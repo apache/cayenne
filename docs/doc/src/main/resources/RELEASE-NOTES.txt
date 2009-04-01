@@ -42,6 +42,7 @@ CAY-1155 Modeler template for SQLServer driver has a typo in the driver name
 CAY-1157 Modeler: Concurrent mod exception on removing DbRelationship
 CAY-1160 Default delete rule is not used when migrating schema (to model)
 CAY-1166 Type checking in the modeler
+CAY-1170 cdbgen task fails due to NPE when instantiating TypesHandler
 CAY-1176 missing classes in ROP cayenne-client render nested contexts unusable
 CAY-1180 Model marked as dirty when leaving DataMap name field
 CAY-1183 commitToParent() makes object persistence state committed, produces exception when using object in parent context (ROP)

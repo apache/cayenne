@@ -73,7 +73,10 @@ public class DbGeneratorTask extends CayenneTask {
 
         validateAttributes();
         
+        ClassLoader loader = null;
         try {
+            loader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
@@ -101,6 +104,9 @@ public class DbGeneratorTask extends CayenneTask {
 
             super.log(message);
             throw new BuildException(message, th);
+        }
+        finally{
+            Thread.currentThread().setContextClassLoader(loader);
         }
     }
 
