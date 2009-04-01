@@ -71,6 +71,34 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             }
 
         });
+
+        scriptArea.getDocument().addDocumentListener(new DocumentListener() {
+
+            public void changedUpdate(DocumentEvent e) {
+            }
+
+            public void insertUpdate(DocumentEvent e) {
+                try {
+                    String text = scriptArea
+                            .getDocument()
+                            .getText(e.getOffset(), 1)
+                            .toString();
+                    if (text.equals(" ") || text.equals("\n") || text.equals("\t")) {
+                        getQuery().setEjbqlStatement(scriptArea.getText());
+                        validateEJBQL();
+                    }
+                }
+                catch (BadLocationException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                getQuery().setEjbqlStatement(scriptArea.getText());
+                scriptArea.removeHighlightText();
+                validateEJBQL();
+            }
+        });
         setLayout(new BorderLayout());
         add(scriptArea, BorderLayout.WEST);
         add(scriptArea.scrollPane, BorderLayout.CENTER);
@@ -112,10 +140,10 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         if (query == null) {
             return;
         }
-
+        String testTemp = null;
         if (text != null) {
-            text = text.trim();
-            if (text.length() == 0) {
+            testTemp = text.trim();
+            if (testTemp.length() == 0) {
                 text = null;
             }
         }
@@ -148,12 +176,16 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 getQuery(),
                 mediator.getCurrentDataDomain());
         if (positionException != null) {
-
-            scriptArea.setHighlightText(
-                    positionException.getBeginLine(),
-                    positionException.getBeginColumn(),
-                    positionException.getLength());
-
+            if (positionException.getBeginLine() != null
+                    || positionException.getBeginColumn() != null
+                    || positionException.getLength() != null) {
+                
+                scriptArea.setHighlightText(
+                        positionException.getBeginLine(),
+                        positionException.getBeginColumn(),
+                        positionException.getLength(),
+                        positionException.getMessage());
+            }
         }
     }
 }

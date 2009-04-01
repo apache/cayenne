@@ -1,14 +1,14 @@
 package org.apache.cayenne.swing.components.textpane;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,7 +31,9 @@ public class JCayenneTextPane extends JPanel {
     protected Highlighter.HighlightPainter painter;
     private JTextPaneScrollable pane;
     public JScrollPane scrollPane;
+
     public boolean repaint;
+
     private static Log logObj = LogFactory.getLog(Main.class);
 
     public void setText(String text) {
@@ -129,9 +131,12 @@ public class JCayenneTextPane extends JPanel {
 
             public void insertUpdate(DocumentEvent evt) {
                 try {
-                    removeHighlightText();
-                    if (pane.getText(evt.getOffset(), 1).toString().equals("/")
-                            || pane.getText(evt.getOffset(), 1).toString().equals("*")) {
+                    String text = pane.getText(evt.getOffset(), 1).toString();
+                    if (!(text.equals(" ") || text.equals("\n") || text.equals("\t"))) {
+                        removeHighlightText();
+                    }
+                    if (text.equals("/") || text.equals("*")) {
+                        removeHighlightText();
                         pane.repaint();
                     }
                 }
@@ -141,7 +146,6 @@ public class JCayenneTextPane extends JPanel {
             }
 
             public void removeUpdate(DocumentEvent evt) {
-                removeHighlightText();
             }
 
             public void changedUpdate(DocumentEvent evt) {
@@ -156,24 +160,25 @@ public class JCayenneTextPane extends JPanel {
         highlighter.addHighlight(lastIndex, endIndex, painter);
     }
 
-    public void setHighlightText(int line, int lastIndex, int size) {
-        int k = 0;
+    /*
+     * set underlines text in JCayenneTextPane
+     * 
+     * @param int line - starting line for underlined text
+     * 
+     * @param int lastIndex - starting position in line for underlined text
+     * 
+     * @param int size
+     * 
+     * @param String message - text for toolTip, contains the text of the error
+     */
+    
+    public void setHighlightText(int line, int lastIndex, int size, String message) {
         try {
-            Matcher matcherTab = Pattern.compile("\t").matcher(
-                    pane.getText(getPosition(line, 0), getPosition(line, lastIndex)));
-            while (matcherTab.find()) {
-                k += 7;
-            }
-        }
-        catch (BadLocationException e1) {
-            logObj.warn("Error: ", e1);
-        }
-        try {
-            int position = getPosition(line, lastIndex-k);
+            int position = getPosition(line, lastIndex);
             int positionEnd = position + size;
             Highlighter highlighter = pane.getHighlighter();
             removeHighlightText(highlighter);
-            highlighter.addHighlight(position, positionEnd, painter);
+            highlighter.addHighlight(position, positionEnd, painter);            
         }
         catch (BadLocationException e) {
             logObj.warn("Error: ", e);

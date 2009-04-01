@@ -48,7 +48,7 @@ public class EjbqlTabbedView extends JTabbedPane {
         addTab("General", new JScrollPane(mainTab));
 
         this.scriptsTab = new EjbqlQueryScriptsTab(mediator);
-        addTab("EJBQL Scripts", scriptsTab);
+        addTab("EJBQL", scriptsTab);
     }
 
     private void initController() {
