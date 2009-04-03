@@ -155,6 +155,8 @@ public class ConfigLoaderTest extends TestCase {
                 .append("\n<domain name='d2'>")
                 .append("\n<node name='n2' datasource='node.xml'")
                 .append("\nfactory='org.apache.cayenne.conf.MockDataSourceFactory1'")
+                .append(
+                        "\nschema-update-strategy='org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy'")
                 .append("\nadapter='org.apache.cayenne.dba.mysql.MySQLAdapter'/>")
                 .append("\n</domain>")
                 .append("\n</domains>");
@@ -169,12 +171,14 @@ public class ConfigLoaderTest extends TestCase {
                     String nodeName,
                     String dataSource,
                     String adapter,
-                    String factory) {
+                    String factory,
+                    String schemaUpdateStrategy) {
 
                 NodeLoadState state = new NodeLoadState();
                 state.domainName = domainName;
                 state.nodeName = nodeName;
                 state.factory = factory;
+                state.schemaUpdateStrategy = schemaUpdateStrategy;
                 nodes.add(state);
             }
         };
@@ -187,11 +191,17 @@ public class ConfigLoaderTest extends TestCase {
         assertEquals("d1", s1.domainName);
         assertEquals("n1", s1.nodeName);
         assertEquals("org.apache.cayenne.conf.MockDataSourceFactory", s1.factory);
+        assertEquals(
+                "org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy",
+                s1.schemaUpdateStrategy);
 
         NodeLoadState s2 = (NodeLoadState) nodes.get(1);
         assertEquals("d2", s2.domainName);
         assertEquals("n2", s2.nodeName);
         assertEquals("org.apache.cayenne.conf.MockDataSourceFactory1", s2.factory);
+        assertEquals(
+                "org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy",
+                s2.schemaUpdateStrategy);
     }
 
     private void runCase(ConfigLoaderCase aCase) throws Exception {
@@ -203,6 +213,7 @@ public class ConfigLoaderTest extends TestCase {
 
     class NodeLoadState {
 
+        String schemaUpdateStrategy;
         String domainName;
         String nodeName;
         String factory;

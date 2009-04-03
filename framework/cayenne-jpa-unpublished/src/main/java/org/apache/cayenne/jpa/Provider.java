@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.conf.ResourceFinder;
@@ -266,6 +267,9 @@ public class Provider implements PersistenceProvider {
             if (adapter == null) {
                 adapter = new AutoAdapter(new NodeDataSource(node));
             }
+            
+            // TODO: add a property to generate schema per bundled or custom strategies
+            node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
 
             node.setAdapter(adapter);
             node.setDataSource(dataSource);

@@ -217,6 +217,7 @@ public class PartialProject extends Project {
         protected String dataSource;
         protected String adapter;
         protected String factory;
+        protected String schemaUpdateStrategy;
         protected List<String> maps = new ArrayList<String>();
 
         public NodeMetaData(String name) {
@@ -327,12 +328,14 @@ public class PartialProject extends Project {
                 String nodeName,
                 String dataSource,
                 String adapter,
-                String factory) {
+                String factory,
+                String schemaUpdateStrategy) {
 
             NodeMetaData node = new NodeMetaData(nodeName);
             node.adapter = adapter;
             node.factory = factory;
             node.dataSource = dataSource;
+            node.schemaUpdateStrategy = schemaUpdateStrategy;
             findDomain(domainName).nodes.put(nodeName, node);
         }
 
@@ -410,6 +413,10 @@ public class PartialProject extends Project {
 
         public String nodeFactoryName(String domainName, String nodeName) {
             return (findDomain(domainName).nodes.get(nodeName)).factory;
+        }
+        
+        public String nodeSchemaUpdateStrategyName(String domainName, String nodeName) {
+            return (findDomain(domainName).nodes.get(nodeName)).schemaUpdateStrategy;
         }
 
         public Iterator nodeNames(String domainName) {

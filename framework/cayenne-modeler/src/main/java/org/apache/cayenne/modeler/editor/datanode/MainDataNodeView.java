@@ -21,11 +21,14 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -42,6 +45,7 @@ public class MainDataNodeView extends JPanel {
     protected CardLayout dataSourceDetailLayout;
     protected JComboBox localDataSources;
     protected JButton configLocalDataSources;
+    protected JComboBox schemaUpdateStrategy;
 
     public MainDataNodeView() {
 
@@ -50,6 +54,7 @@ public class MainDataNodeView extends JPanel {
         this.factories = new JComboBox();
         this.localDataSources = new JComboBox();
 
+        this.schemaUpdateStrategy = new JComboBox();
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
 
@@ -65,6 +70,17 @@ public class MainDataNodeView extends JPanel {
 
         topPanelBuilder.appendSeparator("DataNode Configuration");
         topPanelBuilder.append("DataNode Name:", dataNodeName, 3);
+        topPanelBuilder.append("Schema Update Strategy:", schemaUpdateStrategy, 3);
+
+        DefaultFormBuilder builderForLabel = new DefaultFormBuilder(new FormLayout(
+                "right:199dlu"));
+        JLabel label = new JLabel(
+                "You can enter custom class implementing SchemaUpdateStrategy");
+        Font font = new Font(getFont().getName(), Font.PLAIN, getFont().getSize() - 2);
+        label.setFont(font);
+        builderForLabel.append(label);
+
+        topPanelBuilder.append("", builderForLabel.getPanel(), 3);
         topPanelBuilder.append(
                 "Local DataSource (opt.):",
                 localDataSources,
@@ -74,6 +90,10 @@ public class MainDataNodeView extends JPanel {
         setLayout(new BorderLayout());
         add(topPanelBuilder.getPanel(), BorderLayout.NORTH);
         add(dataSourceDetail, BorderLayout.CENTER);
+    }
+
+    public JComboBox getSchemaUpdateStrategy() {
+        return schemaUpdateStrategy;
     }
 
     public JTextField getDataNodeName() {

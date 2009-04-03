@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.event.DataNodeEvent;
@@ -98,7 +99,8 @@ public class CreateNodeAction extends CayenneAction {
 
         // by default create JDBC Node
         node.setDataSourceFactory(DriverDataSourceFactory.class.getName());
-
+        node.setSchemaUpdateStrategyName(SkipSchemaUpdateStrategy.class.getName());
+        
         domain.addNode(node);
         return node;
     }

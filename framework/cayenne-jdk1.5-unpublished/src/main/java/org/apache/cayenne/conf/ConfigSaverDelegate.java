@@ -61,4 +61,9 @@ public interface ConfigSaverDelegate {
     public String nodeAdapterName(String domainName, String nodeName);
     
     public String nodeFactoryName(String domainName, String nodeName);
+    
+    /**
+     * @since 3.0
+     */
+    public String nodeSchemaUpdateStrategyName(String domainName, String nodeName);
 }

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -36,7 +37,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class that performs runtime loading of Cayenne configuration.
- * 
  */
 public class ConfigLoader {
 
@@ -282,7 +282,11 @@ public class ConfigLoader {
             super(parser, parentHandler);
         }
 
-        public void init(String name, Attributes attrs, String domainName, Map<String, DataMap> locations) {
+        public void init(
+                String name,
+                Attributes attrs,
+                String domainName,
+                Map<String, DataMap> locations) {
             this.domainName = domainName;
             this.mapLocations = locations;
             mapName = attrs.getValue("", "name");
@@ -333,12 +337,18 @@ public class ConfigLoader {
             String dataSrcLocation = attrs.getValue("", "datasource");
             String adapterClass = attrs.getValue("", "adapter");
             String factoryName = attrs.getValue("", "factory");
+            String schemaUpdateStrategyName = attrs
+                    .getValue("", "schema-update-strategy");
+            if (schemaUpdateStrategyName == null) {
+                schemaUpdateStrategyName = SkipSchemaUpdateStrategy.class.getName();
+            }
             delegate.shouldLoadDataNode(
                     domainName,
                     nodeName,
                     dataSrcLocation,
                     adapterClass,
-                    factoryName);
+                    factoryName,
+                    schemaUpdateStrategyName);
         }
 
         @Override

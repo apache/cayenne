@@ -49,7 +49,8 @@ public class MockConfigLoaderDelegate implements ConfigLoaderDelegate {
             String nodeName,
             String dataSource,
             String adapter,
-            String factory) {
+            String factory, 
+            String schemaUpdateStrategy) {
     }
 
     public void shouldLinkDataMap(String domainName, String nodeName, String mapName) {

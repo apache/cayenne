@@ -27,13 +27,13 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.Util;
 
 /**
  * Class that does saving of Cayenne configuration.
- * 
  */
 public class ConfigSaver {
 
@@ -130,6 +130,9 @@ public class ConfigSaver {
             String datasource = delegate.nodeDataSourceName(domainName, nodeName);
             String adapter = delegate.nodeAdapterName(domainName, nodeName);
             String factory = delegate.nodeFactoryName(domainName, nodeName);
+            String schemaUpdateStrategy = delegate.nodeSchemaUpdateStrategyName(
+                    domainName,
+                    nodeName);
             Iterator mapNames = delegate.linkedMapNames(domainName, nodeName);
 
             pw.println("\t<node name=\"" + nodeName.trim() + "\"");
@@ -146,6 +149,14 @@ public class ConfigSaver {
 
             if (factory != null) {
                 pw.print("\t\t factory=\"" + factory.trim() + "\"");
+            }
+
+            if (schemaUpdateStrategy != null
+                    && !(schemaUpdateStrategy == SkipSchemaUpdateStrategy.class.getName())) {
+                pw.println("");
+                pw.print("\t\t schema-update-strategy=\""
+                        + schemaUpdateStrategy.trim()
+                        + "\"");
             }
             pw.println(">");
 

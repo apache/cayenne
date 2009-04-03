@@ -30,6 +30,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.AshwoodEntitySorter;
@@ -41,7 +43,6 @@ import org.apache.cayenne.query.Query;
 /**
  * An abstraction of a single physical data storage. This is usually a database server,
  * but can potentially be some other storage type like an LDAP server, etc.
- * 
  */
 public class DataNode implements QueryEngine {
 
@@ -50,11 +51,45 @@ public class DataNode implements QueryEngine {
     protected DbAdapter adapter;
     protected String dataSourceLocation;
     protected String dataSourceFactory;
+    protected String schemaUpdateStrategyName;
     protected EntityResolver entityResolver;
+    protected SchemaUpdateStrategy schemaUpdateStrategy;
+
     protected EntitySorter entitySorter;
     protected Map<String, DataMap> dataMaps;
 
     TransactionDataSource readThroughDataSource;
+
+    /**
+     * @since 3.0
+     */
+    public String getSchemaUpdateStrategyName() {
+        if (schemaUpdateStrategyName == null) {
+            schemaUpdateStrategyName = SkipSchemaUpdateStrategy.class.getName();
+        }
+        return schemaUpdateStrategyName;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setSchemaUpdateStrategyName(String schemaUpdateStrategyName) {
+        this.schemaUpdateStrategyName = schemaUpdateStrategyName;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public SchemaUpdateStrategy getSchemaUpdateStrategy() {
+        return schemaUpdateStrategy;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setSchemaUpdateStrategy(SchemaUpdateStrategy schemaUpdateStrategy) {
+        this.schemaUpdateStrategy = schemaUpdateStrategy;
+    }
 
     /**
      * Creates a new unnamed DataNode.
@@ -117,7 +152,7 @@ public class DataNode implements QueryEngine {
     public Collection<DataMap> getDataMaps() {
         return Collections.unmodifiableCollection(dataMaps.values());
     }
-    
+
     /**
      * Returns datamap with specified name, null if none present
      */
@@ -187,9 +222,7 @@ public class DataNode implements QueryEngine {
      * 
      * @since 1.1
      */
-    public void performQueries(
-            Collection<Query> queries,
-            OperationObserver callback) {
+    public void performQueries(Collection<Query> queries, OperationObserver callback) {
 
         int listSize = queries.size();
         if (listSize == 0) {
@@ -212,6 +245,7 @@ public class DataNode implements QueryEngine {
         Connection connection = null;
 
         try {
+            getSchemaUpdateStrategy().updateSchema(this);
             connection = this.getDataSource().getConnection();
         }
         catch (Exception globalEx) {
@@ -374,7 +408,7 @@ public class DataNode implements QueryEngine {
         public void setLogWriter(PrintWriter out) throws SQLException {
             dataSource.setLogWriter(out);
         }
-        
+
         /**
          * @since 3.0
          */

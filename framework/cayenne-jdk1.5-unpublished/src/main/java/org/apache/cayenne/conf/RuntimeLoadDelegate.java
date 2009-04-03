@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
@@ -38,7 +39,6 @@ import org.xml.sax.InputSource;
 
 /**
  * Implementation of ConfigLoaderDelegate that creates Cayenne access objects stack.
- * 
  */
 public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
 
@@ -246,7 +246,8 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
             String nodeName,
             String dataSource,
             String adapter,
-            String factory) {
+            String factory,
+            String schemaUpdateStrategy) {
 
         logger.info("loading <node name='"
                 + nodeName
@@ -254,6 +255,8 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
                 + dataSource
                 + "' factory='"
                 + factory
+                + "' schema-update-strategy='"
+                + schemaUpdateStrategy
                 + "'>.");
 
         if (nodeName == null) {
@@ -262,6 +265,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
 
         factory = convertClassNameFromV1_2(factory);
         adapter = convertClassNameFromV1_2(adapter);
+        schemaUpdateStrategy = convertClassNameFromV1_2(schemaUpdateStrategy);
 
         if (dataSource == null) {
             logger.info("Warning: <node> '" + nodeName + "' has no 'datasource'.");
@@ -278,13 +282,33 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
             }
         }
 
+        if (schemaUpdateStrategy == null) {
+            logger.info("Warning: <node> '"
+                    + nodeName
+                    + "' has no 'schema-update-strategy'.");
+        }
+
         DataNode node = createDataNode(nodeName);
 
         node.setDataSourceFactory(factory);
         node.setDataSourceLocation(dataSource);
+        node.setSchemaUpdateStrategyName(schemaUpdateStrategy);
+
 
         // load DataSource
         try {
+
+            SchemaUpdateStrategy confSchema = config.getSchemaUpdateStrategy();
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            SchemaUpdateStrategy localSchema = (confSchema != null)
+                    ? confSchema
+                    : (SchemaUpdateStrategy) Class.forName(
+                            schemaUpdateStrategy,
+                            true,
+                            classLoader).newInstance();
+
+            node.setSchemaUpdateStrategy(localSchema);
+            
             // use DomainHelper factory if it exists, if not - use factory specified
             // in configuration data
             DataSourceFactory confFactory = config.getDataSourceFactory(factory);

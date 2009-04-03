@@ -37,7 +37,6 @@ import org.apache.cayenne.util.Util;
 
 /**
  * Save delegate used for saving Cayenne access stack.
- * 
  */
 public class RuntimeSaveDelegate implements ConfigSaverDelegate {
 
@@ -156,6 +155,13 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
         return findNode(domainName, nodeName).getDataSourceFactory();
     }
 
+    /**
+     * @since 3.0
+     */
+    public String nodeSchemaUpdateStrategyName(String domainName, String nodeName) {
+        return findNode(domainName, nodeName).getSchemaUpdateStrategyName();
+    }
+
     public Iterator nodeNames(String domainName) {
         Transformer tr = new Transformer() {
 
@@ -165,7 +171,8 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
         };
 
         // sort nodes by name
-        List<DataNode> nodes = new ArrayList<DataNode>(findDomain(domainName).getDataNodes());
+        List<DataNode> nodes = new ArrayList<DataNode>(findDomain(domainName)
+                .getDataNodes());
         Collections.sort(nodes, new Comparator() {
 
             public int compare(Object o1, Object o2) {
@@ -174,7 +181,7 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
                 return Util.nullSafeCompare(true, name1, name2);
             }
         });
-        
+
         return new TransformIterator(nodes.iterator(), tr);
     }
 

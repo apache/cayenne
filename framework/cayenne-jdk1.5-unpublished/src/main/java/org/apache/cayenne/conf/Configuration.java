@@ -32,6 +32,7 @@ import java.util.TreeMap;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.logging.Log;
@@ -63,6 +64,7 @@ public abstract class Configuration {
      */
     protected SortedMap<String, DataDomain> dataDomains = new TreeMap<String, DataDomain>();
     protected DataSourceFactory overrideFactory;
+    protected SchemaUpdateStrategy overrideStrategy;
     protected ConfigStatus loadStatus = new ConfigStatus();
     protected String domainConfigurationName = DEFAULT_DOMAIN_FILE;
     protected boolean ignoringLoadFailures;
@@ -336,6 +338,17 @@ public abstract class Configuration {
         return getDataSourceFactory();
     }
 
+    
+    public SchemaUpdateStrategy getSchemaUpdateStrategy() {
+        return overrideStrategy;
+    }
+
+    
+    public void setSchemaUpdateStrategy(SchemaUpdateStrategy overrideStrategy) {
+        this.overrideStrategy = overrideStrategy;
+    }
+
+    
     /**
      * Returns an internal DataSourceFactory that will override any settings configured in
      * XML. Subclasses may override this method to provide a special factory for

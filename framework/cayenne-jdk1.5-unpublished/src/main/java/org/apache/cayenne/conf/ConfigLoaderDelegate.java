@@ -78,7 +78,8 @@ public interface ConfigLoaderDelegate {
         String nodeName,
         String dataSource,
         String adapter,
-        String factory);
+        String factory, 
+        String schemaUpdateStrategy);
 
     public void shouldLinkDataMap(
         String domainName,
