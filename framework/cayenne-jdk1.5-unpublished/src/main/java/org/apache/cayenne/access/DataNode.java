@@ -245,7 +245,11 @@ public class DataNode implements QueryEngine {
         Connection connection = null;
 
         try {
-            getSchemaUpdateStrategy().updateSchema(this);
+            
+            if (schemaUpdateStrategy != null) {
+                schemaUpdateStrategy.updateSchema(this);
+            }
+            
             connection = this.getDataSource().getConnection();
         }
         catch (Exception globalEx) {

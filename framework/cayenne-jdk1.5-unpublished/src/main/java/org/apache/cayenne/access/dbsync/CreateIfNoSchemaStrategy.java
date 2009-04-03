@@ -47,23 +47,14 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
         return currentSchema;
     }
 
-    /**
-     * @since 3.0
-     */
     public CreateIfNoSchemaStrategy() {
         currentSchema = this;
     }
 
-    /**
-     * @since 3.0
-     */
     public void updateSchema(DataNode dataNode) {
         getSchema().generateUpdateSchema(dataNode);
     }
 
-    /**
-     * @since 3.0
-     */
     public void generateUpdateSchema(DataNode dataNode) {
 
         Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
@@ -105,8 +96,8 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
         }
     }
 
-    /*
-     * Returns all the table names in database
+    /**
+     * Returns all the table names in database.
      */
     protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) {
         String tableLabel = dataNode.getAdapter().tableTypeForTable();

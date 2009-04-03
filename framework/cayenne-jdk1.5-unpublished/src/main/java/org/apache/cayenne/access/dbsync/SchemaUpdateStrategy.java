@@ -21,6 +21,8 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.access.DataNode;
 
 /**
+ * A strategy for auto generating a database schema on the application startup.
+ * 
  * @since 3.0
  */
 public interface SchemaUpdateStrategy {
