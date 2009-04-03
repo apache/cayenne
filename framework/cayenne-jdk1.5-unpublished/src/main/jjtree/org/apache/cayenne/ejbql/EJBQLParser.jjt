@@ -55,6 +55,8 @@ public class EJBQL {
 
 	public EJBQL (String source) {
 		this (new StringReader (source));
+		// ensure that error location matches java char count, including the tabs
+		jj_input_stream.setTabSize(1);
 	}
 	
     public static class EJBQLDefaultParser implements EJBQLParser {

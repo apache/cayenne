@@ -32,7 +32,19 @@ public class JCayenneTextPane extends JPanel {
     private JTextPaneScrollable pane;
     public JScrollPane scrollPane;
 
+    private String tooltipTextError;
+    private int startYPositionToolTip;
+    private int endYPositionToolTip;
+
     public boolean repaint;
+
+    public String getTooltipTextError() {
+        return tooltipTextError;
+    }
+
+    public void setTooltipTextError(String tooltipTextError) {
+        this.tooltipTextError = tooltipTextError;
+    }
 
     private static Log logObj = LogFactory.getLog(Main.class);
 
@@ -160,25 +172,24 @@ public class JCayenneTextPane extends JPanel {
         highlighter.addHighlight(lastIndex, endIndex, painter);
     }
 
-    /*
+    /**
      * set underlines text in JCayenneTextPane
      * 
      * @param int line - starting line for underlined text
-     * 
      * @param int lastIndex - starting position in line for underlined text
-     * 
      * @param int size
-     * 
      * @param String message - text for toolTip, contains the text of the error
      */
-    
+
     public void setHighlightText(int line, int lastIndex, int size, String message) {
         try {
+
             int position = getPosition(line, lastIndex);
             int positionEnd = position + size;
             Highlighter highlighter = pane.getHighlighter();
             removeHighlightText(highlighter);
-            highlighter.addHighlight(position, positionEnd, painter);            
+            highlighter.addHighlight(position, positionEnd, painter);
+            setToolTipPosition(line, message);
         }
         catch (BadLocationException e) {
             logObj.warn("Error: ", e);
@@ -193,6 +204,37 @@ public class JCayenneTextPane extends JPanel {
             if (h.getPainter() instanceof UnderlineHighlighterForText.UnderlineHighlightPainter) {
                 highlighter.removeHighlight(h);
             }
+        }
+    }
+
+    public void setToolTipPosition(int line, String string) {
+
+        int height = pane.getFontMetrics(pane.getFont()).getHeight();
+        int start = (line - 1) * height;
+        this.endYPositionToolTip = start;
+        this.startYPositionToolTip = start + height;
+        setTooltipTextError(string);
+        setToolTipText("");
+    }
+
+    public String getToolTipText(MouseEvent e) {
+
+        if (e.getPoint().y > endYPositionToolTip
+                && e.getPoint().y < startYPositionToolTip) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            String htmlText = getTooltipTextError()
+                    .replaceAll("\n", "<br>&nbsp;")
+                    .replaceAll("\t", "&nbsp;")
+                    .replaceAll("\r", "<br>&nbsp;");
+
+            return "<HTML>"
+                    + "<body bgcolor='#FFEBCD' text='black'>"
+                    + htmlText
+                    + "</body>";
+        }
+        else {
+            setCursor(Cursor.getDefaultCursor());
+            return null;
         }
     }
 
