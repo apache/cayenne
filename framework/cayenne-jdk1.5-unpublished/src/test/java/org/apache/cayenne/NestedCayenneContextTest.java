@@ -16,26 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.remote;
+package org.apache.cayenne;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
+import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.remote.RemoteCayenneCase;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.testdo.mt.ClientMtTooneDep;
+import org.apache.cayenne.testdo.mt.ClientMtTooneMaster;
 
 /**
  * Tests nested object contexts
  */
-public class NestedObjectContextTest extends RemoteCayenneCase {
+public class NestedCayenneContextTest extends RemoteCayenneCase {
+
     public void testChannels() {
         ObjectContext child = context.createChildContext();
 
@@ -65,7 +66,8 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         ClientMtTable1 _new = context.newObject(ClientMtTable1.class);
 
-        ClientMtTable1 hollow = (ClientMtTable1) context.localObject(new ObjectId("MtTable1"), null);
+        ClientMtTable1 hollow = (ClientMtTable1) context.localObject(new ObjectId(
+                "MtTable1"), null);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, committed.getPersistenceState());
@@ -90,13 +92,16 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
             assertSame(child, hollowPeer.getObjectContext());
             assertSame(context, hollow.getObjectContext());
 
-            Persistent committedPeer = child.localObject(committed.getObjectId(), committed);
+            Persistent committedPeer = child.localObject(
+                    committed.getObjectId(),
+                    committed);
             assertEquals(PersistenceState.COMMITTED, committedPeer.getPersistenceState());
             assertEquals(committed.getObjectId(), committedPeer.getObjectId());
             assertSame(child, committedPeer.getObjectContext());
             assertSame(context, committed.getObjectContext());
 
-            ClientMtTable1 modifiedPeer = (ClientMtTable1) child.localObject(modified.getObjectId(), modified);
+            ClientMtTable1 modifiedPeer = (ClientMtTable1) child.localObject(modified
+                    .getObjectId(), modified);
             assertEquals(PersistenceState.COMMITTED, modifiedPeer.getPersistenceState());
             assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
             assertEquals("a", modifiedPeer.getGlobalAttribute1());
@@ -123,7 +128,8 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         context.commitChanges();
 
         ClientMtTable1 peerModified = (ClientMtTable1) DataObjectUtils.objectForQuery(
-                child, new ObjectIdQuery(modified.getObjectId()));
+                child,
+                new ObjectIdQuery(modified.getObjectId()));
 
         modified.setGlobalAttribute1("M1");
         peerModified.setGlobalAttribute1("M2");
@@ -135,7 +141,8 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         try {
 
-            Persistent peerModified2 = child.localObject(modified.getObjectId(), modified);
+            Persistent peerModified2 = child
+                    .localObject(modified.getObjectId(), modified);
             assertSame(peerModified, peerModified2);
             assertEquals(PersistenceState.MODIFIED, peerModified2.getPersistenceState());
             assertEquals("M2", peerModified.getGlobalAttribute1());
@@ -158,10 +165,13 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         blockQueries();
 
         try {
-            ClientMtTable2 child2 = (ClientMtTable2) child.localObject(_new2.getObjectId(), _new2);
+            ClientMtTable2 child2 = (ClientMtTable2) child.localObject(_new2
+                    .getObjectId(), _new2);
             assertEquals(PersistenceState.COMMITTED, child2.getPersistenceState());
             assertNotNull(child2.getTable1());
-            assertEquals(PersistenceState.COMMITTED, child2.getTable1().getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, child2
+                    .getTable1()
+                    .getPersistenceState());
         }
         finally {
             unblockQueries();
@@ -313,7 +323,8 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         context.commitChanges();
 
         ClientMtTable2 p = child.newObject(ClientMtTable2.class);
-        ClientMtTable1 aChild = (ClientMtTable1) DataObjectUtils.objectForPK(child, a.getObjectId());
+        ClientMtTable1 aChild = (ClientMtTable1) DataObjectUtils.objectForPK(child, a
+                .getObjectId());
         p.setGlobalAttribute("X");
         aChild.addToTable2Array(p);
 
@@ -340,7 +351,8 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         ObjectContext child = context.createChildContext();
         ObjectContext childPeer = context.createChildContext();
 
-        ClientMtTable2 childP1 = (ClientMtTable2) DataObjectUtils.objectForPK(child, b.getObjectId());
+        ClientMtTable2 childP1 = (ClientMtTable2) DataObjectUtils.objectForPK(child, b
+                .getObjectId());
 
         // trigger object creation in the peer nested DC
         DataObjectUtils.objectForPK(childPeer, b.getObjectId());
@@ -358,6 +370,41 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
             assertNotNull(parentP1);
             assertEquals(PersistenceState.MODIFIED, parentP1.getPersistenceState());
             assertNull(parentP1.getTable1());
+
+            // check that arc changes got recorded in the parent context
+            GraphDiff diffs = context.internalGraphManager().getDiffs();
+            final int[] arcDiffs = new int[1];
+
+            diffs.apply(new GraphChangeHandler() {
+
+                public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+                    arcDiffs[0]++;
+                }
+
+                public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+                    arcDiffs[0]--;
+                }
+
+                public void nodeCreated(Object nodeId) {
+
+                }
+
+                public void nodeIdChanged(Object nodeId, Object newId) {
+                }
+
+                public void nodePropertyChanged(
+                        Object nodeId,
+                        String property,
+                        Object oldValue,
+                        Object newValue) {
+                }
+
+                public void nodeRemoved(Object nodeId) {
+
+                }
+            });
+
+            assertEquals(-2, arcDiffs[0]);
         }
         finally {
             unblockQueries();
@@ -405,14 +452,18 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
             assertEquals(PersistenceState.COMMITTED, childCommitted.getPersistenceState());
             assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
 
-            ClientMtTable1 parentNew = (ClientMtTable1) context.getGraphManager().getNode(
-                    childNew.getObjectId());
-            ClientMtTable1 parentModified = (ClientMtTable1) context.getGraphManager().getNode(
-                    childModified.getObjectId());
-            ClientMtTable1 parentCommitted = (ClientMtTable1) context.getGraphManager().getNode(
-                    childCommitted.getObjectId());
-            ClientMtTable1 parentHollow = (ClientMtTable1) context.getGraphManager().getNode(
-                    childHollow.getObjectId());
+            ClientMtTable1 parentNew = (ClientMtTable1) context
+                    .getGraphManager()
+                    .getNode(childNew.getObjectId());
+            final ClientMtTable1 parentModified = (ClientMtTable1) context
+                    .getGraphManager()
+                    .getNode(childModified.getObjectId());
+            ClientMtTable1 parentCommitted = (ClientMtTable1) context
+                    .getGraphManager()
+                    .getNode(childCommitted.getObjectId());
+            ClientMtTable1 parentHollow = (ClientMtTable1) context
+                    .getGraphManager()
+                    .getNode(childHollow.getObjectId());
 
             assertNotNull(parentNew);
             assertEquals(PersistenceState.NEW, parentNew.getPersistenceState());
@@ -427,6 +478,46 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
                     .getPersistenceState());
 
             assertNotNull(parentHollow);
+
+            // check that arc changes got recorded in the parent context
+            GraphDiff diffs = context.internalGraphManager().getDiffs();
+
+            final int[] modifiedProperties = new int[1];
+
+            diffs.apply(new GraphChangeHandler() {
+
+                public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+
+                }
+
+                public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+
+                }
+
+                public void nodeCreated(Object nodeId) {
+
+                }
+
+                public void nodeIdChanged(Object nodeId, Object newId) {
+                }
+
+                public void nodePropertyChanged(
+                        Object nodeId,
+                        String property,
+                        Object oldValue,
+                        Object newValue) {
+
+                    if (nodeId.equals(parentModified.getObjectId())) {
+                        modifiedProperties[0]++;
+                    }
+                }
+
+                public void nodeRemoved(Object nodeId) {
+
+                }
+            });
+
+            assertEquals(1, modifiedProperties[0]);
         }
         finally {
             unblockQueries();
@@ -465,8 +556,9 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         assertEquals(PersistenceState.TRANSIENT, childDeleted.getPersistenceState());
 
-        ClientMtTable1 parentDeleted = (ClientMtTable1) context.getGraphManager().getNode(
-                childDeleted.getObjectId());
+        ClientMtTable1 parentDeleted = (ClientMtTable1) context
+                .getGraphManager()
+                .getNode(childDeleted.getObjectId());
 
         assertNotNull(parentDeleted);
         assertEquals(PersistenceState.DELETED, parentDeleted.getPersistenceState());
@@ -516,12 +608,15 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         ClientMtTable1 parentNew = (ClientMtTable1) context.getGraphManager().getNode(
                 childNew.getObjectId());
-        ClientMtTable1 parentModified = (ClientMtTable1) context.getGraphManager().getNode(
-                childModified.getObjectId());
-        ClientMtTable1 parentCommitted = (ClientMtTable1) context.getGraphManager().getNode(
-                childCommitted.getObjectId());
-        ClientMtTable1 parentDeleted = (ClientMtTable1) context.getGraphManager().getNode(
-                childDeleted.getObjectId());
+        ClientMtTable1 parentModified = (ClientMtTable1) context
+                .getGraphManager()
+                .getNode(childModified.getObjectId());
+        ClientMtTable1 parentCommitted = (ClientMtTable1) context
+                .getGraphManager()
+                .getNode(childCommitted.getObjectId());
+        ClientMtTable1 parentDeleted = (ClientMtTable1) context
+                .getGraphManager()
+                .getNode(childDeleted.getObjectId());
         ClientMtTable1 parentHollow = (ClientMtTable1) context.getGraphManager().getNode(
                 childHollow.getObjectId());
 
@@ -580,7 +675,8 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         assertEquals(PersistenceState.MODIFIED, a.getPersistenceState());
 
         child.commitChangesToParent();
-        ClientMtTable1 parentA = (ClientMtTable1) context.getGraphManager().getNode(a.getObjectId());
+        ClientMtTable1 parentA = (ClientMtTable1) context.getGraphManager().getNode(
+                a.getObjectId());
         assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
         assertEquals(PersistenceState.MODIFIED, parentA.getPersistenceState());
         assertEquals(1, parentA.getTable2Array().size());
@@ -604,7 +700,9 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         context.commitChanges();
 
         ObjectContext child = context.createChildContext();
-        ClientMtTable1 childMt = (ClientMtTable1) DataObjectUtils.objectForPK(child, parentMt.getObjectId());
+        ClientMtTable1 childMt = (ClientMtTable1) DataObjectUtils.objectForPK(
+                child,
+                parentMt.getObjectId());
         childMt.setGlobalAttribute1("1183");
         ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
         childMt2.setGlobalAttribute("1183");
@@ -612,32 +710,160 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         child.commitChangesToParent();
 
-        //fetching other relationship... this fails per CAY-1183
+        // fetching other relationship... this fails per CAY-1183
         childMt2.getTable3();
     }
-    
+
     public void testCAY1194() throws Exception {
         deleteTestData();
-        
-        ClientMtTable1 parentMt = context.newObject(ClientMtTable1.class);        
+
+        ClientMtTable1 parentMt = context.newObject(ClientMtTable1.class);
         ObjectContext child = context.createChildContext();
-        
+
         ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
         childMt2.setGlobalAttribute("222");
-        
-        ClientMtTable1 localParentMt = (ClientMtTable1) child.localObject(parentMt.getObjectId(), null);
+
+        ClientMtTable1 localParentMt = (ClientMtTable1) child.localObject(parentMt
+                .getObjectId(), null);
         assertEquals(0, parentMt.getTable2Array().size());
         assertEquals(0, localParentMt.getTable2Array().size());
-        
+
         childMt2.setTable1(localParentMt);
-        
+
         assertEquals(0, parentMt.getTable2Array().size());
         assertEquals(1, localParentMt.getTable2Array().size());
-        
-        assertEquals(((Persistent) localParentMt.getTable2Array().get(0)).getObjectContext(), child);
-        
+
+        assertEquals(((Persistent) localParentMt.getTable2Array().get(0))
+                .getObjectContext(), child);
+
         child.commitChangesToParent();
         assertEquals(1, parentMt.getTable2Array().size());
-        assertEquals(((Persistent) parentMt.getTable2Array().get(0)).getObjectContext(), context);
+        assertEquals(
+                ((Persistent) parentMt.getTable2Array().get(0)).getObjectContext(),
+                context);
+    }
+
+    public void testCommitChangesToParentOneToMany() throws Exception {
+        deleteTestData();
+
+        ObjectContext child = context.createChildContext();
+
+        ClientMtTable1 master = child.newObject(ClientMtTable1.class);
+        ClientMtTable2 dep = child.newObject(ClientMtTable2.class);
+        master.addToTable2Array(dep);
+
+        child.commitChangesToParent();
+
+        ClientMtTable1 masterParent = (ClientMtTable1) context.getGraphManager().getNode(
+                master.getObjectId());
+        ClientMtTable2 depParent = (ClientMtTable2) context.getGraphManager().getNode(
+                dep.getObjectId());
+
+        assertNotNull(masterParent);
+        assertNotNull(depParent);
+
+        assertSame(masterParent, depParent.getTable1());
+        assertTrue(masterParent.getTable2Array().contains(depParent));
+
+        // check that arc changes got recorded in the parent context
+        GraphDiff diffs = context.internalGraphManager().getDiffs();
+
+        final int[] arcDiffs = new int[1];
+        final int[] newNodes = new int[1];
+
+        diffs.apply(new GraphChangeHandler() {
+
+            public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+                arcDiffs[0]++;
+            }
+
+            public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+                arcDiffs[0]--;
+            }
+
+            public void nodeCreated(Object nodeId) {
+                newNodes[0]++;
+            }
+
+            public void nodeIdChanged(Object nodeId, Object newId) {
+            }
+
+            public void nodePropertyChanged(
+                    Object nodeId,
+                    String property,
+                    Object oldValue,
+                    Object newValue) {
+            }
+
+            public void nodeRemoved(Object nodeId) {
+                newNodes[0]--;
+            }
+        });
+
+        assertEquals(2, newNodes[0]);
+        assertEquals(2, arcDiffs[0]);
+    }
+
+    public void testCommitChangesToParentOneToOne() throws Exception {
+        deleteTestData();
+
+        ObjectContext child = context.createChildContext();
+
+        ClientMtTooneMaster master = child.newObject(ClientMtTooneMaster.class);
+        ClientMtTooneDep dep = child.newObject(ClientMtTooneDep.class);
+        master.setToDependent(dep);
+
+        child.commitChangesToParent();
+
+        ClientMtTooneMaster masterParent = (ClientMtTooneMaster) context
+                .getGraphManager()
+                .getNode(master.getObjectId());
+        ClientMtTooneDep depParent = (ClientMtTooneDep) context
+                .getGraphManager()
+                .getNode(dep.getObjectId());
+
+        assertNotNull(masterParent);
+        assertNotNull(depParent);
+
+        assertSame(masterParent, depParent.getToMaster());
+        assertSame(depParent, masterParent.getToDependent());
+
+        // check that arc changes got recorded in the parent context
+        GraphDiff diffs = context.internalGraphManager().getDiffs();
+
+        final int[] arcDiffs = new int[1];
+        final int[] newNodes = new int[1];
+
+        diffs.apply(new GraphChangeHandler() {
+
+            public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+                arcDiffs[0]++;
+            }
+
+            public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+                arcDiffs[0]--;
+            }
+
+            public void nodeCreated(Object nodeId) {
+                newNodes[0]++;
+            }
+
+            public void nodeIdChanged(Object nodeId, Object newId) {
+            }
+
+            public void nodePropertyChanged(
+                    Object nodeId,
+                    String property,
+                    Object oldValue,
+                    Object newValue) {
+            }
+
+            public void nodeRemoved(Object nodeId) {
+                newNodes[0]--;
+            }
+        });
+
+        assertEquals(2, newNodes[0]);
+        assertEquals(2, arcDiffs[0]);
     }
 }

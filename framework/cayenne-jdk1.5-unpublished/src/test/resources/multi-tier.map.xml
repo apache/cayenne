@@ -70,6 +70,12 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NUMERIC_COLUMN" type="INTEGER"/>
 	</db-entity>
+	<db-entity name="MT_TOONE_DEP">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TOONE_MASTER">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<obj-entity name="MtDeleteCascade" className="org.apache.cayenne.testdo.mt.MtDeleteCascade" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteCascade" dbEntityName="MT_DELETE_CASCADE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
@@ -115,6 +121,10 @@
 	<obj-entity name="MtTableBool" className="org.apache.cayenne.testdo.mt.MtTableBool" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTableBool" dbEntityName="MT_TABLE_BOOL">
 		<obj-attribute name="blablacheck" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
 		<obj-attribute name="number" type="int" db-attribute-path="NUMERIC_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="MtTooneDep" className="org.apache.cayenne.testdo.mt.MtTooneDep" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTooneDep" dbEntityName="MT_TOONE_DEP">
+	</obj-entity>
+	<obj-entity name="MtTooneMaster" className="org.apache.cayenne.testdo.mt.MtTooneMaster" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTooneMaster" dbEntityName="MT_TOONE_MASTER">
 	</obj-entity>
 	<db-relationship name="cascade" source="MT_DELETE_CASCADE" target="MT_DELETE_RULE" toMany="false">
 		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
@@ -170,6 +180,12 @@
 	<db-relationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">
 		<db-attribute-pair source="ID" target="TABLE5_ID"/>
 	</db-relationship>
+	<db-relationship name="toMaster" source="MT_TOONE_DEP" target="MT_TOONE_MASTER" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toDependent" source="MT_TOONE_MASTER" target="MT_TOONE_DEP" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
 	<obj-relationship name="cascade" source="MtDeleteCascade" target="MtDeleteRule" deleteRule="Cascade" db-relationship-path="cascade"/>
 	<obj-relationship name="deny" source="MtDeleteDeny" target="MtDeleteRule" deleteRule="Deny" db-relationship-path="deny"/>
 	<obj-relationship name="nullify" source="MtDeleteNullify" target="MtDeleteRule" deleteRule="Nullify" db-relationship-path="nullify"/>
@@ -186,6 +202,8 @@
 	<obj-relationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="Deny" db-relationship-path="table2Array"/>
 	<obj-relationship name="table5s" source="MtTable4" target="MtTable5" db-relationship-path="joins.toTable5"/>
 	<obj-relationship name="table4s" source="MtTable5" target="MtTable4" db-relationship-path="joins.toTable4"/>
+	<obj-relationship name="toMaster" source="MtTooneDep" target="MtTooneMaster" deleteRule="Nullify" db-relationship-path="toMaster"/>
+	<obj-relationship name="toDependent" source="MtTooneMaster" target="MtTooneDep" deleteRule="Cascade" db-relationship-path="toDependent"/>
 	<query name="AllMtTable1" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
 	</query>
 	<query name="MtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">

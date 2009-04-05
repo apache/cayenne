@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
@@ -46,6 +45,17 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public class CayenneContext extends BaseContext {
 
+    /**
+     * @since 3.0
+     */
+    private static ThreadLocal<PropertyChangeProcessingStrategy> PROPERTY_CHANGE_PROCESSING_STRATEGY = new ThreadLocal<PropertyChangeProcessingStrategy>() {
+
+        @Override
+        protected PropertyChangeProcessingStrategy initialValue() {
+            return PropertyChangeProcessingStrategy.RECORD_AND_PROCESS_REVERSE_ARCS;
+        }
+    };
+
     protected EntityResolver entityResolver;
 
     CayenneContextGraphManager graphManager;
@@ -58,11 +68,6 @@ public class CayenneContext extends BaseContext {
 
     // object that merges "backdoor" changes that come from the channel.
     CayenneContextMergeHandler mergeHandler;
-
-    /**
-     * @since 3.0
-     */
-    boolean propertyChangeCallbacksDisabled;
 
     /**
      * Creates a new CayenneContext with no channel and disabled graph events.
@@ -95,6 +100,24 @@ public class CayenneContext extends BaseContext {
                 syncEventsEnabled);
 
         setChannel(channel);
+    }
+
+    /**
+     * @since 3.0
+     */
+    // accesses a static thread local variable... still keeping the method non-static for
+    // better future portability...
+    PropertyChangeProcessingStrategy getPropertyChangeProcessingStrategy() {
+        return PROPERTY_CHANGE_PROCESSING_STRATEGY.get();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // accesses a static thread local variable... still keeping the method non-static for
+    // better future portability...
+    void setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy strategy) {
+        PROPERTY_CHANGE_PROCESSING_STRATEGY.set(strategy);
     }
 
     /**
@@ -136,7 +159,8 @@ public class CayenneContext extends BaseContext {
      * Returns true if this context posts lifecycle events. Subjects used for these events
      * are
      * <code>ObjectContext.GRAPH_COMMIT_STARTED_SUBJECT, ObjectContext.GRAPH_COMMITTED_SUBJECT,
-     * ObjectContext.GRAPH_COMMIT_ABORTED_SUBJECT, ObjectContext.GRAPH_ROLLEDBACK_SUBJECT.</code>.
+     * ObjectContext.GRAPH_COMMIT_ABORTED_SUBJECT, ObjectContext.GRAPH_ROLLEDBACK_SUBJECT.</code>
+     * .
      */
     public boolean isLifecycleEventsEnabled() {
         return graphManager.lifecycleEventsEnabled;
@@ -226,7 +250,7 @@ public class CayenneContext extends BaseContext {
                 graphManager.graphCommitStarted();
 
                 GraphDiff changes = graphManager.getDiffsSinceLastFlush();
-                
+
                 try {
                     commitDiff = channel.onSync(this, changes, syncType);
                 }
@@ -242,7 +266,7 @@ public class CayenneContext extends BaseContext {
                 }
 
                 graphManager.graphCommitted(commitDiff);
-                
+
                 // this event is caught by peer nested ObjectContexts to synchronize the
                 // state
                 fireDataChannelCommitted(this, changes);
@@ -277,7 +301,7 @@ public class CayenneContext extends BaseContext {
             if (graphManager.hasChanges()) {
                 GraphDiff diff = graphManager.getDiffs();
                 graphManager.graphReverted();
-                
+
                 fireDataChannelRolledback(this, diff);
             }
         }
@@ -442,7 +466,7 @@ public class CayenneContext extends BaseContext {
             Object oldValue,
             Object newValue) {
 
-        if (!isPropertyChangeCallbacksDisabled()) {
+        if (getPropertyChangeProcessingStrategy() != PropertyChangeProcessingStrategy.IGNORE) {
             graphAction.handlePropertyChange(object, property, oldValue, newValue);
         }
     }
@@ -482,8 +506,8 @@ public class CayenneContext extends BaseContext {
             String entityName,
             ClassDescriptor descriptor) {
         /**
-         * We should create new id only if it is not set for this object.
-         * It could have been created, for instance, in child context
+         * We should create new id only if it is not set for this object. It could have
+         * been created, for instance, in child context
          */
         ObjectId id = object.getObjectId();
         if (id == null) {
@@ -521,26 +545,14 @@ public class CayenneContext extends BaseContext {
     }
 
     /**
-     * @since 3.0
-     */
-    boolean isPropertyChangeCallbacksDisabled() {
-        return propertyChangeCallbacksDisabled;
-    }
-
-    /**
-     * @since 3.0
-     */
-    void setPropertyChangeCallbacksDisabled(boolean propertyChangeCallbacksDisabled) {
-        this.propertyChangeCallbacksDisabled = propertyChangeCallbacksDisabled;
-    }
-
-    /**
      * Creates and returns a new child ObjectContext.
      * 
      * @since 3.0
      */
     public ObjectContext createChildContext() {
-        return new CayenneContext(this, graphManager.changeEventsEnabled, 
+        return new CayenneContext(
+                this,
+                graphManager.changeEventsEnabled,
                 graphManager.lifecycleEventsEnabled);
     }
 
@@ -553,44 +565,27 @@ public class CayenneContext extends BaseContext {
         boolean childContext = this != originatingContext && changes != null;
 
         if (childContext) {
-           changes.apply(new CayenneContextChildDiffLoader(this));
-           fireDataChannelChanged(originatingContext, changes);
+
+            PropertyChangeProcessingStrategy oldStrategy = getPropertyChangeProcessingStrategy();
+            setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
+            try {
+                changes.apply(new CayenneContextChildDiffLoader(this));
+            }
+            finally {
+                setPropertyChangeProcessingStrategy(oldStrategy);
+            }
+            
+            fireDataChannelChanged(originatingContext, changes);
         }
 
         return (cascade) ? doCommitChanges(true) : new CompoundDiff();
     }
-    
+
     /**
      * Returns <code>true</code> if there are any modified, deleted or new objects
      * registered with this CayenneContext, <code>false</code> otherwise.
      */
     public boolean hasChanges() {
         return graphManager.hasChanges();
-    }
-    
-    /**
-     * Class for loading child's CayenneContext changes to parent context.
-     * Required to register diffs in CayenneContext's graph manager when node's simple property changes:
-     * CayenneContext's way of setting properties differs from DataContext's, and method of notifying
-     * graph manager is sealed in every 'set' method of Cayenne Client Data Object class.
-     * So here we should notify graph manager too, so that objects's state will update and they will
-     * be marked as dirty.   
-     */
-    class CayenneContextChildDiffLoader extends ChildDiffLoader {
-        public CayenneContextChildDiffLoader(ObjectContext context) {
-            super(context);
-        }
-        
-        @Override
-        public void nodePropertyChanged(
-                Object nodeId,
-                String property,
-                Object oldValue,
-                Object newValue) {
-            super.nodePropertyChanged(nodeId, property, oldValue, newValue);
-            
-            Persistent object = (Persistent) getGraphManager().getNode(nodeId);
-            propertyChanged(object, property, oldValue, newValue);
-        }
     }
 }

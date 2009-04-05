@@ -49,6 +49,8 @@ CAY-1180 Model marked as dirty when leaving DataMap name field
 CAY-1183 commitToParent() makes object persistence state committed, produces exception when using object in parent context (ROP)
 CAY-1194 problems with relationships when using nested contexts and ROP
 CAY-1196 CayenneRuntimeException in modeler due to ClassNotFoundException when java type is invalid and db attribute is null
+CAY-1204 Incorrect relationship syncing in nested CayenneContext's
+
 ----------------------------------
 Release: 3.0M5
 Date: 15 Dec 2008

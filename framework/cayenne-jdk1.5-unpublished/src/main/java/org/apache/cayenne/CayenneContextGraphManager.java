@@ -135,14 +135,14 @@ final class CayenneContextGraphManager extends GraphMap {
         }
 
         remapTargets();
-        
+
         stateLog.graphCommitted();
         reset();
 
         if (lifecycleEventsEnabled) {
             // include all diffs after the commit start marker.
-            //We fire event as if it was posted by parent channel, so that
-            //nested contexts could catch it
+            // We fire event as if it was posted by parent channel, so that
+            // nested contexts could catch it
             context.fireDataChannelCommitted(context.getChannel(), parentSyncDiff);
         }
     }
@@ -158,8 +158,10 @@ final class CayenneContextGraphManager extends GraphMap {
         EntityResolver resolver = context.getEntityResolver();
 
         // avoid processing callbacks when updating the map...
-        boolean changeCallbacks = context.isPropertyChangeCallbacksDisabled();
-        context.setPropertyChangeCallbacksDisabled(true);
+        PropertyChangeProcessingStrategy oldChangeStrategy = context
+                .getPropertyChangeProcessingStrategy();
+        context
+                .setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.IGNORE);
 
         try {
             while (it.hasNext()) {
@@ -186,7 +188,7 @@ final class CayenneContextGraphManager extends GraphMap {
             }
         }
         finally {
-            context.setPropertyChangeCallbacksDisabled(changeCallbacks);
+            context.setPropertyChangeProcessingStrategy(oldChangeStrategy);
         }
     }
 
@@ -337,6 +339,7 @@ final class CayenneContextGraphManager extends GraphMap {
      * This change handler is used to perform rollback actions for Cayenne context
      */
     class RollbackChangeHandler implements GraphChangeHandler {
+
         public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
             context.mergeHandler.arcCreated(nodeId, targetNodeId, arcId);
             CayenneContextGraphManager.this.arcCreated(nodeId, targetNodeId, arcId);
@@ -356,15 +359,20 @@ final class CayenneContextGraphManager extends GraphMap {
         }
 
         /**
-         * Need to write property directly to this context 
+         * Need to write property directly to this context
          */
         public void nodePropertyChanged(
                 Object nodeId,
                 String property,
                 Object oldValue,
                 Object newValue) {
-            context.mergeHandler.nodePropertyChanged(nodeId, property, oldValue, newValue);
-            CayenneContextGraphManager.this.nodePropertyChanged(nodeId, property, oldValue, newValue);
+            context.mergeHandler
+                    .nodePropertyChanged(nodeId, property, oldValue, newValue);
+            CayenneContextGraphManager.this.nodePropertyChanged(
+                    nodeId,
+                    property,
+                    oldValue,
+                    newValue);
         }
 
         public void nodeRemoved(Object nodeId) {

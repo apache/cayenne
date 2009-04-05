@@ -42,7 +42,7 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
         }
     };
 
-    CayenneContextGraphAction(ObjectContext context) {
+    CayenneContextGraphAction(CayenneContext context) {
         super(context);
     }
 
@@ -57,6 +57,9 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
             return;
         }
 
+        boolean processsReverse = ((CayenneContext) context)
+                .getPropertyChangeProcessingStrategy() == PropertyChangeProcessingStrategy.RECORD_AND_PROCESS_REVERSE_ARCS;
+
         // prevent reverse actions down the stack
         setArcChangeInProcess(true);
 
@@ -67,7 +70,10 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
                         ((Persistent) oldValue).getObjectId(),
                         property.getName());
 
-                unsetReverse(property, object, (Persistent) oldValue);
+                if (processsReverse) {
+                    unsetReverse(property, object, (Persistent) oldValue);
+                }
+
                 markAsDirty(object);
             }
 
@@ -77,7 +83,10 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
                         ((Persistent) newValue).getObjectId(),
                         property.getName());
 
-                setReverse(property, object, (Persistent) newValue);
+                if (processsReverse) {
+                    setReverse(property, object, (Persistent) newValue);
+                }
+                
                 markAsDirty(object);
             }
         }

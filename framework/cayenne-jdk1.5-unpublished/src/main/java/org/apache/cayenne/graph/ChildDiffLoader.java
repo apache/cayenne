@@ -42,13 +42,15 @@ import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A GraphChangeHandler that loads child ObjectContext diffs into a parent ObjectContext.
- * Graph node ids are expected to be ObjectIds.
- * This class is made public since 3.0 to be used in ObjectContext synchronizing
+ * Graph node ids are expected to be ObjectIds. This class is made public since 3.0 to be
+ * used in ObjectContext synchronizing
  * 
  * @since 1.2
  */
 public class ChildDiffLoader implements GraphChangeHandler {
 
+    // TODO: andrus 04/05/2009 - replace with PropertyChangeProcessingStrategy enum used
+    // in ROP?
     static final ThreadLocal<Boolean> childDiffProcessing = new ThreadLocal<Boolean>() {
 
         @Override
@@ -57,7 +59,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
         }
     };
 
-    private ObjectContext context;
+    protected ObjectContext context;
 
     /**
      * Returns whether child diff processing is in progress.
@@ -142,8 +144,8 @@ public class ChildDiffLoader implements GraphChangeHandler {
                 ((ObjectId) nodeId).getEntityName());
 
         setExternalChange(Boolean.TRUE);
-        try {            
-            descriptor.getProperty(property).writeProperty(object, null, newValue);            
+        try {
+            descriptor.getProperty(property).writeProperty(object, null, newValue);
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error setting property: " + property, e);
@@ -259,7 +261,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
         }
     }
 
-    Persistent findObject(Object nodeId) {
+    protected Persistent findObject(Object nodeId) {
         // first do a lookup in ObjectStore; if even a hollow object is found, return it;
         // if not - fetch.
 
@@ -293,7 +295,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
         return (Persistent) objects.get(0);
     }
 
-    Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {
+    protected Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {
         Collection c = (toManyHolder instanceof Map)
                 ? ((Map) toManyHolder).values()
                 : (Collection) toManyHolder;
