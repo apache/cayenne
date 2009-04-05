@@ -281,7 +281,7 @@ public class ResourceLocator implements ResourceFinder {
      */
     public Collection<URL> getResources(String name) {
         URL resource = getResource(name);
-        return resource != null ? Collections.<URL> singleton(resource) : Collections
+        return resource != null ? Collections.singleton(resource) : Collections
                 .<URL> emptySet();
     }
 

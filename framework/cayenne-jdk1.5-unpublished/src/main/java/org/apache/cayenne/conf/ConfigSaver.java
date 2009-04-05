@@ -152,7 +152,7 @@ public class ConfigSaver {
             }
 
             if (schemaUpdateStrategy != null
-                    && !(schemaUpdateStrategy == SkipSchemaUpdateStrategy.class.getName())) {
+                    && !(schemaUpdateStrategy.equals(SkipSchemaUpdateStrategy.class.getName()))) {
                 pw.println("");
                 pw.print("\t\t schema-update-strategy=\""
                         + schemaUpdateStrategy.trim()

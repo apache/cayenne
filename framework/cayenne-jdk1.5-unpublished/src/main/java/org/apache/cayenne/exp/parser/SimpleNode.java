@@ -126,7 +126,7 @@ public abstract class SimpleNode extends Expression implements Node {
      */
     @Override
     public Map<String, String> getPathAliases() {
-        return Collections.<String, String> emptyMap();
+        return Collections.emptyMap();
     }
 
     protected abstract String getExpressionOperator(int index);

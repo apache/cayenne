@@ -332,9 +332,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         assertEquals("c", p1.getToArtist().getArtistName());
         assertEquals("c", p2.getToArtist().getArtistName());
 
-        RefreshQuery refresh = new RefreshQuery(new String[] {
-            "X"
-        });
+        RefreshQuery refresh = new RefreshQuery("X");
 
         // this should invalidate results for the next query run
         context.performQuery(refresh);

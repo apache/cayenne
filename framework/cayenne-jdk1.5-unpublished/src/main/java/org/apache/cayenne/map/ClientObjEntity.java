@@ -35,7 +35,7 @@ class ClientObjEntity extends ObjEntity {
 
     ClientObjEntity(String name) {
         super(name);
-        this.primaryKeys = Collections.<ObjAttribute> emptyList();
+        this.primaryKeys = Collections.emptyList();
     }
 
     @Override

@@ -149,6 +149,6 @@ class DefaultQueryMetadata implements QueryMetadata {
     }
 
     public Map<String, String> getPathSplitAliases() {
-        return Collections.<String, String> emptyMap();
+        return Collections.emptyMap();
     }
 }
