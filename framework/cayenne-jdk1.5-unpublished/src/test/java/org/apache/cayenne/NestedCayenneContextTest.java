@@ -733,14 +733,11 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         assertEquals(0, parentMt.getTable2Array().size());
         assertEquals(1, localParentMt.getTable2Array().size());
 
-        assertEquals(((Persistent) localParentMt.getTable2Array().get(0))
-                .getObjectContext(), child);
+        assertEquals(localParentMt.getTable2Array().get(0).getObjectContext(), child);
 
         child.commitChangesToParent();
         assertEquals(1, parentMt.getTable2Array().size());
-        assertEquals(
-                ((Persistent) parentMt.getTable2Array().get(0)).getObjectContext(),
-                context);
+        assertEquals(parentMt.getTable2Array().get(0).getObjectContext(), context);
     }
 
     public void testCommitChangesToParentOneToMany() throws Exception {

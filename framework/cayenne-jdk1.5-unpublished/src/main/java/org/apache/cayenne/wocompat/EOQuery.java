@@ -339,7 +339,7 @@ public class EOQuery extends SelectQuery {
          * @return int Expression type
          */
         static int expressionTypeForSelector(String selector) {
-            Integer expType = (Integer) selectorToExpressionBridge().get(selector);
+            Integer expType = selectorToExpressionBridge().get(selector);
             return (expType != null ? expType.intValue() : -1);
         }
 

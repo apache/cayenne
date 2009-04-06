@@ -112,7 +112,7 @@ public class InheritanceTest extends PeopleCase {
         // doesn't mess up the Manager
         DataContext c2 = context.getParentDataDomain().createDataContext();
         e = (Employee) DataObjectUtils.objectForPK(c2, e.getObjectId());
-        address = (Address) e.getAddresses().get(0);
+        address = e.getAddresses().get(0);
 
         assertSame(e, address.getToEmployee());
         address.setCity("XYZ");

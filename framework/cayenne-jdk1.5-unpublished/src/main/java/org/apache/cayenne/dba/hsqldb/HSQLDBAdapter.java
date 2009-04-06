@@ -151,7 +151,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
     @Override
     public String createFkConstraint(DbRelationship rel) {
         boolean status;
-        if(((DbEntity)rel.getSourceEntity()).getDataMap()!=null && ((DbEntity)rel.getSourceEntity()).getDataMap().isQuotingSQLIdentifiers()){ 
+        if ((rel.getSourceEntity().getDataMap() != null) && rel.getSourceEntity().getDataMap().isQuotingSQLIdentifiers()){ 
             status= true;
         } else {
             status = false;

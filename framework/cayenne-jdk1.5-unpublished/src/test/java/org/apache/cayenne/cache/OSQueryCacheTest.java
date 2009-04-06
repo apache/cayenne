@@ -72,14 +72,12 @@ public class OSQueryCacheTest extends TestCase {
         assertNotNull(cache.refreshSpecifications);
         assertEquals(2, cache.refreshSpecifications.size());
 
-        RefreshSpecification abc = (RefreshSpecification) cache.refreshSpecifications
-                .get("ABC");
+        RefreshSpecification abc = cache.refreshSpecifications.get("ABC");
         assertNotNull(abc);
         assertEquals("12 * * * * *", abc.cronExpression);
         assertEquals(25, abc.refreshPeriod);
 
-        RefreshSpecification xyz = (RefreshSpecification) cache.refreshSpecifications
-                .get("XYZ");
+        RefreshSpecification xyz = cache.refreshSpecifications.get("XYZ");
         assertNotNull(xyz);
         assertEquals("24 * * * * *", xyz.cronExpression);
         assertEquals(35, xyz.refreshPeriod);

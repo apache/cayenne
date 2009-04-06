@@ -452,7 +452,7 @@ public class DataContextTest extends DataContextCase {
                 DataRow row = (DataRow) it.nextRow();
 
                 // try instantiating an object and fetching its relationships
-                Artist artist = (Artist) context.objectFromDataRow(
+                Artist artist = context.objectFromDataRow(
                         Artist.class,
                         row,
                         false);

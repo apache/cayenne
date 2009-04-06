@@ -150,7 +150,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = (Artist) ctxt.objectFromDataRow(
+        Artist a = ctxt.objectFromDataRow(
                 Artist.class,
                 uppercaseConverter(artistRow),
                 false);
@@ -179,7 +179,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = (Artist) ctxt.objectFromDataRow(
+        Artist a = ctxt.objectFromDataRow(
                 Artist.class,
                 uppercaseConverter(artistRow),
                 false);
@@ -210,7 +210,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = (Artist) ctxt.objectFromDataRow(
+        Artist a = ctxt.objectFromDataRow(
                 Artist.class,
                 uppercaseConverter(artistRow),
                 false);

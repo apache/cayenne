@@ -591,11 +591,11 @@ public class NestedDataContextWriteTest extends CayenneCase {
         
         assertEquals(0, artist.getPaintingArray().size());
         assertEquals(1, localParentMt.getPaintingArray().size());
-        assertEquals(((Persistent) localParentMt.getPaintingArray().get(0)).getObjectContext(), child);
+        assertEquals(localParentMt.getPaintingArray().get(0).getObjectContext(), child);
         
         child.commitChangesToParent();
         assertEquals(1, artist.getPaintingArray().size());
-        assertEquals(((Persistent) artist.getPaintingArray().get(0)).getObjectContext(), context);
+        assertEquals(artist.getPaintingArray().get(0).getObjectContext(), context);
         
     }
 }

@@ -360,8 +360,7 @@ public class JdbcAdapter implements DbAdapter {
      */
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         boolean status;
-        if(((DbEntity) column.getEntity()).getDataMap()!=null && ((DbEntity) column.getEntity())
-                .getDataMap().isQuotingSQLIdentifiers()){ 
+        if((column.getEntity().getDataMap() != null) && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) { 
             status= true;
         } else {
             status = false;
