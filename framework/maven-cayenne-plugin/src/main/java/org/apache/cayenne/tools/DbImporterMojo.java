@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.xml.sax.InputSource;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.sql.Driver;
 
 /**
@@ -86,11 +87,13 @@ public class DbImporterMojo extends AbstractMojo {
      * @parameter expression="${cdbimport.password}"
      */
     private String password;
-    
+
+
+    private Log logger;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        Log logger = new MavenLogger(this);
+        logger = new MavenLogger(this);
 
         logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, username));
 
@@ -109,7 +112,12 @@ public class DbImporterMojo extends AbstractMojo {
             final DbLoader loader = new DbLoader(dataSource.getConnection(), adapterInst, new LoaderDelegate());
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
 
-            logger.info(String.format("New datamap:\n%s", dataMap.toString())); 
+            File f = new File(map.getAbsolutePath());
+            f.delete();
+            PrintWriter pw = new PrintWriter(f);
+            dataMap.encodeAsXML(pw);
+            pw.flush();
+            pw.close();
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
 
@@ -127,23 +135,27 @@ public class DbImporterMojo extends AbstractMojo {
     final class LoaderDelegate implements DbLoaderDelegate {
 
         public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return true;
         }
 
         public void dbEntityAdded(DbEntity ent) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            logger.info("Added DB entity: " + ent.getName());
+            ent.getDataMap().addDbEntity(ent);
         }
 
         public void dbEntityRemoved(DbEntity ent) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            logger.info("Removed DB entity: " + ent.getName());
+            ent.getDataMap().removeDbEntity(ent.getName());
         }
 
         public void objEntityAdded(ObjEntity ent) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            logger.info("Added obj entity: " + ent.getName());
+            ent.getDataMap().addObjEntity(ent);
         }
 
         public void objEntityRemoved(ObjEntity ent) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            logger.info("Removed obj entity: " + ent.getName());
+            ent.getDataMap().removeObjEntity(ent.getName());
         }
     }
 
