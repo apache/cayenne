@@ -36,7 +36,7 @@ import java.io.File;
 import java.sql.Driver;
 
 /**
- * Maven mojo to perform class generation from data map. This class is an Maven
+ * Maven mojo to perform class generation from data map. This class is a Maven
  * adapter to DefaultClassGenerator class.
  *
  * @since 3.0
