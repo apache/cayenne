@@ -108,6 +108,8 @@ public class DbImporterMojo extends AbstractMojo {
             DataMap dataMap = loadDataMap();
             final DbLoader loader = new DbLoader(dataSource.getConnection(), adapterInst, new LoaderDelegate());
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
+
+            logger.info(String.format("New datamap:\n%s", dataMap.toString())); 
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
 
