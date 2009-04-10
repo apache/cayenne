@@ -37,7 +37,7 @@ public class DbImporterMojo extends AbstractMojo {
 	 * @parameter expression="${cdbimport.map}"
 	 * @required
 	 */
-	private File map;
+	private String map;
 
     /**
      * DB schema to use for DB importing.
@@ -90,6 +90,7 @@ public class DbImporterMojo extends AbstractMojo {
 
 
     private Log logger;
+    private File mapFile;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -108,15 +109,15 @@ public class DbImporterMojo extends AbstractMojo {
             DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url, username, password);
 
             // Load the data map and run the db importer.
-            DataMap dataMap = loadDataMap();
             final DbLoader loader = new DbLoader(dataSource.getConnection(), adapterInst, new LoaderDelegate());
+
+            mapFile = new File(map);
+            DataMap dataMap = mapFile.exists() ? loadDataMap() : new DataMap();
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
 
-            File f = new File(map.getAbsolutePath());
-            f.delete();
-            PrintWriter pw = new PrintWriter(f);
+            mapFile.delete();
+            PrintWriter pw = new PrintWriter(mapFile);
             dataMap.encodeAsXML(pw);
-            pw.flush();
             pw.close();
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
@@ -161,7 +162,7 @@ public class DbImporterMojo extends AbstractMojo {
 
     /** Loads and returns DataMap based on <code>map</code> attribute. */
     protected DataMap loadDataMap() throws Exception {
-        InputSource in = new InputSource(map.getCanonicalPath());
+        InputSource in = new InputSource(mapFile.getCanonicalPath());
         return new MapLoader().loadDataMap(in);
     }
 }
