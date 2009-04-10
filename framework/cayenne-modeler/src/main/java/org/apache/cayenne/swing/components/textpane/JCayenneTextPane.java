@@ -3,13 +3,13 @@ package org.apache.cayenne.swing.components.textpane;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -21,6 +21,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 
 import org.apache.cayenne.modeler.Main;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
 import org.apache.commons.logging.Log;
@@ -30,13 +31,18 @@ public class JCayenneTextPane extends JPanel {
 
     protected Highlighter.HighlightPainter painter;
     private JTextPaneScrollable pane;
-    public JScrollPane scrollPane;
+    private JScrollPane scrollPane;
 
+    private boolean imageError;
     private String tooltipTextError;
     private int startYPositionToolTip;
     private int endYPositionToolTip;
 
     public boolean repaint;
+
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
 
     public String getTooltipTextError() {
         return tooltipTextError;
@@ -66,6 +72,10 @@ public class JCayenneTextPane extends JPanel {
         return pane.viewToModel(new Point(scrollPane.getViewport().getViewPosition().x
                 + pane.getWidth(), scrollPane.getViewport().getViewPosition().y
                 + pane.getHeight()));
+    }
+
+    public void repaintPane() {
+        pane.repaint();
     }
 
     /**
@@ -119,11 +129,13 @@ public class JCayenneTextPane extends JPanel {
     public JCayenneTextPane(SyntaxConstant syntaxConstant) {
         super();
 
-        setMinimumSize(new Dimension(30, 30));
-        setPreferredSize(new Dimension(30, 30));
-        setMinimumSize(new Dimension(30, 30));
+        Dimension dimention = new Dimension(15, 15);
+        setMinimumSize(dimention);
+        setPreferredSize(dimention);
+        setMinimumSize(dimention);
         setBackground(new Color(245, 238, 238));
         setBorder(null);
+
         pane = new JTextPaneScrollable(new EditorKit(syntaxConstant)) {
 
             public void paint(Graphics g) {
@@ -133,9 +145,10 @@ public class JCayenneTextPane extends JPanel {
         };
 
         pane.setFont(SQLSyntaxConstants.DEFAULT_FONT);
+        pane.setBorder(new LineNumberedBorder(this));
 
         scrollPane = new JScrollPane(pane);
-
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(115, 115, 115)));
         this.painter = new UnderlineHighlighterForText.UnderlineHighlightPainter(
                 Color.red);
 
@@ -144,11 +157,11 @@ public class JCayenneTextPane extends JPanel {
             public void insertUpdate(DocumentEvent evt) {
                 try {
                     String text = pane.getText(evt.getOffset(), 1).toString();
-                    if (!(text.equals(" ") || text.equals("\n") || text.equals("\t"))) {
-                        removeHighlightText();
-                    }
                     if (text.equals("/") || text.equals("*")) {
                         removeHighlightText();
+                        pane.repaint();
+                    }
+                    if (text.equals(" ") || text.equals("\t") || text.equals("\n")) {
                         pane.repaint();
                     }
                 }
@@ -182,17 +195,22 @@ public class JCayenneTextPane extends JPanel {
      */
 
     public void setHighlightText(int line, int lastIndex, int size, String message) {
-        try {
-
-            int position = getPosition(line, lastIndex);
-            int positionEnd = position + size;
-            Highlighter highlighter = pane.getHighlighter();
-            removeHighlightText(highlighter);
-            highlighter.addHighlight(position, positionEnd, painter);
-            setToolTipPosition(line, message);
+        Highlighter highlighter = pane.getHighlighter();
+        removeHighlightText(highlighter);
+        if (getText().length() > 0) {
+            try {
+                int position = getPosition(line, lastIndex);
+                int positionEnd = position + size;
+                highlighter.addHighlight(position, positionEnd, painter);
+                setToolTipPosition(line, message);
+                repaintPane();
+            }
+            catch (BadLocationException e) {
+                logObj.warn("Error: ", e);
+            }
         }
-        catch (BadLocationException e) {
-            logObj.warn("Error: ", e);
+        else {
+            setToolTipPosition(0, "");
         }
     }
 
@@ -209,12 +227,26 @@ public class JCayenneTextPane extends JPanel {
 
     public void setToolTipPosition(int line, String string) {
 
-        int height = pane.getFontMetrics(pane.getFont()).getHeight();
-        int start = (line - 1) * height;
-        this.endYPositionToolTip = start;
-        this.startYPositionToolTip = start + height;
-        setTooltipTextError(string);
-        setToolTipText("");
+        if (line != 0) {
+            int height = pane.getFontMetrics(pane.getFont()).getHeight();
+            int start = (line - 1) * height;
+            this.endYPositionToolTip = start;
+            this.startYPositionToolTip = start + height;
+            setTooltipTextError(string);
+            if (string != "") {
+                imageError = true;
+            }
+            else {
+                imageError = false;
+            }
+            setToolTipText("");
+        }
+        else {
+            this.endYPositionToolTip = 0;
+            this.startYPositionToolTip = 0;
+            setTooltipTextError(string);
+            imageError = false;
+        }
     }
 
     public String getToolTipText(MouseEvent e) {
@@ -239,6 +271,7 @@ public class JCayenneTextPane extends JPanel {
     }
 
     public void removeHighlightText() {
+        imageError = false;
         Highlighter highlighter = pane.getHighlighter();
         removeHighlightText(highlighter);
     }
@@ -278,18 +311,17 @@ public class JCayenneTextPane extends JPanel {
         for (int line = startline, y = starting_y; line <= endline; y += fontHeight, line++) {
             Color color = g.getColor();
 
-            Font f2 = SQLSyntaxConstants.DEFAULT_FONT;
-            FontMetrics fm2 = getFontMetrics(f2);
-            g.setFont(f2);
             if (line - 1 == doc.getDefaultRootElement().getElementIndex(
                     pane.getCaretPosition())) {
                 g.setColor(new Color(224, 224, 255));
                 g.fillRect(0, y - fontHeight + 3, 30, fontHeight + 1);
             }
 
-            g.setColor(Color.gray);
-            g.drawString(Integer.toString(line), (30 - fm2.stringWidth(Integer
-                    .toString(line))) / 2, y);
+            if (imageError) {
+                Image img = ModelerUtil.buildIcon("error.gif").getImage();
+                g.drawImage(img, 0, endYPositionToolTip, this);
+            }
+
             g.setColor(color);
         }
 

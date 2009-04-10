@@ -19,15 +19,11 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -60,17 +56,6 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
         scriptArea = CayenneWidgetFactory.createJEJBQLTextPane();
         scriptArea.getDocument().addDocumentListener(this);
-        scriptArea.addFocusListener(new FocusListener() {
-
-            public void focusGained(FocusEvent e) {
-                validateEJBQL();
-            }
-
-            public void focusLost(FocusEvent e) {
-                validateEJBQL();
-            }
-
-        });
 
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -91,17 +76,17 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 catch (BadLocationException e1) {
                     e1.printStackTrace();
                 }
+
             }
 
             public void removeUpdate(DocumentEvent e) {
                 getQuery().setEjbqlStatement(scriptArea.getText());
-                scriptArea.removeHighlightText();
                 validateEJBQL();
             }
         });
         setLayout(new BorderLayout());
         add(scriptArea, BorderLayout.WEST);
-        add(scriptArea.scrollPane, BorderLayout.CENTER);
+        add(scriptArea.getScrollPane(), BorderLayout.CENTER);
         setVisible(true);
     }
 
@@ -172,20 +157,26 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     void validateEJBQL() {
+
         PositionException positionException = ejbqlQueryValidator.validateEJBQL(
                 getQuery(),
                 mediator.getCurrentDataDomain());
+
         if (positionException != null) {
             if (positionException.getBeginLine() != null
                     || positionException.getBeginColumn() != null
                     || positionException.getLength() != null) {
-                
+
                 scriptArea.setHighlightText(
                         positionException.getBeginLine(),
                         positionException.getBeginColumn(),
                         positionException.getLength(),
                         positionException.getMessage());
             }
+            else {
+                scriptArea.removeHighlightText();
+            }
         }
+
     }
 }
