@@ -112,15 +112,15 @@ public class DbImporterMojo extends AbstractMojo {
             final DbLoader loader = new DbLoader(dataSource.getConnection(), adapterInst, new LoaderDelegate());
 
             mapFile = new File(map);
-            DataMap dataMap = mapFile.exists() ? loadDataMap() : new DataMap();
+            final DataMap dataMap = mapFile.exists() ? loadDataMap() : new DataMap();
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
 
             mapFile.delete();
             PrintWriter pw = new PrintWriter(mapFile);
             dataMap.encodeAsXML(pw);
             pw.close();
-        } catch (Exception ex) {
-            Throwable th = Util.unwindException(ex);
+        } catch (final Exception ex) {
+            final Throwable th = Util.unwindException(ex);
 
             String message = "Error importing database schema";
 
@@ -135,26 +135,26 @@ public class DbImporterMojo extends AbstractMojo {
 
     final class LoaderDelegate implements DbLoaderDelegate {
 
-        public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
+        public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
             return true;
         }
 
-        public void dbEntityAdded(DbEntity ent) {
+        public void dbEntityAdded(final DbEntity ent) {
             logger.info("Added DB entity: " + ent.getName());
             ent.getDataMap().addDbEntity(ent);
         }
 
-        public void dbEntityRemoved(DbEntity ent) {
+        public void dbEntityRemoved(final DbEntity ent) {
             logger.info("Removed DB entity: " + ent.getName());
             ent.getDataMap().removeDbEntity(ent.getName());
         }
 
-        public void objEntityAdded(ObjEntity ent) {
+        public void objEntityAdded(final ObjEntity ent) {
             logger.info("Added obj entity: " + ent.getName());
             ent.getDataMap().addObjEntity(ent);
         }
 
-        public void objEntityRemoved(ObjEntity ent) {
+        public void objEntityRemoved(final ObjEntity ent) {
             logger.info("Removed obj entity: " + ent.getName());
             ent.getDataMap().removeObjEntity(ent.getName());
         }
@@ -162,7 +162,7 @@ public class DbImporterMojo extends AbstractMojo {
 
     /** Loads and returns DataMap based on <code>map</code> attribute. */
     protected DataMap loadDataMap() throws Exception {
-        InputSource in = new InputSource(mapFile.getCanonicalPath());
+        final InputSource in = new InputSource(mapFile.getCanonicalPath());
         return new MapLoader().loadDataMap(in);
     }
 }
