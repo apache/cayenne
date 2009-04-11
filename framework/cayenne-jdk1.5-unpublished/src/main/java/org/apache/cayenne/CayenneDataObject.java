@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +74,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
      * 
      * @deprecated since 3.0 use {@link #getObjectContext()}.
      */
+    @Deprecated
     public DataContext getDataContext() {
         if (objectContext == null || objectContext instanceof DataContext) {
             return (DataContext) objectContext;
@@ -86,6 +89,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
      * 
      * @deprecated since 3.0 use {@link #setObjectContext(ObjectContext)}.
      */
+    @Deprecated
     public void setDataContext(DataContext dataContext) {
         this.objectContext = dataContext;
 
@@ -127,31 +131,57 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
     }
 
     public Object readNestedProperty(String path) {
-        Object object = null;
-        CayenneDataObject dataObject = this;
-        String[] tokenized = tokenizePath(path);
-        int length = tokenized.length;
+        return readNestedProperty(this, path, tokenizePath(path), 0, 0);
+    }
+    
+    /**
+     * Recursively resolves nested property path 
+     */
+    private static Object readNestedProperty(CayenneDataObject dataObject, 
+        String path, String[] tokenizedPath, int tokenIndex, int pathIndex) {
+        
+        Object property = dataObject.readSimpleProperty(tokenizedPath[tokenIndex]);
 
-        int pathIndex = 0;
-
-        for (int i = 0; i < length; i++) {
-            pathIndex += tokenized[i].length() + 1;
-
-            object = dataObject.readSimpleProperty(tokenized[i]);
-
-            if (object == null) {
-                return null;
-            }
-            else if (object instanceof CayenneDataObject) {
-                dataObject = (CayenneDataObject) object;
-            }
-            else if (i + 1 < length) {
-                // read the rest of the path via introspection
-                return PropertyUtils.getProperty(object, path.substring(pathIndex));
-            }
+        if (tokenIndex == tokenizedPath.length - 1) { //last component
+            return property;
         }
-
-        return object;
+        
+        pathIndex += tokenizedPath[tokenIndex].length() + 1;
+        if (property == null) {
+            return null;
+        }
+        else if (property instanceof CayenneDataObject) {
+            return readNestedProperty((CayenneDataObject) property, path, tokenizedPath, tokenIndex + 1,
+                tokenIndex);
+        }
+        else if (property instanceof Collection) {
+            /**
+             * Support for collection property in the middle of the path
+             */
+            Collection<Object> result = property instanceof List ?
+                    new ArrayList<Object>() : new HashSet<Object>() ;
+            for (Object obj : (Collection) property) {
+                if (obj instanceof CayenneDataObject) {
+                    Object rest = readNestedProperty((CayenneDataObject) obj, path, tokenizedPath, 
+                            tokenIndex + 1, tokenIndex);
+                    if (rest instanceof Collection) {
+                        /**
+                         * We don't want nested collections.
+                         * E.g. readNestedProperty("paintingArray.paintingTitle") should return List<String>
+                         */
+                        result.addAll((Collection) rest);
+                    }
+                    else {
+                        result.add(rest);
+                    }
+                }
+            }
+            return result;
+        }
+        else {
+            // read the rest of the path via introspection
+            return PropertyUtils.getProperty(property, path.substring(pathIndex));
+        }
     }
 
     private static final String[] tokenizePath(String path) {
@@ -471,6 +501,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
      * @deprecated since 3.0 use callbacks.
      * @see LifecycleListener
      */
+    @Deprecated
     public void fetchFinished() {
     }
 

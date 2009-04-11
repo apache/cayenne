@@ -19,9 +19,13 @@
 
 package org.apache.cayenne;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.apache.art.Artist;
+import org.apache.art.ArtistExhibit;
+import org.apache.art.Painting;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.unit.util.TestBean;
 
@@ -48,6 +52,7 @@ public class CayenneDataObjectTest extends TestCase {
     /**
      * @deprecated since 3.0.
      */
+    @Deprecated
     public void testSetDataContext() throws Exception {
         CayenneDataObject obj = new CayenneDataObject();
         assertNull(obj.getDataContext());
@@ -89,5 +94,28 @@ public class CayenneDataObjectTest extends TestCase {
         assertEquals(new Integer(55), o1.readNestedProperty("o2.integer"));
         assertEquals(TestBean.class, o1.readNestedProperty("o2.class"));
         assertEquals(TestBean.class.getName(), o1.readNestedProperty("o2.class.name"));
+    }
+    
+    public void testReadNestedPropertyToManyInMiddle() throws Exception {
+        DataContext context = DataContext.createDataContext();
+        
+        Artist a = context.newObject(Artist.class);
+        ArtistExhibit ex = context.newObject(ArtistExhibit.class);
+        Painting p1 = context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
+        p1.setPaintingTitle("p1");
+        p2.setPaintingTitle("p2");
+        a.addToPaintingArray(p1);
+        a.addToPaintingArray(p2);
+        ex.setToArtist(a);
+        
+        List<String> names = (List<String>) a.readNestedProperty("paintingArray.paintingTitle");
+        assertEquals(names.size(), 2);
+        assertEquals(names.get(0), "p1");
+        assertEquals(names.get(1), "p2");
+        
+        List<String> names2 = (List<String>) 
+            ex.readNestedProperty("toArtist.paintingArray.paintingTitle");
+        assertEquals(names, names2);
     }
 }

@@ -35,6 +35,7 @@ public interface DataObject extends Persistent {
      * 
      * @deprecated since 3.0 use {@link #getObjectContext()}.
      */
+    @Deprecated
     public DataContext getDataContext();
 
     /**
@@ -42,6 +43,7 @@ public interface DataObject extends Persistent {
      * 
      * @deprecated since 3.0 use {@link #setObjectContext(ObjectContext)}.
      */
+    @Deprecated
     public void setDataContext(DataContext ctxt);
 
     /**
@@ -93,8 +95,8 @@ public interface DataObject extends Persistent {
      * <br>
      * <br>
      * </li>
-     * <li>Read to-many relationship in the middle of the path <b>(throws exception)</b>:<br>
-     * <code>String name = (String)artist.readNestedProperty("paintingArray.paintingName");</code>
+     * <li>Read to-many relationship in the middle of the path:<br>
+     * <code>List<String> names = (List<String>)artist.readNestedProperty("paintingArray.paintingName");</code>
      * <br>
      * <br>
      * </li>
@@ -153,6 +155,7 @@ public interface DataObject extends Persistent {
      *             invoked by Cayenne runtime.
      * @see LifecycleListener
      */
+    @Deprecated
     public void fetchFinished();
 
     /**
