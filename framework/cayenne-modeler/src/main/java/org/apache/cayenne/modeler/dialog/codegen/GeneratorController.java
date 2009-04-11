@@ -45,6 +45,8 @@ import org.apache.cayenne.modeler.util.CodeValidationUtil;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.swing.BindingDelegate;
+import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.SimpleValidationFailure;
@@ -69,8 +71,16 @@ public abstract class GeneratorController extends CayenneController {
         initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
     }
 
+    public String getOutputPath() {
+        return preferences.getOutputPath();
+    }
+
+    public void setOutputPath(String path) {
+        preferences.setOutputPath(path);
+    }
+
     protected void initBindings(BindingBuilder bindingBuilder) {
-              
+
         initOutputFolder();
 
         JTextField outputFolder = ((GeneratorControllerPanel) getView())
@@ -78,8 +88,9 @@ public abstract class GeneratorController extends CayenneController {
         JButton outputSelect = ((GeneratorControllerPanel) getView())
                 .getSelectOutputFolder();
 
-        outputFolder.setText(preferences.getOutputPath());
+        outputFolder.setText(getOutputPath());
         bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
+        bindingBuilder.bindToTextField(outputFolder,"outputPath");
     }
 
     protected CodeGeneratorControllerBase getParentController() {
@@ -426,39 +437,33 @@ public abstract class GeneratorController extends CayenneController {
             // update model
             String path = selected.getAbsolutePath();
             outputFolder.setText(path);
-            //be sure to update the destdir property, if it's not null.
-            //this ensures that if the user selected a /different/ dir than the system-property default,
-            //they get back that directory throughought the session.
-            if (System.getProperty("cayenne.cgen.destdir") != null) {
-                System.setProperty("cayenne.cgen.destdir",path);
-            }
-            preferences.setOutputPath(path);
+            setOutputPath(path);
         }
     }
-    
+
     private void initOutputFolder(){
-        
+
         String path = null;
-        if (System.getProperty("cayenne.cgen.destdir") != null) {
-            preferences.setOutputPath(System.getProperty("cayenne.cgen.destdir"));
-            return;
-        }
         if (preferences.getOutputPath() == null) {
-            // init default directory..
-            FSPath lastPath = Application
-                    .getInstance()
-                    .getFrameController()
-                    .getLastDirectory();
-
-            path = checkDefaultMavenResourceDir(lastPath,"test");
-
-            if (path != null || (path=checkDefaultMavenResourceDir(lastPath,"main")) != null) {
-                preferences.setOutputPath(path);
+            if (System.getProperty("cayenne.cgen.destdir") != null) {
+                setOutputPath(System.getProperty("cayenne.cgen.destdir"));
             } else {
-                File lastDir = (lastPath != null)
-                        ? lastPath.getExistingDirectory(false)
-                        : null;
-                preferences.setOutputPath(lastDir != null ? lastDir.getAbsolutePath() : null);
+                // init default directory..
+                FSPath lastPath = Application
+                        .getInstance()
+                        .getFrameController()
+                        .getLastDirectory();
+
+                path = checkDefaultMavenResourceDir(lastPath,"test");
+
+                if (path != null || (path=checkDefaultMavenResourceDir(lastPath,"main")) != null) {
+                    setOutputPath(path);
+                } else {
+                    File lastDir = (lastPath != null)
+                            ? lastPath.getExistingDirectory(false)
+                            : null;
+                    setOutputPath(lastDir != null ? lastDir.getAbsolutePath() : null);
+                }
             }
         }
     }
