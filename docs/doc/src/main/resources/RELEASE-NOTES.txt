@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M5:
 
 CAY-289 Implement Quoting of identifiers
+CAY-816 Improve readNestedProperty() to handle to-many relationships in the path.
 CAY-1021 adding a callback method should result in focus on method name
 CAY-1047 Aligning query capabilities
 CAY-1119 Nested contexts on ROP
