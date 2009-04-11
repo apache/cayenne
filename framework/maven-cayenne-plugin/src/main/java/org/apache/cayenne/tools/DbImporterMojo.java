@@ -41,13 +41,37 @@ public class DbImporterMojo extends AbstractMojo {
 
     /**
      * DB schema to use for DB importing.
+     *
+     * @parameter expression="${cdbimport.schemaName}"
      */
     private String schemaName;
 
     /**
      * Pattern for tables to import from DB.
+     *
+     * The default is to match against all tables.
+     *
+     * @parameter expression="${cdbimport.tablePattern}"
      */
     private String tablePattern;
+
+    /**
+     * Indicates whether stored procedures should be imported.
+     * Default is <code>false</code>.
+     *
+     * @parameter expression="${cdbimport.importProcedures}" default-value="false"
+     */
+    private boolean importProcedures;
+
+    /**
+     * Pattern for stored procedures to import from DB.  This is only meaningful if
+     * <code>importProcedures</code> is set to <code>true</code>.
+     *
+     * The default is to match against all stored procedures.
+     *
+     * @parameter expression="${cdbimport.procedurePattern}"
+     */
+    private String procedurePattern;
 
     /**
      * Java class implementing org.apache.cayenne.dba.DbAdapter.
@@ -115,6 +139,11 @@ public class DbImporterMojo extends AbstractMojo {
             final DataMap dataMap = mapFile.exists() ? loadDataMap() : new DataMap();
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
 
+            if (importProcedures) {
+                loader.loadProceduresFromDB(schemaName, procedurePattern, dataMap);
+            }
+
+            // Write the new DataMap out to disk.
             mapFile.delete();
             PrintWriter pw = new PrintWriter(mapFile);
             dataMap.encodeAsXML(pw);
