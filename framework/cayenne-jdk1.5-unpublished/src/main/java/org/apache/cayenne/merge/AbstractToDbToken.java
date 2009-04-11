@@ -29,7 +29,7 @@ import org.apache.cayenne.map.DbEntity;
  * database.
  * 
  */
-public abstract class AbstractToDbToken implements MergerToken {
+public abstract class AbstractToDbToken implements MergerToken, Comparable<MergerToken> {
     
     public final MergeDirection getDirection() {
         return MergeDirection.TO_DB;
@@ -68,6 +68,11 @@ public abstract class AbstractToDbToken implements MergerToken {
 
         public String getTokenValue() {
             return getEntity().getName();
+        }
+        
+        public int compareTo(MergerToken o) {
+            // default order as tokens are created
+            return 0;
         }
 
     }

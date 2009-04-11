@@ -71,5 +71,14 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     public DbRelationship getRelationship() {
         return rel;
     }
+    
+    @Override
+    public int compareTo(MergerToken o) {
+        // add all AddRelationshipToDb to the end.
+        if (o instanceof AddRelationshipToDb) {
+            return super.compareTo(o);
+        }
+        return 1;
+    }
 
 }

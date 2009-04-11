@@ -24,6 +24,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,6 +172,21 @@ public class DbMerger {
                 }
             }
         }
+        
+        // sort. use a custom Comparator since only toDb tokens
+        // are comparable by now
+        Collections.sort(tokens, new Comparator<MergerToken>() {
+
+            public int compare(MergerToken o1, MergerToken o2) {
+                if ((o1 instanceof AbstractToDbToken)
+                        && (o2 instanceof AbstractToDbToken)) {
+                    AbstractToDbToken d1 = (AbstractToDbToken) o1;
+                    AbstractToDbToken d2 = (AbstractToDbToken) o2;
+                    return d1.compareTo(d2);
+                }
+                return 0;
+            }
+        });
 
         return tokens;
     }
