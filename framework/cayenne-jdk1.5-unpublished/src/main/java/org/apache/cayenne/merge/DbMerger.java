@@ -45,13 +45,23 @@ import org.apache.cayenne.map.ObjEntity;
 
 /**
  * Traverse a {@link DataNode} and a {@link DataMap} and create a group of
- * {@link MergerToken}s to alter the {@link DataNode} datastore to match the
+ * {@link MergerToken}s to alter the {@link DataNode} data store to match the
  * {@link DataMap}.
  * 
  */
 public class DbMerger {
 
     private MergerFactory factory;
+    
+    private ValueForNullProvider valueForNull = new EmptyValueForNullProvider();
+
+    /**
+     * Set a {@link ValueForNullProvider} that will be used to set value for null on not
+     * null columns
+     */
+    public void setValueForNullProvider(ValueForNullProvider valueProvider) {
+        valueForNull = valueProvider;
+    }
 
     /**
      * A method that return true if the given table name should be included. The default
@@ -185,7 +195,12 @@ public class DbMerger {
             if (detected == null) {
                 tokens.add(factory.createAddColumnToDb(dbEntity, attr));
                 if (attr.isMandatory()) {
-                    // TODO: default value
+                    if (valueForNull.hasValueFor(dbEntity, attr)) {
+                        tokens.add(factory.createSetValueForNullToDb(
+                                dbEntity,
+                                attr,
+                                valueForNull));
+                    }
                     tokens.add(factory.createSetNotNullToDb(dbEntity, attr));
                 }
                 continue;
@@ -194,6 +209,12 @@ public class DbMerger {
             // check for not null
             if (attr.isMandatory() != detected.isMandatory()) {
                 if (attr.isMandatory()) {
+                    if (valueForNull.hasValueFor(dbEntity, attr)) {
+                        tokens.add(factory.createSetValueForNullToDb(
+                                dbEntity,
+                                attr,
+                                valueForNull));
+                    }
                     tokens.add(factory.createSetNotNullToDb(dbEntity, attr));
                 }
                 else {

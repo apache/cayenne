@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
@@ -44,6 +46,7 @@ import org.xml.sax.InputSource;
 
 public class MergeCase extends CayenneCase {
 
+    protected DataDomain dom;
     protected DataNode node;
     protected DataMap map;
 
@@ -69,7 +72,15 @@ public class MergeCase extends CayenneCase {
         return createMerger().createMergeTokens(node, map);
     }
 
-    protected DataMap createDataMap() {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        deleteTestData();
+        createTestData("testArtists");
+        DataNode orgNode = getDomain().getDataNodes().iterator().next();
+        
+        
         // clone DataMap by saving and loading from XML as to avoid modifying shared test
         // DataMap
         DataMap originalMap = getDomain().getMap("testmap");
@@ -78,22 +89,19 @@ public class MergeCase extends CayenneCase {
         originalMap.encodeAsXML(outWriter);
         outWriter.flush();
         StringReader in = new StringReader(out.toString());
-        DataMap map = new MapLoader().loadDataMap(new InputSource(in));
-
+        map = new MapLoader().loadDataMap(new InputSource(in));
+        
         // map must operate in an EntityResolve namespace...
         EntityResolver testResolver = new EntityResolver();
         testResolver.addDataMap(map);
-        return map;
-    }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        createTestData("testArtists");
-        node = getDomain().getDataNodes().iterator().next();
-        map = createDataMap();
+        node = new DataNode("mergenode");
+        node.setAdapter(orgNode.getAdapter());
+        node.setDataSource(orgNode.getDataSource());
+        node.addDataMap(map);
+        
+        dom = new DataDomain("mergetestdomain");
+        dom.addNode(node);
 
         filterDataMap(node, map);
 
@@ -251,6 +259,11 @@ public class MergeCase extends CayenneCase {
         }
         catch (Exception e) {
         }
+    }
+    
+    @Override
+    protected DataContext createDataContext() {
+        return dom.createDataContext();
     }
 
     @Override

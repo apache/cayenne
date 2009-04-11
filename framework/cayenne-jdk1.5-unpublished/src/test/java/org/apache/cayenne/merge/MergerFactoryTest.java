@@ -150,7 +150,7 @@ public class MergerFactoryTest extends MergeCase {
 
         // try to insert some rows to check that pk stuff is working
         DataContext ctxt = createDataContext();
-        DataMap sourceMap = ctxt.getEntityResolver().getDataMap("testmap");
+        DataMap sourceMap = map;//ctxt.getEntityResolver().getDataMap("testmap");
 
         try {
             sourceMap.addDbEntity(dbEntity);

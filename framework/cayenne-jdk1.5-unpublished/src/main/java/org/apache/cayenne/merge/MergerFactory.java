@@ -79,6 +79,10 @@ public class MergerFactory {
     public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
         return new SetAllowNullToDb(entity, column);
     }
+    
+    public MergerToken createSetValueForNullToDb(DbEntity entity, DbAttribute column, ValueForNullProvider valueForNullProvider){
+        return new SetValueForNullToDb(entity, column, valueForNullProvider);
+    }
 
     public MergerToken createSetColumnTypeToModel(
             DbEntity entity,
@@ -109,4 +113,5 @@ public class MergerFactory {
     public MergerToken createDropRelationshipToModel(DbEntity entity, DbRelationship rel) {
         return new DropRelationshipToModel(entity, rel);
     }
+    
 }
