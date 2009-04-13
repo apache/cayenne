@@ -29,7 +29,7 @@ class OpenBaseSelectTranslator extends SelectTranslator {
 
     @Override
     protected JoinStack createJoinStack() {
-        return new OpenBaseJoinStack();
+        return new OpenBaseJoinStack(getAdapter(), queryMetadata.getDataMap());
     }
 
     @Override

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.openbase;
+package org.apache.cayenne.dba.oracle;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,16 +30,12 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
- * OpenBase does not support standard JOIN keyword and have strange syntax for defining
- * inner/outer joins
- * 
- * @see http
- *      ://www.openbase.com/help/KnowledgeBase/400_OpenBaseSQL/401_SelectStatements.html
  * @since 3.0
  */
-class OpenBaseJoinStack extends JoinStack {
+// cloned from OpenBaseJoin stack... need better strategies of reuse...
+class Oracle8JoinStack extends JoinStack {
 
-    protected OpenBaseJoinStack(DbAdapter dbAdapter, DataMap dataMap) {
+    Oracle8JoinStack(DbAdapter dbAdapter, DataMap dataMap) {
         super(dbAdapter, dataMap);
     }
 
@@ -107,14 +103,11 @@ class OpenBaseJoinStack extends JoinStack {
             }
 
             out.append(targetAlias).append('.').append(join.getTargetName());
-
         }
 
         for (JoinTreeNode child : node.getChildren()) {
             out.append(" AND ");
             appendQualifierSubtree(out, child);
         }
-
     }
-
 }

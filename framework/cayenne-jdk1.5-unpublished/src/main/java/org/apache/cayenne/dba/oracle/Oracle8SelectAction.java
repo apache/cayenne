@@ -16,33 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.dba.JdbcAdapter;
+import java.sql.Connection;
+
+import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * An action builder for Oracle8Adapter.
- * 
- * @since 1.2
+ * @since 3.0
  */
-class Oracle8ActionBuilder extends OracleActionBuilder {
+class Oracle8SelectAction extends OracleSelectAction {
 
-    Oracle8ActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
+    Oracle8SelectAction(SelectQuery query, DbAdapter adapter,
+            EntityResolver entityResolver) {
+        super(query, adapter, entityResolver);
     }
 
     @Override
-    public SQLAction sqlAction(SQLTemplate query) {
-        return new Oracle8SQLTemplateAction(query, adapter, getEntityResolver());
-    }
-
-    @Override
-    public SQLAction objectSelectAction(SelectQuery query) {
-        return new Oracle8SelectAction(query, getAdapter(), getEntityResolver());
+    protected SelectTranslator createTranslator(Connection connection) {
+        SelectTranslator translator = new Oracle8SelectTranslator();
+        translator.setQuery(query);
+        translator.setAdapter(adapter);
+        translator.setEntityResolver(getEntityResolver());
+        translator.setConnection(connection);
+        return translator;
     }
 }
