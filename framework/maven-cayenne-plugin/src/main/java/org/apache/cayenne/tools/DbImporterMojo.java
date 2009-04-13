@@ -12,6 +12,7 @@ import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.CayenneException;
 import org.apache.commons.logging.Log;
@@ -20,6 +21,8 @@ import org.xml.sax.InputSource;
 import java.io.File;
 import java.io.PrintWriter;
 import java.sql.Driver;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.
@@ -38,6 +41,15 @@ public class DbImporterMojo extends AbstractMojo {
 	 * @required
 	 */
 	private String map;
+
+    /**
+     * Indicates whether existing DB and object entities should be overwritten.
+     * This is an all-or-nothing setting.  If you need finer granularity, please
+     * use the Cayenne Modeler.
+     *
+     * @parameter expression="${cdbimport.overwriteExisting}" default-value="true"
+     */
+    private boolean overwriteExisting;
 
     /**
      * DB schema to use for DB importing.
@@ -112,9 +124,17 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private String password;
 
-
+    /**
+     * Maven logger.
+     */
     private Log logger;
+
+    /**
+     * The DataMap file to use for importing.
+     */
     private File mapFile;
+
+    private List<ObjEntity> addedObjEntities = new ArrayList<ObjEntity>();
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -138,6 +158,10 @@ public class DbImporterMojo extends AbstractMojo {
             mapFile = new File(map);
             final DataMap dataMap = mapFile.exists() ? loadDataMap() : new DataMap();
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
+
+            for (ObjEntity addedObjEntity : addedObjEntities) {
+                    DeleteRuleUpdater.updateObjEntity(addedObjEntity);
+                }
 
             if (importProcedures) {
                 loader.loadProceduresFromDB(schemaName, procedurePattern, dataMap);
@@ -165,7 +189,7 @@ public class DbImporterMojo extends AbstractMojo {
     final class LoaderDelegate implements DbLoaderDelegate {
 
         public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
-            return true;
+            return overwriteExisting;
         }
 
         public void dbEntityAdded(final DbEntity ent) {
@@ -180,6 +204,7 @@ public class DbImporterMojo extends AbstractMojo {
 
         public void objEntityAdded(final ObjEntity ent) {
             logger.info("Added obj entity: " + ent.getName());
+            addedObjEntities.add(ent);
             ent.getDataMap().addObjEntity(ent);
         }
 
