@@ -34,6 +34,7 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 
@@ -102,9 +103,20 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         Iterator it = dbEntities.iterator();
         while (it.hasNext()) {
             DbEntity ent = (DbEntity) it.next();
-            if (sequences.contains(stripSchemaName(sequenceName(ent)))) {
+            String name;
+            if(ent.getDataMap().isQuotingSQLIdentifiers()){
+                DbEntity tempEnt = new DbEntity();
+                DataMap dm = new DataMap();                
+                dm.setQuotingSQLIdentifiers(false);
+                tempEnt.setDataMap(dm);
+                tempEnt.setName(ent.getName());
+                name = stripSchemaName(sequenceName(tempEnt));
+            } else {
+                name = stripSchemaName(sequenceName(ent));
+            }           
+            if (sequences.contains(name)) {
                 runUpdate(node, dropSequenceString(ent));
-            }
+            } 
         }
     }
 
