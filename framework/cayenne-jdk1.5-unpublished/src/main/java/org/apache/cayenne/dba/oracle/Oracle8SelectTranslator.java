@@ -23,7 +23,7 @@ import org.apache.cayenne.access.trans.JoinStack;
 /**
  * @since 3.0
  */
-public class Oracle8SelectTranslator extends OracleSelectTranslator {
+class Oracle8SelectTranslator extends OracleSelectTranslator {
 
     /**
      * Returns an old style joint stack for Oracle8 that does not support explicit join
