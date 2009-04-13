@@ -59,7 +59,7 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * SelectTranslator is stateful and thread-unsafe.
  */
 public class SelectTranslator extends QueryAssembler {
-    
+
     protected static final int[] UNSUPPORTED_DISTINCT_TYPES = new int[] {
             Types.BLOB, Types.CLOB, Types.LONGVARBINARY, Types.LONGVARCHAR
     };
@@ -73,16 +73,16 @@ public class SelectTranslator extends QueryAssembler {
 
         return false;
     }
+
     JoinStack joinStack;
 
-    
     public JoinStack getJoinStack() {
-        if(joinStack==null){
+        if (joinStack == null) {
             joinStack = createJoinStack();
         }
         return joinStack;
     }
-    
+
     List<ColumnDescriptor> resultColumns;
     Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
     Map<ColumnDescriptor, ObjAttribute> defaultAttributesByColumn;
@@ -96,7 +96,7 @@ public class SelectTranslator extends QueryAssembler {
      */
     boolean forcingDistinct;
 
-    protected JoinStack createJoinStack() {        
+    protected JoinStack createJoinStack() {
         return new JoinStack(getAdapter(), queryMetadata.getDataMap());
     }
 
@@ -106,29 +106,31 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public String createSqlString() throws Exception {
-        
-        JoinStack jStack = getJoinStack();
+
+        JoinStack joins = getJoinStack();
         boolean status;
-        if(queryMetadata.getDataMap()!=null && queryMetadata.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (queryMetadata.getDataMap() != null
+                && queryMetadata.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
 
-        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
         forcingDistinct = false;
-       
+
         // build column list
         this.resultColumns = buildResultColumns();
-        
+
         // build qualifier
         StringBuilder qualifierBuffer = adapter.getQualifierTranslator(this).appendPart(
                 new StringBuilder());
 
-         // build ORDER BY
+        // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
         StringBuilder orderingBuffer = orderingTranslator.appendPart(new StringBuilder());
-        
+
         // assemble
         StringBuilder queryBuf = new StringBuilder();
         queryBuf.append("SELECT ");
@@ -153,8 +155,8 @@ public class SelectTranslator extends QueryAssembler {
         // convert ColumnDescriptors to column names
         List<String> selectColumnExpList = new ArrayList<String>();
         for (ColumnDescriptor column : resultColumns) {
-            selectColumnExpList.add(
-                        column.getQualifiedColumnNameWithQuoteSqlIdentifiers(strategy));
+            selectColumnExpList.add(column
+                    .getQualifiedColumnNameWithQuoteSqlIdentifiers(strategy));
         }
 
         // append any column expressions used in the order by if this query
@@ -163,34 +165,34 @@ public class SelectTranslator extends QueryAssembler {
             List<String> orderByColumnList = orderingTranslator.getOrderByColumnList();
             for (String orderByColumnExp : orderByColumnList) {
                 // Convert to ColumnDescriptors??
-                if (!selectColumnExpList.contains(orderByColumnExp)) {                    
+                if (!selectColumnExpList.contains(orderByColumnExp)) {
                     selectColumnExpList.add(orderByColumnExp);
                 }
             }
         }
-      
+
         // append columns (unroll the loop's first element)
         int columnCount = selectColumnExpList.size();
         queryBuf.append(selectColumnExpList.get(0));
-        
+
         // assume there is at least 1 element
         for (int i = 1; i < columnCount; i++) {
             queryBuf.append(", ");
-            queryBuf.append(selectColumnExpList.get(i));            
+            queryBuf.append(selectColumnExpList.get(i));
         }
 
         // append from clause
         queryBuf.append(" FROM ");
 
         // append tables and joins
-        jStack.appendRootWithQuoteSqlIdentifiers(queryBuf, getRootDbEntity());
-        
-        jStack.appendJoins(queryBuf);
-        jStack.appendQualifier(qualifierBuffer, qualifierBuffer.length() == 0);
+        joins.appendRootWithQuoteSqlIdentifiers(queryBuf, getRootDbEntity());
+
+        joins.appendJoins(queryBuf);
+        joins.appendQualifier(qualifierBuffer, qualifierBuffer.length() == 0);
 
         // append qualifier
         if (qualifierBuffer.length() > 0) {
-            queryBuf.append(" WHERE ");            
+            queryBuf.append(" WHERE ");
             queryBuf.append(qualifierBuffer);
         }
 
@@ -618,7 +620,7 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public void resetJoinStack() {
-        getJoinStack().resetStack();           
+        getJoinStack().resetStack();
     }
 
     /**
@@ -643,4 +645,4 @@ public class SelectTranslator extends QueryAssembler {
     public boolean supportsTableAliases() {
         return true;
     }
- }
+}

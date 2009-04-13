@@ -168,7 +168,7 @@ public class JoinStack {
     /**
      * Append join information to the qualifier - the part after "WHERE".
      */
-    protected void appendQualifier(Appendable out, boolean firstQualifyerElement)
+    protected void appendQualifier(Appendable out, boolean firstQualifierElement)
             throws IOException {
         // nothing as standard join is performed before "WHERE"
     }

@@ -60,8 +60,8 @@ public class OpenBaseJoinStack extends JoinStack {
     }
 
     @Override
-    protected void appendQualifier(Appendable out, boolean firstQualifyerElement) throws IOException {
-        boolean first = firstQualifyerElement;
+    protected void appendQualifier(Appendable out, boolean firstQualifierElement) throws IOException {
+        boolean first = firstQualifierElement;
         for (JoinTreeNode node : rootNode.getChildren()) {
             if (!first) {
                 out.append(" AND ");
