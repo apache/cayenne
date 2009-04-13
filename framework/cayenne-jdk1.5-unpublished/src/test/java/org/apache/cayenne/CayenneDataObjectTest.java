@@ -21,15 +21,14 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.art.Artist;
 import org.apache.art.ArtistExhibit;
 import org.apache.art.Painting;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.TestBean;
 
-public class CayenneDataObjectTest extends TestCase {
+public class CayenneDataObjectTest extends CayenneCase {
 
     public void testSetObjectId() throws Exception {
         CayenneDataObject obj = new CayenneDataObject();
@@ -97,7 +96,7 @@ public class CayenneDataObjectTest extends TestCase {
     }
     
     public void testReadNestedPropertyToManyInMiddle() throws Exception {
-        DataContext context = DataContext.createDataContext();
+        DataContext context = createDataContext();
         
         Artist a = context.newObject(Artist.class);
         ArtistExhibit ex = context.newObject(ArtistExhibit.class);
