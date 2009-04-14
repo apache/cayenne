@@ -22,6 +22,6 @@ package org.apache.cayenne;
  * This class is a placeholder class for the Java 1.6 module. Once we add the first real
  * Java class in this module, this class should be removed.
  */
-public class Placeholder16 {
+class Placeholder16 {
 
 }
