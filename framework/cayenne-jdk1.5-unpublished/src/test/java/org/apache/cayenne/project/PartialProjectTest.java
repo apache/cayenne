@@ -27,6 +27,9 @@ import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 
 /**
+ * @deprecated since 3.0. {@link ProjectConfigurator} approach turned out to be not
+ *             usable, and is in fact rarely used (if ever). It will be removed in
+ *             subsequent releases.
  */
 public class PartialProjectTest extends CayenneCase {
 
@@ -85,8 +88,7 @@ public class PartialProjectTest extends CayenneCase {
     }
 
     public void testNodes() throws Exception {
-        PartialProject.DomainMetaData d2 = project.domains
-                .get("d2");
+        PartialProject.DomainMetaData d2 = project.domains.get("d2");
         assertNotNull(d2);
         assertEquals(2, d2.nodes.size());
     }

@@ -27,11 +27,14 @@ import org.apache.cayenne.project.ProjectConfigurator;
 import org.apache.cayenne.project.ProjectException;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 /**
  * A "cdeploy" Ant task providing an Ant frontend to
  * org.apache.cayenne.project.ProjectConfigurator.
  * 
+ * @deprecated since 3.0. This task turned out to be not usable, and is in fact rarely
+ *             used (if ever). It will be removed in subsequent releases.
  */
 public class DeploymentConfigurator extends CayenneTask {
 
@@ -54,7 +57,11 @@ public class DeploymentConfigurator extends CayenneTask {
      */
     @Override
     public void execute() throws BuildException {
-        
+
+        log(
+                "*** cdeploy is deprecated in Cayenne 3.0 and will be removed in subsequent releases",
+                Project.MSG_WARN);
+
         validateAttributes();
 
         try {

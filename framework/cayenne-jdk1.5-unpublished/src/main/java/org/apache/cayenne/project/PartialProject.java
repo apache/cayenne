@@ -40,6 +40,9 @@ import org.apache.cayenne.conf.JNDIDataSourceFactory;
  * even when some of the resources are missing. It never instantiates Cayenne stack
  * objects, using other, lightweight, data structures instead.
  * 
+ * @deprecated since 3.0. {@link ProjectConfigurator} approach turned out to be not
+ *             usable, and is in fact rarely used (if ever). It will be removed in
+ *             subsequent releases.
  */
 public class PartialProject extends Project {
 
@@ -414,7 +417,7 @@ public class PartialProject extends Project {
         public String nodeFactoryName(String domainName, String nodeName) {
             return (findDomain(domainName).nodes.get(nodeName)).factory;
         }
-        
+
         public String nodeSchemaUpdateStrategyName(String domainName, String nodeName) {
             return (findDomain(domainName).nodes.get(nodeName)).schemaUpdateStrategy;
         }

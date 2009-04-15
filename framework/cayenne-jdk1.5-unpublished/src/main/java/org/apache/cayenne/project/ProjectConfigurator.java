@@ -29,9 +29,13 @@ import org.apache.cayenne.util.ZipUtil;
 
 /**
  * Performs on the fly reconfiguration of Cayenne projects.
- *  
+ * 
+ * @deprecated since 3.0. {@link ProjectConfigurator} approach turned out to be not
+ *             usable, and is in fact rarely used (if ever). It will be removed in
+ *             subsequent releases.
  */
 public class ProjectConfigurator {
+
     protected ProjectConfigInfo info;
 
     public ProjectConfigurator(ProjectConfigInfo info) {
@@ -47,7 +51,7 @@ public class ProjectConfigurator {
         File tmpDir = null;
         File tmpDest = null;
         try {
-            // initialize default settings 
+            // initialize default settings
             if (info.getDestJar() == null) {
                 info.setDestJar(info.getSourceJar());
             }
@@ -66,17 +70,20 @@ public class ProjectConfigurator {
 
             // finally, since everything goes well so far, rename temp file to final name
             if (info.getDestJar().exists() && !info.getDestJar().delete()) {
-                throw new IOException(
-                    "Can't delete old jar file: " + info.getDestJar());
+                throw new IOException("Can't delete old jar file: " + info.getDestJar());
             }
 
             if (!tmpDest.renameTo(info.getDestJar())) {
-                throw new IOException(
-                    "Error renaming: " + tmpDest + " to " + info.getDestJar());
+                throw new IOException("Error renaming: "
+                        + tmpDest
+                        + " to "
+                        + info.getDestJar());
             }
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new ProjectException("Error performing reconfiguration.", ex);
-        } finally {
+        }
+        finally {
             if (tmpDir != null) {
                 cleanup(tmpDir);
             }
@@ -90,18 +97,16 @@ public class ProjectConfigurator {
     /**
      * Performs reconfiguration of the unjarred project.
      * 
-     * @param projectDir a directory where a working copy of the project is
-     * located.
+     * @param projectDir a directory where a working copy of the project is located.
      */
-    protected void reconfigureProject(File projectDir)
-        throws ProjectException {
+    protected void reconfigureProject(File projectDir) throws ProjectException {
         File projectFile = new File(projectDir, Configuration.DEFAULT_DOMAIN_FILE);
 
         // process alternative project file
         if (info.getAltProjectFile() != null) {
             if (!Util.copy(info.getAltProjectFile(), projectFile)) {
-                throw new ProjectException(
-                    "Can't copy project file: " + info.getAltProjectFile());
+                throw new ProjectException("Can't copy project file: "
+                        + info.getAltProjectFile());
             }
         }
 
@@ -112,23 +117,21 @@ public class ProjectConfigurator {
             DataNodeConfigInfo nodeInfo = it.next();
             String name = nodeInfo.getName();
 
-            File targetDriverFile =
-                new File(projectDir, name + DataNodeFile.LOCATION_SUFFIX);
+            File targetDriverFile = new File(projectDir, name
+                    + DataNodeFile.LOCATION_SUFFIX);
 
             // these are the two cases when the driver file must be deleted
-            if (nodeInfo.getDataSource() != null
-                || nodeInfo.getDriverFile() != null) {
+            if (nodeInfo.getDataSource() != null || nodeInfo.getDriverFile() != null) {
                 if (targetDriverFile.exists()) {
                     targetDriverFile.delete();
                 }
             }
 
             if (nodeInfo.getDriverFile() != null
-                && !nodeInfo.getDriverFile().equals(targetDriverFile)) {
+                    && !nodeInfo.getDriverFile().equals(targetDriverFile)) {
                 // need to copy file from another location
                 if (!Util.copy(nodeInfo.getDriverFile(), targetDriverFile)) {
-                    throw new ProjectException(
-                        "Can't copy driver file from "
+                    throw new ProjectException("Can't copy driver file from "
                             + nodeInfo.getDriverFile());
                 }
             }
@@ -150,8 +153,8 @@ public class ProjectConfigurator {
         File destFolder = info.getDestJar().getParentFile();
         if (destFolder != null && !destFolder.isDirectory()) {
             if (!destFolder.mkdirs()) {
-                throw new IOException(
-                    "Can't create directory: " + destFolder.getCanonicalPath());
+                throw new IOException("Can't create directory: "
+                        + destFolder.getCanonicalPath());
             }
         }
 
@@ -160,8 +163,7 @@ public class ProjectConfigurator {
         // seeting upper limit on a number of tries, though normally we would expect
         // to succeed from the first attempt...
         for (int i = 0; i < 50; i++) {
-            File tmpFile =
-                (destFolder != null)
+            File tmpFile = (destFolder != null)
                     ? new File(destFolder, baseName + i)
                     : new File(baseName + i);
             if (!tmpFile.exists()) {
@@ -173,7 +175,7 @@ public class ProjectConfigurator {
     }
 
     /**
-     *  Deletes a temporary directories and files created.
+     * Deletes a temporary directories and files created.
      */
     protected void cleanup(File dir) {
         Util.delete(dir.getPath(), true);
@@ -189,8 +191,8 @@ public class ProjectConfigurator {
         File destFolder = info.getDestJar().getParentFile();
         if (destFolder != null && !destFolder.isDirectory()) {
             if (!destFolder.mkdirs()) {
-                throw new IOException(
-                    "Can't create directory: " + destFolder.getCanonicalPath());
+                throw new IOException("Can't create directory: "
+                        + destFolder.getCanonicalPath());
             }
         }
 
@@ -200,16 +202,15 @@ public class ProjectConfigurator {
         }
 
         // seeting upper limit on a number of tries, though normally we would expect
-        // to succeed from the first attempt... 
+        // to succeed from the first attempt...
         for (int i = 0; i < 50; i++) {
-            File tmpDir =
-                (destFolder != null)
+            File tmpDir = (destFolder != null)
                     ? new File(destFolder, baseName + i)
                     : new File(baseName + i);
             if (!tmpDir.exists()) {
                 if (!tmpDir.mkdir()) {
-                    throw new IOException(
-                        "Can't create directory: " + tmpDir.getCanonicalPath());
+                    throw new IOException("Can't create directory: "
+                            + tmpDir.getCanonicalPath());
                 }
 
                 return tmpDir;

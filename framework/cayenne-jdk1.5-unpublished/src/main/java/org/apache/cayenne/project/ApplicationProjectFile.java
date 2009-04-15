@@ -30,17 +30,12 @@ import org.apache.cayenne.conf.RuntimeSaveDelegate;
  * ApplicationProjectFile is a ProjectFile abstraction of the main project file in a
  * Cayenne project. Right now Cayenne projects can not be renamed, so all the name
  * tracking functionality is pretty much noop.
- * 
  */
 public class ApplicationProjectFile extends ProjectFile {
 
     protected ConfigSaverDelegate saveDelegate;
 
     private String objectName = null;
-
-    private ApplicationProjectFile() {
-        super();
-    }
 
     /**
      * Constructor for default ApplicationProjectFile.

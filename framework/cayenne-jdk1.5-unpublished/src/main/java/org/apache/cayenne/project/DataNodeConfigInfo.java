@@ -27,9 +27,13 @@ import org.apache.cayenne.conf.Configuration;
 
 /**
  * Stores information necessary to reconfigure nodes of existing projects.
- *  
+ * 
+ * @deprecated since 3.0. {@link ProjectConfigurator} approach turned out to be not
+ *             usable, and is in fact rarely used (if ever). It will be removed in
+ *             subsequent releases.
  */
 public class DataNodeConfigInfo {
+
     protected String name;
     protected String domain;
     protected String adapter;
@@ -37,12 +41,10 @@ public class DataNodeConfigInfo {
     protected File driverFile;
 
     /**
-     * Searches for the DataNode described by this DataNodeConfigInfo in the
-     * provided configuration object. Throws ProjectException if there is no
-     * matching DataNode.
+     * Searches for the DataNode described by this DataNodeConfigInfo in the provided
+     * configuration object. Throws ProjectException if there is no matching DataNode.
      */
-    public DataNode findDataNode(Configuration config)
-        throws ProjectException {
+    public DataNode findDataNode(Configuration config) throws ProjectException {
         DataDomain domainObj = null;
 
         // domain name is either explicit, or use default domain
@@ -52,10 +54,12 @@ public class DataNodeConfigInfo {
             if (domainObj == null) {
                 throw new ProjectException("Can't find domain named " + domain);
             }
-        } else {
+        }
+        else {
             try {
                 domainObj = config.getDomain();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 throw new ProjectException("Project has no default domain.", ex);
             }
 
@@ -66,8 +70,7 @@ public class DataNodeConfigInfo {
 
         DataNode node = domainObj.getNode(name);
         if (node == null) {
-            throw new ProjectException(
-                "Domain "
+            throw new ProjectException("Domain "
                     + domainObj.getName()
                     + " has no node named '"
                     + name
@@ -78,6 +81,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Returns the adapter.
+     * 
      * @return String
      */
     public String getAdapter() {
@@ -86,6 +90,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Returns the dataSource.
+     * 
      * @return String
      */
     public String getDataSource() {
@@ -94,6 +99,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Returns the domain.
+     * 
      * @return String
      */
     public String getDomain() {
@@ -102,6 +108,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Returns the driverFile.
+     * 
      * @return File
      */
     public File getDriverFile() {
@@ -110,6 +117,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Returns the name.
+     * 
      * @return String
      */
     public String getName() {
@@ -118,6 +126,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Sets the adapter.
+     * 
      * @param adapter The adapter to set
      */
     public void setAdapter(String adapter) {
@@ -126,6 +135,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Sets the dataSource.
+     * 
      * @param dataSource The dataSource to set
      */
     public void setDataSource(String dataSource) {
@@ -134,6 +144,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Sets the domain.
+     * 
      * @param domain The domain to set
      */
     public void setDomain(String domain) {
@@ -142,6 +153,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Sets the driverFile.
+     * 
      * @param driverFile The driverFile to set
      */
     public void setDriverFile(File driverFile) {
@@ -150,6 +162,7 @@ public class DataNodeConfigInfo {
 
     /**
      * Sets the name.
+     * 
      * @param name The name to set
      */
     public void setName(String name) {
