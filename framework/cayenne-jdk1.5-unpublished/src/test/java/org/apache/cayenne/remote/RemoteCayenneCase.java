@@ -35,6 +35,21 @@ public abstract class RemoteCayenneCase extends CayenneCase {
     
     protected DataContext parentDataContext;
     
+    /**
+     * Used serialization policy. Per CAY-979 we're testing on all policies
+     */
+    protected int serializationPolicy;
+    
+    @Override
+    public void runBare() throws Throwable {
+        serializationPolicy = LocalConnection.HESSIAN_SERIALIZATION;
+        super.runBare();
+        serializationPolicy = LocalConnection.JAVA_SERIALIZATION;
+        super.runBare();
+        serializationPolicy = LocalConnection.NO_SERIALIZATION;
+        super.runBare();
+    }
+    
     @Override
     public void setUp() throws Exception {
         parentDataContext = createDataContext();
@@ -45,7 +60,7 @@ public abstract class RemoteCayenneCase extends CayenneCase {
         ClientServerChannel clientServerChannel = new ClientServerChannel(parentDataContext);
         UnitLocalConnection connection = new UnitLocalConnection(
                 clientServerChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
+                serializationPolicy);
         ClientChannel channel = new ClientChannel(connection);
         return new CayenneContext(channel, true, true);
     }

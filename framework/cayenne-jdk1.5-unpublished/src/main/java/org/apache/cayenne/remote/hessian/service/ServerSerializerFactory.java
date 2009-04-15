@@ -19,12 +19,7 @@
 
 package org.apache.cayenne.remote.hessian.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.util.PersistentObjectList;
 
 import com.caucho.hessian.io.AbstractSerializerFactory;
@@ -38,21 +33,12 @@ import com.caucho.hessian.io.Serializer;
  * @since 1.2
  */
 class ServerSerializerFactory extends AbstractSerializerFactory {
-
-    private EntityResolver serverResolver;
-
     private ServerPersistentObjectListSerializer persistentObjectListSerializer;
     private ServerDataRowSerializer dataRowSerilaizer;
-    private Map<Class, Deserializer> deserializers;
 
     ServerSerializerFactory() {
         this.persistentObjectListSerializer = new ServerPersistentObjectListSerializer();
         this.dataRowSerilaizer = new ServerDataRowSerializer();
-    }
-
-    // this method is used by HessianCOnfig to inject resolver
-    void setEntityResolver(EntityResolver resolver) {
-        this.serverResolver = resolver;
     }
 
     @Override
@@ -70,30 +56,6 @@ class ServerSerializerFactory extends AbstractSerializerFactory {
 
     @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
-        Deserializer deserializer = null;
-
-        if (AbstractQuery.class.isAssignableFrom(cl)) {
-
-            synchronized (this) {
-
-                if (deserializers != null) {
-                    deserializer = deserializers.get(cl);
-                }
-
-                if (deserializer == null) {
-                    deserializer = new ServerAbstractQueryDeserializer(cl, serverResolver
-                            .getClientEntityResolver());
-
-                    if (deserializers == null) {
-                        deserializers = new HashMap<Class, Deserializer>();
-                    }
-
-                    deserializers.put(cl, deserializer);
-                }
-            }
-
-        }
-
-        return deserializer;
+        return null;
     }
 }

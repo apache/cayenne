@@ -98,6 +98,16 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             if (root != null) {
                 if (root instanceof Class) {
                     entity = resolver.lookupObjEntity((Class<?>) root);
+                    if (entity == null) { //entity not found, try to resolve it with client resolver
+                        EntityResolver clientResolver = resolver.getClientEntityResolver();
+                        if (clientResolver != resolver) {
+                            ObjEntity clientEntity = clientResolver.lookupObjEntity((Class<?>) root);
+                            
+                            if (clientEntity != null) {
+                                entity = resolver.getObjEntity(clientEntity.getName());
+                            }
+                        }
+                    }
 
                     if (entity != null) {
                         this.dbEntity = entity.getDbEntity();
@@ -138,6 +148,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
             this.lastRoot = root;
             this.lastEntityResolver = resolver;
+            
             return true;
         }
 
@@ -324,6 +335,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     /**
      * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
+    @Deprecated
     public String getCachePolicy() {
         if (cacheStrategy == null) {
             return QueryMetadata.CACHE_POLICY_DEFAULT;
@@ -350,6 +362,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
      * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
      *             method.
      */
+    @Deprecated
     void setCachePolicy(String policy) {
         if (policy == null) {
             cacheStrategy = null;
@@ -428,6 +441,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public int getFetchStartIndex() {
         return getFetchOffset();
     }
@@ -439,6 +453,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     /**
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     public boolean isResolvingInherited() {
         return true;
     }
