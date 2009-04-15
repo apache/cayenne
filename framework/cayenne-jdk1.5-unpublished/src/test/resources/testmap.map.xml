@@ -587,7 +587,7 @@
 	<query name="EjbqlQueryTest" factory="org.apache.cayenne.map.EjbqlBuilder">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
-		<ejbql><![CDATA[select * from ejbql]]></ejbql>
+		<ejbql><![CDATA[select a from Artist a]]></ejbql>
 	</query>
 	<query name="NonSelectingQuery" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
