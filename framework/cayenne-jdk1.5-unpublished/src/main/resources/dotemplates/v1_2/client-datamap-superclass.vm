@@ -34,7 +34,7 @@
 ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
-#if( ${object.hasQueries()} ) 
+#if( ${object.hasSelectQueries()} ) 
 ${importUtils.addType('java.util.List')}##
 ${importUtils.addType('org.apache.cayenne.ObjectContext')}##
 ${importUtils.addType('org.apache.cayenne.query.NamedQuery')}##
@@ -54,6 +54,12 @@ ${importUtils.generate()}
  * If you need to make any customizations, please use subclass.
  */
 public class ${superClassName} {
+#if( ${object.hasQueryNames()})
+#foreach( $qname in ${object.QueryNames})
+
+    public static final String ${stringUtils.capitalizedAsConstant($qname)}_QUERYNAME = "$qname";
+#end
+#end
 #foreach( $selectQuery in ${object.SelectQueries})
 
     public List<${stringUtils.stripPackageName($selectQuery.Root.ClientClassName)}> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter}#end) {

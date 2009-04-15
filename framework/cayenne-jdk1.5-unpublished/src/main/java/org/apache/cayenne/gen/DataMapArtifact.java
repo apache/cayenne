@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
@@ -43,12 +44,16 @@ public class DataMapArtifact implements Artifact {
     protected Collection<SelectQuery> selectQueries;
     protected Collection<SQLTemplate> sqlTemplateQueries;
     protected Collection<ProcedureQuery> procedureQueries;
+    protected Collection<EJBQLQuery> ejbqlQueries;
+    protected Collection<String> queryNames;
 
     public DataMapArtifact(DataMap dataMap, Collection<Query> queries) {
         this.dataMap = dataMap;
         selectQueries = new LinkedList<SelectQuery>();
         sqlTemplateQueries = new LinkedList<SQLTemplate>();
         procedureQueries = new LinkedList<ProcedureQuery>();
+        ejbqlQueries = new LinkedList<EJBQLQuery>();
+        queryNames = new LinkedList<String>();
         addQueries(queries);
     }
 
@@ -105,6 +110,15 @@ public class DataMapArtifact implements Artifact {
     private void addQuery(Query query) {
         if (query instanceof SelectQuery) {
             selectQueries.add((SelectQuery) query);
+        } else if (query instanceof ProcedureQuery) {
+            procedureQueries.add((ProcedureQuery) query);
+        } else if (query instanceof SQLTemplate) {
+            sqlTemplateQueries.add((SQLTemplate) query);
+        } else if (query instanceof EJBQLQuery) {
+            ejbqlQueries.add((EJBQLQuery) query);
+        }
+        if (query.getName() != null && !"".equals(query.getName())) {
+            queryNames.add(query.getName());
         }
     }
 
@@ -112,7 +126,15 @@ public class DataMapArtifact implements Artifact {
         return selectQueries;
     }
 
-    public boolean hasQueries() {
+    public boolean hasSelectQueries() {
         return selectQueries.size() > 0;
+    }
+
+    public boolean hasQueryNames() {
+        return !queryNames.isEmpty();
+    }
+
+    public Collection<String> getQueryNames() {
+        return queryNames;
     }
 }

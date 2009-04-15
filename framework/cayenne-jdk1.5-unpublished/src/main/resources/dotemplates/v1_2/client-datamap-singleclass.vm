@@ -55,8 +55,14 @@ ${importUtils.generate()}
  * If you need to make any customizations, please use subclass.
  */
 public class ${subClassName} {
+#if( ${object.hasQueryNames()})
+#foreach( $qname in ${object.QueryNames})
 
-    private static ${subClassName} instance;
+    public static final String ${stringUtils.capitalizedAsConstant($qname)}_QUERYNAME = "$qname";
+#end
+#end
+
+private static ${subClassName} instance;
 
     private ${subClassName}() {}
 

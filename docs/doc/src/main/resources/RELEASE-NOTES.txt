@@ -23,6 +23,7 @@ CAY-1140 Store ObjEntity name in the DataRow
 CAY-1142 (Single table) Inheritance and Paginated lists 
 CAY-1146 Move User properties API to ObjectContext & BaseContext
 CAY-1147 Remove id reading functionality from ResultIterator
+CAY-1150 Generated DataMap classes should contain public constants for all query names
 CAY-1153 MySQL : Enable views during reverse engineering
 CAY-1154 Rename .access.reveng package to .map.naming
 CAY-1156 Modeler search improvement
@@ -30,7 +31,6 @@ CAY-1158 cayenne-modeler:run plugin should open a (configured) project file, wit
 CAY-1161 Deprecate SelectQuery custom columns feature
 CAY-1174 Modeler: support optional meaningful PK mapping during reverse engineering
 CAY-1175 Replace String column name capitalization property with an enum
-CAY-1181 Default class generation folder is wrong
 CAY-1184 Callback methods should default to usable names
 CAY-1185 Expression API: boolean support in string representation
 
@@ -49,6 +49,7 @@ CAY-1166 Type checking in the modeler
 CAY-1170 cdbgen task fails due to NPE when instantiating TypesHandler
 CAY-1176 missing classes in ROP cayenne-client render nested contexts unusable
 CAY-1180 Model marked as dirty when leaving DataMap name field
+CAY-1181 Default class generation folder is wrong
 CAY-1183 commitToParent() makes object persistence state committed, produces exception when using object in parent context (ROP)
 CAY-1194 problems with relationships when using nested contexts and ROP
 CAY-1196 CayenneRuntimeException in modeler due to ClassNotFoundException when java type is invalid and db attribute is null

@@ -25,11 +25,9 @@ import java.util.Collection;
 import java.util.List;
 
 
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.unit.BasicCase;
+import org.apache.cayenne.query.NamedQuery;
 
 public class ClassGenerationActionTest extends BasicCase {
 
@@ -154,7 +152,30 @@ public class ClassGenerationActionTest extends BasicCase {
         assertTrue(superclass, superclass.contains("return (value != null) ? (Character) value : 0;"));
 
     }
-    
+
+    public void testExecuteDataMapQueryNames() throws Exception {
+        runDataMapTest(false);
+    }
+
+    public void testExecuteClientDataMapQueryNames() throws Exception {
+        runDataMapTest(true);
+    }
+
+    private void runDataMapTest(boolean client) throws Exception {
+        DataMap map = new DataMap();
+        map.addQuery(new NamedQuery("TestQuery"));
+        map.setName("testmap");
+        List<String> generated;
+        if (client) {
+            map.setDefaultClientPackage("testpackage");
+            generated = execute(new ClientDataMapArtifact(map,map.getQueries()));
+        } else {
+            map.setDefaultPackage("testpackage");
+            generated = execute(new DataMapArtifact(map,map.getQueries()));
+        }
+        assertEquals(2,generated.size());
+        assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
+    }
 
     protected List<String> execute(Artifact artifact) throws Exception {
 
