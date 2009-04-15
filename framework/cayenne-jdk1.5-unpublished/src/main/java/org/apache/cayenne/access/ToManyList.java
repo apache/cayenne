@@ -73,34 +73,18 @@ public class ToManyList extends PersistentObjectList implements Serializable {
     // Tracking list modifications, and resolving it
     // on demand
     // ====================================================
-
+    
     @Override
-    protected boolean removeLocal(Object object) {
-        if (addedToUnresolved != null) {
-            addedToUnresolved.remove(object);
-        }
-
-        if (removedFromUnresolved == null) {
-            removedFromUnresolved = new LinkedList<Object>();
-        }
-
+    protected boolean shouldAddToRemovedFromUnresolvedList(Object object) {
         // No point in adding a new or transient object -- these will never be fetched
         // from the database.
-        boolean shouldAddToRemovedFromUnresolvedList = true;
         if (object instanceof Persistent) {
             Persistent dataObject = (Persistent) object;
             if ((dataObject.getPersistenceState() == PersistenceState.TRANSIENT)
                     || (dataObject.getPersistenceState() == PersistenceState.NEW)) {
-                shouldAddToRemovedFromUnresolvedList = false;
+                return false;
             }
         }
-
-        if (shouldAddToRemovedFromUnresolvedList) {
-            removedFromUnresolved.addLast(object);
-        }
-
-        // this is really meaningless, since we don't know
-        // if an object was present in the list
         return true;
     }
 

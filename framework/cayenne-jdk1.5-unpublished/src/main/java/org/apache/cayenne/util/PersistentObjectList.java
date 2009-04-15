@@ -375,10 +375,19 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
             removedFromUnresolved = new LinkedList<Object>();
         }
 
-        removedFromUnresolved.addLast(object);
+        if (shouldAddToRemovedFromUnresolvedList(object)) {
+            removedFromUnresolved.addLast(object);
+        }
 
         // this is really meaningless, since we don't know
         // if an object was present in the list
+        return true;
+    }
+    
+    /**
+     * @return whether object should be added to {@link #removedFromUnresolved} during removal
+     */
+    protected boolean shouldAddToRemovedFromUnresolvedList(Object object) {
         return true;
     }
 
