@@ -47,6 +47,8 @@ public class DbImporterMojo extends AbstractMojo {
      * This is an all-or-nothing setting.  If you need finer granularity, please
      * use the Cayenne Modeler.
      *
+     * Default is <code>true</code>.
+     *
      * @parameter expression="${cdbimport.overwriteExisting}" default-value="true"
      */
     private boolean overwriteExisting;
@@ -69,6 +71,7 @@ public class DbImporterMojo extends AbstractMojo {
 
     /**
      * Indicates whether stored procedures should be imported.
+     *
      * Default is <code>false</code>.
      *
      * @parameter expression="${cdbimport.importProcedures}" default-value="false"
@@ -84,6 +87,15 @@ public class DbImporterMojo extends AbstractMojo {
      * @parameter expression="${cdbimport.procedurePattern}"
      */
     private String procedurePattern;
+
+    /**
+     * Indicates whether primary keys should be mapped as meaningful attributes in the object entities.
+     *
+     * Default is <code>false</code>.
+     *
+     * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
+     */
+    private boolean meaningfulPk;
 
     /**
      * Java class implementing org.apache.cayenne.dba.DbAdapter.
@@ -140,10 +152,10 @@ public class DbImporterMojo extends AbstractMojo {
 
         logger = new MavenLogger(this);
 
-        logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, username));
+        logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s, password: %s]", driver, url, username, password));
 
-        logger.info(String.format("importer options - [map: %s, schemaName: %s, tablePattern: %s, driver: %s, url: %s, username: %s, password: %s]",
-                map, schemaName, tablePattern, driver, url, username, password));
+        logger.info(String.format("importer options - [map: %s, overwriteExisting: %s, schemaName: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s]",
+                map, overwriteExisting, schemaName, tablePattern, importProcedures, procedurePattern, meaningfulPk));
 
         try {
             final DbAdapter adapterInst = (adapter == null) ? new JdbcAdapter()
@@ -157,6 +169,7 @@ public class DbImporterMojo extends AbstractMojo {
 
             mapFile = new File(map);
             final DataMap dataMap = mapFile.exists() ? loadDataMap() : new DataMap();
+            loader.setCreatingMeaningfulPK(meaningfulPk);
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
 
             for (ObjEntity addedObjEntity : addedObjEntities) {
