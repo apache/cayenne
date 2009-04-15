@@ -97,11 +97,17 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
         assertNotNull(map);
         MockOperationObserver observer = new MockOperationObserver();
         DataNode dataNode = createDataNode(map);
-        
+
         setStrategy(ThrowOnPartialSchemaStrategy.class.getName(), dataNode);
-        
+
         try {
             dataNode.performQueries(Collections.singletonList((Query) query), observer);
+        }
+        catch (CayenneRuntimeException e) {
+            assertNotNull(e);
+        }
+
+        try {
             dataNode.performQueries(Collections.singletonList((Query) query), observer);
         }
         catch (CayenneRuntimeException e) {
@@ -183,26 +189,32 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
         assertNotNull(map);
         MockOperationObserver observer = new MockOperationObserver();
         DataNode dataNode = createDataNode(map);
-      
+
+        DataNode dataNode2 = createDataNode(map);
+
         try {
-      
+
             int sizeDB = getNameTablesInDB(dataNode).size();
             entity = createOneTable(dataNode);
             int sizeDB2 = getNameTablesInDB(dataNode).size();
             assertEquals(1, sizeDB2 - sizeDB);
-            DataNode dataNode2 = createDataNode(map);
-
             setStrategy(strategy, dataNode2);
-
             dataNode2.performQueries(Collections.singletonList((Query) query), observer);
-           
+
+        }
+        catch (CayenneRuntimeException e) {
+            assertNotNull(e);
+        }
+        try {
+            dataNode2.performQueries(Collections.singletonList((Query) query), observer);
         }
         catch (CayenneRuntimeException e) {
             assertNotNull(e);
         }
         finally {
+
             if (entity != null) {
-                
+
                 Collection<String> template2 = dataNode.getAdapter().dropTableStatements(
                         entity);
                 Iterator<String> it = template2.iterator();

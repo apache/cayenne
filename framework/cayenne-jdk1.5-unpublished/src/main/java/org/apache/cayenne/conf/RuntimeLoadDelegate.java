@@ -294,21 +294,31 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         node.setDataSourceLocation(dataSource);
         node.setSchemaUpdateStrategyName(schemaUpdateStrategy);
 
-
-        // load DataSource
+        SchemaUpdateStrategy confSchema = config.getSchemaUpdateStrategy();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        SchemaUpdateStrategy localSchema;
         try {
-
-            SchemaUpdateStrategy confSchema = config.getSchemaUpdateStrategy();
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            SchemaUpdateStrategy localSchema = (confSchema != null)
+            localSchema = (confSchema != null)
                     ? confSchema
                     : (SchemaUpdateStrategy) Class.forName(
                             schemaUpdateStrategy,
                             true,
                             classLoader).newInstance();
-
             node.setSchemaUpdateStrategy(localSchema);
-            
+        }
+        catch (InstantiationException e) {
+            logger.info("Error: ", e);
+        }
+        catch (IllegalAccessException e) {
+            logger.info("Error: ", e);
+        }
+        catch (ClassNotFoundException e) {
+            logger.info("Error: ", e);
+        }
+        
+        // load DataSource
+        try {
+
             // use DomainHelper factory if it exists, if not - use factory specified
             // in configuration data
             DataSourceFactory confFactory = config.getDataSourceFactory(factory);

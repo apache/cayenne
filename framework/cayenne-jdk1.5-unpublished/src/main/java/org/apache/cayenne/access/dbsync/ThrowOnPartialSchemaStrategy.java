@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -33,11 +34,10 @@ import org.apache.cayenne.merge.MergerToken;
 /**
  * @since 3.0
  */
-public class ThrowOnPartialSchemaStrategy implements SchemaUpdateStrategy {
+public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
 
-    protected SchemaUpdateStrategy currentSchema;
-
-    protected SchemaUpdateStrategy getSchema() {
+    @Override
+    public BaseSchemaUpdateStrategy getSchema() {
         return currentSchema;
     }
 
@@ -49,15 +49,17 @@ public class ThrowOnPartialSchemaStrategy implements SchemaUpdateStrategy {
     }
 
     /**
+     * @throws SQLException 
      * @since 3.0
      */
-    public void updateSchema(DataNode dataNode) {
-        getSchema().generateUpdateSchema(dataNode);
+    public void updateSchema(DataNode dataNode) throws SQLException {
+        super.generateUpdateSchema(dataNode);
     }
 
     /**
      * @since 3.0
      */
+    @Override
     public void generateUpdateSchema(DataNode dataNode) {
         String errorMessage = null;
         List<String> mergerOnlyTable = new ArrayList<String>();
@@ -93,8 +95,6 @@ public class ThrowOnPartialSchemaStrategy implements SchemaUpdateStrategy {
             }
         }
         analyser(dataNode, mergerOnlyTable, errorMessage, entitiesSize);
-
-        currentSchema = new SkipSchemaUpdateStrategy();
     }
 
     protected synchronized void analyser(
@@ -118,7 +118,6 @@ public class ThrowOnPartialSchemaStrategy implements SchemaUpdateStrategy {
                     err += "expect table " + mergerOnlyTable.get(0);
                 }
             }
-
             throw new CayenneRuntimeException(err);
         }
     }

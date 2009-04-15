@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
+import java.sql.SQLException;
+
 import org.apache.cayenne.access.DataNode;
 
 /**
@@ -27,7 +29,5 @@ import org.apache.cayenne.access.DataNode;
  */
 public interface SchemaUpdateStrategy {
 
-    void updateSchema(DataNode dataNode);
-
-    void generateUpdateSchema(DataNode dataNode);
+    void updateSchema(DataNode dataNode) throws SQLException;
 }

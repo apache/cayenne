@@ -18,33 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
+import java.sql.SQLException;
+
 import org.apache.cayenne.access.DataNode;
 
 /**
- * A SchemaUpdateStrategy that does nothing. This is usually the default strategy, as in
- * most cases DB schema management is outside the scope of Cayenne.
- * 
  * @since 3.0
  */
-public class SkipSchemaUpdateStrategy extends BaseSchemaUpdateStrategy {
+public abstract class BaseSchemaUpdateStrategy implements SchemaUpdateStrategy {
+
+    protected BaseSchemaUpdateStrategy currentSchema;
+
+    protected abstract BaseSchemaUpdateStrategy getSchema();
 
     /**
      * @since 3.0
      */
-    public void updateSchema(DataNode dataNode) {
-        // does nothing
-    }
-
-    /**
-     * @since 3.0
-     */
-    @Override
-    public void generateUpdateSchema(DataNode dataNode) {
-        // does nothing
-    }
-
-    @Override
-    protected BaseSchemaUpdateStrategy getSchema() {
-        return this;
-    }
+    public void generateUpdateSchema(DataNode dataNode) throws SQLException {
+            getSchema().generateUpdateSchema(dataNode);
+             currentSchema = new SkipSchemaUpdateStrategy();
+     };
 }

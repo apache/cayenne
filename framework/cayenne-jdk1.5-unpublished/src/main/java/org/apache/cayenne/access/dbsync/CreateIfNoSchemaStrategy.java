@@ -37,13 +37,12 @@ import org.apache.commons.logging.LogFactory;
 /**
  * @since 3.0
  */
-public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
+public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
 
     final Log logObj = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
 
-    private SchemaUpdateStrategy currentSchema;
-
-    private SchemaUpdateStrategy getSchema() {
+    @Override
+    protected BaseSchemaUpdateStrategy getSchema() {
         return currentSchema;
     }
 
@@ -51,11 +50,13 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
         currentSchema = this;
     }
 
-    public void updateSchema(DataNode dataNode) {
-        getSchema().generateUpdateSchema(dataNode);
+    public void updateSchema(DataNode dataNode) throws SQLException {
+        super.generateUpdateSchema(dataNode);
     }
 
-    public void generateUpdateSchema(DataNode dataNode) {
+  
+    @Override
+    public void generateUpdateSchema(DataNode dataNode) throws SQLException {
 
         Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
         Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
@@ -74,7 +75,6 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
             logObj
                     .info("DbGenerator no create, because one of the tables, modeled in Cayenne, already exist in DB");
         }
-        currentSchema = new SkipSchemaUpdateStrategy();
     }
 
     private synchronized void generate(DataNode dataNode) {
@@ -98,33 +98,36 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
 
     /**
      * Returns all the table names in database.
+     * 
+     * @throws SQLException
      */
-    protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) {
+    protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode)
+            throws SQLException {
         String tableLabel = dataNode.getAdapter().tableTypeForTable();
         Connection con = null;
         Map<String, Boolean> nameTables = new HashMap<String, Boolean>();
+        con = dataNode.getDataSource().getConnection();
+
         try {
-            con = dataNode.getDataSource().getConnection();
             ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] {
                 tableLabel
             });
 
-            while (rs.next()) {
-                String name = rs.getString("TABLE_NAME");
-                nameTables.put(name, false);
+            try {
+
+                while (rs.next()) {
+                    String name = rs.getString("TABLE_NAME");
+                    nameTables.put(name, false);
+                }
             }
-            rs.close();
-        }
-        catch (SQLException e) {
-            throw new CayenneRuntimeException(e);
+            finally {
+                rs.close();
+            }
+
         }
         finally {
-            try {
-                con.close();
-            }
-            catch (SQLException e) {
-                logObj.info("error: " + e);
-            }
+
+            con.close();
         }
         return nameTables;
     }
