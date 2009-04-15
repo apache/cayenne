@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.map;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,6 +87,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Creates new EntityResolver.
      */
     public EntityResolver() {
+        init();
+    }
+    
+    /**
+     * Initialization of EntityResolver. Used in constructor and in Java deserialization process
+     */
+    private void init() {
         this.indexedByClass = true;
         this.maps = new ArrayList<DataMap>(3);
         this.embeddableCache = new HashMap<String, Embeddable>();
@@ -647,6 +656,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @return the required DbEntity, or null if none matches the specifier
      * @deprecated since 3.0 - lookup DbEntity via ObjEntity instead.
      */
+    @Deprecated
     public synchronized DbEntity lookupDbEntity(Class<?> aClass) {
         ObjEntity oe = lookupObjEntity(aClass);
         return oe != null ? oe.getDbEntity() : null;
@@ -659,6 +669,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @return the required DbEntity, or null if none matches the specifier
      * @deprecated since 3.0 - lookup DbEntity via ObjEntity instead.
      */
+    @Deprecated
     public synchronized DbEntity lookupDbEntity(Persistent dataObject) {
         return lookupDbEntity(dataObject.getClass());
     }
@@ -731,6 +742,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @return the required ObjEntity or null if there is none that matches the specifier
      * @deprecated since 3.0 - use getObjEntity() instead.
      */
+    @Deprecated
     public synchronized ObjEntity lookupObjEntity(String entityName) {
         return _lookupObjEntity(entityName);
     }
@@ -896,5 +908,14 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public void setEntityListenerFactory(EntityListenerFactory entityListenerFactory) {
         this.entityListenerFactory = entityListenerFactory;
+    }
+
+    /**
+     * Java default deserialization seems not to invoke constructor by default - 
+     * invoking it manually
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        init();
+        in.defaultReadObject();
     }
 }
