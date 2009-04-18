@@ -259,7 +259,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         createTestData("prepareCompound");
 
         ObjectContext context = createDataContext();
-        Map key1 = new HashMap();
+        Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
         CompoundPkTestEntity object = DataObjectUtils.objectForPK(

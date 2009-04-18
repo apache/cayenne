@@ -354,7 +354,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Map pk = new HashMap();
+        Map<String, String> pk = new HashMap<String, String>();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 
@@ -381,7 +381,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Map pk = new HashMap();
+        Map<String, String> pk = new HashMap<String, String>();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 

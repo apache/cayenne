@@ -414,7 +414,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Map key1 = new HashMap();
+        Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
         CompoundPkTestEntity a = DataObjectUtils.objectForPK(
@@ -442,7 +442,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Map key1 = new HashMap();
+        Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
         CompoundPkTestEntity a = DataObjectUtils.objectForPK(
@@ -466,7 +466,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Map key1 = new HashMap();
+        Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
         CompoundPkTestEntity a = DataObjectUtils.objectForPK(
