@@ -101,7 +101,7 @@ hierarchy.
 	source CDATA #REQUIRED
 	target CDATA #REQUIRED
 	toMany (true | false) "false"
-	collection-type (java.util.List | java.util.Collection | java.util.Set | java.util.Map )
+	collection-type (java.util.List | java.util.Collection | java.util.Set | java.util.Map ) "java.util.List"
 	map-key CDATA #IMPLIED
 	lock (true | false) "false"
 	db-relationship-path CDATA #IMPLIED
@@ -143,7 +143,7 @@ hierarchy.
 Defines a Cayenne Query that can be either at the DataMap
 level, or linked to an entity or procedure.
 -->
-<!ELEMENT query (property*, (sql* | (qualifier?, ordering*, prefetch*)?) >
+<!ELEMENT query (property*, (sql* | (qualifier?, ordering*, prefetch*)?)) >
 <!ATTLIST query
         name CDATA #REQUIRED
         factory CDATA #REQUIRED
