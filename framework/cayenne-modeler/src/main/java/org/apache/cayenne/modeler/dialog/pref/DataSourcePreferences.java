@@ -25,6 +25,7 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -240,8 +241,29 @@ public class DataSourcePreferences extends CayenneController {
         }
         catch (Throwable th) {
             th = Util.unwindException(th);
-            JOptionPane.showMessageDialog(null, "Error connecting to DB: "
-                    + th.getLocalizedMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+            String message = "Error connecting to DB: " + th.getLocalizedMessage();
+
+            StringTokenizer st = new StringTokenizer(message);
+            StringBuilder sbMessage = new StringBuilder();
+            int len = 0;
+            
+            String tempString;
+            while (st.hasMoreTokens()) {
+                tempString = st.nextElement().toString();
+                if(len < 110){
+                    len = len + tempString.length() + 1;
+                } else {
+                    sbMessage.append("\n");
+                    len = 0;
+                }
+                sbMessage.append(tempString + " ");
+            }
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    sbMessage.toString(),
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
     }
