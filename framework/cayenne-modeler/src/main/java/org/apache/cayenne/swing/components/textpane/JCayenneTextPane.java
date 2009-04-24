@@ -1,12 +1,15 @@
 package org.apache.cayenne.swing.components.textpane;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
@@ -26,6 +29,8 @@ import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
 
 public class JCayenneTextPane extends JPanel {
 
@@ -62,6 +67,10 @@ public class JCayenneTextPane extends JPanel {
         return pane.getText();
     }
 
+    public Component getPane() {
+        return pane;
+    }
+    
     public int getStartPositionInDocument() {
         return pane.viewToModel(scrollPane.getViewport().getViewPosition());
         // starting pos
@@ -125,6 +134,7 @@ public class JCayenneTextPane extends JPanel {
         }
         return position + posInLine;
     }
+    
 
     public JCayenneTextPane(SyntaxConstant syntaxConstant) {
         super();
@@ -176,7 +186,8 @@ public class JCayenneTextPane extends JPanel {
             public void changedUpdate(DocumentEvent evt) {
             }
 
-        });
+        });        
+       
     }
 
     public void setHighlightText(int lastIndex, int endIndex) throws BadLocationException {
@@ -242,32 +253,35 @@ public class JCayenneTextPane extends JPanel {
             setToolTipText("");
         }
         else {
-            this.endYPositionToolTip = 0;
-            this.startYPositionToolTip = 0;
-            setTooltipTextError(string);
+            this.endYPositionToolTip = -1;
+            this.startYPositionToolTip = -1;
+            setTooltipTextError("");
+            setToolTipText("");
             imageError = false;
         }
     }
 
     public String getToolTipText(MouseEvent e) {
 
-        if (e.getPoint().y > endYPositionToolTip
-                && e.getPoint().y < startYPositionToolTip) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            String htmlText = getTooltipTextError()
-                    .replaceAll("\n", "<br>&nbsp;")
-                    .replaceAll("\t", "&nbsp;")
-                    .replaceAll("\r", "<br>&nbsp;");
+        
+            if (e.getPoint().y > endYPositionToolTip
+                    && e.getPoint().y < startYPositionToolTip 
+                    && imageError) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                String htmlText = getTooltipTextError()
+                        .replaceAll("\n", "<br>&nbsp;")
+                        .replaceAll("\t", "&nbsp;")
+                        .replaceAll("\r", "<br>&nbsp;");
 
-            return "<HTML>"
-                    + "<body bgcolor='#FFEBCD' text='black'>"
-                    + htmlText
-                    + "</body>";
-        }
-        else {
-            setCursor(Cursor.getDefaultCursor());
-            return null;
-        }
+                return "<HTML>"
+                        + "<body bgcolor='#FFEBCD' text='black'>"
+                        + htmlText
+                        + "</body>";
+            }
+            else {
+                setCursor(Cursor.getDefaultCursor());
+                return null;
+            }
     }
 
     public void removeHighlightText() {

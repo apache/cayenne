@@ -48,8 +48,11 @@ public class EJBQLQueryValidator extends TreeNodeValidator {
         if (query.getEjbqlStatement() != null) {
             PositionException message = null;
 
+            EJBQLQuery queryTemp = new EJBQLQuery();
+            queryTemp.setEjbqlStatement(query.getEjbqlStatement());
+            
             try {
-                query.getExpression(dd.getEntityResolver());
+                queryTemp.getExpression(dd.getEntityResolver());
             }
             catch (CayenneRuntimeException e) {
                 message = new PositionException();

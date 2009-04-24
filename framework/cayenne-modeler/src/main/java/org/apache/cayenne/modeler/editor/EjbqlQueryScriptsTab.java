@@ -19,6 +19,9 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -76,7 +79,6 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 catch (BadLocationException e1) {
                     e1.printStackTrace();
                 }
-
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -84,6 +86,42 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 validateEJBQL();
             }
         });
+
+        scriptArea.getPane().addKeyListener(new KeyListener() {
+
+            boolean pasteOrCut;
+
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_END
+                        || e.getKeyCode() == KeyEvent.VK_HOME
+                        || e.getKeyCode() == KeyEvent.VK_LEFT
+                        || e.getKeyCode() == KeyEvent.VK_RIGHT
+                        || e.getKeyCode() == KeyEvent.VK_UP
+                        || e.getKeyCode() == KeyEvent.VK_UNDO) {
+                    getQuery().setEjbqlStatement(scriptArea.getText());
+                    validateEJBQL();
+                }
+                if ((e.getKeyCode() == KeyEvent.VK_V || e.getKeyCode() == KeyEvent.VK_X)
+                        && e.isControlDown()) {
+                    pasteOrCut = true;
+                }
+            }
+
+            public void keyReleased(KeyEvent e) {
+
+                if ((pasteOrCut && e.getKeyCode() == KeyEvent.VK_CONTROL)
+                        || e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    scriptArea.removeHighlightText();
+                    getQuery().setEjbqlStatement(scriptArea.getText());
+                    validateEJBQL();
+                    pasteOrCut = false;
+                }
+            }
+
+            public void keyTyped(KeyEvent e) {
+            }
+        });
+
         setLayout(new BorderLayout());
         add(scriptArea, BorderLayout.WEST);
         add(scriptArea.getScrollPane(), BorderLayout.CENTER);
@@ -99,10 +137,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         }
         scriptArea.setEnabled(true);
         displayScript();
-
         validateEJBQL();
         setVisible(true);
-
     }
 
     EJBQLQuery getQuery() {
@@ -125,6 +161,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         if (query == null) {
             return;
         }
+
         String testTemp = null;
         if (text != null) {
             testTemp = text.trim();
@@ -161,12 +198,10 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         PositionException positionException = ejbqlQueryValidator.validateEJBQL(
                 getQuery(),
                 mediator.getCurrentDataDomain());
-
         if (positionException != null) {
             if (positionException.getBeginLine() != null
                     || positionException.getBeginColumn() != null
                     || positionException.getLength() != null) {
-
                 scriptArea.setHighlightText(
                         positionException.getBeginLine(),
                         positionException.getBeginColumn(),
@@ -177,6 +212,5 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 scriptArea.removeHighlightText();
             }
         }
-
     }
 }

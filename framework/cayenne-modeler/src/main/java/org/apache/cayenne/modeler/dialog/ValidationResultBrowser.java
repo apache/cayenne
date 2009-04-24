@@ -21,10 +21,7 @@
 package org.apache.cayenne.modeler.dialog;
 
 import java.awt.Component;
-import java.util.Iterator;
-
 import javax.swing.WindowConstants;
-
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.validation.ValidationFailure;
