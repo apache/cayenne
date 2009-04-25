@@ -128,4 +128,10 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 
 #end
+##
+##callback methods
+#foreach($cbname in ${entityUtils.callbackNames})
+    protected abstract void ${cbname}();
+
+#end
 }

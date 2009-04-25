@@ -21,13 +21,10 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.MappingNamespace;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.*;
+
+import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Attributes and Methods for working with ObjEntities.
@@ -47,6 +44,8 @@ public class EntityUtils {
     protected DataMap primaryDataMap;
     protected ObjEntity objEntity;
 
+    protected Collection<String> callbackNames;
+
     public EntityUtils(DataMap dataMap, ObjEntity objEntity, String fqnBaseClass,
             String fqnSuperClass, String fqnSubClass) {
 
@@ -62,6 +61,12 @@ public class EntityUtils {
         this.primaryDataMap = dataMap;
 
         this.objEntity = objEntity;
+
+
+        this.callbackNames = new ArrayList<String>();
+        for(CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
+            callbackNames.addAll(cb.getCallbackMethods());
+        }
     }
 
     EntityUtils(DataMap dataMap, ObjEntity objEntity, String baseClassName,
@@ -78,7 +83,13 @@ public class EntityUtils {
         this.primaryDataMap = dataMap;
 
         this.objEntity = objEntity;
+
+        this.callbackNames = new ArrayList<String>();
+        for(CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
+            callbackNames.addAll(cb.getCallbackMethods());
+        }
     }
+
 
     /**
      * Returns class name (without a package) of the sub class associated with this
@@ -321,5 +332,15 @@ public class EntityUtils {
         }
 
         return attribute.getType();
+    }
+
+
+    /**
+     *
+     * @return the list of all callback names registered for the entity.
+     * @since 3.0
+     */
+    public Collection<String> getCallbackNames() {
+        return callbackNames;
     }
 }

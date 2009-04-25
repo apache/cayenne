@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 import org.apache.cayenne.map.*;
@@ -175,6 +176,58 @@ public class ClassGenerationActionTest extends BasicCase {
         }
         assertEquals(2,generated.size());
         assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
+    }
+
+    public void testCallbackMethodGeneration() throws Exception {
+        assertCallbacks(false);
+    }
+
+    
+    public void testClientCallbackMethodGeneration() throws Exception {
+        assertCallbacks(true);
+    }
+
+    private void assertCallbacks(boolean isClient) throws Exception
+    {
+        ObjEntity testEntity1 = new ObjEntity("TE1");
+        testEntity1.setClassName("org.example.TestClass1");
+        int i=0;
+        for(CallbackDescriptor cb : testEntity1.getCallbackMap().getCallbacks()) {
+            cb.addCallbackMethod("cb" + i++);
+        }
+        
+        if (isClient) {
+
+            action = new ClientClassGenerationAction() {
+                @Override
+                protected Writer openWriter(TemplateType templateType) throws Exception {
+                    StringWriter writer = new StringWriter();
+                    writers.add(writer);
+                    return writer;
+                }
+
+            };
+
+        }
+
+        action.setMakePairs(true);
+
+        List<String> generated = execute(new EntityArtifact(testEntity1));
+        assertNotNull(generated);
+        assertEquals(2, generated.size());
+
+        String superclass = generated.get(0);
+
+        assertTrue(superclass, superclass.contains("public abstract class _TestClass1"));
+
+        for(int j=0;j<i;j++) {
+            assertTrue(superclass, superclass.contains("protected abstract void cb" + j + "();"));
+        }
+
+        String subclass = generated.get(1);
+        for(int j=0;j<i;j++) {
+            assertTrue(subclass, subclass.contains("protected void cb" + j + "() {"));
+        }
     }
 
     protected List<String> execute(Artifact artifact) throws Exception {

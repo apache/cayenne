@@ -34,4 +34,12 @@ ${importUtils.generate()}
 
 public#if("true" == "${object.getIsAbstract()}") abstract#end class ${entityUtils.subClassName} extends ${entityUtils.superClassName} {
 
+##callbacks
+#foreach($cbname in ${entityUtils.callbackNames})
+    @Override
+    protected void ${cbname}() {
+        //TODO: implement ${cbname}
+    }
+
+#end 
 }

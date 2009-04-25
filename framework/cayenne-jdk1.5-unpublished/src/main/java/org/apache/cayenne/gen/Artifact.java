@@ -41,6 +41,7 @@ public interface Artifact {
     public static String SUB_PACKAGE_KEY = "subPackageName";
     public static String BASE_CLASS_KEY = "baseClassName";
     public static String BASE_PACKAGE_KEY = "basePackageName";
+    public static String CALLBACK_NAMES_KEY = "callbackNames";
 
     TemplateType[] getTemplateTypes(ArtifactGenerationMode mode);
 
