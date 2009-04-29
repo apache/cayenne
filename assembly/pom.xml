@@ -34,7 +34,7 @@
 	<packaging>pom</packaging>
 	<name>Cayenne Release Assembly</name>
 
-	<description>An assembly of Cayenne into a genericly runnable package.</description>
+	<description>An assembly of Cayenne into a generically runnable package.</description>
 
 	<dependencies>
 
@@ -47,6 +47,12 @@
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-client</artifactId>
+			<version>${version}</version>
+		</dependency>
+
+    <dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-tools</artifactId>
 			<version>${version}</version>
 		</dependency>
 
