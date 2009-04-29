@@ -33,72 +33,121 @@
 	<artifactId>cayenne-tools</artifactId>
 	<packaging>jar</packaging>
 	<name>Cayenne Tools</name>
+  	<dependencies>
+  		<dependency>
+  			<groupId>junit</groupId>
+  			<artifactId>junit</artifactId>
+  		</dependency>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0.9</version>
-		</dependency>
+  		<dependency>
+  			<groupId>commons-collections</groupId>
+  			<artifactId>commons-collections</artifactId>
+  		</dependency>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-artifact</artifactId>
-			<version>2.0.9</version>
-		</dependency>
+  		<dependency>
+  			<groupId>commons-logging</groupId>
+  			<artifactId>commons-logging</artifactId>
+  		</dependency>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>2.0.9</version>
-		</dependency>
+  		<dependency>
+  			<groupId>commons-dbcp</groupId>
+  			<artifactId>commons-dbcp</artifactId>
+  			<scope>compile</scope>
+  		</dependency>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-tools-api</artifactId>
-			<version>2.0.5</version>
-		</dependency>
+  		<dependency>
+  			<groupId>commons-pool</groupId>
+  			<artifactId>commons-pool</artifactId>
+  			<scope>compile</scope>
+  		</dependency>
 
-		<!-- even though the runtime dependency is on 'cayenne-server', 
-			need to mention this one here as to fix the build failure from the parent folder
-		-->
-		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
-			<version>${version}</version>
-			<scope>provided</scope>
-		</dependency>
+  		<dependency>
+  			<groupId>velocity</groupId>
+  			<artifactId>velocity</artifactId>
+  		</dependency>
 
-        <dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
-			<version>${version}</version>
-		</dependency>
+  		<dependency>
+  			<groupId>org.objectstyle.ashwood</groupId>
+  			<artifactId>ashwood</artifactId>
+  		</dependency>
+  		
+  		<dependency>
+  			<groupId>org.apache.cayenne.unpublished</groupId>
+  			<artifactId>cayenne-legal-unpublished</artifactId>
+  			<version>${version}</version>
+  			<scope>provided</scope>
+  		</dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+  		<dependency>
+  			<groupId>org.apache.cayenne.unpublished</groupId>
+  			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
+  			<version>${version}</version>
+  			<scope>provided</scope>
+  		</dependency>
 
-		<dependency>
-			<groupId>foundrylogic.vpp</groupId>
-			<artifactId>vpp</artifactId>
-			<scope>compile</scope>
-		</dependency>
+  		<dependency>
+  			<groupId>ognl</groupId>
+  			<artifactId>ognl</artifactId>
+  		</dependency>
 
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-</project>
+  		<dependency>
+  			<groupId>mockrunner</groupId>
+  			<artifactId>mockrunner</artifactId>
+  		</dependency>
 
+      	<dependency>
+    			<groupId>net.java.dev.inflector</groupId>
+  			  <artifactId>inflector</artifactId>
+  			  <version>0.7.0</version>
+  		</dependency>
+    </dependencies>
+
+  	<build>
+  		<plugins>
+  			<plugin>
+  				<artifactId>maven-remote-resources-plugin</artifactId>
+  				<executions>
+  					<execution>
+  						<goals>
+  							<goal>process</goal>
+  						</goals>
+  						<phase>process-resources</phase>
+  						<configuration>
+  							<outputDirectory>
+  								${project.build.directory}/classes
+  							</outputDirectory>
+  							<resourceBundles>
+  								<resourceBundle>
+  									org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
+  								</resourceBundle>
+  							</resourceBundles>
+  						</configuration>
+  					</execution>
+  				</executions>
+  			</plugin>
+
+  			<plugin>
+  				<groupId>org.apache.maven.plugins</groupId>
+  				<artifactId>maven-compiler-plugin</artifactId>
+  				<configuration>
+  					<source>1.5</source>
+  					<target>1.5</target>
+  				</configuration>
+  			</plugin>
+  			<plugin>
+                                  <groupId>org.apache.maven.plugins</groupId>
+                                  <artifactId>maven-source-plugin</artifactId>
+                                  <executions>
+                                          <execution>
+                                                  <id>bundle-source-jar</id>
+                                                  <phase>package</phase>
+                                                  <goals>
+                                                          <goal>jar</goal>
+                                                  </goals>
+                                          </execution>
+                                  </executions>
+                          </plugin>
+  		</plugins>
+
+  	</build>
+  </project>

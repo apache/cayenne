@@ -67,7 +67,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
     static {
         PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.modeler.util.SmartNamingStrategy");
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.SmartNamingStrategy");
     };
 
     public static final int CANCEL = 0;

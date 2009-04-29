@@ -96,6 +96,12 @@
 			<version>${version}</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-tools</artifactId>
+			<version>${version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>ognl</groupId>
@@ -117,12 +123,6 @@
       		<artifactId>jedit-syntax</artifactId>
       		<version>2.2.2</version>
     	</dependency>
-    	
-    	<dependency>
-  			<groupId>net.java.dev.inflector</groupId>
-			  <artifactId>inflector</artifactId>
-			  <version>0.7.0</version>
-		</dependency>
   </dependencies>
 
 	<build>
