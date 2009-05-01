@@ -17,6 +17,7 @@ Changes/New Features Since M5:
 CAY-289 Implement Quoting of identifiers
 CAY-816 Improve readNestedProperty() to handle to-many relationships in the path.
 CAY-1021 adding a callback method should result in focus on method name
+CAY-1029 maven2 plugin to reverse engineer database
 CAY-1047 Aligning query capabilities
 CAY-1119 Nested contexts on ROP
 CAY-1140 Store ObjEntity name in the DataRow
@@ -33,6 +34,7 @@ CAY-1174 Modeler: support optional meaningful PK mapping during reverse engineer
 CAY-1175 Replace String column name capitalization property with an enum
 CAY-1184 Callback methods should default to usable names
 CAY-1185 Expression API: boolean support in string representation
+CAY-1197 ANT task for reverse engineering
 CAY-1211 Modeler: blown out warning dialogs
 CAY-1214 Class generation should create abstract callback methods in the superclass and stub methods in the subclass
 
