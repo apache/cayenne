@@ -21,17 +21,12 @@ package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.conn.DriverDataSource;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.xml.sax.InputSource;
 
-
-import java.io.File;
 import java.sql.Driver;
 
 /**
@@ -42,13 +37,6 @@ import java.sql.Driver;
  */
 // TODO: support classpath attribute for loading the driver
 public class DbGeneratorTask extends CayenneTask {
-    
-    protected DbAdapter adapter;
-    protected File map;
-    protected String driver;
-    protected String url;
-    protected String userName;
-    protected String password;
 
     // DbGenerator options... setup defaults similar to DbGenerator itself:
     // all DROP set to false, all CREATE - to true
@@ -102,7 +90,7 @@ public class DbGeneratorTask extends CayenneTask {
                 message += ": " + th.getLocalizedMessage();
             }
 
-            super.log(message);
+            log(message, Project.MSG_ERR);
             throw new BuildException(message, th);
         }
         finally{
@@ -134,12 +122,6 @@ public class DbGeneratorTask extends CayenneTask {
         }
     }
 
-    /** Loads and returns DataMap based on <code>map</code> attribute. */
-    protected DataMap loadDataMap() throws Exception {
-        InputSource in = new InputSource(map.getCanonicalPath());
-        return new MapLoader().loadDataMap(in);
-    }
-
     public void setCreateFK(boolean createFK) {
         this.createFK = createFK;
     }
@@ -158,75 +140,5 @@ public class DbGeneratorTask extends CayenneTask {
 
     public void setDropTables(boolean dropTables) {
         this.dropTables = dropTables;
-    }
-
-    /**
-     * Sets the map.
-     * 
-     * @param map The map to set
-     */
-    public void setMap(File map) {
-        this.map = map;
-    }
-
-    /**
-     * Sets the db adapter.
-     * 
-     * @param adapter The db adapter to set.
-     */
-    public void setAdapter(String adapter) {
-        ClassLoader loader = null;
-        if (adapter != null) {
-            // Try to create an instance of the DB adapter.
-            try {
-                loader = Thread.currentThread().getContextClassLoader();
-                Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
-
-                Class<?> c = Util.getJavaClass(adapter);
-                this.adapter = (DbAdapter) c.newInstance();
-            }
-            catch (Exception e) {
-                throw new BuildException("Can't load DbAdapter: " + adapter,e);
-            }
-            finally{
-                Thread.currentThread().setContextClassLoader(loader);
-            }
-        }
-    }
-
-    /**
-     * Sets the JDBC driver used to connect to the database server.
-     * 
-     * @param driver The driver to set.
-     */
-    public void setDriver(String driver) {
-        this.driver = driver;
-    }
-
-    /**
-     * Sets the JDBC URL used to connect to the database server.
-     * 
-     * @param url The url to set.
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    /**
-     * Sets the username used to connect to the database server.
-     * 
-     * @param username The username to set.
-     */
-    public void setUserName(String username) {
-        this.userName = username;
-    }
-
-    /**
-     * Sets the password used to connect to the database server.
-     * 
-     * @param password The password to set.
-     */
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
