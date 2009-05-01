@@ -104,7 +104,7 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * The default is a basic naming strategy.
      *
-     * @parameter expression="${cdbimport.namingStrategy}"
+     * @parameter expression="${cdbimport.namingStrategy}" default-value="org.apache.cayenne.map.naming.SmartNamingStrategy"
      */
     private String namingStrategy;
 
