@@ -10,6 +10,7 @@ import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.util.Util;
@@ -157,8 +158,6 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private File mapFile;
 
-    private List<ObjEntity> addedObjEntities = new ArrayList<ObjEntity>();
-
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         logger = new MavenLogger(this);
@@ -176,7 +175,8 @@ public class DbImporterMojo extends AbstractMojo {
             DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url, username, password);
 
             // Load the data map and run the db importer.
-            final DbLoader loader = new DbLoader(dataSource.getConnection(), adapterInst, new LoaderDelegate());
+            final LoaderDelegate loaderDelegate = new LoaderDelegate();
+            final DbLoader loader = new DbLoader(dataSource.getConnection(), adapterInst, loaderDelegate);
             loader.setCreatingMeaningfulPK(meaningfulPk);
 
             if (namingStrategy != null) {
@@ -188,7 +188,7 @@ public class DbImporterMojo extends AbstractMojo {
             final DataMap dataMap = mapFile.exists() ? loadDataMap() : new DataMap();
             loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
 
-            for (ObjEntity addedObjEntity : addedObjEntities) {
+            for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
                     DeleteRuleUpdater.updateObjEntity(addedObjEntity);
                 }
 
@@ -215,31 +215,30 @@ public class DbImporterMojo extends AbstractMojo {
         }
     }
 
-    final class LoaderDelegate implements DbLoaderDelegate {
-
+    final class LoaderDelegate extends AbstractDbLoaderDelegate {
+       
         public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
             return overwriteExisting;
         }
 
         public void dbEntityAdded(final DbEntity ent) {
+            super.dbEntityAdded(ent);
             logger.info("Added DB entity: " + ent.getName());
-            ent.getDataMap().addDbEntity(ent);
         }
 
         public void dbEntityRemoved(final DbEntity ent) {
+            super.dbEntityRemoved(ent);
             logger.info("Removed DB entity: " + ent.getName());
-            ent.getDataMap().removeDbEntity(ent.getName());
         }
 
         public void objEntityAdded(final ObjEntity ent) {
+            super.objEntityAdded(ent);
             logger.info("Added obj entity: " + ent.getName());
-            addedObjEntities.add(ent);
-            ent.getDataMap().addObjEntity(ent);
         }
 
         public void objEntityRemoved(final ObjEntity ent) {
+            super.objEntityRemoved(ent);
             logger.info("Removed obj entity: " + ent.getName());
-            ent.getDataMap().removeObjEntity(ent.getName());
         }
     }
 
