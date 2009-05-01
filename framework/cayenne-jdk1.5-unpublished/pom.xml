@@ -109,16 +109,16 @@
 			<artifactId>smackx</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>foundrylogic.vpp</groupId>
-			<artifactId>vpp</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>oscache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
+		</dependency>
+        <dependency>
+			<groupId>oro</groupId>
+			<artifactId>oro</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -237,6 +237,17 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.cayenne.build-tools</groupId>
 				<artifactId>maven-cayenne-build-plugin</artifactId>

@@ -19,140 +19,169 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<artifactId>cayenne-parent</artifactId>
-		<groupId>org.apache.cayenne</groupId>
-		<version>3.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <artifactId>cayenne-parent</artifactId>
+        <groupId>org.apache.cayenne</groupId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cayenne-tools</artifactId>
-	<packaging>jar</packaging>
-	<name>Cayenne Tools</name>
-  	<dependencies>
-  		<dependency>
-  			<groupId>junit</groupId>
-  			<artifactId>junit</artifactId>
-  		</dependency>
+    <artifactId>cayenne-tools</artifactId>
+    <packaging>jar</packaging>
+    <name>Cayenne Tools</name>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
 
         <dependency>
-			<groupId>ant</groupId>
-			<artifactId>ant</artifactId>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>velocity</groupId>
+            <artifactId>velocity</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.objectstyle.ashwood</groupId>
+            <artifactId>ashwood</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cayenne.unpublished</groupId>
+            <artifactId>cayenne-legal-unpublished</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cayenne.unpublished</groupId>
+            <artifactId>cayenne-jdk1.5-unpublished</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>foundrylogic.vpp</groupId>
+            <artifactId>vpp</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mockrunner</groupId>
+            <artifactId>mockrunner</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.java.dev.inflector</groupId>
+            <artifactId>inflector</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cayenne.unpublished</groupId>
+            <artifactId>cayenne-jdk1.5-unpublished</artifactId>
+            <version>${version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+        
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
 		</dependency>
 
-  		<dependency>
-  			<groupId>commons-collections</groupId>
-  			<artifactId>commons-collections</artifactId>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>commons-logging</groupId>
-  			<artifactId>commons-logging</artifactId>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>commons-dbcp</groupId>
-  			<artifactId>commons-dbcp</artifactId>
-  			<scope>compile</scope>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>commons-pool</groupId>
-  			<artifactId>commons-pool</artifactId>
-  			<scope>compile</scope>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>velocity</groupId>
-  			<artifactId>velocity</artifactId>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>org.objectstyle.ashwood</groupId>
-  			<artifactId>ashwood</artifactId>
-  		</dependency>
-  		
-  		<dependency>
-  			<groupId>org.apache.cayenne.unpublished</groupId>
-  			<artifactId>cayenne-legal-unpublished</artifactId>
-  			<version>${version}</version>
-  			<scope>provided</scope>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>org.apache.cayenne.unpublished</groupId>
-  			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
-  			<version>${version}</version>
-  			<scope>provided</scope>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>ognl</groupId>
-  			<artifactId>ognl</artifactId>
-  		</dependency>
-
-  		<dependency>
-  			<groupId>mockrunner</groupId>
-  			<artifactId>mockrunner</artifactId>
-  		</dependency>
-
-      	<dependency>
-    			<groupId>net.java.dev.inflector</groupId>
-  			  <artifactId>inflector</artifactId>
-  			  <version>0.7.0</version>
-  		</dependency>
+        <dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
-  	<build>
-  		<plugins>
-  			<plugin>
-  				<artifactId>maven-remote-resources-plugin</artifactId>
-  				<executions>
-  					<execution>
-  						<goals>
-  							<goal>process</goal>
-  						</goals>
-  						<phase>process-resources</phase>
-  						<configuration>
-  							<outputDirectory>
-  								${project.build.directory}/classes
-  							</outputDirectory>
-  							<resourceBundles>
-  								<resourceBundle>
-  									org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
-  								</resourceBundle>
-  							</resourceBundles>
-  						</configuration>
-  					</execution>
-  				</executions>
-  			</plugin>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/classes
+                            </outputDirectory>
+                            <resourceBundles>
+                                <resourceBundle>
+                                    org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
+                                </resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-  			<plugin>
-  				<groupId>org.apache.maven.plugins</groupId>
-  				<artifactId>maven-compiler-plugin</artifactId>
-  				<configuration>
-  					<source>1.5</source>
-  					<target>1.5</target>
-  				</configuration>
-  			</plugin>
-  			<plugin>
-                                  <groupId>org.apache.maven.plugins</groupId>
-                                  <artifactId>maven-source-plugin</artifactId>
-                                  <executions>
-                                          <execution>
-                                                  <id>bundle-source-jar</id>
-                                                  <phase>package</phase>
-                                                  <goals>
-                                                          <goal>jar</goal>
-                                                  </goals>
-                                          </execution>
-                                  </executions>
-                          </plugin>
-  		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-source-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
 
-  	</build>
-  </project>
+    </build>
+</project>
