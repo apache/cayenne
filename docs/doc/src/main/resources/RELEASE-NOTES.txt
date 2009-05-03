@@ -60,6 +60,7 @@ CAY-1194 problems with relationships when using nested contexts and ROP
 CAY-1196 CayenneRuntimeException in modeler due to ClassNotFoundException when java type is invalid and db attribute is null
 CAY-1204 Incorrect relationship syncing in nested CayenneContext's
 CAY-1207 Oracle8 does not like new join syntax
+CAY-1217 Project tree loses focus when traversing a list of entities with the keyboard
 
 ----------------------------------
 Release: 3.0M5

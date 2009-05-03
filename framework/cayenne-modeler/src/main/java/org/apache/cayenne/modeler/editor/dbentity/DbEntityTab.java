@@ -194,7 +194,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         }
 
         if (!e.isEntityChanged()) {
-            name.getComponent().requestFocusInWindow();
+            //name.getComponent().requestFocusInWindow();
             return;
         }
 
@@ -223,7 +223,6 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         pkGeneratorType.setSelectedItem(type);
         pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
 
-        name.getComponent().requestFocusInWindow();
     }
 
     void setEntityName(String newName) {

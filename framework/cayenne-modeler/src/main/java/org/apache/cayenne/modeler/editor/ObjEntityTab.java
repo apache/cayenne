@@ -635,7 +635,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         }
 
         initFromModel(entity);
-        name.getComponent().requestFocusInWindow();
     }
     
     private List<ObjAttribute> getDuplicatedAttributes(ObjEntity superEntity) {
