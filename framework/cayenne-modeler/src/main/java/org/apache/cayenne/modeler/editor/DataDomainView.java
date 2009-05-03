@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
@@ -25,13 +24,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
+import org.apache.cayenne.cache.MapQueryCacheFactory;
+import org.apache.cayenne.cache.OSQueryCacheFactory;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.map.event.DomainEvent;
 import org.apache.cayenne.modeler.Application;
@@ -55,6 +58,10 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class DataDomainView extends JPanel implements DomainDisplayListener {
 
+    final static String[] QUERY_CACHE_FACTORIES = new String[] {
+            MapQueryCacheFactory.class.getName(), OSQueryCacheFactory.class.getName()
+    };
+
     protected ProjectController projectController;
 
     protected TextAdapter name;
@@ -62,6 +69,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     protected JCheckBox objectValidation;
     protected JCheckBox externalTransactions;
     protected TextAdapter dataContextFactory;
+    protected JComboBox queryCacheFactory;
     protected JCheckBox sharedCache;
     protected JCheckBox remoteUpdates;
     protected JButton configRemoteUpdates;
@@ -103,6 +111,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         this.objectValidation = new JCheckBox();
         this.externalTransactions = new JCheckBox();
 
+        this.queryCacheFactory = new JComboBox();
+
         this.sharedCache = new JCheckBox();
         this.remoteUpdates = new JCheckBox();
         this.configRemoteUpdates = new JButton("Configure...");
@@ -112,7 +122,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, fill:50dlu, 3dlu, fill:47dlu, 3dlu, fill:100",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
@@ -129,17 +139,20 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
         builder.addLabel("Container-Managed Transactions:", cc.xy(1, 9));
         builder.add(externalTransactions, cc.xy(3, 9));
-        
+
         builder.addSeparator("Cache Configuration", cc.xywh(1, 11, 7, 1));
-        builder.addLabel("Max. Number of Objects:", cc.xy(1, 13));
-        builder.add(cacheSize.getComponent(), cc.xy(3, 13));
+        builder.addLabel("Query Cache Factory:", cc.xy(1, 13));
+        builder.add(queryCacheFactory, cc.xywh(3, 13, 5, 1));
 
-        builder.addLabel("Use Shared Cache:", cc.xy(1, 15));
-        builder.add(sharedCache, cc.xy(3, 15));
+        builder.addLabel("Size of Object Cache:", cc.xy(1, 15));
+        builder.add(cacheSize.getComponent(), cc.xy(3, 15));
 
-        builder.addLabel("Remote Change Notifications:", cc.xy(1, 17));
-        builder.add(remoteUpdates, cc.xy(3, 17));
-        builder.add(configRemoteUpdates, cc.xy(7, 17));
+        builder.addLabel("Use Shared Cache:", cc.xy(1, 17));
+        builder.add(sharedCache, cc.xy(3, 17));
+
+        builder.addLabel("Remote Change Notifications:", cc.xy(1, 19));
+        builder.add(remoteUpdates, cc.xy(3, 19));
+        builder.add(configRemoteUpdates, cc.xy(7, 19));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -147,6 +160,19 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
     protected void initController() {
         projectController.addDomainDisplayListener(this);
+
+        queryCacheFactory.setEditable(true);
+        queryCacheFactory.setModel(new DefaultComboBoxModel(QUERY_CACHE_FACTORIES));
+
+        queryCacheFactory.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                setDomainProperty(
+                        DataDomain.QUERY_CACHE_FACTORY_PROPERTY,
+                        (String) queryCacheFactory.getModel().getSelectedItem(),
+                        MapQueryCacheFactory.class.getName());
+            }
+        });
 
         // add action listener to checkboxes
         objectValidation.addActionListener(new ActionListener() {
@@ -187,7 +213,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
                 if (!sharedCache.isSelected()) {
                     // uncheck remote updates...
                     remoteUpdates.setSelected(false);
-                    
+
                     setDomainProperty(
                             DataRowStore.REMOTE_NOTIFICATION_PROPERTY,
                             "false",
@@ -305,6 +331,10 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         remoteUpdates.setEnabled(sharedCache.isSelected());
         configRemoteUpdates.setEnabled(remoteUpdates.isEnabled()
                 && remoteUpdates.isSelected());
+
+        queryCacheFactory.setSelectedItem(getDomainProperty(
+                DataDomain.QUERY_CACHE_FACTORY_PROPERTY,
+                MapQueryCacheFactory.class.getName()));
     }
 
     void setDomainName(String newName) {

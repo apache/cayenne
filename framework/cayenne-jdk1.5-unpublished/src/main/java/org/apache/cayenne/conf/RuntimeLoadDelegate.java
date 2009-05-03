@@ -117,7 +117,9 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         views.put(name, location);
     }
 
-    public void shouldLoadDataDomainProperties(String domainName, Map properties) {
+    public void shouldLoadDataDomainProperties(
+            String domainName,
+            Map<String, String> properties) {
         if (properties == null || properties.isEmpty()) {
             return;
         }
@@ -315,7 +317,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         catch (ClassNotFoundException e) {
             logger.info("Error: ", e);
         }
-        
+
         // load DataSource
         try {
 

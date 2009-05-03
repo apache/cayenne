@@ -51,7 +51,6 @@ import org.apache.commons.collections.Transformer;
  * source abstraction hiding multiple physical data sources from the user. When a child
  * DataContext sends a query to the DataDomain, it is transparently routed to an
  * appropriate DataNode.
- * 
  */
 public class DataDomain implements QueryEngine, DataChannel {
 
@@ -88,7 +87,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Properties configured for DataDomain. These include properties of the DataRowStore
      * and remote notifications.
      */
-    protected Map properties = Collections.synchronizedMap(new TreeMap());
+    protected Map<String, String> properties = Collections.synchronizedMap(new TreeMap<String, String>());
 
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
@@ -212,50 +211,48 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @since 1.1
      */
-    public void initWithProperties(Map properties) {
+    public void initWithProperties(Map<String, String> properties) {
         // create map with predictable modification and synchronization behavior
-        Map localMap = new HashMap();
+        Map<String, String> localMap = new HashMap<String, String>();
         if (properties != null) {
             localMap.putAll(properties);
         }
 
         this.properties = localMap;
 
-        Object sharedCacheEnabled = localMap.get(SHARED_CACHE_ENABLED_PROPERTY);
-        Object validatingObjectsOnCommit = localMap
+        String sharedCacheEnabled = localMap.get(SHARED_CACHE_ENABLED_PROPERTY);
+        String validatingObjectsOnCommit = localMap
                 .get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);
-        Object usingExternalTransactions = localMap
+        String usingExternalTransactions = localMap
                 .get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
 
-        Object dataContextFactory = localMap.get(DATA_CONTEXT_FACTORY_PROPERTY);
-        Object queryCacheFactory = localMap.get(QUERY_CACHE_FACTORY_PROPERTY);
+        String dataContextFactory = localMap.get(DATA_CONTEXT_FACTORY_PROPERTY);
+        String queryCacheFactoryName = localMap.get(QUERY_CACHE_FACTORY_PROPERTY);
 
         // init ivars from properties
-        this.sharedCacheEnabled = (sharedCacheEnabled != null)
-                ? "true".equalsIgnoreCase(sharedCacheEnabled.toString())
-                : SHARED_CACHE_ENABLED_DEFAULT;
+        this.sharedCacheEnabled = (sharedCacheEnabled != null) ? "true"
+                .equalsIgnoreCase(sharedCacheEnabled) : SHARED_CACHE_ENABLED_DEFAULT;
         this.validatingObjectsOnCommit = (validatingObjectsOnCommit != null)
-                ? "true".equalsIgnoreCase(validatingObjectsOnCommit.toString())
+                ? "true".equalsIgnoreCase(validatingObjectsOnCommit)
                 : VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
         this.usingExternalTransactions = (usingExternalTransactions != null)
-                ? "true".equalsIgnoreCase(usingExternalTransactions.toString())
+                ? "true".equalsIgnoreCase(usingExternalTransactions)
                 : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
 
-        if (dataContextFactory != null
-                && !Util.isEmptyString(dataContextFactory.toString())) {
-            this.dataContextFactory = (DataContextFactory) createInstance(
-                    dataContextFactory.toString(),
+        if (dataContextFactory != null && !Util.isEmptyString(dataContextFactory)) {
+            this.dataContextFactory = createInstance(
+                    dataContextFactory,
                     DataContextFactory.class);
         }
         else {
             this.dataContextFactory = null;
         }
 
-        if (queryCacheFactory != null
+        if (queryCacheFactoryName != null
                 && dataContextFactory != null
-                && !Util.isEmptyString(dataContextFactory.toString())) {
+                && !Util.isEmptyString(dataContextFactory)) {
             queryCacheFactory = createInstance(
-                    queryCacheFactory.toString(),
+                    queryCacheFactoryName,
                     QueryCacheFactory.class);
         }
         else {
@@ -263,7 +260,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
     }
 
-    private Object createInstance(String className, Class<?> implementedInterface) {
+    private <T> T createInstance(String className, Class<T> implementedInterface) {
         Class<?> aClass;
         try {
             aClass = Class.forName(className, true, Thread
@@ -282,7 +279,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
 
         try {
-            return aClass.newInstance();
+            return (T) aClass.newInstance();
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error instantiating " + className, e);
@@ -330,9 +327,9 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Returns <code>true</code> if DataContexts produced by this DataDomain are using
-     * shared DataRowStore. Returns <code>false</code> if each DataContext would work
-     * with its own DataRowStore. Note that this setting can be overwritten per
-     * DataContext. See {@link #createDataContext(boolean)}.
+     * shared DataRowStore. Returns <code>false</code> if each DataContext would work with
+     * its own DataRowStore. Note that this setting can be overwritten per DataContext.
+     * See {@link #createDataContext(boolean)}.
      */
     public boolean isSharedCacheEnabled() {
         return sharedCacheEnabled;
@@ -387,7 +384,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @return a Map of properties for this DataDomain. There is no guarantees of specific
      *         synchronization behavior of this map.
      */
-    public Map getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
@@ -898,7 +895,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns shared {@link QueryCache} used by this DataDomain, creating it on the fly
      * if needed. Uses factory obtained via {@link #getQueryCacheFactory()} to initialize
-     * the cache for the first time.
+     * the cache for the first time. This domain properties are passed to the
+     * {@link QueryCacheFactory#getQueryCache(Map)} method.
      * 
      * @since 3.0
      */
@@ -907,8 +905,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         if (queryCache == null) {
             synchronized (this) {
                 if (queryCache == null) {
-                    queryCache = getQueryCacheFactory().getQueryCache(
-                            Collections.EMPTY_MAP);
+                    queryCache = getQueryCacheFactory().getQueryCache(getProperties());
                 }
             }
         }

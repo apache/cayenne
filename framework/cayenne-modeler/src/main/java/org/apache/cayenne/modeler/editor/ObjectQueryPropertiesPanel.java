@@ -54,7 +54,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "right:max(80dlu;pref), 3dlu, left:max(50dlu;pref), fill:max(150dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
@@ -62,14 +62,16 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
 
         builder.addLabel("Result Caching:", cc.xy(1, 3));
         builder.add(cacheStrategy, cc.xywh(3, 3, 2, 1));
-        builder.addLabel("Fetch Data Rows:", cc.xy(1, 7));
-        builder.add(dataRows, cc.xy(3, 7));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 9));
-        builder.add(fetchOffset.getComponent(), cc.xy(3, 9));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 11));
-        builder.add(fetchLimit.getComponent(), cc.xy(3, 11));
-        builder.addLabel("Page Size:", cc.xy(1, 13));
-        builder.add(pageSize.getComponent(), cc.xy(3, 13));
+        cacheGroupsLabel = builder.addLabel("Cache Groups:", cc.xy(1, 7));
+        builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 2, 1));
+        builder.addLabel("Fetch Data Rows:", cc.xy(1, 9));
+        builder.add(dataRows, cc.xy(3, 9));
+        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));
+        builder.add(fetchOffset.getComponent(), cc.xy(3, 11));
+        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 13));
+        builder.add(fetchLimit.getComponent(), cc.xy(3, 13));
+        builder.addLabel("Page Size:", cc.xy(1, 15));
+        builder.add(pageSize.getComponent(), cc.xy(3, 15));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);

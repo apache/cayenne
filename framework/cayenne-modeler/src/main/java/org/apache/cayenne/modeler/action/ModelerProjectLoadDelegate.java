@@ -62,13 +62,15 @@ class ModelerProjectLoadDelegate extends RuntimeLoadDelegate {
         }
     }
 
-    public void shouldLoadDataDomainProperties(String domainName, Map properties) {
+    public void shouldLoadDataDomainProperties(
+            String domainName,
+            Map<String, String> properties) {
 
-        // remove factory property to avoid instatiation attempts for unknown/invalid
+        // remove factory property to avoid instantiation attempts for unknown/invalid
         // classes
 
-        Map propertiesClone = new HashMap(properties);
-        Object dataContextFactory = propertiesClone
+        Map<String, String> propertiesClone = new HashMap<String, String>(properties);
+        String dataContextFactory = propertiesClone
                 .remove(DataDomain.DATA_CONTEXT_FACTORY_PROPERTY);
 
         super.shouldLoadDataDomainProperties(domainName, propertiesClone);

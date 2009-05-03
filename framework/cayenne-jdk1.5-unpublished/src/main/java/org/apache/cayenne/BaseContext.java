@@ -44,21 +44,21 @@ import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
- *
+ * 
  * @since 3.0
  */
 public abstract class BaseContext implements ObjectContext, DataChannel {
 
     /**
      * A holder of a ObjectContext bound to the current thread.
-     *
+     * 
      * @since 3.0
      */
     protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<ObjectContext>();
 
     /**
      * Returns the ObjectContext bound to the current thread.
-     *
+     * 
      * @since 3.0
      * @return the ObjectContext associated with caller thread.
      * @throws IllegalStateException if there is no ObjectContext bound to the current
@@ -75,10 +75,10 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Binds a ObjectContext to the current thread. ObjectContext can later be retrieved by
-     * users in the same thread by calling {@link BaseContext#getThreadObjectContext}.
+     * Binds a ObjectContext to the current thread. ObjectContext can later be retrieved
+     * by users in the same thread by calling {@link BaseContext#getThreadObjectContext}.
      * Using null parameter will unbind currently bound ObjectContext.
-     *
+     * 
      * @since 3.0
      */
     public static void bindThreadObjectContext(ObjectContext context) {
@@ -92,7 +92,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     /**
      * Stores user defined properties associated with this DataContext.
-     *
+     * 
      * @since 3.0
      */
     protected Map<String, Object> userProperties;
@@ -255,7 +255,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * Returns {@link QueryCache}, creating it on the fly if needed.
      */
-    public synchronized QueryCache getQueryCache() {
+    public QueryCache getQueryCache() {
         if (queryCache == null) {
             synchronized (this) {
                 if (queryCache == null) {
@@ -272,13 +272,13 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * Sets a QueryCache to be used for storing cached query results.
      */
-    public synchronized void setQueryCache(QueryCache queryCache) {
+    public void setQueryCache(QueryCache queryCache) {
         this.queryCache = queryCache;
     }
 
     /**
      * Returns EventManager associated with the ObjectStore.
-     *
+     * 
      * @since 1.2
      */
     public EventManager getEventManager() {
@@ -354,7 +354,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     /**
      * Returns a map of user-defined properties associated with this DataContext.
-     *
+     * 
      * @since 3.0
      */
     protected Map<String, Object> getUserProperties() {
@@ -370,7 +370,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * Returns a user-defined property previously set via 'setUserProperty'. Note that it
      * is a caller responsibility to synchronize access to properties.
-     *
+     * 
      * @since 3.0
      */
     public Object getUserProperty(String key) {
@@ -380,7 +380,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * Sets a user-defined property. Note that it is a caller responsibility to
      * synchronize access to properties.
-     *
+     * 
      * @since 3.0
      */
     public void setUserProperty(String key, Object value) {

@@ -24,11 +24,13 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -76,6 +78,8 @@ public abstract class SelectPropertiesPanel extends JPanel {
     protected TextAdapter fetchLimit;
     protected TextAdapter pageSize;
     protected JComboBox cacheStrategy;
+    protected TextAdapter cacheGroups;
+    protected JComponent cacheGroupsLabel;
 
     protected ProjectController mediator;
 
@@ -92,7 +96,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 setFetchOffset(text);
             }
         };
-        
+
         fetchLimit = new TextAdapter(new JTextField(7)) {
 
             protected void updateModel(String text) {
@@ -109,14 +113,24 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
         cacheStrategy = CayenneWidgetFactory.createComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
+        cacheGroups = new TextAdapter(new JTextField()) {
+
+            protected void updateModel(String text) {
+                setCacheGroups(text);
+            }
+        };
     }
 
     protected void initController() {
         cacheStrategy.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                Object strategy = cacheStrategy.getModel().getSelectedItem();
+                QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy
+                        .getModel()
+                        .getSelectedItem();
                 setQueryProperty("cacheStrategy", strategy);
+                setCacheGroupsEnabled(strategy != null
+                        && strategy != QueryCacheStrategy.NO_CACHE);
             }
         });
     }
@@ -138,11 +152,33 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 : QueryCacheStrategy.getDefaultStrategy());
         cacheStrategy.setModel(cacheModel);
 
+        String[] cacheGroupsArray = query.getMetaData(resolver).getCacheGroups();
+        cacheGroups.setText(toCacheGroupsString(cacheGroupsArray));
+        setCacheGroupsEnabled(selectedStrategy != null
+                && selectedStrategy != QueryCacheStrategy.NO_CACHE);
+
         fetchOffset.setText(String.valueOf(query.getMetaData(resolver).getFetchOffset()));
         fetchLimit.setText(String.valueOf(query.getMetaData(resolver).getFetchLimit()));
         pageSize.setText(String.valueOf(query.getMetaData(resolver).getPageSize()));
     }
-    
+
+    protected String toCacheGroupsString(String[] groups) {
+
+        StringBuilder buffer = new StringBuilder();
+        if (groups != null && groups.length > 0) {
+
+            for (int i = 0; i < groups.length; i++) {
+                if (i > 0) {
+                    buffer.append(", ");
+                }
+
+                buffer.append(groups[i]);
+            }
+        }
+
+        return buffer.toString();
+    }
+
     void setFetchOffset(String string) {
         string = (string == null) ? "" : string.trim();
 
@@ -154,7 +190,8 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 setQueryProperty("fetchOffset", new Integer(string));
             }
             catch (NumberFormatException nfex) {
-                throw new ValidationException("Fetch offset must be an integer: " + string);
+                throw new ValidationException("Fetch offset must be an integer: "
+                        + string);
             }
         }
     }
@@ -191,6 +228,18 @@ public abstract class SelectPropertiesPanel extends JPanel {
         }
     }
 
+    void setCacheGroups(String string) {
+        string = (string == null) ? "" : string.trim();
+
+        StringTokenizer toks = new StringTokenizer(string, ", \t");
+        String[] cacheGroups = new String[toks.countTokens()];
+        for (int i = 0; i < cacheGroups.length; i++) {
+            cacheGroups[i] = toks.nextToken();
+        }
+
+        setQueryProperty("cacheGroups", cacheGroups);
+    }
+
     Query getQuery() {
         return mediator.getCurrentQuery();
     }
@@ -204,6 +253,11 @@ public abstract class SelectPropertiesPanel extends JPanel {
         for (Component child : children) {
             child.setEnabled(flag);
         }
+    }
+
+    protected void setCacheGroupsEnabled(boolean enabled) {
+        cacheGroups.getComponent().setEnabled(enabled);
+        cacheGroupsLabel.setEnabled(enabled);
     }
 
     void setQueryProperty(String property, Object value) {

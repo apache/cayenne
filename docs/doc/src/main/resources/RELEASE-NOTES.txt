@@ -38,6 +38,7 @@ CAY-1197 ANT task for reverse engineering
 CAY-1211 Modeler: blown out warning dialogs
 CAY-1214 Class generation should create abstract callback methods in the superclass and stub methods in the subclass
 CAY-1215 Move tool-like items into new cayenne-tools module
+CAY-1218 Query caching loose ends
 
 Bug Fixes Since M5:
 

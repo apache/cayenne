@@ -25,6 +25,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
+import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.conf.Configuration;
@@ -106,7 +108,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Returns the DataContext bound to the current thread.
-     *
+     * 
      * @since 1.1
      * @return the DataContext associated with caller thread.
      * @throws IllegalStateException if there is no DataContext bound to the current
@@ -123,7 +125,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Binds a DataContext to the current thread. DataContext can later be retrieved by
      * users in the same thread by calling {@link DataContext#getThreadDataContext}. Using
      * null parameter will unbind currently bound DataContext.
-     *
+     * 
      * @since 1.1
      * @deprecated since 3.0, replaced by BaseContex#getThreadObjectContext().
      */
@@ -149,7 +151,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * {@link DataContext#createDataContext(String, boolean)} must be used instead.
      * ObjectStore associated with newly created DataContext will have a cache stack
      * configured according to the specified policy, overriding a parent domain setting.
-     *
+     * 
      * @since 1.1
      */
     public static DataContext createDataContext(boolean useSharedCache) {
@@ -174,7 +176,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Creates and returns new DataContext that will use a named DataDomain as its parent.
      * ObjectStore associated with newly created DataContext will have a cache stack
      * configured according to the specified policy, overriding a parent domain setting.
-     *
+     * 
      * @since 1.1
      */
     public static DataContext createDataContext(String domainName, boolean useSharedCache) {
@@ -195,7 +197,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Creates a new DataContext with parent DataChannel and ObjectStore.
-     *
+     * 
      * @since 1.2
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
@@ -218,15 +220,21 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Returns {@link QueryCache} used by this DataContext, creating it on the fly if
      * needed. Uses parent DataDomain {@link QueryCacheFactory} to initialize the cache
-     * for the first time.
-     *
+     * for the first time, passing parent DataDomain's properties.
+     * 
      * @since 3.0
      */
     @Override
-    public synchronized QueryCache getQueryCache() {
+    public QueryCache getQueryCache() {
         if (queryCache == null) {
-            queryCache = getParentDataDomain().getQueryCacheFactory().getQueryCache(
-                    Collections.EMPTY_MAP);
+            synchronized (this) {
+                if (queryCache == null) {
+
+                    DataDomain domain = getParentDataDomain();
+                    queryCache = domain.getQueryCacheFactory().getQueryCache(
+                            domain.getProperties());
+                }
+            }
         }
 
         return queryCache;
@@ -234,7 +242,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Creates and returns a new child ObjectContext.
-     *
+     * 
      * @since 3.0
      */
     public ObjectContext createChildContext() {
@@ -243,7 +251,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Creates and returns a new child DataContext.
-     *
+     * 
      * @since 1.2
      * @deprecated since 3.0 use {@link #createChildContext()}.
      */
@@ -317,7 +325,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a DataDomain used by this DataContext. DataDomain is looked up in the
      * DataChannel hierarchy. If a channel is not a DataDomain or a DataContext, null is
      * returned.
-     *
+     * 
      * @return DataDomain that is a direct or indirect parent of this DataContext in the
      *         DataChannel hierarchy.
      * @since 1.1
@@ -347,7 +355,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Sets a DataContextDelegate for this context. Delegate is notified of certain events
      * in the DataContext lifecycle and can customize DataContext behavior.
-     *
+     * 
      * @since 1.1
      */
     public void setDelegate(DataContextDelegate delegate) {
@@ -356,7 +364,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Returns a delegate currently associated with this DataContext.
-     *
+     * 
      * @since 1.1
      */
     public DataContextDelegate getDelegate() {
@@ -417,7 +425,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Returns a collection of all uncommitted registered objects.
-     *
+     * 
      * @since 1.2
      */
     @Override
@@ -454,7 +462,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * temporary ids. DO NOT USE this method if you expect a DataRow to represent a
      * complete object state.
      * </p>
-     *
+     * 
      * @since 1.1
      */
     public DataRow currentSnapshot(final Persistent object) {
@@ -561,7 +569,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Converts a list of data rows to a list of DataObjects.
-     *
+     * 
      * @since 1.1
      * @deprecated since 3.0 as refreshing and resolvingInheritanceHierarchy flags are
      *             deprecated. Use {@link #objectsFromDataRows(ClassDescriptor, List)}
@@ -582,7 +590,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Converts a list of DataRows to a List of DataObject registered with this
      * DataContext.
-     *
+     * 
      * @since 3.0
      */
     public List objectsFromDataRows(
@@ -595,7 +603,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Converts a list of DataRows to a List of DataObject registered with this
      * DataContext.
-     *
+     * 
      * @deprecated since 3.0 as refresh and resolveInheritanceHierarchy flags are
      *             deprecated. Use {@link #objectsFromDataRows(ClassDescriptor, List)}
      *             instead.
@@ -621,7 +629,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Creates a DataObject from DataRow.
-     *
+     * 
      * @see DataRow
      */
     public <T extends DataObject> T objectFromDataRow(
@@ -644,7 +652,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Creates a DataObject from DataRow. This variety of the 'objectFromDataRow' method
      * is normally used for generic classes.
-     *
+     * 
      * @see DataRow
      * @since 3.0
      */
@@ -669,7 +677,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Creates and registers a new persistent object.
-     *
+     * 
      * @since 1.2
      */
     @Override
@@ -693,7 +701,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * <p/>
      * <i>Note: in most cases {@link #newObject(Class)} method should be used, however
      * this method is helpful when generic persistent classes are used.</i>
-     *
+     * 
      * @since 3.0
      */
     public Persistent newObject(String entityName) {
@@ -734,7 +742,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Instantiates new object and registers it with itself. Object class must have a
      * default constructor.
-     *
+     * 
      * @since 1.1
      * @deprecated since 3.0, use {@link #newObject(Class)} instead.
      */
@@ -759,7 +767,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * <p/>
      * <i>Note that since 3.0 this method takes Object as an argument instead of a
      * {@link DataObject}.</i>
-     *
+     * 
      * @param object new object that needs to be made persistent.
      */
     @Override
@@ -872,7 +880,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Unregisters a Collection of DataObjects from the DataContext and the underlying
      * ObjectStore. This operation also unsets DataContext and ObjectId for each object
      * and changes its state to TRANSIENT.
-     *
+     * 
      * @see #invalidateObjects(Collection)
      */
     public void unregisterObjects(Collection dataObjects) {
@@ -890,7 +898,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * to-many relationship with nullify delete rule may result in objects being removed
      * from collection.
      * </p>
-     *
+     * 
      * @since 1.2
      */
     public void deleteObjects(Collection objects) {
@@ -910,7 +918,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * persistence state is changed to PersistenceState.DELETED; objects related to this
      * object are processed according to delete rules, i.e. relationships can be unset
      * ("nullify" rule), deletion operation is cascaded (cascade rule).
-     *
+     * 
      * @param object a persistent object that we want to delete.
      * @throws DeleteDenyException if a DENY delete rule is applicable for object
      *             deletion.
@@ -925,7 +933,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Refetches object data for ObjectId. This method is used internally by Cayenne to
      * resolve objects in state <code>PersistenceState.HOLLOW</code>. It can also be used
      * to refresh certain objects.
-     *
+     * 
      * @throws CayenneRuntimeException if object id doesn't match any records, or if there
      *             is more than one object is fetched.
      * @deprecated since 3.0 use {@link ObjectIdQuery} with appropriate refresh settings.
@@ -967,7 +975,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * If the parent channel is a DataContext, reverts local changes to make this context
      * look like the parent, if the parent channel is a DataDomain, reverts all changes.
-     *
+     * 
      * @since 1.2
      */
     @Override
@@ -1017,7 +1025,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * update. If it is a DataDomain (the most common case), the changes are written to
      * the database. To cause cascading commit all the way to the database, one must use
      * {@link #commitChanges()}.
-     *
+     * 
      * @since 1.2
      * @see #commitChanges()
      */
@@ -1061,7 +1069,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Synchronizes with the parent channel, performing a flush or a commit.
-     *
+     * 
      * @since 1.2
      */
     GraphDiff flushToParent(boolean cascade) {
@@ -1195,7 +1203,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Runs an iterated query in transactional context provided by the caller.
-     *
+     * 
      * @since 1.2
      */
     ResultIterator internalPerformIteratedQuery(Query query) throws CayenneException {
@@ -1208,7 +1216,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Executes a query returning a generic response.
-     *
+     * 
      * @since 1.2
      */
     @Override
@@ -1242,7 +1250,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * <p>
      * <i>Since 1.2 takes any Query parameter, not just GenericSelectQuery</i>
      * </p>
-     *
+     * 
      * @return A list of DataObjects or a DataRows, depending on the value returned by
      *         {@link QueryMetadata#isFetchingDataRows()}.
      */
@@ -1261,7 +1269,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * An implementation of a {@link DataChannel} method that is used by child contexts to
      * execute queries. Not intended for direct use.
-     *
+     * 
      * @since 1.2
      */
     public QueryResponse onQuery(ObjectContext context, Query query) {
@@ -1271,7 +1279,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Performs a single database query that does not select rows. Returns an array of
      * update counts.
-     *
+     * 
      * @since 1.1
      */
     public int[] performNonSelectingQuery(Query query) {
@@ -1282,7 +1290,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Performs a named mapped query that does not select rows. Returns an array of update
      * counts.
-     *
+     * 
      * @since 1.1
      */
     public int[] performNonSelectingQuery(String queryName) {
@@ -1292,7 +1300,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Performs a named mapped non-selecting query using a map of parameters. Returns an
      * array of update counts.
-     *
+     * 
      * @since 1.1
      */
     public int[] performNonSelectingQuery(String queryName, Map<String, ?> parameters) {
@@ -1303,7 +1311,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects or DataRows for a named query stored in one of the
      * DataMaps. Internally Cayenne uses a caching policy defined in the named query. If
      * refresh flag is true, a refresh is forced no matter what the caching policy is.
-     *
+     * 
      * @param queryName a name of a GenericSelectQuery defined in one of the DataMaps. If
      *            no such query is defined, this method will throw a
      *            CayenneRuntimeException.
@@ -1319,7 +1327,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects or DataRows for a named query stored in one of the
      * DataMaps. Internally Cayenne uses a caching policy defined in the named query. If
      * refresh flag is true, a refresh is forced no matter what the caching policy is.
-     *
+     * 
      * @param queryName a name of a GenericSelectQuery defined in one of the DataMaps. If
      *            no such query is defined, this method will throw a
      *            CayenneRuntimeException.
@@ -1350,7 +1358,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Returns <code>true</code> if the ObjectStore uses shared cache of a parent
      * DataDomain.
-     *
+     * 
      * @since 1.1
      */
     public boolean isUsingSharedSnapshotCache() {
@@ -1360,7 +1368,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Returns whether this DataContext performs object validation before commit is
      * executed.
-     *
+     * 
      * @since 1.1
      */
     public boolean isValidatingObjectsOnCommit() {
@@ -1370,7 +1378,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Sets the property defining whether this DataContext should perform object
      * validation before commit is executed.
-     *
+     * 
      * @since 1.1
      */
     public void setValidatingObjectsOnCommit(boolean flag) {
@@ -1482,7 +1490,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Returns this context's ObjectStore.
-     *
+     * 
      * @since 1.2
      */
     @Override
@@ -1498,7 +1506,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * In case you pass a non-null second parameter, you are responsible for setting
      * correct persistence state of the returned local object, as generally there is no
      * way for Cayenne to determine the resulting local object state.
-     *
+     * 
      * @since 1.2
      */
     @Override

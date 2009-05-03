@@ -37,7 +37,6 @@ import org.apache.cayenne.map.DataMap;
 
 /**
  * Represents Cayenne application project.
- * 
  */
 public class ApplicationProject extends Project {
 
@@ -218,7 +217,7 @@ public class ApplicationProject extends Project {
         public ProjectLoader(Configuration config) {
             super(config, config.getLoadStatus());
         }
-        
+
         protected void updateDefaults(DataDomain domain) {
             // do nothing...
         }
@@ -237,13 +236,15 @@ public class ApplicationProject extends Project {
         }
 
         @Override
-        public void shouldLoadDataDomainProperties(String domainName, Map properties) {
+        public void shouldLoadDataDomainProperties(
+                String domainName,
+                Map<String, String> properties) {
 
-            // remove factory property to avoid instatiation attempts for unknown/invalid
+            // remove factory property to avoid instantiation attempts for unknown/invalid
             // classes
 
-            Map propertiesClone = new HashMap(properties);
-            Object dataContextFactory = propertiesClone
+            Map<String, String> propertiesClone = new HashMap<String, String>(properties);
+            String dataContextFactory = propertiesClone
                     .remove(DataDomain.DATA_CONTEXT_FACTORY_PROPERTY);
 
             super.shouldLoadDataDomainProperties(domainName, propertiesClone);
