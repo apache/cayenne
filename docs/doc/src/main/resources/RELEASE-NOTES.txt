@@ -62,6 +62,7 @@ CAY-1196 CayenneRuntimeException in modeler due to ClassNotFoundException when j
 CAY-1204 Incorrect relationship syncing in nested CayenneContext's
 CAY-1207 Oracle8 does not like new join syntax
 CAY-1217 Project tree loses focus when traversing a list of entities with the keyboard
+CAY-1219 Modeler - clicking on query "select properties" fields changes project status to "dirty"
 
 ----------------------------------
 Release: 3.0M5

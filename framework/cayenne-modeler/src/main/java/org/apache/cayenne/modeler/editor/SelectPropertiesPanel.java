@@ -43,9 +43,11 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.texen.util.PropertiesUtil;
 
 /**
  * A panel that supports editing the properties of a GenericSelectQuery.
@@ -264,6 +266,10 @@ public abstract class SelectPropertiesPanel extends JPanel {
         Query query = getQuery();
         if (query != null) {
             try {
+                Object old = PropertyUtils.getProperty(query, property);
+                if (Util.nullSafeEquals(value, old)) {
+                    return;
+                }
                 PropertyUtils.setProperty(query, property, value);
                 mediator.fireQueryEvent(new QueryEvent(this, query));
             }
