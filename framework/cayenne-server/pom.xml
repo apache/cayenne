@@ -38,12 +38,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jpa-unpublished</artifactId>
-			<version>${version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-legal-unpublished</artifactId>
 			<version>${version}</version>
 			<scope>provided</scope>
@@ -55,10 +49,6 @@
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm-commons</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jpa_3.0_spec</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -95,11 +85,6 @@
 								<artifactItem>
 									<groupId>org.apache.cayenne.unpublished</groupId>
 									<artifactId>cayenne-jdk1.5-unpublished</artifactId>
-									<version>${version}</version>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.cayenne.unpublished</groupId>
-									<artifactId>cayenne-jpa-unpublished</artifactId>
 									<version>${version}</version>
 								</artifactItem>
 								<artifactItem>
@@ -151,11 +136,6 @@
 										<artifactItem>
 											<groupId>org.apache.cayenne.unpublished</groupId>
 											<artifactId>cayenne-jdk1.6-unpublished</artifactId>
-											<version>${version}</version>
-										</artifactItem>
-										<artifactItem>
-											<groupId>org.apache.cayenne.unpublished</groupId>
-											<artifactId>cayenne-jpa-unpublished</artifactId>
 											<version>${version}</version>
 										</artifactItem>
 										<artifactItem>
