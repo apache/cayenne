@@ -73,13 +73,13 @@
 
 <p>Queries like <tt>"SELECT * FROM..."</tt> and even <tt>"SELECT COLUMN1, COLUMN2, ... FROM ..."</tt> can sometimes result in Cayenne exceptions on attempts to convert fetched DataRows to objects. Essentially any query that is not using a <a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Scripting SQLTemplate/index.html" title="Scripting SQLTemplate">#result directive</a> to describe the result set is prone to this problem, as different databases may produce different capitalization of the <tt>java.sql.ResultSet</tt> columns. </p>
 
-<p>The most universal way to address this issue is to describe each column explicitly in the SQLTemplate via <tt>#result</tt> directive, as mentioned above: <tt>"SELECT #result('column1'), #result('column2'), .."</tt>. However this becomes unpractical for the tables with lots of columns. For such cases Cayenne provides a shortcut based on the fact that normally an ORM mapping follows some naming convention for the column names. Simply put, for case-insensitive databases developers normall use either <b>all lowercase</b> or <b>all uppercase</b> column names.</p>
+<p>The most universal way to address this issue is to describe each column explicitly in the SQLTemplate via <tt>#result</tt> directive, as mentioned above: <tt>"SELECT #result('column1'), #result('column2'), .."</tt>. However this becomes unpractical for the tables with lots of columns. For such cases Cayenne provides a shortcut based on the fact that normally an ORM mapping follows some naming convention for the column names. Simply put, for case-insensitive databases developers normally use either <b>all lowercase</b> or <b>all uppercase</b> column names.</p>
 
 <p>Here is the API to force Cayenne to follow the naming convention (also available as a dropdown in the Modeler). <em>Note that you shouldn't bother with this unless you are getting CayenneRuntimeExceptions when fetching with SQLTemplate.</em></p>
 
 <div class="code"><div class="codeContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(<span class="code-quote">"SELECT * FROM ARTIST"</span>);
-query.setColumnNamesCapitalization(SQLTemplate.LOWERCASE_COLUMN_NAMES);
+query.setColumnNamesCapitalization(CapsStrategy.LOWER);
 List objects = context.performQuery(query);</pre>
 </div></div>
 
@@ -87,7 +87,7 @@ List objects = context.performQuery(query);</pre>
 
 <div class="code"><div class="codeContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(<span class="code-quote">"SELECT * FROM ARTIST"</span>);
-query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 List objects = context.performQuery(query);</pre>
 </div></div>
 

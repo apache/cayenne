@@ -18,14 +18,14 @@
 -->
 <html>
   <head>
-    <title>Apache Cayenne Documentation - maven2-cdbgen</title>
+    <title>Apache Cayenne Documentation - maven2-cdbimport</title>
     <style type="text/css">@import "../../../../style.css";</style>
   </head>
 <body>
   <div class="header">
     <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
     <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
-    <span class="pagetitle">maven2-cdbgen</span>
+    <span class="pagetitle">maven2-cdbimport</span>
   </div>
 <div id="cayenne_toc">
 <ul>
@@ -45,87 +45,97 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a><ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html">maven2-cgen</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html">maven2-cdbgen</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html">maven2-cdbgen</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbimport/index.html">maven2-cdbimport</a><ul>
 </ul>
 </li>
-<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbimport/index.html">maven2-cdbimport</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html">maven2-modeler</a></li>
 </ul>
 </li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p><tt>cdbgen</tt> is an Maven 2 mojo that that uses Cayenne DataMap to drop and/or generate schema objects of a specified database.  By default, it is bound to the <tt>pre-integration-test</tt> phase.  Please see this <span class="nobr"><a href="http://docs.codehaus.org/display/MAVENUSER/Maven+and+Integration+Testing" title="Visit page outside Confluence" rel="nofollow">guide to integration testing with maven2<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> for ideas of how tie this in with your existing test infrastructure.</p>
+<div id="ConfluenceContent"><p><tt>cdbimport</tt> is a Maven 2 mojo that that uses Cayenne to generate a DataMap based on an existing database schema.  By default, it is bound to the <tt>generate-sources</tt> phase.  This allows you to generate your DataMap prior to building your project, which may be necessary if you are also using the <a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html" title="maven2-cgen">cgen</a> task.</p>
 
-<h3><a name="maven2-cdbgen-Parameters%28asXMLelements%29"></a>Parameters (as XML elements)</h3>
+<h3><a name="maven2-cdbimport-Parameters%28asXMLelements%29"></a>Parameters (as XML elements)</h3>
+
 <table class='confluenceTable'><tbody>
 <tr>
-<th class='confluenceTh'>Attribute</th>
-<th class='confluenceTh'>Description</th>
-<th class='confluenceTh'>Required</th>
+<th class='confluenceTh'> Attribute </th>
+<th class='confluenceTh'> Description </th>
+<th class='confluenceTh'> Required </th>
 </tr>
 <tr>
-<td class='confluenceTd'>map</td>
-<td class='confluenceTd'>DataMap XML file to use as a schema descriptor.</td>
-<td class='confluenceTd'>Yes</td>
+<td class='confluenceTd'> map </td>
+<td class='confluenceTd'> DataMap XML file to use as a schema descriptor. </td>
+<td class='confluenceTd'> Yes </td>
 </tr>
 <tr>
-<td class='confluenceTd'>adapter</td>
-<td class='confluenceTd'>Java class name implementing org.apache.cayenne.dba.DbAdapter. While this attribute is optional (a generic JdbcAdapter is used if not set), it is highly recommended to specify correct target adapter.</td>
-<td class='confluenceTd'>No (but strongly recommended)</td>
+<td class='confluenceTd'> overwriteExisting </td>
+<td class='confluenceTd'> Indicates whether existing DB and object entities should be overwritten.  This is an all-or-nothing setting.  If you need finer granularity, please  use the Cayenne Modeler.  Default is <tt>true</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>driver</td>
-<td class='confluenceTd'>A class of JDBC driver to use for the target database.</td>
-<td class='confluenceTd'>Yes</td>
+<td class='confluenceTd'> schemaName </td>
+<td class='confluenceTd'> Database schema to use for importing. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>url</td>
-<td class='confluenceTd'>JDBC connection URL of a target database.</td>
-<td class='confluenceTd'>Yes</td>
+<td class='confluenceTd'> tablePattern </td>
+<td class='confluenceTd'> Pattern to match tables against for import.  Default is to match all tables. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>username</td>
-<td class='confluenceTd'>Database user name.</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> importProcedures </td>
+<td class='confluenceTd'> Indicates whether stored procedures should be imported.  Default is <tt>false</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>password</td>
-<td class='confluenceTd'>Database user password.</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> procedurePattern </td>
+<td class='confluenceTd'> Pattern to match stored procedures against for import.  Default is to match all stored procedures.  This value is only meaningful if <tt>importProcedures</tt> is <tt>true</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>dropTables</td>
-<td class='confluenceTd'>Defines whether cdbgen should drop the tables before attempting to create new ones. Default is "No".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> meaningfulPk </td>
+<td class='confluenceTd'> Indicates whether primary keys should be mapped as attributes of the object entity.  Default is <tt>false</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>dropPK</td>
-<td class='confluenceTd'>Defines whether cdbgen should drop Cayenne primary key support objects. Default is "No".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> namingStrategy </td>
+<td class='confluenceTd'> The naming strategy used for mapping database names to object entity names.  Default is <tt>org.apache.cayenne.map.naming.SmartNamingStrategy</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>createTables</td>
-<td class='confluenceTd'>Defines whether cdbgen should create new tables. Default is "Yes".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> adapter </td>
+<td class='confluenceTd'> Java class name implementing org.apache.cayenne.dba.DbAdapter. While this attribute is optional (a generic JdbcAdapter is used if not set), it is highly recommended to specify correct target adapter. </td>
+<td class='confluenceTd'> No (but strongly recommended) </td>
 </tr>
 <tr>
-<td class='confluenceTd'>createPK</td>
-<td class='confluenceTd'>Defines whether cdbgen should create Cayenne-specific auto PK objects. Default is "Yes".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> driver </td>
+<td class='confluenceTd'> A class of JDBC driver to use for the target database. </td>
+<td class='confluenceTd'> Yes </td>
 </tr>
 <tr>
-<td class='confluenceTd'>createFK</td>
-<td class='confluenceTd'>Defines whether cdbgen should create foreign key copnstraints. Default is "Yes".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> url </td>
+<td class='confluenceTd'> JDBC connection URL of a target database. </td>
+<td class='confluenceTd'> Yes </td>
+</tr>
+<tr>
+<td class='confluenceTd'> username </td>
+<td class='confluenceTd'> Database user name. </td>
+<td class='confluenceTd'> No </td>
+</tr>
+<tr>
+<td class='confluenceTd'> password </td>
+<td class='confluenceTd'> Database user password. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 </tbody></table>
 
 
-<h3><a name="maven2-cdbgen-Examples"></a>Examples</h3>
+<h3><a name="maven2-cdbimport-Examples"></a>Examples</h3>
 
-<p>Load the Maven 2 plugin and configure the <tt>cdbgen</tt> mojo: </p>
-
+<p>Load the Maven 2 plugin and configure the <tt>cdbimport</tt> mojo:</p>
 <div class="code"><div class="codeContent">
 <pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
     <span class="code-tag">&lt;plugins&gt;</span>
@@ -134,12 +144,12 @@
       	    <span class="code-tag">&lt;artifactId&gt;</span>maven-cayenne-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
       	    <span class="code-tag">&lt;executions&gt;</span>
                 <span class="code-tag">&lt;execution&gt;</span>
-      		    <span class="code-tag">&lt;id&gt;</span>cdbgen<span class="code-tag">&lt;/id&gt;</span>
+      		    <span class="code-tag">&lt;id&gt;</span>cdbimport<span class="code-tag">&lt;/id&gt;</span>
       		    <span class="code-tag">&lt;configuration&gt;</span>
       			<span class="code-tag"><span class="code-comment">&lt;!-- Configuration items go in here.  See table, above. --&gt;</span></span>
       		    <span class="code-tag">&lt;/configuration&gt;</span>
       		    <span class="code-tag">&lt;goals&gt;</span>
-      			<span class="code-tag">&lt;goal&gt;</span>cdbgen<span class="code-tag">&lt;/goal&gt;</span>
+      			<span class="code-tag">&lt;goal&gt;</span>cdbimport<span class="code-tag">&lt;/goal&gt;</span>
       		    <span class="code-tag">&lt;/goals&gt;</span>
       		<span class="code-tag">&lt;/execution&gt;</span>
       	    <span class="code-tag">&lt;/executions&gt;</span>
@@ -147,8 +157,7 @@
     <span class="code-tag">&lt;/plugins&gt;</span>
 <span class="code-tag">&lt;/build&gt;</span></pre>
 </div></div>
-
-<p>Here is an example of using <tt>cdbgen</tt> to create DB schema objects on a local HSQLDB database named "bookmarker" from a DataMap located in "main/resources/datamap.map.xml":</p>
+<p>Here is an example of using <tt>cdbimport</tt> to create DB schema objects on a local HSQLDB database named "bookmarker" from a DataMap located in "main/resources/datamap.map.xml":</p>
 <div class="code"><div class="codeContent">
 <pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
     <span class="code-tag">&lt;plugins&gt;</span>
@@ -157,7 +166,7 @@
       	    <span class="code-tag">&lt;artifactId&gt;</span>maven-cayenne-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
       	    <span class="code-tag">&lt;executions&gt;</span>
                 <span class="code-tag">&lt;execution&gt;</span>
-      		    <span class="code-tag">&lt;id&gt;</span>cdbgen<span class="code-tag">&lt;/id&gt;</span>
+      		    <span class="code-tag">&lt;id&gt;</span>cdbimport<span class="code-tag">&lt;/id&gt;</span>
       		    <span class="code-tag">&lt;configuration&gt;</span>
       			<span class="code-tag">&lt;map&gt;</span>${project.build.sourceDirectory}/../resources/datamap.map.xml<span class="code-tag">&lt;/map&gt;</span>
                         <span class="code-tag">&lt;adapter&gt;</span>org.apache.cayenne.dba.hsqldb.HSQLDBAdapter<span class="code-tag">&lt;/adapter&gt;</span>
@@ -166,7 +175,7 @@
                         <span class="code-tag">&lt;username&gt;</span>sa<span class="code-tag">&lt;/username&gt;</span>
       		    <span class="code-tag">&lt;/configuration&gt;</span>
       		    <span class="code-tag">&lt;goals&gt;</span>
-      			<span class="code-tag">&lt;goal&gt;</span>cdbgen<span class="code-tag">&lt;/goal&gt;</span>
+      			<span class="code-tag">&lt;goal&gt;</span>cdbimport<span class="code-tag">&lt;/goal&gt;</span>
       		    <span class="code-tag">&lt;/goals&gt;</span>
       		<span class="code-tag">&lt;/execution&gt;</span>
       	    <span class="code-tag">&lt;/executions&gt;</span>

@@ -18,14 +18,14 @@
 -->
 <html>
   <head>
-    <title>Apache Cayenne Documentation - Nested DataContexts</title>
+    <title>Apache Cayenne Documentation - Nested Contexts</title>
     <style type="text/css">@import "../../../../style.css";</style>
   </head>
 <body>
   <div class="header">
     <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
     <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
-    <span class="pagetitle">Nested DataContexts</span>
+    <span class="pagetitle">Nested Contexts</span>
   </div>
 <div id="cayenne_toc">
 <ul>
@@ -40,7 +40,7 @@
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html">Moving Objects Between Contexts</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html">DataContextDelegate</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html">DataContextFactory</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Nested DataContexts/index.html">Nested DataContexts</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html">Nested Contexts</a><ul>
 </ul>
 </li>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html">ObjectContext Memory Management</a></li>
@@ -59,27 +59,34 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>One of the goals of the DataContext is to provide an isolated area where local object changes can be performed without affecting other similar areas or the underlying storage. At some point in time users would either commit changes to the underlying storage or undo them (roll them back). </p>
+<div id="ConfluenceContent"><p>One of the goals of the ObjectContext is to provide an isolated area where local object changes can be performed without affecting other similar areas or the underlying storage. At some point in time users would either commit changes to the underlying storage or undo them (roll them back). </p>
 
 <p>If a DataContext is directly attached to the DataDomain, a call to <tt>DataContext.commitChanges()</tt> results in changes written to the database. On the other hand if DataContext's direct parent in the access stack is not a DataDomain, but another DataContext, changes can be saved to the parent without saving them to the database. Such child context is often called "nested".</p>
 
-<p>Nested contexts are useful in many situations, such as nested UI dialogs, complicated workflows, etc.</p>
+<p>Same thing is true when ObjectContext is used via ROP. Committing changes to a nested ROP ObjectContext (CayenneContext) locally will not result in sending data to a server.</p>
 
 <table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">ROP</b><br />
-<p>Nested contexts are not available in Cayenne ROP (three tier).</p></td></tr></table> 
+<p>Nested contexts are available in Cayenne ROP (three tier) only from version 3.0M6.</p></td></tr></table> 
 
-<h3><a name="NestedDataContexts-CreatingNestedDataContext"></a>Creating Nested DataContext</h3>
+<p>Nested contexts are useful in many situations, such as nested UI dialogs, complicated workflows, etc.</p>
+
+<h3><a name="NestedContexts-CreatingNestedContexts"></a>Creating Nested Contexts</h3>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Deprecation</b><br />
+<p>Since 3.0M6 a new method, <tt>ObjectContext.createChildContext()</tt> was introduced, so <tt>DataContext.createChildDataContext()</tt> is now deprecated. Please update your code properly.</p></td></tr></table> 
 
 <div class="code"><div class="codeContent">
-<pre class="code-java">DataContext parent = ...
-DataContext child = context.createChildDataContext();</pre>
+<pre class="code-java">ObjectContext parent = ...
+ObjectContext child = context.createChildContext();</pre>
 </div></div>
 
-<p>Note that if there was a DataContextFactory configured for the DataDomain at the top of the context hierarchy, such factory will be used internally by <tt>createChildDataContext</tt> method. Also child DataContext inherits parent's <tt>"ValidatingObjectsOnCommit"</tt> property.</p>
+<p><tt>child</tt> object will be instance of the same class, as <tt>parent</tt> is - DataContext or CayenneContext.</p>
 
-<h3><a name="NestedDataContexts-UsingNestedDataContext"></a>Using Nested DataContext</h3>
+<p>When creating a nested DataContext, note that if there was a DataContextFactory configured for the DataDomain at the top of the context hierarchy, such factory will be used internally by <tt>createChildDataContext</tt> method. Also child DataContext inherits parent's <tt>"ValidatingObjectsOnCommit"</tt> property.</p>
 
-<p>A nested DataContext does everything a regular DataContext can do, i.e. perform queries, register new objects, delete objects, etc. A specific behavior is the ability to choose between a cascading or one-level commit or rollback.</p>
+<h3><a name="NestedContexts-UsingNestedContexts"></a>Using Nested Contexts</h3>
+
+<p>A nested context does everything a parent context can do, i.e. perform queries, register new objects, delete objects, etc. A specific behavior is the ability to choose between a cascading or one-level commit or rollback.</p>
 
 <p>Regular <tt>"commitChanges"</tt> call does a cascading commit through the stack of parents all the way to the database:</p>
 <div class="code"><div class="codeContent">
@@ -101,10 +108,11 @@ DataContext child = context.createChildDataContext();</pre>
 <pre class="code-java">child.rollbackChangesLocally();</pre>
 </div></div>
 
+<p>From the child context, you may want to get a reference to the parent context. Use child.getChannel() to get the parent context, and if called from the top level context context.getChannel() will return the DataDomain.</p>
 
-<h3><a name="NestedDataContexts-NestedDataContextsPerformance"></a>Nested DataContexts Performance</h3>
+<h3><a name="NestedContexts-NestedContextsPerformance"></a>Nested Contexts Performance</h3>
 
-<p>All cascading operations (such as a select query or a cascading update) initiated by a nested DataContext will have to travel through the stack of parent contexts, incurring certain delay at each stack level. The delay is due to the fact that each DataContext has to update its own objects during most operations. So nesting should only be used when application specifics require to do so. Also nesting of more than a few levels should be avoided.</p></div>
+<p>All cascading operations (such as a select query or a cascading update) initiated by a nested context will have to travel through the stack of parent contexts, incurring certain delay at each stack level. The delay is due to the fact that each context has to update its own objects during most operations. So nesting should only be used when application specifics require to do so. Also nesting of more than a few levels should be avoided.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

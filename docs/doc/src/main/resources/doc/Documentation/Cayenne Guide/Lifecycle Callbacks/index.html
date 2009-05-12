@@ -51,7 +51,7 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="LifecycleCallbacks-LifecycleCallbacks"></a>Lifecycle Callbacks</h2>
 
-<p>Users can register callback methods that will be invoked during the lifecycle of persistent objects. Callback mechanism matches closely the one defined in the <a href="../../../Documentation/JPA Guide/index.html" title="JPA Guide">JPA Specification</a> (except that it works with JDK 1.4 and allows preconfigured listeners). There are seven lifecycle callbacks described below (PrePersist, PostPersist, PreUpdate, PostUpdate, PreRemove, PostRemove, PostLoad). There are two types of invocations for each one of them: <b>callback on a persistent object</b> itself or a <b>callback on  an arbitrary listener object</b>.</p>
+<p>Users can register callback methods that will be invoked during the lifecycle of persistent objects. Callback mechanism matches closely the one defined in the <a href="http://cwiki.apache.org/confluence/confluence/display/CAYJPA/JPA+Guide" title="JPA Guide">JPA Specification</a> (except that it works with JDK 1.4 and allows preconfigured listeners). There are seven lifecycle callbacks described below (PrePersist, PostPersist, PreUpdate, PostUpdate, PreRemove, PostRemove, PostLoad). There are two types of invocations for each one of them: <b>callback on a persistent object</b> itself or a <b>callback on  an arbitrary listener object</b>.</p>
 
 <table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Callbacks feature supercedes the following 1.2/2.0 features:</b><br />
 <ul>
@@ -105,7 +105,7 @@
 <h2><a name="LifecycleCallbacks-TypesofCallbacks"></a>Types of Callbacks</h2>
 
 
-<p>Valid callback types are defined as int constants in the <tt>LifecycleListener</tt> interface.</p>
+<p>Valid callback types are defined as Java enumerated constants in the <tt>org.apache.cayenne.map.LifecycleEvent</tt> enumeration.</p>
 
 <table class='confluenceTable'><tbody>
 <tr>

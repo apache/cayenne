@@ -18,14 +18,14 @@
 -->
 <html>
   <head>
-    <title>Apache Cayenne Documentation - cdbgen</title>
+    <title>Apache Cayenne Documentation - cdbimport</title>
     <style type="text/css">@import "../../../../style.css";</style>
   </head>
 <body>
   <div class="header">
     <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
     <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
-    <span class="pagetitle">cdbgen</span>
+    <span class="pagetitle">cdbimport</span>
   </div>
 <div id="cayenne_toc">
 <ul>
@@ -44,107 +44,109 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a><ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html">cgen</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cdbgen/index.html">cdbgen</a><ul>
-</ul>
-</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cdbgen/index.html">cdbgen</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cdeploy/index.html">cdeploy</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cdataport/index.html">cdataport</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cdbimport/index.html">cdbimport</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cdbimport/index.html">cdbimport</a><ul>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p><tt>cdbgen</tt> is an Ant task that uses Cayenne DataMap to drop and/or generate schema objects of a specified database.</p>
+<div id="ConfluenceContent"><p><tt>cdbimport</tt> is an Ant task that that uses Cayenne to generate a DataMap based on an existing database schema.  This allows you to generate your DataMap prior to building your project, which may be necessary if you are also using the <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html" title="cgen">cgen</a> task.</p>
 
-<h3><a name="cdbgen-Parameters"></a>Parameters</h3>
+<h3><a name="cdbimport-Parameters"></a>Parameters</h3>
+
 <table class='confluenceTable'><tbody>
 <tr>
-<th class='confluenceTh'>Attribute</th>
-<th class='confluenceTh'>Description</th>
-<th class='confluenceTh'>Required</th>
+<th class='confluenceTh'> Attribute </th>
+<th class='confluenceTh'> Description </th>
+<th class='confluenceTh'> Required </th>
 </tr>
 <tr>
-<td class='confluenceTd'>map</td>
-<td class='confluenceTd'>DataMap XML file to use as a schema descriptor.</td>
-<td class='confluenceTd'>Yes</td>
+<td class='confluenceTd'> map </td>
+<td class='confluenceTd'> DataMap XML file to use as a schema descriptor. </td>
+<td class='confluenceTd'> Yes </td>
 </tr>
 <tr>
-<td class='confluenceTd'>adapter</td>
-<td class='confluenceTd'>Java class implementing <tt>org.apache.cayenne.dba.DbAdapter</tt>. While this attribute is optional (a generic JdbcAdapter is used if not set), it is highly recommended to specify correct target adapter.</td>
-<td class='confluenceTd'>No (but strongly recommended)</td>
+<td class='confluenceTd'> overwriteExisting </td>
+<td class='confluenceTd'> Indicates whether existing DB and object entities should be overwritten.  This is an all-or-nothing setting.  If you need finer granularity, please  use the Cayenne Modeler.  Default is <tt>true</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>driver</td>
-<td class='confluenceTd'>A class of JDBC driver to use for the target database.</td>
-<td class='confluenceTd'>Yes</td>
+<td class='confluenceTd'> schemaName </td>
+<td class='confluenceTd'> Database schema to use for importing. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>url</td>
-<td class='confluenceTd'>JDBC connection URL of a target database.</td>
-<td class='confluenceTd'>Yes</td>
+<td class='confluenceTd'> tablePattern </td>
+<td class='confluenceTd'> Pattern to match tables against for import.  Default is to match all tables. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>username</td>
-<td class='confluenceTd'>Database user name.</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> importProcedures </td>
+<td class='confluenceTd'> Indicates whether stored procedures should be imported.  Default is <tt>false</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>password</td>
-<td class='confluenceTd'>Database user password.</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> procedurePattern </td>
+<td class='confluenceTd'> Pattern to match stored procedures against for import.  Default is to match all stored procedures.  This value is only meaningful if <tt>importProcedures</tt> is <tt>true</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>droptables</td>
-<td class='confluenceTd'>Defines whether cdbgen should drop the tables before attempting to create new ones. Default is "No".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> meaningfulPk </td>
+<td class='confluenceTd'> Indicates whether primary keys should be mapped as attributes of the object entity.  Default is <tt>false</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>droppk</td>
-<td class='confluenceTd'>Defines whether cdbgen should drop Cayenne primary key support objects. Default is "No".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> namingStrategy </td>
+<td class='confluenceTd'> The naming strategy used for mapping database names to object entity names.  Default is <tt>org.apache.cayenne.map.naming.SmartNamingStrategy</tt>. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>createtables</td>
-<td class='confluenceTd'>Defines whether cdbgen should create new tables. Default is "Yes".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> adapter </td>
+<td class='confluenceTd'> Java class name implementing org.apache.cayenne.dba.DbAdapter. While this attribute is optional (a generic JdbcAdapter is used if not set), it is highly recommended to specify correct target adapter. </td>
+<td class='confluenceTd'> No (but strongly recommended) </td>
 </tr>
 <tr>
-<td class='confluenceTd'>createpk</td>
-<td class='confluenceTd'>Defines whether cdbgen should create Cayenne-specific auto PK objects. Default is "Yes".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> driver </td>
+<td class='confluenceTd'> A class of JDBC driver to use for the target database. </td>
+<td class='confluenceTd'> Yes </td>
 </tr>
 <tr>
-<td class='confluenceTd'>createfk</td>
-<td class='confluenceTd'>Defines whether cdbgen should create foreign key copnstraints. Default is "Yes".</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> url </td>
+<td class='confluenceTd'> JDBC connection URL of a target database. </td>
+<td class='confluenceTd'> Yes </td>
 </tr>
 <tr>
-<td class='confluenceTd'>classpath</td>
-<td class='confluenceTd'>The classpath used by the task.</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> username </td>
+<td class='confluenceTd'> Database user name. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 <tr>
-<td class='confluenceTd'>classpathref</td>
-<td class='confluenceTd'>The classpath reference used by the task.</td>
-<td class='confluenceTd'>No</td>
+<td class='confluenceTd'> password </td>
+<td class='confluenceTd'> Database user password. </td>
+<td class='confluenceTd'> No </td>
 </tr>
 </tbody></table>
 
-<h3><a name="cdbgen-Example"></a>Example</h3>
+
+<h3><a name="cdbimport-Example"></a>Example</h3>
 
 <p>Load the Ant task <em>(note: if you already loaded all Cayenne tasks via an antlib taskdef <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html" title="Ant Tasks">described before</a>, this step is not needed)</em>: </p>
 <div class="code"><div class="codeContent">
-<pre class="code-xml"><span class="code-tag">&lt;taskdef name=<span class="code-quote">"cdbgen"</span> classname=<span class="code-quote">"org.apache.cayenne.tools.DbGeneratorTask"</span>&gt;</span>
+<pre class="code-xml"><span class="code-tag">&lt;taskdef name=<span class="code-quote">"cdbimport"</span> classname=<span class="code-quote">"org.apache.cayenne.tools.DbImporterTask"</span>&gt;</span>
     <span class="code-tag">&lt;classpath refid=<span class="code-quote">"classpath"</span>/&gt;</span>
 <span class="code-tag">&lt;/taskdef&gt;</span></pre>
 </div></div>
 
-<p>Here is an example of using <tt>cdbgen</tt> to create DB schema objects on a local HSQLDB.</p>
+<p>Here is an example of using <tt>cdbimport</tt> to create DB schema objects on a local HSQLDB.</p>
 
 <div class="code"><div class="codeContent">
-<pre class="code-xml">&lt;cdbgen map=<span class="code-quote">"${context.dir}/WEB-INF/DefaultMap.map.xml"</span> 
+<pre class="code-xml">&lt;cdbimport map=<span class="code-quote">"${context.dir}/WEB-INF/DefaultMap.map.xml"</span> 
     adapter=<span class="code-quote">"org.apache.cayenne.dba.hsqldb.HSQLDBAdapter"</span>
     driver=<span class="code-quote">"org.hsqldb.jdbcDriver"</span> 
     url=<span class="code-quote">"jdbc:hsqldb:hsql://localhost/bookmarker"</span> 

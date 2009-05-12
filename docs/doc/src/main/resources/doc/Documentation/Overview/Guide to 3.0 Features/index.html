@@ -62,26 +62,8 @@
 
 
 <h2><a name="Guideto3.0Features-CayenneJPAProvider"></a>Cayenne JPA Provider</h2>
-<p><em>(status: preview)</em></p>
 
-<p>Cayenne 3.0 includes an in-progress partial implementation of a <span class="nobr"><a href="http://jcp.org/en/jsr/detail?id=220" title="Visit page outside Confluence" rel="nofollow">Java Persistence API specification<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> compliant persistence provider, with support for POJO and JPA annotations. Provider can be used in a standalone mode, as well as a part of a J2EE container.</p>
-
-<p>Currently implemented features:</p>
-
-<ul>
-	<li>Provider, EntityManagerFactory, EntityManager API bridge to the current Cayenne stack</li>
-	<li>Loading mapping from annotations</li>
-	<li>Loading mapping from XML</li>
-	<li>Class enhancement</li>
-	<li>Field-based access and property-based access</li>
-	<li>EJBQL</li>
-	<li>Entity callbacks</li>
-	<li>All types of relationships and simple properties</li>
-	<li>Embeddables</li>
-	<li>Single table inheritance</li>
-</ul>
-
-
+<p><em>Note that Cayenne JPA provider work has been frozen and it IS NOT included in 3.0. If you have further questions or would like to give a hand with the JPA work, please send a note to <span class="nobr"><a href="http://cayenne.apache.org/mailing-lists.html" title="Visit page outside Confluence" rel="nofollow">developer mailing list<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</em></p>
 
 <h2><a name="Guideto3.0Features-ObjectRelationalMapping"></a>Object Relational Mapping</h2>
 
@@ -118,8 +100,6 @@
 
 <h2><a name="Guideto3.0Features-CayennePersistenceAPI"></a>Cayenne Persistence API</h2>
 
-<p>Many of the improvements below were done to support the JPA provider, still Cayenne applications can take advantage from all of these things without using JPA.</p>
-
 <h3><a name="Guideto3.0Features-Java5Migration"></a>Java 5 Migration</h3>
 
 <p>Cayenne now requires Java 5 or newer to run. This allowed us to start using generics, enums and other Java 5 features.</p>
@@ -136,9 +116,8 @@
 <p>This protects your code from the evolution of the underlying implementation, allows you to customize context behavior by using interface wrappers. There are plans to update all Cayenne API to return ObjectContext everywhere DataContext might be returned.</p>
 
 <h3><a name="Guideto3.0Features-EJBQLQueries"></a>EJB QL Queries</h3>
-<p><em>(as of M3 there's no Modeler support)</em></p>
 
-<p>Never mind the "EJB" in the name. EJBQL queries are a powerful object query mechanism borrowed from the JPA specification and added to Cayenne API. <a href="../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html" title="EJBQLQuery">EJBQLQuery</a> is a first-class citizen, just like SelectQuery.</p>
+<p>Never mind the "EJB" in the name. EJBQL queries are a powerful object query mechanism similar to the one supported by the JPA specification. <a href="../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html" title="EJBQLQuery">EJBQLQuery</a> is a first-class citizen, just like SelectQuery.</p>
 
 <h3><a name="Guideto3.0Features-SQLTemplateQueryImprovements"></a>SQLTemplate Query Improvements</h3>
 
@@ -150,7 +129,7 @@
 
 <h3><a name="Guideto3.0Features-EntityLifecycleCallbacks"></a>Entity Lifecycle Callbacks</h3>
 
-<p>Just like EJBQL, lifecycle callbacks is a JPA-inspired feature that allows to perform custom operations at certain points in the object lifecycle. For more details see <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">this page</a>.</p>
+<p>Cayenne lifecycle callbacks are similar to callbacks defined in the JPA specification. This is a feature that allows to perform custom operations at certain points in the object lifecycle. For more details see <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">this page</a>.</p>
 
 <h3><a name="Guideto3.0Features-GeneralQueryImprovements"></a>General Query Improvements</h3>
 
@@ -169,7 +148,6 @@
 	<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html" title="Caching and Fresh Data">pluggable query cache</a></li>
 	<li>a notion of Query cache groups</li>
 	<li>automated cache key management for standard queries</li>
-	<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/RefreshQuery/index.html" title="RefreshQuery">RefreshQuery</a></li>
 </ul>
 
 
@@ -219,9 +197,11 @@
 
 <h2><a name="Guideto3.0Features-RemoteObjectPersistence"></a>Remote Object Persistence</h2>
 
-<h3><a name="Guideto3.0Features-ValidationcallbackssupportforROPObjectContext."></a>Validation callbacks support for ROP ObjectContext. </h3>
+<h3><a name="Guideto3.0Features-ValidationcallbackssupportforROPObjectContext"></a>Validation callbacks support for ROP ObjectContext</h3>
 <p>Now object validation works the same way on the ROP client as it did on the server.</p>
 
+<h3><a name="Guideto3.0Features-NestedcontextssupportforROPObjectContext"></a>Nested contexts support for ROP ObjectContext</h3>
+<p>Nested contexts can now be created for ROP contexts. Creation method is added to ObjectContext interface.</p>
 
 
 <h2><a name="Guideto3.0Features-CayenneModeler"></a>CayenneModeler</h2>

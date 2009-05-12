@@ -51,7 +51,7 @@
 
 <h3><a name="RemoteObjectPersistenceInstallation-ServerJarFiles"></a>Server Jar Files</h3>
 
-<p>Cayenne web service is no different from a regular Cayenne application, so it requires <b><tt>cayenne-server.jar</tt></b> and all standard dependencies. One additional required third party library is <b><tt>hessian.jar</tt></b>, version 3.1.5, which is included in "lib/third-party" or can be downloaded from <span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">http://www.caucho.com/hessian/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</p>
+<p>Cayenne web service is no different from a regular Cayenne application, so it requires <b><tt>cayenne-server.jar</tt></b> and all standard dependencies. One additional required third party library is <b><tt>hessian.jar</tt></b>, version 3.1.6, which is included in "lib/third-party" or can be downloaded from <span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">http://www.caucho.com/hessian/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</p>
 
 <h3><a name="RemoteObjectPersistenceInstallation-ClientJarFiles"></a>Client Jar Files</h3>
 
@@ -60,9 +60,11 @@
 <ul>
 	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/logging/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Logging<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.1.</li>
 	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/collections" title="Visit page outside Confluence" rel="nofollow">Apache Commons Collections<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.1.</li>
-	<li><span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">Hessian Library<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.1.5.</li>
+	<li><span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">Hessian Library<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.1.6.</li>
 </ul>
-</div>
+
+
+<p>Note that there can be issues with running different versions of Hessian on the client and server since the Hessian protocols sometimes change between even minor releases. We recommend you keep them matched or look at the Hessian source to decide whether you might have compatibility issues.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
