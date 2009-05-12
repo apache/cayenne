@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.map;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +38,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+import org.xml.sax.InputSource;
 
 /**
  * DataMap unit tests.
@@ -404,33 +408,39 @@ public class DataMapTest extends TestCase {
     }
 
 
-    public void testQuoteSqlIdentifiersEcodeAsXML(){
+    public void testQuoteSqlIdentifiersEncodeAsXML(){
         DataMap map = new DataMap("aaa");
         map.setQuotingSQLIdentifiers(true);
         StringWriter w = new StringWriter();
-        XMLEncoder e = new XMLEncoder(new PrintWriter(w));
-
-        String separator = System.getProperty("line.separator");
-
-        StringBuffer s = new StringBuffer("<data-map project-version=\"");
-        s.append(String.valueOf(Project.CURRENT_PROJECT_VERSION));
-        s.append("\">").append(separator);
-        s.append("<property name=\"quoteSqlIdentifiers\" value=\"true\"/>").append(separator);
-        s.append("</data-map>").append(separator);
-
-        map.encodeAsXML(e);
-        assertEquals(w.getBuffer().toString(), s.toString());
+        XMLEncoder encoder = new XMLEncoder(new PrintWriter(w));
+        map.encodeAsXML(encoder);
+        
+        assertTrue(map.quotingSQLIdentifiers);
+        
+        MapLoader loader = new MapLoader();
+        try {
+            InputStream is = new ByteArrayInputStream(w.getBuffer().toString().getBytes("UTF-8"));
+            DataMap newMap = loader.loadDataMap(new InputSource(is));
+            assertTrue(newMap.quotingSQLIdentifiers);
+            
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         map.setQuotingSQLIdentifiers(false);
         StringWriter w2 = new StringWriter();
-        XMLEncoder e2 = new XMLEncoder(new PrintWriter(w2));
-
-        StringBuffer s2 = new StringBuffer("<data-map project-version=\"");
-        s2.append(String.valueOf(Project.CURRENT_PROJECT_VERSION));
-        s2.append("\">").append(separator);
-        s2.append("</data-map>").append(separator);
-        map.encodeAsXML(e2);
-        assertEquals(w2.getBuffer().toString(), s2.toString());
+        XMLEncoder encoder2 = new XMLEncoder(new PrintWriter(w2));
+        map.encodeAsXML(encoder2);
+        
+        assertFalse(map.quotingSQLIdentifiers);
+        try {
+            InputStream is = new ByteArrayInputStream(w2.getBuffer().toString().getBytes("UTF-8"));
+            DataMap newMap = loader.loadDataMap(new InputSource(is));
+            assertFalse(newMap.quotingSQLIdentifiers);
+            
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
     }
 }

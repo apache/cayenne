@@ -102,6 +102,11 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     
     public static final String DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY = "quoteSqlIdentifiers";
 
+    /**
+     * The namespace in which the data map XML file will be created. This is also the URI to locate a copy of the schema document.
+     */
+    public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/3.0/modelMap";
+    
     protected String name;
     protected String location;
     protected MappingNamespace namespace;
@@ -259,9 +264,10 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 1.1
      */
     public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<data-map project-version=\"");
-        encoder.print(String.valueOf(Project.CURRENT_PROJECT_VERSION));        
-        encoder.println("\">");
+        encoder.println("<data-map xmlns=\"http://cayenne.apache.org/schema/3.0/modelMap\"");
+        encoder.println("  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+        encoder.println("  xsi:schemaLocation=\"" + SCHEMA_XSD + " " + SCHEMA_XSD + "\"");
+        encoder.println("  project-version=\"" + Project.CURRENT_PROJECT_VERSION + "\">");
 
         encoder.indent(1);
 
