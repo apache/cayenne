@@ -8,8 +8,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
@@ -70,7 +68,7 @@ public class JCayenneTextPane extends JPanel {
     public Component getPane() {
         return pane;
     }
-    
+
     public int getStartPositionInDocument() {
         return pane.viewToModel(scrollPane.getViewport().getViewPosition());
         // starting pos
@@ -134,7 +132,6 @@ public class JCayenneTextPane extends JPanel {
         }
         return position + posInLine;
     }
-    
 
     public JCayenneTextPane(SyntaxConstant syntaxConstant) {
         super();
@@ -186,8 +183,8 @@ public class JCayenneTextPane extends JPanel {
             public void changedUpdate(DocumentEvent evt) {
             }
 
-        });        
-       
+        });
+
     }
 
     public void setHighlightText(int lastIndex, int endIndex) throws BadLocationException {
@@ -263,31 +260,34 @@ public class JCayenneTextPane extends JPanel {
 
     public String getToolTipText(MouseEvent e) {
 
-        
-            if (e.getPoint().y > endYPositionToolTip
-                    && e.getPoint().y < startYPositionToolTip 
-                    && imageError) {
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                String htmlText = getTooltipTextError()
-                        .replaceAll("\n", "<br>&nbsp;")
-                        .replaceAll("\t", "&nbsp;")
-                        .replaceAll("\r", "<br>&nbsp;");
+        if (e.getPoint().y > endYPositionToolTip
+                && e.getPoint().y < startYPositionToolTip
+                && imageError) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            String htmlText = getTooltipTextError()
+                    .replaceAll("\n", "<br>&nbsp;")
+                    .replaceAll("\t", "&nbsp;")
+                    .replaceAll("\r", "<br>&nbsp;");
 
-                return "<HTML>"
-                        + "<body bgcolor='#FFEBCD' text='black'>"
-                        + htmlText
-                        + "</body>";
-            }
-            else {
-                setCursor(Cursor.getDefaultCursor());
-                return null;
-            }
+            return "<HTML>"
+                    + "<body bgcolor='#FFEBCD' text='black'>"
+                    + htmlText
+                    + "</body>";
+        }
+        else {
+            setCursor(Cursor.getDefaultCursor());
+            return null;
+        }
     }
 
     public void removeHighlightText() {
         imageError = false;
         Highlighter highlighter = pane.getHighlighter();
         removeHighlightText(highlighter);
+    }
+    
+    public int getCaretPosition() {
+        return pane.getCaretPosition();        
     }
 
     public void paint(Graphics g) {

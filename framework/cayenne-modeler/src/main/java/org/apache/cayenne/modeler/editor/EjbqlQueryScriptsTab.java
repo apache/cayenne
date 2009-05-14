@@ -19,6 +19,8 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -27,6 +29,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -84,6 +87,20 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             public void removeUpdate(DocumentEvent e) {
                 getQuery().setEjbqlStatement(scriptArea.getText());
                 validateEJBQL();
+            }
+        });
+
+        scriptArea.getPane().addFocusListener(new FocusListener() {
+
+            EJBQLValidationThread thread;
+
+            public void focusGained(FocusEvent e) {
+                thread = new EJBQLValidationThread();
+                thread.start();
+            }
+
+            public void focusLost(FocusEvent e) {
+                thread.terminate();
             }
         });
 
@@ -194,7 +211,6 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     void validateEJBQL() {
-
         PositionException positionException = ejbqlQueryValidator.validateEJBQL(
                 getQuery(),
                 mediator.getCurrentDataDomain());
@@ -210,6 +226,49 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             }
             else {
                 scriptArea.removeHighlightText();
+            }
+        }
+    }
+
+    class EJBQLValidationThread extends Thread {
+
+        boolean running;
+        Object timer = new Object();
+        int previousCaretPosition;
+        int validateCaretPosition;
+
+        static final int DELAY = 500;
+
+        EJBQLValidationThread() {
+            super("ejbql-validation-thread");
+            setDaemon(true);
+        }
+        
+        public void run() {
+            running = true;
+            while (running) {
+                int caretPosition = scriptArea.getCaretPosition();
+                if (previousCaretPosition != 0
+                        && previousCaretPosition == caretPosition
+                        && validateCaretPosition != previousCaretPosition) {
+                    validateEJBQL();
+                    validateCaretPosition = caretPosition;
+                }
+                previousCaretPosition = caretPosition;
+                synchronized (timer) {
+                    try {
+                        timer.wait(DELAY);
+                    }
+                    catch (InterruptedException e) {
+                    }
+                }
+            }
+        }
+
+        public void terminate() {
+            synchronized (timer) {
+                running = false;
+                timer.notify();
             }
         }
     }
