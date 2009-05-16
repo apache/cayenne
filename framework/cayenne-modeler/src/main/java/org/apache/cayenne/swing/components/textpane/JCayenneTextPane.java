@@ -28,8 +28,6 @@ import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
-
 public class JCayenneTextPane extends JPanel {
 
     protected Highlighter.HighlightPainter painter;
