@@ -165,6 +165,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     /**
      * @deprecated since 3.0 use {@link #getPrimaryKeys()} that returns a collection.
      */
+    @Deprecated
     public List<DbAttribute> getPrimaryKey() {
         return new ArrayList<DbAttribute>(getPrimaryKeys());
     }
@@ -525,22 +526,6 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         // handle relationship name changes
         if (e.getId() == RelationshipEvent.CHANGE && e.isNameChange()) {
             String oldName = e.getOldName();
-            String newName = e.getNewName();
-
-            DataMap map = getDataMap();
-            if (map != null) {
-                // finds all object entities with a db relationship path to the renamed
-                // relationship
-                for (ObjEntity oe : map.getObjEntities()) {
-                    for (Relationship relationship : oe.getRelationships()) {
-                        ObjRelationship or = (ObjRelationship) relationship;
-                        // rename the db relationship path with the new name
-                        if (Util.nullSafeEquals(or.getDbRelationshipPath(), oldName)) {
-                            or.setDbRelationshipPath(newName);
-                        }
-                    }
-                }
-            }
 
             // clear the relationship out of the collection
             relationships.remove(oldName);

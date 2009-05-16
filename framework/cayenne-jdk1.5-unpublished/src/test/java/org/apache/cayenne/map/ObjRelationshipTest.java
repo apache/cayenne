@@ -71,8 +71,11 @@ public class ObjRelationshipTest extends CayenneCase {
     }
 
     public void testSerializability() throws Exception {
-        ObjRelationship r1 = new ObjRelationship("r1");
-        r1.setDbRelationshipPath("aaaa");
+        ObjEntity artistObjEnt = getObjEntity("Artist");
+
+        // start with "to many"
+        ObjRelationship r1 = (ObjRelationship) artistObjEnt
+                .getRelationship("paintingArray");
 
         ObjRelationship r2 = (ObjRelationship) Util.cloneViaSerialization(r1);
         assertEquals(r1.getName(), r2.getName());
@@ -115,25 +118,22 @@ public class ObjRelationshipTest extends CayenneCase {
     }
 
     public void testSetDbRelationshipPath() {
-        ObjRelationship relationship = new ObjRelationship();
-        relationship.dbRelationshipsRefreshNeeded = false;
+        ObjEntity artistObjEnt = getObjEntity("Artist");
 
-        relationship.setDbRelationshipPath("dummy.path");
-        assertTrue(relationship.dbRelationshipsRefreshNeeded);
-
-        assertEquals("dummy.path", relationship.getDbRelationshipPath());
-        assertTrue(relationship.dbRelationshipsRefreshNeeded);
+        ObjRelationship r = new ObjRelationship("r");
+        r.setSourceEntity(artistObjEnt);
+        r.setDbRelationshipPath("paintingArray");
+        assertEquals(r.getDbRelationshipPath(), "paintingArray");
     }
 
     public void testRefreshFromPath() {
         ObjRelationship relationship = new ObjRelationship();
-        relationship.setDbRelationshipPath("dummy.path");
 
         // attempt to resolve must fail - relationship is outside of context,
         // plus the path is random
         try {
-            relationship.refreshFromPath(false);
-            fail("refresh without source entity should have failed.");
+            relationship.setDbRelationshipPath("dummy.path");
+            fail("set random path should have failed.");
         }
         catch (CayenneRuntimeException ex) {
             // expected
@@ -147,7 +147,7 @@ public class ObjRelationshipTest extends CayenneCase {
         // attempt to resolve must fail - relationship is outside of context,
         // plus the path is random
         try {
-            relationship.refreshFromPath(false);
+            relationship.refreshFromPath("dummy.path");
             fail("refresh over a dummy path should have failed.");
         }
         catch (ExpressionException ex) {
@@ -171,8 +171,7 @@ public class ObjRelationshipTest extends CayenneCase {
         dbEntity1.addRelationship(dummyR);
         dbEntity2.addRelationship(pathR);
 
-        relationship.refreshFromPath(false);
-        assertFalse(relationship.dbRelationshipsRefreshNeeded);
+        relationship.refreshFromPath("dummy.path");
 
         List<DbRelationship> resolvedPath = relationship.getDbRelationships();
         assertEquals(2, resolvedPath.size());
@@ -207,7 +206,6 @@ public class ObjRelationshipTest extends CayenneCase {
 
         // test how toMany changes dependending on the underlying DbRelationships
         // add DbRelationships directly to avoid events to test "calculateToMany"
-        relationship.dbRelationshipsRefreshNeeded = false;
         relationship.dbRelationships.add(dummyR);
         assertFalse(relationship.isToMany());
 

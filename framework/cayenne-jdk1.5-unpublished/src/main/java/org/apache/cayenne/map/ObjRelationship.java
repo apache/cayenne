@@ -49,11 +49,9 @@ public class ObjRelationship extends Relationship {
     public static final String DEFAULT_COLLECTION_TYPE = "java.util.List";
 
     boolean readOnly;
-    boolean dbRelationshipsRefreshNeeded = true;
 
     protected int deleteRule = DeleteRule.NO_ACTION;
     protected boolean usedForLocking;
-    protected String dbRelationshipPath;
 
     protected List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(2);
 
@@ -228,7 +226,6 @@ public class ObjRelationship extends Relationship {
      * Returns an immutable list of underlying DbRelationships.
      */
     public List<DbRelationship> getDbRelationships() {
-        refreshFromPath(true);
         return Collections.unmodifiableList(dbRelationships);
     }
 
@@ -236,8 +233,6 @@ public class ObjRelationship extends Relationship {
      * Appends a DbRelationship to the existing list of DbRelationships.
      */
     public void addDbRelationship(DbRelationship dbRel) {
-        refreshFromPath(true);
-
         if (dbRel.getName() == null) {
             throw new IllegalArgumentException("DbRelationship has no name");
         }
@@ -261,13 +256,6 @@ public class ObjRelationship extends Relationship {
 
         dbRelationships.add(dbRel);
 
-        if (dbRelationshipPath == null) {
-            dbRelationshipPath = dbRel.getName();
-        }
-        else {
-            dbRelationshipPath += '.' + dbRel.getName();
-        }
-
         this.recalculateReadOnlyValue();
         this.recalculateToManyValue();
     }
@@ -276,36 +264,13 @@ public class ObjRelationship extends Relationship {
      * Removes the relationship <code>dbRel</code> from the list of relationships.
      */
     public void removeDbRelationship(DbRelationship dbRel) {
-        refreshFromPath(true);
-
         if (dbRelationships.remove(dbRel)) {
-
-            if (dbRelationships.isEmpty()) {
-                dbRelationshipPath = null;
-            }
-            else {
-                StringBuilder path = new StringBuilder();
-
-                for (int i = 0; i < dbRelationships.size(); i++) {
-                    DbRelationship r = dbRelationships.get(i);
-                    if (i > 0) {
-                        path.append('.');
-                    }
-
-                    path.append(r.getName());
-                }
-
-                dbRelationshipPath = path.toString();
-            }
-
             this.recalculateReadOnlyValue();
             this.recalculateToManyValue();
         }
     }
 
     public void clearDbRelationships() {
-        this.dbRelationshipPath = null;
-        this.dbRelationshipsRefreshNeeded = false;
         this.dbRelationships.clear();
         this.readOnly = false;
         this.toMany = false;
@@ -361,13 +326,13 @@ public class ObjRelationship extends Relationship {
      * @return flag indicating if the relationship is read only or not
      */
     public boolean isReadOnly() {
-        refreshFromPath(true);
+        recalculateReadOnlyValue();
         return readOnly;
     }
 
     @Override
     public boolean isToMany() {
-        refreshFromPath(true);
+        recalculateToManyValue();
         return super.isToMany();
     }
 
@@ -408,6 +373,7 @@ public class ObjRelationship extends Relationship {
     /**
      * @deprecated since 3.0 as ObjRelationship no longer reacts to DbRelationship events.
      */
+    @Deprecated
     public void dbRelationshipDidChange(RelationshipEvent event) {
         recalculateToManyValue();
         recalculateReadOnlyValue();
@@ -437,27 +403,22 @@ public class ObjRelationship extends Relationship {
      * @since 1.1
      */
     public String getDbRelationshipPath() {
-        if (dbRelationshipsRefreshNeeded) {
-            return dbRelationshipPath;
+        // build path on the fly
+        if (getDbRelationships().isEmpty()) {
+            return null;
         }
-        else {
-            // build path on the fly
-            if (getDbRelationships().isEmpty()) {
-                return null;
-            }
 
-            StringBuilder path = new StringBuilder();
-            Iterator<DbRelationship> it = getDbRelationships().iterator();
-            while (it.hasNext()) {
-                DbRelationship next = it.next();
-                path.append(next.getName());
-                if (it.hasNext()) {
-                    path.append(Entity.PATH_SEPARATOR);
-                }
+        StringBuilder path = new StringBuilder();
+        Iterator<DbRelationship> it = getDbRelationships().iterator();
+        while (it.hasNext()) {
+            DbRelationship next = it.next();
+            path.append(next.getName());
+            if (it.hasNext()) {
+                path.append(Entity.PATH_SEPARATOR);
             }
-
-            return path.toString();
         }
+
+        return path.toString();
     }
 
     /**
@@ -502,9 +463,8 @@ public class ObjRelationship extends Relationship {
      * Sets mapped DbRelationships as a dot-separated path.
      */
     public void setDbRelationshipPath(String relationshipPath) {
-        if (!Util.nullSafeEquals(this.dbRelationshipPath, relationshipPath)) {
-            this.dbRelationshipPath = relationshipPath;
-            this.dbRelationshipsRefreshNeeded = true;
+        if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
+            refreshFromPath(relationshipPath);
         }
     }
 
@@ -551,21 +511,13 @@ public class ObjRelationship extends Relationship {
     /**
      * Rebuild a list of relationships if String relationshipPath has changed.
      */
-    final void refreshFromPath(boolean stripInvalid) {
-        if (!dbRelationshipsRefreshNeeded) {
-            return;
-        }
-
+    final void refreshFromPath(String dbRelationshipPath) {
         synchronized (this) {
-            // check flag again in the synced block...
-            if (!dbRelationshipsRefreshNeeded) {
-                return;
-            }
 
             // remove existing relationships
             dbRelationships.clear();
 
-            if (this.dbRelationshipPath != null) {
+            if (dbRelationshipPath != null) {
 
                 ObjEntity entity = (ObjEntity) getSourceEntity();
                 if (entity == null) {
@@ -576,7 +528,7 @@ public class ObjRelationship extends Relationship {
                 try {
                     // add new relationships from path
                     Iterator<CayenneMapEntry> it = entity
-                            .resolvePathComponents(new ASTDbPath(this.dbRelationshipPath));
+                            .resolvePathComponents(new ASTDbPath(dbRelationshipPath));
 
                     while (it.hasNext()) {
                         DbRelationship relationship = (DbRelationship) it.next();
@@ -585,16 +537,12 @@ public class ObjRelationship extends Relationship {
                     }
                 }
                 catch (ExpressionException ex) {
-                    if (!stripInvalid) {
-                        throw ex;
-                    }
+                    throw ex;
                 }
             }
 
             recalculateToManyValue();
             recalculateReadOnlyValue();
-
-            dbRelationshipsRefreshNeeded = false;
         }
     }
 
@@ -668,7 +616,7 @@ public class ObjRelationship extends Relationship {
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).append(
                 "dbRelationshipPath",
-                dbRelationshipPath).toString();
+                getDbRelationshipPath()).toString();
     }
 
     /**
