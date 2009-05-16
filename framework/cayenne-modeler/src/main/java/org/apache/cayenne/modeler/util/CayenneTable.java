@@ -175,7 +175,9 @@ public class CayenneTable extends JTable {
             
             clearSelection();
             for (int row : rows) {
-                addRowSelectionInterval(row, row);
+                if (row >= 0 && row < getRowCount()) {
+                    addRowSelectionInterval(row, row);
+                }
             }
             
             fireForbidden = false;
