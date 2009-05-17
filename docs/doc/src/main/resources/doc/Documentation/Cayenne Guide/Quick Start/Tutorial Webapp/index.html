@@ -61,7 +61,7 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>Now we'll convert the tutorial that we created to a web application. The web part of it is done in JSP and is intentionally primitive from the UI perspective, to concentrate on Cayenne integration aspect. There may be some specifics depending on the web framework used (JSP, Struts, JSF, Click, WebWork, Tapestry, etc.), still the procedure outlined here is quite universal as it relies on the J2EE servlet specification.</p>
+<div id="ConfluenceContent"><p>Now we'll convert the tutorial that we created to a web application. The web part of it is done in JSP, which is the least common denominator of the Java web technologies, and is intentionally simplistic from the UI perspective, to concentrate on Cayenne integration aspect, rather than the interface. Other web frameworks may have some specifics, still the procedure outlined here is quite universal as it is based on the Java servlet specification.</p>
 
 <p>A typical Cayenne web application works like this:</p>
 
@@ -74,11 +74,10 @@
 
 <p>For detailed discussion of web application deployment, check <a href="../../../../Documentation/Cayenne Guide/Deployment/Web Applications/index.html" title="Web Applications">this page</a>.</p>
 
-<p>To run the web application from Eclipse, we will use <span class="nobr"><a href="http://jettylauncher.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">JettyLauncher plugin<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. If you are using something else (e.g. a Tomcat plugin) it should probably work as well.</p>
+<p>To run the web application from Eclipse, we will use <span class="nobr"><a href="http://code.google.com/p/run-jetty-run/" title="Visit page outside Confluence" rel="nofollow">run-jetty-run plugin<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. If you prefer another way to start web applications (e.g. via Eclipse WTP), it should work as well.</p>
 
 <ul>
-	<li><span class="nobr"><a href="http://jetty.mortbay.org" title="Visit page outside Confluence" rel="nofollow">Download<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> and unpack Jetty web container (tested version is 5.1.3).</li>
-	<li><span class="nobr"><a href="http://sourceforge.net/project/showfiles.php?group_id=118870" title="Visit page outside Confluence" rel="nofollow">Download<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> and unpack JettyLauncher to a local directory. Install it in Eclipse (<tt>"Help &gt; Find and Install"</tt>).</li>
+	<li>Install <tt>run-jetty-run</tt> plugin via Eclipse "Software Updates" function, following <span class="nobr"><a href="http://code.google.com/p/run-jetty-run/wiki/GettingStarted" title="Visit page outside Confluence" rel="nofollow">instructions on run-jetty-run website<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</li>
 </ul>
 
 
@@ -235,12 +234,10 @@
 </div></div>
 
 <ul>
-	<li>Run the application. Go to "Run &gt; Run..." menu, select "Jetty Web", right click and select "New"</li>
-	<li>Make sure project is "cayenne-tutorial", webapp root is "webapp" and Jetty home points to a directory where you unpacked Jetty:</li>
+	<li>Run the application. Go to "Run &gt; Run..." menu, select "Jetty Webapp", right click and select "New"</li>
+	<li>Make sure project is "cayenne-tutorial", webapp dir is "webapp".</li>
 </ul>
 
-
-<p><img src="jetty-run.jpg" align="absmiddle" border="0" /></p>
 
 <ul>
 	<li>Click "Apply" and "Run".</li>

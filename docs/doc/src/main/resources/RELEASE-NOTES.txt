@@ -25,6 +25,7 @@ CAY-1142 (Single table) Inheritance and Paginated lists
 CAY-1146 Move User properties API to ObjectContext & BaseContext
 CAY-1147 Remove id reading functionality from ResultIterator
 CAY-1150 Generated DataMap classes should contain public constants for all query names
+CAY-1151 Update web app tutorial - JettyLauncher plugin does not work with Eclipse Ganymede release or newer
 CAY-1153 MySQL : Enable views during reverse engineering
 CAY-1154 Rename .access.reveng package to .map.naming
 CAY-1156 Modeler search improvement

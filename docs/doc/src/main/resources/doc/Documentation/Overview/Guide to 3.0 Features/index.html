@@ -71,13 +71,17 @@
 
 <p>Stopped supporting <tt>DerivedDbEntity</tt> - its functionality (aggregate queries) is achieved via EJBQL and other means.</p>
 
+<h3><a name="Guideto3.0Features-DataMapDTDReplacedwithSchema"></a>DataMap DTD Replaced with Schema</h3>
+
+<p>A schema is now available <span class="nobr"><a href="http://cayenne.apache.org/schema/3.0/modelMap.html" title="Visit page outside Confluence" rel="nofollow">here<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> for the DataMap XML format.</p>
+
 <h3><a name="Guideto3.0Features-Embeddables"></a>Embeddables</h3>
-<p><em>(as of M4 there's no Modeler support)</em></p>
+<p><em>(as of M6 there's no Modeler support)</em></p>
 
 <p>Added a new mapping artifact - Embeddable, that allows to map composite objects to a single table. </p>
 
 <h3><a name="Guideto3.0Features-FlattenedAttributes"></a>Flattened Attributes</h3>
-<p><em>(as of M4 there's no Modeler support)</em></p>
+<p><em>(as of M6 there's no Modeler support)</em></p>
 
 <p>Just like with "flattened" relationships, now there is a way to map an ObjAttribute that spans one or more DbRelationships and is mapped to a column of a joined table.</p>
 
@@ -187,13 +191,8 @@
 
 
 <h3><a name="Guideto3.0Features-POJOPersistence"></a>POJO Persistence</h3>
-<p><em>(status: preview)</em></p>
 
-<ul>
-	<li>Implemented class enhancer to enhance POJO's into org.apache.cayenne.Persistent</li>
-</ul>
-
-
+<p><em>(status: experimental. Unlikely to be production ready in 3.0)</em></p>
 
 <h2><a name="Guideto3.0Features-RemoteObjectPersistence"></a>Remote Object Persistence</h2>
 
@@ -227,6 +226,9 @@
 	<li>Reopen Last Project on Startup</li>
 	<li>Added progress/log view</li>
 	<li>Added SQL syntax highlighting.</li>
+	<li>Added EJBQL Query mapping capabilities, with synatx highlighting.</li>
+	<li>Added support for quoting of SQL Identifiers</li>
+	<li>The Modeler can be <a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html" title="maven2-modeler">started from Maven</a></li>
 </ul>
 
 
@@ -259,12 +261,22 @@
 <pre class="code-java">org.apache.log4j.PropertyConfigurator.configure(<span class="code-quote">"cayenne-log.properties"</span>);</pre>
 </div></div>
 
+<h3><a name="Guideto3.0Features-OptionalQuotingofSQLIdentifiers"></a>Optional Quoting of SQL Identifiers</h3>
+
+<p>Cayenne now supports optional quoting of SQL identifiers in the generated SQL. This has been a very popular request in the past. Identifier quoting can be turned on per DataMap in the Modeler (look for "Quote SQL Identifiers" checkbox). This will allow to map column names that contain spaces, non-ascii characters, reserved words, etc., i.e. the schemas that could not be mapped with Cayenne before.</p>
+
+<h3><a name="Guideto3.0Features-AbilitytoDetectMissing%2FPartialSchemaandAutoGenerateSchemainRuntime"></a>Ability to Detect Missing/Partial Schema and Auto Generate Schema in Runtime</h3>
+
+<p><em>(status: as of M6 column consistency checks)</em></p>
+
+<p>DataNode has a new attribute in the Modeler - "Schema Update Strategy". This allows to specify runtime behavior in regards to schema consistency checking. The default behavior is "do nothing" (<tt>org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy</tt>). Alternatively Cayenne can create the schema if none is found or throw an exception if schema inconsistencies are detected.</p>
 
 <h2><a name="Guideto3.0Features-Tools"></a>Tools</h2>
 
 <ul>
 	<li>Switched <tt>"cgen"</tt> to "version 1.2" of the template as a default version</li>
 	<li>Support for classpath in <tt>"cdbgen"</tt>.</li>
+	<li>The Modeler can be <a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html" title="maven2-modeler">started from Maven</a>, that can potentially help in aligning the Modeler version with the project runtime Cayenne version.</li>
 </ul>
 </div>
 </div>
