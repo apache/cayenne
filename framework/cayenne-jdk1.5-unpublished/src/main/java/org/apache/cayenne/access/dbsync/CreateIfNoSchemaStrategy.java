@@ -39,10 +39,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
 
-    final Log logObj = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
+    final static Log logger = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
 
     @Override
-    public void generateUpdateSchema(DataNode dataNode) throws SQLException {
+    public void processSchemaUpdate(DataNode dataNode) throws SQLException {
 
         Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
         Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
@@ -56,10 +56,11 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
         }
 
         if (generate) {
+            logger.info("No schema detected, will create mapped tables");
             generate(dataNode);
         }
         else {
-            logObj.info("Full or partial schema is present, skipping schema generation");
+            logger.info("Full or partial schema detected, skipping tables creation");
         }
     }
 

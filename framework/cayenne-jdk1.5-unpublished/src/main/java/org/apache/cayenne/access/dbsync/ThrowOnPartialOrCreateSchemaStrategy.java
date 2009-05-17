@@ -26,36 +26,49 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.map.DataMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @since 3.0
  */
 public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaStrategy {
 
+    final static Log logger = LogFactory
+            .getLog(ThrowOnPartialOrCreateSchemaStrategy.class);
+
     @Override
-    protected void analyze(
+    protected void processSchemaUpdate(
             DataNode dataNode,
             List<String> mergerOnlyTable,
             String errorMessage,
             int entitiesSize) {
 
         if (mergerOnlyTable.size() == 0 && errorMessage == null) {
+            logger.info("Full schema is present");
         }
         else if (mergerOnlyTable.size() == entitiesSize) {
+            logger.info("No schema detected, will create mapped tables");
             generate(dataNode);
         }
         else {
-            String err = "Partial schema detected: ";
-            if (errorMessage != null) {
-                err += errorMessage;
-            }
+            logger.info("Error - partial schema detected");
 
+            StringBuilder buffer = new StringBuilder("Schema mismatch detected");
+
+            if (errorMessage != null) {
+                buffer.append(": ").append(errorMessage);
+            }
             else {
                 if (mergerOnlyTable.size() > 0) {
-                    err += "expect table " + mergerOnlyTable.get(0);
+                    buffer
+                            .append(": missing table '")
+                            .append(mergerOnlyTable.get(0))
+                            .append('\'');
                 }
             }
-            throw new CayenneRuntimeException(err);
+
+            throw new CayenneRuntimeException(buffer.toString());
         }
     }
 

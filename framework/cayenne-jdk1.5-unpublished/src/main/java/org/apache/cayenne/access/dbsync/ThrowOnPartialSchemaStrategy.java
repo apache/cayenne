@@ -36,13 +36,13 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
 
-    final Log log = LogFactory.getLog(ThrowOnPartialSchemaStrategy.class);
+    final static Log logger = LogFactory.getLog(ThrowOnPartialSchemaStrategy.class);
 
     /**
      * @since 3.0
      */
     @Override
-    public void generateUpdateSchema(DataNode dataNode) {
+    protected void processSchemaUpdate(DataNode dataNode) {
 
         SchemaAnalyzer analyzer = new SchemaAnalyzer();
 
@@ -55,8 +55,8 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
 
             try {
                 while (rs.next()) {
-                    String schema_name = rs.getString(1);
-                    schemas.add(schema_name);
+                    String schemaName = rs.getString(1);
+                    schemas.add(schemaName);
                 }
             }
             finally {
@@ -66,7 +66,7 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
             analyzer.analyzeSchemas(schemas, md);
         }
         catch (Exception e) {
-            log.debug("Exception analyzing schema, ignoring", e);
+            logger.debug("Exception analyzing schema, ignoring", e);
         }
 
         Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
@@ -78,35 +78,43 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
                 analyzer.compareColumns(md);
             }
             catch (SQLException e) {
-                log.debug("Exception analyzing schema, ignoring", e);
+                logger.debug("Exception analyzing schema, ignoring", e);
             }
         }
-        analyze(dataNode, analyzer.getTableNoInDB(), analyzer.getErrorMessage(), entities
-                .size());
+
+        processSchemaUpdate(dataNode, analyzer.getTableNoInDB(), analyzer
+                .getErrorMessage(), entities.size());
     }
 
-    protected void analyze(
+    protected void processSchemaUpdate(
             DataNode dataNode,
             List<String> mergerOnlyTable,
             String errorMessage,
             int entitiesSize) {
 
         if (mergerOnlyTable.size() == 0 && errorMessage == null) {
+            logger.info("Full schema is present");
         }
         else {
-            String err = "Partial schema detected: ";
+            logger.info("Error - missing or partial schema detected");
+            StringBuilder buffer = new StringBuilder("Schema mismatch detected");
+
             if (errorMessage != null) {
-                err += errorMessage;
+                buffer.append(": ").append(errorMessage);
             }
             else if (mergerOnlyTable.size() == entitiesSize) {
-                err += "no schema in database";
+                buffer.append(": no schema found");
             }
             else {
                 if (mergerOnlyTable.size() > 0) {
-                    err += "expect table " + mergerOnlyTable.get(0);
+                    buffer
+                            .append(": missing table '")
+                            .append(mergerOnlyTable.get(0))
+                            .append('\'');
                 }
             }
-            throw new CayenneRuntimeException(err);
+
+            throw new CayenneRuntimeException(buffer.toString());
         }
     }
 }

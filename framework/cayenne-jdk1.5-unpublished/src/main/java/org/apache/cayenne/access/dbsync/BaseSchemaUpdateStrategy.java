@@ -33,19 +33,19 @@ public abstract class BaseSchemaUpdateStrategy implements SchemaUpdateStrategy {
      * @since 3.0
      */
     public void updateSchema(DataNode dataNode) throws SQLException {
-        if(!run) {
-            synchronized(this) {
-              if(!run) {
-                generateUpdateSchema(dataNode);
-                run = true;
-              }
+        if (!run) {
+            synchronized (this) {
+                if (!run) {
+                    processSchemaUpdate(dataNode);
+                    run = true;
+                }
             }
-         }
+        }
     }
-    
+
     /**
      * @since 3.0
      */
-    protected abstract void generateUpdateSchema(DataNode dataNode) throws SQLException;
- 
+    protected abstract void processSchemaUpdate(DataNode dataNode) throws SQLException;
+
 }
