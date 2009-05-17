@@ -67,11 +67,5 @@
 				<module>maven-cayenne-modeler-plugin</module>
 			</modules>
 		</profile>
-		<profile>
-			<id>windows</id>
-			<modules>
-				<module>cayenne-modeler-win</module>
-			</modules>
-		</profile>
 	</profiles>
 </project>
