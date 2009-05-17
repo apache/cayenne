@@ -22,29 +22,32 @@ package org.apache.cayenne.gen;
 import java.util.Collection;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.NameConverter;
+import org.apache.cayenne.util.Util;
 
-public class ClientDataMapArtifact extends DataMapArtifact{
+public class ClientDataMapArtifact extends DataMapArtifact {
 
     public ClientDataMapArtifact(DataMap dataMap, Collection<Query> queries) {
         super(dataMap, queries);
-        
+
     }
-    
+
     @Override
-    public String getQualifiedBaseClassName(){
+    public String getQualifiedBaseClassName() {
 
         return dataMap.getDefaultClientSuperclass();
-    } 
-    
+    }
+
     @Override
     public String getQualifiedClassName() {
         String clientPrefix = "";
-        if(dataMap.getDefaultClientPackage().equals(dataMap.getDefaultPackage())){
+
+        if (Util.nullSafeEquals(dataMap.getDefaultClientPackage(), dataMap
+                .getDefaultPackage())) {
             clientPrefix = "Client_";
         }
+
         String pkg = dataMap.getDefaultClientPackage();
         if (pkg == null) {
             pkg = "";
@@ -54,7 +57,7 @@ public class ClientDataMapArtifact extends DataMapArtifact{
         }
 
         return pkg
-            + NameConverter.underscoredToJava(clientPrefix + NameConverter
-                        .specialCharsToJava(dataMap.getName()), true);
+                + NameConverter.underscoredToJava(clientPrefix
+                        + NameConverter.specialCharsToJava(dataMap.getName()), true);
     }
 }
