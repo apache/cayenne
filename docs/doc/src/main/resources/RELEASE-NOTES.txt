@@ -31,6 +31,7 @@ CAY-1156 Modeler search improvement
 CAY-1158 cayenne-modeler:run plugin should open a (configured) project file, with suitable defaults
 CAY-1161 Deprecate SelectQuery custom columns feature
 CAY-1164 Implement EJBQL query support in the Modeler
+CAY-1167 Create model schema XSD
 CAY-1174 Modeler: support optional meaningful PK mapping during reverse engineering
 CAY-1175 Replace String column name capitalization property with an enum
 CAY-1184 Callback methods should default to usable names
