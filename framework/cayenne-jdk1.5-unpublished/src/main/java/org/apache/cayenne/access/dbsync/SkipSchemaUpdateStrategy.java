@@ -26,25 +26,12 @@ import org.apache.cayenne.access.DataNode;
  * 
  * @since 3.0
  */
-public class SkipSchemaUpdateStrategy extends BaseSchemaUpdateStrategy {
+public class SkipSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
     /**
      * @since 3.0
      */
     public void updateSchema(DataNode dataNode) {
         // does nothing
-    }
-
-    /**
-     * @since 3.0
-     */
-    @Override
-    public void generateUpdateSchema(DataNode dataNode) {
-        // does nothing
-    }
-
-    @Override
-    protected BaseSchemaUpdateStrategy getSchema() {
-        return this;
     }
 }

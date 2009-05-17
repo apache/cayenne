@@ -42,20 +42,6 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
     final Log logObj = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
 
     @Override
-    protected BaseSchemaUpdateStrategy getSchema() {
-        return currentSchema;
-    }
-
-    public CreateIfNoSchemaStrategy() {
-        currentSchema = this;
-    }
-
-    public void updateSchema(DataNode dataNode) throws SQLException {
-        super.generateUpdateSchema(dataNode);
-    }
-
-  
-    @Override
     public void generateUpdateSchema(DataNode dataNode) throws SQLException {
 
         Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
@@ -68,16 +54,16 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
                 break;
             }
         }
+
         if (generate) {
             generate(dataNode);
         }
         else {
-            logObj
-                    .info("DbGenerator no create, because one of the tables, modeled in Cayenne, already exist in DB");
+            logObj.info("Full or partial schema is present, skipping schema generation");
         }
     }
 
-    private synchronized void generate(DataNode dataNode) {
+    private void generate(DataNode dataNode) {
         Collection<DataMap> map = dataNode.getDataMaps();
         Iterator<DataMap> iterator = map.iterator();
         while (iterator.hasNext()) {

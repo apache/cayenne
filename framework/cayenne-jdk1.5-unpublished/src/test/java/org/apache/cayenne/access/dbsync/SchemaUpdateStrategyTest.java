@@ -140,7 +140,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
         try {
             dataNode.performQueries(Collections.singletonList((Query) query), observer);
             Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
-            assertNotNull(nameTables.get("SUS1"));
+            assertTrue(nameTables.get("sus1")!=null || nameTables.get("SUS1")!=null );
             int sizeDB2 = getNameTablesInDB(dataNode).size();
             assertEquals(2, sizeDB2 - sizeDB);
             dataNode.performQueries(Collections.singletonList((Query) query), observer);
@@ -245,7 +245,6 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
             DataNode dataNode2 = createDataNode(map);
             setStrategy(strategy, dataNode2);
             dataNode2.performQueries(Collections.singletonList((Query) query), observer);
-            dataNode2.performQueries(Collections.singletonList((Query) query), observer);
         }
         finally {
             dropTables(map, dataNode, observer);
@@ -291,7 +290,8 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
 
         dataNode.performQueries(Collections.singletonList((Query) query), observer);
         Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
-        assertNotNull(nameTables.get("SUS1"));
+        assertTrue(nameTables.get("sus1") != null || nameTables.get("SUS1") != null);
+
     }
 
     private void setStrategy(String name, DataNode dataNode) {

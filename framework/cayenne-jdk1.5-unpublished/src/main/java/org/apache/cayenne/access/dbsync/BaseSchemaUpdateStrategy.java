@@ -27,15 +27,25 @@ import org.apache.cayenne.access.DataNode;
  */
 public abstract class BaseSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
-    protected BaseSchemaUpdateStrategy currentSchema;
-
-    protected abstract BaseSchemaUpdateStrategy getSchema();
+    protected volatile boolean run;
 
     /**
      * @since 3.0
      */
-    public void generateUpdateSchema(DataNode dataNode) throws SQLException {
-            getSchema().generateUpdateSchema(dataNode);
-             currentSchema = new SkipSchemaUpdateStrategy();
-     };
+    public void updateSchema(DataNode dataNode) throws SQLException {
+        if(!run) {
+            synchronized(this) {
+              if(!run) {
+                generateUpdateSchema(dataNode);
+                run = true;
+              }
+            }
+         }
+    }
+    
+    /**
+     * @since 3.0
+     */
+    protected abstract void generateUpdateSchema(DataNode dataNode) throws SQLException;
+ 
 }

@@ -26,25 +26,14 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.map.DataMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @since 3.0
  */
 public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaStrategy {
 
-    final Log logObj = LogFactory.getLog(ThrowOnPartialOrCreateSchemaStrategy.class);
-
-    /**
-     * @since 3.0
-     */
-    public ThrowOnPartialOrCreateSchemaStrategy() {
-        currentSchema = this;
-    }
-
     @Override
-    protected synchronized void analyser(
+    protected void analyze(
             DataNode dataNode,
             List<String> mergerOnlyTable,
             String errorMessage,
@@ -56,7 +45,7 @@ public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaSt
             generate(dataNode);
         }
         else {
-            String err = "Parser schema detected: ";
+            String err = "Partial schema detected: ";
             if (errorMessage != null) {
                 err += errorMessage;
             }
@@ -70,7 +59,7 @@ public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaSt
         }
     }
 
-    private synchronized void generate(DataNode dataNode) {
+    private void generate(DataNode dataNode) {
         Collection<DataMap> map = dataNode.getDataMaps();
         Iterator<DataMap> iterator = map.iterator();
         while (iterator.hasNext()) {
