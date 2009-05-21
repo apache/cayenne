@@ -21,6 +21,9 @@ package org.apache.cayenne;
 
 import junit.framework.TestCase;
 
+import org.apache.art.Artist;
+import org.apache.cayenne.access.DataContext;
+
 
 /**
  */
@@ -50,5 +53,13 @@ public class PersistentObjectTest extends TestCase {
         assertNull(object.getObjectId());
         object.setObjectId(id);
         assertSame(id, object.getObjectId());
+    }
+    
+    public void testGetObjEntity() throws Exception {
+        PersistentObject a = new Artist();
+        assertEquals(a.getObjEntity(), null);
+        
+        DataContext.createDataContext().registerNewObject(a);
+        assertEquals(a.getObjEntity().getName(), "Artist");
     }
 }

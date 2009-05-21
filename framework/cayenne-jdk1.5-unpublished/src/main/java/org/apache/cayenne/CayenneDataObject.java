@@ -42,10 +42,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -58,13 +55,10 @@ import org.apache.cayenne.xml.XMLSerializable;
  * of Cayenne persistent objects.
  * 
  */
-public class CayenneDataObject implements DataObject, Validating, XMLSerializable {
+public class CayenneDataObject extends PersistentObject implements DataObject, Validating, XMLSerializable {
 
     protected long snapshotVersion = DEFAULT_VERSION;
 
-    protected ObjectId objectId;
-    protected transient int persistenceState = PersistenceState.TRANSIENT;
-    protected transient ObjectContext objectContext;
     protected Map<String, Object> values = new HashMap<String, Object>();
 
     /**
@@ -98,30 +92,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         }
     }
 
-    /**
-     * Returns mapped ObjEntity for this object. If an object is transient or is not
-     * mapped returns null.
-     * 
-     * @since 1.2
-     */
-    public ObjEntity getObjEntity() {
-        return (getObjectContext() != null) ? getObjectContext()
-                .getEntityResolver()
-                .lookupObjEntity(this) : null;
-    }
-
-    public ObjectId getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(ObjectId objectId) {
-        this.objectId = objectId;
-    }
-
-    public int getPersistenceState() {
-        return persistenceState;
-    }
-
+    @Override
     public void setPersistenceState(int persistenceState) {
         this.persistenceState = persistenceState;
 
@@ -160,7 +131,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
              */
             Collection<Object> result = property instanceof List ?
                     new ArrayList<Object>() : new HashSet<Object>() ;
-            for (Object obj : (Collection) property) {
+            for (Object obj : (Collection<?>) property) {
                 if (obj instanceof CayenneDataObject) {
                     Object rest = readNestedProperty((CayenneDataObject) obj, path, tokenizedPath, 
                             tokenIndex + 1, tokenIndex);
@@ -169,7 +140,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
                          * We don't want nested collections.
                          * E.g. readNestedProperty("paintingArray.paintingTitle") should return List<String>
                          */
-                        result.addAll((Collection) rest);
+                        result.addAll((Collection<?>) rest);
                     }
                     else {
                         result.add(rest);
@@ -389,32 +360,6 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
             else
                 val.setToOneTarget(revRel.getName(), this, false);
         }
-    }
-
-    /**
-     * Returns a map key for a given object and relationship.
-     * 
-     * @since 3.0
-     */
-    private Object getMapKey(String relationshipName, Object value) {
-
-        EntityResolver resolver = objectContext.getEntityResolver();
-        ClassDescriptor descriptor = resolver
-                .getClassDescriptor(objectId.getEntityName());
-
-        if (descriptor == null) {
-            throw new IllegalStateException("DataObject's entity is unmapped, objectId: "
-                    + objectId);
-        }
-
-        Property property = descriptor.getProperty(relationshipName);
-        if (property instanceof ToManyMapProperty) {
-            return ((ToManyMapProperty) property).getMapKey(value);
-        }
-
-        throw new IllegalArgumentException("Relationship '"
-                + relationshipName
-                + "' is not a to-many Map");
     }
 
     /**
@@ -792,17 +737,9 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
     }
 
     /**
-     * Returns this object's DataContext.
-     * 
      * @since 1.2
      */
-    public ObjectContext getObjectContext() {
-        return objectContext;
-    }
-
-    /**
-     * @since 1.2
-     */
+    @Override
     public void setObjectContext(ObjectContext objectContext) {
         this.objectContext = objectContext;
 
