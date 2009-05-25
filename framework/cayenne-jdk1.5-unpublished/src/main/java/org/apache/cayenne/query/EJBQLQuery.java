@@ -249,4 +249,20 @@ public class EJBQLQuery implements Query, XMLSerializable {
     public void setPageSize(int pageSize) {
         metadata.setPageSize(pageSize);
     }
+    
+    /**
+     * Sets statement's fetch size (0 for no default size)
+     * @since 3.0 
+     */
+    public void setStatementFetchSize(int size) {
+        metadata.setStatementFetchSize(size);
+    }
+    
+    /**
+     * @return statement's fetch size
+     * @since 3.0
+     */
+    public int getStatementFetchSize() {
+        return metadata.getStatementFetchSize();
+    }
 }

@@ -40,6 +40,7 @@ public interface QueryMetadata {
      * 
      * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
+    @Deprecated
     public static final String NO_CACHE = "nocache";
 
     /**
@@ -48,6 +49,7 @@ public interface QueryMetadata {
      * 
      * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
+    @Deprecated
     public static final String LOCAL_CACHE = "localcache";
 
     /**
@@ -55,6 +57,7 @@ public interface QueryMetadata {
      * 
      * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
+    @Deprecated
     public static final String LOCAL_CACHE_REFRESH = "localcache_refresh";
 
     /**
@@ -63,6 +66,7 @@ public interface QueryMetadata {
      * 
      * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
+    @Deprecated
     public static final String SHARED_CACHE = "sharedcache";
 
     /**
@@ -70,6 +74,7 @@ public interface QueryMetadata {
      * 
      * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
+    @Deprecated
     public static final String SHARED_CACHE_REFRESH = "sharedcache_refresh";
 
     /**
@@ -117,26 +122,31 @@ public interface QueryMetadata {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public static final String REFRESHING_OBJECTS_PROPERTY = "cayenne.GenericSelectQuery.refreshingObjects";
 
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public static final boolean REFRESHING_OBJECTS_DEFAULT = true;
 
     /**
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     public static final String RESOLVING_INHERITED_PROPERTY = "cayenne.GenericSelectQuery.resolvingInherited";
 
     /**
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     public static final boolean RESOLVING_INHERITED_DEFAULT = true;
 
     /**
      * @deprecated since 3.0 use {@value #CACHE_STRATEGY_PROPERTY}
      */
+    @Deprecated
     public static final String CACHE_POLICY_PROPERTY = "cayenne.GenericSelectQuery.cachePolicy";
 
     /**
@@ -152,7 +162,24 @@ public interface QueryMetadata {
     /**
      * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
+    @Deprecated
     public static final String CACHE_POLICY_DEFAULT = NO_CACHE;
+    
+    /**
+     * Defines the name of the property for the query {@link #getStatementFetchSize() fetch
+     * size}.
+     * 
+     * @since 3.0
+     */
+    public static final String STATEMENT_FETCH_SIZE_PROPERTY = "cayenne.GenericSelectQuery.statementFetchSize";
+
+    /**
+     * Defines default query fetch start index, which is 0, meaning that matching rows
+     * selected starting from the first.
+     * 
+     * @since 3.0
+     */
+    public static final int STATEMENT_FETCH_SIZE_DEFAULT = 0;
 
     /**
      * @since 3.0
@@ -186,6 +213,7 @@ public interface QueryMetadata {
      * 
      * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
+    @Deprecated
     String getCachePolicy();
 
     /**
@@ -231,6 +259,7 @@ public interface QueryMetadata {
      * 
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     boolean isResolvingInherited();
 
     /**
@@ -250,6 +279,7 @@ public interface QueryMetadata {
     /**
      * @deprecated since 3.0, renamed to {@link #getFetchOffset()}.
      */
+    @Deprecated
     int getFetchStartIndex();
 
     /**
@@ -297,4 +327,10 @@ public interface QueryMetadata {
      * @since 3.0
      */
     List<Object> getResultSetMapping();
+    
+    /**
+     * @return statement's fetch size
+     * @since 3.0
+     */
+    public int getStatementFetchSize();
 }

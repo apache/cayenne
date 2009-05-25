@@ -111,6 +111,7 @@ class QueryMetadataWrapper implements QueryMetadata {
     /**
      * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
+    @Deprecated
     public String getCachePolicy() {
         return (overrideExists(QueryMetadata.CACHE_POLICY_PROPERTY)) ? (String) overrides
                 .get(QueryMetadata.CACHE_POLICY_PROPERTY) : info.getCachePolicy();
@@ -144,6 +145,7 @@ class QueryMetadataWrapper implements QueryMetadata {
     /**
      * @deprecated since 3.0 as super is deprecated.
      */
+    @Deprecated
     public boolean isRefreshingObjects() {
         return true;
     }
@@ -151,6 +153,7 @@ class QueryMetadataWrapper implements QueryMetadata {
     /**
      * @deprecated since 3.0 inheritance resolving is not optional.
      */
+    @Deprecated
     public boolean isResolvingInherited() {
         return true;
     }
@@ -171,6 +174,7 @@ class QueryMetadataWrapper implements QueryMetadata {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public int getFetchStartIndex() {
         return getFetchOffset();
     }
@@ -186,5 +190,14 @@ class QueryMetadataWrapper implements QueryMetadata {
 
     public PrefetchTreeNode getPrefetchTree() {
         return info.getPrefetchTree();
+    }
+
+    public int getStatementFetchSize() {
+        if (!overrideExists(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY)) {
+            return info.getPageSize();
+        }
+
+        Number n = (Number) overrides.get(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY);
+        return n != null ? n.intValue() : 0;
     }
 }

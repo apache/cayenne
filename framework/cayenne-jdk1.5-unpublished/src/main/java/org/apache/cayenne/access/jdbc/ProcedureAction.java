@@ -70,6 +70,8 @@ public class ProcedureAction extends BaseSQLAction {
         CallableStatement statement = (CallableStatement) transl.createStatement();
 
         try {
+            initStatement(statement);
+            
             // stored procedure may contain a mixture of update counts and result sets,
             // and out parameters. Read out parameters first, then
             // iterate until we exhaust all results
@@ -226,6 +228,17 @@ public class ProcedureAction extends BaseSQLAction {
             // treat out parameters as a separate data row set
             QueryLogger.logSelectCount(1, System.currentTimeMillis() - t1);
             delegate.nextRows(query, Collections.singletonList(result));
+        }
+    }
+    
+    /**
+     * Initializes statement with query parameters
+     * @throws Exception 
+     */
+    void initStatement(CallableStatement statement) throws Exception {
+        int statementFetchSize = query.getMetaData(getEntityResolver()).getStatementFetchSize();
+        if (statementFetchSize != 0) {
+            statement.setFetchSize(statementFetchSize);
         }
     }
 }

@@ -218,5 +218,9 @@ public abstract class QueryAssembler {
                 }
             }
         }
+        
+        if (queryMetadata.getStatementFetchSize() != 0) {
+            stmt.setFetchSize(queryMetadata.getStatementFetchSize());
+        }
     }
 }

@@ -66,10 +66,13 @@ public class SelectQueryBuilderTest extends TestCase {
     public void testGetQueryProperties() throws Exception {
         SelectQueryBuilder builder = new MockupRootQueryBuilder();
         builder.addProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
+        builder.addProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
 
         Query query = builder.getQuery();
         assertTrue(query instanceof SelectQuery);
         assertEquals(5, ((SelectQuery) query).getFetchLimit());
+        
+        assertEquals(6, ((SelectQuery) query).getStatementFetchSize());
 
         // TODO: test other properties...
     }

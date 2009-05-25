@@ -22,8 +22,8 @@ package org.apache.cayenne.map;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.SQLTemplate;
 
 /**
  */
@@ -57,10 +57,13 @@ public class SQLTemplateBuilderTest extends TestCase {
     public void testGetQueryProperties() throws Exception {
         SQLTemplateBuilder builder = new MockupRootQueryBuilder();
         builder.addProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
+        builder.addProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
 
         Query query = builder.getQuery();
         assertTrue(query instanceof SQLTemplate);
         assertEquals(5, ((SQLTemplate) query).getFetchLimit());
+        
+        assertEquals(6, ((SQLTemplate) query).getStatementFetchSize());
 
         // TODO: test other properties...
     }

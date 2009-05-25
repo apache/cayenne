@@ -81,6 +81,7 @@ class DataDomainQuery implements Query, QueryMetadata {
     /**
      * @deprecated since 3.0 in favor of 'getCacheStrategy'.
      */
+    @Deprecated
     public String getCachePolicy() {
         return null;
     }
@@ -108,6 +109,7 @@ class DataDomainQuery implements Query, QueryMetadata {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public int getFetchStartIndex() {
         return getFetchOffset();
     }
@@ -143,5 +145,9 @@ class DataDomainQuery implements Query, QueryMetadata {
 
     public boolean isResolvingInherited() {
         return false;
+    }
+
+    public int getStatementFetchSize() {
+        return 0;
     }
 }

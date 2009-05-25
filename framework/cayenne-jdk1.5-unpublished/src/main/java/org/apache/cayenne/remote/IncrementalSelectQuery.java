@@ -89,6 +89,7 @@ class IncrementalSelectQuery extends SelectQuery {
             /**
              * @deprecated since 3.0 in favor of 'getCacheStrategy'.
              */
+            @Deprecated
             public String getCachePolicy() {
                 return metadata.getCachePolicy();
             }
@@ -116,6 +117,7 @@ class IncrementalSelectQuery extends SelectQuery {
             /**
              * @deprecated since 3.0
              */
+            @Deprecated
             public int getFetchStartIndex() {
                 return metadata.getFetchStartIndex();
             }
@@ -154,6 +156,10 @@ class IncrementalSelectQuery extends SelectQuery {
 
             public boolean isResolvingInherited() {
                 return metadata.isResolvingInherited();
+            }
+
+            public int getStatementFetchSize() {
+                return metadata.getStatementFetchSize();
             }
         };
     }
@@ -306,6 +312,7 @@ class IncrementalSelectQuery extends SelectQuery {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     @Override
     public boolean isRefreshingObjects() {
         return query.isRefreshingObjects();
@@ -314,6 +321,7 @@ class IncrementalSelectQuery extends SelectQuery {
     /**
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     @Override
     public boolean isResolvingInherited() {
         return query.isResolvingInherited();
@@ -397,6 +405,7 @@ class IncrementalSelectQuery extends SelectQuery {
     /**
      * @deprecated since 3.0 as wrapped method is also deprecated.
      */
+    @Deprecated
     @Override
     public void setRefreshingObjects(boolean flag) {
         query.setRefreshingObjects(flag);
@@ -405,6 +414,7 @@ class IncrementalSelectQuery extends SelectQuery {
     /**
      * @deprecated since 3.0 as wrapped method is also deprecated.
      */
+    @Deprecated
     @Override
     public void setResolvingInherited(boolean b) {
         query.setResolvingInherited(b);

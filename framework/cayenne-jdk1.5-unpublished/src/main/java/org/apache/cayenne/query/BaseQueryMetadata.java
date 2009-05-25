@@ -47,6 +47,8 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
     int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
+    
+    int statementFetchSize = QueryMetadata.FETCH_OFFSET_DEFAULT;
 
     int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
     boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
@@ -164,6 +166,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         Object fetchOffset = properties.get(QueryMetadata.FETCH_OFFSET_PROPERTY);
         Object fetchLimit = properties.get(QueryMetadata.FETCH_LIMIT_PROPERTY);
         Object pageSize = properties.get(QueryMetadata.PAGE_SIZE_PROPERTY);
+        Object statementFetchSize = properties.get(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY);
         Object fetchingDataRows = properties
                 .get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY);
 
@@ -184,6 +187,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.pageSize = (pageSize != null)
                 ? Integer.parseInt(pageSize.toString())
                 : QueryMetadata.PAGE_SIZE_DEFAULT;
+                
+        this.statementFetchSize = (statementFetchSize != null)
+                ? Integer.parseInt(statementFetchSize.toString())
+                : QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
 
         this.fetchingDataRows = (fetchingDataRows != null)
                 ? "true".equalsIgnoreCase(fetchingDataRows.toString())
@@ -235,6 +242,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                 && QueryCacheStrategy.getDefaultStrategy() != cacheStrategy) {
             encoder.printProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, cacheStrategy
                     .name());
+        }
+        
+        if (statementFetchSize != QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT) {
+            encoder.printProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, statementFetchSize);
         }
 
         if (prefetchTree != null) {
@@ -472,6 +483,22 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     void setPageSize(int i) {
         pageSize = i;
+    }
+    
+    /**
+     * Sets statement's fetch size (0 for no default size)
+     * @since 3.0 
+     */
+    void setStatementFetchSize(int size) {
+        this.statementFetchSize = size;
+    }
+    
+    /**
+     * @return statement's fetch size
+     * @since 3.0
+     */
+    public int getStatementFetchSize() {
+        return statementFetchSize;
     }
 
     /**

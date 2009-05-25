@@ -415,6 +415,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
      *             EJBQL.
      */
+    @Deprecated
     public List<String> getCustomDbAttributes() {
         // if query root is DbEntity, and no custom attributes
         // are defined, return DbEntity attributes.
@@ -438,6 +439,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
      *             EJBQL.
      */
+    @Deprecated
     public void addCustomDbAttribute(String attributePath) {
         nonNullCustomDbAttributes().add(attributePath);
     }
@@ -446,6 +448,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
      *             EJBQL.
      */
+    @Deprecated
     public void addCustomDbAttributes(List<String> attrPaths) {
         nonNullCustomDbAttributes().addAll(attrPaths);
     }
@@ -532,6 +535,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      *             redundant, although it is still being taken into account. It will be
      *             removed in the later versions of Cayenne.
      */
+    @Deprecated
     public boolean isRefreshingObjects() {
         return metaData.isRefreshingObjects();
     }
@@ -542,6 +546,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      *             redundant, although it is still being taken into account. It will be
      *             removed in the later versions of Cayenne.
      */
+    @Deprecated
     public void setRefreshingObjects(boolean flag) {
         // noop
     }
@@ -550,6 +555,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.1
      * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
+    @Deprecated
     public String getCachePolicy() {
         return metaData.getCachePolicy();
     }
@@ -559,6 +565,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
      *             method.
      */
+    @Deprecated
     public void setCachePolicy(String policy) {
         metaData.setCachePolicy(policy);
     }
@@ -646,6 +653,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.1
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     public boolean isResolvingInherited() {
         return true;
     }
@@ -657,6 +665,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.1
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     public void setResolvingInherited(boolean b) {
         // noop
     }
@@ -685,5 +694,21 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         }
 
         return orderings;
+    }
+    
+    /**
+     * Sets statement's fetch size (0 for no default size)
+     * @since 3.0 
+     */
+    public void setStatementFetchSize(int size) {
+        metaData.setStatementFetchSize(size);
+    }
+    
+    /**
+     * @return statement's fetch size
+     * @since 3.0
+     */
+    public int getStatementFetchSize() {
+        return metaData.getStatementFetchSize();
     }
 }

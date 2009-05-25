@@ -322,6 +322,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
+    @Deprecated
     public String getCachePolicy() {
         return metaData.getCachePolicy();
     }
@@ -330,6 +331,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
      *             method.
      */
+    @Deprecated
     public void setCachePolicy(String policy) {
         metaData.setCachePolicy(policy);
     }
@@ -405,6 +407,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      *             redundant, although it is still being taken into account. It will be
      *             removed in the later versions of Cayenne.
      */
+    @Deprecated
     public boolean isRefreshingObjects() {
         return metaData.isRefreshingObjects();
     }
@@ -414,6 +417,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      *             redundant, although it is still being taken into account. It will be
      *             removed in the later versions of Cayenne.
      */
+    @Deprecated
     public void setRefreshingObjects(boolean flag) {
         // noop
     }
@@ -421,6 +425,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     public boolean isResolvingInherited() {
         return true;
     }
@@ -428,6 +433,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
+    @Deprecated
     public void setResolvingInherited(boolean b) {
         // noop
     }
@@ -621,5 +627,21 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     public SQLResult getResult() {
         return result;
+    }
+    
+    /**
+     * Sets statement's fetch size (0 for no default size)
+     * @since 3.0 
+     */
+    public void setStatementFetchSize(int size) {
+        metaData.setStatementFetchSize(size);
+    }
+    
+    /**
+     * @return statement's fetch size
+     * @since 3.0
+     */
+    public int getStatementFetchSize() {
+        return metaData.getStatementFetchSize();
     }
 }

@@ -98,6 +98,10 @@ public class EJBQLAction extends BaseSQLAction {
         sqlQuery.setFetchOffset(md.getFetchOffset());
         sqlQuery.setResult(compiledExpression.getResult());
         sqlQuery.setPageSize(md.getPageSize());
+        
+        if (md.getStatementFetchSize() != 0) {
+            sqlQuery.setStatementFetchSize(md.getStatementFetchSize());
+        }
 
         actionFactory.sqlAction(sqlQuery).performAction(connection, observer);
     }

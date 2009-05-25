@@ -248,6 +248,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.2
      * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
      */
+    @Deprecated
     public int cachedQueriesCount() {
         return context != null && context.getQueryCache() != null ? context
                 .getQueryCache()
@@ -319,6 +320,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0, use {@link DataContext#invalidateObjects(Collection)} or
      *             {@link RefreshQuery}.
      */
+    @Deprecated
     public synchronized void objectsInvalidated(Collection objects) {
         if (context != null) {
             context.invalidateObjects(objects);
@@ -426,6 +428,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.1
      * @deprecated since 3.0 unused
      */
+    @Deprecated
     public void snapshotsUpdatedForObjects(List objects, List snapshots, boolean refresh) {
         DataRowStore cache = getDataRowCache();
         if (cache != null) {
@@ -541,6 +544,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0 as ObjectStore holds weak reference to unmodified objects and
      *             this feature is useless.
      */
+    @Deprecated
     public synchronized void startTrackingNewObjects() {
         // noop
     }
@@ -553,6 +557,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0 as ObjectStore holds weak reference to unmodified objects and
      *             this feature is useless.
      */
+    @Deprecated
     public synchronized void unregisterNewObjects() {
         // noop
     }
@@ -583,6 +588,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.1
      * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
      */
+    @Deprecated
     public synchronized List getCachedQueryResult(String name) {
         return context != null && context.getQueryCache() != null ? context
                 .getQueryCache()
@@ -595,6 +601,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.1
      * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
      */
+    @Deprecated
     public synchronized void cacheQueryResult(String name, List results) {
         if (context != null) {
             context.getQueryCache().put(new CacheQueryMetadata(name), results);
@@ -718,6 +725,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0 use
      *             {@link ObjectContext#prepareForAccess(Persistent, String, boolean)}.
      */
+    @Deprecated
     public void resolveHollow(Persistent object) {
         context.prepareForAccess(object, null, false);
     }
@@ -1155,6 +1163,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0 as this inner class is used to provide backwards
      *             compatibility for some deprecated methods.
      */
+    @Deprecated
     final class CacheQueryMetadata implements QueryMetadata {
 
         private String cacheKey;
@@ -1206,6 +1215,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         /**
          * @deprecated since 3.0
          */
+        @Deprecated
         public int getFetchStartIndex() {
             return getFetchOffset();
         }
@@ -1244,6 +1254,10 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         public boolean isResolvingInherited() {
             return false;
+        }
+
+        public int getStatementFetchSize() {
+            return 0;
         }
     }
 }

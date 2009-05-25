@@ -63,6 +63,7 @@ public class SQLTemplateAction implements SQLAction {
      *             {@link #SQLTemplateAction(SQLTemplate, DbAdapter, EntityResolver)}
      *             constructor.
      */
+    @Deprecated
     public SQLTemplateAction(SQLTemplate query, DbAdapter adapter) {
         this.query = query;
         this.adapter = adapter;
@@ -333,6 +334,10 @@ public class SQLTemplateAction implements SQLAction {
                         bindings[i].getPrecision());
             }
         }
+        
+        if (queryMetadata.getStatementFetchSize() != 0) {
+            preparedStatement.setFetchSize(queryMetadata.getStatementFetchSize());
+        }
     }
 
     /**
@@ -340,6 +345,7 @@ public class SQLTemplateAction implements SQLAction {
      * 
      * @deprecated since 3.0
      */
+    @Deprecated
     public boolean isRemovingLineBreaks() {
         return true;
     }
@@ -347,6 +353,7 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * @deprecated since 3.0 - does nothing
      */
+    @Deprecated
     public void setRemovingLineBreaks(boolean removingLineBreaks) {
 
     }

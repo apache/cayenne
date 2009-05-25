@@ -57,6 +57,7 @@ public class MockQueryMetadata implements QueryMetadata {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public String getCachePolicy() {
         return null;
     }
@@ -100,6 +101,7 @@ public class MockQueryMetadata implements QueryMetadata {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public int getFetchStartIndex() {
         return getFetchOffset();
     }
@@ -114,5 +116,9 @@ public class MockQueryMetadata implements QueryMetadata {
     
     public Query getOrginatingQuery() {
         return null;
+    }
+
+    public int getStatementFetchSize() {
+        return 0;
     }
 }

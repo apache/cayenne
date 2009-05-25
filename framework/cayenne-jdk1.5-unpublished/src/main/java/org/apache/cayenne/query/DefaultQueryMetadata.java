@@ -106,6 +106,7 @@ class DefaultQueryMetadata implements QueryMetadata {
     /**
      * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
+    @Deprecated
     public String getCachePolicy() {
         return QueryMetadata.CACHE_POLICY_DEFAULT;
     }
@@ -121,6 +122,7 @@ class DefaultQueryMetadata implements QueryMetadata {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public boolean isResolvingInherited() {
         return true;
     }
@@ -136,6 +138,7 @@ class DefaultQueryMetadata implements QueryMetadata {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public int getFetchStartIndex() {
         return getFetchOffset();
     }
@@ -150,5 +153,9 @@ class DefaultQueryMetadata implements QueryMetadata {
 
     public Map<String, String> getPathSplitAliases() {
         return Collections.emptyMap();
+    }
+
+    public int getStatementFetchSize() {
+        return QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
     }
 }

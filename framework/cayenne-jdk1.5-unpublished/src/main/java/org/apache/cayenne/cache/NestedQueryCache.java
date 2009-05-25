@@ -136,6 +136,7 @@ public class NestedQueryCache implements QueryCache {
         /**
          * @deprecated since 3.0 in favor of 'getCacheStrategy'.
          */
+        @Deprecated
         public String getCachePolicy() {
             return mdDelegate.getCachePolicy();
         }
@@ -167,6 +168,7 @@ public class NestedQueryCache implements QueryCache {
         /**
          * @deprecated since 3.0
          */
+        @Deprecated
         public int getFetchStartIndex() {
             return mdDelegate.getFetchStartIndex();
         }
@@ -209,6 +211,10 @@ public class NestedQueryCache implements QueryCache {
 
         public boolean isResolvingInherited() {
             return mdDelegate.isResolvingInherited();
+        }
+
+        public int getStatementFetchSize() {
+            return mdDelegate.getStatementFetchSize();
         }
     }
 }

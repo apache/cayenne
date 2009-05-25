@@ -82,6 +82,7 @@ class IncrementalQuery implements Query {
             /**
              * @deprecated since 3.0 in favor of 'getCacheStrategy'.
              */
+            @Deprecated
             public String getCachePolicy() {
                 return metadata.getCachePolicy();
             }
@@ -112,6 +113,7 @@ class IncrementalQuery implements Query {
             /**
              * @deprecated since 3.0
              */
+            @Deprecated
             public int getFetchStartIndex() {
                 return metadata.getFetchStartIndex();
             }
@@ -147,6 +149,7 @@ class IncrementalQuery implements Query {
             /**
              * @deprecated since 3.0
              */
+            @Deprecated
             public boolean isRefreshingObjects() {
                 return metadata.isRefreshingObjects();
             }
@@ -154,8 +157,13 @@ class IncrementalQuery implements Query {
             /**
              * @deprecated since 3.0. Inheritance resolving is not optional anymore.
              */
+            @Deprecated
             public boolean isResolvingInherited() {
                 return metadata.isResolvingInherited();
+            }
+
+            public int getStatementFetchSize() {
+                return metadata.getStatementFetchSize();
             }
         };
     }

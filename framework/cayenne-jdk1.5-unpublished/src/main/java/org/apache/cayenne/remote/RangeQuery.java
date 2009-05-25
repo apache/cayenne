@@ -95,6 +95,7 @@ class RangeQuery implements Query {
             /**
              * @deprecated since 3.0
              */
+            @Deprecated
             public int getFetchStartIndex() {
                 return getFetchOffset();
             }
@@ -114,6 +115,7 @@ class RangeQuery implements Query {
             /**
              * @deprecated since 3.0 in favor of 'getCacheStrategy'.
              */
+            @Deprecated
             public String getCachePolicy() {
                 return QueryMetadata.NO_CACHE;
             }
@@ -159,6 +161,10 @@ class RangeQuery implements Query {
 
             public boolean isResolvingInherited() {
                 throw new UnsupportedOperationException();
+            }
+
+            public int getStatementFetchSize() {
+                return 0;
             }
         };
     }
