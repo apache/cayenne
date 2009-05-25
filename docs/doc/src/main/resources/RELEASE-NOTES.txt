@@ -8,8 +8,19 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
-Release: 3.0M6
+Release: 3.0M7
 Date: 
+----------------------------------
+
+Changes/New Features Since M6:
+
+Bug Fixes Since M5:
+
+CAY-1224 reverse engineering partially changed schema shows empty error messge window
+
+----------------------------------
+Release: 3.0M6
+Date: 25 May 2009
 ----------------------------------
 
 Changes/New Features Since M5:

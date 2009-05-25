@@ -354,9 +354,7 @@ public class DbLoader {
     public boolean loadDbEntities(DataMap map, List<? extends DbEntity> tables)
             throws SQLException {
         this.dbEntityList = new ArrayList<DbEntity>();
-
         for (DbEntity dbEntity : tables) {
-
             // Check if there already is a DbEntity under such name
             // if so, consult the delegate what to do
             DbEntity oldEnt = map.getDbEntity(dbEntity.getName());
@@ -461,27 +459,34 @@ public class DbLoader {
 
         // get primary keys for each table and store it in dbEntity
         for (final DbEntity dbEntity : map.getDbEntities()) {
-            String tableName = dbEntity.getName();
-            ResultSet rs = metaData.getPrimaryKeys(null, dbEntity.getSchema(), tableName);
+            if (tables.contains(dbEntity)) {
+                String tableName = dbEntity.getName();
+                ResultSet rs = metaData.getPrimaryKeys(
+                        null,
+                        dbEntity.getSchema(),
+                        tableName);
+                try {
+                    while (rs.next()) {
+                        String keyName = rs.getString(4);
+                        DbAttribute attribute = (DbAttribute) dbEntity
+                                .getAttribute(keyName);
 
-            try {
-                while (rs.next()) {
-                    String keyName = rs.getString(4);
-                    DbAttribute attribute = (DbAttribute) dbEntity.getAttribute(keyName);
-
-                    if (attribute != null) {
-                        attribute.setPrimaryKey(true);
-                    }
-                    else {
-                        // why an attribute might be null is not quiet clear
-                        // but there is a bug report 731406 indicating that it is possible
-                        // so just print the warning, and ignore
-                        logObj.warn("Can't locate attribute for primary key: " + keyName);
+                        if (attribute != null) {
+                            attribute.setPrimaryKey(true);
+                        }
+                        else {
+                            // why an attribute might be null is not quiet clear
+                            // but there is a bug report 731406 indicating that it is
+                            // possible
+                            // so just print the warning, and ignore
+                            logObj.warn("Can't locate attribute for primary key: "
+                                    + keyName);
+                        }
                     }
                 }
-            }
-            finally {
-                rs.close();
+                finally {
+                    rs.close();
+                }
             }
         }
 
@@ -665,14 +670,19 @@ public class DbLoader {
                         continue;
                     }
 
-                    forwardRelationship.addJoin(new DbJoin(
-                            forwardRelationship,
-                            pkName,
-                            fkName));
-                    reverseRelationship.addJoin(new DbJoin(
-                            reverseRelationship,
-                            fkName,
-                            pkName));
+                    if (forwardRelationship != null) {
+                        forwardRelationship.addJoin(new DbJoin(
+                                forwardRelationship,
+                                pkName,
+                                fkName));
+                    }
+                    if (reverseRelationship != null) {
+                        reverseRelationship.addJoin(new DbJoin(
+                                reverseRelationship,
+                                fkName,
+                                pkName));
+                    }
+
                 }
             } while (rs.next());
 
