@@ -14,6 +14,8 @@ Date:
 
 Changes/New Features Since M6:
 
+CAY-1225 Controlling JDBC Driver setting "fetchSize" in a SelectQuery
+
 Bug Fixes Since M5:
 
 CAY-1224 reverse engineering partially changed schema shows empty error messge window
