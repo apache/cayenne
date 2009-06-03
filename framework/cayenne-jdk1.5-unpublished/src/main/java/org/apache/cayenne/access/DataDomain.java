@@ -30,6 +30,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
@@ -117,6 +118,12 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected QueryCache queryCache;
 
     protected boolean stopped;
+    
+    /**
+     * Factory for creating QueryBuilders. Might be null, then default one will be used. 
+     * Server-only.
+     */
+    private BatchQueryBuilderFactory queryBuilderFactory;
 
     /**
      * Creates a DataDomain and assigns it a name.
@@ -918,5 +925,19 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     QueryCache getQueryCacheInternal() {
         return queryCache;
+    }
+    
+    /**
+     * Sets factory for creating QueryBuilders
+     */
+    public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {
+        this.queryBuilderFactory = queryBuilderFactory;
+    }
+    
+    /**
+     * @return factory for creating QueryBuilders. Might be null
+     */
+    public BatchQueryBuilderFactory getQueryBuilderFactory() {
+        return queryBuilderFactory;
     }
 }

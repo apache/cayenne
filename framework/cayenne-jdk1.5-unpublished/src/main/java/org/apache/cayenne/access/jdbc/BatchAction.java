@@ -34,9 +34,6 @@ import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
-import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
-import org.apache.cayenne.access.trans.InsertBatchQueryBuilder;
-import org.apache.cayenne.access.trans.UpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -60,6 +57,13 @@ public class BatchAction extends BaseSQLAction {
         super(adapter, entityResolver);
         this.query = batchQuery;
     }
+    
+    /**
+     * @return Query which originated this action
+     */
+    public BatchQuery getQuery() {
+        return query;
+    }
 
     public boolean isBatch() {
         return batch;
@@ -82,16 +86,29 @@ public class BatchAction extends BaseSQLAction {
             runAsIndividualQueries(connection, queryBuilder, observer, generatesKeys);
         }
     }
+    
+    /**
+     * @return factory that creates BatchQueryBuilders
+     */
+    protected BatchQueryBuilderFactory getBatchQueryBuilderFactory() {
+        return null;
+    }
 
     protected BatchQueryBuilder createBuilder() throws CayenneException {
+        BatchQueryBuilderFactory factory = getBatchQueryBuilderFactory();
+           
+        if (factory == null) {
+            factory = new DefaultBatchQueryBuilderFactory();
+        }
+        
         if (query instanceof InsertBatchQuery) {
-            return new InsertBatchQueryBuilder(getAdapter());
+            return factory.createInsertQueryBuilder(adapter);
         }
         else if (query instanceof UpdateBatchQuery) {
-            return new UpdateBatchQueryBuilder(getAdapter());
+            return factory.createUpdateQueryBuilder(adapter);
         }
         else if (query instanceof DeleteBatchQuery) {
-            return new DeleteBatchQueryBuilder(getAdapter());
+            return factory.createDeleteQueryBuilder(adapter);
         }
         else {
             throw new CayenneException("Unsupported batch query: " + query);

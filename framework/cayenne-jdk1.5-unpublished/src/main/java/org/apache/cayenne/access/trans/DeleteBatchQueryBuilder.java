@@ -42,21 +42,26 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
     @Override
     public String createSqlString(BatchQuery batch) throws IOException {
-
-        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
-
-        boolean status;
-        if(batch.getDbEntity().getDataMap()!=null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
-            status = false;
-        }
+        boolean status = batch.getDbEntity().getDataMap() != null 
+            && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers();
+        
         QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
        
         StringBuffer query = new StringBuffer("DELETE FROM ");
         query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
-        query.append(" WHERE ");
 
+        applyQualifier(query, batch);
+
+        return query.toString();
+    }
+    
+    /**
+     * Appends WHERE clause to SQL string
+     */
+    protected void applyQualifier(StringBuffer query, BatchQuery batch) {
+        query.append(" WHERE ");
+        
+        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
         Iterator<DbAttribute> i = deleteBatch.getQualifierAttributes().iterator();
         while (i.hasNext()) {
             DbAttribute attribute = i.next();
@@ -67,8 +72,6 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
                 query.append(" AND ");
             }
         }
-
-        return query.toString();
     }
 
     /**
@@ -80,7 +83,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
 
-        int parameterIndex = 1;
+        int parameterIndex = getFirstParameterIndex(query);
         int i = 0;
 
         for (DbAttribute attribute : deleteBatch.getQualifierAttributes()) {
@@ -98,6 +101,13 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
                     attribute.getType(),
                     attribute.getScale());
         }
+    }
+    
+    /**
+     * @return index of first parameter in delete clause 
+     */
+    protected int getFirstParameterIndex(BatchQuery query) {
+        return 1;
     }
 
 }

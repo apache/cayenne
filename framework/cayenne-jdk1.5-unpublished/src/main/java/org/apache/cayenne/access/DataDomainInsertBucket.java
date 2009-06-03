@@ -60,7 +60,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
             Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
                     .get(dbEntity);
 
-            InsertBatchQuery batch = new InsertBatchQuery(dbEntity, 27);
+            InsertBatchQuery batch = 
+                new DataDomainInsertQuery(parent.getDomain(), dbEntity, 27);
             for (DbEntityClassDescriptor descriptor : descriptors) {
 
                 diffBuilder.reset(descriptor);

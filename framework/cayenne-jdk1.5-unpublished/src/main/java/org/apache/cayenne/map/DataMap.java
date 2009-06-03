@@ -101,7 +101,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public static final String DEFAULT_LOCK_TYPE_PROPERTY = "defaultLockType";
     
     public static final String DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY = "quoteSqlIdentifiers";
-
+    
     /**
      * The namespace in which the data map XML file will be created. This is also the URI to locate a copy of the schema document.
      */
@@ -1180,6 +1180,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
      */
+    @Deprecated
     public void dbAttributeChanged(AttributeEvent e) {
         Entity entity = e.getEntity();
         if (entity instanceof DbEntity) {
@@ -1192,6 +1193,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
      */
+    @Deprecated
     public void dbAttributeAdded(AttributeEvent e) {
         // does nothing currently
     }
@@ -1201,6 +1203,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
      */
+    @Deprecated
     public void dbAttributeRemoved(AttributeEvent e) {
         // does nothing currently
     }
@@ -1210,6 +1213,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
      */
+    @Deprecated
     public void dbRelationshipChanged(RelationshipEvent e) {
         Entity entity = e.getEntity();
         if (entity instanceof DbEntity) {
@@ -1222,6 +1226,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
      */
+    @Deprecated
     public void dbRelationshipAdded(RelationshipEvent e) {
         // does nothing currently
     }
@@ -1231,6 +1236,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
      */
+    @Deprecated
     public void dbRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }
@@ -1282,6 +1288,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
      */
+    @Deprecated
     public void objAttributeChanged(AttributeEvent e) {
         // does nothing currently
     }
@@ -1291,6 +1298,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
      */
+    @Deprecated
     public void objAttributeAdded(AttributeEvent e) {
         // does nothing currently
     }
@@ -1300,6 +1308,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
      */
+    @Deprecated
     public void objAttributeRemoved(AttributeEvent e) {
         // does nothing currently
     }
@@ -1309,6 +1318,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
      */
+    @Deprecated
     public void objRelationshipChanged(RelationshipEvent e) {
         // does nothing currently
     }
@@ -1318,6 +1328,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
      */
+    @Deprecated
     public void objRelationshipAdded(RelationshipEvent e) {
         // does nothing currently
     }
@@ -1327,6 +1338,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
      */
+    @Deprecated
     public void objRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }

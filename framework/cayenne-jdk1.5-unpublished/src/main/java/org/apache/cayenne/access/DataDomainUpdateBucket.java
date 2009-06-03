@@ -107,7 +107,8 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
                     UpdateBatchQuery batch = (UpdateBatchQuery) batches.get(batchKey);
                     if (batch == null) {
-                        batch = new UpdateBatchQuery(
+                        batch = new DataDomainUpdateQuery(
+                                parent.getDomain(),
                                 dbEntity,
                                 qualifierBuilder.getAttributes(),
                                 updatedAttributes(dbEntity, snapshot),

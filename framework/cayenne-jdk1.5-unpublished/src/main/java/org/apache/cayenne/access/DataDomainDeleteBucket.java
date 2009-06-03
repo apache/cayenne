@@ -108,8 +108,9 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
 
                     DeleteBatchQuery batch = (DeleteBatchQuery) batches.get(batchKey);
                     if (batch == null) {
-                        batch = new DeleteBatchQuery(dbEntity, qualifierBuilder
-                                .getAttributes(), nullQualifierNames, 27);
+                        batch = new DataDomainDeleteQuery(parent.getDomain(),
+                                dbEntity, qualifierBuilder.getAttributes(), 
+                                nullQualifierNames, 27);
                         batch.setUsingOptimisticLocking(qualifierBuilder
                                 .isUsingOptimisticLocking());
                         batches.put(batchKey, batch);
