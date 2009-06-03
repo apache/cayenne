@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M6:
 
 CAY-1225 Controlling JDBC Driver setting "fetchSize" in a SelectQuery
+CAY-1236 Allow providing custom INSERT, UPDATE, DELETE query builders
 
 Bug Fixes Since M5:
 
