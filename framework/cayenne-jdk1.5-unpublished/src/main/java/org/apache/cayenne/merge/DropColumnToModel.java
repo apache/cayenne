@@ -51,7 +51,7 @@ public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
         for (DbRelationship dbRelationship : dbRelationships) {
             for (DbJoin join : dbRelationship.getJoins()) {
                 if (join.getSource() == getColumn() || join.getTarget() == getColumn()) {
-                    remove(dbRelationship, true);
+                    remove(mergerContext, dbRelationship, true);
                 }
             }
         }
@@ -61,12 +61,15 @@ public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
             ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(getColumn());
             if (objAttribute != null) {
                 objEntity.removeAttribute(objAttribute.getName());
+                mergerContext.getModelMergeDelegate().objAttributeRemoved(objAttribute);
             }
 
         }
 
         // remove DbAttribute
         getEntity().removeAttribute(getColumn().getName());
+
+        mergerContext.getModelMergeDelegate().dbAttributeRemoved(getColumn());
     }
 
     public String getTokenName() {

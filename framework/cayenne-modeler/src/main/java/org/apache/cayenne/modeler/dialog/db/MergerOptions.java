@@ -34,16 +34,30 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.merge.DbMerger;
 import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.merge.ModelMergeDelegate;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
+import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project.Project;
@@ -172,7 +186,7 @@ public class MergerOptions extends CayenneController {
         final String lineEnd = (batchTerminator != null) ? "\n"
                 + batchTerminator
                 + "\n\n" : "\n\n";
-
+        
         MergerContext context = new MergerContext() {
 
             public void executeSql(String sql) {
@@ -190,6 +204,10 @@ public class MergerOptions extends CayenneController {
 
             public ValidationResult getValidationResult() {
                 return new ValidationResult();
+            }
+
+            public ModelMergeDelegate getModelMergeDelegate() {
+                return null;
             }
 
         };
@@ -259,6 +277,77 @@ public class MergerOptions extends CayenneController {
             JOptionPane.showMessageDialog(getView(), "Nothing to migrate.");
             return;
         }
+        
+        final ProjectController c = getProjectController();
+        
+        final Object src = this;
+        final DataDomain domain = getProjectController().getCurrentDataDomain();
+        final DataNode node = getProjectController().getCurrentDataNode();
+
+        final ModelMergeDelegate delegate = new ModelMergeDelegate (){
+
+            public void dbAttributeAdded(DbAttribute att) {
+                c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+            }
+
+            public void dbAttributeModified(DbAttribute att) {
+                c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+            }
+
+            public void dbAttributeRemoved(DbAttribute att) {
+                c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+            }
+
+            public void dbEntityAdded(DbEntity ent) {
+                c.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
+                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+            }
+
+            public void dbEntityRemoved(DbEntity ent) {
+                c.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
+                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+            }
+
+            public void dbRelationshipAdded(DbRelationship rel) {
+                c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+            }
+
+            public void dbRelationshipRemoved(DbRelationship rel) {
+                c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+            }
+
+            public void objAttributeAdded(ObjAttribute att) {
+                c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+            }
+
+            public void objAttributeModified(ObjAttribute att) {
+                c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+            }
+
+            public void objAttributeRemoved(ObjAttribute att) {
+                c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+            }
+
+            public void objEntityAdded(ObjEntity ent) {
+                c.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
+                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+            }
+
+            public void objEntityRemoved(ObjEntity ent) {
+                c.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
+                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+            }
+
+            public void objRelationshipAdded(ObjRelationship rel) {
+                c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+            }
+
+            public void objRelationshipRemoved(ObjRelationship rel) {
+                c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+            }
+            
+        };
+
 
         try {
             DataSource dataSource = connectionInfo.makeDataSource(getApplication()
@@ -268,7 +357,7 @@ public class MergerOptions extends CayenneController {
             MergerContext mergerContext = new ExecutingMergerContext(
                     dataMap,
                     dataSource,
-                    adapter);
+                    adapter, delegate);
             boolean modelChanged = false;
             for (MergerToken tok : tokensToMigrate) {
                 int numOfFailuresBefore = mergerContext
@@ -347,6 +436,10 @@ public class MergerOptions extends CayenneController {
                 reportError("Error Saving SQL", ex);
             }
         }
+    }
+    
+    private ProjectController getProjectController() {
+        return getApplication().getFrameController().getProjectController();
     }
 
     public void closeAction() {

@@ -31,6 +31,8 @@ public interface MergerContext {
 
     public void executeSql(String sql);
     
+    public ModelMergeDelegate getModelMergeDelegate();
+    
     public DbAdapter getAdapter();
 
     public DataMap getDataMap();

@@ -21,61 +21,44 @@ package org.apache.cayenne.merge;
 /**
  * Represent a merge direction that can be one of two. Either from the model to the db or
  * from the db to the model.
- * 
  */
-public class MergeDirection {
+public enum MergeDirection {
 
-    private static final int TO_DB_ID = 1;
-    private static final int TO_MODEL_ID = 2;
+    TO_DB("To DB"), TO_MODEL("To Model");
 
-    public static final MergeDirection TO_DB = new MergeDirection(TO_DB_ID, "To DB");
-    public static final MergeDirection TO_MODEL = new MergeDirection(
-            TO_MODEL_ID,
-            "To Model");
-
-    private int id;
     private String name;
 
-    private MergeDirection(int id, String name) {
-        this.id = id;
+    private MergeDirection(String name) {
         this.name = name;
     }
 
     public String getName() {
         return name;
     }
-    
+
     public boolean isToDb() {
-        return (id == TO_DB_ID);
+        return (this == TO_DB);
     }
 
     public boolean isToModel() {
-        return (id == TO_MODEL_ID);
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        return (obj == this);
-    }
-
-    @Override
-    public int hashCode() {
-        return id * 17;
+        return (this == TO_MODEL);
     }
 
     @Override
     public String toString() {
+        super.toString();
         return getName();
     }
-
+    
     public MergeDirection reverseDirection() {
-        switch (id) {
-            case TO_DB_ID:
+        switch (this) {
+            case TO_DB:
                 return TO_MODEL;
-            case TO_MODEL_ID:
+            case TO_MODEL:
                 return TO_DB;
             default:
-                throw new IllegalStateException("Invalid direction id: " + id);
+                throw new IllegalStateException("Invalid direction: " + this);
         }
     }
+
 }

@@ -37,17 +37,20 @@ public class ExecutingMergerContext implements MergerContext {
     private DbAdapter adapter;
     private DataSource dataSource;
     private ValidationResult result = new ValidationResult();
+    private ModelMergeDelegate delegate;
 
     public ExecutingMergerContext(DataMap map, DataNode node) {
         this.map = map;
         this.dataSource = node.getDataSource();
         this.adapter = node.getAdapter();
+        this.delegate = new DefaultModelMergeDelegate();
     }
 
-    public ExecutingMergerContext(DataMap map, DataSource dataSource, DbAdapter adapter) {
+    public ExecutingMergerContext(DataMap map, DataSource dataSource, DbAdapter adapter, ModelMergeDelegate delegate) {
         this.map = map;
         this.dataSource = dataSource;
         this.adapter = adapter;
+        this.delegate = delegate;
     }
 
     public void executeSql(String sql) {
@@ -91,6 +94,10 @@ public class ExecutingMergerContext implements MergerContext {
 
     public ValidationResult getValidationResult() {
         return result;
+    }
+
+    public ModelMergeDelegate getModelMergeDelegate() {
+        return delegate;
     }
 
 }

@@ -35,7 +35,7 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
     }
 
     public void execute(MergerContext mergerContext) {
-        remove(rel, true);
+        remove(mergerContext, rel, true);
     }
 
     public String getTokenName() {

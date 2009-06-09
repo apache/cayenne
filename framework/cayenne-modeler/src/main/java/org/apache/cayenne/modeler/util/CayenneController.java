@@ -111,6 +111,7 @@ public abstract class CayenneController implements BoundComponent {
     protected void reportError(String title, Throwable th) {
         th = Util.unwindException(th);
         logObj.info("Error in " + getClass().getName(), th);
+        th.printStackTrace();
 
         JOptionPane.showMessageDialog(getView(),
                 th.getMessage(),

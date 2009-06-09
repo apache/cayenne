@@ -20,32 +20,57 @@ package org.apache.cayenne.merge;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.util.EntityMergeSupport;
+import org.apache.cayenne.map.ObjRelationship;
 
 /**
- * A {@link MergerToken} to add a {@link DbAttribute} to a {@link DbEntity}. The
- * {@link EntityMergeSupport} will be used to update the mapped {@link ObjEntity}
- * 
+ * A default implementation of {@link ModelMergeDelegate} that does nothing by
+ * itself.
  */
-public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
+class DefaultModelMergeDelegate implements ModelMergeDelegate {
 
-    public AddColumnToModel(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+    public void dbAttributeAdded(DbAttribute att) {
     }
 
-    public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropColumnToDb(getEntity(), getColumn());
+    public void dbAttributeModified(DbAttribute att) {
     }
 
-    public void execute(MergerContext mergerContext) {
-        getEntity().addAttribute(getColumn());
-        synchronizeWithObjEntity(mergerContext, getEntity());
-        mergerContext.getModelMergeDelegate().dbAttributeAdded(getColumn());
+    public void dbAttributeRemoved(DbAttribute att) {
     }
 
-    public String getTokenName() {
-        return "Add Column";
+    public void dbEntityAdded(DbEntity ent) {
+    }
+
+    public void dbEntityRemoved(DbEntity ent) {
+    }
+
+    public void dbRelationshipAdded(DbRelationship rel) {
+    }
+
+    public void dbRelationshipRemoved(DbRelationship rel) {
+    }
+
+    public void objAttributeAdded(ObjAttribute att) {
+    }
+
+    public void objAttributeModified(ObjAttribute att) {
+    }
+
+    public void objAttributeRemoved(ObjAttribute att) {
+    }
+
+    public void objEntityAdded(ObjEntity ent) {
+    }
+
+    public void objEntityRemoved(ObjEntity ent) {
+    }
+
+    public void objRelationshipAdded(ObjRelationship rel) {
+    }
+
+    public void objRelationshipRemoved(ObjRelationship rel) {
     }
 
 }

@@ -101,7 +101,10 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         
         map.addObjEntity(objEntity);
 
-        synchronizeWithObjEntity(getEntity());
+        synchronizeWithObjEntity(mergerContext, getEntity());
+        
+        mergerContext.getModelMergeDelegate().dbEntityAdded(getEntity());
+        mergerContext.getModelMergeDelegate().objEntityAdded(objEntity);
     }
 
     public String getTokenName() {

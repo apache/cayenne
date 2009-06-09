@@ -41,7 +41,7 @@ public abstract class AbstractToModelToken implements MergerToken {
         return MergeDirection.TO_MODEL;
     }
 
-    protected void synchronizeWithObjEntity(DbEntity entity) {
+    protected void synchronizeWithObjEntity(MergerContext mergerContext, DbEntity entity) {
         for (ObjEntity objEntity : objEntitiesMappedToDbEntity(entity)) {
             new EntityMergeSupport(objEntity.getDataMap())
                     .synchronizeWithDbEntity(objEntity);
@@ -62,30 +62,32 @@ public abstract class AbstractToModelToken implements MergerToken {
         return objEntities;
     }
     
-    protected void remove(DbRelationship rel, boolean reverse) {
+    protected void remove(MergerContext mergerContext, DbRelationship rel, boolean reverse) {
         if (rel == null) {
             return;
         }
         if (reverse) {
-            remove(rel.getReverseRelationship(), false);
+            remove(mergerContext, rel.getReverseRelationship(), false);
         }
 
         DbEntity dbEntity = (DbEntity) rel.getSourceEntity();
         for (ObjEntity objEntity : objEntitiesMappedToDbEntity(dbEntity)) {
-            remove(objEntity.getRelationshipForDbRelationship(rel), true);
+            remove(mergerContext, objEntity.getRelationshipForDbRelationship(rel), true);
         }
         
         rel.getSourceEntity().removeRelationship(rel.getName());
+        mergerContext.getModelMergeDelegate().dbRelationshipRemoved(rel);
     }
 
-    protected void remove(ObjRelationship rel, boolean reverse) {
+    protected void remove(MergerContext mergerContext, ObjRelationship rel, boolean reverse) {
         if (rel == null) {
             return;
         }
         if (reverse) {
-            remove(rel.getReverseRelationship(), false);
+            remove(mergerContext, rel.getReverseRelationship(), false);
         }
         rel.getSourceEntity().removeRelationship(rel.getName());
+        mergerContext.getModelMergeDelegate().objRelationshipRemoved(rel);
     }
 
     @Override

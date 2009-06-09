@@ -40,8 +40,10 @@ public class DropTableToModel extends AbstractToModelToken.Entity {
     public void execute(MergerContext mergerContext) {
         for (ObjEntity objEntity : objEntitiesMappedToDbEntity(getEntity())) {
             objEntity.getDataMap().removeObjEntity(objEntity.getName(), true);
+            mergerContext.getModelMergeDelegate().objEntityRemoved(objEntity);
         }
         getEntity().getDataMap().removeDbEntity(getEntity().getName(), true);
+        mergerContext.getModelMergeDelegate().dbEntityRemoved(getEntity());
     }
 
     public String getTokenName() {
