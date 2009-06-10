@@ -35,6 +35,12 @@ import org.apache.cayenne.query.SQLAction;
  * A SQLite database adapter that works with Zentus JDBC driver. See
  * http://www.zentus.com/sqlitejdbc/ for the driver information.
  * 
+ * <pre>
+ *      sqlite.cayenne.adapter = org.apache.cayenne.dba.sqlite.SQLiteAdapter
+ *      sqlite.jdbc.url = jdbc:sqlite:sqlitetest.db
+ *      sqlite.jdbc.driver = org.sqlite.JDBC
+ * </pre>
+ * 
  * @since 3.0
  */
 // check http://cwiki.apache.org/CAY/sqliteadapter.html for current limitations.
@@ -43,7 +49,7 @@ public class SQLiteAdapter extends JdbcAdapter {
     public SQLiteAdapter() {
         setSupportsFkConstraints(false);
         this.setSupportsUniqueConstraints(false);
-        this.setSupportsGeneratedKeys(false);
+        this.setSupportsGeneratedKeys(true);
     }
 
     @Override
@@ -76,4 +82,33 @@ public class SQLiteAdapter extends JdbcAdapter {
         return query.createSQLAction(new SQLiteActionBuilder(this, node
                 .getEntityResolver()));
     }
+
+    /**
+     * Appends AUTOINCREMENT clause to the column definition for generated columns.
+     */
+    @Override
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        super.createTableAppendColumn(sqlBuffer, column);
+        DbEntity entity = (DbEntity) column.getEntity();
+        if (column.isGenerated()
+                && column.isPrimaryKey()
+                && entity.getPrimaryKeys().size() == 1) {
+            sqlBuffer.append(" PRIMARY KEY AUTOINCREMENT");
+        }
+    }
+
+    @Override
+    protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
+
+        // do not append " PRIMARY KEY () " for single column generated primary key
+        if (entity.getPrimaryKeys().size() == 1) {
+            DbAttribute column = entity.getPrimaryKeys().iterator().next();
+            if (column.isGenerated()) {
+                return;
+            }
+        }
+
+        super.createTableAppendPKClause(sqlBuffer, entity);
+    }
+
 }

@@ -14,6 +14,7 @@ Date:
 
 Changes/New Features Since M6:
 
+CAY-1116 Add generated PK support to SQLite
 CAY-1225 Controlling JDBC Driver setting "fetchSize" in a SelectQuery
 CAY-1236 Allow providing custom INSERT, UPDATE, DELETE query builders
 

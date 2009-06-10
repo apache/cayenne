@@ -196,6 +196,7 @@ public class JdbcPkGenerator implements PkGenerator {
             con.close();
         }
 
+        QueryLogger.logQueryError(new RuntimeException("AUTO_PK_SUPPORT exist: " + Boolean.valueOf(exists)));
         return exists;
     }
 
