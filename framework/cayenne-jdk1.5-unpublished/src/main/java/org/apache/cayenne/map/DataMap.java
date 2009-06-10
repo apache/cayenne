@@ -266,7 +266,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.println("<data-map xmlns=\"http://cayenne.apache.org/schema/3.0/modelMap\"");
         encoder.println("  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-        encoder.println("  xsi:schemaLocation=\"" + SCHEMA_XSD + " " + SCHEMA_XSD + "\"");
+        encoder.println("  xsi:schemaLocation=\"" + SCHEMA_XSD + " " + SCHEMA_XSD + ".xsd\"");
         encoder.println("  project-version=\"" + Project.CURRENT_PROJECT_VERSION + "\">");
 
         encoder.indent(1);
