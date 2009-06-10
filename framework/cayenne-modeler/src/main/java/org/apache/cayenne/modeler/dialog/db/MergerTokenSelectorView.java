@@ -24,6 +24,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -41,11 +43,13 @@ public class MergerTokenSelectorView extends JPanel {
     protected JTable tokens;
     protected JCheckBox checkAll;
     protected JLabel checkAllLabel;
+    protected JButton reverseAll;
 
     public MergerTokenSelectorView() {
 
         this.checkAll = new JCheckBox();
         this.checkAllLabel = new JLabel("Check All Operations");
+        this.reverseAll = new JButton("Reverse All Operations");
 
         checkAll.addItemListener(new ItemListener() {
 
@@ -60,9 +64,13 @@ public class MergerTokenSelectorView extends JPanel {
         });
 
         // assemble
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        topPanel.add(checkAll);
-        topPanel.add(checkAllLabel);
+        JPanel checkAllPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        checkAllPanel.add(checkAll);
+        checkAllPanel.add(checkAllLabel);
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(checkAllPanel, BorderLayout.WEST);
+        topPanel.add(ButtonBarFactory.buildRightAlignedBar(reverseAll), BorderLayout.EAST);
 
         tokens = new JTable();
         tokens.setRowHeight(25);
@@ -90,5 +98,9 @@ public class MergerTokenSelectorView extends JPanel {
 
     public JCheckBox getCheckAll() {
         return checkAll;
+    }
+    
+    public JButton getReverseAll() {
+        return reverseAll;
     }
 }

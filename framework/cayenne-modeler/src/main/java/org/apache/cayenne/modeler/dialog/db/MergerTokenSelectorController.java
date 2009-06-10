@@ -152,6 +152,7 @@ public class MergerTokenSelectorController extends CayenneController {
                 this);
 
         builder.bindToAction(view.getCheckAll(), "checkAllAction()");
+        builder.bindToAction(view.getReverseAll(), "reverseAllAction()");
 
         TableModel model = new MergerTokenTableModel(this);
 
@@ -221,4 +222,18 @@ public class MergerTokenSelectorController extends CayenneController {
         model.fireTableDataChanged();
     }
 
+    public void reverseAllAction() {
+        
+        for (int i = 0; i < selectableTokensList.size(); i++) {
+            MergerToken token = selectableTokensList.get(i);
+            MergerToken reverse = token.createReverse(mergerFactory);
+            selectableTokensList.set(i, reverse);
+            if (excludedTokens.remove(token)) {
+                excludedTokens.add(reverse);
+            }
+        }
+
+        AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
+        model.fireTableDataChanged();
+    }
 }
