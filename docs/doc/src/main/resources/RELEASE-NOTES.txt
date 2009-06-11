@@ -8,7 +8,7 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
-Release: 3.0M7
+Release: 3.0 beta 1
 Date: 
 ----------------------------------
 
@@ -16,6 +16,7 @@ Changes/New Features Since M6:
 
 CAY-1116 Add generated PK support to SQLite
 CAY-1225 Controlling JDBC Driver setting "fetchSize" in a SelectQuery
+CAY-1235 Implement qualifiers for DBEntities
 CAY-1236 Allow providing custom INSERT, UPDATE, DELETE query builders
 
 Bug Fixes Since M6:
