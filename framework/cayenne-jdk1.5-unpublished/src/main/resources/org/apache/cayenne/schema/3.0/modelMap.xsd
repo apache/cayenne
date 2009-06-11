@@ -49,6 +49,9 @@
 			<xs:sequence>
 				<xs:element maxOccurs="unbounded" ref="cay:db-attribute"/>
 				<xs:element minOccurs="0" ref="cay:db-key-generator"/>
+				
+				<!-- Qualifier for DB Entity -->
+				<xs:element minOccurs="0" ref="cay:qualifier"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
@@ -83,16 +86,16 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embedded-attribute"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-attribute"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:attribute-override"/>
-				<xs:sequence minOccurs="0">
-					<xs:element ref="cay:entity-listener"/>
-					<xs:element ref="cay:pre-persist"/>
-					<xs:element ref="cay:post-persist"/>
-					<xs:element ref="cay:pre-update"/>
-					<xs:element ref="cay:post-update"/>
-					<xs:element ref="cay:pre-remove"/>
-					<xs:element ref="cay:post-remove"/>
-					<xs:element ref="cay:post-load"/>
-				</xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:entity-listener"/>
+				
+				<!--  Callbacks -->
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-persist"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-persist"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-update"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-update"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-remove"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-remove"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-load"/>
 			</xs:sequence>
 			<xs:attribute name="className" use="optional" type="xs:string"/>
 			<xs:attribute name="abstract" use="optional" type="xs:string"/>
