@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
+import org.apache.cayenne.util.Util;
 
 /**
  * Encapsulates join reuse/split logic used in SelectQuery processing. All expression
@@ -47,6 +48,7 @@ public class JoinStack {
     /**
      * @deprecated since 3.0
      */   
+    @Deprecated
     protected JoinStack() {
         this.rootNode = new JoinTreeNode(this);
         this.rootNode.setTargetTableAlias(newAlias());
@@ -170,7 +172,36 @@ public class JoinStack {
      */
     protected void appendQualifier(Appendable out, boolean firstQualifierElement)
             throws IOException {
-        // nothing as standard join is performed before "WHERE"
+        // skip root, recursively append its children
+        for (JoinTreeNode child : rootNode.getChildren()) {
+            firstQualifierElement &= appendQualifier(out, child, firstQualifierElement);
+        }
+    }
+    
+    /**
+     * Append join tree node information to the qualifier - the part after "WHERE".
+     * @return whether qualifier was not yet appended (i.e. firstQualifierElement is still false)
+     */
+    private boolean appendQualifier(Appendable out, JoinTreeNode node, boolean firstQualifierElement) 
+        throws IOException {
+        DbRelationship relationship = node.getRelationship();
+
+        DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
+        if (!Util.isEmptyString(targetEntity.getQualifier())) {
+            if (!firstQualifierElement) {
+                out.append(" AND ");
+            }
+            else {
+                firstQualifierElement = false;
+            }
+            
+            out.append(targetEntity.getQualifier());
+        }
+        
+        for (JoinTreeNode child : node.getChildren()) {
+            firstQualifierElement &= appendQualifier(out, child, firstQualifierElement);
+        }
+        return firstQualifierElement;
     }
 
     /**

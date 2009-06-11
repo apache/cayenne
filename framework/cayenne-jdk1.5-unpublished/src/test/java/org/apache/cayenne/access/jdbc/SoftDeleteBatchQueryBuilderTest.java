@@ -159,10 +159,11 @@ public class SoftDeleteBatchQueryBuilderTest extends LockingCase {
                 @Override
                 protected void assertResult() throws Exception {
                     query.setQualifier(ExpressionFactory.matchExp("name", test.getName()));
-                    assertEquals(1, context.performQuery(query).size());
+                    assertEquals(0, context.performQuery(query).size());
                     
-                    query.andQualifier(ExpressionFactory.matchDbExp("DELETED", true));
-                    assertEquals(1, context.performQuery(query).size());
+                    SQLTemplate template = new SQLTemplate(entity, "SELECT * FROM SOFT_TEST");
+                    template.setFetchingDataRows(true);
+                    assertEquals(1, context.performQuery(template).size());
                 }
             }.assertWithTimeout(200);
         }

@@ -72,6 +72,51 @@ public class SelectTranslatorTest extends CayenneCase {
 
         test.test(q);
     }
+    
+    /**
+     * Tests query creation with qualifier and ordering.
+     */
+    public void testDbEntityQualifier() throws Exception {
+        SelectQuery q = new SelectQuery(Artist.class);
+        final DbEntity entity = getNode().getEntityResolver().getDbEntity("ARTIST");
+        final DbEntity middleEntity = getNode().getEntityResolver().getDbEntity("ARTIST_GROUP");
+        entity.setQualifier("ARTIST_NAME = \"123\"");
+        middleEntity.setQualifier("ARTIST_GROUP_ID = 1987");
+
+        try {
+            Template test = new Template() {
+                @Override
+                void test(SelectTranslator transl) throws Exception {
+                    String generatedSql = transl.createSqlString();
+    
+                    // do some simple assertions to make sure all parts are in
+                    assertNotNull(generatedSql);
+                    assertTrue(generatedSql.startsWith("SELECT "));
+                    assertTrue(generatedSql.indexOf(" FROM ") > 0);
+                    assertTrue(generatedSql.indexOf(entity.getQualifier()) > 0);
+                }
+            };
+    
+            test.test(q);
+            
+            //testing quering from related table 
+            q = new SelectQuery(Painting.class, ExpressionFactory.matchExp("toArtist.artistName", "foo"));
+            test.test(q);
+            
+            //testing flattened rels
+            q = new SelectQuery(Artist.class, ExpressionFactory.matchExp("groupArray.name", "bar"));
+            new Template() {
+                @Override
+                void test(SelectTranslator transl) throws Exception {
+                    assertTrue(transl.createSqlString().indexOf(middleEntity.getQualifier()) > 0);
+                }
+            }.test(q);
+        }
+        finally {
+            entity.setQualifier(null);
+            middleEntity.setQualifier(null);
+        }
+    }
 
     /**
      * Tests query creation with "distinct" specified.

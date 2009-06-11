@@ -10,9 +10,17 @@ import org.apache.cayenne.CayenneDataObject;
  */
 public abstract class _SoftTest extends CayenneDataObject {
 
+    public static final String DELETED_PROPERTY = "deleted";
     public static final String NAME_PROPERTY = "name";
 
     public static final String SOFT_TEST_ID_PK_COLUMN = "SOFT_TEST_ID";
+
+    public void setDeleted(Boolean deleted) {
+        writeProperty("deleted", deleted);
+    }
+    public Boolean getDeleted() {
+        return (Boolean)readProperty("deleted");
+    }
 
     public void setName(String name) {
         writeProperty("name", name);
@@ -20,5 +28,7 @@ public abstract class _SoftTest extends CayenneDataObject {
     public String getName() {
         return (String)readProperty("name");
     }
+
+    protected abstract void onPrePersist();
 
 }

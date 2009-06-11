@@ -35,6 +35,7 @@ import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.IteratorUtils;
 
 /**
@@ -58,10 +59,20 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     @Override
     protected void doAppendPart() throws IOException {
         Expression rootNode = extractQualifier();
+        
+        String dbQualifier = queryAssembler.getRootDbEntity() != null ?
+                queryAssembler.getRootDbEntity().getQualifier() : null;
+        if (!Util.isEmptyString(dbQualifier)) {
+            out.append(dbQualifier);
+        }
+        
         if (rootNode == null) {
             return;
         }
 
+        if (!Util.isEmptyString(dbQualifier)) {
+            out.append(" AND ");
+        }
         rootNode.traverse(this);
     }
 

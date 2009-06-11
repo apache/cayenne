@@ -61,6 +61,11 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      */
     protected Collection<DbAttribute> generatedAttributes;
     protected DbKeyGenerator primaryKeyGenerator;
+    
+    /**
+     * Qualifier, that will be applied to all select queries and joins with this DbEntity
+     */
+    protected String qualifier;
 
     /**
      * Creates an unnamed DbEntity.
@@ -109,6 +114,12 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
         if (getPrimaryKeyGenerator() != null) {
             getPrimaryKeyGenerator().encodeAsXML(encoder);
+        }
+        
+        if (getQualifier() != null && getQualifier().trim().length() > 0) {
+            encoder.print("<qualifier><![CDATA[");
+            encoder.print(getQualifier());
+            encoder.println("]]></qualifier>");
         }
 
         encoder.indent(-1);
@@ -543,6 +554,20 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     /** Relationship has been removed. */
     public void dbRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
+    }
+    
+    /**
+     * @return qualifier that will be ANDed to all select queries with this entity
+     */
+    public String getQualifier() {
+        return qualifier;
+    }
+    
+    /**
+     * Sets qualifier for this entity
+     */
+    public void setQualifier(String qualifier) {
+        this.qualifier = qualifier;
     }
 
     /**

@@ -758,6 +758,7 @@ public class MapLoader extends DefaultHandler {
      * 
      * @deprecated since 3.0 use {@link #createResourceFinder()}.
      */
+    @Deprecated
     protected ResourceLocator configLocator() {
         return (ResourceLocator) createResourceFinder();
     }
@@ -1235,9 +1236,12 @@ public class MapLoader extends DefaultHandler {
             return;
         }
 
-        // qualifier can belong to ObjEntity or a query
+        // qualifier can belong to ObjEntity, DbEntity or a query
         if (objEntity != null) {
             objEntity.setDeclaredQualifier(Expression.fromString(qualifier));
+        }
+        else if (dbEntity != null) {
+            dbEntity.setQualifier(qualifier);
         }
         else {
             queryBuilder.setQualifier(qualifier);
