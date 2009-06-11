@@ -70,6 +70,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
     protected TextAdapter name;
     protected TextAdapter schema;
+    protected TextAdapter qualifier;
     protected JLabel schemaLabel;
 
     protected JComboBox pkGeneratorType;
@@ -112,6 +113,12 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
                 setSchema(text);
             }
         };
+        qualifier = new TextAdapter(new JTextField()) {
+
+            protected void updateModel(String qualifier) {
+                setQualifier(qualifier);
+            }
+        };
 
         pkGeneratorType = new JComboBox();
         pkGeneratorType.setEditable(false);
@@ -134,6 +141,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         builder.appendSeparator("DbEntity Configuration");
         builder.append("DbEntity Name:", name.getComponent());
         builder.append(schemaLabel, schema.getComponent());
+        builder.append("Qualifier", qualifier.getComponent());
 
         builder.appendSeparator("Primary Key");
         builder.append("PK Generation Strategy:", pkGeneratorType);
@@ -200,6 +208,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
         name.setText(entity.getName());
         schema.setText(entity.getSchema());
+        qualifier.setText(entity.getQualifier());
 
         String type = PK_DEFAULT_GENERATOR;
 
@@ -264,6 +273,20 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
         if (ent != null && !Util.nullSafeEquals(ent.getSchema(), text)) {
             ent.setSchema(text);
+            mediator.fireDbEntityEvent(new EntityEvent(this, ent));
+        }
+    }
+    
+    void setQualifier(String qualifier) {
+
+        if (qualifier != null && qualifier.trim().length() == 0) {
+            qualifier = null;
+        }
+
+        DbEntity ent = mediator.getCurrentDbEntity();
+
+        if (ent != null && !Util.nullSafeEquals(ent.getQualifier(), qualifier)) {
+            ent.setQualifier(qualifier);
             mediator.fireDbEntityEvent(new EntityEvent(this, ent));
         }
     }
