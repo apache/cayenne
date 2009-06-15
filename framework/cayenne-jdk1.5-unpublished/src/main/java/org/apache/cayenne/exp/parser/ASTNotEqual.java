@@ -21,7 +21,6 @@
 package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.util.Util;
 
 /**
  * "Not equal to" expression.
@@ -55,7 +54,7 @@ public class ASTNotEqual extends ConditionNode {
 
         Object o1 = evaluateChild(0, o);
         Object o2 = evaluateChild(1, o);
-        return Util.nullSafeEquals(o1, o2) ? Boolean.FALSE : Boolean.TRUE;
+        return !ASTEqual.evaluateImpl(o1, o2);
     }
 
     /**

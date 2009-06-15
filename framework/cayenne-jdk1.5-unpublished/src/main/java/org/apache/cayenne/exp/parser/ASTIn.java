@@ -65,7 +65,7 @@ public class ASTIn extends ConditionNode {
 
         int size = objects.length;
         for (int i = 0; i < size; i++) {
-            if (o1.equals(objects[i])) {
+            if (objects[i] != null && ASTEqual.evaluateAtomic(o1, objects[i])) {
                 return Boolean.TRUE;
             }
         }

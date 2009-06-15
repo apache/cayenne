@@ -22,9 +22,12 @@ package org.apache.cayenne.exp;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.apache.art.Artist;
+import org.apache.art.Painting;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.unit.CayenneCase;
 
-public class ExpressionFactoryTest extends TestCase {
+public class ExpressionFactoryTest extends CayenneCase {
 
     // non-existent type
     private static final int badType = -50;
@@ -214,5 +217,31 @@ public class ExpressionFactoryTest extends TestCase {
         Expression path = (Expression) exp.getOperand(0);
         assertEquals(Expression.OBJ_PATH, path.getType());
         assertNull(exp.getOperand(1));
+    }
+    
+    //CAY-416
+    public void testCollectionMatch() {
+        ObjectContext dc = createDataContext();
+        Artist artist = dc.newObject(Artist.class);
+        Painting p1 = dc.newObject(Painting.class), p2 = dc.newObject(Painting.class), 
+            p3 = dc.newObject(Painting.class);
+        p1.setPaintingTitle("p1");
+        p2.setPaintingTitle("p2");
+        p3.setPaintingTitle("p3");
+        artist.addToPaintingArray(p1);
+        artist.addToPaintingArray(p2);
+        
+        assertTrue(ExpressionFactory.matchExp("paintingArray", p1).match(artist));
+        assertFalse(ExpressionFactory.matchExp("paintingArray", p3).match(artist));
+        assertFalse(ExpressionFactory.noMatchExp("paintingArray", p1).match(artist));
+        assertTrue(ExpressionFactory.noMatchExp("paintingArray", p3).match(artist));
+        
+        assertTrue(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p1").match(artist));
+        assertFalse(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p3").match(artist));
+        assertFalse(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p1").match(artist));
+        assertTrue(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p3").match(artist));
+        
+        assertTrue(ExpressionFactory.inExp("paintingTitle", "p1").match(p1));
+        assertFalse(ExpressionFactory.notInExp("paintingTitle", "p3").match(p3));
     }
 }
