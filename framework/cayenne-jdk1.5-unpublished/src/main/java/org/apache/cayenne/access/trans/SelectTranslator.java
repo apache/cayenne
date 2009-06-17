@@ -187,6 +187,9 @@ public class SelectTranslator extends QueryAssembler {
 
         // append tables and joins
         joins.appendRootWithQuoteSqlIdentifiers(queryBuf, getRootDbEntity());
+        
+        //join parameters will be added to head of query
+        parameterIndex = 0;
 
         joins.appendJoins(queryBuf);
         joins.appendQualifier(qualifierBuffer, qualifierBuffer.length() == 0);

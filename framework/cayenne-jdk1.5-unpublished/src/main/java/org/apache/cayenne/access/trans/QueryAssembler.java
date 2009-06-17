@@ -57,6 +57,11 @@ public abstract class QueryAssembler {
      * PreparedStatement attributes matching entries in <code>values</code> list.
      */
     protected List<DbAttribute> attributes = new ArrayList<DbAttribute>();
+    
+    /**
+     * The index parameter will be inserted at in parameter list
+     */
+    protected int parameterIndex;
 
     /**
      * Returns aliases for the path splits defined in the query.
@@ -177,8 +182,8 @@ public abstract class QueryAssembler {
      * @param dbAttr DbAttribute being processed.
      */
     public void addToParamList(DbAttribute dbAttr, Object anObject) {
-        attributes.add(dbAttr);
-        values.add(anObject);
+        attributes.add(parameterIndex, dbAttr);
+        values.add(parameterIndex++, anObject);
     }
 
     /**
