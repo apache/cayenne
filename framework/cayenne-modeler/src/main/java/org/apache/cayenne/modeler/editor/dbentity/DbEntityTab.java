@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -44,6 +45,7 @@ import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -208,7 +210,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
         name.setText(entity.getName());
         schema.setText(entity.getSchema());
-        qualifier.setText(entity.getQualifier());
+        qualifier.setText(new ExpressionConvertor().valueAsString(entity.getQualifier()));
 
         String type = PK_DEFAULT_GENERATOR;
 
@@ -286,8 +288,20 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         DbEntity ent = mediator.getCurrentDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getQualifier(), qualifier)) {
-            ent.setQualifier(qualifier);
-            mediator.fireDbEntityEvent(new EntityEvent(this, ent));
+            ExpressionConvertor convertor = new ExpressionConvertor();
+            try {
+                String oldQualifier = convertor.valueAsString(ent.getQualifier());
+                if (!Util.nullSafeEquals(oldQualifier, qualifier)) {
+                    Expression exp = (Expression) convertor.stringAsValue(qualifier);
+                    ent.setQualifier(exp);
+                    mediator.fireDbEntityEvent(new EntityEvent(this, ent));
+                }
+            }
+            catch (IllegalArgumentException ex) {
+                // unparsable qualifier
+                throw new ValidationException(ex.getMessage());
+            }
+            
         }
     }
 }
