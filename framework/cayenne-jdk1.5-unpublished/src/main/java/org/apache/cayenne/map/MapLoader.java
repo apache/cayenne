@@ -1241,7 +1241,7 @@ public class MapLoader extends DefaultHandler {
             objEntity.setDeclaredQualifier(Expression.fromString(qualifier));
         }
         else if (dbEntity != null) {
-            dbEntity.setQualifier(qualifier);
+            dbEntity.setQualifier(Expression.fromString(qualifier));
         }
         else {
             queryBuilder.setQualifier(qualifier);

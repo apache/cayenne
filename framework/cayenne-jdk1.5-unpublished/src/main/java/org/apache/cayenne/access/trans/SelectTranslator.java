@@ -97,7 +97,7 @@ public class SelectTranslator extends QueryAssembler {
     boolean forcingDistinct;
 
     protected JoinStack createJoinStack() {
-        return new JoinStack(getAdapter(), queryMetadata.getDataMap());
+        return new JoinStack(getAdapter(), queryMetadata.getDataMap(), this);
     }
 
     /**
@@ -124,7 +124,8 @@ public class SelectTranslator extends QueryAssembler {
         this.resultColumns = buildResultColumns();
 
         // build qualifier
-        StringBuilder qualifierBuffer = adapter.getQualifierTranslator(this).appendPart(
+        QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
+        StringBuilder qualifierBuffer = qualifierTranslator.appendPart(
                 new StringBuilder());
 
         // build ORDER BY
@@ -545,6 +546,7 @@ public class SelectTranslator extends QueryAssembler {
      * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
      *             EJBQL.
      */
+    @Deprecated
     List<ColumnDescriptor> appendCustomColumns(
             List<ColumnDescriptor> columns,
             SelectQuery query) {

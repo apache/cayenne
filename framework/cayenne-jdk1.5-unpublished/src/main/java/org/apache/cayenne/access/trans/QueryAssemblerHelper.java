@@ -82,6 +82,20 @@ public abstract class QueryAssemblerHelper {
         doAppendPart();
         return out;
     }
+    
+    /**
+     * Sets ouput buffer
+     */
+    void setOut(Appendable out) {
+        this.out = out;
+    }
+    
+    /**
+     * @return output buffer
+     */
+    Appendable getOut() {
+        return out;
+    }
 
     /**
      * @since 3.0

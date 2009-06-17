@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.trans.JoinStack;
 import org.apache.cayenne.access.trans.JoinTreeNode;
+import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -35,8 +36,8 @@ import org.apache.cayenne.map.DbRelationship;
 // cloned from OpenBaseJoin stack... need better strategies of reuse...
 class Oracle8JoinStack extends JoinStack {
 
-    Oracle8JoinStack(DbAdapter dbAdapter, DataMap dataMap) {
-        super(dbAdapter, dataMap);
+    Oracle8JoinStack(DbAdapter dbAdapter, DataMap dataMap, QueryAssembler assembler) {
+        super(dbAdapter, dataMap, assembler);
     }
 
     @Override

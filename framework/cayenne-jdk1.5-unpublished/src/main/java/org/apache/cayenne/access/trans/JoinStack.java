@@ -23,12 +23,17 @@ import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.util.Util;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.commons.collections.Transformer;
 
 /**
  * Encapsulates join reuse/split logic used in SelectQuery processing. All expression
@@ -46,6 +51,11 @@ public class JoinStack {
     private int aliasCounter;
     
     /**
+     * Helper class to process DbEntity qualifiers
+     */
+    private QualifierTranslator qualifierTranslator;
+    
+    /**
      * @deprecated since 3.0
      */   
     @Deprecated
@@ -56,7 +66,8 @@ public class JoinStack {
         resetStack();
     }
     
-    protected JoinStack(DbAdapter dbAdapter, DataMap dataMap) {
+    protected JoinStack(DbAdapter dbAdapter, DataMap dataMap,
+            QueryAssembler assembler) {
         this.rootNode = new JoinTreeNode(this);
         this.rootNode.setTargetTableAlias(newAlias());
         boolean status;
@@ -66,7 +77,8 @@ public class JoinStack {
             status = false;
         }
         strategy =  dbAdapter.getQuotingStrategy(status);
-  
+        qualifierTranslator = dbAdapter.getQualifierTranslator(assembler);
+        
         resetStack();
     }
     
@@ -159,6 +171,20 @@ public class JoinStack {
             out.append('.');
             out.append(strategy.quoteString(join.getTargetName()));
         }
+        
+        /**
+         * Attaching root Db entity's qualifier
+         */
+        Expression dbQualifier = targetEntity.getQualifier();
+        if (dbQualifier != null) {
+            dbQualifier = dbQualifier.transform(new JoinedDbEntityQualifierTransformer(node));
+            
+            if (len > 0) {
+                out.append(" AND ");
+            }
+            qualifierTranslator.setOut(out);
+            qualifierTranslator.doAppendPart(dbQualifier);
+        }
 
         out.append(')');
 
@@ -172,38 +198,9 @@ public class JoinStack {
      */
     protected void appendQualifier(Appendable out, boolean firstQualifierElement)
             throws IOException {
-        // skip root, recursively append its children
-        for (JoinTreeNode child : rootNode.getChildren()) {
-            firstQualifierElement &= appendQualifier(out, child, firstQualifierElement);
-        }
+        // nothing as standard join is performed before "WHERE"
     }
     
-    /**
-     * Append join tree node information to the qualifier - the part after "WHERE".
-     * @return whether qualifier was not yet appended (i.e. firstQualifierElement is still false)
-     */
-    private boolean appendQualifier(Appendable out, JoinTreeNode node, boolean firstQualifierElement) 
-        throws IOException {
-        DbRelationship relationship = node.getRelationship();
-
-        DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
-        if (!Util.isEmptyString(targetEntity.getQualifier())) {
-            if (!firstQualifierElement) {
-                out.append(" AND ");
-            }
-            else {
-                firstQualifierElement = false;
-            }
-            
-            out.append(targetEntity.getQualifier());
-        }
-        
-        for (JoinTreeNode child : node.getChildren()) {
-            firstQualifierElement &= appendQualifier(out, child, firstQualifierElement);
-        }
-        return firstQualifierElement;
-    }
-
     /**
      * Pops the stack all the way to the root node.
      */
@@ -223,4 +220,29 @@ public class JoinStack {
         return "t" + aliasCounter++;
     }
     
+    /**
+     * Class to translate *joined* DB Entity qualifiers annotation to 
+     * *current* Obj-entity qualifiers annotation
+     * This is done by changing all Obj-paths to concatenated Db-paths to root entity
+     * and rejecting all original Db-paths
+     */
+    class JoinedDbEntityQualifierTransformer implements Transformer {
+        String pathToRoot;
+        
+        JoinedDbEntityQualifierTransformer(JoinTreeNode node) {
+            pathToRoot = "";
+            while (node != null && node.getRelationship() != null) {
+                pathToRoot += node.getRelationship().getName() + ObjEntity.PATH_SEPARATOR;
+                node = node.getParent();
+            }
+        }
+        
+        public Object transform(Object input) {
+            if (input instanceof ASTObjPath) {
+                return new ASTDbPath(pathToRoot + 
+                        ((SimpleNode) input).getOperand(0));
+            }
+            return input;
+        }
+    }
 }

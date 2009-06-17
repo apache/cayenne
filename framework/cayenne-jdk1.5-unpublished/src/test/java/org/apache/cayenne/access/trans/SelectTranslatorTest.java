@@ -80,8 +80,8 @@ public class SelectTranslatorTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Artist.class);
         final DbEntity entity = getNode().getEntityResolver().getDbEntity("ARTIST");
         final DbEntity middleEntity = getNode().getEntityResolver().getDbEntity("ARTIST_GROUP");
-        entity.setQualifier("ARTIST_NAME = \"123\"");
-        middleEntity.setQualifier("ARTIST_GROUP_ID = 1987");
+        entity.setQualifier(Expression.fromString("ARTIST_NAME = \"123\""));
+        middleEntity.setQualifier(Expression.fromString("GROUP_ID = 1987"));
 
         try {
             Template test = new Template() {
@@ -93,14 +93,15 @@ public class SelectTranslatorTest extends CayenneCase {
                     assertNotNull(generatedSql);
                     assertTrue(generatedSql.startsWith("SELECT "));
                     assertTrue(generatedSql.indexOf(" FROM ") > 0);
-                    assertTrue(generatedSql.indexOf(entity.getQualifier()) > 0);
+                    assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
                 }
             };
     
             test.test(q);
             
             //testing quering from related table 
-            q = new SelectQuery(Painting.class, ExpressionFactory.matchExp("toArtist.artistName", "foo"));
+            q = new SelectQuery(Painting.class, 
+                    ExpressionFactory.matchExp("toArtist.artistName", "foo"));
             test.test(q);
             
             //testing flattened rels
@@ -108,7 +109,7 @@ public class SelectTranslatorTest extends CayenneCase {
             new Template() {
                 @Override
                 void test(SelectTranslator transl) throws Exception {
-                    assertTrue(transl.createSqlString().indexOf(middleEntity.getQualifier()) > 0);
+                    assertTrue(transl.createSqlString().indexOf("GROUP_ID = ") > 0);
                 }
             }.test(q);
         }

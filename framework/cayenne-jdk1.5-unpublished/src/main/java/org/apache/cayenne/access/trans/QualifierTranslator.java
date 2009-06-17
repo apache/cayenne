@@ -28,6 +28,9 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityInheritanceTree;
@@ -35,8 +38,8 @@ import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Transformer;
 
 /**
  * Translates query qualifier to SQL. Used as a helper class by query translators.
@@ -58,20 +61,16 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
      */
     @Override
     protected void doAppendPart() throws IOException {
-        Expression rootNode = extractQualifier();
-        
-        String dbQualifier = queryAssembler.getRootDbEntity() != null ?
-                queryAssembler.getRootDbEntity().getQualifier() : null;
-        if (!Util.isEmptyString(dbQualifier)) {
-            out.append(dbQualifier);
-        }
-        
+        doAppendPart(extractQualifier());
+    }
+    
+    /**
+     * Translates query qualifier to SQL WHERE clause. Qualifier is a method parameter     * 
+     * @since 3.0
+     */
+    protected void doAppendPart(Expression rootNode) throws IOException {
         if (rootNode == null) {
             return;
-        }
-
-        if (!Util.isEmptyString(dbQualifier)) {
-            out.append(" AND ");
         }
         rootNode.traverse(this);
     }
@@ -94,6 +93,19 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 qualifier = (qualifier != null)
                         ? qualifier.andExp(entityQualifier)
                         : entityQualifier;
+            }
+        }
+        
+        /**
+         * Attaching root Db entity's qualifier
+         */
+        if (getDbEntity() != null) {
+            Expression dbQualifier = getDbEntity().getQualifier();
+            if (dbQualifier != null) {
+                dbQualifier = dbQualifier.transform(new DbEntityQualifierTransformer());
+                
+                qualifier = qualifier == null ? dbQualifier :
+                    qualifier.andExp(dbQualifier);
             }
         }
 
@@ -448,6 +460,19 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 queryAssembler.dbRelationshipAdded(rel, joinType, joinSplitAlias);
             }
             objectMatchTranslator.setRelationship(rel, joinSplitAlias);
+        }
+    }
+    
+    /**
+     * Class to translate DB Entity qualifiers annotation to Obj-entity qualifiers annotation
+     * This is done by changing all Obj-paths to Db-paths and rejecting all original Db-paths
+     */
+    class DbEntityQualifierTransformer implements Transformer {
+        public Object transform(Object input) {
+            if (input instanceof ASTObjPath) {
+                return new ASTDbPath(((SimpleNode) input).getOperand(0));
+            }
+            return input;
         }
     }
 }

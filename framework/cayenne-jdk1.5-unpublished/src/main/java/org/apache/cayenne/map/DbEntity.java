@@ -65,7 +65,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     /**
      * Qualifier, that will be applied to all select queries and joins with this DbEntity
      */
-    protected String qualifier;
+    protected Expression qualifier;
 
     /**
      * Creates an unnamed DbEntity.
@@ -116,9 +116,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             getPrimaryKeyGenerator().encodeAsXML(encoder);
         }
         
-        if (getQualifier() != null && getQualifier().trim().length() > 0) {
+        if (getQualifier() != null) {
             encoder.print("<qualifier><![CDATA[");
-            encoder.print(getQualifier());
+            getQualifier().encodeAsXML(encoder);
             encoder.println("]]></qualifier>");
         }
 
@@ -559,14 +559,14 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     /**
      * @return qualifier that will be ANDed to all select queries with this entity
      */
-    public String getQualifier() {
+    public Expression getQualifier() {
         return qualifier;
     }
     
     /**
      * Sets qualifier for this entity
      */
-    public void setQualifier(String qualifier) {
+    public void setQualifier(Expression qualifier) {
         this.qualifier = qualifier;
     }
 

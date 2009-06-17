@@ -38,17 +38,23 @@ public final class JoinTreeNode {
     private JoinType joinType;
     private Collection<JoinTreeNode> children;
     private JoinStack joinProcessor;
+    
+    /**
+     * Parent join
+     */
+    private JoinTreeNode parent;
 
     JoinTreeNode(JoinStack joinProcessor) {
         this.joinProcessor = joinProcessor;
     }
 
     JoinTreeNode(JoinStack joinProcessor, DbRelationship relationship,
-            JoinType joinType, String alias) {
+            JoinType joinType, String alias, JoinTreeNode parent) {
         this(joinProcessor);
         this.relationship = relationship;
         this.alias = alias;
         this.joinType = joinType;
+        this.parent = parent;
     }
 
     int size() {
@@ -88,7 +94,8 @@ public final class JoinTreeNode {
                 joinProcessor,
                 relationship,
                 joinType,
-                alias);
+                alias,
+                this);
         child.setSourceTableAlias(this.targetTableAlias);
         child.setTargetTableAlias(joinProcessor.newAlias());
         children.add(child);
@@ -127,5 +134,12 @@ public final class JoinTreeNode {
 
     public JoinType getJoinType() {
         return joinType;
+    }
+    
+    /**
+     * @return parent join
+     */
+    public JoinTreeNode getParent() {
+        return parent;
     }
 }
