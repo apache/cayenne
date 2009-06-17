@@ -65,6 +65,7 @@ import org.apache.cayenne.modeler.action.GenerateDBAction;
 import org.apache.cayenne.modeler.action.ImportDBAction;
 import org.apache.cayenne.modeler.action.ImportDataMapAction;
 import org.apache.cayenne.modeler.action.ImportEOModelAction;
+import org.apache.cayenne.modeler.action.InferRelationshipsAction;
 import org.apache.cayenne.modeler.action.MigrateAction;
 import org.apache.cayenne.modeler.action.NavigateBackwardAction;
 import org.apache.cayenne.modeler.action.NavigateForwardAction;
@@ -128,7 +129,7 @@ public class ActionManager {
                 CreateProcedureAction.getActionName(),
                 GenerateDBAction.getActionName(),
                 MigrateAction.getActionName(),
-                
+                InferRelationshipsAction.getActionName(),
                 CutAction.getActionName(),
                 CopyAction.getActionName()));
     }
@@ -212,6 +213,7 @@ public class ActionManager {
         registerAction(new DbEntitySyncAction(application));
         registerAction(new ObjEntitySyncAction(application));
         registerAction(new ImportDBAction(application));
+        registerAction(new InferRelationshipsAction(application));
         registerAction(new ImportEOModelAction(application));
         registerAction(new GenerateDBAction(application));
         registerAction(new MigrateAction(application));

@@ -64,6 +64,7 @@ import org.apache.cayenne.modeler.action.GenerateDBAction;
 import org.apache.cayenne.modeler.action.ImportDBAction;
 import org.apache.cayenne.modeler.action.ImportDataMapAction;
 import org.apache.cayenne.modeler.action.ImportEOModelAction;
+import org.apache.cayenne.modeler.action.InferRelationshipsAction;
 import org.apache.cayenne.modeler.action.MigrateAction;
 import org.apache.cayenne.modeler.action.NavigateBackwardAction;
 import org.apache.cayenne.modeler.action.NavigateForwardAction;
@@ -222,6 +223,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         projectMenu.add(getAction(RemoveAction.getActionName()).buildMenu());
 
         toolMenu.add(getAction(ImportDBAction.getActionName()).buildMenu());
+        toolMenu.add(getAction(InferRelationshipsAction.getActionName()).buildMenu());
         toolMenu.add(getAction(ImportEOModelAction.getActionName()).buildMenu());
         toolMenu.addSeparator();
         toolMenu.add(getAction(GenerateCodeAction.getActionName()).buildMenu());
