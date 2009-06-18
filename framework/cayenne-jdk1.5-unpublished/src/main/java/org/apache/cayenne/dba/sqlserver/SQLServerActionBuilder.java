@@ -25,7 +25,9 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SQLAction;
+
 
 /**
  * @since 1.2
@@ -35,7 +37,7 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
     public SQLServerActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         super(adapter, resolver);
     }
-
+    
     @Override
     public SQLAction batchAction(BatchQuery query) {
         // check run strategy...
@@ -49,6 +51,11 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
         return action;
     }
 
+    @Override
+    public SQLAction objectSelectAction(SelectQuery query) {
+        return new SQLServerSelectAction(query, adapter, entityResolver);
+    }    
+    
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
         return new SQLServerProcedureAction(query, getAdapter(), getEntityResolver());
