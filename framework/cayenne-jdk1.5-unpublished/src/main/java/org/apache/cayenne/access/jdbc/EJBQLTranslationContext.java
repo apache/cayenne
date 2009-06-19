@@ -221,7 +221,7 @@ public class EJBQLTranslationContext {
      * on the stack. Note that this can be done even before the marker is inserted in the
      * main buffer. If "reset" is true, any previous contents of the marker are cleared.
      */
-    void pushMarker(String marker, boolean reset) {
+    public void pushMarker(String marker, boolean reset) {
 
         stackTop = findOrCreateMarkedBuffer(marker);
         if (reset) {
@@ -412,7 +412,7 @@ public class EJBQLTranslationContext {
                 .getColumn();
     }
 
-    boolean isAppendingResultColumns() {
+    public boolean isAppendingResultColumns() {
         return appendingResultColumns;
     }
 
@@ -428,11 +428,11 @@ public class EJBQLTranslationContext {
         this.usingAliases = useAliases;
     }
 
-    void onSubselect() {
+    public void onSubselect() {
         subselectCount++;
     }
 
-    String makeDistinctMarker() {
+    public String makeDistinctMarker() {
         return "DISTINCT_MARKER" + subselectCount;
     }
 

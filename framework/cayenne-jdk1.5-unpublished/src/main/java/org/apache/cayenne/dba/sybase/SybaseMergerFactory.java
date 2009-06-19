@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.mysql;
+package org.apache.cayenne.dba.sybase;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,36 +25,82 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.merge.DropRelationshipToDb;
+import org.apache.cayenne.merge.AddColumnToDb;
+import org.apache.cayenne.merge.DropColumnToDb;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
 import org.apache.cayenne.merge.SetNotNullToDb;
 
-public class MySQLMergerFactory extends MergerFactory {
+/**
+ * @since 3.0
+ */
+public class SybaseMergerFactory extends MergerFactory {
 
+    /**
+     * @since 3.0
+     */
     @Override
-    public MergerToken createSetNotNullToDb(
-            final DbEntity entity,
-            final DbAttribute column) {
+    public MergerToken createAddColumnToDb(DbEntity entity, final DbAttribute column) {
+        return new AddColumnToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+
+                StringBuffer sqlBuffer = new StringBuffer();
+                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers());
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(" ADD ");
+
+                adapter.createTableAppendColumn(sqlBuffer, column);
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Override
+    public MergerToken createDropColumnToDb(DbEntity entity, DbAttribute column) {
+        return new DropColumnToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuilder sqlBuffer = new StringBuilder();
+                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers());
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(" DROP ");
+                sqlBuffer.append(context.quoteString(getColumn().getName()));
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Override
+    public MergerToken createSetNotNullToDb(DbEntity entity, DbAttribute column) {
         return new SetNotNullToDb(entity, column) {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
-
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
-                sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quoteString(getColumn().getName()));
-                sqlBuffer.append(" ");
-                adapter.createTableAppendColumn(sqlBuffer, column);
+                StringBuffer sqlBuffer = createStringQuery(
+                        adapter,
+                        getEntity(),
+                        getColumn());
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
@@ -62,33 +108,27 @@ public class MySQLMergerFactory extends MergerFactory {
         };
     }
 
+    /**
+     * @since 3.0
+     */
     @Override
-    public MergerToken createSetAllowNullToDb(
-            final DbEntity entity,
-            final DbAttribute column) {
+    public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
         return new SetAllowNullToDb(entity, column) {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                StringBuffer sqlBuffer = new StringBuffer();
-
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
-
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
-                sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quoteString(getColumn().getName()));
-                sqlBuffer.append(" ");
-                adapter.createTableAppendColumn(sqlBuffer, column);
-
+                StringBuffer sqlBuffer = createStringQuery(
+                        adapter,
+                        getEntity(),
+                        getColumn());
                 return Collections.singletonList(sqlBuffer.toString());
             }
-
         };
     }
 
+    /**
+     * @since 3.0
+     */
     @Override
     public MergerToken createSetColumnTypeToDb(
             final DbEntity entity,
@@ -110,32 +150,20 @@ public class MySQLMergerFactory extends MergerFactory {
         };
     }
 
-    @Override
-    public MergerToken createDropRelationshipToDb(
-            final DbEntity entity,
-            DbRelationship rel) {
+    private static StringBuffer createStringQuery(
+            DbAdapter adapter,
+            DbEntity entity,
+            DbAttribute column) {
+        StringBuffer sqlBuffer = new StringBuffer();
+        QuotingStrategy context = adapter.getQuotingStrategy(entity
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
+        sqlBuffer.append("ALTER TABLE ");
+        sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+        sqlBuffer.append(" MODIFY ");
+        adapter.createTableAppendColumn(sqlBuffer, column);
 
-        return new DropRelationshipToDb(entity, rel) {
-
-            @Override
-            public List<String> createSql(DbAdapter adapter) {
-                String fkName = getFkName();
-
-                if (fkName == null) {
-                    return Collections.emptyList();
-                }
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
-                StringBuilder buf = new StringBuilder();
-                // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
-                buf.append("ALTER TABLE ");
-                buf.append(context.quoteFullyQualifiedName(entity));
-                buf.append(" DROP FOREIGN KEY ");
-                buf.append(fkName);
-
-                return Collections.singletonList(buf.toString());
-            }
-        };
+        return sqlBuffer;
     }
+
 }

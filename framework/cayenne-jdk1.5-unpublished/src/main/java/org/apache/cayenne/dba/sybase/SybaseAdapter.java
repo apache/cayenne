@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -30,6 +31,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.merge.MergerFactory;
 
 /** 
  * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
@@ -37,6 +39,27 @@ import org.apache.cayenne.dba.PkGenerator;
  */
 public class SybaseAdapter extends JdbcAdapter {
 
+    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "[";
+    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "]";
+    
+    /**
+    * 
+    * @since 3.0
+    */
+    @Override
+    public void initIdentifiersQuotes(){
+        this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
+        this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
+    }
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+        return new SybaseEJBQLTranslatorFactory();
+    }
+    
     /**
      * Returns word "go".
      * 
@@ -96,5 +119,10 @@ public class SybaseAdapter extends JdbcAdapter {
         }
 
         super.bindParameter(statement, object, pos, sqlType, precision);
+    }
+    
+    @Override
+    public MergerFactory mergerFactory() {
+        return new SybaseMergerFactory();
     }
 }

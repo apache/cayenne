@@ -70,6 +70,36 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         if (e != null) {
             ((DbAttribute) e.getAttribute("BOOLEAN_COLUMN")).setMandatory(true);
         }
+        DbEntity e1 = map.getDbEntity("INHERITANCE_SUB_ENTITY3");
+        if (e1 != null) {
+            ((DbAttribute) e1.getAttribute("SUBENTITY_BOOL_ATTR")).setMandatory(true);
+        }
+        DbEntity e2 = map.getDbEntity("MT_TABLE_BOOL");
+        if (e2 != null) {
+            ((DbAttribute) e2.getAttribute("BOOLEAN_COLUMN")).setMandatory(true);
+        }
+        DbEntity e3 = map.getDbEntity("QUALIFIED1");
+        if (e3 != null) {
+            ((DbAttribute) e3.getAttribute("DELETED")).setMandatory(true);
+        }
+
+        DbEntity e4 = map.getDbEntity("QUALIFIED2");
+        if (e4 != null) {
+            ((DbAttribute) e4.getAttribute("DELETED")).setMandatory(true);
+        }
+
+        DbEntity e5 = map.getDbEntity("Painting");
+        if (e5 != null) {
+            if (e5.getAttribute("NEWCOL2") != null) {
+                ((DbAttribute) e5.getAttribute("DELETED")).setMandatory(true);
+            }
+        }
+
+        DbEntity e6 = map.getDbEntity("SOFT_TEST");
+        if (e6 != null) {
+            ((DbAttribute) e6.getAttribute("DELETED")).setMandatory(true);
+        }
+
     }
 
     @Override
@@ -119,10 +149,7 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         }
 
         for (Object name : names) {
-            executeDDL(con, "alter table "
-                    + tableName
-                    + " drop constraint "
-                    + name);
+            executeDDL(con, "alter table " + tableName + " drop constraint " + name);
         }
     }
 
@@ -137,4 +164,8 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         return false;
     }
 
+    @Override
+    public boolean supportsNullBoolean() {
+        return false;
+    }
 }

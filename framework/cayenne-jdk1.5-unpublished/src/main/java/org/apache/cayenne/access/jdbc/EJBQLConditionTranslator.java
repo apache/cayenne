@@ -21,7 +21,6 @@ package org.apache.cayenne.access.jdbc;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -709,8 +708,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                 AttributeProperty property = (AttributeProperty) descriptor
                         .getProperty(pathChunk);
                 String atrType = property.getAttribute().getType();
-                
-                type = TypesMapping.getSqlNameByType(TypesMapping.getSqlTypeByJava(atrType));
+
+                type = TypesMapping.getSqlNameByType(TypesMapping
+                        .getSqlTypeByJava(atrType));
 
             }
             context.popMarker();
@@ -1022,7 +1022,7 @@ class EJBQLPathAnaliserTranslator extends EJBQLPathTranslator {
                 }
                 else {
                     processLastPathComponent();
-                    if(idPath!=null && lastPathComponent!=null){
+                    if (idPath != null && lastPathComponent != null) {
                         isPath = true;
                     }
                     return false;

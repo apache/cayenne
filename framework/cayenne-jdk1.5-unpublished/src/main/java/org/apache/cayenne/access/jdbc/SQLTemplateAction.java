@@ -38,6 +38,9 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -58,6 +61,8 @@ public class SQLTemplateAction implements SQLAction {
     protected SQLTemplate query;
     protected QueryMetadata queryMetadata;
 
+    protected DbEntity dbEntity;
+
     /**
      * @deprecated since 3.0 use a
      *             {@link #SQLTemplateAction(SQLTemplate, DbAdapter, EntityResolver)}
@@ -77,6 +82,7 @@ public class SQLTemplateAction implements SQLAction {
         this.query = query;
         this.adapter = adapter;
         this.queryMetadata = query.getMetaData(entityResolver);
+        this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
     }
 
     /**
@@ -218,13 +224,14 @@ public class SQLTemplateAction implements SQLAction {
 
         boolean iteratedResult = callback.isIteratedResult();
 
-        ExtendedTypeMap types = adapter.getExtendedTypes();
+        ExtendedTypeMap types = getAdapter().getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
 
         JDBCResultIterator result = new JDBCResultIterator(
                 connection,
                 statement,
                 resultSet,
+                // descriptor,
                 builder.getDescriptor(types),
                 queryMetadata);
 
@@ -280,13 +287,23 @@ public class SQLTemplateAction implements SQLAction {
                     if (column == null || column.indexOf('.') > 0) {
                         continue;
                     }
-
                     builder.overrideColumnType(column, attribute.getType());
+                }
+            }
 
-                    // note that some DB's (Oracle) also add default JDBC overrides for
-                    // DbAttributes that have no ObjAttributes (very common for PK's). If
-                    // we find that there is more than one such DB, we can make that a
-                    // default policy.
+            // override numeric Java types based on JDBC defaults for DbAttributes, as
+            // Oracle
+            // ResultSetMetadata is not very precise about NUMERIC distinctions...
+            // (BigDecimal vs Long vs. Integer)
+            if (dbEntity != null) {
+                for (DbAttribute attribute : dbEntity.getAttributes()) {
+
+                    if (!builder.isOverriden(attribute.getName())
+                            && TypesMapping.isNumeric(attribute.getType())) {
+
+                        builder.overrideColumnType(attribute.getName(), TypesMapping
+                                .getJavaBySqlType(attribute.getType()));
+                    }
                 }
             }
         }
@@ -334,7 +351,7 @@ public class SQLTemplateAction implements SQLAction {
                         bindings[i].getPrecision());
             }
         }
-        
+
         if (queryMetadata.getStatementFetchSize() != 0) {
             preparedStatement.setFetchSize(queryMetadata.getStatementFetchSize());
         }

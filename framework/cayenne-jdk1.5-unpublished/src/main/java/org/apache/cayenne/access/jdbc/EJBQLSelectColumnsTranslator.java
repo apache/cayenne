@@ -30,12 +30,12 @@ import org.apache.cayenne.map.ObjAttribute;
  * 
  * @since 3.0
  */
-class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
+public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLTranslationContext context;
+    protected EJBQLTranslationContext context;
     private int expressionsCount;
 
-    EJBQLSelectColumnsTranslator(EJBQLTranslationContext context) {
+    protected EJBQLSelectColumnsTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
 

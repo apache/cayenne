@@ -205,7 +205,8 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         DataRow row2 = (DataRow) rows.get(1);
         assertEquals(3, row2.size());
-        assertEquals(33002l, row2.get("ARTIST_ID"));
+        Object id = row2.get("ARTIST_ID");
+        assertEquals(new Integer(33002), new Integer(id.toString()));
     }
 
     public void testFetchObjects() throws Exception {
@@ -491,6 +492,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setPageSize(pageSize);
 
         List objects = context.performQuery(query);
+        
         assertEquals(DataContextCase.artistCount, objects.size());
         assertTrue(objects.get(0) instanceof Artist);
 
@@ -528,7 +530,8 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
                 DataRow row = (DataRow) it.nextRow();
                 assertEquals(3, row.size());
-                assertEquals(33000l + i, row.get("ARTIST_ID"));
+                Object id = row.get("ARTIST_ID");
+                assertEquals(new Integer((int) (33000 + i)), new Integer(id.toString()));
             }
 
             assertEquals(DataContextCase.artistCount, i);

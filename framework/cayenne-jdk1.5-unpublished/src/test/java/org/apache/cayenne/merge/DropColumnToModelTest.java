@@ -58,7 +58,7 @@ public class DropColumnToModelTest extends MergeCase {
         objEntity.setDbEntity(dbEntity);
         ObjAttribute oatr1 = new ObjAttribute("name");
         oatr1.setDbAttributePath(column2.getName());
-        oatr1.setType("java.lang.String");
+        oatr1.setType("java.lang.String");        
         objEntity.addAttribute(oatr1);
         map.addObjEntity(objEntity);
 

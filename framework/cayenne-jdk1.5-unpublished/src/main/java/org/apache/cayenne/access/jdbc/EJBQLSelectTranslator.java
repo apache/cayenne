@@ -26,11 +26,11 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
  * 
  * @since 3.0
  */
-class EJBQLSelectTranslator extends EJBQLBaseVisitor {
+public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLTranslationContext context;
+    protected EJBQLTranslationContext context;
 
-    EJBQLSelectTranslator(EJBQLTranslationContext context) {
+    protected EJBQLSelectTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
 

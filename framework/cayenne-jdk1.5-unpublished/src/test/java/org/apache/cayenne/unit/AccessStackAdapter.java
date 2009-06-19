@@ -125,6 +125,7 @@ public class AccessStackAdapter {
     public void createdTables(Connection con, DataMap map) throws Exception {
 
     }
+    
 
     public boolean supportsStoredProcedures() {
         return false;
@@ -331,5 +332,9 @@ public class AccessStackAdapter {
 
     public QuotingStrategy getQuotingStrategy(boolean status) {
         return adapter.getQuotingStrategy(status);
+    }
+    
+    public boolean supportsNullBoolean() {
+        return true;
     }
 }

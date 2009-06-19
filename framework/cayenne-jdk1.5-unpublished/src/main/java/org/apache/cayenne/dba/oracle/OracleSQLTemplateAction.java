@@ -47,8 +47,6 @@ import org.apache.cayenne.access.jdbc.RowDescriptorBuilder;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
@@ -102,21 +100,6 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         RowDescriptorBuilder builder = super.configureRowDescriptorBuilder(
                 compiled,
                 resultSet);
-
-        // override numeric Java types based on JDBC defaults for DbAttributes, as Oracle
-        // ResultSetMetadata is not very precise about NUMERIC distinctions...
-        // (BigDecimal vs Long vs. Integer)
-        if (dbEntity != null) {
-            for (DbAttribute attribute : dbEntity.getAttributes()) {
-
-                if (!builder.isOverriden(attribute.getName())
-                        && TypesMapping.isNumeric(attribute.getType())) {
-
-                    builder.overrideColumnType(attribute.getName(), TypesMapping
-                            .getJavaBySqlType(attribute.getType()));
-                }
-            }
-        }
 
         return builder;
     }
