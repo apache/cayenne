@@ -20,6 +20,8 @@ package org.apache.cayenne.modeler.dialog.autorelationship;
 
 import java.awt.Component;
 
+import javax.swing.JOptionPane;
+
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -90,13 +92,13 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         String label;
 
         if (size == 0) {
-            label = "No entities selected";
+            label = "No DbRelationships selected";
         }
         else if (size == 1) {
-            label = "One entity selected";
+            label = "One DbRelationships selected";
         }
         else {
-            label = size + " entities selected";
+            label = size + " DbRelationships selected";
         }
 
         view.getEntityCount().setText(label);
@@ -127,6 +129,9 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             rel.setToMany(temp.isToMany());
             temp.getSource().addRelationship(rel);
         }
+        JOptionPane.showMessageDialog(this.getView(), getSelectedEntitiesSize()
+                + " relationships generated");
+        view.dispose();
     }
 
     private String uniqueRelName(Entity entity, String preferredName) {

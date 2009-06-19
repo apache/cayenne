@@ -33,22 +33,20 @@ import javax.swing.SwingConstants;
 
 import org.apache.cayenne.modeler.Application;
 
-
 public class InferRelationshipsDialog extends JDialog {
 
     protected JButton generateButton;
     protected JButton cancelButton;
     protected JLabel entityCount;
-    
+
     public InferRelationshipsDialog(Component entitySelectorPanel) {
         super(Application.getFrame());
-        this.generateButton = new JButton("Generate");
+        this.generateButton = new JButton("Create DbRelationships");
         this.cancelButton = new JButton("Cancel");
-        this.entityCount = new JLabel("No Relationships selected");
+        this.entityCount = new JLabel("No DbRelationships selected");
         entityCount.setFont(entityCount.getFont().deriveFont(10f));
 
         // assemble
-       
 
         JPanel messages = new JPanel(new BorderLayout());
         messages.add(entityCount, BorderLayout.WEST);
@@ -66,7 +64,7 @@ public class InferRelationshipsDialog extends JDialog {
 
         setTitle("Infer Relationships");
     }
-    
+
     public JButton getCancelButton() {
         return cancelButton;
     }

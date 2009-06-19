@@ -31,8 +31,8 @@ import org.apache.cayenne.swing.TableBindingBuilder;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
+public class InferRelationshipsTabController extends CayenneController {
 
-public class InferRelationshipsTabController extends CayenneController{
     public static final String GENERATE_PROPERTY = "generate";
 
     protected InferRelationshipsPanel view;
@@ -61,7 +61,7 @@ public class InferRelationshipsTabController extends CayenneController{
         builder.bindToAction(view.getCheckAll(), "checkAllAction()");
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
-        
+
         tableBuilder.addColumn(
                 "",
                 "parent.setCurrentEntity(#item), selected",
@@ -90,6 +90,12 @@ public class InferRelationshipsTabController extends CayenneController{
         tableBuilder.addColumn(
                 "Name",
                 "#item.getName()",
+                String.class,
+                false,
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        tableBuilder.addColumn(
+                "To Many",
+                "parent.getToMany(#item)",
                 String.class,
                 false,
                 "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -133,4 +139,3 @@ public class InferRelationshipsTabController extends CayenneController{
         }
     }
 }
-

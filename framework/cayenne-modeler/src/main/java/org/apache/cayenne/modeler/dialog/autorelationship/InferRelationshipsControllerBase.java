@@ -88,7 +88,8 @@ public class InferRelationshipsControllerBase extends CayenneController {
             for (DbEntity myEntity : entities) {
                 if ((attribute.getName().equalsIgnoreCase(myEntity.getName() + "_ID"))
                         && (!attribute.isPrimaryKey())
-                        && (myEntity.getAttributes().size() != 0)) {
+                        && (myEntity.getAttributes().size() != 0)
+                        && (myEntity != entity)) {
                     if (!attribute.isForeignKey()) {
                         InferRelationships myir = new InferRelationships();
                         myir.setSource(entity);
@@ -123,6 +124,15 @@ public class InferRelationshipsControllerBase extends CayenneController {
                 + irItem.getJoinTarget().getName();
     }
 
+    public String getToMany(InferRelationships irItem) {
+        if (irItem.isToMany()) {
+            return "to many";
+        }
+        else {
+            return "to one";
+        }
+    }
+
     public DbAttribute getJoinAttribute(DbEntity sEntity, DbEntity tEntity) {
         if (sEntity.getAttributes().size() == 1) {
             return sEntity.getAttributes().iterator().next();
@@ -133,9 +143,14 @@ public class InferRelationshipsControllerBase extends CayenneController {
                     return attr;
                 }
             }
-
-            for(DbAttribute attr : sEntity.getAttributes()){
-                if(attr.isPrimaryKey()){
+            for (DbAttribute attr : sEntity.getAttributes()) {
+                if ((attr.getName().equalsIgnoreCase(sEntity.getName() + "_ID"))
+                        && (!attr.isPrimaryKey())) {
+                    return (DbAttribute) sEntity.getAttribute(attr.getName());
+                }
+            }
+            for (DbAttribute attr : sEntity.getAttributes()) {
+                if (attr.isPrimaryKey()) {
                     return attr;
                 }
             }
@@ -156,14 +171,32 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     public void createName() {
+        ExportedKey key = null;
         for (InferRelationships myir : ir) {
-            ExportedKey key = new ExportedKey(myir.getSource().getName(), myir
-                    .getJoinSource()
-                    .getName(), null, myir.getTarget().getName(), myir
-                    .getJoinTarget()
-                    .getName(), null);
+            if (myir.getJoinSource().isPrimaryKey()) {
+                key = getExportedKey(myir.getSource().getName(), myir
+                        .getJoinSource()
+                        .getName(), myir.getTarget().getName(), myir
+                        .getJoinTarget()
+                        .getName());
+            }
+            else {
+                key = getExportedKey(myir.getTarget().getName(), myir
+                        .getJoinTarget()
+                        .getName(), myir.getSource().getName(), myir
+                        .getJoinSource()
+                        .getName());
+            }
             myir.setName(strategy.createDbRelationshipName(key, myir.isToMany()));
         }
+    }
+
+    public ExportedKey getExportedKey(
+            String pkTable,
+            String pkColumn,
+            String fkTable,
+            String fkColumn) {
+        return new ExportedKey(pkTable, pkColumn, null, fkTable, fkColumn, null);
     }
 
     public List<InferRelationships> getSelectedEntities() {
