@@ -30,7 +30,15 @@ public class SQLServerSelectTranslator extends SelectTranslator {
         int limit = metadata.getFetchLimit();
         
         if (limit > 0) {
-        	buffer.replace(0, 6, "SELECT TOP " + limit);
+        	String sql = buffer.toString();
+        	
+        	// If contains distinct insert top limit after
+        	if (sql.startsWith("SELECT DISTINCT ")) {
+        		buffer.replace(0, 15, "SELECT DISTINCT TOP " + limit);	
+        		
+        	} else {
+        		buffer.replace(0, 6, "SELECT TOP " + limit);	
+        	}
         }
     }
 
