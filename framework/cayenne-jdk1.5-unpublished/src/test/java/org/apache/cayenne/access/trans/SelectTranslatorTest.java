@@ -28,6 +28,7 @@ import org.apache.art.Artist;
 import org.apache.art.ArtistExhibit;
 import org.apache.art.CompoundPainting;
 import org.apache.art.Painting;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.exp.Expression;
@@ -77,6 +78,8 @@ public class SelectTranslatorTest extends CayenneCase {
      * Tests query creation with qualifier and ordering.
      */
     public void testDbEntityQualifier() throws Exception {
+        ObjectContext context = createDataContext();
+        
         SelectQuery q = new SelectQuery(Artist.class);
         final DbEntity entity = getNode().getEntityResolver().getDbEntity("ARTIST");
         final DbEntity middleEntity = getNode().getEntityResolver().getDbEntity("ARTIST_GROUP");
@@ -94,15 +97,24 @@ public class SelectTranslatorTest extends CayenneCase {
                     assertTrue(generatedSql.startsWith("SELECT "));
                     assertTrue(generatedSql.indexOf(" FROM ") > 0);
                     assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
+                    System.out.println(generatedSql);
                 }
             };
     
             test.test(q);
+            context.performQuery(q);            
+            
+            //testing outer join!!
+            q = new SelectQuery(Painting.class);
+            q.addOrdering("toArtist+.artistName", true);
+            test.test(q);
+            context.performQuery(q);
             
             //testing quering from related table 
             q = new SelectQuery(Painting.class, 
                     ExpressionFactory.matchExp("toArtist.artistName", "foo"));
             test.test(q);
+            context.performQuery(q);
             
             //testing flattened rels
             q = new SelectQuery(Artist.class, ExpressionFactory.matchExp("groupArray.name", "bar"));
@@ -112,6 +124,7 @@ public class SelectTranslatorTest extends CayenneCase {
                     assertTrue(transl.createSqlString().indexOf("GROUP_ID = ") > 0);
                 }
             }.test(q);
+            context.performQuery(q);
         }
         finally {
             entity.setQualifier(null);

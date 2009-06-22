@@ -31,6 +31,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.collections.Transformer;
@@ -232,7 +233,18 @@ public class JoinStack {
         JoinedDbEntityQualifierTransformer(JoinTreeNode node) {
             pathToRoot = "";
             while (node != null && node.getRelationship() != null) {
-                pathToRoot += node.getRelationship().getName() + ObjEntity.PATH_SEPARATOR;
+                pathToRoot += node.getRelationship().getName();
+                
+                /**
+                 * We must be in the same join as 'node',
+                 * otherwise incorrect join statement like 
+                 * JOIN t1 ... ON (t0.id=t1.id AND t2.qualifier=0) could be generated
+                 */
+                if (node.getJoinType() == JoinType.LEFT_OUTER) {
+                    pathToRoot += Entity.OUTER_JOIN_INDICATOR;
+                }
+                pathToRoot += ObjEntity.PATH_SEPARATOR;
+                
                 node = node.getParent();
             }
         }
