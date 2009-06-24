@@ -19,7 +19,9 @@
 package org.apache.cayenne.modeler.dialog.autorelationship;
 
 import java.awt.Component;
+import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.access.DbLoader;
@@ -30,9 +32,11 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.map.naming.BasicNamingStrategy;
+import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
+import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -46,11 +50,24 @@ import org.apache.commons.logging.LogFactory;
 
 public class InferRelationshipsController extends InferRelationshipsControllerBase {
 
+    private static final String STRATEGIES_PREFERENCE = "recent.preferences";
+
+    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
+    static {
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.SmartNamingStrategy");
+    };
+
+    public static final int SELECT = 1;
+    public static final int CANCEL = 0;
+
     private static Log logObj = LogFactory.getLog(ErrorDebugDialog.class);
 
     protected InferRelationshipsDialog view;
 
     protected InferRelationshipsTabController entitySelector;
+
+    protected NamingStrategy strategy;
 
     public InferRelationshipsController(CayenneController parent, DataMap dataMap) {
         super(parent, dataMap);
@@ -75,6 +92,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         centerView();
         makeCloseableOnEscape();
         view.setVisible(true);
+
     }
 
     protected void initBindings() {
@@ -85,6 +103,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         builder.bindToAction(view.getCancelButton(), "cancelAction()");
         builder.bindToAction(view.getGenerateButton(), "generateAction()");
         builder.bindToAction(this, "entitySelectedAction()", SELECTED_PROPERTY);
+        builder.bindToAction(view.getStrategyCombo(), "strategyComboAction()");
     }
 
     public void entitySelectedAction() {
@@ -102,6 +121,45 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         }
 
         view.getEntityCount().setText(label);
+    }
+
+    public void strategyComboAction() {
+        try {
+            ClassLoadingService classLoader = Application
+                    .getInstance()
+                    .getClassLoadingService();
+            String strategyClass = (String) view.getStrategyCombo().getSelectedItem();
+
+            this.strategy = (NamingStrategy) classLoader
+                    .loadClass(strategyClass)
+                    .newInstance();
+            
+            /**
+             * Be user-friendly and update preferences with specified strategy
+             */
+            ModelerPreferences pref = ModelerPreferences.getPreferences();
+            Vector arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
+
+            // move to top
+            arr.remove(strategyClass);
+            arr.add(0, strategyClass);
+
+            pref.setProperty(STRATEGIES_PREFERENCE, arr);
+        }
+        catch (Throwable th) {
+            logObj.error("Error in " + getClass().getName(), th);
+            return;
+        }
+
+        setNamingStrategy(strategy);
+        createName();
+        entitySelector.initBindings();
+        view.setChoice(SELECT);
+
+    }
+
+    public NamingStrategy getNamingStrategy() {
+        return strategy;
     }
 
     public void cancelAction() {

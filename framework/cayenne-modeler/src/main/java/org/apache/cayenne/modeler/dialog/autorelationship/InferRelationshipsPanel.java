@@ -23,22 +23,27 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Vector;
 
 import javax.swing.AbstractButton;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 
+import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.modeler.ModelerPreferences;
 
 public class InferRelationshipsPanel extends JPanel {
-    
+
     protected JTable table;
     protected JCheckBox checkAll;
     protected JLabel checkAllLabel;
-    
+
     public InferRelationshipsPanel() {
         this.table = new JTable();
 
@@ -76,7 +81,7 @@ public class InferRelationshipsPanel extends JPanel {
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
         add(tablePanel, BorderLayout.CENTER);
-        
+
     }
 
     public JTable getTable() {

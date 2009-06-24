@@ -22,22 +22,42 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.util.Vector;
 
 import javax.swing.Box;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
+import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ModelerPreferences;
 
 public class InferRelationshipsDialog extends JDialog {
+
+    private static final String STRATEGIES_PREFERENCE = "recent.preferences";
+
+    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
+    static {
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.SmartNamingStrategy");
+    };
+
+    public static final int SELECT = 1;
+    public static final int CANCEL = 0;
+    protected int choice;
 
     protected JButton generateButton;
     protected JButton cancelButton;
     protected JLabel entityCount;
+    protected JLabel strategyLabel;
+
+    protected JComboBox strategyCombo;
 
     public InferRelationshipsDialog(Component entitySelectorPanel) {
         super(Application.getFrame());
@@ -46,7 +66,14 @@ public class InferRelationshipsDialog extends JDialog {
         this.entityCount = new JLabel("No DbRelationships selected");
         entityCount.setFont(entityCount.getFont().deriveFont(10f));
 
+        this.strategyCombo = new JComboBox();
+        strategyCombo.setEditable(true);
+        this.strategyLabel = new JLabel("Naming Strategy:  ");
+
         // assemble
+        JPanel strategyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        strategyPanel.add(strategyLabel);
+        strategyPanel.add(strategyCombo);
 
         JPanel messages = new JPanel(new BorderLayout());
         messages.add(entityCount, BorderLayout.WEST);
@@ -59,10 +86,25 @@ public class InferRelationshipsDialog extends JDialog {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
+        contentPane.add(strategyPanel, BorderLayout.NORTH);
         contentPane.add(entitySelectorPanel, BorderLayout.CENTER);
         contentPane.add(buttons, BorderLayout.SOUTH);
 
+        this.choice = CANCEL;
+
+        ModelerPreferences pref = ModelerPreferences.getPreferences();
+        Vector<?> arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
+        strategyCombo.setModel(new DefaultComboBoxModel(arr));
+
         setTitle("Infer Relationships");
+    }
+
+    public int getChoice() {
+        return choice;
+    }
+
+    public void setChoice(int choice) {
+        this.choice = choice;
     }
 
     public JButton getCancelButton() {
@@ -75,5 +117,9 @@ public class InferRelationshipsDialog extends JDialog {
 
     public JLabel getEntityCount() {
         return entityCount;
+    }
+
+    public JComboBox getStrategyCombo() {
+        return strategyCombo;
     }
 }

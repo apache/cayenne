@@ -55,7 +55,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
     protected List<DbEntity> entities;
     protected Set<InferRelationships> selectedEntities;
     protected int index = 0;
-    protected BasicNamingStrategy strategy;
+    protected NamingStrategy strategy;
 
     protected transient InferRelationships currentEntity;
     protected transient Integer entityNumber;
@@ -66,6 +66,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
         this.dataMap = dataMap;
         this.entities = new ArrayList(dataMap.getDbEntities());
         this.selectedEntities = new HashSet();
+        strategy = new BasicNamingStrategy();
         setRelationships();
         createJoin();
         createName();
@@ -171,6 +172,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     public void createName() {
+
         ExportedKey key = null;
         for (InferRelationships myir : ir) {
             if (myir.getJoinSource().isPrimaryKey()) {
@@ -281,6 +283,10 @@ public class InferRelationshipsControllerBase extends CayenneController {
     @Override
     public Component getView() {
         return null;
+    }
+
+    public void setNamingStrategy(NamingStrategy namestr) {
+        strategy = namestr;
     }
 
 }
