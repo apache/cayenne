@@ -20,11 +20,15 @@
 package org.apache.cayenne.exp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class ExpressionFactoryTest extends CayenneCase {
@@ -243,5 +247,36 @@ public class ExpressionFactoryTest extends CayenneCase {
         
         assertTrue(ExpressionFactory.inExp("paintingTitle", "p1").match(p1));
         assertFalse(ExpressionFactory.notInExp("paintingTitle", "p3").match(p3));
+    }
+    
+    public void testMatchObject() {
+        ObjectContext dc = createDataContext();
+        
+        Artist a1 = dc.newObject(Artist.class);
+        a1.setArtistName("a1");
+        Artist a2 = dc.newObject(Artist.class);
+        a2.setArtistName("a2");
+        Artist a3 = dc.newObject(Artist.class);
+        a3.setArtistName("a3");
+        dc.commitChanges();
+        
+        SelectQuery query = new SelectQuery(Artist.class);
+        
+        query.setQualifier(ExpressionFactory.matchObjectExp(a2));
+        Object res = DataObjectUtils.objectForQuery(dc, query);//exception if >1 result
+        assertSame(res, a2);
+        assertTrue(query.getQualifier().match(res));
+        
+        query.setQualifier(ExpressionFactory.matchObjectsExp(a1, a3));
+        query.addOrdering("artistName", true);
+        List<Persistent> list = dc.performQuery(query);
+        assertEquals(list.size(), 2);
+        assertSame(list.get(0), a1);
+        assertSame(list.get(1), a3);
+        assertTrue(query.getQualifier().match(a1));
+        assertTrue(query.getQualifier().match(a3));
+        
+        assertEquals(query.getQualifier(), 
+                ExpressionFactory.matchObjectsExp(Arrays.asList(a1, a3)));
     }
 }
