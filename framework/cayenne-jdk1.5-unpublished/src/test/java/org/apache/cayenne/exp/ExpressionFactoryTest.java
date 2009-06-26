@@ -262,12 +262,12 @@ public class ExpressionFactoryTest extends CayenneCase {
         
         SelectQuery query = new SelectQuery(Artist.class);
         
-        query.setQualifier(ExpressionFactory.matchObjectExp(a2));
+        query.setQualifier(ExpressionFactory.matchExp(a2));
         Object res = DataObjectUtils.objectForQuery(dc, query);//exception if >1 result
         assertSame(res, a2);
         assertTrue(query.getQualifier().match(res));
         
-        query.setQualifier(ExpressionFactory.matchObjectsExp(a1, a3));
+        query.setQualifier(ExpressionFactory.matchAnyExp(a1, a3));
         query.addOrdering("artistName", true);
         List<Persistent> list = dc.performQuery(query);
         assertEquals(list.size(), 2);
@@ -277,6 +277,6 @@ public class ExpressionFactoryTest extends CayenneCase {
         assertTrue(query.getQualifier().match(a3));
         
         assertEquals(query.getQualifier(), 
-                ExpressionFactory.matchObjectsExp(Arrays.asList(a1, a3)));
+                ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
     }
 }

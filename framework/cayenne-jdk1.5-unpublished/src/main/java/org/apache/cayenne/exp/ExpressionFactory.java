@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTAdd;
 import org.apache.cayenne.exp.parser.ASTAnd;
@@ -683,39 +682,27 @@ public class ExpressionFactory {
      * <code>ObjectId</code>'s <code>IdSnapshot</code> for the argument
      * <code>object</code>.
      */
-    public static Expression matchObjectExp(Persistent object) {
-        ObjectId obid = object.getObjectId();
-        Map<String, ?> map = obid.getIdSnapshot();
-
-        List<Expression> pairs = new ArrayList<Expression>(map.size());
-
-        for (Map.Entry<String, ?> entry : map.entrySet()) {
-            Expression exp = expressionOfType(Expression.EQUAL_TO);
-            exp.setOperand(0, new ASTDbPath(entry.getKey()));
-            exp.setOperand(1, wrapPathOperand(entry.getValue()));
-            pairs.add(exp);
-        }
-
-        return joinExp(Expression.AND, pairs);
+    public static Expression matchExp(Persistent object) {
+        return matchAllDbExp(object.getObjectId().getIdSnapshot(), Expression.EQUAL_TO);
     }
 
     /**
      * Creates an expression that matches any of the objects contained in the list
      * <code>objects</code>
      */
-    public static Expression matchObjectsExp(List<? extends Persistent> objects) {
+    public static Expression matchAnyExp(List<? extends Persistent> objects) {
         if (objects == null || objects.size() == 0) {
             return expFalse();
         }
         
-        return matchObjectsExp(objects.toArray(new Persistent[objects.size()]));
+        return matchAnyExp(objects.toArray(new Persistent[objects.size()]));
     } 
     
     /**
      * Creates an expression that matches any of the objects contained in the
      * <code>objects</code> array
      */
-    public static Expression matchObjectsExp(Persistent... objects) {
+    public static Expression matchAnyExp(Persistent... objects) {
         if (objects == null || objects.length == 0) {
             return expFalse();
         }
@@ -723,7 +710,7 @@ public class ExpressionFactory {
         List<Expression> pairs = new ArrayList<Expression>(objects.length);
 
         for (Persistent object : objects) {
-            pairs.add(matchObjectExp(object));
+            pairs.add(matchExp(object));
         }
 
         return joinExp(Expression.OR, pairs);
