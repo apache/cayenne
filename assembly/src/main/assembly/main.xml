@@ -37,13 +37,14 @@
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>lib/third-party</outputDirectory>
-			<!-- Include only a minimal set of dependencies to run cayenne-server -->
+			<!-- Include only a minimal set of dependencies to run cayenne-server and ant tasks -->
 			<includes>
 				<include>com.caucho:hessian</include>
 				<include>commons-collections:commons-collections</include>
 				<include>commons-logging:commons-logging</include>
 				<include>org.objectstyle.ashwood:ashwood</include>
 				<include>velocity:velocity</include>
+				<include>foundrylogic.vpp:vpp</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>
