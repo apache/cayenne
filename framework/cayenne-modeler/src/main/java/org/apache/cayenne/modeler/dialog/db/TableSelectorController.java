@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.dialog.db;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +53,9 @@ public class TableSelectorController extends CayenneController {
     protected int permanentlyExcludedCount;
     protected Map excludedTables;
     protected List<DbEntity> selectableTablesList;
+
     protected Map validationMessages;
+  
 
     public TableSelectorController(ProjectController parent) {
         super(parent);
@@ -107,10 +109,10 @@ public class TableSelectorController extends CayenneController {
         else {
             excludedTables.put(table.getName(), table);
         }
-        
+
         tableSelectedAction();
     }
-    
+
     /**
      * A callback action that updates the state of Select All checkbox.
      */
@@ -132,6 +134,7 @@ public class TableSelectorController extends CayenneController {
     // ------ other stuff ------
 
     protected void initController() {
+
         BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
                 this);
@@ -191,11 +194,13 @@ public class TableSelectorController extends CayenneController {
                     DbAttribute failedAttribute = (DbAttribute) nextProblem
                             .getValidatedObject();
                     failedEntity = failedAttribute.getEntity();
-                } else if (nextProblem.getValidatedObject() instanceof DbRelationship) {
+                }
+                else if (nextProblem.getValidatedObject() instanceof DbRelationship) {
                     DbRelationship failedRelationship = (DbRelationship) nextProblem
                             .getValidatedObject();
                     failedEntity = failedRelationship.getSourceEntity();
-                } else if (nextProblem.getValidatedObject() instanceof DbEntity) {
+                }
+                else if (nextProblem.getValidatedObject() instanceof DbEntity) {
                     failedEntity = (Entity) nextProblem.getValidatedObject();
                 }
 
@@ -224,12 +229,20 @@ public class TableSelectorController extends CayenneController {
     public void checkAllAction() {
 
         boolean isCheckAllSelected = view.getCheckAll().isSelected();
-        
-        // now do a pass through the selectable tables and reset selected status
-        for (DbEntity table : selectableTablesList) {
-            setIncluded(isCheckAllSelected);
+
+        if (isCheckAllSelected) {
+            selectableTablesList.clear();
+            selectableTablesList.addAll(tables);
+            excludedTables.clear();
         }
-        
+        else {
+            excludedTables.clear();
+            for (DbEntity table : tables) {
+                excludedTables.put(table.getName(), table);
+            }
+            selectableTablesList.clear();
+        }
+
         tableBinding.updateView();
     }
 }
