@@ -145,11 +145,11 @@ public class ProjectUtil {
             return;
         }
 
-        if(query instanceof AbstractQuery){
-            ((AbstractQuery)query).setName(newName);
+        if (query instanceof AbstractQuery) {
+            ((AbstractQuery) query).setName(newName);
         }
-        if(query instanceof EJBQLQuery){
-            ((EJBQLQuery)query).setName(newName);
+        if (query instanceof EJBQLQuery) {
+            ((EJBQLQuery) query).setName(newName);
         }
         map.removeQuery(oldName);
         map.addQuery(query);
@@ -248,19 +248,69 @@ public class ProjectUtil {
                 continue;
             }
 
-            // check individual attributes           
+            // check individual attributes
             for (ObjAttribute att : entity.getAttributes()) {
-                DbAttribute dbAtt = att.getDbAttribute();
-                if (dbAtt != null) {
-                    if (dbEnt.getAttribute(dbAtt.getName()) != dbAtt) {
-                        att.setDbAttributePath(null);
+
+                // If flattenet atribute
+                if (att.getDbAttributePath() != null
+                        && att.getDbAttributePath().contains(".")) {
+                    String[] pathSplit = att.getDbAttributePath().split("\\.");
+
+                    // If flattened attribute
+                    if (pathSplit.length > 1) {
+
+                        DbEntity currentEnt = dbEnt;
+                        StringBuilder pathBuf = new StringBuilder();
+                        boolean isTruePath = true;
+
+                        if (currentEnt != null) {
+
+                            for (int j = 0; j < pathSplit.length; j++) {
+
+                                if (j == pathSplit.length - 1 && isTruePath) {
+                                    DbAttribute dbAttribute = (DbAttribute) currentEnt
+                                            .getAttribute(pathSplit[j]);
+                                    if (dbAttribute != null) {
+                                        pathBuf.append(dbAttribute.getName());
+                                    }
+                                    else {
+                                        isTruePath = false;
+                                    }
+                                }
+                                else if (isTruePath) {
+                                    DbRelationship dbRelationship = (DbRelationship) currentEnt
+                                            .getRelationship(pathSplit[j]);
+                                    if (dbRelationship != null) {
+                                        currentEnt = (DbEntity) dbRelationship
+                                                .getTargetEntity();
+                                        pathBuf.append(dbRelationship.getName());
+                                        pathBuf.append(".");
+                                    }
+                                    else {
+                                        isTruePath = false;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!isTruePath) {
+                            att.setDbAttributePath(null);
+                        }
+                    }
+                }
+                else {
+                    DbAttribute dbAtt = att.getDbAttribute();
+                    if (dbAtt != null) {
+                        if (dbEnt.getAttribute(dbAtt.getName()) != dbAtt) {
+                            att.setDbAttributePath(null);
+                        }
                     }
                 }
             }
 
-            // check individual relationships           
+            // check individual relationships
             for (ObjRelationship rel : entity.getRelationships()) {
-                
+
                 List<DbRelationship> dbRelList = new ArrayList<DbRelationship>(rel
                         .getDbRelationships());
                 for (DbRelationship dbRel : dbRelList) {
@@ -285,7 +335,7 @@ public class ProjectUtil {
             return;
         }
 
-       for (ObjAttribute objAttr : entity.getAttributeMap().values()) {
+        for (ObjAttribute objAttr : entity.getAttributeMap().values()) {
             DbAttribute dbAttr = objAttr.getDbAttribute();
             if (null != dbAttr) {
                 objAttr.setDbAttributePath(null);
@@ -308,7 +358,7 @@ public class ProjectUtil {
             return false;
         }
 
-       for (DbJoin join : relationship.getJoins()) {
+        for (DbJoin join : relationship.getJoins()) {
             if (join.getSource() == attribute) {
                 return true;
             }

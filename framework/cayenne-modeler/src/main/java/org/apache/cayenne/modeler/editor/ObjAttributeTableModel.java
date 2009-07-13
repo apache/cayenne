@@ -27,6 +27,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -144,10 +145,10 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     public Object getValueAt(int row, int column) {
         ObjAttribute attribute = getAttribute(row);
 
-
         if (column == INHERITED) {
             return attribute.isInherited();
-        } else if (column == OBJ_ATTRIBUTE) {
+        }
+        else if (column == OBJ_ATTRIBUTE) {
             return attribute.getName();
         }
         else if (column == OBJ_ATTRIBUTE_TYPE) {
@@ -160,29 +161,41 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             DbAttribute dbAttribute = attribute.getDbAttribute();
             if (column == DB_ATTRIBUTE) {
                 if (dbAttribute == null) {
-                    if (!attribute.isInherited() && ((ObjEntity)attribute.getEntity()).isAbstract()) {
+                    if (!attribute.isInherited()
+                            && ((ObjEntity) attribute.getEntity()).isAbstract()) {
                         return attribute.getDbAttributePath();
-                    } else {
+                    }
+                    else {
                         return null;
                     }
                 }
-                return dbAttribute.getName(); }
-            else 
-            if (column == DB_ATTRIBUTE_TYPE) {
+                else if (attribute.getDbAttributePath() != null
+                        && attribute.getDbAttributePath().contains(".")) {
+                    return attribute.getDbAttributePath();
+                }
+                return dbAttribute.getName();
+            }
+            else if (column == DB_ATTRIBUTE_TYPE) {
                 int type;
                 if (dbAttribute == null) {
                     if (!(attribute instanceof EmbeddedAttribute)) {
                         try {
-                            type = TypesMapping.getSqlTypeByJava(getAttribute(row).getJavaClass());
-                            //have to catch the exception here to make sure that exceptional situations
-                            //(class doesn't exist, for example) don't prevent the gui from properly updating.
-                        } catch (CayenneRuntimeException cre) {
+                            type = TypesMapping.getSqlTypeByJava(getAttribute(row)
+                                    .getJavaClass());
+                            // have to catch the exception here to make sure that
+                            // exceptional situations
+                            // (class doesn't exist, for example) don't prevent the gui
+                            // from properly updating.
+                        }
+                        catch (CayenneRuntimeException cre) {
                             return null;
                         }
-                    } else {
+                    }
+                    else {
                         return null;
                     }
-                } else {
+                }
+                else {
                     type = dbAttribute.getType();
                 }
                 return TypesMapping.getSqlNameByType(type);
@@ -216,25 +229,70 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         }
         else {
             if (column == DB_ATTRIBUTE) {
+
                 // If db attrib exist, associate it with obj attribute
                 if (value != null) {
                     String path = value.toString();
-                    if (dbEntity != null) {
-                        DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(value
-                                .toString());
-                        path = dbAttribute != null ? dbAttribute.getName() : null;
+
+                    String[] pathSplit = path.split("\\.");
+
+                    // If flattened attribute
+                    if (pathSplit.length > 1) {
+
+                        DbEntity currentEnt = dbEntity;
+                        StringBuilder pathBuf = new StringBuilder();
+                        boolean isTruePath = true;
+
+                        if (dbEntity != null) {
+
+                            for (int j = 0; j < pathSplit.length; j++) {
+
+                                if (j == pathSplit.length - 1 && isTruePath) {
+                                    DbAttribute dbAttribute = (DbAttribute) currentEnt
+                                            .getAttribute(pathSplit[j]);
+                                    if (dbAttribute != null) {
+                                        pathBuf.append(dbAttribute.getName());
+                                    }
+                                    else {
+                                        isTruePath = false;
+                                    }
+                                }
+                                else if (isTruePath) {
+                                    DbRelationship dbRelationship = (DbRelationship) currentEnt
+                                            .getRelationship(pathSplit[j]);
+                                    if (dbRelationship != null) {
+                                        currentEnt = (DbEntity) dbRelationship
+                                                .getTargetEntity();
+                                        pathBuf.append(dbRelationship.getName());
+                                        pathBuf.append(".");
+                                    }
+                                    else {
+                                        isTruePath = false;
+                                    }
+                                }
+                            }
+                        }
+                        path = isTruePath ? pathBuf.toString() : null;
+                    }
+                    else {
+
+                        if (dbEntity != null) {
+                            DbAttribute dbAttribute = (DbAttribute) dbEntity
+                                    .getAttribute(value.toString());
+                            path = dbAttribute != null ? dbAttribute.getName() : null;
+                        }
                     }
                     attribute.setDbAttributePath(path);
+
                 }
                 // If name is erased, remove db attribute from obj attribute.
                 else if (attribute.getDbAttribute() != null) {
                     attribute.setDbAttributePath(null);
                 }
-            }
 
+            }
             fireTableRowsUpdated(row, row);
         }
-
         mediator.fireObjAttributeEvent(event);
     }
 

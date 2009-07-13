@@ -17,14 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.KeyStroke;
 
@@ -79,17 +77,20 @@ public class RemoveAction extends CayenneAction {
 
     @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit
+                .getDefaultToolkit()
+                .getMenuShortcutKeyMask());
     }
 
     /**
      * Creates and returns dialog for delete prompt
-     * @param allowAsking If false, no question will be asked no matter what settings are 
+     * 
+     * @param allowAsking If false, no question will be asked no matter what settings are
      */
     public ConfirmRemoveDialog getConfirmDeleteDialog(boolean allowAsking) {
         return new ConfirmRemoveDialog(allowAsking);
     }
-    
+
     @Override
     public void performAction(ActionEvent e) {
         performAction(e, true);
@@ -97,7 +98,8 @@ public class RemoveAction extends CayenneAction {
 
     /**
      * Performs delete action
-     * @param allowAsking If false, no question will be asked no matter what settings are 
+     * 
+     * @param allowAsking If false, no question will be asked no matter what settings are
      */
     public void performAction(ActionEvent e, boolean allowAsking) {
 
@@ -106,13 +108,16 @@ public class RemoveAction extends CayenneAction {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
         if (mediator.getCurrentObjEntity() != null) {
-            if (dialog.shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
-                removeObjEntity(mediator.getCurrentDataMap(), mediator.getCurrentObjEntity());
+            if (dialog
+                    .shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
+                removeObjEntity(mediator.getCurrentDataMap(), mediator
+                        .getCurrentObjEntity());
             }
         }
         else if (mediator.getCurrentDbEntity() != null) {
             if (dialog.shouldDelete("DbEntity", mediator.getCurrentDbEntity().getName())) {
-                removeDbEntity(mediator.getCurrentDataMap(), mediator.getCurrentDbEntity());
+                removeDbEntity(mediator.getCurrentDataMap(), mediator
+                        .getCurrentDbEntity());
             }
         }
         else if (mediator.getCurrentQuery() != null) {
@@ -121,8 +126,10 @@ public class RemoveAction extends CayenneAction {
             }
         }
         else if (mediator.getCurrentProcedure() != null) {
-            if (dialog.shouldDelete("procedure", mediator.getCurrentProcedure().getName())) {
-                removeProcedure(mediator.getCurrentDataMap(), mediator.getCurrentProcedure());
+            if (dialog
+                    .shouldDelete("procedure", mediator.getCurrentProcedure().getName())) {
+                removeProcedure(mediator.getCurrentDataMap(), mediator
+                        .getCurrentProcedure());
             }
         }
         else if (mediator.getCurrentDataMap() != null) {
@@ -130,25 +137,30 @@ public class RemoveAction extends CayenneAction {
 
                 // In context of Data node just remove from Data Node
                 if (mediator.getCurrentDataNode() != null) {
-                    removeDataMapFromDataNode(mediator.getCurrentDataNode(), mediator.getCurrentDataMap());
+                    removeDataMapFromDataNode(mediator.getCurrentDataNode(), mediator
+                            .getCurrentDataMap());
                 }
                 else {
                     // Not under Data Node, remove completely
-                    removeDataMap(mediator.getCurrentDataDomain(), mediator.getCurrentDataMap());
+                    removeDataMap(mediator.getCurrentDataDomain(), mediator
+                            .getCurrentDataMap());
                 }
             }
         }
         else if (mediator.getCurrentDataNode() != null) {
             if (dialog.shouldDelete("data node", mediator.getCurrentDataNode().getName())) {
-                removeDataNode(mediator.getCurrentDataDomain(), mediator.getCurrentDataNode());
+                removeDataNode(mediator.getCurrentDataDomain(), mediator
+                        .getCurrentDataNode());
             }
         }
         else if (mediator.getCurrentDataDomain() != null) {
-            if (dialog.shouldDelete("data domain", mediator.getCurrentDataDomain().getName())) {
+            if (dialog.shouldDelete("data domain", mediator
+                    .getCurrentDataDomain()
+                    .getName())) {
                 removeDomain(mediator.getCurrentDataDomain());
             }
         }
-        else if (mediator.getCurrentPaths() != null) { //multiple deletion
+        else if (mediator.getCurrentPaths() != null) { // multiple deletion
             if (dialog.shouldDelete("selected objects")) {
                 ProjectPath[] paths = mediator.getCurrentPaths();
                 for (ProjectPath path : paths) {
@@ -157,11 +169,11 @@ public class RemoveAction extends CayenneAction {
             }
         }
     }
-    
-    private void removeDomain(DataDomain domain){
+
+    private void removeDomain(DataDomain domain) {
         ApplicationProject project = (ApplicationProject) getCurrentProject();
         ProjectController mediator = getProjectController();
-        
+
         project.getConfiguration().removeDomain(domain.getName());
         mediator.fireDomainEvent(new DomainEvent(
                 Application.getFrame(),
@@ -171,11 +183,8 @@ public class RemoveAction extends CayenneAction {
 
     private void removeDataMap(DataDomain domain, DataMap map) {
         ProjectController mediator = getProjectController();
-        
-        DataMapEvent e = new DataMapEvent(
-                Application.getFrame(),
-                map,
-                MapEvent.REMOVE);
+
+        DataMapEvent e = new DataMapEvent(Application.getFrame(), map, MapEvent.REMOVE);
         e.setDomain(domain);
 
         domain.removeMap(map.getName());
@@ -184,11 +193,8 @@ public class RemoveAction extends CayenneAction {
 
     private void removeDataNode(DataDomain domain, DataNode node) {
         ProjectController mediator = getProjectController();
-        
-        DataNodeEvent e = new DataNodeEvent(
-                Application.getFrame(),
-                node,
-                MapEvent.REMOVE);
+
+        DataNodeEvent e = new DataNodeEvent(Application.getFrame(), node, MapEvent.REMOVE);
         e.setDomain(domain);
 
         domain.removeDataNode(node.getName());
@@ -200,11 +206,8 @@ public class RemoveAction extends CayenneAction {
      */
     private void removeDbEntity(DataMap map, DbEntity ent) {
         ProjectController mediator = getProjectController();
-        
-        EntityEvent e = new EntityEvent(
-                Application.getFrame(),
-                ent,
-                MapEvent.REMOVE);
+
+        EntityEvent e = new EntityEvent(Application.getFrame(), ent, MapEvent.REMOVE);
         e.setDomain(mediator.findDomain(map));
 
         map.removeDbEntity(ent.getName(), true);
@@ -216,14 +219,10 @@ public class RemoveAction extends CayenneAction {
      */
     private void removeQuery(DataMap map, Query query) {
         ProjectController mediator = getProjectController();
-        
-        QueryEvent e = new QueryEvent(
-                Application.getFrame(),
-                query,
-                MapEvent.REMOVE,
-                map);
+
+        QueryEvent e = new QueryEvent(Application.getFrame(), query, MapEvent.REMOVE, map);
         e.setDomain(mediator.findDomain(map));
-        
+
         map.removeQuery(query.getName());
         mediator.fireQueryEvent(e);
     }
@@ -233,13 +232,13 @@ public class RemoveAction extends CayenneAction {
      */
     private void removeProcedure(DataMap map, Procedure procedure) {
         ProjectController mediator = getProjectController();
-        
+
         ProcedureEvent e = new ProcedureEvent(
                 Application.getFrame(),
                 procedure,
                 MapEvent.REMOVE);
         e.setDomain(mediator.findDomain(map));
-        
+
         map.removeProcedure(procedure.getName());
         mediator.fireProcedureEvent(e);
     }
@@ -249,13 +248,10 @@ public class RemoveAction extends CayenneAction {
      */
     private void removeObjEntity(DataMap map, ObjEntity entity) {
         ProjectController mediator = getProjectController();
-        
-        EntityEvent e = new EntityEvent(
-                Application.getFrame(),
-                entity,
-                MapEvent.REMOVE);
+
+        EntityEvent e = new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE);
         e.setDomain(mediator.findDomain(map));
-        
+
         map.removeObjEntity(entity.getName(), true);
         mediator.fireObjEntityEvent(e);
 
@@ -269,8 +265,8 @@ public class RemoveAction extends CayenneAction {
 
             if (root == entity
                     || (root instanceof String && root
-                    .toString()
-                    .equals(entity.getName()))) {
+                            .toString()
+                            .equals(entity.getName()))) {
                 removeQuery(map, next);
             }
         }
@@ -278,10 +274,10 @@ public class RemoveAction extends CayenneAction {
 
     private void removeDataMapFromDataNode(DataNode node, DataMap map) {
         ProjectController mediator = getProjectController();
-        
+
         DataNodeEvent e = new DataNodeEvent(Application.getFrame(), node);
         e.setDomain(mediator.findDomain(node));
-        
+
         node.removeDataMap(map.getName());
 
         // Force reloading of the data node in the browse view
@@ -327,22 +323,23 @@ public class RemoveAction extends CayenneAction {
             return false;
         }
     }
-    
+
     /**
      * Removes an object, depending on its type
      */
     private void removeLastPathComponent(ProjectPath path) {
         Object lastObject = path.getObject();
-        
+
         if (lastObject instanceof DataDomain) {
             removeDomain((DataDomain) lastObject);
         }
         else if (lastObject instanceof DataMap) {
             Object parent = path.getObjectParent();
-            
-            if(parent instanceof DataDomain)
+
+            if (parent instanceof DataDomain)
                 removeDataMap((DataDomain) parent, (DataMap) lastObject);
-            else //if(parent instanceof DataNode)
+            else
+                // if(parent instanceof DataNode)
                 removeDataMapFromDataNode((DataNode) parent, (DataMap) lastObject);
         }
         else if (lastObject instanceof DataNode) {

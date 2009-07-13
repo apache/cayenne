@@ -20,43 +20,29 @@ package org.apache.cayenne.modeler.dialog.objentity;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.TreePath;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 
-/**
- * Multi-column browser for obj relationships
- */
-public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
+public class ObjAttributePathBrowser extends ObjRelationshipPathBrowser {
 
-    /**
-     * Listener, which performs adding of new column
-     */
-    protected MouseListener panelOpener;
+    JButton selectPathButton;
+    JButton doneButton;
 
-    /**
-     * Listener, which performs removing of columns to the right of selected row
-     */
-    protected ListSelectionListener panelRemover;
-
-    public ObjRelationshipPathBrowser() {
-        this(DEFAULT_MIN_COLUMNS_COUNT);
-    }
-
-    public ObjRelationshipPathBrowser(int minColumns) {
-        super(minColumns);
+    public ObjAttributePathBrowser(JButton selectPathButton, JButton doneButton) {
+        super();
+        this.selectPathButton = selectPathButton;
+        this.doneButton = doneButton;
     }
 
     @Override
     protected void installColumn(BrowserPanel panel) {
         if (panelOpener == null) {
-            panelOpener = new PanelOpener();
+            panelOpener = new PanelAttributeOpener();
         }
 
         if (panelRemover == null) {
@@ -65,7 +51,6 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
 
         panel.addMouseListener(panelOpener);
         panel.addListSelectionListener(panelRemover);
-
         panel.setCellRenderer(renderer);
     }
 
@@ -84,16 +69,10 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
         }
     }
 
-    @Override
-    protected void uninstallColumn(BrowserPanel panel) {
-        panel.removeMouseListener(panelOpener);
-        panel.removeListSelectionListener(panelRemover);
-    }
-
     /**
      * Listener, which performs adding of new column at double-click
      */
-    protected class PanelOpener extends MouseAdapter {
+    protected class PanelAttributeOpener extends MouseAdapter {
 
         /**
          * Invoked when the mouse has been clicked on a component.
@@ -111,27 +90,13 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
             // ignore unselected
             if (selectedNode != null && selectedNode instanceof DbRelationship) {
                 updateFromModel(selectedNode, columns.indexOf(panel));
+                selectPathButton.setEnabled(false);
+                doneButton.setEnabled(false);
+            }
+            else if (selectedNode instanceof DbAttribute) {
+                doneButton.setEnabled(true);
+                selectPathButton.setEnabled(true);
             }
         }
-    }
-
-    /**
-     * Listener, which performs removing columns to the right of selected row
-     */
-    protected class PanelRemover implements ListSelectionListener {
-
-        public void valueChanged(ListSelectionEvent e) {
-            // ignore "adjusting"
-            if (!e.getValueIsAdjusting()) {
-                BrowserPanel panel = (BrowserPanel) e.getSource();
-
-                Object selectedNode = panel.getSelectedValue();
-
-                if (selectedNode != null) {
-                    updateFromModel(selectedNode, columns.indexOf(panel), false);
-                }
-            }
-        }
-
     }
 }

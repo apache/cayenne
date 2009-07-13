@@ -60,9 +60,9 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ObjRelationshipInfoDialog extends SPanel {
 
     static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
-    
+
     /**
-     * Browser to select path for flattened relationship 
+     * Browser to select path for flattened relationship
      */
     protected MultiColumnBrowser pathBrowser;
 
@@ -88,14 +88,14 @@ public class ObjRelationshipInfoDialog extends SPanel {
         SButton newRelButton = new SButton(new SAction(
                 ObjRelationshipInfoController.NEW_REL_CONTROL));
         newRelButton.setEnabled(true);
-        
+
         SButton selectPathButton = new SButton(new SAction(
                 ObjRelationshipInfoController.SELECT_PATH_CONTROL));
         selectPathButton.setEnabled(true);
-        
+
         STextField relationshipName = new STextField(25);
         relationshipName.setSelector(ObjRelationshipInfoModel.RELATIONSHIP_NAME_SELECTOR);
-        
+
         SLabel currentPathLabel = new SLabel();
         currentPathLabel.setSelector(ObjRelationshipInfoModel.CURRENT_PATH_SELECTOR);
 
@@ -118,11 +118,11 @@ public class ObjRelationshipInfoDialog extends SPanel {
         mapKeysCombo = new SComboBox();
         mapKeysCombo.setSelector(ObjRelationshipInfoModel.MAP_KEYS_SELECTOR);
         mapKeysCombo.setSelectionSelector(ObjRelationshipInfoModel.MAP_KEY_SELECTOR);
-        
+
         pathBrowser = new ObjRelationshipPathBrowser();
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
-        
+
         // enable/disable map keys for collection type selection
         collectionTypeCombo.addActionListener(new ActionListener() {
 
@@ -146,10 +146,10 @@ public class ObjRelationshipInfoDialog extends SPanel {
         builder.addSeparator("ObjRelationship Information", cc.xywh(1, 1, 5, 1));
         builder.addLabel("Relationship:", cc.xy(1, 3));
         builder.add(relationshipName, cc.xywh(3, 3, 1, 1));
-        
+
         builder.addLabel("Current Db Path:", cc.xy(1, 5));
         builder.add(currentPathLabel, cc.xywh(3, 5, 5, 1));
-        
+
         builder.addLabel("Source:", cc.xy(1, 7));
         builder.add(sourceEntityLabel, cc.xywh(3, 7, 1, 1));
         builder.addLabel("Target:", cc.xy(1, 9));
@@ -160,21 +160,21 @@ public class ObjRelationshipInfoDialog extends SPanel {
         builder.add(mapKeysCombo, cc.xywh(3, 13, 1, 1));
 
         builder.addSeparator("Mapping to DbRelationships", cc.xywh(1, 15, 5, 1));
-        
+
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
         buttonsPane.add(selectPathButton);
         buttonsPane.add(newRelButton);
-        
+
         builder.add(buttonsPane, cc.xywh(1, 17, 5, 1));
         builder.add(new JScrollPane(
                 pathBrowser,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 19, 5, 3));
-                
+
         add(builder.getPanel(), BorderLayout.CENTER);
         add(PanelFactory.createButtonPanel(new JButton[] {
                 saveButton, cancelButton
-            }), BorderLayout.SOUTH);
+        }), BorderLayout.SOUTH);
     }
 
     /**
@@ -191,43 +191,44 @@ public class ObjRelationshipInfoDialog extends SPanel {
         }
 
         ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getController()
-            .getModel();
-        
+                .getModel();
+
         if (pathBrowser.getModel() == null) {
             EntityTreeModel treeModel = new EntityTreeModel(model.getStartEntity());
-            treeModel.setFilter(
-                    new EntityTreeFilter() {
-                        public boolean attributeMatch(Object node, Attribute attr) {
-                            //attrs not allowed here
-                            return false;
-                        }
+            treeModel.setFilter(new EntityTreeFilter() {
 
-                        public boolean relationshipMatch(Object node, Relationship rel) {
-                            if (!(node instanceof Relationship)) {
-                                return true;
-                            }
-                            
-                            /**
-                             * We do not allow A->B->A chains, where relationships are to-one
-                             */
-                            DbRelationship prev = (DbRelationship) node;
-                            return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
-                        }
-                        
-                    });
-        
+                public boolean attributeMatch(Object node, Attribute attr) {
+                    // attrs not allowed here
+                    return false;
+                }
+
+                public boolean relationshipMatch(Object node, Relationship rel) {
+                    if (!(node instanceof Relationship)) {
+                        return true;
+                    }
+
+                    /**
+                     * We do not allow A->B->A chains, where relationships are to-one
+                     */
+                    DbRelationship prev = (DbRelationship) node;
+                    return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
+                }
+
+            });
+
             pathBrowser.setModel(treeModel);
-        
+
             setSelectionPath(model.getSavedDbRelationships());
         }
     }
-    
+
     /**
      * Selects path in browser
      */
     void setSelectionPath(List<DbRelationship> rels) {
-        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getController().getModel();
-        
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getController()
+                .getModel();
+
         Object[] path = new Object[rels.size() + 1];
         path[0] = model.getStartEntity();
 
@@ -235,28 +236,28 @@ public class ObjRelationshipInfoDialog extends SPanel {
 
         pathBrowser.setSelectionPath(new TreePath(path));
     }
-    
+
     /**
-     * Updates 'collection type' and 'map keys' comboboxes 
+     * Updates 'collection type' and 'map keys' comboboxes
      */
     boolean updateCollectionChoosers() {
         if (getController() == null || getController().getModel() == null) {
             return false;
         }
-        
+
         ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getController()
                 .getModel();
-        
+
         boolean collectionTypeEnabled = model.isToMany();
         collectionTypeCombo.setEnabled(collectionTypeEnabled);
         collectionTypeLabel.setEnabled(collectionTypeEnabled);
-        
+
         boolean mapKeysEnabled = collectionTypeEnabled
                 && ObjRelationshipInfoModel.COLLECTION_TYPE_MAP
                         .equals(collectionTypeCombo.getSelectedItem());
         mapKeysCombo.setEnabled(mapKeysEnabled);
         mapKeysLabel.setEnabled(mapKeysEnabled);
-        
+
         return true;
     }
 
