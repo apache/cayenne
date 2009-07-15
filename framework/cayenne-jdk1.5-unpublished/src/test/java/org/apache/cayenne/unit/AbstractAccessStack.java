@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -164,11 +165,21 @@ public abstract class AbstractAccessStack {
                     stmt.executeUpdate(deleteSql);
                 }
                 catch (SQLException e) {
-                    throw new CayenneRuntimeException(
-                            "Error deleting test data for entity '"
-                                    + ent.getName()
-                                    + "': "
-                                    + e.getLocalizedMessage());
+                    try {
+                        Collection<String> deleteTableSql = node
+                                .getAdapter()
+                                .dropTableStatements(ent);
+                        stmt.executeUpdate(deleteTableSql.iterator().next());
+                        String createTableSql = node.getAdapter().createTable(ent);
+                        stmt.executeUpdate(createTableSql);
+                    }
+                    catch (SQLException e1) {
+                        throw new CayenneRuntimeException(
+                                "Error deleting test data for entity '"
+                                        + ent.getName()
+                                        + "': "
+                                        + e.getLocalizedMessage());
+                    }
                 }
             }
             conn.commit();

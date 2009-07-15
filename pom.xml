@@ -832,6 +832,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>db2</id>
+			<activation>
+				<property>
+					<name>cayenne.test.connection</name>
+					<value>db2</value>					
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.ibm.db2</groupId>
+					<artifactId>db2-driver</artifactId>
+					<version>1.0</version>
+                                        <scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
 </project>
 

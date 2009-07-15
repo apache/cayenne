@@ -33,7 +33,9 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.omg.PortableServer.AdapterActivator;
 
 /**
  * A sequence-based PK generator used by {@link DB2Adapter}.
@@ -165,7 +167,18 @@ public class DB2PkGenerator extends JdbcPkGenerator {
         Collection<String> sequences = getExistingSequences(node);
 
         for (DbEntity ent : dbEntities) {
-            if (sequences.contains(sequenceName(ent))) {
+            String name;
+            if(ent.getDataMap().isQuotingSQLIdentifiers()){
+                DbEntity tempEnt = new DbEntity();
+                DataMap dm = new DataMap();                
+                dm.setQuotingSQLIdentifiers(false);
+                tempEnt.setDataMap(dm);
+                tempEnt.setName(ent.getName());
+                name = sequenceName(tempEnt);
+            } else {
+                name = sequenceName(ent);
+            }    
+            if (sequences.contains(name)) {
                 runUpdate(node, dropSequenceString(ent));
             }
         }
@@ -236,21 +249,21 @@ public class DB2PkGenerator extends JdbcPkGenerator {
         String seqName = _SEQUENCE_PREFIX + entName;
 
         if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            if(getAdapter()!=null){
+            if(context!=null){
                 seqName = context.quoteString(entity.getSchema()) +
                  "." + context.quoteString(seqName);
            } else {
                 seqName = entity.getSchema() + "." + seqName;
            }
         }
-        return seqName;
+        
+        return context.quoteString(seqName);
     }
 
     /**
      * Returns DROP SEQUENCE statement.
      */
-    protected String dropSequenceString(DbEntity entity) {
-         
+    protected String dropSequenceString(DbEntity entity) {       
         return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT ";
     }
 

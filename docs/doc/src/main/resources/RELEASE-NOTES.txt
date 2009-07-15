@@ -25,6 +25,7 @@ Bug Fixes Since M6:
 
 CAY-1169 Weird behavior when adding entity via merging
 CAY-1224 reverse engineering partially changed schema shows empty error messge window
+CAY-1229 Fixing DB2 Tests
 CAY-1232 Unit tests failing on Sybase
 CAY-1240 Schema generation dialog has "uncheck all tables" checkbox incorrectly checked by default
 
