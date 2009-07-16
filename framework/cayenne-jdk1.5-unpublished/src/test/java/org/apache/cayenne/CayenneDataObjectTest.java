@@ -19,12 +19,15 @@
 
 package org.apache.cayenne;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.ArtistExhibit;
 import org.apache.art.Painting;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.TestBean;
 
@@ -116,5 +119,43 @@ public class CayenneDataObjectTest extends CayenneCase {
         List<String> names2 = (List<String>) 
             ex.readNestedProperty("toArtist.paintingArray.paintingTitle");
         assertEquals(names, names2);
+    }
+    
+    public void testReadNestedPropertyToManyInMiddle1() throws Exception {
+        DataContext context = createDataContext();
+        
+        Artist a = context.newObject(Artist.class);
+        ArtistExhibit ex = context.newObject(ArtistExhibit.class);
+        Painting p1 = context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
+        p1.setPaintingTitle("p1");
+        p2.setPaintingTitle("p2");
+        a.addToPaintingArray(p1);
+        a.addToPaintingArray(p2);
+        ex.setToArtist(a);
+        
+        List<String> names = (List<String>) a.readNestedProperty("paintingArray+.paintingTitle");
+        assertEquals(names.size(), 2);
+        assertEquals(names.get(0), "p1");
+        assertEquals(names.get(1), "p2");
+        
+        List<String> names2 = (List<String>) 
+            ex.readNestedProperty("toArtist.paintingArray+.paintingTitle");
+        assertEquals(names, names2);
+    }
+    
+    public void testFilterObjects() {
+        DataContext context = createDataContext();
+        List paintingList = new ArrayList();
+        Painting p1 = (Painting) context.newObject(Painting.class);
+        Artist a1 = (Artist) context.newObject(Artist.class);
+        a1.setArtistName("dddAd");
+        p1.setToArtist(a1);
+
+        paintingList.add(p1);
+        Expression exp = ExpressionFactory.likeExp("toArtist+.artistName", "d%");
+
+        List<Painting> rezult = exp.filterObjects(paintingList);
+        assertEquals(a1,rezult.get(0).getToArtist());
     }
 }

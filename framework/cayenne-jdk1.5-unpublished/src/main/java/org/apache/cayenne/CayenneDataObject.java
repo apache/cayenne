@@ -175,9 +175,14 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         int length = tokens.countTokens();
         String[] tokenized = new String[length];
         for (int i = 0; i < length; i++) {
-            tokenized[i] = tokens.nextToken();
+            String temp = tokens.nextToken();
+            if(temp.endsWith("+")){
+                tokenized[i] = temp.substring(0, temp.length() - 1);
+            }
+            else{
+                tokenized[i] = temp;
+            }
         }
-
         return tokenized;
     }
 
