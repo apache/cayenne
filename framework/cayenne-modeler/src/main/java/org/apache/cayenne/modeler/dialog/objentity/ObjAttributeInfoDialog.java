@@ -207,52 +207,51 @@ public class ObjAttributeInfoDialog extends CayenneController implements
         view.dispose();
     }
 
-    public boolean isChange() {
-        StringBuilder attriburePathStr = new StringBuilder();
+    public boolean setPath() {
+        StringBuilder attributePath = new StringBuilder();
         StringBuilder pathStr = new StringBuilder();
         TreePath path = view.getPathBrowser().getSelectionPath();
 
         if (path.getLastPathComponent() instanceof DbAttribute) {
-            Object[] ob = path.getPath();
-            for (int i = 0; i < ob.length; i++) {
+            Object[] pathComponents = path.getPath();
+            for (int i = 0; i < pathComponents.length; i++) {
                 boolean attrOrRel = true;
-                if (ob[i] instanceof DbAttribute) {
-                    pathStr.append(((DbAttribute) ob[i]).getName());
-                    attriburePathStr.append(((DbAttribute) ob[i]).getName());
+                if (pathComponents[i] instanceof DbAttribute) {
+                    pathStr.append(((DbAttribute) pathComponents[i]).getName());
+                    attributePath.append(((DbAttribute) pathComponents[i]).getName());
                 }
-                else if (ob[i] instanceof DbRelationship) {
-                    pathStr.append(((DbRelationship) ob[i]).getName());
-                    attriburePathStr.append(((DbRelationship) ob[i]).getName());
+                else if (pathComponents[i] instanceof DbRelationship) {
+                    pathStr.append(((DbRelationship) pathComponents[i]).getName());
+                    attributePath.append(((DbRelationship) pathComponents[i]).getName());
                 }
                 else {
                     attrOrRel = false;
                 }
 
-                if (i != ob.length - 1 && attrOrRel) {
+                if (i != pathComponents.length - 1 && attrOrRel) {
                     pathStr.append(" -> ");
-                    attriburePathStr.append(".");
+                    attributePath.append(".");
                 }
             }
         }
         else {
             view.getCurrentPathLabel().setText("");
-            attriburePathStr = null;
         }
 
         view.getCurrentPathLabel().setText(pathStr.toString());
 
         if (attribute.getDbAttributePath() != null) {
-            if (!attribute.getDbAttributePath().equals(attriburePathStr.toString())
+            if (!attribute.getDbAttributePath().equals(attributePath.toString())
                     || !attribute.getName().equals(view.getAttributeName().getText())) {
-                attributeSaved.setDbAttributePath(attriburePathStr.toString());
+                attributeSaved.setDbAttributePath(attributePath.toString());
                 attributeSaved.setName(view.getAttributeName().getText());
                 return true;
             }
         }
-        else if (attribute.getDbAttributePath() == null) {
-            if (attriburePathStr.toString().length() > 0
+        else {
+            if (attributePath.length() > 0
                     || !attribute.getName().equals(view.getAttributeName().getText())) {
-                attributeSaved.setDbAttributePath(attriburePathStr.toString());
+                attributeSaved.setDbAttributePath(attributePath.toString());
                 attributeSaved.setName(view.getAttributeName().getText());
                 return true;
             }
@@ -262,7 +261,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
 
     public void saveMapping() {
 
-        if (isChange()) {
+        if (setPath()) {
             if (JOptionPane.showConfirmDialog(
                     (Component) getView(),
                     "You have changed Db Attribute path. Do you want it to be saved?",
