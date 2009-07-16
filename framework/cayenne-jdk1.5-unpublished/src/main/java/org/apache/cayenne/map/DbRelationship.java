@@ -227,11 +227,31 @@ public class DbRelationship extends Relationship {
      */
     public boolean isToPK() {
         for (DbJoin join : getJoins()) {
-            if (join.getTarget() == null) {
+            
+            DbAttribute target = join.getTarget();
+            if (target == null) {
                 return false;
             }
 
-            if (join.getTarget().isPrimaryKey()) {
+            if (target.isPrimaryKey()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public boolean isFromPK() {
+        for (DbJoin join : getJoins()) {
+            DbAttribute source = join.getSource();
+            if (source == null) {
+                return false;
+            }
+
+            if (source.isPrimaryKey()) {
                 return true;
             }
         }

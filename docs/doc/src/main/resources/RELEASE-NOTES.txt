@@ -14,12 +14,14 @@ Date:
 
 Changes/New Features Since M6:
 
+CAY-132 Intelligent lazy fault detection
 CAY-419 Collections aren't supported with in-memory filtering
 CAY-1116 Add generated PK support to SQLite
 CAY-1225 Controlling JDBC Driver setting "fetchSize" in a SelectQuery
 CAY-1235 Implement qualifiers for DBEntities
 CAY-1236 Allow providing custom INSERT, UPDATE, DELETE query builders
 CAY-1241 Add method to ExpressionFactory to match against the primary key of an object or list of objects
+
 
 Bug Fixes Since M6:
 

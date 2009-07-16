@@ -275,6 +275,59 @@ public class ObjRelationship extends Relationship {
         this.readOnly = false;
         this.toMany = false;
     }
+    
+    /**
+     * Returns a boolean indicating whether the presence of a non-null source key(s) will
+     * not guarantee a presence of a target record. PK..FK relationships are all optional,
+     * but there are other more subtle cases, such as PK..PK, etc.
+     * 
+     * @since 3.0
+     */
+    public boolean isOptional() {
+        if (isToMany() || isFlattened()) {
+            return true;
+        }
+
+        // entities with qualifiers may result in filtering even existing target rows, so
+        // such relationships are optional
+        if (isQualifiedEntity((ObjEntity) getTargetEntity())) {
+            return true;
+        }
+
+        DbRelationship dbRelationship = getDbRelationships().get(0);
+
+        // to-one mandatory relationships are either from non-PK or to master pk
+        if (dbRelationship.isToPK()) {
+            if (!dbRelationship.isFromPK()) {
+                return false;
+            }
+
+            DbRelationship reverseRelationship = dbRelationship.getReverseRelationship();
+            if (reverseRelationship.isToDependentPK()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    /**
+     * Returns true if the entity or its super entities have a limiting qualifier.
+     */
+    private boolean isQualifiedEntity(ObjEntity entity) {
+        if (entity.getDeclaredQualifier() != null) {
+            return true;
+        }
+
+        entity = entity.getSuperEntity();
+
+        if (entity == null) {
+            return false;
+        }
+
+        return isQualifiedEntity(entity);
+    }
+
 
     /**
      * Returns a boolean indicating whether modifying a target of such relationship in any

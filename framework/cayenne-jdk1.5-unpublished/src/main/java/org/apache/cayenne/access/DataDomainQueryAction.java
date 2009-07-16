@@ -38,7 +38,6 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -197,8 +196,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             }
 
             // we can assume that there is one and only one DbRelationship as
-            // we previously checked that
-            // "!isSourceIndependentFromTargetChange"
+            // we previously checked that "!isSourceIndependentFromTargetChange"
             DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
 
             ObjectId targetId = sourceRow.createTargetObjectId(relationship
@@ -217,14 +215,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
-            ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
-
-            // do not create a target hollow object for qualified entities or entities
-            // involved in inheritance, as the target object may be null even for non-null
-            // FK.
-            if (context != null
-                    && !isQualifiedEntity(targetEntity)
-                    && domain.getEntityResolver().lookupInheritanceTree(targetEntity) == null) {
+            // check whether a non-null FK is enough to assume non-null target, and if so,
+            // create a fault
+            if (context != null && !relationship.isOptional()) {
 
                 // prevent passing partial snapshots to ObjectResolver per CAY-724. Create
                 // a hollow object right here and skip object conversion downstream
@@ -555,23 +548,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     public boolean isIteratedResult() {
         return false;
-    }
-
-    /**
-     * Returns true if the entity or its super entities have a limiting qualifier.
-     */
-    private boolean isQualifiedEntity(ObjEntity entity) {
-        if (entity.getDeclaredQualifier() != null) {
-            return true;
-        }
-
-        entity = entity.getSuperEntity();
-
-        if (entity == null) {
-            return false;
-        }
-
-        return isQualifiedEntity(entity);
     }
 
     abstract class ObjectConversionStrategy<T> {
