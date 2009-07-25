@@ -117,9 +117,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         }
         
         if (getQualifier() != null) {
-            encoder.print("<qualifier><![CDATA[");
+            encoder.print("<qualifier>");
             getQualifier().encodeAsXML(encoder);
-            encoder.println("]]></qualifier>");
+            encoder.println("</qualifier>");
         }
 
         encoder.indent(-1);
