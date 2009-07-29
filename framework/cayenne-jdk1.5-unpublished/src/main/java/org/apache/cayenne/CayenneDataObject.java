@@ -553,7 +553,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
             DbAttribute dbAttribute = objAttribute.getDbAttribute();
             
             if (dbAttribute == null) {
-                throw new CayenneRuntimeException("ObjAttribute '" + objAttribute +
+                throw new CayenneRuntimeException("ObjAttribute '" + objAttribute.getName() +
                     "' does not have a corresponding DbAttribute");
             }
 
