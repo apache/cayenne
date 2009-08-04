@@ -248,20 +248,14 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 rels[i] = model.getRelationship(sel[i]);
             }
             
-            /**
-             * As of CAY-1077, relationship inspector can be opened even if no target entity was set.
-             */
-            if (rels.length == 1 && ((ObjEntity) rels[0].getSourceEntity()).getDbEntity() != null) {
-                resolve.setEnabled(true);
-            }
-            else
-                resolve.setEnabled(false);
+            resolve.setEnabled(true);
 
             // scroll table
             UIUtil.scrollToSelectedRow(table);
         }
-        else
+        else {
             resolve.setEnabled(false);
+        }
         
         resolveMenu.setEnabled(resolve.isEnabled());
 
