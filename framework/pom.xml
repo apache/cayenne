@@ -68,4 +68,19 @@
 			</modules>
 		</profile>
 	</profiles>
+	
+	<repositories>
+		<repository>
+			<id>objectstyle</id>
+			<name>Objectstyle Repository</name>
+			<url>http://objectstyle.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
 </project>
