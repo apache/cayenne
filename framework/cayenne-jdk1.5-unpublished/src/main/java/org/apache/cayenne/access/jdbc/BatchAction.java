@@ -51,6 +51,11 @@ public class BatchAction extends BaseSQLAction {
     protected boolean batch;
     protected BatchQuery query;
     protected RowDescriptor keyRowDescriptor;
+    
+    /**
+     * Custom BatchQueryBuilderFactory. Can be null, then default will be used.
+     */
+    protected BatchQueryBuilderFactory queryBuilderFactory;
 
     public BatchAction(BatchQuery batchQuery, DbAdapter adapter,
             EntityResolver entityResolver) {
@@ -90,12 +95,16 @@ public class BatchAction extends BaseSQLAction {
     /**
      * @return factory that creates BatchQueryBuilders
      */
-    protected BatchQueryBuilderFactory getBatchQueryBuilderFactory() {
-        return null;
+    public BatchQueryBuilderFactory getQueryBuilderFactory() {
+        return queryBuilderFactory;
+    }
+    
+    public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {
+        this.queryBuilderFactory = queryBuilderFactory;
     }
 
     protected BatchQueryBuilder createBuilder() throws CayenneException {
-        BatchQueryBuilderFactory factory = getBatchQueryBuilderFactory();
+        BatchQueryBuilderFactory factory = getQueryBuilderFactory();
            
         if (factory == null) {
             factory = new DefaultBatchQueryBuilderFactory();

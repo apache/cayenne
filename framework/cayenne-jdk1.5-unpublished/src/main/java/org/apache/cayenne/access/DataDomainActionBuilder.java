@@ -45,8 +45,12 @@ class DataDomainActionBuilder implements SQLActionVisitor {
         return domain;
     }
 
-    public SQLAction batchAction(BatchQuery query) { 
-        return new DataDomainBatchAction(domain, (BatchAction) delegate.batchAction(query));
+    public SQLAction batchAction(BatchQuery query) {
+        SQLAction action = delegate.batchAction(query);
+        if (action instanceof BatchAction) {
+            ((BatchAction) action).setQueryBuilderFactory(domain.getQueryBuilderFactory());
+        }
+        return action;
     }
 
     public SQLAction ejbqlAction(EJBQLQuery query) {
