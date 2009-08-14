@@ -70,7 +70,7 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(MtTable1.class, "SELECT * FROM MT_TABLE1");
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setFetchingDataRows(true);
-        
+
         List<DataRow> rows = checkContext.performQuery(query);
         assertEquals(1, rows.size());
         assertEquals("sub1", rows.get(0).get("GLOBAL_ATTRIBUTE1"));
@@ -125,9 +125,23 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         List<ClientMtTable1> objects = context.performQuery(query);
 
         assertEquals(3, objects.size());
-        assertEquals("a", objects.get(0).getGlobalAttribute1());
-        assertEquals("sa1", ((ClientMtTable1Subclass) objects.get(1))
-                .getSubclassAttribute1());
+
+        int checkedFields = 0;
+        for (int i = 0; i < objects.size(); i++) {
+            Integer id = (Integer) objects.get(i).getObjectId().getIdSnapshot().get(
+                    "TABLE1_ID");
+            if (id == 1) {
+                assertEquals("a", objects.get(i).getGlobalAttribute1());
+                checkedFields++;
+            }
+            else if (id == 2) {
+                assertEquals("sa1", ((ClientMtTable1Subclass) objects.get(i))
+                        .getSubclassAttribute1());
+                checkedFields++;
+            }
+
+        }
+        assertEquals(2, checkedFields);
     }
 
     public void testPerformQueryWithQualifierInheritanceSuper() {
@@ -155,9 +169,23 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         List<ClientMtTable1> objects = context.performQuery(query);
 
         assertEquals(2, objects.size());
-        assertEquals("a", objects.get(0).getGlobalAttribute1());
-        assertEquals("sa1", ((ClientMtTable1Subclass) objects.get(1))
-                .getSubclassAttribute1());
+        
+        int checkedFields = 0;
+        for (int i = 0; i < objects.size(); i++) {
+            Integer id = (Integer) objects.get(i).getObjectId().getIdSnapshot().get(
+                    "TABLE1_ID");
+            if (id == 1) {
+                assertEquals("a", objects.get(i).getGlobalAttribute1());
+                checkedFields++;
+            }
+            else if (id == 2) {
+                assertEquals("sa1", ((ClientMtTable1Subclass) objects.get(i))
+                        .getSubclassAttribute1());
+                checkedFields++;
+            }
+
+        }
+        assertEquals(2, checkedFields);
     }
 
 }

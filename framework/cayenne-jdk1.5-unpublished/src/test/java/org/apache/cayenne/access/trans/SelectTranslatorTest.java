@@ -96,8 +96,12 @@ public class SelectTranslatorTest extends CayenneCase {
                     assertNotNull(generatedSql);
                     assertTrue(generatedSql.startsWith("SELECT "));
                     assertTrue(generatedSql.indexOf(" FROM ") > 0);
-                    assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
-                    System.out.println(generatedSql);
+                    if (generatedSql.contains("RTRIM")) {
+                        assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("RTRIM("));
+                        }
+                    else {
+                        assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
+                        }
                 }
             };
     

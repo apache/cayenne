@@ -48,6 +48,7 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
@@ -445,5 +446,10 @@ public class OracleAdapter extends JdbcAdapter {
             int i = st.getInt(index);
             return (st.wasNull()) ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
         }
+    }
+    
+    @Override
+    public MergerFactory mergerFactory() {
+        return new OracleMergerFactory();
     }
 }

@@ -35,6 +35,7 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.merge.MergerFactory;
 
 
 /**
@@ -205,5 +206,8 @@ public class DB2Adapter extends JdbcAdapter {
             }
         }
     }
-
+    @Override
+    public MergerFactory mergerFactory() {
+        return new DB2MergerFactory();
+    }
 }
