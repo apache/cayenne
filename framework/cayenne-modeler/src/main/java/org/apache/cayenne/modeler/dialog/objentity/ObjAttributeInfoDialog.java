@@ -245,6 +245,9 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                     || !attribute.getName().equals(view.getAttributeName().getText())) {
                 attributeSaved.setDbAttributePath(attributePath.toString());
                 attributeSaved.setName(view.getAttributeName().getText());
+                if (!attribute.getDbAttributePath().equals(attributePath.toString())) {
+                    model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+                }
                 return true;
             }
         }
@@ -253,6 +256,9 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                     || !attribute.getName().equals(view.getAttributeName().getText())) {
                 attributeSaved.setDbAttributePath(attributePath.toString());
                 attributeSaved.setName(view.getAttributeName().getText());
+                if (attributePath.length() > 0) {
+                    model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+                }
                 return true;
             }
         }
@@ -267,7 +273,6 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                     "You have changed Db Attribute path. Do you want it to be saved?",
                     "Save ObjAttribute",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
                 model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
             }
         }

@@ -177,6 +177,21 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                 CopyAttributeAction.getActionName());
     }
 
+    public void initComboBoxes(ObjAttributeTableModel model) {
+        TableColumn dbNameColumn = table.getColumnModel().getColumn(
+                ObjAttributeTableModel.DB_ATTRIBUTE);
+        dbNameColumn.setMinWidth(150);
+
+        if (model.getEntity().getDbEntity() != null) {
+            Collection<String> nameAttr = ModelerUtil.getDbAttributeNames(mediator, model
+                    .getEntity()
+                    .getDbEntity());
+
+            model.setCellEditor(nameAttr, table);
+            model.setComboBoxes(nameAttr, ObjAttributeTableModel.DB_ATTRIBUTE);
+        }
+    }
+
     /**
      * Selects a specified attribute.
      */
@@ -306,30 +321,8 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                 ObjAttributeTableModel.DB_ATTRIBUTE_TYPE);
         dbTypeColumn.setMinWidth(120);
 
-        TableColumn dbNameColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.DB_ATTRIBUTE);
-        dbNameColumn.setMinWidth(150);
+        initComboBoxes(model);
 
-        if (model.getEntity().getDbEntity() != null) {
-            Collection<String> nameAttr = ModelerUtil.getDbAttributeNames(mediator, model
-                    .getEntity()
-                    .getDbEntity());
-
-            int count = model.getRowCount();
-            for (int i = 0; i < count; i++) {
-                if (model.getAttribute(i).getDbAttributePath() != null
-                        && model.getAttribute(i).getDbAttributePath().contains(".")) {
-                    nameAttr.add(model.getAttribute(i).getDbAttributePath());
-                }
-            }
-            JComboBox dbAttributesCombo = CayenneWidgetFactory.createComboBox(
-                    nameAttr,
-                    true);
-            AutoCompletion.enable(dbAttributesCombo);
-
-            dbNameColumn.setCellEditor(CayenneWidgetFactory
-                    .createCellEditor(dbAttributesCombo));
-        }
     }
 
     /**
@@ -411,4 +404,5 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
             return this;
         }
     }
+
 }

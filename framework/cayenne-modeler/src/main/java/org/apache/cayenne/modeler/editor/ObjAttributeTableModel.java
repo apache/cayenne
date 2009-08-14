@@ -19,10 +19,19 @@
 
 package org.apache.cayenne.modeler.editor;
 
+import java.awt.Component;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-
+import java.util.EventObject;
+import java.util.Hashtable;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.event.CellEditorListener;
+import javax.swing.table.TableCellEditor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
@@ -33,7 +42,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -55,6 +67,8 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
     protected ObjEntity entity;
     protected DbEntity dbEntity;
+    private CellEditor cellEditor;
+    private CayenneTable table;
 
     public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator,
             Object eventSource) {
@@ -160,6 +174,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         else {
             DbAttribute dbAttribute = attribute.getDbAttribute();
             if (column == DB_ATTRIBUTE) {
+
                 if (dbAttribute == null) {
                     if (!attribute.isInherited()
                             && ((ObjEntity) attribute.getEntity()).isAbstract()) {
@@ -206,10 +221,24 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         }
     }
 
+    public CellEditor setCellEditor(Collection<String> nameAttr, CayenneTable table) {
+        this.cellEditor = new CellEditor(table, CayenneWidgetFactory.createComboBox(
+                nameAttr,
+                true));
+        this.table = table;
+        return cellEditor;
+    }
+
+    public CellEditor getCellEditor() {
+        return cellEditor;
+    }
+
     public void setUpdatedValueAt(Object value, int row, int column) {
 
         ObjAttribute attribute = getAttribute(row);
         AttributeEvent event = new AttributeEvent(eventSource, attribute, entity);
+        String path = null;
+        Collection<String> nameAttr = null;
 
         if (column == OBJ_ATTRIBUTE) {
             event.setOldName(attribute.getName());
@@ -232,7 +261,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
                 // If db attrib exist, associate it with obj attribute
                 if (value != null) {
-                    String path = value.toString();
+                    path = value.toString();
 
                     String[] pathSplit = path.split("\\.");
 
@@ -244,6 +273,9 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                         boolean isTruePath = true;
 
                         if (dbEntity != null) {
+
+                            nameAttr = ModelerUtil
+                                    .getDbAttributeNames(mediator, dbEntity);
 
                             for (int j = 0; j < pathSplit.length; j++) {
 
@@ -273,6 +305,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                             }
                         }
                         path = isTruePath ? pathBuf.toString() : null;
+
                     }
                     else {
 
@@ -290,10 +323,35 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                     attribute.setDbAttributePath(null);
                 }
 
+                // If path is flattened attribute, update the JComboBox
+                if (path != null && path.split("\\.").length > 1 && dbEntity!=null) {
+                    setComboBoxes(nameAttr, column);
+                }
             }
             fireTableRowsUpdated(row, row);
         }
         mediator.fireObjAttributeEvent(event);
+    }
+    
+    public void setComboBoxes(Collection<String> nameAttr, int column) {
+        int count = getRowCount();
+        for (int i = 0; i < count; i++) {
+            if (getAttribute(i).getDbAttributePath() != null
+                    && getAttribute(i).getDbAttributePath().contains(".")) {
+                Collection<String> attributeComboForRow = new ArrayList<String>();
+                attributeComboForRow.addAll(nameAttr);
+                attributeComboForRow
+                        .add(getAttribute(i).getDbAttributePath());
+                JComboBox comboBoxForRow = CayenneWidgetFactory
+                        .createComboBox(attributeComboForRow, true);
+
+                cellEditor.setEditorAt(new Integer(i), new DefaultCellEditor(
+                        comboBoxForRow));
+                
+            }
+        }
+        table.getColumnModel().getColumn(column).setCellEditor(
+                cellEditor);
     }
 
     public boolean isCellEditable(int row, int col) {
@@ -325,4 +383,86 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             return a.getEntity() == entity ? 1 : -1;
         }
     }
+
+    final class CellEditor implements TableCellEditor {
+
+        protected Hashtable editors;
+        protected TableCellEditor editor, defaultEditor;
+        JTable table;
+
+        public CellEditor(JTable table, JComboBox combo) {
+            this.table = table;
+            editors = new Hashtable();
+            if (combo != null) {
+                defaultEditor = new DefaultCellEditor(combo);
+            }
+            else {
+                defaultEditor = new DefaultCellEditor(new JComboBox());
+            }
+        }
+
+        public void setEditorAt(int row, TableCellEditor editor) {
+            editors.put(new Integer(row), editor);
+        }
+
+        public Component getTableCellEditorComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                int row,
+                int column) {
+
+            return editor.getTableCellEditorComponent(
+                    table,
+                    value,
+                    isSelected,
+                    row,
+                    column);
+        }
+
+        public Object getCellEditorValue() {
+            return editor.getCellEditorValue();
+        }
+
+        public boolean stopCellEditing() {
+            return editor.stopCellEditing();
+        }
+
+        public void cancelCellEditing() {
+            editor.cancelCellEditing();
+        }
+
+        public boolean isCellEditable(EventObject anEvent) {
+            selectEditor((MouseEvent) anEvent);
+            return editor.isCellEditable(anEvent);
+        }
+
+        public void addCellEditorListener(CellEditorListener l) {
+            editor.addCellEditorListener(l);
+        }
+
+        public void removeCellEditorListener(CellEditorListener l) {
+            editor.removeCellEditorListener(l);
+        }
+
+        public boolean shouldSelectCell(EventObject anEvent) {
+            selectEditor((MouseEvent) anEvent);
+            return editor.shouldSelectCell(anEvent);
+        }
+
+        protected void selectEditor(MouseEvent e) {
+            int row;
+            if (e == null) {
+                row = table.getSelectionModel().getAnchorSelectionIndex();
+            }
+            else {
+                row = table.rowAtPoint(e.getPoint());
+            }
+            editor = (TableCellEditor) editors.get(new Integer(row));
+            if (editor == null) {
+                editor = defaultEditor;
+            }
+        }
+    }
+
 }
