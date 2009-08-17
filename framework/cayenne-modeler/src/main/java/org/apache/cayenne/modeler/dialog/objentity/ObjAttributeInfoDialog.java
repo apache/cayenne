@@ -139,7 +139,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                 getApplication().getBindingFactory(),
                 this);
         builder.bindToAction(view.getCancelButton(), "closeAction()");
-        builder.bindToAction(view.getSelectPathButton(), "setPath()");
+        builder.bindToAction(view.getSelectPathButton(), "setPath(true)");
         builder.bindToAction(view.getSaveButton(), "saveMapping()");
 
         /*
@@ -207,7 +207,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
         view.dispose();
     }
 
-    public boolean setPath() {
+    public boolean setPath(boolean isChange) {
         StringBuilder attributePath = new StringBuilder();
         StringBuilder pathStr = new StringBuilder();
         TreePath path = view.getPathBrowser().getSelectionPath();
@@ -245,7 +245,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                     || !attribute.getName().equals(view.getAttributeName().getText())) {
                 attributeSaved.setDbAttributePath(attributePath.toString());
                 attributeSaved.setName(view.getAttributeName().getText());
-                if (!attribute.getDbAttributePath().equals(attributePath.toString())) {
+                if (!attribute.getDbAttributePath().equals(attributePath.toString()) && isChange) {
                     model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
                 }
                 return true;
@@ -256,7 +256,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                     || !attribute.getName().equals(view.getAttributeName().getText())) {
                 attributeSaved.setDbAttributePath(attributePath.toString());
                 attributeSaved.setName(view.getAttributeName().getText());
-                if (attributePath.length() > 0) {
+                if (attributePath.length() > 0 && isChange) {
                     model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
                 }
                 return true;
@@ -267,13 +267,14 @@ public class ObjAttributeInfoDialog extends CayenneController implements
 
     public void saveMapping() {
 
-        if (setPath()) {
+        if (setPath(false)) {
             if (JOptionPane.showConfirmDialog(
                     (Component) getView(),
                     "You have changed Db Attribute path. Do you want it to be saved?",
                     "Save ObjAttribute",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
+                model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
             }
         }
 
