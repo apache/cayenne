@@ -204,6 +204,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         entity.setClassName(getClientClassName());
         entity.setSuperClassName(getClientSuperClassName());
         entity.setSuperEntityName(getSuperEntityName());
+        entity.setDeclaredQualifier(getDeclaredQualifier());
 
         // TODO: should we also copy lock type?
 
@@ -1208,6 +1209,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * 
      * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
      */
+    @Deprecated
     public void objAttributeChanged(AttributeEvent e) {
         // does nothing currently
     }
@@ -1217,6 +1219,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * 
      * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
      */
+    @Deprecated
     public void objAttributeAdded(AttributeEvent e) {
         // does nothing currently
     }
@@ -1226,6 +1229,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * 
      * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
      */
+    @Deprecated
     public void objAttributeRemoved(AttributeEvent e) {
         // does nothing currently
     }
@@ -1235,6 +1239,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * 
      * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
      */
+    @Deprecated
     public void objRelationshipChanged(RelationshipEvent e) {
         // does nothing currently
     }
@@ -1244,6 +1249,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * 
      * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
      */
+    @Deprecated
     public void objRelationshipAdded(RelationshipEvent e) {
         // does nothing currently
     }
@@ -1253,6 +1259,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * 
      * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
      */
+    @Deprecated
     public void objRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }

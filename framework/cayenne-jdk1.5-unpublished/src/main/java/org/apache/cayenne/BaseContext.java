@@ -27,11 +27,13 @@ import java.util.Map;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.RefreshQuery;
@@ -385,5 +387,25 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      */
     public void setUserProperty(String key, Object value) {
         getUserProperties().put(key, value);
+    }
+    
+    /**
+     * If ObjEntity qualifier is set, asks it to inject initial value to an object 
+     */
+    protected void injectInitialValue(Object object) {
+        ObjEntity entity;
+        try {
+            entity = getEntityResolver().lookupObjEntity(object.getClass());
+        }
+        catch (CayenneRuntimeException ex) {
+            //ObjEntity cannot be fetched, ignored
+            entity = null;
+        }
+        
+        if (entity != null) {
+            if (entity.getDeclaredQualifier() instanceof ValueInjector) {
+                ((ValueInjector) entity.getDeclaredQualifier()).injectValue(object);
+            }
+        }
     }
 }

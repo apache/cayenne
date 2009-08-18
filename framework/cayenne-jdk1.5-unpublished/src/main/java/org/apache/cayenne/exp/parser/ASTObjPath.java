@@ -21,12 +21,17 @@ package org.apache.cayenne.exp.parser;
 
 import java.io.PrintWriter;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ASTObjPath extends ASTPath {
+    private static final Log logObj = LogFactory.getLog(ASTObjPath.class);
 
     /**
      * Constructor used by expression parser. Do not invoke directly.
@@ -80,5 +85,22 @@ public class ASTObjPath extends ASTPath {
     @Override
     public int getType() {
         return Expression.OBJ_PATH;
+    }
+
+    void injectValue(Object source, Object value) {
+        if (getPath().indexOf(ObjEntity.PATH_SEPARATOR) == -1) {
+            try {
+                if (source instanceof DataObject) {
+                    ((DataObject) source).writeProperty(getPath(), value);
+                }
+                else {
+                    PropertyUtils.setProperty(source, getPath(), value);
+                }
+            }   
+            catch (CayenneRuntimeException ex) {
+                logObj.warn("Failed to inject value " + value + 
+                        " on path " + getPath() + " to " + source, ex);
+            }
+       }
     }
 }

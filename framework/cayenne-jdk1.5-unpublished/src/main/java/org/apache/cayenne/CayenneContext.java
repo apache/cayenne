@@ -519,11 +519,13 @@ public class CayenneContext extends BaseContext {
         // the id and the context in place BEFORE setPersistence is called
         object.setObjectContext(this);
         object.setPersistenceState(PersistenceState.NEW);
-
+        
         synchronized (graphManager) {
             graphManager.registerNode(id, object);
             graphManager.nodeCreated(id);
         }
+        
+        injectInitialValue(object);
     }
 
     Persistent createFault(ObjectId id) {

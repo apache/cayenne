@@ -23,13 +23,18 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ValueInjector;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * "Equal To" expression.
  * 
  * @since 1.1
  */
-public class ASTEqual extends ConditionNode {
+public class ASTEqual extends ConditionNode implements ValueInjector {
+    private static final Log logObj = LogFactory.getLog(ASTEqual.class);
+    
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */
@@ -135,5 +140,31 @@ public class ASTEqual extends ConditionNode {
     @Override
     public int getType() {
         return Expression.EQUAL_TO;
+    }
+
+    public void injectValue(Object o) {
+        //try to inject value, if one of the operands is scalar, and other is a path 
+        
+        Node[] args = new Node[] { jjtGetChild(0), jjtGetChild(1) };
+        
+        int scalarIndex = -1;
+        if (args[0] instanceof ASTScalar) {
+            scalarIndex = 0;
+        }
+        else if (args[1] instanceof ASTScalar) {
+            scalarIndex = 1;
+        }
+        
+        if (scalarIndex != -1 && args[1 - scalarIndex] instanceof ASTObjPath) {
+            //inject
+            ASTObjPath path = (ASTObjPath) args[1 - scalarIndex];
+            try {
+                path.injectValue(o, evaluateChild(scalarIndex, o));
+            }
+            catch (Exception ex) {
+                logObj.warn("Failed to inject value " + 
+                        " on path " + path.getPath() + " to " + o, ex);
+            }
+        }
     }
 }

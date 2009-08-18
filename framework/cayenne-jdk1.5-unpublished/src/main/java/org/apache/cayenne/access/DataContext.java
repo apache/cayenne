@@ -25,7 +25,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +44,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
-import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.conf.Configuration;
@@ -730,6 +728,8 @@ public class DataContext extends BaseContext implements DataChannel {
         object.setPersistenceState(PersistenceState.NEW);
         getObjectStore().registerNode(id, object);
         getObjectStore().nodeCreated(id);
+        
+        injectInitialValue(object);
 
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
@@ -869,6 +869,8 @@ public class DataContext extends BaseContext implements DataChannel {
                 return true;
             }
         });
+        
+        injectInitialValue(object);
 
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(

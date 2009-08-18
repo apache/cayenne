@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.util.ConversionUtil;
 
 /**
@@ -30,7 +31,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  * @since 1.1
  */
-public class ASTAnd extends AggregateConditionNode {
+public class ASTAnd extends AggregateConditionNode implements ValueInjector {
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */
@@ -101,5 +102,16 @@ public class ASTAnd extends AggregateConditionNode {
     @Override
     protected String getExpressionOperator(int index) {
         return "and";
+    }
+
+    public void injectValue(Object o) {
+        //iterate through all operands, inject all possible
+        int len = jjtGetNumChildren();
+        for (int i = 0; i < len; i++) {
+            Node node = jjtGetChild(i);
+            if (node instanceof ValueInjector) {
+                ((ValueInjector) node).injectValue(o);
+            }
+        }
     }
 }
