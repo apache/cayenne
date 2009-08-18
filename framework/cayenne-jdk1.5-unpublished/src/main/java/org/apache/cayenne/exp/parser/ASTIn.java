@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.Collection;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.commons.collections.Transformer;
 
@@ -62,11 +64,23 @@ public class ASTIn extends ConditionNode {
         if (objects == null) {
             return Boolean.FALSE;
         }
-
+    
         int size = objects.length;
         for (int i = 0; i < size; i++) {
-            if (objects[i] != null && ASTEqual.evaluateAtomic(o1, objects[i])) {
-                return Boolean.TRUE;
+            if (objects[i] != null) {
+                if (o1 instanceof Collection) {
+                	/* handle the case where we have a collection of objects */
+                	for (Object obj : (Collection) o1) {
+                    	if (ASTEqual.evaluateAtomic(obj, objects[i])) {
+                            return Boolean.TRUE;
+                    	}
+                	}
+                }
+                else {
+                	if (ASTEqual.evaluateAtomic(o1, objects[i])) {
+                        return Boolean.TRUE;
+                	}
+                }
             }
         }
 

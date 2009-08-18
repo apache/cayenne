@@ -279,4 +279,21 @@ public class ExpressionFactoryTest extends CayenneCase {
         assertEquals(query.getQualifier(), 
                 ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
     }
+    
+    public void testIn() {
+        ObjectContext dc = createDataContext();
+        
+        Artist a1 = dc.newObject(Artist.class);
+        a1.setArtistName("a1");
+        Painting p1 = dc.newObject(Painting.class);
+        p1.setPaintingTitle("p1");
+        Painting p2 = dc.newObject(Painting.class);
+        p2.setPaintingTitle("p2");
+        a1.addToPaintingArray(p1);
+        a1.addToPaintingArray(p2);
+        dc.commitChanges();
+        
+        Expression in = ExpressionFactory.inExp("paintingArray", p1);
+        assertTrue(in.match(a1));
+    }
 }
