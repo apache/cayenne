@@ -36,10 +36,15 @@
 		<db-attribute name="PERSON_TYPE" type="CHAR" isMandatory="true" length="2"/>
 		<db-attribute name="SALARY" type="FLOAT"/>
 	</db-entity>
+	<db-entity name="PERSON_NOTES">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NOTES" type="VARCHAR" length="255"/>
+		<db-attribute name="PERSON_ID" type="INTEGER"/>
+	</db-entity>
 	<db-entity name="RELATED_ENTITY">
 		<db-attribute name="RELATED_ENTITY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
-	<obj-entity name="AbstractPerson" className="org.apache.cayenne.testdo.inherit.AbstractPerson" dbEntityName="PERSON">
+	<obj-entity name="AbstractPerson" abstract="true" className="org.apache.cayenne.testdo.inherit.AbstractPerson" dbEntityName="PERSON">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 		<obj-attribute name="personType" type="java.lang.String" db-attribute-path="PERSON_TYPE"/>
 	</obj-entity>
@@ -69,6 +74,9 @@
 	</obj-entity>
 	<obj-entity name="Manager" superEntityName="Employee" className="org.apache.cayenne.testdo.inherit.Manager">
 		<qualifier><![CDATA[personType = "EM"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="PersonNotes" className="org.apache.cayenne.testdo.inherit.PersonNotes" dbEntityName="PERSON_NOTES">
+		<obj-attribute name="notes" type="java.lang.String" db-attribute-path="NOTES"/>
 	</obj-entity>
 	<obj-entity name="RelatedEntity" className="org.apache.cayenne.testdo.inherit.RelatedEntity" dbEntityName="RELATED_ENTITY">
 	</obj-entity>
@@ -102,15 +110,22 @@
 	<db-relationship name="managedDepartments" source="PERSON" target="DEPARTMENT" toMany="true">
 		<db-attribute-pair source="PERSON_ID" target="MANAGER_ID"/>
 	</db-relationship>
+	<db-relationship name="notes" source="PERSON" target="PERSON_NOTES" toMany="true">
+		<db-attribute-pair source="PERSON_ID" target="PERSON_ID"/>
+	</db-relationship>
 	<db-relationship name="toClientCompany" source="PERSON" target="CLIENT_COMPANY" toMany="false">
 		<db-attribute-pair source="CLIENT_COMPANY_ID" target="CLIENT_COMPANY_ID"/>
 	</db-relationship>
 	<db-relationship name="toDepartment" source="PERSON" target="DEPARTMENT" toMany="false">
 		<db-attribute-pair source="DEPARTMENT_ID" target="DEPARTMENT_ID"/>
 	</db-relationship>
+	<db-relationship name="person" source="PERSON_NOTES" target="PERSON" toMany="false">
+		<db-attribute-pair source="PERSON_ID" target="PERSON_ID"/>
+	</db-relationship>
 	<db-relationship name="entities" source="RELATED_ENTITY" target="BASE_ENTITY" toMany="true">
 		<db-attribute-pair source="RELATED_ENTITY_ID" target="RELATED_ENTITY_ID"/>
 	</db-relationship>
+	<obj-relationship name="notes" source="AbstractPerson" target="PersonNotes" deleteRule="Nullify" db-relationship-path="notes"/>
 	<obj-relationship name="toEmployee" source="Address" target="Employee" db-relationship-path="toPerson"/>
 	<obj-relationship name="toDirectToSubEntity" source="BaseEntity" target="DirectToSubEntity" deleteRule="Nullify" db-relationship-path="directToSubEntities"/>
 	<obj-relationship name="toRelatedEntity" source="BaseEntity" target="RelatedEntity" deleteRule="Nullify" db-relationship-path="relatedEntities"/>
@@ -122,6 +137,7 @@
 	<obj-relationship name="addresses" source="Employee" target="Address" db-relationship-path="employeeAddresses"/>
 	<obj-relationship name="toDepartment" source="Employee" target="Department" db-relationship-path="toDepartment"/>
 	<obj-relationship name="managedDepartments" source="Manager" target="Department" db-relationship-path="managedDepartments"/>
+	<obj-relationship name="person" source="PersonNotes" target="AbstractPerson" deleteRule="Nullify" db-relationship-path="person"/>
 	<obj-relationship name="baseEntities" source="RelatedEntity" target="BaseEntity" db-relationship-path="entities"/>
 	<obj-relationship name="subEntities" source="RelatedEntity" target="SubEntity" db-relationship-path="entities"/>
 </data-map>

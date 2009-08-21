@@ -38,6 +38,7 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -219,13 +220,20 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // create a fault
             if (context != null && !relationship.isOptional()) {
 
-                // prevent passing partial snapshots to ObjectResolver per CAY-724. Create
-                // a hollow object right here and skip object conversion downstream
-                this.noObjectConversion = true;
-                Object object = context.localObject(targetId, null);
+                // final check (how do we do it in relationship.isOptional()??) - is
+                // inheritance involved
+                ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+                if (domain.getEntityResolver().lookupInheritanceTree(targetEntity) == null) {
 
-                this.response = new GenericResponse(Collections.singletonList(object));
-                return DONE;
+                    // prevent passing partial snapshots to ObjectResolver per CAY-724.
+                    // Create
+                    // a hollow object right here and skip object conversion downstream
+                    this.noObjectConversion = true;
+                    Object object = context.localObject(targetId, null);
+
+                    this.response = new GenericResponse(Collections.singletonList(object));
+                    return DONE;
+                }
             }
         }
 

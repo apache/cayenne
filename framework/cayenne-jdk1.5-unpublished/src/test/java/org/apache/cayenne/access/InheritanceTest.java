@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.Address;
@@ -32,13 +34,13 @@ import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
+import org.apache.cayenne.testdo.inherit.PersonNotes;
 import org.apache.cayenne.testdo.inherit.RelatedEntity;
 import org.apache.cayenne.testdo.inherit.SubEntity;
 import org.apache.cayenne.unit.PeopleCase;
 
 /**
  * Testing Cayenne behavior with DataObject inheritance hierarchies.
- * 
  */
 public class InheritanceTest extends PeopleCase {
 
@@ -49,6 +51,23 @@ public class InheritanceTest extends PeopleCase {
         super.setUp();
         deleteTestData();
         context = createDataContext();
+    }
+
+    public void testRelationshipToAbstractSuper() {
+        context
+                .performGenericQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'AA', 'EE')"));
+
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (1, 'AA', 1)"));
+
+        PersonNotes note = DataObjectUtils.objectForPK(context, PersonNotes.class, 1);
+        assertNotNull(note);
+        assertNotNull(note.getPerson());
+        assertTrue(note.getPerson() instanceof Employee);
+
     }
 
     public void testSave() throws Exception {
@@ -201,7 +220,7 @@ public class InheritanceTest extends PeopleCase {
         // We should still just have the one mapped relationship, but we in fact now have
         // two:
         // DirectToSubEntity -> BaseEntity and DirectToSubEntity -> SubEntity.
-        
+
         // TODO: andrus 2008/03/28 - this fails...
         // assertEquals(1, context.getEntityResolver().getObjEntity("DirectToSubEntity")
         // .getRelationships().size());
@@ -213,8 +232,8 @@ public class InheritanceTest extends PeopleCase {
         //
         // assertEquals(1, direct.getSubEntities().size());
         //
-        //        context.deleteObject(sub);
-        //        assertEquals(0, direct.getSubEntities().size());
+        // context.deleteObject(sub);
+        // assertEquals(0, direct.getSubEntities().size());
     }
 
     /**
