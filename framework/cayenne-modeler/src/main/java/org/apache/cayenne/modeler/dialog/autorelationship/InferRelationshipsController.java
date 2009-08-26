@@ -19,14 +19,10 @@
 package org.apache.cayenne.modeler.dialog.autorelationship;
 
 import java.awt.Component;
-import java.util.Vector;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
-import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -34,30 +30,16 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ClassLoadingService;
-import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.ProjectUtil;
-import org.apache.cayenne.project.NamedObjectFactory;
+import org.apache.cayenne.modeler.util.NamingStrategyPreferences;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class InferRelationshipsController extends InferRelationshipsControllerBase {
-
-    private static final String STRATEGIES_PREFERENCE = "recent.preferences";
-
-    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
-    static {
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.SmartNamingStrategy");
-    };
-
     public static final int SELECT = 1;
     public static final int CANCEL = 0;
 
@@ -137,14 +119,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             /**
              * Be user-friendly and update preferences with specified strategy
              */
-            ModelerPreferences pref = ModelerPreferences.getPreferences();
-            Vector arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
-
-            // move to top
-            arr.remove(strategyClass);
-            arr.add(0, strategyClass);
-
-            pref.setProperty(STRATEGIES_PREFERENCE, arr);
+            NamingStrategyPreferences.getInstance().addToLastUsedStrategies(strategyClass);
         }
         catch (Throwable th) {
             logObj.error("Error in " + getClass().getName(), th);

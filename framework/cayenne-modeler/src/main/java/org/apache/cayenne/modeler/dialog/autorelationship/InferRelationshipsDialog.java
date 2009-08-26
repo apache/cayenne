@@ -22,7 +22,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -31,23 +30,11 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
 
-import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ModelerPreferences;
+import org.apache.cayenne.modeler.util.NamingStrategyPreferences;
 
 public class InferRelationshipsDialog extends JDialog {
-
-    private static final String STRATEGIES_PREFERENCE = "recent.preferences";
-
-    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
-    static {
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.SmartNamingStrategy");
-    };
-
     public static final int SELECT = 1;
     public static final int CANCEL = 0;
     protected int choice;
@@ -92,9 +79,8 @@ public class InferRelationshipsDialog extends JDialog {
 
         this.choice = CANCEL;
 
-        ModelerPreferences pref = ModelerPreferences.getPreferences();
-        Vector<?> arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
-        strategyCombo.setModel(new DefaultComboBoxModel(arr));
+        strategyCombo.setModel(new DefaultComboBoxModel(
+                NamingStrategyPreferences.getInstance().getLastUsedStrategies()));
 
         setTitle("Infer Relationships");
     }

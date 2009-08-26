@@ -21,11 +21,8 @@ package org.apache.cayenne.modeler.dialog.autorelationship;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.map.DataMap;
@@ -33,15 +30,11 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.naming.BasicNamingStrategy;
 import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.project.NamedObjectFactory;
-import org.apache.cayenne.validation.ValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.collections.Predicate;
 
 public class InferRelationshipsControllerBase extends CayenneController {

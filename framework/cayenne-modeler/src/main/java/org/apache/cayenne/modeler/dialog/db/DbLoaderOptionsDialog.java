@@ -42,8 +42,8 @@ import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
-import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.NamingStrategyPreferences;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,20 +55,6 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class DbLoaderOptionsDialog extends CayenneDialog {
     private static final Log logObj = LogFactory.getLog(DbLoaderOptionsDialog.class);
-    
-    /**
-     * Preference to store latest strategies
-     */
-    private static final String STRATEGIES_PREFERENCE = "recent.preferences";
-    
-    /**
-     * Naming strategies to appear in combobox by default
-     */
-    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
-    static {
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.SmartNamingStrategy");
-    };
 
     public static final int CANCEL = 0;
     public static final int SELECT = 1;
@@ -182,8 +168,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         this.procNamePatternField.setEnabled(shouldLoadProcedures);
         this.procedureLabel.setEnabled(shouldLoadProcedures);
         
-        ModelerPreferences pref = ModelerPreferences.getPreferences();
-        Vector<?> arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
+        Vector<String> arr = NamingStrategyPreferences.getInstance().getLastUsedStrategies();
         strategyCombo.setModel(new DefaultComboBoxModel(arr));
 
         boolean showSchemaSelector = schemas != null && !schemas.isEmpty();
@@ -220,14 +205,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
             /**
              * Be user-friendly and update preferences with specified strategy
              */
-            ModelerPreferences pref = ModelerPreferences.getPreferences();
-            Vector arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
-            
-            //move to top
-            arr.remove(strategyClass);
-            arr.add(0, strategyClass);
-            
-            pref.setProperty(STRATEGIES_PREFERENCE, arr);
+            NamingStrategyPreferences.getInstance().addToLastUsedStrategies(strategyClass);
         }
         catch (Throwable th) {
             logObj.error("Error in " + getClass().getName(), th);

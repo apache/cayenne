@@ -20,10 +20,6 @@ package org.apache.cayenne.modeler.dialog.autorelationship;
 
 import java.awt.Component;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
