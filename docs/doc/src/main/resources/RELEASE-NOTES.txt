@@ -33,6 +33,7 @@ CAY-1224 reverse engineering partially changed schema shows empty error messge w
 CAY-1229 Fixing DB2 Tests
 CAY-1232 Unit tests failing on Sybase
 CAY-1240 Schema generation dialog has "uncheck all tables" checkbox incorrectly checked by default
+CAY-1246 Naming strategy getting stuck in (incorrect) preferences location
 CAY-1248 ClassCastException with OracleLOBBatchAction
 CAY-1252 Bad XML generated when saving DBEntity qualifiers
 
