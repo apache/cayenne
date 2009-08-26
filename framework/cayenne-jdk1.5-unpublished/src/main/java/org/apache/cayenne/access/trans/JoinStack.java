@@ -228,12 +228,12 @@ public class JoinStack {
      * and rejecting all original Db-paths
      */
     class JoinedDbEntityQualifierTransformer implements Transformer {
-        String pathToRoot;
+        StringBuilder pathToRoot;
         
         JoinedDbEntityQualifierTransformer(JoinTreeNode node) {
-            pathToRoot = "";
+            pathToRoot = new StringBuilder();
             while (node != null && node.getRelationship() != null) {
-                pathToRoot += node.getRelationship().getName();
+                String relName = node.getRelationship().getName();
                 
                 /**
                  * We must be in the same join as 'node',
@@ -241,17 +241,18 @@ public class JoinStack {
                  * JOIN t1 ... ON (t0.id=t1.id AND t2.qualifier=0) could be generated
                  */
                 if (node.getJoinType() == JoinType.LEFT_OUTER) {
-                    pathToRoot += Entity.OUTER_JOIN_INDICATOR;
+                	relName += Entity.OUTER_JOIN_INDICATOR;
                 }
-                pathToRoot += ObjEntity.PATH_SEPARATOR;
+                relName += ObjEntity.PATH_SEPARATOR;
                 
+                pathToRoot.insert(0, relName);
                 node = node.getParent();
             }
         }
         
         public Object transform(Object input) {
             if (input instanceof ASTObjPath) {
-                return new ASTDbPath(pathToRoot + 
+                return new ASTDbPath(pathToRoot.toString() + 
                         ((SimpleNode) input).getOperand(0));
             }
             return input;
