@@ -27,6 +27,7 @@ CAY-1261 Auto-inject values in NEW objects with declared qualifiers
 
 Bug Fixes Since M6:
 
+CAY-1009 Bogus runtime relationships can mess up commit
 CAY-1169 Weird behavior when adding entity via merging
 CAY-1177 Outer join syntax causes exception with Expression.filterObjects()
 CAY-1224 reverse engineering partially changed schema shows empty error messge window
