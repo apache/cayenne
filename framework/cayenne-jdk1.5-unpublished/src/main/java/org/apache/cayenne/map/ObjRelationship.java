@@ -167,28 +167,29 @@ public class ObjRelationship extends Relationship {
 
         for (DbRelationship rel : relationships) {
             DbRelationship reverse = rel.getReverseRelationship();
-            if (reverse == null)
+            if (reverse == null) {
                 return null;
+            }
 
             reversed.add(0, reverse);
         }
 
-        Entity target = this.getTargetEntity();
+        ObjEntity target = (ObjEntity) this.getTargetEntity();
         if (target == null) {
             return null;
         }
 
-        Entity src = this.getSourceEntity();
-
         Iterator<?> it = target.getRelationships().iterator();
         while (it.hasNext()) {
             ObjRelationship rel = (ObjRelationship) it.next();
-            if (rel.getTargetEntity() != src)
+            if (target.isSubentityOf((ObjEntity) rel.getTargetEntity())) {
                 continue;
+            }
 
             List<?> otherRels = rel.getDbRelationships();
-            if (reversed.size() != otherRels.size())
+            if (reversed.size() != otherRels.size()) {
                 continue;
+            }
 
             int len = reversed.size();
             boolean relsMatch = true;
@@ -199,8 +200,9 @@ public class ObjRelationship extends Relationship {
                 }
             }
 
-            if (relsMatch)
+            if (relsMatch) {
                 return rel;
+            }
         }
 
         return null;
