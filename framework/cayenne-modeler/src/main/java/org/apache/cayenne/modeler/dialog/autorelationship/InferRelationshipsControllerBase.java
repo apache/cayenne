@@ -59,19 +59,18 @@ public class InferRelationshipsControllerBase extends CayenneController {
         this.dataMap = dataMap;
         this.entities = new ArrayList(dataMap.getDbEntities());
         this.selectedEntities = new HashSet();
-        strategy = new BasicNamingStrategy();
-        setRelationships();
-        createJoin();
-        createName();
 
     }
 
     public void setRelationships() {
         ir = new ArrayList<InferRelationships>();
-        strategy = new BasicNamingStrategy();
+
         for (DbEntity entity : entities) {
             createRelationships(entity);
         }
+
+        createJoin();
+        createName();
     }
 
     public void createRelationships(DbEntity entity) {

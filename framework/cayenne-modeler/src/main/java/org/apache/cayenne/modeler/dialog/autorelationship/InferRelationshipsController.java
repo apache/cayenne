@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.dialog.autorelationship;
 
 import java.awt.Component;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.map.DataMap;
@@ -40,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class InferRelationshipsController extends InferRelationshipsControllerBase {
+
     public static final int SELECT = 1;
     public static final int CANCEL = 0;
 
@@ -53,8 +55,33 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
     public InferRelationshipsController(CayenneController parent, DataMap dataMap) {
         super(parent, dataMap);
-
+        strategy = createNamingStrategy(NamingStrategyPreferences
+                .getInstance()
+                .getLastUsedStrategies()
+                .get(0));
+        setNamingStrategy(strategy);
+        setRelationships();
         this.entitySelector = new InferRelationshipsTabController(this);
+    }
+
+    public NamingStrategy createNamingStrategy(String strategyClass) {
+        try {
+            ClassLoadingService classLoader = Application
+                    .getInstance()
+                    .getClassLoadingService();
+
+            return (NamingStrategy) classLoader.loadClass(strategyClass).newInstance();
+        }
+        catch (Throwable th) {
+            logObj.error("Error in " + getClass().getName(), th);
+
+            JOptionPane.showMessageDialog(
+                    view,
+                    "Naming Strategy Initialization Error: " + th.getMessage(),
+                    "Naming Strategy Initialization Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
     }
 
     @Override
@@ -107,19 +134,25 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
     public void strategyComboAction() {
         try {
-            ClassLoadingService classLoader = Application
-                    .getInstance()
-                    .getClassLoadingService();
+
             String strategyClass = (String) view.getStrategyCombo().getSelectedItem();
 
-            this.strategy = (NamingStrategy) classLoader
-                    .loadClass(strategyClass)
-                    .newInstance();
-            
+            this.strategy = createNamingStrategy(strategyClass);
+
             /**
              * Be user-friendly and update preferences with specified strategy
              */
-            NamingStrategyPreferences.getInstance().addToLastUsedStrategies(strategyClass);
+            if (strategy == null) {
+                return;
+            }
+            NamingStrategyPreferences
+                    .getInstance()
+                    .addToLastUsedStrategies(strategyClass);
+            view.getStrategyCombo().setModel(
+                    new DefaultComboBoxModel(NamingStrategyPreferences
+                            .getInstance()
+                            .getLastUsedStrategies()));
+
         }
         catch (Throwable th) {
             logObj.error("Error in " + getClass().getName(), th);

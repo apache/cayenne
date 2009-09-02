@@ -17,6 +17,7 @@ Changes/New Features Since M6:
 CAY-132 Intelligent lazy fault detection
 CAY-419 Collections aren't supported with in-memory filtering
 CAY-1116 Add generated PK support to SQLite
+CAY-1220 A function to auto-map the DB relationships
 CAY-1225 Controlling JDBC Driver setting "fetchSize" in a SelectQuery
 CAY-1227 Modeler support for flattened attributes
 CAY-1235 Implement qualifiers for DBEntities
