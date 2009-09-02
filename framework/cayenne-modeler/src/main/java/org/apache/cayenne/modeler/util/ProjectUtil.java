@@ -33,6 +33,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
@@ -218,6 +220,22 @@ public class ProjectUtil {
         if (entity != null) {
             entity.removeAttribute(oldName);
             entity.addAttribute(attribute);
+        }
+    }
+    
+    
+    /**
+     * Changes the name of the embeddable attribute and all references to this embeddable attribute.
+     */
+    public static void setEmbeddableAttributeName(EmbeddableAttribute attribute, String newName) {
+        String oldName = attribute.getName();
+
+        attribute.setName(newName);
+        Embeddable embeddable = attribute.getEmbeddable();
+        
+        if (embeddable != null) {
+            embeddable.removeAttribute(oldName);
+            embeddable.addAttribute(attribute);
         }
     }
 

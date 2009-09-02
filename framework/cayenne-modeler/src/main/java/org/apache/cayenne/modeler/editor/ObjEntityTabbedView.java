@@ -82,7 +82,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
 
         entityPanel = new JScrollPane(new ObjEntityTab(mediator));
         addTab("Entity", entityPanel);
-        
+
         attributesPanel = new ObjEntityAttributeTab(mediator);
         addTab("Attributes", attributesPanel);
 
@@ -118,7 +118,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
     }
 
     /** Reset the remove buttons */
-    private void resetRemoveButtons(){
+    private void resetRemoveButtons() {
         Application app = Application.getInstance();
         app.getAction(RemoveAttributeAction.getActionName()).setEnabled(false);
         app.getAction(RemoveRelationshipAction.getActionName()).setEnabled(false);
@@ -127,6 +127,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {
         Entity entity = e.getEntity();
+
         if (e.isMainTabFocus() && entity instanceof ObjEntity) {
             if (getSelectedComponent() != entityPanel) {
                 setSelectedComponent(entityPanel);
@@ -146,14 +147,14 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         // update relationship selection
         Relationship[] rels = e.getRelationships();
         ObjRelationship[] objRels = new ObjRelationship[rels.length];
-        
+
         System.arraycopy(rels, 0, objRels, 0, rels.length);
-        
+
         if (getSelectedComponent() != relationshipsPanel && objRels.length > 0) {
             setSelectedComponent(relationshipsPanel);
             relationshipsPanel.setVisible(true);
         }
-        
+
         relationshipsPanel.selectRelationships(objRels);
     }
 
@@ -164,14 +165,14 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         // update relationship selection
         Attribute[] attrs = e.getAttributes();
         ObjAttribute[] objAttrs = new ObjAttribute[attrs.length];
-        
+
         System.arraycopy(attrs, 0, objAttrs, 0, attrs.length);
-        
+
         if (getSelectedComponent() != attributesPanel && objAttrs.length > 0) {
             setSelectedComponent(attributesPanel);
             attributesPanel.setVisible(true);
         }
-        
+
         attributesPanel.selectAttributes(objAttrs);
     }
 }

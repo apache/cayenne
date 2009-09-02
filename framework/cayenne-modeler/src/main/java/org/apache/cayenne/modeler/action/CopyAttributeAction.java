@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 import java.util.Arrays;
 
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.project.ProjectPath;
@@ -29,8 +30,9 @@ import org.apache.cayenne.project.ProjectPath;
  * Action for copying attribute(s)
  */
 public class CopyAttributeAction extends CopyAction implements MultipleObjectsAction {
+
     private final static String ACTION_NAME = "Copy Attribute";
-    
+
     /**
      * Name of action if multiple attrs are selected
      */
@@ -39,7 +41,7 @@ public class CopyAttributeAction extends CopyAction implements MultipleObjectsAc
     public static String getActionName() {
         return ACTION_NAME;
     }
-    
+
     public String getActionName(boolean multiple) {
         return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
@@ -57,21 +59,28 @@ public class CopyAttributeAction extends CopyAction implements MultipleObjectsAc
         if (path == null) {
             return false;
         }
+        boolean isEnable = path.getObject() instanceof Attribute;
+        if (!isEnable) {
+            isEnable = path.getObject() instanceof EmbeddableAttribute;
+        }
 
-        return path.getObject() instanceof Attribute;
+        return isEnable;
     }
-    
+
     @Override
     public Object copy(ProjectController mediator) {
         Object[] attrs = getProjectController().getCurrentObjAttributes();
         if (attrs == null || attrs.length == 0) {
             attrs = getProjectController().getCurrentDbAttributes();
         }
-        
+        if (attrs == null || attrs.length == 0) {
+            attrs = getProjectController().getCurrentEmbAttrs();
+        }
+
         if (attrs != null && attrs.length > 0) {
             return Arrays.asList(attrs);
         }
-        
+
         return null;
     }
 }

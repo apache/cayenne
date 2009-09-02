@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.project.ProjectPath;
 
@@ -28,8 +29,9 @@ import org.apache.cayenne.project.ProjectPath;
  * Action for cutting attribute(s)
  */
 public class CutAttributeAction extends CutAction implements MultipleObjectsAction {
+
     private final static String ACTION_NAME = "Cut Attribute";
-    
+
     /**
      * Name of action if multiple attrs are selected
      */
@@ -38,7 +40,7 @@ public class CutAttributeAction extends CutAction implements MultipleObjectsActi
     public static String getActionName() {
         return ACTION_NAME;
     }
-    
+
     public String getActionName(boolean multiple) {
         return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
@@ -56,16 +58,21 @@ public class CutAttributeAction extends CutAction implements MultipleObjectsActi
         if (path == null) {
             return false;
         }
+        boolean isEnable = path.getObject() instanceof Attribute;
+        if (!isEnable) {
+            isEnable = path.getObject() instanceof EmbeddableAttribute;
+        }
 
-        return path.getObject() instanceof Attribute;
+        return isEnable;
     }
-    
+
     /**
      * Performs cutting of items
      */
     @Override
     public void performAction(ActionEvent e) {
         application.getAction(CopyAttributeAction.getActionName()).performAction(e);
-        ((RemoveAction) application.getAction(RemoveAttributeAction.getActionName())).performAction(e, false);
+        ((RemoveAction) application.getAction(RemoveAttributeAction.getActionName()))
+                .performAction(e, false);
     }
 }

@@ -45,6 +45,7 @@ import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.CreateDataMapEntityListenerAction;
 import org.apache.cayenne.modeler.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.action.CreateDomainAction;
+import org.apache.cayenne.modeler.action.CreateEmbeddableAction;
 import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityListenerAction;
@@ -123,6 +124,7 @@ public class ActionManager {
     static {
         DATA_MAP_ACTIONS.addAll(Arrays.asList(
                 GenerateCodeAction.getActionName(),
+                CreateEmbeddableAction.getActionName(),
                 CreateObjEntityAction.getActionName(),
                 CreateDbEntityAction.getActionName(),
                 CreateQueryAction.getActionName(),
@@ -152,6 +154,13 @@ public class ActionManager {
                 DbEntitySyncAction.getActionName()));
     }
 
+    static final Collection<String> EMBEDDABLE_ACTIONS = new HashSet<String>(
+            DATA_MAP_ACTIONS);
+    static {
+        EMBEDDABLE_ACTIONS.addAll(Arrays.asList(
+                CreateAttributeAction.getActionName()));
+    }
+    
     static final Collection<String> PROCEDURE_ACTIONS = new HashSet<String>(
             DATA_MAP_ACTIONS);
     static {
@@ -237,6 +246,8 @@ public class ActionManager {
         registerAction(new CopyRelationshipAction(application));
         registerAction(new CopyProcedureParameterAction(application));
         registerAction(new PasteAction(application));
+        
+        registerAction(new CreateEmbeddableAction(application));
     }
 
     private CayenneAction registerAction(CayenneAction action) {
@@ -310,6 +321,11 @@ public class ActionManager {
     public void querySelected() {
         processActionsState(DATA_MAP_ACTIONS);
         updateActions("Query");
+    }
+    
+    public void embeddableSelected() {
+        processActionsState(EMBEDDABLE_ACTIONS);
+        updateActions("Embeddable");
     }
     
     /**

@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,42 +16,18 @@ package org.apache.cayenne.modeler.event;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.map.event;
 
+import java.util.EventListener;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
+public interface EmbeddableAttributeListener extends EventListener {
 
-/** 
-  */
-public class AttributeDisplayEvent extends EntityDisplayEvent {
-   
-    protected Attribute[] attributes;
-    
-    public AttributeDisplayEvent(
-            Object src,
-            Attribute attribute,
-            Entity entity,
-            DataMap dataMap,
-            DataDomain domain) {
-        
-            super(src, entity, dataMap, domain);
-            attributes = new Attribute[] { attribute };
-    }
+    /** EmbeddableAttribute property changed. */
+    public void embeddableAttributeChanged(EmbeddableAttributeEvent e);
 
-    public AttributeDisplayEvent(
-        Object src,
-        Attribute[] attributes,
-        Entity entity,
-        DataMap dataMap,
-        DataDomain domain) {
+    /** New EmbeddableAttribute has been created/added. */
+    public void embeddableAttributeAdded(EmbeddableAttributeEvent e);
 
-        super(src, entity, dataMap, domain);
-        this.attributes = attributes;
-    }
-    
-    public Attribute[] getAttributes() {
-        return attributes;
-    }
+    /** EmbeddableAttribute has been removed. */
+    public void embeddableAttributeRemoved(EmbeddableAttributeEvent e);
 }

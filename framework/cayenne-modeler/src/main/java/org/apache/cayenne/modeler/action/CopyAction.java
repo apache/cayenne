@@ -29,6 +29,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -119,6 +121,7 @@ public class CopyAction extends CayenneAction {
         Object last = path.getObject();
         if (last instanceof DataMap || last instanceof Query
                 || last instanceof DbEntity || last instanceof ObjEntity
+                || last instanceof Embeddable || last instanceof EmbeddableAttribute
                 || last instanceof DbAttribute || last instanceof DbRelationship
                 || last instanceof ObjAttribute || last instanceof ObjRelationship
                 || last instanceof Procedure || last instanceof ProcedureParameter) {

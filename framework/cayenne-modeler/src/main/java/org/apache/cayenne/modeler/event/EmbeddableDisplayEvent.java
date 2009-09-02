@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,42 +16,43 @@ package org.apache.cayenne.modeler.event;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
+package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.Embeddable;
 
-/** 
-  */
-public class AttributeDisplayEvent extends EntityDisplayEvent {
-   
-    protected Attribute[] attributes;
-    
-    public AttributeDisplayEvent(
-            Object src,
-            Attribute attribute,
-            Entity entity,
-            DataMap dataMap,
-            DataDomain domain) {
-        
-            super(src, entity, dataMap, domain);
-            attributes = new Attribute[] { attribute };
+public class EmbeddableDisplayEvent extends DataMapDisplayEvent {
+
+    protected Embeddable embeddable;
+    protected boolean embeddableChanged = true;
+
+    protected boolean mainTabFocus;
+
+    public EmbeddableDisplayEvent(Object src, Embeddable embeddable, DataMap dataMap,
+            DataDomain dataDomain) {
+        super(src, dataMap, dataDomain);
+        this.embeddable = embeddable;
+        setDataMapChanged(false);
     }
 
-    public AttributeDisplayEvent(
-        Object src,
-        Attribute[] attributes,
-        Entity entity,
-        DataMap dataMap,
-        DataDomain domain) {
-
-        super(src, entity, dataMap, domain);
-        this.attributes = attributes;
+    public Embeddable getEmbeddable() {
+        return embeddable;
     }
-    
-    public Attribute[] getAttributes() {
-        return attributes;
+
+    public boolean isMainTabFocus() {
+        return mainTabFocus;
+    }
+
+    public void setMainTabFocus(boolean mainTabFocus) {
+        this.mainTabFocus = mainTabFocus;
+    }
+
+    public boolean isEmbeddableChanged() {
+        return embeddableChanged;
+    }
+
+    public void setEmbeddableChanged(boolean temp) {
+        this.embeddableChanged = temp;
     }
 }

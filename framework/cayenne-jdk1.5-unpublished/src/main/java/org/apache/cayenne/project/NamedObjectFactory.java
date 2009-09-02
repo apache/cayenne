@@ -30,6 +30,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -82,6 +84,8 @@ public abstract class NamedObjectFactory {
         factories.put(Procedure.class, new ProcedureFactory());
         factories.put(Query.class, new SelectQueryFactory());
         factories.put(ProcedureParameter.class, new ProcedureParameterFactory());
+        factories.put(Embeddable.class, new EmbeddableFactory());
+        factories.put(EmbeddableAttribute.class, new EmbeddableAttributeFactory());
     }
 
     public static String createName(Class objectClass, Object namingContext) {
@@ -247,6 +251,44 @@ public abstract class NamedObjectFactory {
         }
     }
 
+    static class EmbeddableFactory extends NamedObjectFactory {
+        @Override
+        protected String nameBase() {
+            return "Package.UntitledObjEntity";
+        }
+
+        @Override
+        protected Object create(String name, Object namingContext) {
+            return new Embeddable(name);
+        }
+
+        @Override
+        protected boolean isNameInUse(String name, Object namingContext) {
+            DataMap map = (DataMap) namingContext;
+            return map.getEmbeddable(name) != null;
+        }
+    }
+    
+    static class EmbeddableAttributeFactory extends NamedObjectFactory {
+        @Override
+        protected String nameBase() {
+            return "untitledAttr";
+        }
+
+        @Override
+        protected Object create(String name, Object namingContext) {
+            return new EmbeddableAttribute(name);
+        }
+
+        @Override
+        protected boolean isNameInUse(String name, Object namingContext) {
+            Embeddable emb = (Embeddable) namingContext;
+            return emb.getAttribute(name) != null;
+        }
+    }
+
+    
+    
     static class DbEntityFactory extends NamedObjectFactory {
         @Override
         protected String nameBase() {

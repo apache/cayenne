@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
@@ -25,9 +24,12 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
+import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -42,7 +44,7 @@ import org.apache.cayenne.project.ProjectPath;
 public class RemoveAttributeAction extends RemoveAction implements MultipleObjectsAction {
 
     private final static String ACTION_NAME = "Remove Attribute";
-    
+
     /**
      * Name of action if multiple rels are selected
      */
@@ -51,7 +53,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
     public static String getActionName() {
         return ACTION_NAME;
     }
-    
+
     public String getActionName(boolean multiple) {
         return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
@@ -77,21 +79,35 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
     public void performAction(ActionEvent e, boolean allowAsking) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
+        EmbeddableAttribute[] embAttrs = getProjectController().getCurrentEmbAttrs();
         ObjAttribute[] attrs = getProjectController().getCurrentObjAttributes();
-        if (attrs != null && attrs.length > 0) {
-            if ((attrs.length == 1 && dialog.shouldDelete("ObjAttribute", attrs[0].getName()))
-                || (attrs.length > 1 && dialog.shouldDelete("selected ObjAttributes"))) {
+
+        if (embAttrs != null && embAttrs.length > 0) {
+            if ((embAttrs.length == 1 && dialog.shouldDelete(
+                    "Embeddable Attribute",
+                    embAttrs[0].getName()))
+                    || (embAttrs.length > 1 && dialog
+                            .shouldDelete("selected EmbAttributes"))) {
+                removeEmbeddableAttributes();
+            }
+        }
+        else if (attrs != null && attrs.length > 0) {
+            if ((attrs.length == 1 && dialog.shouldDelete("ObjAttribute", attrs[0]
+                    .getName()))
+                    || (attrs.length > 1 && dialog.shouldDelete("selected ObjAttributes"))) {
                 removeObjAttributes();
             }
         }
         else {
             DbAttribute[] dbAttrs = getProjectController().getCurrentDbAttributes();
             if (dbAttrs != null && dbAttrs.length > 0) {
-                if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0].getName()))
-                    || (dbAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
+                if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0]
+                        .getName()))
+                        || (dbAttrs.length > 1 && dialog
+                                .shouldDelete("selected DbAttributes"))) {
                     removeDbAttributes();
                 }
-            }            
+            }
         }
     }
 
@@ -117,7 +133,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
     protected void removeObjAttributes() {
         ProjectController mediator = getProjectController();
         ObjEntity entity = mediator.getCurrentObjEntity();
-        
+
         ObjAttribute[] attribs = mediator.getCurrentObjAttributes();
 
         for (ObjAttribute attrib : attribs) {
@@ -128,6 +144,20 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                     entity,
                     MapEvent.REMOVE);
             mediator.fireObjAttributeEvent(e);
+        }
+    }
+
+    protected void removeEmbeddableAttributes() {
+        ProjectController mediator = getProjectController();
+        Embeddable embeddable = mediator.getCurrentEmbeddable();
+
+        EmbeddableAttribute[] attrs = getProjectController().getCurrentEmbAttrs();
+
+        for (EmbeddableAttribute attrib : attrs) {
+            embeddable.removeAttribute(attrib.getName());
+            EmbeddableAttributeEvent e = new EmbeddableAttributeEvent(Application
+                    .getFrame(), attrib, embeddable, MapEvent.REMOVE);
+            mediator.fireEmbeddableAttributeEvent(e);
         }
     }
 }

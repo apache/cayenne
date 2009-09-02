@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,42 +16,42 @@ package org.apache.cayenne.modeler.event;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.map.event;
+
+import org.apache.cayenne.map.Embeddable;
 
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
+public class EmbeddableEvent extends MapEvent {
 
-/** 
-  */
-public class AttributeDisplayEvent extends EntityDisplayEvent {
-   
-    protected Attribute[] attributes;
+    protected Embeddable embeddable;
     
-    public AttributeDisplayEvent(
-            Object src,
-            Attribute attribute,
-            Entity entity,
-            DataMap dataMap,
-            DataDomain domain) {
-        
-            super(src, entity, dataMap, domain);
-            attributes = new Attribute[] { attribute };
+    public EmbeddableEvent(Object source, Embeddable embeddable) {
+        super(source);
+        setEmbeddable(embeddable);
     }
 
-    public AttributeDisplayEvent(
-        Object src,
-        Attribute[] attributes,
-        Entity entity,
-        DataMap dataMap,
-        DataDomain domain) {
-
-        super(src, entity, dataMap, domain);
-        this.attributes = attributes;
+     public EmbeddableEvent(Object src, Embeddable embeddable2, int id) {
+         this(src, embeddable2);
+         setId(id);
     }
+
+     public EmbeddableEvent(Object src, Embeddable embeddable2, String oldClassName) {
+         this(src, embeddable2);
+         setOldName(oldClassName);
+    }
+
+     
+    public void setEmbeddable(Embeddable embeddable) {
+        this.embeddable = embeddable;
+    }
+
     
-    public Attribute[] getAttributes() {
-        return attributes;
+    public Embeddable getEmbeddable() {
+        return embeddable;
+    }
+
+    @Override
+    public String getNewName() {
+        return (embeddable != null) ? embeddable.getClassName() : null;
     }
 }

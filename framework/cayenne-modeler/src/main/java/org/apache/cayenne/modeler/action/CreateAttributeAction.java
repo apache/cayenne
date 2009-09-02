@@ -23,14 +23,18 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
+import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
@@ -40,7 +44,7 @@ import org.apache.cayenne.project.ProjectPath;
 public class CreateAttributeAction extends CayenneAction {
 
     public static String getActionName() {
-    	return "Create Attribute";
+        return "Create Attribute";
     }
 
     /**
@@ -60,12 +64,48 @@ public class CreateAttributeAction extends CayenneAction {
      */
     @Override
     public void performAction(ActionEvent e) {
+        if (getProjectController().getCurrentEmbeddable() != null) {
+            createEmbAttribute();
+        }
         if (getProjectController().getCurrentObjEntity() != null) {
             createObjAttribute();
         }
         else if (getProjectController().getCurrentDbEntity() != null) {
             createDbAttribute();
         }
+    }
+
+    private void createEmbAttribute() {
+        ProjectController mediator = getProjectController();
+        Embeddable embeddable = mediator.getCurrentEmbeddable();
+
+        EmbeddableAttribute attr = (EmbeddableAttribute) NamedObjectFactory.createObject(
+                EmbeddableAttribute.class,
+                embeddable);
+        embeddable.addAttribute(attr);
+
+        fireEmbeddableAttributeEvent(this, mediator, embeddable, attr);
+    }
+
+    static void fireEmbeddableAttributeEvent(
+            Object src,
+            ProjectController mediator,
+            Embeddable embeddable,
+            EmbeddableAttribute attr) {
+        mediator.fireEmbeddableAttributeEvent(new EmbeddableAttributeEvent(
+                src,
+                attr,
+                embeddable,
+                MapEvent.ADD));
+
+        EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(
+                src,
+                embeddable,
+                attr,
+                mediator.getCurrentDataMap(),
+                mediator.getCurrentDataDomain());
+
+        mediator.fireEmbeddableAttributeDisplayEvent(e);
     }
 
     public void createObjAttribute() {
@@ -79,11 +119,14 @@ public class CreateAttributeAction extends CayenneAction {
 
         fireObjAttributeEvent(this, mediator, objEntity, attr);
     }
-    
+
     /**
      * Fires events when an obj attribute was added
      */
-    static void fireObjAttributeEvent(Object src, ProjectController mediator, ObjEntity objEntity, 
+    static void fireObjAttributeEvent(
+            Object src,
+            ProjectController mediator,
+            ObjEntity objEntity,
             ObjAttribute attr) {
         mediator.fireObjAttributeEvent(new AttributeEvent(
                 src,
@@ -111,11 +154,14 @@ public class CreateAttributeAction extends CayenneAction {
         ProjectController mediator = getProjectController();
         fireDbAttributeEvent(this, mediator, dbEntity, attr);
     }
-    
+
     /**
      * Fires events when a db attribute was added
      */
-    static void fireDbAttributeEvent(Object src, ProjectController mediator, DbEntity dbEntity, 
+    static void fireDbAttributeEvent(
+            Object src,
+            ProjectController mediator,
+            DbEntity dbEntity,
             DbAttribute attr) {
         mediator.fireDbAttributeEvent(new AttributeEvent(
                 src,

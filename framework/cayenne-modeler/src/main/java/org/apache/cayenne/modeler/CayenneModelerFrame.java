@@ -51,6 +51,7 @@ import org.apache.cayenne.modeler.action.CopyAction;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.action.CreateDomainAction;
+import org.apache.cayenne.modeler.action.CreateEmbeddableAction;
 import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
@@ -86,6 +87,8 @@ import org.apache.cayenne.modeler.event.DataMapDisplayListener;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
 import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
@@ -109,7 +112,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListener,
         DataMapDisplayListener, ObjEntityDisplayListener, DbEntityDisplayListener,
-        QueryDisplayListener, ProcedureDisplayListener, MultipleObjectsDisplayListener {
+        QueryDisplayListener, ProcedureDisplayListener, MultipleObjectsDisplayListener, 
+        EmbeddableDisplayListener{
 
     protected EditorView view;
     protected RecentFileMenu recentFileMenu;
@@ -215,8 +219,12 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         projectMenu.add(getAction(CreateObjEntityAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateDbEntityAction.getActionName()).buildMenu());
+
+        projectMenu.add(getAction(CreateEmbeddableAction.getActionName()).buildMenu());
+        
         projectMenu.add(getAction(CreateProcedureAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateQueryAction.getActionName()).buildMenu());
+        
         projectMenu.addSeparator();
         projectMenu.add(getAction(ObjEntitySyncAction.getActionName()).buildMenu());
         projectMenu.addSeparator();
@@ -371,9 +379,13 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         toolBar.addSeparator();
 
+        
         toolBar.add(getAction(CreateObjEntityAction.getActionName()).buildButton());
-        toolBar.add(getAction(CreateQueryAction.getActionName()).buildButton());
+      
+        toolBar.add(getAction(CreateEmbeddableAction.getActionName()).buildButton());
 
+        toolBar.add(getAction(CreateQueryAction.getActionName()).buildButton());
+ 
         toolBar.addSeparator();
 
         toolBar.add(getAction(NavigateBackwardAction.getActionName()).buildButton());
@@ -451,6 +463,10 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     
     public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
         actionManager.multipleObjectsSelected(e.getPaths());
+    }
+    
+    public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
+        actionManager.embeddableSelected();
     }
 
     /**

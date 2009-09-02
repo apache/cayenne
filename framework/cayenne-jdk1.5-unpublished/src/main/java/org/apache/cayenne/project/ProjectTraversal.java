@@ -27,6 +27,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.Relationship;
@@ -42,7 +43,6 @@ import org.apache.cayenne.util.Util;
  * <i>Current implementation is not very efficient and would actually first read the whole
  * tree, before returning the first element from the iterator.</i>
  * </p>
- * 
  */
 public class ProjectTraversal {
 
@@ -51,6 +51,7 @@ public class ProjectTraversal {
     protected static final Comparator dataDomainComparator = new DataDomainComparator();
     protected static final Comparator dataNodeComparator = new DataNodeComparator();
     protected static final Comparator queryComparator = new QueryComparator();
+    protected static final Comparator embaddableComparator = new EmbeddableComparator();
 
     protected ProjectTraversalHandler handler;
     protected boolean sort;
@@ -61,8 +62,8 @@ public class ProjectTraversal {
 
     /**
      * Creates ProjectTraversal instance with a given handler and sort policy. If
-     * <code>sort</code> is true, children of each node will be sorted using a
-     * predefined Comparator for a given type of child nodes.
+     * <code>sort</code> is true, children of each node will be sorted using a predefined
+     * Comparator for a given type of child nodes.
      */
     public ProjectTraversal(ProjectTraversalHandler handler, boolean sort) {
         this.handler = handler;
@@ -100,6 +101,9 @@ public class ProjectTraversal {
         }
         else if (rootNode instanceof DataNode) {
             this.traverseNodes(Collections.singletonList(rootNode).iterator(), path);
+        }
+        else if (rootNode instanceof Embeddable) {
+            this.traverseEmbeddable(Collections.singletonList(rootNode).iterator(), path);
         }
         else {
             String nodeClass = (rootNode != null)
@@ -174,8 +178,27 @@ public class ProjectTraversal {
             if (handler.shouldReadChildren(map, path)) {
                 this.traverseEntities(map.getObjEntities().iterator(), mapPath);
                 this.traverseEntities(map.getDbEntities().iterator(), mapPath);
+                this.traverseEmbeddable(map.getEmbeddables().iterator(), mapPath);
                 this.traverseProcedures(map.getProcedures().iterator(), mapPath);
                 this.traverseQueries(map.getQueries().iterator(), mapPath);
+            }
+        }
+    }
+
+    public void traverseEmbeddable(Iterator embeddadles, ProjectPath path) {
+        if (sort) {
+            embeddadles = Util.sortedIterator(
+                    embeddadles,
+                    ProjectTraversal.embaddableComparator);
+        }
+
+        while (embeddadles.hasNext()) {
+            Embeddable emd = (Embeddable) embeddadles.next();
+            ProjectPath entPath = path.appendToPath(emd);
+            handler.projectNode(entPath);
+
+            if (handler.shouldReadChildren(emd, path)) {
+                this.traverseAttributes(emd.getAttributes().iterator(), entPath);
             }
         }
     }
@@ -260,7 +283,9 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseProcedureParameters(Iterator<? extends ProcedureParameter> parameters, ProjectPath path) {
+    public void traverseProcedureParameters(
+            Iterator<? extends ProcedureParameter> parameters,
+            ProjectPath path) {
         // Note: !! do not try to sort parameters - they are positional by definition
 
         while (parameters.hasNext()) {
@@ -291,6 +316,24 @@ public class ProjectTraversal {
         public int compare(Object o1, Object o2) {
             String name1 = ((CayenneMapEntry) o1).getName();
             String name2 = ((CayenneMapEntry) o2).getName();
+
+            if (name1 == null) {
+                return (name2 != null) ? -1 : 0;
+            }
+            else if (name2 == null) {
+                return 1;
+            }
+            else {
+                return name1.compareTo(name2);
+            }
+        }
+    }
+
+    static class EmbeddableComparator implements Comparator {
+
+        public int compare(Object o1, Object o2) {
+            String name1 = ((Embeddable) o1).getClassName();
+            String name2 = ((Embeddable) o2).getClassName();
 
             if (name1 == null) {
                 return (name2 != null) ? -1 : 0;

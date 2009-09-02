@@ -31,6 +31,8 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
@@ -39,6 +41,7 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.DataMapEvent;
 import org.apache.cayenne.map.event.DataNodeEvent;
 import org.apache.cayenne.map.event.DomainEvent;
+import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.ProcedureEvent;
@@ -131,6 +134,12 @@ public class RemoveAction extends CayenneAction {
                 removeProcedure(mediator.getCurrentDataMap(), mediator
                         .getCurrentProcedure());
             }
+        } 
+        else if (mediator.getCurrentEmbeddable() != null) {
+            if (dialog.shouldDelete("embeddable", mediator.getCurrentEmbeddable().getClassName())) {
+                removeEmbeddable(mediator.getCurrentDataMap(), mediator
+                        .getCurrentEmbeddable());
+            }
         }
         else if (mediator.getCurrentDataMap() != null) {
             if (dialog.shouldDelete("data map", mediator.getCurrentDataMap().getName())) {
@@ -168,6 +177,7 @@ public class RemoveAction extends CayenneAction {
                 }
             }
         }
+        
     }
 
     private void removeDomain(DataDomain domain) {
@@ -272,6 +282,16 @@ public class RemoveAction extends CayenneAction {
         }
     }
 
+    private void removeEmbeddable(DataMap map, Embeddable embeddable) {
+        ProjectController mediator = getProjectController();
+
+        EmbeddableEvent e = new EmbeddableEvent(Application.getFrame(), embeddable, MapEvent.REMOVE);
+        e.setDomain(mediator.findDomain(map));
+        
+        map.removeEmbeddable(embeddable.getClassName());
+        mediator.fireEmbeddableEvent(e, map);
+    }
+    
     private void removeDataMapFromDataNode(DataNode node, DataMap map) {
         ProjectController mediator = getProjectController();
 
@@ -319,6 +339,12 @@ public class RemoveAction extends CayenneAction {
         else if (lastObject instanceof ProcedureParameter) {
             return true;
         }
+        else if (lastObject instanceof Embeddable) {
+            return true;
+        }
+        else if (lastObject instanceof EmbeddableAttribute) {
+            return true;
+        }
         else {
             return false;
         }
@@ -328,6 +354,7 @@ public class RemoveAction extends CayenneAction {
      * Removes an object, depending on its type
      */
     private void removeLastPathComponent(ProjectPath path) {
+        
         Object lastObject = path.getObject();
 
         if (lastObject instanceof DataDomain) {
@@ -356,6 +383,9 @@ public class RemoveAction extends CayenneAction {
         }
         else if (lastObject instanceof Procedure) {
             removeProcedure((DataMap) path.getObjectParent(), (Procedure) lastObject);
+        }
+        else if (lastObject instanceof Embeddable) {
+            removeEmbeddable((DataMap) path.getObjectParent(), (Embeddable) lastObject);
         }
     }
 }

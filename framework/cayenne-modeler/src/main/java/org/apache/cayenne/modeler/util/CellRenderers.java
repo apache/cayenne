@@ -38,6 +38,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
@@ -65,6 +66,7 @@ public final class CellRenderers {
     protected static ImageIcon attributeIcon;
     protected static ImageIcon procedureIcon;
     protected static ImageIcon queryIcon;
+    protected static ImageIcon embeddableIcon;
 
     static {
         domainIcon = ModelerUtil.buildIcon("icon-dom.gif");
@@ -76,6 +78,7 @@ public final class CellRenderers {
         queryIcon = ModelerUtil.buildIcon("icon-query.gif");
         relationshipIcon = ModelerUtil.buildIcon("icon-relationship.gif");
         attributeIcon = ModelerUtil.buildIcon("icon-attribute.gif");
+        embeddableIcon = ModelerUtil.buildIcon("icon-embeddable.gif");
     }
 
     public static ImageIcon iconForObject(Object object) {
@@ -112,6 +115,9 @@ public final class CellRenderers {
         }
         else if (object instanceof Attribute) {
             return attributeIcon;
+        }
+        else if (object instanceof Embeddable) {
+            return embeddableIcon;
         }
 
         return null;

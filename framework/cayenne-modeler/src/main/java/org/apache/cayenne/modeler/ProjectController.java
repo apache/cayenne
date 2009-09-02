@@ -39,6 +39,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -54,6 +56,10 @@ import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.DbRelationshipListener;
 import org.apache.cayenne.map.event.DomainEvent;
 import org.apache.cayenne.map.event.DomainListener;
+import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
+import org.apache.cayenne.map.event.EmbeddableAttributeListener;
+import org.apache.cayenne.map.event.EmbeddableEvent;
+import org.apache.cayenne.map.event.EmbeddableListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.ObjAttributeListener;
@@ -84,6 +90,10 @@ import org.apache.cayenne.modeler.event.DbRelationshipDisplayListener;
 import org.apache.cayenne.modeler.event.DisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
+import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayListener;
+import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityListenerEvent;
 import org.apache.cayenne.modeler.event.EntityListenerListener;
@@ -135,6 +145,9 @@ public class ProjectController extends CayenneController {
         private DataMap map;
         private ObjEntity objEntity;
         private DbEntity dbEntity;
+        private Embeddable embeddable;
+
+        private EmbeddableAttribute[] embAttrs;
 
         private ObjAttribute[] objAttrs;
         private DbAttribute[] dbAttrs;
@@ -171,9 +184,12 @@ public class ProjectController extends CayenneController {
             objEntity = null;
             dbEntity = null;
 
+            embeddable = null;
+
             procedure = null;
 
             // life is much easier if these guys are never null
+            embAttrs = new EmbeddableAttribute[0];
             dbAttrs = new DbAttribute[0];
             dbRels = new DbRelationship[0];
             procedureParameters = new ProcedureParameter[0];
@@ -196,6 +212,7 @@ public class ProjectController extends CayenneController {
          * get's a bit messy at the end, because of inheritance heirarchy issues.
          */
         public boolean isEquivalent(ControllerState val) {
+
             if (val == null)
                 return false;
 
@@ -216,6 +233,10 @@ public class ProjectController extends CayenneController {
                     && val.event instanceof QueryDisplayEvent) {
                 return query == val.query;
             }
+            else if (event instanceof EmbeddableDisplayEvent
+                    && val.event instanceof EmbeddableDisplayEvent) {
+                return embeddable == val.embeddable;
+            }
             else if (event.getClass() == DataMapDisplayEvent.class
                     && event.getClass() == val.event.getClass()) {
                 return map == val.map;
@@ -228,6 +249,7 @@ public class ProjectController extends CayenneController {
                     && event.getClass() == val.event.getClass()) {
                 return domain == val.domain;
             }
+
             return false;
         }
     }
@@ -381,6 +403,7 @@ public class ProjectController extends CayenneController {
         addQueryDisplayListener(frame);
         addProcedureDisplayListener(frame);
         addMultipleObjectsDisplayListener(frame);
+        addEmbeddableDisplayListener(frame);
     }
 
     public void reset() {
@@ -488,6 +511,13 @@ public class ProjectController extends CayenneController {
                         removeList.add(cs);
                     }
                 }
+                else if (e instanceof EmbeddableEvent
+                        && csEvent instanceof EmbeddableDisplayEvent) {
+                    if (((EmbeddableEvent) e).getEmbeddable() == ((EmbeddableDisplayEvent) csEvent)
+                            .getEmbeddable()) {
+                        removeList.add(cs);
+                    }
+                }
                 else if (e instanceof ProcedureEvent
                         && csEvent instanceof ProcedureDisplayEvent) {
                     if (((ProcedureEvent) e).getProcedure() == ((ProcedureDisplayEvent) csEvent)
@@ -547,6 +577,10 @@ public class ProjectController extends CayenneController {
         return currentState.objEntity;
     }
 
+    public Embeddable getCurrentEmbeddable() {
+        return currentState.embeddable;
+    }
+
     public DbEntity getCurrentDbEntity() {
         return currentState.dbEntity;
     }
@@ -563,6 +597,13 @@ public class ProjectController extends CayenneController {
      */
     public DbAttribute[] getCurrentDbAttributes() {
         return currentState.dbAttrs;
+    }
+
+    /**
+     * @return Array of selected EmbeddableAttribute
+     */
+    public EmbeddableAttribute[] getCurrentEmbAttrs() {
+        return currentState.embAttrs;
     }
 
     /**
@@ -635,6 +676,15 @@ public class ProjectController extends CayenneController {
         listenerList.add(ObjEntityDisplayListener.class, listener);
     }
 
+    public void addEmbeddableDisplayListener(EmbeddableDisplayListener listener) {
+        listenerList.add(EmbeddableDisplayListener.class, listener);
+    }
+
+    public void addEmbeddableAttributeDisplayListener(
+            EmbeddableAttributeDisplayListener listener) {
+        listenerList.add(EmbeddableAttributeDisplayListener.class, listener);
+    }
+
     public void addDbAttributeListener(DbAttributeListener listener) {
         listenerList.add(DbAttributeListener.class, listener);
     }
@@ -704,7 +754,8 @@ public class ProjectController extends CayenneController {
                     || currentState.dbEntity != null
                     || currentState.objEntity != null
                     || currentState.procedure != null
-                    || currentState.query != null;
+                    || currentState.query != null
+                    || currentState.embeddable != null;
         }
 
         if (!e.isRefired()) {
@@ -773,7 +824,8 @@ public class ProjectController extends CayenneController {
                     || currentState.dbEntity != null
                     || currentState.objEntity != null
                     || currentState.procedure != null
-                    || currentState.query != null;
+                    || currentState.query != null
+                    || currentState.embeddable != null;
         }
 
         if (!e.isRefired()) {
@@ -833,7 +885,8 @@ public class ProjectController extends CayenneController {
             changed = currentState.dbEntity != null
                     || currentState.objEntity != null
                     || currentState.procedure != null
-                    || currentState.query != null;
+                    || currentState.query != null
+                    || currentState.embeddable != null;
         }
 
         if (!e.isRefired()) {
@@ -1147,6 +1200,11 @@ public class ProjectController extends CayenneController {
                 fireDbEntityDisplayEvent(ede);
             }
         }
+        else if (de instanceof EmbeddableDisplayEvent) {
+            EmbeddableDisplayEvent ede = (EmbeddableDisplayEvent) de;
+            ede.setEmbeddableChanged(true);
+            fireEmbeddableDisplayEvent(ede);
+        }
         else if (de instanceof ProcedureDisplayEvent) {
             ProcedureDisplayEvent pde = (ProcedureDisplayEvent) de;
             pde.setProcedureChanged(true);
@@ -1203,6 +1261,33 @@ public class ProjectController extends CayenneController {
         }
     }
 
+    
+    public void fireEmbeddableDisplayEvent(EmbeddableDisplayEvent e) {
+        boolean changed = e.getEmbeddable() != currentState.embeddable;
+
+        if (!e.isRefired()) {
+            e.setEmbeddableChanged(changed);
+
+            if (changed) {
+                clearState();
+                currentState.domain = e.getDomain();
+                currentState.node = e.getDataNode();
+                currentState.map = e.getDataMap();
+                currentState.embeddable = (Embeddable) e.getEmbeddable();
+            }
+        }
+
+        if (changed) {
+            saveState(e);
+        }
+
+        for (EventListener listener : listenerList
+                .getListeners(EmbeddableDisplayListener.class)) {
+            EmbeddableDisplayListener temp = (EmbeddableDisplayListener) listener;
+            temp.currentEmbeddableChanged(e);
+        }
+    }
+    
     public void fireQueryDisplayEvent(QueryDisplayEvent e) {
         boolean changed = e.getQuery() != currentState.query;
 
@@ -1377,7 +1462,7 @@ public class ProjectController extends CayenneController {
 
     public void fireObjAttributeDisplayEvent(AttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), currentState.objAttrs);
-
+        
         if (changed) {
             if (e.getEntity() != currentState.objEntity) {
                 clearState();
@@ -1399,6 +1484,35 @@ public class ProjectController extends CayenneController {
         for (EventListener listener : list) {
             ObjAttributeDisplayListener temp = (ObjAttributeDisplayListener) listener;
             temp.currentObjAttributeChanged(e);
+        }
+    }
+
+    public void fireEmbeddableAttributeDisplayEvent(EmbeddableAttributeDisplayEvent ev) {
+        boolean changed = !Arrays.equals(
+                ev.getEmbeddableAttributes(),
+                currentState.embAttrs);
+
+        if (changed) {
+            if (ev.getEmbeddable() != currentState.embeddable) {
+                clearState();
+                currentState.domain = ev.getDomain();
+                currentState.map = ev.getDataMap();
+                currentState.embeddable = (Embeddable) ev.getEmbeddable();
+            }
+            currentState.embAttrs = new EmbeddableAttribute[ev.getEmbeddableAttributes().length];
+            System.arraycopy(
+                    ev.getEmbeddableAttributes(),
+                    0,
+                    currentState.embAttrs,
+                    0,
+                    currentState.embAttrs.length);
+        }
+
+        EventListener[] list = listenerList
+                .getListeners(EmbeddableAttributeDisplayListener.class);
+        for (EventListener listener : list) {
+            EmbeddableAttributeDisplayListener temp = (EmbeddableAttributeDisplayListener) listener;
+            temp.currentEmbeddableAttributeChanged(ev);
         }
     }
 
@@ -1693,6 +1807,9 @@ public class ProjectController extends CayenneController {
         else if (getCurrentDbEntity() != null) {
             return getCurrentDbEntity();
         }
+        else if (getCurrentEmbeddable() != null) {
+            return getCurrentEmbeddable();
+        }
         else if (getCurrentQuery() != null) {
             return getCurrentQuery();
         }
@@ -1734,4 +1851,58 @@ public class ProjectController extends CayenneController {
         return null;
     }
 
+    
+
+    public void addEmbeddableAttributeListener(EmbeddableAttributeListener listener) {
+        listenerList.add(EmbeddableAttributeListener.class, listener);
+    }
+
+    public void addEmbeddableListener(EmbeddableListener listener) {
+        listenerList.add(EmbeddableListener.class, listener);
+    }
+
+    public void fireEmbeddableEvent(EmbeddableEvent e, DataMap map) {
+        setDirty(true);
+        for (EventListener listener : listenerList.getListeners(EmbeddableListener.class)) {
+            EmbeddableListener temp = (EmbeddableListener) listener;
+
+            switch (e.getId()) {
+                case MapEvent.ADD:
+                    temp.embeddableAdded(e, map);
+                    break;
+                case MapEvent.CHANGE:
+                    temp.embeddableChanged(e, map);
+                    break;
+                case MapEvent.REMOVE:
+                    temp.embeddableRemoved(e, map);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: "
+                            + e.getId());
+            }
+        }
+    }
+
+    public void fireEmbeddableAttributeEvent(EmbeddableAttributeEvent e) {
+        setDirty(true);
+        for (EventListener listener : listenerList
+                .getListeners(EmbeddableAttributeListener.class)) {
+            EmbeddableAttributeListener temp = (EmbeddableAttributeListener) listener;
+
+            switch (e.getId()) {
+                case MapEvent.ADD:
+                    temp.embeddableAttributeAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    temp.embeddableAttributeChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    temp.embeddableAttributeRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: "
+                            + e.getId());
+            }
+        }
+    }
 }
