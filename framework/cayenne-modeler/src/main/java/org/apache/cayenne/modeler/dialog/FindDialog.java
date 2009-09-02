@@ -106,7 +106,18 @@ public class FindDialog extends CayenneController {
 
             if (path[path.length - 1] instanceof Relationship) {
                 Object parentObject = ((Relationship) path[path.length - 1]).getParent();
-                relatNames.put(new Integer(index++), getParentName(path, parentObject)
+
+                /*
+                 * relationships are different from attributes in that they do not
+                 * correctly return the owning entity when inheritance is involved.
+                 * Hopefully this will be reconciled in the future relases
+                 */
+                String parentName = getParentName(path, parentObject);
+                if (!parentObject.equals(path[path.length - 2])) {
+                    parentName = ((ObjEntity) path[path.length - 2]).getName();
+                }
+
+                relatNames.put(new Integer(index++), parentName
                         + "."
                         + ((Relationship) path[path.length - 1]).getName());
             }

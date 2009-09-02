@@ -37,6 +37,7 @@ CAY-1240 Schema generation dialog has "uncheck all tables" checkbox incorrectly 
 CAY-1246 Naming strategy getting stuck in (incorrect) preferences location
 CAY-1248 ClassCastException with OracleLOBBatchAction
 CAY-1252 Bad XML generated when saving DBEntity qualifiers
+CAY-1265 error while search inheritance relationship
 
 ----------------------------------
 Release: 3.0M6
