@@ -89,9 +89,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
     public EntityResolver() {
         init();
     }
-    
+
     /**
-     * Initialization of EntityResolver. Used in constructor and in Java deserialization process
+     * Initialization of EntityResolver. Used in constructor and in Java deserialization
+     * process
      */
     private void init() {
         this.indexedByClass = true;
@@ -394,7 +395,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         return c;
     }
-    
+
     /**
      * @since 3.0
      */
@@ -403,7 +404,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         for (DataMap map : getDataMaps()) {
             c.addComposited(map.getResults());
         }
-        
+
         return c;
     }
 
@@ -456,7 +457,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         return result;
     }
-    
+
     /**
      * @since 3.0
      */
@@ -680,8 +681,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * known subentities, null is returned.
      */
     public EntityInheritanceTree lookupInheritanceTree(ObjEntity entity) {
+        return lookupInheritanceTree(entity.getName());
+    }
 
-        EntityInheritanceTree tree = entityInheritanceCache.get(entity.getName());
+    /**
+     * Returns EntityInheritanceTree representing inheritance hierarchy that starts with a
+     * given ObjEntity as root, and includes all its subentities. If ObjEntity has no
+     * known subentities, null is returned.
+     * 
+     * @since 3.0
+     */
+    public EntityInheritanceTree lookupInheritanceTree(String entityName) {
+
+        EntityInheritanceTree tree = entityInheritanceCache.get(entityName);
 
         if (tree == null) {
             // since we keep inheritance trees for all entities, null means
@@ -690,7 +702,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             // rebuild cache just in case some of the datamaps
             // have changed and now contain the required information
             constructCache();
-            tree = entityInheritanceCache.get(entity.getName());
+            tree = entityInheritanceCache.get(entityName);
         }
 
         // don't return "trivial" trees
@@ -911,10 +923,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Java default deserialization seems not to invoke constructor by default - 
-     * invoking it manually
+     * Java default deserialization seems not to invoke constructor by default - invoking
+     * it manually
      */
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException,
+            ClassNotFoundException {
         init();
         in.defaultReadObject();
     }

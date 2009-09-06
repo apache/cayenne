@@ -37,7 +37,6 @@ import org.apache.cayenne.util.XMLEncoder;
 /**
  * Describes an association between two Java classes mapped as source and target
  * ObjEntity. Maps to a path of DbRelationships.
- * 
  */
 public class ObjRelationship extends Relationship {
 
@@ -277,7 +276,7 @@ public class ObjRelationship extends Relationship {
         this.readOnly = false;
         this.toMany = false;
     }
-    
+
     /**
      * Returns a boolean indicating whether the presence of a non-null source key(s) will
      * not guarantee a presence of a target record. PK..FK relationships are all optional,
@@ -312,7 +311,17 @@ public class ObjRelationship extends Relationship {
 
         return true;
     }
-    
+
+    /**
+     * Returns true if the relationship is non-optional and target has no subclasses.
+     * 
+     * @since 3.0
+     */
+    public boolean isSourceDefiningTargetPrecenseAndType(EntityResolver entityResolver) {
+        return !isOptional()
+                && entityResolver.lookupInheritanceTree(getTargetEntityName()) == null;
+    }
+
     /**
      * Returns true if the entity or its super entities have a limiting qualifier.
      */
@@ -329,7 +338,6 @@ public class ObjRelationship extends Relationship {
 
         return isQualifiedEntity(entity);
     }
-
 
     /**
      * Returns a boolean indicating whether modifying a target of such relationship in any
@@ -725,8 +733,8 @@ public class ObjRelationship extends Relationship {
      * Returns a property name of a target entity used to create a relationship map. Only
      * has effect if collectionType property is set to "java.util.Map".
      * 
-     * @return The attribute name used for the map key or <code>null</code> if the
-     *         default (PK) is used as the map key.
+     * @return The attribute name used for the map key or <code>null</code> if the default
+     *         (PK) is used as the map key.
      * @since 3.0
      */
     public String getMapKey() {
