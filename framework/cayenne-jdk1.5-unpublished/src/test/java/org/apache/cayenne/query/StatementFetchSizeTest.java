@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -43,5 +44,12 @@ public class StatementFetchSizeTest extends CayenneCase {
         
         assertEquals(10, ejbql.getMetaData(dataContext.getEntityResolver()).getStatementFetchSize());
         dataContext.performQuery(ejbql);
+        
+        ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
+        RelationshipQuery relationshipQuery = new RelationshipQuery(id, Artist.PAINTING_ARRAY_PROPERTY, true);
+        relationshipQuery.setStatementFetchSize(10);
+        
+        assertEquals(10, relationshipQuery.getMetaData(dataContext.getEntityResolver()).getStatementFetchSize());
+        dataContext.performQuery(relationshipQuery);
     }
 }

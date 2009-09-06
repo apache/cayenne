@@ -42,6 +42,7 @@ public class RelationshipQuery extends IndirectQuery {
     protected ObjectId objectId;
     protected String relationshipName;
     protected boolean refreshing;
+    protected int statementFetchSize;
 
     protected transient EntityResolver metadataResolver;
     protected transient QueryMetadata metadata;
@@ -121,7 +122,11 @@ public class RelationshipQuery extends IndirectQuery {
         Expression qualifier = ExpressionFactory.matchDbExp(relationship
                 .getReverseDbRelationshipPath(), objectId);
 
-        return new SelectQuery((ObjEntity) relationship.getTargetEntity(), qualifier);
+        SelectQuery query = new SelectQuery(
+                (ObjEntity) relationship.getTargetEntity(),
+                qualifier);
+        query.setStatementFetchSize(statementFetchSize);
+        return query;
     }
 
     /**
@@ -170,10 +175,32 @@ public class RelationshipQuery extends IndirectQuery {
                 public ClassDescriptor getClassDescriptor() {
                     return arc.getTargetDescriptor();
                 }
+
+                @Override
+                public int getStatementFetchSize() {
+                    return statementFetchSize;
+                }
             };
 
             this.metadataResolver = resolver;
         }
+    }
+
+    /**
+     * Sets statement's fetch size (0 for no default size)
+     * 
+     * @since 3.0
+     */
+    public void setStatementFetchSize(int size) {
+        this.statementFetchSize = size;
+    }
+
+    /**
+     * @return statement's fetch size
+     * @since 3.0
+     */
+    public int getStatementFetchSize() {
+        return statementFetchSize;
     }
 
     /**
