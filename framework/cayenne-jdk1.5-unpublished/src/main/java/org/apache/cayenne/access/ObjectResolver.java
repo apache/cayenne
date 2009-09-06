@@ -112,6 +112,7 @@ class ObjectResolver {
         List<Persistent> results = new ArrayList<Persistent>(rows.size());
 
         for (DataRow row : rows) {
+
             Persistent object = objectFromDataRow(row);
 
             if (object == null) {
@@ -153,15 +154,40 @@ class ObjectResolver {
                 + ".";
 
         List<Persistent> results = new ArrayList<Persistent>(rows.size());
+
+        // here we can get the same object repeated multiple times in case of
+        // many-to-many between prefetched and main entity... this is needed to
+        // connect prefetched objects to the main objects. To avoid needlessly refreshing
+        // the same object multiple times, track which objectids area alrady loaded in
+        // this pass
+        Map<ObjectId, Persistent> seen = new HashMap<ObjectId, Persistent>();
+
         Iterator it = rows.iterator();
 
         while (it.hasNext()) {
 
             DataRow row = (DataRow) it.next();
-            Persistent object = objectFromDataRow(row);
+
+            // determine entity to use
+            ClassDescriptor classDescriptor = descriptorResolutionStrategy
+                    .descriptorForRow(row);
+
+            // not using DataRow.createObjectId for performance reasons - ObjectResolver
+            // has all needed metadata already cached.
+            ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
+
+            Persistent object = seen.get(anId);
+
             if (object == null) {
-                throw new CayenneRuntimeException("Can't build Object from row: " + row);
+                object = objectFromDataRow(row, anId, classDescriptor);
+
+                if (object == null) {
+                    throw new CayenneRuntimeException("Can't build Object from row: "
+                            + row);
+                }
+                seen.put(anId, object);
             }
+
             results.add(object);
 
             // link with parent
@@ -192,19 +218,21 @@ class ObjectResolver {
         return results;
     }
 
-    /**
-     * Processes a single row. This method does not synchronize on ObjectStore and doesn't
-     * send snapshot updates. These are responsibilities of the caller.
-     */
     Persistent objectFromDataRow(DataRow row) {
-
         // determine entity to use
         ClassDescriptor classDescriptor = descriptorResolutionStrategy
                 .descriptorForRow(row);
 
-        // not using DataRow.createObjectId for performance reasons - ObjectResolver has
-        // all needed metadata already cached.
+        // not using DataRow.createObjectId for performance reasons - ObjectResolver
+        // has all needed metadata already cached.
         ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
+        return objectFromDataRow(row, anId, classDescriptor);
+    }
+
+    Persistent objectFromDataRow(
+            DataRow row,
+            ObjectId anId,
+            ClassDescriptor classDescriptor) {
 
         // this condition is valid - see comments on 'createObjectId' for details
         if (anId == null) {

@@ -28,7 +28,6 @@ import org.apache.art.Artist;
 import org.apache.art.Gallery;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.ObjectTreeResolver.TreeBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -38,7 +37,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.unit.CayenneCase;
 
-public class ObjectTreeResolver_TreeBuilderTest extends CayenneCase {
+public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
 
     public void testBuildTreeNoPrefetches() {
 
@@ -86,7 +85,10 @@ public class ObjectTreeResolver_TreeBuilderTest extends CayenneCase {
         ObjectTreeResolver resolver = new ObjectTreeResolver(
                 createDataContext(),
                 metadata);
-        TreeBuilder builder = resolver.new TreeBuilder(dataRows, new HashMap());
+        PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
+                resolver,
+                dataRows,
+                new HashMap());
 
         PrefetchProcessorNode processingTree = builder.buildTree(tree);
 
@@ -158,7 +160,10 @@ public class ObjectTreeResolver_TreeBuilderTest extends CayenneCase {
         ObjectTreeResolver resolver = new ObjectTreeResolver(
                 createDataContext(),
                 metadata);
-        TreeBuilder builder = resolver.new TreeBuilder(mainRows, extraRows);
+        PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
+                resolver,
+                mainRows,
+                extraRows);
 
         PrefetchProcessorNode n1 = builder.buildTree(tree);
 
