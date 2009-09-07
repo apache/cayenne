@@ -40,9 +40,15 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
         if (node.getParent() == null || node.getParent().isPhantom()) {
             this.parentAttachmentStrategy = new NoopParentAttachmentStrategy();
         }
-        else {
+        else if (node
+                .getIncoming()
+                .getRelationship()
+                .isSourceIndependentFromTargetChange()) {
             this.parentAttachmentStrategy = new JoinedIdParentAttachementStrategy(context
                     .getGraphManager(), node);
+        }
+        else {
+            this.parentAttachmentStrategy = new ResultScanParentAttachmentStrategy(node);
         }
     }
 
@@ -58,7 +64,7 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
         // here we can get the same object repeated multiple times in case of
         // many-to-many between prefetched and main entity... this is needed to
         // connect prefetched objects to the main objects. To avoid needlessly refreshing
-        // the same object multiple times, track which objectids area alrady loaded in
+        // the same object multiple times, track which objectids area already loaded in
         // this pass
         Map<ObjectId, Persistent> seen = new HashMap<ObjectId, Persistent>();
 
