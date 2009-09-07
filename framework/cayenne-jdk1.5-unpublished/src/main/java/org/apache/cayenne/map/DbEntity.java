@@ -47,7 +47,6 @@ import org.apache.commons.collections.Transformer;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database table.
- * 
  */
 public class DbEntity extends Entity implements DbEntityListener, DbAttributeListener,
         DbRelationshipListener {
@@ -61,7 +60,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      */
     protected Collection<DbAttribute> generatedAttributes;
     protected DbKeyGenerator primaryKeyGenerator;
-    
+
     /**
      * Qualifier, that will be applied to all select queries and joins with this DbEntity
      */
@@ -115,7 +114,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         if (getPrimaryKeyGenerator() != null) {
             getPrimaryKeyGenerator().encodeAsXML(encoder);
         }
-        
+
         if (getQualifier() != null) {
             encoder.print("<qualifier>");
             getQualifier().encodeAsXML(encoder);
@@ -278,7 +277,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     public SortedMap<String, DbRelationship> getRelationshipMap() {
         return (SortedMap<String, DbRelationship>) super.getRelationshipMap();
     }
-    
+
     /**
      * @since 3.0
      */
@@ -555,14 +554,14 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     public void dbRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }
-    
+
     /**
      * @return qualifier that will be ANDed to all select queries with this entity
      */
     public Expression getQualifier() {
         return qualifier;
     }
-    
+
     /**
      * Sets qualifier for this entity
      */
@@ -621,9 +620,21 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     final class RelationshipPathConverter implements Transformer {
 
         String relationshipPath;
+        boolean toMany;
 
         RelationshipPathConverter(String relationshipPath) {
             this.relationshipPath = relationshipPath;
+
+            Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
+            while (relationshipIt.hasNext()) {
+                // relationship path components must be DbRelationships
+                DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
+
+                if (nextDBR.isToMany()) {
+                    toMany = true;
+                    break;
+                }
+            }
         }
 
         public Object transform(Object input) {
@@ -648,6 +659,8 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         String translatePath(String path) {
 
             // algorithm to determine the translated path:
+            // 0. If relationship has at least one to-many component, travel all the way
+            // back, and then all the way forward
             // 1. If relationship path equals to input, travel one step back, and then one
             // step forward.
             // 2. If input completely includes relationship path, use input's remaining
@@ -658,6 +671,28 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             // (b) reverse the remaining relationship part;
             // (c) append remaining input to the reversed remaining relationship.
 
+            // case (0)
+            if (toMany) {
+                Iterator<CayenneMapEntry> pathIt = resolvePathComponents(path);
+                Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
+
+                // for inserts from the both ends use LinkedList
+                LinkedList<String> finalPath = new LinkedList<String>();
+
+                // append remainder of the relationship, reversing it
+                while (relationshipIt.hasNext()) {
+                    DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
+                    prependReversedPath(finalPath, nextDBR);
+                }
+
+                while (pathIt.hasNext()) {
+                    // components may be attributes or relationships
+                    CayenneMapEntry next = pathIt.next();
+                    appendPath(finalPath, next);
+                }
+
+                return convertToPath(finalPath);
+            }
             // case (1)
             if (path.equals(relationshipPath)) {
 

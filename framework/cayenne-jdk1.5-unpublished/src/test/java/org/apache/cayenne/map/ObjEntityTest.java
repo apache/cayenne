@@ -103,11 +103,11 @@ public class ObjEntityTest extends CayenneCase {
         assertEquals("java.lang.Integer", clientmpk.getType());
         assertTrue(clientMeaningfulPKE.getAttributes().contains(clientmpk));
     }
-    
+
     public void testAttributes() {
         ObjEntity artistE = getObjEntity("Artist");
         ObjAttribute attr = (ObjAttribute) artistE.getAttribute("artistName");
-        
+
         assertEquals(attr.getMaxLength(), attr.getDbAttribute().getMaxLength());
         assertEquals(attr.isMandatory(), attr.getDbAttribute().isMandatory());
     }
@@ -392,10 +392,8 @@ public class ObjEntityTest extends CayenneCase {
         Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
         Expression translated = artistE
                 .translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(
-                "failure: " + translated,
-                Expression.fromString("db:toExhibit"),
-                translated);
+        assertEquals("failure: " + translated, Expression
+                .fromString("db:toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
     public void testTranslateToRelatedEntitySplitHalfWay() throws Exception {
@@ -405,8 +403,11 @@ public class ObjEntityTest extends CayenneCase {
         Expression translated = artistE.translateToRelatedEntity(
                 e1,
                 "paintingArray.toGallery");
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
+        assertEquals(
+                "failure: " + translated,
+                Expression
+                        .fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"),
+                translated);
     }
 
     public void testTranslateToRelatedEntityMatchingPath() throws Exception {
@@ -415,8 +416,11 @@ public class ObjEntityTest extends CayenneCase {
         Expression translated = artistE.translateToRelatedEntity(
                 e1,
                 "artistExhibitArray.toExhibit");
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:artistExhibitArray.toExhibit"), translated);
+        assertEquals(
+                "failure: " + translated,
+                Expression
+                        .fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"),
+                translated);
     }
 
     public void testTranslateToRelatedEntityMultiplePaths() throws Exception {
@@ -429,7 +433,8 @@ public class ObjEntityTest extends CayenneCase {
         assertEquals(
                 "failure: " + translated,
                 Expression
-                        .fromString("db:toArtist.paintingArray = $p and db:toExhibit.CLOSING_DATE = $d"),
+                        .fromString("db:toArtist.paintingArray = $p "
+                                + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"),
                 translated);
     }
 }

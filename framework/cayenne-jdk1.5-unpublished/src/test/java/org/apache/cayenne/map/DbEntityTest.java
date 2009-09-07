@@ -245,10 +245,8 @@ public class DbEntityTest extends CayenneCase {
         Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
         Expression translated = artistE
                 .translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(
-                "failure: " + translated,
-                Expression.fromString("db:toExhibit"),
-                translated);
+        assertEquals("failure: " + translated, Expression
+                .fromString("db:toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
     public void testTranslateToRelatedEntitySplitHalfWay() {
@@ -259,8 +257,11 @@ public class DbEntityTest extends CayenneCase {
         Expression translated = artistE.translateToRelatedEntity(
                 e1,
                 "paintingArray.toGallery");
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
+        assertEquals(
+                "failure: " + translated,
+                Expression
+                        .fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"),
+                translated);
     }
 
     public void testTranslateToRelatedEntityMatchingPath() {
@@ -272,6 +273,16 @@ public class DbEntityTest extends CayenneCase {
                 "artistExhibitArray.toExhibit");
 
         assertEquals("failure: " + translated, Expression
-                .fromString("db:artistExhibitArray.toExhibit"), translated);
+                .fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
+    }
+
+    public void testTranslateToRelatedEntityToOne() {
+        DbEntity paintingE = getDomain().getEntityResolver().getDbEntity("PAINTING");
+
+        Expression e1 = Expression.fromString("db:toArtist.ARTIST_NAME = 'aa'");
+        Expression translated = paintingE.translateToRelatedEntity(e1, "toArtist");
+
+        assertEquals("failure: " + translated, Expression
+                .fromString("db:ARTIST_NAME = 'aa'"), translated);
     }
 }

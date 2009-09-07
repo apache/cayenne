@@ -37,7 +37,43 @@ public class DataContextPrefetchQualifierOverlapTest extends CayenneCase {
         deleteTestData();
     }
 
-    public void testToManyOverlappingQualifierWithInnerJoin() {
+    public void testToManyDisjointOverlappingQualifierWithInnerJoin() {
+        QueryChain data = new QueryChain();
+        data.addQuery(new SQLTemplate(
+                Artist.class,
+                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'A1')"));
+        data.addQuery(new SQLTemplate(
+                Artist.class,
+                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'A2')"));
+        data
+                .addQuery(new SQLTemplate(
+                        Artist.class,
+                        "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE) VALUES (1, 1, 'ABC')"));
+        data
+                .addQuery(new SQLTemplate(
+                        Artist.class,
+                        "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE) VALUES (2, 1, 'ABD')"));
+        data
+                .addQuery(new SQLTemplate(
+                        Artist.class,
+                        "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE) VALUES (3, 1, 'ACC')"));
+
+        createDataContext().performGenericQuery(data);
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.andQualifier(ExpressionFactory
+                .likeExp("paintingArray.paintingTitle", "AB%"));
+        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+
+        List<Artist> result = createDataContext().performQuery(query);
+        assertEquals(1, result.size());
+
+        Artist a = result.get(0);
+        assertEquals(3, a.getPaintingArray().size());
+    }
+
+    public void testToManyJointOverlappingQualifierWithInnerJoin() {
         QueryChain data = new QueryChain();
         data.addQuery(new SQLTemplate(
                 Artist.class,
@@ -73,7 +109,7 @@ public class DataContextPrefetchQualifierOverlapTest extends CayenneCase {
         assertEquals(3, a.getPaintingArray().size());
     }
 
-    public void testToManyOverlappingQualifierWithOuterJoin() {
+    public void testToManyJointOverlappingQualifierWithOuterJoin() {
         QueryChain data = new QueryChain();
         data.addQuery(new SQLTemplate(
                 Artist.class,
@@ -106,13 +142,12 @@ public class DataContextPrefetchQualifierOverlapTest extends CayenneCase {
         query.orQualifier(ExpressionFactory.likeExp("artistName", "A%"));
         query.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
 
-
         List<Artist> result = createDataContext().performQuery(query);
         assertEquals(2, result.size());
 
         Artist a = result.get(0);
         assertEquals(3, a.getPaintingArray().size());
-        
+
         Artist a1 = result.get(1);
         assertEquals(0, a1.getPaintingArray().size());
     }
