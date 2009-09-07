@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,15 +30,13 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
 import org.apache.cayenne.access.util.DefaultOperationObserver;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SQLTemplate;
 
 /**
  * A holder of flattened relationship modification data.
@@ -135,7 +134,7 @@ final class FlattenedArcKey {
     }
 
     /**
-     * Returns pk snapshots for join records for the single-stp flattened relationship.
+     * Returns pk snapshots for join records for the single-step flattened relationship.
      * Multiple joins between the same pair of objects are theoretically possible, so the
      * return value is a list.
      */
@@ -161,24 +160,42 @@ final class FlattenedArcKey {
         // TODO: this should be optimized in the future, but now DeleteBatchQuery
         // expects a PK snapshot, so we must provide it.
 
-        SelectQuery query = new SelectQuery(joinEntity, ExpressionFactory.matchAllDbExp(
-                snapshot,
-                Expression.EQUAL_TO));
-        query.setFetchingDataRows(true);
+        StringBuilder sql = new StringBuilder("SELECT ");
+        Collection<DbAttribute> pk = joinEntity.getPrimaryKeys();
 
-        for (DbAttribute dbAttr : joinEntity.getPrimaryKeys()) {
-            query.addCustomDbAttribute(dbAttr.getName());
+        int i = pk.size();
+        for (DbAttribute attribute : joinEntity.getPrimaryKeys()) {
+            sql.append(attribute.getName());
+            if (--i > 0) {
+                sql.append(", ");
+            }
         }
+
+        sql.append(" FROM ").append(joinEntity.getFullyQualifiedName()).append(" WHERE ");
+        i = snapshot.size();
+        for (Object key : snapshot.keySet()) {
+            sql.append(key).append(" #bindEqual($").append(key).append(")");
+
+            if (--i > 0) {
+                sql.append(" AND ");
+            }
+        }
+
+        SQLTemplate query = new SQLTemplate(joinEntity.getDataMap(), sql.toString());
+        query.setParameters(snapshot);
+        query.setFetchingDataRows(true);
 
         final List[] result = new List[1];
 
-        node.performQueries(Collections.singleton((Query) query), new DefaultOperationObserver() {
+        node.performQueries(
+                Collections.singleton((Query) query),
+                new DefaultOperationObserver() {
 
-            @Override
-            public void nextRows(Query query, List dataRows) {
-                result[0] = dataRows;
-            }
-        });
+                    @Override
+                    public void nextRows(Query query, List dataRows) {
+                        result[0] = dataRows;
+                    }
+                });
 
         return result[0];
     }
@@ -248,7 +265,8 @@ final class FlattenedArcKey {
         Map<String, ?> sourceId = this.sourceId.getIdSnapshot();
         Map<String, ?> destinationId = this.destinationId.getIdSnapshot();
 
-        Map<String, Object> snapshot = new HashMap<String, Object>(sourceId.size() + destinationId.size(), 1);
+        Map<String, Object> snapshot = new HashMap<String, Object>(sourceId.size()
+                + destinationId.size(), 1);
         for (DbJoin join : firstDbRel.getJoins()) {
             snapshot.put(join.getTargetName(), sourceId.get(join.getSourceName()));
         }
@@ -275,7 +293,8 @@ final class FlattenedArcKey {
         List<DbJoin> fromSourceJoins = firstDbRel.getJoins();
         List<DbJoin> toTargetJoins = secondDbRel.getJoins();
 
-        Map<String, Object> snapshot = new HashMap<String, Object>(fromSourceJoins.size() + toTargetJoins.size(), 1);
+        Map<String, Object> snapshot = new HashMap<String, Object>(fromSourceJoins.size()
+                + toTargetJoins.size(), 1);
 
         for (int i = 0, numJoins = fromSourceJoins.size(); i < numJoins; i++) {
             DbJoin join = fromSourceJoins.get(i);

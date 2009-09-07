@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
     public static final boolean DISTINCT_DEFAULT = false;
 
-    protected List<String> customDbAttributes;
     protected List<Ordering> orderings;
     protected boolean distinct;
 
@@ -144,8 +142,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     public QueryMetadata getMetaData(EntityResolver resolver) {
         metaData.resolve(root, resolver, this);
 
-        // must force DataRows if custom attributes are fetched
-        if (isFetchingCustomAttributes()) {
+        // must force DataRows if DbEntity is fetched
+        if (root instanceof DbEntity) {
             QueryMetadataWrapper wrapper = new QueryMetadataWrapper(metaData);
             wrapper.override(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, Boolean.TRUE);
             return wrapper;
@@ -311,10 +309,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
             query.addOrderings(orderings);
         }
 
-        if (customDbAttributes != null) {
-            query.addCustomDbAttributes(customDbAttributes);
-        }
-
         // substitute qualifier parameters
         if (qualifier != null) {
             query.setQualifier(qualifier.expWithParameters(parameters, pruneMissing));
@@ -410,64 +404,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Returns a list of attributes that will be included in the results of this query.
-     * 
-     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
-     *             EJBQL.
-     */
-    @Deprecated
-    public List<String> getCustomDbAttributes() {
-        // if query root is DbEntity, and no custom attributes
-        // are defined, return DbEntity attributes.
-        if ((customDbAttributes == null || customDbAttributes.isEmpty())
-                && (root instanceof DbEntity)) {
-            Collection<String> names = ((DbEntity) root).getAttributeMap().keySet();
-            return new ArrayList<String>(names);
-        }
-        else {
-            return (customDbAttributes != null)
-                    ? customDbAttributes
-                    : Collections.EMPTY_LIST;
-        }
-    }
-
-    /**
-     * Adds a path to the DbAttribute that should be included in the results of this
-     * query. Valid paths would look like <code>ARTIST_NAME</code>,
-     * <code>PAINTING_ARRAY.PAINTING_ID</code>, etc.
-     * 
-     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
-     *             EJBQL.
-     */
-    @Deprecated
-    public void addCustomDbAttribute(String attributePath) {
-        nonNullCustomDbAttributes().add(attributePath);
-    }
-
-    /**
-     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
-     *             EJBQL.
-     */
-    @Deprecated
-    public void addCustomDbAttributes(List<String> attrPaths) {
-        nonNullCustomDbAttributes().addAll(attrPaths);
-    }
-
-    /**
-     * Returns <code>true</code> if there is at least one custom query attribute
-     * specified, otherwise returns <code>false</code> for the case when the query results
-     * will contain only the root entity attributes.
-     * <p>
-     * Note that queries that are fetching custom attributes always return data rows
-     * instead of DataObjects.
-     * </p>
-     */
-    public boolean isFetchingCustomAttributes() {
-        return (root instanceof DbEntity)
-                || (customDbAttributes != null && !customDbAttributes.isEmpty());
-    }
-
-    /**
      * @since 1.2
      */
     public PrefetchTreeNode getPrefetchTree() {
@@ -512,15 +448,15 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * QueryEngine executing this query.
      */
     public boolean isFetchingDataRows() {
-        return this.isFetchingCustomAttributes() || metaData.isFetchingDataRows();
+        return (root instanceof DbEntity) || metaData.isFetchingDataRows();
     }
 
     /**
      * Sets query result type. If <code>flag</code> parameter is <code>true</code>, then
      * results will be in the form of data rows.
      * <p>
-     * <i>Note that if <code>isFetchingCustAttributes()</code> returns <code>true</code>,
-     * this setting has no effect, and data rows are always fetched. </i>
+     * <i>Note that if the root of this query is a {@link DbEntity}, this setting has no
+     * effect, and data rows are always fetched. </i>
      * </p>
      */
     public void setFetchingDataRows(boolean flag) {
@@ -671,19 +607,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Returns a list that internally stores custom db attributes, creating it on demand.
-     * 
-     * @since 1.2
-     */
-    List<String> nonNullCustomDbAttributes() {
-        if (customDbAttributes == null) {
-            customDbAttributes = new ArrayList<String>();
-        }
-
-        return customDbAttributes;
-    }
-
-    /**
      * Returns a list that internally stores orderings, creating it on demand.
      * 
      * @since 1.2
@@ -695,15 +618,16 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
         return orderings;
     }
-    
+
     /**
      * Sets statement's fetch size (0 for no default size)
-     * @since 3.0 
+     * 
+     * @since 3.0
      */
     public void setStatementFetchSize(int size) {
         metaData.setStatementFetchSize(size);
     }
-    
+
     /**
      * @return statement's fetch size
      * @since 3.0

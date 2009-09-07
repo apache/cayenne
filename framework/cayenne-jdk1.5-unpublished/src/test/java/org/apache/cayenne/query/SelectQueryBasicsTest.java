@@ -99,37 +99,6 @@ public class SelectQueryBasicsTest extends TestCase {
         assertTrue(q.isDistinct());
     }
 
-    public void testFetchingDataRowsSpecial() {
-        SelectQuery q = new SelectQuery();
-
-        assertFalse(q.isFetchingDataRows());
-        q.addCustomDbAttribute("ARTIST_ID");
-        assertTrue(q.isFetchingDataRows());
-
-        // this shouldn't have any effect, since custom attributes are fetched
-        q.setFetchingDataRows(false);
-        assertTrue(q.isFetchingDataRows());
-    }
-
-    public void testQueryAttributes() throws Exception {
-        SelectQuery q = new SelectQuery();
-
-        assertEquals(0, q.getCustomDbAttributes().size());
-
-        q.addCustomDbAttribute("ARTIST_ID");
-        assertEquals(1, q.getCustomDbAttributes().size());
-        assertEquals("ARTIST_ID", q.getCustomDbAttributes().get(0));
-    }
-
-    public void testUsingRootEntityAttributes() throws Exception {
-        SelectQuery q = new SelectQuery();
-
-        assertFalse(q.isFetchingCustomAttributes());
-
-        q.addCustomDbAttribute("ARTIST_ID");
-        assertTrue(q.isFetchingCustomAttributes());
-    }
-
     public void testQueryWithParams1() {
         SelectQuery q = new SelectQuery();
         q.setRoot(Artist.class);

@@ -30,6 +30,7 @@ import org.apache.art.ArtistExhibit;
 import org.apache.art.Exhibit;
 import org.apache.art.Gallery;
 import org.apache.art.Painting;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -64,6 +65,16 @@ public class SelectQueryTest extends SelectQueryBase {
 
         assertEquals(totalRows - 5, results.size());
         assertEquals("artist6", results.get(0).getArtistName());
+    }
+    
+    public void testDbEntityRoot() {
+        ObjectContext context = createDataContext();
+
+        SelectQuery query = new SelectQuery(getDbEntity("ARTIST"));
+        List results = context.performQuery(query);
+
+        assertEquals(20, results.size());
+        assertTrue(results.get(0) instanceof DataRow);
     }
 
     public void testFetchLimitWithOffset() throws Exception {
@@ -310,20 +321,6 @@ public class SelectQueryTest extends SelectQueryBase {
         // check query results
         List objects = opObserver.rowsForQuery(query);
         assertEquals(20, objects.size());
-    }
-
-    public void testSelectCustAttributes() throws Exception {
-        query.setRoot(Artist.class);
-        query.addCustomDbAttribute("ARTIST_NAME");
-
-        List results = createDataContext().performQuery(query);
-
-        // check query results
-        assertEquals(_artistCount, results.size());
-
-        Map row = (Map) results.get(0);
-        assertNotNull(row.get("ARTIST_NAME"));
-        assertEquals(1, row.size());
     }
 
     public void testSelectBooleanTrue() throws Exception {

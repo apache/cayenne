@@ -165,16 +165,6 @@ class IncrementalSelectQuery extends SelectQuery {
     }
 
     @Override
-    public void addCustomDbAttribute(String attributePath) {
-        query.addCustomDbAttribute(attributePath);
-    }
-
-    @Override
-    public void addCustomDbAttributes(List attrPaths) {
-        query.addCustomDbAttributes(attrPaths);
-    }
-
-    @Override
     public void addOrdering(Ordering ordering) {
         query.addOrdering(ordering);
     }
@@ -245,11 +235,6 @@ class IncrementalSelectQuery extends SelectQuery {
     }
 
     @Override
-    public List<String> getCustomDbAttributes() {
-        return query.getCustomDbAttributes();
-    }
-
-    @Override
     public int getFetchLimit() {
         return query.getFetchLimit();
     }
@@ -297,11 +282,6 @@ class IncrementalSelectQuery extends SelectQuery {
     @Override
     public boolean isDistinct() {
         return query.isDistinct();
-    }
-
-    @Override
-    public boolean isFetchingCustomAttributes() {
-        return query.isFetchingCustomAttributes();
     }
 
     @Override

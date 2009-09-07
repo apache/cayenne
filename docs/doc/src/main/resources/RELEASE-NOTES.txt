@@ -80,6 +80,7 @@ CAY-1215 Move tool-like items into new cayenne-tools module
 CAY-1218 Query caching loose ends
 CAY-1221 Exclude JPA from releases
 CAY-1250 Prefetching doesn't work with prefetched subentity
+CAY-1269 Remove SelectQuery custom columns feature
 
 Bug Fixes Since M5:
 

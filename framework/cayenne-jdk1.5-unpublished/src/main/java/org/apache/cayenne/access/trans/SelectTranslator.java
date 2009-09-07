@@ -280,15 +280,28 @@ public class SelectTranslator extends QueryAssembler {
         List<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();
         SelectQuery query = getSelectQuery();
 
-        // for query with custom attributes use a different strategy
-        if (query.isFetchingCustomAttributes()) {
-            appendCustomColumns(columns, query);
+        if (query.getRoot() instanceof DbEntity) {
+            appendDbEntityColumns(columns, query);
         }
         else if (getQueryMetadata().getPageSize() > 0) {
             appendIdColumns(columns, query);
         }
         else {
             appendQueryColumns(columns, query);
+        }
+
+        return columns;
+    }
+
+    List<ColumnDescriptor> appendDbEntityColumns(
+            List<ColumnDescriptor> columns,
+            SelectQuery query) {
+
+        final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
+
+        DbEntity table = getRootDbEntity();
+        for (DbAttribute dba : table.getAttributes()) {
+            appendColumn(columns, null, dba, attributes, null);
         }
 
         return columns;
@@ -514,35 +527,6 @@ public class SelectTranslator extends QueryAssembler {
             DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(attribute
                     .getDbAttributeName());
             appendColumn(columns, attribute, dbAttribute, skipSet, null);
-        }
-
-        return columns;
-    }
-
-    /**
-     * Appends custom columns from SelectQuery to the provided list.
-     * 
-     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
-     *             EJBQL.
-     */
-    @Deprecated
-    List<ColumnDescriptor> appendCustomColumns(
-            List<ColumnDescriptor> columns,
-            SelectQuery query) {
-
-        List<String> customAttributes = query.getCustomDbAttributes();
-        DbEntity table = getRootDbEntity();
-        int len = customAttributes.size();
-
-        for (int i = 0; i < len; i++) {
-            DbAttribute attribute = (DbAttribute) table.getAttribute(customAttributes
-                    .get(i));
-            if (attribute == null) {
-                throw new CayenneRuntimeException("Attribute does not exist: "
-                        + customAttributes.get(i));
-            }
-
-            columns.add(new ColumnDescriptor(attribute, getCurrentAlias()));
         }
 
         return columns;
