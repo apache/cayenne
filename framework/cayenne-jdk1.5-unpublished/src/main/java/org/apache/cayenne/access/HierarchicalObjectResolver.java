@@ -37,16 +37,14 @@ import org.apache.cayenne.query.QueryMetadata;
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
  * DataRows to an object tree. Can process any combination of joint and disjoint sets, per
  * prefetch tree.
- * 
- * @since 1.2
  */
-class ObjectTreeResolver {
+class HierarchicalObjectResolver {
 
     DataContext context;
     QueryMetadata queryMetadata;
     DataRowStore cache;
 
-    ObjectTreeResolver(DataContext context, QueryMetadata queryMetadata) {
+    HierarchicalObjectResolver(DataContext context, QueryMetadata queryMetadata) {
         this.queryMetadata = queryMetadata;
         this.context = context;
         this.cache = context.getObjectStore().getDataRowCache();
@@ -67,7 +65,7 @@ class ObjectTreeResolver {
         }
     }
 
-    List resolveObjectTree(
+    private List resolveObjectTree(
             PrefetchTreeNode tree,
             List mainResultRows,
             Map extraResultsByPath) {
@@ -108,18 +106,9 @@ class ObjectTreeResolver {
                 return true;
             }
 
-            if (processorNode.isPartitionedByParent()) {
-
-                List objects = processorNode.getResolver().relatedObjectsFromDataRows(
-                        processorNode.getDataRows(),
-                        processorNode);
-                processorNode.setObjects(objects);
-            }
-            else {
-                List objects = processorNode.getResolver().objectsFromDataRows(
-                        processorNode.getDataRows());
-                processorNode.setObjects(objects);
-            }
+            List objects = processorNode.getResolver().objectsFromDataRows(
+                    processorNode.getDataRows());
+            processorNode.setObjects(objects);
 
             return true;
         }
@@ -133,20 +122,19 @@ class ObjectTreeResolver {
 
                 PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
 
-                JointProcessor subprocessor = new JointProcessor(
-                        (PrefetchProcessorJointNode) node);
+                JointProcessor subprocessor = new JointProcessor(processorNode);
 
                 PrefetchProcessorNode parent = (PrefetchProcessorNode) processorNode
                         .getParent();
-                
-                while(parent != null && parent.isPhantom()) {
+
+                while (parent != null && parent.isPhantom()) {
                     parent = (PrefetchProcessorNode) parent.getParent();
                 }
-                
-                if(parent == null) {
+
+                if (parent == null) {
                     return false;
                 }
-                
+
                 List parentRows = parent.getDataRows();
 
                 // phantom node?

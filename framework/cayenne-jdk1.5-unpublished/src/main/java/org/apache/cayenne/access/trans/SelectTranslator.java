@@ -389,8 +389,7 @@ public class SelectTranslator extends QueryAssembler {
 
         if (query instanceof PrefetchSelectQuery) {
 
-            // for each relationship path add closest FK or PK, for each attribute path,
-            // add specified column
+            // for each relationship path add PK of the target entity...
             for (String path : ((PrefetchSelectQuery) query).getResultPaths()) {
 
                 Expression pathExp = oe.translateToDbPath(Expression.fromString(path));

@@ -570,7 +570,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         .synchronizedObjectsFromDataRows(normalizedRows);
             }
             else {
-                ObjectTreeResolver resolver = new ObjectTreeResolver(context, metadata);
+                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata);
                 objects = resolver.synchronizedObjectsFromDataRows(
                         prefetchTree,
                         normalizedRows,
@@ -644,7 +644,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         .synchronizedObjectsFromDataRows(rowsColumn);
             }
             else {
-                ObjectTreeResolver resolver = new ObjectTreeResolver(context, metadata);
+                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata);
                 objects = resolver.synchronizedObjectsFromDataRows(
                         prefetchTree,
                         rowsColumn,

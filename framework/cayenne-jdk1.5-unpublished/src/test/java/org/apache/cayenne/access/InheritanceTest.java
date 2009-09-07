@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -159,12 +160,17 @@ public class InheritanceTest extends PeopleCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (2, 'AA', 2)"));
 
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'BB', 2)"));
+
         SelectQuery query = new SelectQuery(PersonNotes.class);
         query.addPrefetch(PersonNotes.PERSON_PROPERTY);
+        query.addOrdering(PersonNotes.NOTES_PROPERTY, Ordering.ASC);
 
-        PersonNotes note = (PersonNotes) DataObjectUtils.objectForQuery(
-                createDataContext(),
-                query);
+        List<PersonNotes> notes = createDataContext().performQuery(query);
+        assertEquals(2, notes.size());
+        PersonNotes note = notes.get(0);
 
         blockQueries();
         try {

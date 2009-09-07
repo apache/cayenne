@@ -61,7 +61,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     Map<Map, Persistent> resolved;
     List<DataRow> resolvedRows;
 
-    PrefetchProcessorJointNode(PrefetchTreeNode parent, String segmentPath) {
+    PrefetchProcessorJointNode(PrefetchProcessorNode parent, String segmentPath) {
         super(parent, segmentPath);
     }
 

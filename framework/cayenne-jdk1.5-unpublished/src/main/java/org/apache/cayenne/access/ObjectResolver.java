@@ -21,15 +21,14 @@ package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -56,10 +55,7 @@ class ObjectResolver {
     DescriptorResolutionStrategy descriptorResolutionStrategy;
 
     ObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh) {
-        init(context, descriptor, refresh);
-    }
 
-    void init(DataContext context, ClassDescriptor descriptor, boolean refresh) {
         // sanity check
         DbEntity dbEntity = descriptor.getEntity().getDbEntity();
         if (dbEntity == null) {
@@ -125,135 +121,6 @@ class ObjectResolver {
         }
 
         // now deal with snapshots
-        cache.snapshotsUpdatedForObjects(results, rows, refreshObjects);
-
-        return results;
-    }
-
-    /**
-     * Processes a list of rows for a result set that has objects related to a set of
-     * parent objects via some relationship defined in PrefetchProcessorNode parameter.
-     * Relationships are linked in this method, assuming that parent PK columns are
-     * included in each row and are prefixed with DB relationship name.
-     * <p>
-     * Synchronization note. This method requires EXTERNAL synchronization on ObjectStore
-     * and DataRowStore.
-     * </p>
-     */
-    List<Persistent> relatedObjectsFromDataRows(List rows, PrefetchProcessorNode node) {
-        if (rows == null || rows.size() == 0) {
-            return new ArrayList<Persistent>(1);
-        }
-
-        boolean linkToParent = node.getParent() != null && !node.getParent().isPhantom();
-
-        String relatedIdPrefix = null;
-
-        // since we do not add descriptor columns for the source entity in the result,
-        // will need to try all subentities to find parent object...
-        Collection<ObjEntity> sourceEntities = null;
-
-        if (linkToParent) {
-            ClassDescriptor parentDescriptor = ((PrefetchProcessorNode) node.getParent())
-                    .getResolver()
-                    .getDescriptor();
-            relatedIdPrefix = node
-                    .getIncoming()
-                    .getRelationship()
-                    .getReverseDbRelationshipPath()
-                    + ".";
-
-            if (parentDescriptor.getEntityInheritanceTree() == null) {
-                sourceEntities = Collections.singletonList(parentDescriptor.getEntity());
-            }
-            else {
-                sourceEntities = parentDescriptor
-                        .getEntityInheritanceTree()
-                        .allSubEntities();
-            }
-        }
-
-        List<Persistent> results = new ArrayList<Persistent>(rows.size());
-
-        // here we can get the same object repeated multiple times in case of
-        // many-to-many between prefetched and main entity... this is needed to
-        // connect prefetched objects to the main objects. To avoid needlessly refreshing
-        // the same object multiple times, track which objectids area alrady loaded in
-        // this pass
-        Map<ObjectId, Persistent> seen = new HashMap<ObjectId, Persistent>();
-
-        Iterator it = rows.iterator();
-
-        while (it.hasNext()) {
-
-            DataRow row = (DataRow) it.next();
-
-            // determine entity to use
-            ClassDescriptor classDescriptor = descriptorResolutionStrategy
-                    .descriptorForRow(row);
-
-            // not using DataRow.createObjectId for performance reasons - ObjectResolver
-            // has all needed metadata already cached.
-            ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
-
-            Persistent object = seen.get(anId);
-
-            if (object == null) {
-                object = objectFromDataRow(row, anId, classDescriptor);
-
-                if (object == null) {
-                    throw new CayenneRuntimeException("Can't build Object from row: "
-                            + row);
-                }
-                seen.put(anId, object);
-            }
-
-            // keep the dupe objects (and data rows) around, as there maybe an attached
-            // joint prefetch...
-            results.add(object);
-
-            if (linkToParent) {
-
-                Persistent parentObject = null;
-
-                for (ObjEntity entity : sourceEntities) {
-                    if (entity.isAbstract()) {
-                        continue;
-                    }
-
-                    ObjectId id = createObjectId(row, entity, relatedIdPrefix);
-                    if (id == null) {
-                        throw new CayenneRuntimeException(
-                                "Can't build ObjectId from row: "
-                                        + row
-                                        + ", entity: "
-                                        + entity.getName()
-                                        + ", prefix: "
-                                        + relatedIdPrefix);
-                    }
-
-                    parentObject = (Persistent) context.getObjectStore().getNode(id);
-
-                    if (parentObject != null) {
-                        break;
-                    }
-                }
-
-                // don't attach to hollow objects
-                if (parentObject != null
-                        && parentObject.getPersistenceState() != PersistenceState.HOLLOW) {
-                    node.linkToParent(object, parentObject);
-                }
-            }
-        }
-
-        // now deal with snapshots
-
-        // TODO: refactoring: dupes will clutter the lists and cause extra processing...
-        // removal of dupes happens only downstream, as we need the objects matching
-        // fetched rows for joint prefetch resolving... maybe pushback unique and
-        // non-unique lists to the "node", instead of returning a single list from this
-        // method
         cache.snapshotsUpdatedForObjects(results, rows, refreshObjects);
 
         return results;
@@ -335,6 +202,10 @@ class ObjectResolver {
 
     EntityResolver getEntityResolver() {
         return context.getEntityResolver();
+    }
+
+    ObjectContext getContext() {
+        return context;
     }
 
     ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, String namePrefix) {

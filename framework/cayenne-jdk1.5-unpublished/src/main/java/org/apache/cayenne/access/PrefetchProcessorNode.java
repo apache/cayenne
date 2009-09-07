@@ -52,7 +52,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     Persistent lastResolved;
 
-    PrefetchProcessorNode(PrefetchTreeNode parent, String segmentPath) {
+    PrefetchProcessorNode(PrefetchProcessorNode parent, String segmentPath) {
         super(parent, segmentPath);
     }
 

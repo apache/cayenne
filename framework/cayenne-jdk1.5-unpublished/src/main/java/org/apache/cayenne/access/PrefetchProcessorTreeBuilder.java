@@ -39,7 +39,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     private List mainResultRows;
     private Map extraResultsByPath;
 
-    PrefetchProcessorTreeBuilder(ObjectTreeResolver objectTreeResolver,
+    PrefetchProcessorTreeBuilder(HierarchicalObjectResolver objectTreeResolver,
             List mainResultRows, Map extraResultsByPath) {
         this.context = objectTreeResolver.context;
         this.queryMetadata = objectTreeResolver.queryMetadata;
@@ -152,9 +152,19 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         }
 
         node.setDataRows(rows);
-        node.setResolver(new ObjectResolver(context, descriptor, queryMetadata
-                .isRefreshingObjects()));
+
         node.setIncoming(arc);
+        if (node.getParent() != null) {
+            node.setResolver(new HierarchicalObjectResolverNode(
+                    node,
+                    context,
+                    descriptor,
+                    queryMetadata.isRefreshingObjects()));
+        }
+        else {
+            node.setResolver(new ObjectResolver(context, descriptor, queryMetadata
+                    .isRefreshingObjects()));
+        }
 
         if (currentNode != null) {
             currentNode.addChild(node);

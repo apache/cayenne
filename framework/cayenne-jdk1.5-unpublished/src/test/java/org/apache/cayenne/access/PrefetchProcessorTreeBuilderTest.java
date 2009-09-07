@@ -82,7 +82,7 @@ public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
         };
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
-        ObjectTreeResolver resolver = new ObjectTreeResolver(
+        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
                 createDataContext(),
                 metadata);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
@@ -157,7 +157,7 @@ public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
             }
         };
 
-        ObjectTreeResolver resolver = new ObjectTreeResolver(
+        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
                 createDataContext(),
                 metadata);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
