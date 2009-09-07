@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.util.Collections;
@@ -31,6 +30,7 @@ import org.apache.art.Gallery;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -38,7 +38,6 @@ import org.apache.cayenne.query.SelectQuery;
 
 /**
  * Testing chained prefetches...
- * 
  */
 public class DataContextPrefetchMultistepTest extends DataContextCase {
 
@@ -52,6 +51,12 @@ public class DataContextPrefetchMultistepTest extends DataContextCase {
     }
 
     public void testToManyToManyFirstStepUnresolved() throws Exception {
+
+        // since objects for the phantom prefetches are not retained explicitly, they may
+        // get garbage collected, and we won't be able to detect them
+        // so ensure ObjectStore uses a regular map just for this test
+
+        context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
 
         // Check the target ArtistExhibit objects do not exist yet
 
@@ -85,6 +90,7 @@ public class DataContextPrefetchMultistepTest extends DataContextCase {
         // however the target objects must be resolved
         ArtistExhibit ae1 = (ArtistExhibit) context.getGraphManager().getNode(oid1);
         ArtistExhibit ae2 = (ArtistExhibit) context.getGraphManager().getNode(oid2);
+
         assertNotNull(ae1);
         assertNotNull(ae2);
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());

@@ -20,20 +20,18 @@
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.reflect.ArcProperty;
 
 /**
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
@@ -77,7 +75,8 @@ class ObjectTreeResolver {
         // create a copy of the tree using DecoratedPrefetchNodes and then traverse it
         // resolving objects...
         PrefetchProcessorNode decoratedTree = new PrefetchProcessorTreeBuilder(
-                this, mainResultRows,
+                this,
+                mainResultRows,
                 extraResultsByPath).buildTree(tree);
 
         // do a single path for disjoint prefetches, joint subtrees will be processed at
@@ -109,124 +108,69 @@ class ObjectTreeResolver {
                 return true;
             }
 
-            List objects;
+            if (processorNode.isPartitionedByParent()) {
 
-            // disjoint node that is an instance of DecoratedJointNode is a top
-            // of a local joint prefetch "group"...
-            if (processorNode instanceof PrefetchProcessorJointNode) {
-                JointProcessor subprocessor = new JointProcessor(
-                        (PrefetchProcessorJointNode) processorNode);
-                Iterator it = processorNode.getDataRows().iterator();
-                while (it.hasNext()) {
-                    subprocessor.setCurrentFlatRow((DataRow) it.next());
-                    processorNode.traverse(subprocessor);
-                }
-
-                objects = processorNode.getObjects();
-
-                cache.snapshotsUpdatedForObjects(
-                        objects,
-                        ((PrefetchProcessorJointNode) processorNode).getResolvedRows(),
-                        queryMetadata.isRefreshingObjects());
-            }
-            // disjoint prefetch on flattened relationships still requires manual matching
-            else if (processorNode.getIncoming() != null
-                    && processorNode.getIncoming().getRelationship().isFlattened()) {
-
-                objects = processorNode.getResolver().relatedObjectsFromDataRows(
+                List objects = processorNode.getResolver().relatedObjectsFromDataRows(
                         processorNode.getDataRows(),
                         processorNode);
                 processorNode.setObjects(objects);
             }
             else {
-                objects = processorNode.getResolver().objectsFromDataRows(
+                List objects = processorNode.getResolver().objectsFromDataRows(
                         processorNode.getDataRows());
                 processorNode.setObjects(objects);
-            }
-
-            // ... continue with processing even if the objects list is empty to handle
-            // multi-step prefetches.
-            if (objects.isEmpty()) {
-                return true;
-            }
-
-            // create temporary relationship mapping if needed..; flattened relationships
-            // are matched with parents during resolving phase, so skip them here.
-            if (processorNode.isPartitionedByParent()
-                    && !processorNode.getIncoming().getRelationship().isFlattened()) {
-
-                ObjEntity sourceObjEntity = null;
-                String relatedIdPrefix = null;
-
-                // determine resolution strategy
-                ArcProperty reverseArc = processorNode
-                        .getIncoming()
-                        .getComplimentaryReverseArc();
-
-                // if null, prepare for manual matching
-                if (reverseArc == null) {
-                    relatedIdPrefix = processorNode
-                            .getIncoming()
-                            .getRelationship()
-                            .getReverseDbRelationshipPath()
-                            + ".";
-
-                    sourceObjEntity = (ObjEntity) processorNode
-                            .getIncoming()
-                            .getRelationship()
-                            .getSourceEntity();
-                }
-
-                Iterator it = objects.iterator();
-                while (it.hasNext()) {
-                    Persistent destinationObject = (Persistent) it.next();
-                    Persistent sourceObject = null;
-
-                    if (reverseArc != null) {
-                        sourceObject = (Persistent) reverseArc
-                                .readProperty(destinationObject);
-                    }
-                    else {
-                        ObjectStore objectStore = context.getObjectStore();
-
-                        // prefetched snapshots contain parent ids prefixed with
-                        // relationship name.
-
-                        DataRow snapshot = objectStore.getSnapshot(destinationObject
-                                .getObjectId());
-
-                        ObjectId id = processorNode.getResolver().createObjectId(
-                                snapshot,
-                                sourceObjEntity,
-                                relatedIdPrefix);
-
-                        if (id == null) {
-                            throw new CayenneRuntimeException(
-                                    "Can't build ObjectId from row: "
-                                            + snapshot
-                                            + ", entity: "
-                                            + sourceObjEntity.getName()
-                                            + ", prefix: "
-                                            + relatedIdPrefix);
-                        }
-
-                        sourceObject = (Persistent) objectStore.getNode(id);
-                    }
-
-                    // don't attach to hollow objects
-                    if (sourceObject != null
-                            && sourceObject.getPersistenceState() != PersistenceState.HOLLOW) {
-                        processorNode.linkToParent(destinationObject, sourceObject);
-                    }
-                }
             }
 
             return true;
         }
 
         public boolean startJointPrefetch(PrefetchTreeNode node) {
-            // allow joint prefetch nodes to process their children, but skip their own
-            // processing.
+
+            // delegate processing of the top level joint prefetch to a joint processor,
+            // skip non-top joint nodes
+
+            if (node.getParent() != null && !node.getParent().isJointPrefetch()) {
+
+                PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
+
+                JointProcessor subprocessor = new JointProcessor(
+                        (PrefetchProcessorJointNode) node);
+
+                PrefetchProcessorNode parent = (PrefetchProcessorNode) processorNode
+                        .getParent();
+                
+                while(parent != null && parent.isPhantom()) {
+                    parent = (PrefetchProcessorNode) parent.getParent();
+                }
+                
+                if(parent == null) {
+                    return false;
+                }
+                
+                List parentRows = parent.getDataRows();
+
+                // phantom node?
+                if (parentRows == null || parentRows.size() == 0) {
+                    return false;
+                }
+
+                List parentObjects = parent.getObjects();
+                int size = parentRows.size();
+
+                for (int i = 0; i < size; i++) {
+                    subprocessor.setCurrentFlatRow((DataRow) parentRows.get(i));
+                    parent.setLastResolved((Persistent) parentObjects.get(i));
+                    processorNode.traverse(subprocessor);
+                }
+
+                List objects = processorNode.getObjects();
+
+                cache.snapshotsUpdatedForObjects(
+                        objects,
+                        processorNode.getResolvedRows(),
+                        queryMetadata.isRefreshingObjects());
+
+            }
             return true;
         }
 
@@ -239,7 +183,27 @@ class ObjectTreeResolver {
         }
 
         public void finishPrefetch(PrefetchTreeNode node) {
-            // noop
+            // now that all the children are processed, we can clear the dupes
+
+            // TODO: see TODO in ObjectResolver.relatedObjectsFromDataRows
+
+            if (node.isDisjointPrefetch()) {
+                PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
+                if (processorNode.isJointChildren()) {
+                    List<Persistent> objects = processorNode.getObjects();
+
+                    if (objects != null && objects.size() > 1) {
+
+                        Set<Persistent> seen = new HashSet<Persistent>(objects.size());
+                        Iterator<Persistent> it = objects.iterator();
+                        while (it.hasNext()) {
+                            if (!seen.add(it.next())) {
+                                it.remove();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -260,7 +224,8 @@ class ObjectTreeResolver {
 
         public boolean startDisjointPrefetch(PrefetchTreeNode node) {
             // disjoint prefetch that is not the root terminates the walk...
-            return node == rootNode ? startJointPrefetch(node) : false;
+            // don't process the root node itself..
+            return node == rootNode;
         }
 
         public boolean startJointPrefetch(PrefetchTreeNode node) {
@@ -286,10 +251,9 @@ class ObjectTreeResolver {
                 processorNode.addObject(object, row);
             }
 
-            // categorization by parent needed even if an object is already there
+            // linking by parent needed even if an object is already there
             // (many-to-many case)
             if (processorNode.isPartitionedByParent()) {
-
                 PrefetchProcessorNode parent = (PrefetchProcessorNode) processorNode
                         .getParent();
                 processorNode.linkToParent(object, parent.getLastResolved());

@@ -134,6 +134,30 @@ public class EntityInheritanceTree {
         return entity;
     }
 
+    /**
+     * @since 3.0
+     */
+    public Collection<ObjEntity> allSubEntities() {
+        if (subentities == null) {
+            return Collections.singletonList(entity);
+        }
+
+        Collection<ObjEntity> c = new ArrayList<ObjEntity>();
+        appendSubentities(c);
+        return c;
+    }
+
+    private void appendSubentities(Collection<ObjEntity> c) {
+        c.add(entity);
+        if (subentities == null) {
+            return;
+        }
+
+        for (EntityInheritanceTree subentity : subentities) {
+            subentity.appendSubentities(c);
+        }
+    }
+
     public Collection<ObjAttribute> allAttributes() {
         if (subentities == null) {
             return entity.getAttributes();

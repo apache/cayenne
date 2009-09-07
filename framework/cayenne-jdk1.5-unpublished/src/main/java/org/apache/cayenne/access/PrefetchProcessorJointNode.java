@@ -37,9 +37,16 @@ import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A specialized PrefetchTreeNode used for joint prefetch resolving.
@@ -132,6 +139,23 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             row.put(column.getName(), flatRow.get(column.getDataRowKey()));
         }
 
+        // since JDBC row reader won't inject JOINED entity name, we have to
+        // detect it here...
+
+        ObjEntity entity = null;
+        ClassDescriptor descriptor = resolver.getDescriptor();
+        EntityInheritanceTree entityInheritanceTree = descriptor
+                .getEntityInheritanceTree();
+
+        if (entityInheritanceTree != null) {
+            entity = entityInheritanceTree.entityMatchingRow(row);
+        }
+
+        if (entity == null) {
+            entity = descriptor.getEntity();
+        }
+
+        row.setEntityName(entity.getName());
         return row;
     }
 
@@ -142,7 +166,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * Configures row columns mapping for this node entity.
      */
     private void buildRowMapping() {
-        Map<String, ColumnDescriptor> targetSource = new TreeMap<String, ColumnDescriptor>();
+        final Map<String, ColumnDescriptor> targetSource = new TreeMap<String, ColumnDescriptor>();
 
         // build a DB path .. find parent node that terminates the joint group...
         PrefetchTreeNode jointRoot = this;
@@ -150,7 +174,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             jointRoot = jointRoot.getParent();
         }
 
-        String prefix;
+        final String prefix;
         if (jointRoot != this) {
             Expression objectPath = Expression.fromString(getPath(jointRoot));
             ASTPath translated = (ASTPath) ((PrefetchProcessorNode) jointRoot)
@@ -183,26 +207,47 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             }
         }
 
-        // add class attributes
-        for (ObjAttribute attribute : getResolver().getEntity().getAttributes()) {
-            String target = attribute.getDbAttributePath();
+        ClassDescriptor descriptor = resolver.getDescriptor();
 
-            appendColumn(targetSource, target, prefix + target);
-        }
+        descriptor.visitAllProperties(new PropertyVisitor() {
 
-        // add relationships
-        for (ObjRelationship rel : getResolver().getEntity().getRelationships()) {
-            DbRelationship dbRel = rel.getDbRelationships().get(0);
-            for (DbAttribute attribute : dbRel.getSourceAttributes()) {
-                String target = attribute.getName();
-
+            public boolean visitAttribute(AttributeProperty property) {
+                String target = property.getAttribute().getDbAttributePath();
                 appendColumn(targetSource, target, prefix + target);
+                return true;
             }
+
+            public boolean visitToMany(ToManyProperty property) {
+                return visitRelationship(property);
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                return visitRelationship(property);
+            }
+
+            private boolean visitRelationship(ArcProperty arc) {
+                DbRelationship dbRel = arc.getRelationship().getDbRelationships().get(0);
+                for (DbAttribute attribute : dbRel.getSourceAttributes()) {
+                    String target = attribute.getName();
+
+                    appendColumn(targetSource, target, prefix + target);
+                }
+                return true;
+            }
+        });
+
+        // append id columns ... (some may have been appended already via relationships)
+        for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
+            appendColumn(targetSource, pkName, prefix + pkName);
         }
 
-        // add unmapped PK
-        for (DbAttribute pk : getResolver().getEntity().getDbEntity().getPrimaryKeys()) {
-            appendColumn(targetSource, pk.getName(), prefix + pk.getName());
+        // append inheritance discriminator columns...
+        Iterator<ObjAttribute> discriminatorColumns = descriptor
+                .getDiscriminatorColumns();
+        while (discriminatorColumns.hasNext()) {
+            ObjAttribute column = discriminatorColumns.next();
+            String target = column.getDbAttributePath();
+            appendColumn(targetSource, target, prefix + target);
         }
 
         int size = targetSource.size();

@@ -107,12 +107,7 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
 
         // setup extra result columns to be able to relate result rows to the parent
         // result objects.
-        if (relationship.isFlattened()
-                || (relationship.isToMany() && relationship.getReverseRelationship() == null)) {
-
-            prefetchQuery.addResultPath("db:"
-                    + relationship.getReverseDbRelationshipPath());
-        }
+        prefetchQuery.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
 
         // pass prefetch subtree to enable joint prefetches...
         prefetchQuery.setPrefetchTree(node);

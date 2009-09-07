@@ -32,17 +32,13 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A specialized PrefetchTreeNode used for disjoint prefetch resolving.
  * 
  * @since 1.2
  */
-// TODO: Andrus 2/9/2006 optional to-one relationships (Painting -> Artist) are not
-// connected by this algorithm. They are being intercepted later when a corresponding
-// fault is being resolved, but this seems like a wasteful approach. Test case that
-// succeeds, but goes through this wasteful route is
-// DataContextPrefetchTst.testPrefetchingToOneNull().
 class PrefetchProcessorNode extends PrefetchTreeNode {
 
     List dataRows;
@@ -53,7 +49,6 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     Map partitionByParent;
     boolean jointChildren;
-    boolean partitionedByParent;
 
     Persistent lastResolved;
 
@@ -67,11 +62,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
      */
     void afterInit() {
 
-        partitionedByParent = !phantom
-                && incoming != null
-                && incoming.getRelationship().isSourceIndependentFromTargetChange();
-
-        if (partitionedByParent) {
+        if (isPartitionedByParent()) {
             partitionByParent = new HashMap();
         }
     }
@@ -227,7 +218,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     }
 
     boolean isPartitionedByParent() {
-        return partitionedByParent;
+        return parent != null;
     }
 
     Persistent getLastResolved() {
@@ -236,5 +227,14 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     void setLastResolved(Persistent lastResolved) {
         this.lastResolved = lastResolved;
+    }
+
+    @Override
+    public String toString() {
+        String label = incoming != null ? incoming.getName() : "<root>";
+
+        return new ToStringBuilder(this).append("incoming", label).append(
+                "phantom",
+                phantom).toString();
     }
 }

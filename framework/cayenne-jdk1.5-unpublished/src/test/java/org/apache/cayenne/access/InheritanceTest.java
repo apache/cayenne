@@ -19,11 +19,12 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
@@ -67,6 +68,138 @@ public class InheritanceTest extends PeopleCase {
         assertNotNull(note);
         assertNotNull(note.getPerson());
         assertTrue(note.getPerson() instanceof Employee);
+    }
+
+    public void testRelationshipAbstractFromSuperPrefetchingJoint() {
+        context
+                .performGenericQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
+
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
+
+        SelectQuery query = new SelectQuery(AbstractPerson.class);
+        query.addPrefetch(AbstractPerson.NOTES_PROPERTY).setSemantics(
+                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+
+        AbstractPerson person = (AbstractPerson) DataObjectUtils.objectForQuery(
+                createDataContext(),
+                query);
+
+        assertTrue(person instanceof Employee);
+
+        blockQueries();
+        try {
+            assertEquals(2, person.getNotes().size());
+
+            String[] names = new String[2];
+            names[0] = person.getNotes().get(0).getNotes();
+            names[1] = person.getNotes().get(1).getNotes();
+            List<String> nameSet = Arrays.asList(names);
+
+            assertTrue(nameSet.contains("AA"));
+            assertTrue(nameSet.contains("BB"));
+        }
+        finally {
+            unblockQueries();
+        }
+    }
+
+    public void testRelationshipAbstractFromSuperPrefetchingDisjoint() {
+        context
+                .performGenericQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
+
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
+
+        SelectQuery query = new SelectQuery(AbstractPerson.class);
+        query.addPrefetch(AbstractPerson.NOTES_PROPERTY);
+
+        AbstractPerson person = (AbstractPerson) DataObjectUtils.objectForQuery(
+                createDataContext(),
+                query);
+
+        assertTrue(person instanceof Employee);
+
+        blockQueries();
+        try {
+            assertEquals(2, person.getNotes().size());
+
+            String[] names = new String[2];
+            names[0] = person.getNotes().get(0).getNotes();
+            names[1] = person.getNotes().get(1).getNotes();
+            List<String> nameSet = Arrays.asList(names);
+
+            assertTrue(nameSet.contains("AA"));
+            assertTrue(nameSet.contains("BB"));
+        }
+        finally {
+            unblockQueries();
+        }
+    }
+
+    public void testRelationshipAbstractToSuperPrefetchingDisjoint() {
+        context
+                .performGenericQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'AA', 'EE')"));
+
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (2, 'AA', 2)"));
+
+        SelectQuery query = new SelectQuery(PersonNotes.class);
+        query.addPrefetch(PersonNotes.PERSON_PROPERTY);
+
+        PersonNotes note = (PersonNotes) DataObjectUtils.objectForQuery(
+                createDataContext(),
+                query);
+
+        blockQueries();
+        try {
+            assertEquals("AA", note.getPerson().getName());
+        }
+        finally {
+            unblockQueries();
+        }
+    }
+
+    public void testRelationshipAbstractToSuperPrefetchingJoint() {
+        context
+                .performGenericQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
+
+        context.performGenericQuery(new SQLTemplate(
+                PersonNotes.class,
+                "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
+
+        SelectQuery query = new SelectQuery(PersonNotes.class);
+        query.addPrefetch(PersonNotes.PERSON_PROPERTY).setSemantics(
+                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+
+        PersonNotes note = (PersonNotes) DataObjectUtils.objectForQuery(
+                createDataContext(),
+                query);
+
+        blockQueries();
+        try {
+            assertEquals("AA", note.getPerson().getName());
+        }
+        finally {
+            unblockQueries();
+        }
 
     }
 

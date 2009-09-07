@@ -21,6 +21,8 @@ package org.apache.cayenne.itest.pojo;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
 
 public class OneToManyObjectTest extends PojoContextCase {
@@ -94,16 +96,18 @@ public class OneToManyObjectTest extends PojoContextCase {
         Field f = OneToManyEntity1.class.getDeclaredField("$cay_faultResolved_toMany");
         assertEquals(Boolean.TRUE, f.get(o1));
 
-        blockContextQueries();
+        List<ManyToOneEntity1> or;
+        blockDomainQueries();
         try {
-            List<ManyToOneEntity1> or = o1.getToMany();
+            or = o1.getToMany();
             assertNotNull(or);
-
             assertEquals(2, or.size());
+            assertEquals(PersistenceState.COMMITTED, ((Persistent) or.get(0))
+                    .getPersistenceState());
             assertSame(o1, or.get(0).getToOne());
         }
         finally {
-            unblockContextQueries();
+            unblockDomainQueries();
         }
     }
 

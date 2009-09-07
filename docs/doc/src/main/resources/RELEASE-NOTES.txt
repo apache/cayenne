@@ -38,6 +38,7 @@ CAY-1232 Unit tests failing on Sybase
 CAY-1240 Schema generation dialog has "uncheck all tables" checkbox incorrectly checked by default
 CAY-1246 Naming strategy getting stuck in (incorrect) preferences location
 CAY-1248 ClassCastException with OracleLOBBatchAction
+CAY-1250 Prefetching doesn't work with prefetched subentity
 CAY-1252 Bad XML generated when saving DBEntity qualifiers
 CAY-1265 error while search inheritance relationship
 
@@ -78,6 +79,7 @@ CAY-1214 Class generation should create abstract callback methods in the supercl
 CAY-1215 Move tool-like items into new cayenne-tools module
 CAY-1218 Query caching loose ends
 CAY-1221 Exclude JPA from releases
+CAY-1250 Prefetching doesn't work with prefetched subentity
 
 Bug Fixes Since M5:
 

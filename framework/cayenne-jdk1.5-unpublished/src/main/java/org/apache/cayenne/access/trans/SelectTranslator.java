@@ -52,6 +52,8 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
 
 /**
  * A builder of JDBC PreparedStatements based on Cayenne SelectQueries. Translates
@@ -125,8 +127,8 @@ public class SelectTranslator extends QueryAssembler {
 
         // build qualifier
         QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
-        StringBuilder qualifierBuffer = qualifierTranslator.appendPart(
-                new StringBuilder());
+        StringBuilder qualifierBuffer = qualifierTranslator
+                .appendPart(new StringBuilder());
 
         // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
@@ -187,8 +189,8 @@ public class SelectTranslator extends QueryAssembler {
 
         // append tables and joins
         joins.appendRootWithQuoteSqlIdentifiers(queryBuf, getRootDbEntity());
-        
-        //join parameters will be added to head of query
+
+        // join parameters will be added to head of query
         parameterIndex = 0;
 
         joins.appendJoins(queryBuf);
@@ -295,12 +297,11 @@ public class SelectTranslator extends QueryAssembler {
     /**
      * Appends columns needed for object SelectQuery to the provided columns list.
      */
-    // TODO: this whole method screams REFACTORING!!!
     List<ColumnDescriptor> appendQueryColumns(
             final List<ColumnDescriptor> columns,
             SelectQuery query) {
 
-        final Set<DbAttribute> attributes = new HashSet<DbAttribute>();
+        final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
         // fetched attributes include attributes that are either:
         // 
@@ -373,9 +374,6 @@ public class SelectTranslator extends QueryAssembler {
 
         // special handling of a disjoint query...
 
-        // TODO, Andrus 11/17/2005 - resultPath mechanism is generic and should probably
-        // be moved in the superclass (SelectQuery), replacing customDbAttributes.
-
         if (query instanceof PrefetchSelectQuery) {
 
             // for each relationship path add closest FK or PK, for each attribute path,
@@ -392,16 +390,13 @@ public class SelectTranslator extends QueryAssembler {
                 for (PathComponent<DbAttribute, DbRelationship> component : table
                         .resolvePath(pathExp, getPathAliases())) {
 
-                    // do not add join for the last DB Rel
-                    if (component.getRelationship() != null && !component.isLast()) {
+                    if (component.getRelationship() != null) {
                         dbRelationshipAdded(component.getRelationship(), component
                                 .getJoinType(), null);
                     }
 
                     lastComponent = component;
                 }
-
-                String labelPrefix = pathExp.toString().substring("db:".length());
 
                 // process terminating element
                 if (lastComponent != null) {
@@ -410,36 +405,17 @@ public class SelectTranslator extends QueryAssembler {
 
                     if (relationship != null) {
 
-                        // add last join
-                        if (relationship.isToMany()) {
-                            dbRelationshipAdded(relationship, JoinType.INNER, null);
-                        }
+                        String labelPrefix = pathExp.toString().substring("db:".length());
+                        DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
 
-                        for (DbJoin j : relationship.getJoins()) {
-
-                            DbAttribute attribute = relationship.isToMany() ? j
-                                    .getTarget() : j.getSource();
+                        for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
 
                             // note that we my select a source attribute, but label it as
                             // target for simplified snapshot processing
-                            appendColumn(
-                                    columns,
-                                    null,
-                                    attribute,
-                                    attributes,
-                                    labelPrefix + '.' + j.getTargetName());
+                            appendColumn(columns, null, pk, attributes, labelPrefix
+                                    + '.'
+                                    + pk.getName());
                         }
-                    }
-
-                    else {
-
-                        // label prefix already includes relationship name
-                        appendColumn(
-                                columns,
-                                null,
-                                lastComponent.getAttribute(),
-                                attributes,
-                                labelPrefix);
                     }
                 }
             }
@@ -526,7 +502,7 @@ public class SelectTranslator extends QueryAssembler {
             final List<ColumnDescriptor> columns,
             SelectQuery query) {
 
-        Set<DbAttribute> skipSet = new HashSet<DbAttribute>();
+        Set<ColumnTracker> skipSet = new HashSet<ColumnTracker>();
 
         ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
         ObjEntity oe = descriptor.getEntity();
@@ -576,11 +552,12 @@ public class SelectTranslator extends QueryAssembler {
             List<ColumnDescriptor> columns,
             ObjAttribute objAttribute,
             DbAttribute attribute,
-            Set<DbAttribute> skipSet,
+            Set<ColumnTracker> skipSet,
             String label) {
 
-        if (skipSet.add(attribute)) {
-            String alias = getCurrentAlias();
+        String alias = getCurrentAlias();
+        if (skipSet.add(new ColumnTracker(alias, attribute))) {
+
             ColumnDescriptor column = (objAttribute != null) ? new ColumnDescriptor(
                     objAttribute,
                     attribute,
@@ -649,5 +626,36 @@ public class SelectTranslator extends QueryAssembler {
     @Override
     public boolean supportsTableAliases() {
         return true;
+    }
+
+    final class ColumnTracker {
+
+        private DbAttribute attribute;
+        private String alias;
+
+        ColumnTracker(String alias, DbAttribute attribute) {
+            this.attribute = attribute;
+            this.alias = alias;
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (object instanceof ColumnTracker) {
+                ColumnTracker other = (ColumnTracker) object;
+                return new EqualsBuilder().append(alias, other.alias).append(
+                        attribute,
+                        other.attribute).isEquals();
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(31, 5)
+                    .append(alias)
+                    .append(attribute)
+                    .toHashCode();
+        }
+
     }
 }

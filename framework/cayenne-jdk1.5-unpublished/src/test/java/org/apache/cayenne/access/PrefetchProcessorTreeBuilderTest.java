@@ -181,7 +181,7 @@ public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
         assertNotNull(n3);
         assertSame(e3, n3.getResolver().getEntity());
         assertTrue(n3.isPhantom());
-        assertFalse(n3.isPartitionedByParent());
+        assertTrue(n3.isPartitionedByParent());
 
         PrefetchProcessorNode n4 = (PrefetchProcessorNode) n1
                 .getNode("paintingArray.toGallery.exhibitArray");

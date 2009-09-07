@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -143,15 +145,33 @@ class ObjectResolver {
             return new ArrayList<Persistent>(1);
         }
 
-        ObjEntity sourceObjEntity = (ObjEntity) node
-                .getIncoming()
-                .getRelationship()
-                .getSourceEntity();
-        String relatedIdPrefix = node
-                .getIncoming()
-                .getRelationship()
-                .getReverseDbRelationshipPath()
-                + ".";
+        boolean linkToParent = node.getParent() != null && !node.getParent().isPhantom();
+
+        String relatedIdPrefix = null;
+
+        // since we do not add descriptor columns for the source entity in the result,
+        // will need to try all subentities to find parent object...
+        Collection<ObjEntity> sourceEntities = null;
+
+        if (linkToParent) {
+            ClassDescriptor parentDescriptor = ((PrefetchProcessorNode) node.getParent())
+                    .getResolver()
+                    .getDescriptor();
+            relatedIdPrefix = node
+                    .getIncoming()
+                    .getRelationship()
+                    .getReverseDbRelationshipPath()
+                    + ".";
+
+            if (parentDescriptor.getEntityInheritanceTree() == null) {
+                sourceEntities = Collections.singletonList(parentDescriptor.getEntity());
+            }
+            else {
+                sourceEntities = parentDescriptor
+                        .getEntityInheritanceTree()
+                        .allSubEntities();
+            }
+        }
 
         List<Persistent> results = new ArrayList<Persistent>(rows.size());
 
@@ -188,31 +208,52 @@ class ObjectResolver {
                 seen.put(anId, object);
             }
 
+            // keep the dupe objects (and data rows) around, as there maybe an attached
+            // joint prefetch...
             results.add(object);
 
-            // link with parent
+            if (linkToParent) {
 
-            // The algorithm below of building an ID doesn't take inheritance into
-            // account, so there maybe a miss...
-            ObjectId id = createObjectId(row, sourceObjEntity, relatedIdPrefix);
-            if (id == null) {
-                throw new CayenneRuntimeException("Can't build ObjectId from row: "
-                        + row
-                        + ", entity: "
-                        + sourceObjEntity.getName()
-                        + ", prefix: "
-                        + relatedIdPrefix);
-            }
-            Persistent parentObject = (Persistent) context.getObjectStore().getNode(id);
+                Persistent parentObject = null;
 
-            // don't attach to hollow objects
-            if (parentObject != null
-                    && parentObject.getPersistenceState() != PersistenceState.HOLLOW) {
-                node.linkToParent(object, parentObject);
+                for (ObjEntity entity : sourceEntities) {
+                    if (entity.isAbstract()) {
+                        continue;
+                    }
+
+                    ObjectId id = createObjectId(row, entity, relatedIdPrefix);
+                    if (id == null) {
+                        throw new CayenneRuntimeException(
+                                "Can't build ObjectId from row: "
+                                        + row
+                                        + ", entity: "
+                                        + entity.getName()
+                                        + ", prefix: "
+                                        + relatedIdPrefix);
+                    }
+
+                    parentObject = (Persistent) context.getObjectStore().getNode(id);
+
+                    if (parentObject != null) {
+                        break;
+                    }
+                }
+
+                // don't attach to hollow objects
+                if (parentObject != null
+                        && parentObject.getPersistenceState() != PersistenceState.HOLLOW) {
+                    node.linkToParent(object, parentObject);
+                }
             }
         }
 
         // now deal with snapshots
+
+        // TODO: refactoring: dupes will clutter the lists and cause extra processing...
+        // removal of dupes happens only downstream, as we need the objects matching
+        // fetched rows for joint prefetch resolving... maybe pushback unique and
+        // non-unique lists to the "node", instead of returning a single list from this
+        // method
         cache.snapshotsUpdatedForObjects(results, rows, refreshObjects);
 
         return results;
@@ -290,6 +331,10 @@ class ObjectResolver {
 
     ClassDescriptor getDescriptor() {
         return descriptor;
+    }
+
+    EntityResolver getEntityResolver() {
+        return context.getEntityResolver();
     }
 
     ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, String namePrefix) {

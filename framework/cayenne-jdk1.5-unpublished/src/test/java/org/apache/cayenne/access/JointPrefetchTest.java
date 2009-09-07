@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.sql.Date;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -45,7 +47,6 @@ import org.apache.cayenne.unit.CayenneCase;
 
 /**
  * Tests joint prefetch handling by Cayenne access stack.
- * 
  */
 public class JointPrefetchTest extends CayenneCase {
 
@@ -231,7 +232,8 @@ public class JointPrefetchTest extends CayenneCase {
                     Artist a = p.getToArtist();
                     assertNotNull(a);
                     assertNotNull(a.getDateOfBirth());
-                    assertTrue(Date.class.isAssignableFrom(a.getDateOfBirth().getClass()));
+                    assertTrue(a.getDateOfBirth().getClass().getName(), Date.class
+                            .isAssignableFrom(a.getDateOfBirth().getClass()));
                 }
             }
             finally {
@@ -340,6 +342,9 @@ public class JointPrefetchTest extends CayenneCase {
                 .setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         DataContext context = createDataContext();
+
+        // make sure phantomly prefetched objects are not deallocated
+        context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
 
         // sanity check...
         DataObject g1 = (DataObject) context.getGraphManager().getNode(
