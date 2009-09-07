@@ -90,10 +90,6 @@ class JoinedIdParentAttachementStrategy implements ParentAttachmentStrategy {
             }
         }
 
-        // don't attach to hollow objects
-        if (parentObject != null
-                && parentObject.getPersistenceState() != PersistenceState.HOLLOW) {
-            node.linkToParent(object, parentObject);
-        }
+        node.linkToParent(object, parentObject);
     }
 }

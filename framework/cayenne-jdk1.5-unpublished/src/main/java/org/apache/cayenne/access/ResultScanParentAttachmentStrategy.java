@@ -131,5 +131,4 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
             parents.add(objects.get(i));
         }
     }
-
 }

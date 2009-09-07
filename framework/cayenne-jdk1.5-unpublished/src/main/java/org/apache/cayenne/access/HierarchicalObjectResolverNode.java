@@ -31,25 +31,12 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 class HierarchicalObjectResolverNode extends ObjectResolver {
 
-    private ParentAttachmentStrategy parentAttachmentStrategy;
+    private PrefetchProcessorNode node;
 
     HierarchicalObjectResolverNode(PrefetchProcessorNode node, DataContext context,
             ClassDescriptor descriptor, boolean refresh) {
         super(context, descriptor, refresh);
-
-        if (node.getParent() == null || node.getParent().isPhantom()) {
-            this.parentAttachmentStrategy = new NoopParentAttachmentStrategy();
-        }
-        else if (node
-                .getIncoming()
-                .getRelationship()
-                .isSourceIndependentFromTargetChange()) {
-            this.parentAttachmentStrategy = new JoinedIdParentAttachementStrategy(context
-                    .getGraphManager(), node);
-        }
-        else {
-            this.parentAttachmentStrategy = new ResultScanParentAttachmentStrategy(node);
-        }
+        this.node = node;
     }
 
     @Override
@@ -94,7 +81,7 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
             // joint prefetch...
             results.add(object);
 
-            parentAttachmentStrategy.linkToParent(row, object);
+            node.getParentAttachmentStrategy().linkToParent(row, object);
         }
 
         // now deal with snapshots

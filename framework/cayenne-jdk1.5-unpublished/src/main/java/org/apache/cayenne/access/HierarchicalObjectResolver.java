@@ -224,10 +224,10 @@ class HierarchicalObjectResolver {
             // find existing object, if found skip further processing
             Map id = processorNode.idFromFlatRow(currentFlatRow);
             object = processorNode.getResolved(id);
-
+            DataRow row = null;
             if (object == null) {
 
-                DataRow row = processorNode.rowFromFlatRow(currentFlatRow);
+                row = processorNode.rowFromFlatRow(currentFlatRow);
                 object = processorNode.getResolver().objectFromDataRow(row);
 
                 // LEFT OUTER JOIN produced no matches...
@@ -241,11 +241,8 @@ class HierarchicalObjectResolver {
 
             // linking by parent needed even if an object is already there
             // (many-to-many case)
-            if (processorNode.isPartitionedByParent()) {
-                PrefetchProcessorNode parent = (PrefetchProcessorNode) processorNode
-                        .getParent();
-                processorNode.linkToParent(object, parent.getLastResolved());
-            }
+
+            processorNode.getParentAttachmentStrategy().linkToParent(row, object);
 
             processorNode.setLastResolved(object);
             return processorNode.isJointChildren();

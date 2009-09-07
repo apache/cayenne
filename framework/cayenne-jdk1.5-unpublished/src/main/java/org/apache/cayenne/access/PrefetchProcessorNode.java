@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -50,7 +51,8 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     Map partitionByParent;
     boolean jointChildren;
 
-    Persistent lastResolved;
+    private Persistent lastResolved;
+    private ParentAttachmentStrategy parentAttachmentStrategy;
 
     PrefetchProcessorNode(PrefetchProcessorNode parent, String segmentPath) {
         super(parent, segmentPath);
@@ -73,7 +75,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
      * 'connectToParents'.
      */
     void linkToParent(Persistent object, Persistent parent) {
-        if (parent != null) {
+        if (parent != null && parent.getPersistenceState() != PersistenceState.HOLLOW) {
 
             // if a relationship is to-one (i.e. flattened to-one), can connect right
             // away.... write directly to prevent changing persistence state.
@@ -236,5 +238,13 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         return new ToStringBuilder(this).append("incoming", label).append(
                 "phantom",
                 phantom).toString();
+    }
+
+    ParentAttachmentStrategy getParentAttachmentStrategy() {
+        return parentAttachmentStrategy;
+    }
+
+    void setParentAttachmentStrategy(ParentAttachmentStrategy parentAttachmentStrategy) {
+        this.parentAttachmentStrategy = parentAttachmentStrategy;
     }
 }

@@ -154,7 +154,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         node.setDataRows(rows);
 
         node.setIncoming(arc);
-        if (node.getParent() != null) {
+        if (node.getParent() != null && !node.isJointPrefetch()) {
             node.setResolver(new HierarchicalObjectResolverNode(
                     node,
                     context,
@@ -164,6 +164,28 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         else {
             node.setResolver(new ObjectResolver(context, descriptor, queryMetadata
                     .isRefreshingObjects()));
+        }
+
+        if (node.getParent() == null || node.getParent().isPhantom()) {
+            node.setParentAttachmentStrategy(new NoopParentAttachmentStrategy());
+        }
+        else if (node.isJointPrefetch()) {
+            node
+                    .setParentAttachmentStrategy(new StackLookupParentAttachmentStrategy(
+                            node));
+        }
+        else if (node
+                .getIncoming()
+                .getRelationship()
+                .isSourceIndependentFromTargetChange()) {
+            node.setParentAttachmentStrategy(new JoinedIdParentAttachementStrategy(
+                    context.getGraphManager(),
+                    node));
+        }
+        else {
+            node
+                    .setParentAttachmentStrategy(new ResultScanParentAttachmentStrategy(
+                            node));
         }
 
         if (currentNode != null) {
