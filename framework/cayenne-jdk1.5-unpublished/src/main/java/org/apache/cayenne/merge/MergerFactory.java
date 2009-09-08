@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.Collection;
+
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -114,4 +116,17 @@ public class MergerFactory {
         return new DropRelationshipToModel(entity, rel);
     }
     
+    public MergerToken createSetPrimaryKeyToDb(
+            DbEntity entity,
+            Collection<DbAttribute> primaryKeyOriginal,
+            Collection<DbAttribute> primaryKeyNew) {
+        return new SetPrimaryKeyToDb(entity, primaryKeyOriginal, primaryKeyNew);
+    }
+
+    public MergerToken createSetPrimaryKeyToModel(
+            DbEntity entity,
+            Collection<DbAttribute> primaryKeyOriginal,
+            Collection<DbAttribute> primaryKeyNew) {
+        return new SetPrimaryKeyToModel(entity, primaryKeyOriginal, primaryKeyNew);
+    }
 }

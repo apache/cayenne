@@ -27,8 +27,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -38,6 +40,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -138,6 +141,7 @@ public class DbMerger {
 
                 checkRelationshipsToDrop(adapter, tokens, dbEntity, detectedEntity);
                 checkRows(tokens, dbEntity, detectedEntity);
+                checkPrimaryKeyChange(adapter, tokens, dbEntity, detectedEntity);
                 checkRelationshipsToAdd(adapter, tokens, dbEntity, detectedEntity);
             }
 
@@ -324,6 +328,28 @@ public class DbMerger {
                 }
             }
         }
+    }
+    
+    private void checkPrimaryKeyChange(DbAdapter adapter,
+            List<MergerToken> tokens,
+            DbEntity dbEntity,
+            DbEntity detectedEntity) {
+        Collection<DbAttribute> primaryKeyOriginal = detectedEntity.getPrimaryKeys();
+        Collection<DbAttribute> primaryKeyNew = dbEntity.getPrimaryKeys();
+
+        if (upperCaseEntityNames(primaryKeyOriginal).equals(upperCaseEntityNames(primaryKeyNew))) {
+            return;
+        }
+        
+        tokens.add(factory.createSetPrimaryKeyToDb(dbEntity, primaryKeyOriginal, primaryKeyNew));
+    }
+    
+    private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attrs) {
+        Set<String> names = new HashSet<String>();
+        for (Attribute attr : attrs) {
+            names.add(attr.getName().toUpperCase());
+        }
+        return names;
     }
     
     /**
