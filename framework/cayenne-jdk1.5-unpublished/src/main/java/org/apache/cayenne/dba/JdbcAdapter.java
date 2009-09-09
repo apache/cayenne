@@ -41,6 +41,7 @@ import org.apache.cayenne.access.types.CalendarType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.IntegerType;
 import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.conf.ClasspathResourceFinder;
 import org.apache.cayenne.map.DbAttribute;
@@ -163,6 +164,9 @@ public class JdbcAdapter implements DbAdapter {
      * and Java layers. Called from default constructor.
      */
     protected void configureExtendedTypes(ExtendedTypeMap map) {
+
+        map.registerType(new IntegerType());
+
         // use BooleanType to ensure that returned booleans are an enum of Boolean.TRUE
         // and Boolean.FALSE
         map.registerType(new BooleanType());
@@ -266,7 +270,9 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context =  getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(table
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
 
         StringBuffer buf = new StringBuffer("DROP TABLE ");
         buf.append(context.quoteFullyQualifiedName(table));
@@ -280,12 +286,13 @@ public class JdbcAdapter implements DbAdapter {
      */
     public String createTable(DbEntity entity) {
         boolean status;
-        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getQuotingStrategy(status);
+        QuotingStrategy context = getQuotingStrategy(status);
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ");
         sqlBuffer.append(context.quoteFullyQualifiedName(entity));
@@ -329,12 +336,13 @@ public class JdbcAdapter implements DbAdapter {
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
         boolean status;
-        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getQuotingStrategy(status);
+        QuotingStrategy context = getQuotingStrategy(status);
         Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
@@ -360,12 +368,14 @@ public class JdbcAdapter implements DbAdapter {
      */
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         boolean status;
-        if((column.getEntity().getDataMap() != null) && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) { 
-            status= true;
-        } else {
+        if ((column.getEntity().getDataMap() != null)
+                && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getQuotingStrategy(status);
+        QuotingStrategy context = getQuotingStrategy(status);
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column
@@ -413,12 +423,13 @@ public class JdbcAdapter implements DbAdapter {
      */
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         boolean status;
-        if(source.getDataMap()!=null && source.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getQuotingStrategy(status);
+        QuotingStrategy context = getQuotingStrategy(status);
 
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
@@ -454,12 +465,13 @@ public class JdbcAdapter implements DbAdapter {
 
         DbEntity source = (DbEntity) rel.getSourceEntity();
         boolean status;
-        if(source.getDataMap()!=null && source.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getQuotingStrategy(status);
+        QuotingStrategy context = getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
@@ -627,11 +639,10 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * @since 3.0
      */
-    public QuotingStrategy  getQuotingStrategy(boolean needQuotes) {
+    public QuotingStrategy getQuotingStrategy(boolean needQuotes) {
         if (needQuotes) {
-            return new QuoteStrategy(
-                    this.getIdentifiersStartQuote(),
-                    this.getIdentifiersEndQuote());
+            return new QuoteStrategy(this.getIdentifiersStartQuote(), this
+                    .getIdentifiersEndQuote());
         }
         else {
             return new NoQuoteStrategy();
