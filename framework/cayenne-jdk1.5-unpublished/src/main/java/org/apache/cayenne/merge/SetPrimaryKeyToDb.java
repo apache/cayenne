@@ -31,37 +31,45 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
 
     private Collection<DbAttribute> primaryKeyOriginal;
     private Collection<DbAttribute> primaryKeyNew;
+    private String detectedPrimaryKeyName;
 
     public SetPrimaryKeyToDb(DbEntity entity, Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew) {
+            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
         super(entity);
+
         this.primaryKeyOriginal = primaryKeyOriginal;
         this.primaryKeyNew = primaryKeyNew;
+        this.detectedPrimaryKeyName = detectedPrimaryKeyName;
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         List<String> sqls = new ArrayList<String>();
         if (!primaryKeyOriginal.isEmpty()) {
-            appendDropOriginalPrimaryKeySQL(sqls);
+            appendDropOriginalPrimaryKeySQL(adapter, sqls);
         }
-        appendAddNewPrimaryKeySQL(sqls);
+        appendAddNewPrimaryKeySQL(adapter, sqls);
         return sqls;
     }
 
-    protected void appendDropOriginalPrimaryKeySQL(List<String> sqls) {
+    protected void appendDropOriginalPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
+        if (detectedPrimaryKeyName == null) {
+            return;
+        }
         sqls.add("ALTER TABLE "
-                + getEntity().getFullyQualifiedName()
-                + " DROP PRIMARY KEY");
+                + getQuotingStrategy(adapter)
+                        .quoteFullyQualifiedName(getEntity())
+                + " DROP CONSTRAINT "
+                + detectedPrimaryKeyName);
     }
 
-    protected void appendAddNewPrimaryKeySQL(List<String> sqls) {
+    protected void appendAddNewPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
         StringBuilder sql = new StringBuilder();
         sql.append("ALTER TABLE ");
-        sql.append(getEntity().getFullyQualifiedName());
+        sql.append(getQuotingStrategy(adapter).quoteFullyQualifiedName(getEntity()));
         sql.append(" ADD PRIMARY KEY (");
         for (Iterator<DbAttribute> it = primaryKeyNew.iterator(); it.hasNext();) {
-            sql.append(it.next().getName());
+            sql.append(getQuotingStrategy(adapter).quoteString(it.next().getName()));
             if (it.hasNext()) {
                 sql.append(", ");
             }
@@ -74,11 +82,8 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
         return factory.createSetPrimaryKeyToModel(
                 getEntity(),
                 primaryKeyNew,
-                primaryKeyOriginal);
-    }
-
-    protected String getConstraintName() {
-        return getEntity().getName() + "_PK";
+                primaryKeyOriginal,
+                detectedPrimaryKeyName);
     }
 
     public String getTokenName() {

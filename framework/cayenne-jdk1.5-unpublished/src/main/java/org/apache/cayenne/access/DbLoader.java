@@ -42,6 +42,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DbRelationshipDetected;
+import org.apache.cayenne.map.DetectedDbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
@@ -331,7 +332,7 @@ public class DbLoader {
                     continue;
                 }
 
-                DbEntity table = new DbEntity(name);
+                DbEntity table = new DetectedDbEntity(name);
                 table.setCatalog(catalog);
                 table.setSchema(schema);
                 tables.add(table);
@@ -467,9 +468,9 @@ public class DbLoader {
                         tableName);
                 try {
                     while (rs.next()) {
-                        String keyName = rs.getString(4);
+                        String columnName = rs.getString(4);
                         DbAttribute attribute = (DbAttribute) dbEntity
-                                .getAttribute(keyName);
+                                .getAttribute(columnName);
 
                         if (attribute != null) {
                             attribute.setPrimaryKey(true);
@@ -480,7 +481,12 @@ public class DbLoader {
                             // possible
                             // so just print the warning, and ignore
                             logObj.warn("Can't locate attribute for primary key: "
-                                    + keyName);
+                                    + columnName);
+                        }
+                        
+                        String pkName = rs.getString(6);
+                        if ((pkName != null) && (dbEntity instanceof DetectedDbEntity)) {
+                            ((DetectedDbEntity) dbEntity).setPrimaryKeyName(pkName);
                         }
                     }
                 }

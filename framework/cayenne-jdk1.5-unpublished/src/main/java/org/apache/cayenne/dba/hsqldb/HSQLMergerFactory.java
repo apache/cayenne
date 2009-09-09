@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba.hsqldb;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
+import org.apache.cayenne.merge.SetPrimaryKeyToDb;
 
 public class HSQLMergerFactory extends MergerFactory {
 
@@ -68,6 +70,31 @@ public class HSQLMergerFactory extends MergerFactory {
                 sqlBuffer.append(" NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
+
+    @Override
+    public MergerToken createSetPrimaryKeyToDb(
+            DbEntity entity,
+            Collection<DbAttribute> primaryKeyOriginal,
+            Collection<DbAttribute> primaryKeyNew,
+            String detectedPrimaryKeyName) {
+        return new SetPrimaryKeyToDb(
+                entity,
+                primaryKeyOriginal,
+                primaryKeyNew,
+                detectedPrimaryKeyName) {
+
+            @Override
+            protected void appendDropOriginalPrimaryKeySQL(
+                    DbAdapter adapter,
+                    List<String> sqls) {
+                sqls.add("ALTER TABLE "
+                        + getQuotingStrategy(adapter)
+                                .quoteFullyQualifiedName(getEntity())
+                        + " DROP PRIMARY KEY");
             }
 
         };

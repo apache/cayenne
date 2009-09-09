@@ -119,14 +119,24 @@ public class MergerFactory {
     public MergerToken createSetPrimaryKeyToDb(
             DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew) {
-        return new SetPrimaryKeyToDb(entity, primaryKeyOriginal, primaryKeyNew);
+            Collection<DbAttribute> primaryKeyNew,
+            String detectedPrimaryKeyName) {
+        return new SetPrimaryKeyToDb(
+                entity,
+                primaryKeyOriginal,
+                primaryKeyNew,
+                detectedPrimaryKeyName);
     }
 
     public MergerToken createSetPrimaryKeyToModel(
             DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew) {
-        return new SetPrimaryKeyToModel(entity, primaryKeyOriginal, primaryKeyNew);
+            Collection<DbAttribute> primaryKeyNew,
+            String detectedPrimaryKeyName) {
+        return new SetPrimaryKeyToModel(
+                entity,
+                primaryKeyOriginal,
+                primaryKeyNew,
+                detectedPrimaryKeyName);
     }
 }

@@ -30,16 +30,20 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
 
     private Collection<DbAttribute> primaryKeyOriginal;
     private Collection<DbAttribute> primaryKeyNew;
-    private Set<String> primaryKeyNewNames = new HashSet<String>();
+    private String detectedPrimaryKeyName;
+    private Set<String> primaryKeyNewAttributeNames = new HashSet<String>();
 
     public SetPrimaryKeyToModel(DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew) {
+            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
         super(entity);
+        
         this.primaryKeyOriginal = primaryKeyOriginal;
         this.primaryKeyNew = primaryKeyNew;
+        this.detectedPrimaryKeyName = detectedPrimaryKeyName;
+        
         for (DbAttribute attr : primaryKeyNew) {
-            primaryKeyNewNames.add(attr.getName().toUpperCase());
+            primaryKeyNewAttributeNames.add(attr.getName().toUpperCase());
         }
     }
 
@@ -47,7 +51,8 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
         return factory.createSetPrimaryKeyToDb(
                 getEntity(),
                 primaryKeyNew,
-                primaryKeyOriginal);
+                primaryKeyOriginal,
+                detectedPrimaryKeyName);
     }
 
     public void execute(MergerContext mergerContext) {
@@ -56,7 +61,7 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
         for (DbAttribute attr : e.getAttributes()) {
 
             boolean wasPrimaryKey = attr.isPrimaryKey();
-            boolean willBePrimaryKey = primaryKeyNewNames.contains(attr
+            boolean willBePrimaryKey = primaryKeyNewAttributeNames.contains(attr
                     .getName()
                     .toUpperCase());
 

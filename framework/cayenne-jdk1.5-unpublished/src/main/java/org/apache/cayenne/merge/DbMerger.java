@@ -46,6 +46,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DetectedDbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -330,18 +331,29 @@ public class DbMerger {
         }
     }
     
-    private void checkPrimaryKeyChange(DbAdapter adapter,
+    private void checkPrimaryKeyChange(
+            DbAdapter adapter,
             List<MergerToken> tokens,
             DbEntity dbEntity,
             DbEntity detectedEntity) {
         Collection<DbAttribute> primaryKeyOriginal = detectedEntity.getPrimaryKeys();
         Collection<DbAttribute> primaryKeyNew = dbEntity.getPrimaryKeys();
 
-        if (upperCaseEntityNames(primaryKeyOriginal).equals(upperCaseEntityNames(primaryKeyNew))) {
+        String primaryKeyName = null;
+        if ((detectedEntity instanceof DetectedDbEntity)) {
+            primaryKeyName = ((DetectedDbEntity) detectedEntity).getPrimaryKeyName();
+        }
+
+        if (upperCaseEntityNames(primaryKeyOriginal).equals(
+                upperCaseEntityNames(primaryKeyNew))) {
             return;
         }
-        
-        tokens.add(factory.createSetPrimaryKeyToDb(dbEntity, primaryKeyOriginal, primaryKeyNew));
+
+        tokens.add(factory.createSetPrimaryKeyToDb(
+                dbEntity,
+                primaryKeyOriginal,
+                primaryKeyNew,
+                primaryKeyName));
     }
     
     private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attrs) {

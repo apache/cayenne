@@ -18,16 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.dba.postgres;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
-import org.apache.cayenne.merge.SetPrimaryKeyToDb;
 
 public class PostgresMergerFactory extends MergerFactory {
 
@@ -47,28 +43,6 @@ public class PostgresMergerFactory extends MergerFactory {
                 sqlBuffer.append(" ALTER ");
                 sqlBuffer.append(context.quoteString(columnNew.getName()));
                 sqlBuffer.append(" TYPE ");
-            }
-        };
-    }
-
-    @Override
-    public MergerToken createSetPrimaryKeyToDb(
-            DbEntity entity,
-            final Collection<DbAttribute> primaryKeyOriginal,
-            final Collection<DbAttribute> primaryKeyNew) {
-        return new SetPrimaryKeyToDb(entity, primaryKeyOriginal, primaryKeyNew) {
-
-            @Override
-            protected void appendDropOriginalPrimaryKeySQL(List<String> sqls) {
-                sqls.add("ALTER TABLE "
-                        + getEntity().getFullyQualifiedName()
-                        + " DROP CONSTRAINT "
-                        + getConstraintName());
-            }
-
-            @Override
-            protected String getConstraintName() {
-                return getEntity().getName().toLowerCase() + "_pkey";
             }
         };
     }
