@@ -35,7 +35,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -43,9 +42,9 @@ import org.apache.cayenne.access.types.DefaultType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
@@ -117,6 +116,7 @@ public class OracleAdapter extends JdbcAdapter {
     /**
      * @deprecated since 3.0, as a generic BLOB method is used to write BLOBs.
      */
+    @Deprecated
     public static Method getOutputStreamFromBlobMethod() {
         return outputStreamFromBlobMethod;
     }
@@ -157,6 +157,7 @@ public class OracleAdapter extends JdbcAdapter {
     /**
      * @deprecated since 3.0, as a generic CLOB method is used to write CLOBs.
      */
+    @Deprecated
     public static Method getWriterFromClobMethod() {
         return writerFromClobMethod;
     }
@@ -322,9 +323,7 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new TrimmingQualifierTranslator(
-                queryAssembler,
-                OracleAdapter.TRIM_FUNCTION);
+        return new OracleQualifierTranslator(queryAssembler);
     }
 
     /**
@@ -402,6 +401,7 @@ public class OracleAdapter extends JdbcAdapter {
         /**
          * @deprecated since 3.0 as validation should not be done at the DataNode level.
          */
+        @Deprecated
         public boolean validateProperty(
                 Object source,
                 String property,

@@ -296,4 +296,18 @@ public class ExpressionFactoryTest extends CayenneCase {
         Expression in = ExpressionFactory.inExp("paintingArray", p1);
         assertTrue(in.match(a1));
     }
+    
+    /**
+     * Tests INs with more than 1000 elements
+     */
+    public void testLongIn() {
+        //not all adapters strip INs, so we just make sure query with such qualifier fires OK
+        Object[] numbers = new String[2009];
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = "" + i;
+        }
+        
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp("artistName", numbers));
+        createDataContext().performQuery(query);
+    }
 }
