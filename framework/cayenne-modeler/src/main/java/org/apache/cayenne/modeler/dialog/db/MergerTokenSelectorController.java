@@ -173,8 +173,10 @@ public class MergerTokenSelectorController extends CayenneController {
         
         // TODO: correct width for the different columns
         //view.getTokens().setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setPreferredWidth(15);
-        columnModel.getColumn(MergerTokenTableModel.COL_DIRECTION).setPreferredWidth(15);
+        columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setPreferredWidth(50);
+        columnModel.getColumn(MergerTokenTableModel.COL_DIRECTION).setPreferredWidth(100);
+        columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setMaxWidth(50);
+        columnModel.getColumn(MergerTokenTableModel.COL_DIRECTION).setMaxWidth(100);
     }
 
     public boolean isSelected(MergerToken token) {

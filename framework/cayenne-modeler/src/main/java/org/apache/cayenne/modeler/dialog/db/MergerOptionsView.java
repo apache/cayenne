@@ -91,7 +91,7 @@ public class MergerOptionsView extends JDialog {
 
         // we need the right preferred size so that dialog "pack()" produces decent
         // default size...
-        tabs.setPreferredSize(new Dimension(450, 350));
+        tabs.setPreferredSize(new Dimension(600, 350));
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(saveSqlButton);
