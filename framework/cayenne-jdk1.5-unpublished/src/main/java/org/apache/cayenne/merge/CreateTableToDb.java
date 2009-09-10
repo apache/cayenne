@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.validation.SimpleValidationFailure;
 
 public class CreateTableToDb extends AbstractToDbToken.Entity {
 
@@ -38,6 +40,22 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
                 Collections.singletonList(getEntity())));
         sqls.add(adapter.createTable(getEntity()));
         return sqls;
+    }
+
+    @Override
+    public void execute(MergerContext mergerContext) {
+        try {
+            DataNode node = mergerContext.getDataNode();
+            DbAdapter adapter = mergerContext.getAdapter();
+            adapter.getPkGenerator().createAutoPk(
+                    node,
+                    Collections.singletonList(getEntity()));
+            executeSql(mergerContext, adapter.createTable(getEntity()));
+        }
+        catch (Exception e) {
+            mergerContext.getValidationResult().addFailure(
+                    new SimpleValidationFailure(this, e.getMessage()));
+        }
     }
 
     public String getTokenName() {

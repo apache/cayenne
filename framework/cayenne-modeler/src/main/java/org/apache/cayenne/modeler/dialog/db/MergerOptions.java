@@ -46,6 +46,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.merge.AbstractToDbToken;
 import org.apache.cayenne.merge.DbMerger;
 import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergeDirection;
@@ -187,38 +188,16 @@ public class MergerOptions extends CayenneController {
                 + batchTerminator
                 + "\n\n" : "\n\n";
         
-        MergerContext context = new MergerContext() {
-
-            public void executeSql(String sql) {
-                buf.append(sql);
-                buf.append(lineEnd);
-            }
-
-            public DbAdapter getAdapter() {
-                return adapter;
-            }
-
-            public DataMap getDataMap() {
-                return dataMap;
-            }
-
-            public ValidationResult getValidationResult() {
-                return new ValidationResult();
-            }
-
-            public ModelMergeDelegate getModelMergeDelegate() {
-                return null;
-            }
-
-        };
-
         while (it.hasNext()) {
             MergerToken token = it.next();
-            
-            if (token.getDirection() == MergeDirection.TO_DB) {
-                token.execute(context);
+
+            if (token instanceof AbstractToDbToken) {
+                AbstractToDbToken tdb = (AbstractToDbToken) token;
+                for (String sql : tdb.createSql(adapter)) {
+                    buf.append(sql);
+                    buf.append(lineEnd);
+                }
             }
-            // buf.append(token.createSql(adapter)).append(lineEnd);
         }
 
         textForSQL = buf.toString();

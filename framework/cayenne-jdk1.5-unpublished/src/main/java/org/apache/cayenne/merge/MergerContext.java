@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.validation.ValidationResult;
@@ -29,6 +30,7 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public interface MergerContext {
 
+    @Deprecated
     public void executeSql(String sql);
     
     public ModelMergeDelegate getModelMergeDelegate();
@@ -36,6 +38,8 @@ public interface MergerContext {
     public DbAdapter getAdapter();
 
     public DataMap getDataMap();
+    
+    public DataNode getDataNode();
     
     public ValidationResult getValidationResult();
 

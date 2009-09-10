@@ -18,30 +18,66 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
+import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.validation.SimpleValidationFailure;
 
 /**
  * Common abstract superclass for all {@link MergerToken}s going from the model to the
  * database.
- * 
  */
 public abstract class AbstractToDbToken implements MergerToken, Comparable<MergerToken> {
-    
+
     public final MergeDirection getDirection() {
         return MergeDirection.TO_DB;
     }
 
     public void execute(MergerContext mergerContext) {
         for (String sql : createSql(mergerContext.getAdapter())) {
-            mergerContext.executeSql(sql);
+            executeSql(mergerContext, sql);
         }
     }
-    
+
+    protected void executeSql(MergerContext mergerContext, String sql) {
+        Connection conn = null;
+        Statement st = null;
+        try {
+            QueryLogger.log(sql);
+            conn = mergerContext.getDataNode().getDataSource().getConnection();
+            st = conn.createStatement();
+            st.execute(sql);
+        }
+        catch (SQLException e) {
+            mergerContext.getValidationResult().addFailure(
+                    new SimpleValidationFailure(sql, e.getMessage()));
+            QueryLogger.logQueryError(e);
+        }
+        finally {
+            if (st != null) {
+                try {
+                    st.close();
+                }
+                catch (SQLException e) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                }
+                catch (SQLException e) {
+                }
+            }
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder ts = new StringBuilder();
@@ -54,9 +90,9 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
     }
 
     public abstract List<String> createSql(DbAdapter adapter);
-    
+
     abstract static class Entity extends AbstractToDbToken {
-        
+
         private DbEntity entity;
 
         public Entity(DbEntity entity) {
@@ -70,13 +106,13 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
         public String getTokenValue() {
             return getEntity().getName();
         }
-        
+
         protected QuotingStrategy getQuotingStrategy(DbAdapter adapter) {
             return adapter.getQuotingStrategy(getEntity()
                     .getDataMap()
                     .isQuotingSQLIdentifiers());
         }
-        
+
         public int compareTo(MergerToken o) {
             // default order as tokens are created
             return 0;
@@ -85,9 +121,9 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
     }
 
     abstract static class EntityAndColumn extends Entity {
-        
+
         private DbAttribute column;
-        
+
         public EntityAndColumn(DbEntity entity, DbAttribute column) {
             super(entity);
             this.column = column;
@@ -96,11 +132,11 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
         public DbAttribute getColumn() {
             return column;
         }
-        
+
         @Override
         public String getTokenValue() {
             return getEntity().getName() + "." + getColumn().getName();
         }
-        
+
     }
 }

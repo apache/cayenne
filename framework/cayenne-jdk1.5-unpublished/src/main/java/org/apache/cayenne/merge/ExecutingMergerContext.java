@@ -34,31 +34,34 @@ import org.apache.cayenne.validation.ValidationResult;
 public class ExecutingMergerContext implements MergerContext {
 
     private DataMap map;
-    private DbAdapter adapter;
-    private DataSource dataSource;
+    private DataNode node;
     private ValidationResult result = new ValidationResult();
     private ModelMergeDelegate delegate;
 
     public ExecutingMergerContext(DataMap map, DataNode node) {
         this.map = map;
-        this.dataSource = node.getDataSource();
-        this.adapter = node.getAdapter();
+        this.node = node;
         this.delegate = new DefaultModelMergeDelegate();
     }
 
-    public ExecutingMergerContext(DataMap map, DataSource dataSource, DbAdapter adapter, ModelMergeDelegate delegate) {
+    public ExecutingMergerContext(DataMap map, DataSource dataSource, DbAdapter adapter,
+            ModelMergeDelegate delegate) {
         this.map = map;
-        this.dataSource = dataSource;
-        this.adapter = adapter;
+        // create a fake DataNode as lots of DbAdapter/PkGenerator methods
+        // take a DataNode instead of just a DataSource
+        this.node = new DataNode();
+        this.node.setDataSource(dataSource);
+        this.node.setAdapter(adapter);
         this.delegate = delegate;
     }
 
+    @Deprecated
     public void executeSql(String sql) {
         Connection conn = null;
         Statement st = null;
         try {
             QueryLogger.log(sql);
-            conn = dataSource.getConnection();
+            conn = getDataNode().getDataSource().getConnection();
             st = conn.createStatement();
             st.execute(sql);
         }
@@ -85,11 +88,15 @@ public class ExecutingMergerContext implements MergerContext {
     }
 
     public DbAdapter getAdapter() {
-        return adapter;
+        return getDataNode().getAdapter();
     }
 
     public DataMap getDataMap() {
         return map;
+    }
+
+    public DataNode getDataNode() {
+        return node;
     }
 
     public ValidationResult getValidationResult() {

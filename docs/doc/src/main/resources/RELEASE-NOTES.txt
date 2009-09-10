@@ -42,6 +42,7 @@ CAY-1248 ClassCastException with OracleLOBBatchAction
 CAY-1250 Prefetching doesn't work with prefetched subentity
 CAY-1252 Bad XML generated when saving DBEntity qualifiers
 CAY-1265 error while search inheritance relationship
+CAY-1274 CreateTableToDb should not create existing AUTO_PK_SUPPORT
 
 ----------------------------------
 Release: 3.0M6
