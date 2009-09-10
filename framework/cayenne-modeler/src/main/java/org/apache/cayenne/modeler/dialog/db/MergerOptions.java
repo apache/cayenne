@@ -266,15 +266,21 @@ public class MergerOptions extends CayenneController {
         final ModelMergeDelegate delegate = new ModelMergeDelegate (){
 
             public void dbAttributeAdded(DbAttribute att) {
-                c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                if (c.getCurrentDbEntity() == att.getEntity()) {
+                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                }
             }
 
             public void dbAttributeModified(DbAttribute att) {
-                c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                if (c.getCurrentDbEntity() == att.getEntity()) {
+                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                }
             }
 
             public void dbAttributeRemoved(DbAttribute att) {
-                c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                if (c.getCurrentDbEntity() == att.getEntity()) {
+                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                }
             }
 
             public void dbEntityAdded(DbEntity ent) {
@@ -288,23 +294,33 @@ public class MergerOptions extends CayenneController {
             }
 
             public void dbRelationshipAdded(DbRelationship rel) {
-                c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                if (c.getCurrentDbEntity() == rel.getSourceEntity()) {
+                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                }
             }
 
             public void dbRelationshipRemoved(DbRelationship rel) {
-                c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                if (c.getCurrentDbEntity() == rel.getSourceEntity()) {
+                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                }
             }
 
             public void objAttributeAdded(ObjAttribute att) {
-                c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                if (c.getCurrentObjEntity() == att.getEntity()) {
+                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                }
             }
 
             public void objAttributeModified(ObjAttribute att) {
-                c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                if (c.getCurrentObjEntity() == att.getEntity()) {
+                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                }
             }
 
             public void objAttributeRemoved(ObjAttribute att) {
-                c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                if (c.getCurrentObjEntity() == att.getEntity()) {
+                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                }
             }
 
             public void objEntityAdded(ObjEntity ent) {
@@ -318,11 +334,15 @@ public class MergerOptions extends CayenneController {
             }
 
             public void objRelationshipAdded(ObjRelationship rel) {
-                c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                if (c.getCurrentObjEntity() == rel.getSourceEntity()) {
+                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                }
             }
 
             public void objRelationshipRemoved(ObjRelationship rel) {
-                c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                if (c.getCurrentObjEntity() == rel.getSourceEntity()) {
+                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                }
             }
             
         };
