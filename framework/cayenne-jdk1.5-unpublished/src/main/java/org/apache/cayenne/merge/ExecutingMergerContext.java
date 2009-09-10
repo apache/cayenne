@@ -18,17 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 public class ExecutingMergerContext implements MergerContext {
@@ -53,38 +47,6 @@ public class ExecutingMergerContext implements MergerContext {
         this.node.setDataSource(dataSource);
         this.node.setAdapter(adapter);
         this.delegate = delegate;
-    }
-
-    @Deprecated
-    public void executeSql(String sql) {
-        Connection conn = null;
-        Statement st = null;
-        try {
-            QueryLogger.log(sql);
-            conn = getDataNode().getDataSource().getConnection();
-            st = conn.createStatement();
-            st.execute(sql);
-        }
-        catch (SQLException e) {
-            result.addFailure(new SimpleValidationFailure(sql, e.getMessage()));
-            QueryLogger.logQueryError(e);
-        }
-        finally {
-            if (st != null) {
-                try {
-                    st.close();
-                }
-                catch (SQLException e) {
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                }
-                catch (SQLException e) {
-                }
-            }
-        }
     }
 
     public DbAdapter getAdapter() {

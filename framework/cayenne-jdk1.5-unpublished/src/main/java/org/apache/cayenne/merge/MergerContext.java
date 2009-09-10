@@ -30,9 +30,6 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public interface MergerContext {
 
-    @Deprecated
-    public void executeSql(String sql);
-    
     public ModelMergeDelegate getModelMergeDelegate();
     
     public DbAdapter getAdapter();
