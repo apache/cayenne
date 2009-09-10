@@ -108,8 +108,7 @@ public class OracleMergerFactory extends MergerFactory {
                 sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" MODIFY ");
 
-                OracleAdapter oradapter = (OracleAdapter) adapter;
-                oradapter.createTableAppendColumn(sqlBuffer, column);
+                adapter.createTableAppendColumn(sqlBuffer, column);
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
