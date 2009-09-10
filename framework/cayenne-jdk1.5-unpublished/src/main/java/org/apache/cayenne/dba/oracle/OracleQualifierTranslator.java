@@ -27,6 +27,8 @@ import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTIn;
 import org.apache.cayenne.exp.parser.ASTList;
+import org.apache.cayenne.exp.parser.ASTNegate;
+import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.commons.collections.Transformer;
 
@@ -61,7 +63,11 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
                 return exp;
             }
             
-            return trimmedInExpression((ASTPath) exp.getOperand(0), objects, maxInSize);
+            Expression trimmed = trimmedInExpression((ASTPath) exp.getOperand(0), objects, maxInSize);
+            if (exp instanceof ASTNotIn) {
+                return new ASTNegate(trimmed);
+            }
+            return trimmed;
         }
         
         Expression trimmedInExpression(ASTPath path, Object[] values, int maxInSize) {
@@ -84,7 +90,7 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
         }
 
         public Object transform(Object input) {
-            if (input instanceof Expression && ((Expression) input).getType() == Expression.IN) {
+            if (input instanceof ASTIn || input instanceof ASTNotIn) {
                 return trimmedInExpression((Expression) input, 1000);
             }
             return input;
