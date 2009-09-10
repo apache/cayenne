@@ -25,6 +25,7 @@ CAY-1236 Allow providing custom INSERT, UPDATE, DELETE query builders
 CAY-1241 Add method to ExpressionFactory to match against the primary key of an object or list of objects
 CAY-1254 filtering an inExp(a, b) does not work when the path (a) refers to a collection of objects
 CAY-1261 Auto-inject values in NEW objects with declared qualifiers
+CAY-1263 Cayenne Oracle adapter should automatically strip IN clauses with more than 1000 elements
 CAY-1268 Implement 'setStatementFetchSize' for RelationshipQuery
 CAY-1270 Merge primary key changes
 
