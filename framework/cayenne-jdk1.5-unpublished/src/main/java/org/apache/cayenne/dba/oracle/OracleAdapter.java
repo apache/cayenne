@@ -38,7 +38,6 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.DefaultType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
@@ -213,15 +212,6 @@ public class OracleAdapter extends JdbcAdapter {
         // At least on MacOS X, driver does not handle Short and Byte properly
         map.registerType(new ShortType(true));
         map.registerType(new ByteType(true));
-
-        // these two types are needed to replace PreparedStatement binding
-        // via "setObject()" to a call to setInt or setDouble to make
-        // Oracle happy, esp. with the AST* expression classes
-        // that do not evaluate constants to BigDecimals, but rather
-        // Integer and Double
-        map.registerType(new OracleIntegerType());
-        map.registerType(new OracleDoubleType());
-
         map.registerType(new OracleBooleanType());
     }
 
@@ -335,58 +325,6 @@ public class OracleAdapter extends JdbcAdapter {
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new OracleActionBuilder(this, node
                 .getEntityResolver()));
-    }
-
-    /**
-     * @since 1.1
-     */
-    final class OracleIntegerType extends DefaultType {
-
-        public OracleIntegerType() {
-            super(Integer.class.getName());
-        }
-
-        @Override
-        public void setJdbcObject(
-                PreparedStatement st,
-                Object val,
-                int pos,
-                int type,
-                int precision) throws Exception {
-
-            if (val != null) {
-                st.setInt(pos, ((Number) val).intValue());
-            }
-            else {
-                super.setJdbcObject(st, val, pos, type, precision);
-            }
-        }
-    }
-
-    /**
-     * @since 1.1
-     */
-    final class OracleDoubleType extends DefaultType {
-
-        public OracleDoubleType() {
-            super(Double.class.getName());
-        }
-
-        @Override
-        public void setJdbcObject(
-                PreparedStatement st,
-                Object val,
-                int pos,
-                int type,
-                int precision) throws Exception {
-
-            if (val != null) {
-                st.setDouble(pos, ((Number) val).doubleValue());
-            }
-            else {
-                super.setJdbcObject(st, val, pos, type, precision);
-            }
-        }
     }
 
     /**

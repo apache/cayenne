@@ -22,10 +22,8 @@ package org.apache.cayenne.dba;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -34,15 +32,8 @@ import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.access.types.BigIntegerType;
-import org.apache.cayenne.access.types.BooleanType;
-import org.apache.cayenne.access.types.ByteArrayType;
-import org.apache.cayenne.access.types.CalendarType;
-import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.access.types.IntegerType;
-import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.conf.ClasspathResourceFinder;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -164,31 +155,7 @@ public class JdbcAdapter implements DbAdapter {
      * and Java layers. Called from default constructor.
      */
     protected void configureExtendedTypes(ExtendedTypeMap map) {
-
-        map.registerType(new IntegerType());
-
-        // use BooleanType to ensure that returned booleans are an enum of Boolean.TRUE
-        // and Boolean.FALSE
-        map.registerType(new BooleanType());
-
-        // Create a default CHAR handler with some generic settings.
-        // Subclasses may need to install their own CharType or reconfigure
-        // this one to work better with the target database.
-        map.registerType(new CharType(false, true));
-
-        // enable java.util.Dates as "persistent" values
-        map.registerType(new UtilDateType());
-
-        // enable "small" BLOBs
-        map.registerType(new ByteArrayType(false, true));
-
-        // enable Calendar
-        // TODO: andrus 9/1/2006 - maybe use ExtendedTypeFactory to handle all calendar
-        // subclasses at once
-        map.registerType(new CalendarType<GregorianCalendar>(GregorianCalendar.class));
-        map.registerType(new CalendarType<Calendar>(Calendar.class));
-
-        map.registerType(new BigIntegerType());
+        // noop... subclasses may override to install custom types
     }
 
     /**

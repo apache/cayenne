@@ -23,6 +23,10 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.validation.BeanValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
+
 /**
  * Handles <code>java.lang.Short</code> type mapping. Can be configured to recast
  * java.lang.Short to java.lang.Integer when binding values to PreparedStatement. This is
@@ -31,7 +35,7 @@ import java.sql.ResultSet;
  * 
  * @since 1.0.2
  */
-public class ShortType extends AbstractType {
+public class ShortType implements ExtendedType {
 
     protected boolean widenShorts;
 
@@ -39,36 +43,57 @@ public class ShortType extends AbstractType {
         this.widenShorts = widenShorts;
     }
 
-    @Override
     public String getClassName() {
         return Short.class.getName();
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         short s = rs.getShort(index);
-        return (rs.wasNull()) ? null : Short.valueOf(s);
+        return (rs.wasNull()) ? null : s;
     }
 
-    @Override
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         short s = st.getShort(index);
-        return (st.wasNull()) ? null : Short.valueOf(s);
+        return (st.wasNull()) ? null : s;
     }
 
-    @Override
     public void setJdbcObject(
-            PreparedStatement st,
-            Object val,
+            PreparedStatement statement,
+            Object value,
             int pos,
             int type,
             int precision) throws Exception {
 
-        if (widenShorts && (val instanceof Short)) {
-            val = Integer.valueOf(((Short) val).intValue());
+        if (value == null) {
+            statement.setNull(pos, type);
+        }
+        else {
+
+            Short s = (Short) value;
+            if (widenShorts) {
+                statement.setInt(pos, s.intValue());
+            }
+            else {
+                statement.setShort(pos, s.shortValue());
+            }
+        }
+    }
+
+    public boolean validateProperty(
+            Object source,
+            String property,
+            Object value,
+            DbAttribute dbAttribute,
+            ValidationResult validationResult) {
+        
+        if (dbAttribute.isMandatory() && value == null) {
+            validationResult.addFailure(new BeanValidationFailure(source, property, "'"
+                    + property
+                    + "' must be not null"));
+            return false;
         }
 
-        super.setJdbcObject(st, val, pos, type, precision);
+        return true;
     }
 }

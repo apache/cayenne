@@ -19,13 +19,16 @@
 
 package org.apache.cayenne.access.types;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.cayenne.util.Util;
 
@@ -33,10 +36,7 @@ import org.apache.cayenne.util.Util;
  * Stores ExtendedTypes, implementing an algorithm to determine the right type for a given
  * Java class. See {@link #getRegisteredType(String)} documentation for lookup algorithm
  * details.
- * 
  */
-// TODO: andrus 10/30/2007 - implement efficient synchronization. This class is 99% read
-// and 1% write, so probably should use ConcurrentHashMap once we switch to Java 5.
 public class ExtendedTypeMap {
 
     static final Map<String, String> classesForPrimitives;
@@ -53,7 +53,7 @@ public class ExtendedTypeMap {
     }
 
     protected final Map<String, ExtendedType> typeMap;
-    protected DefaultType defaultType;
+    protected ExtendedType defaultType;
 
     Collection<ExtendedTypeFactory> extendedTypeFactories;
 
@@ -66,8 +66,10 @@ public class ExtendedTypeMap {
      * JDK version is at least 1.5, also loads support for enumerated types.
      */
     public ExtendedTypeMap() {
-        this.typeMap = new HashMap<String, ExtendedType>();
-        this.defaultType = new DefaultType();
+        this.defaultType = new ObjectType();
+        this.typeMap = new ConcurrentHashMap<String, ExtendedType>();
+        this.extendedTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
+        this.internalTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
 
         initDefaultTypes();
         initDefaultFactories();
@@ -77,15 +79,30 @@ public class ExtendedTypeMap {
      * Registers default extended types. This method is called from constructor.
      */
     protected void initDefaultTypes() {
-        // void placeholder
         registerType(new VoidType());
 
-        // register default types
-        Iterator<String> it = DefaultType.defaultTypes();
-        while (it.hasNext()) {
-            registerType(new DefaultType(it.next()));
-        }
-        
+        registerType(new BigDecimalType());
+        registerType(new BigIntegerType());
+        registerType(new BooleanType());
+        registerType(new ByteArrayType(false, true));
+        registerType(new ByteType(false));
+        registerType(new CharType(false, true));
+        registerType(new DateType());
+        registerType(new DoubleType());
+        registerType(new FloatType());
+        registerType(new IntegerType());
+        registerType(new LongType());
+        registerType(new ShortType(false));
+        registerType(new TimeType());
+        registerType(new TimestampType());
+
+        registerType(new UtilDateType());
+
+        // TODO: andrus 9/1/2006 - maybe use ExtendedTypeFactory to handle all calendar
+        // subclasses at once
+        registerType(new CalendarType<GregorianCalendar>(GregorianCalendar.class));
+        registerType(new CalendarType<Calendar>(Calendar.class));
+
         registerType(new UUIDType());
     }
 
@@ -96,7 +113,6 @@ public class ExtendedTypeMap {
      * @since 3.0
      */
     protected void initDefaultFactories() {
-        internalTypeFactories = new ArrayList<ExtendedTypeFactory>(3);
         internalTypeFactories.add(new EnumTypeFactory());
         internalTypeFactories.add(new ByteOrCharArrayFactory(this));
 
@@ -109,10 +125,10 @@ public class ExtendedTypeMap {
      * Returns ExtendedTypeFactories registered with this instance.
      * 
      * @since 1.2
+     * @deprecated since 3.0 unused
      */
     public Collection<ExtendedTypeFactory> getFactories() {
-        return extendedTypeFactories != null ? Collections
-                .unmodifiableCollection(extendedTypeFactories) : Collections.EMPTY_SET;
+        return Collections.unmodifiableCollection(extendedTypeFactories);
     }
 
     /**
@@ -131,10 +147,6 @@ public class ExtendedTypeMap {
             throw new IllegalArgumentException("Attempt to add null factory");
         }
 
-        if (extendedTypeFactories == null) {
-            extendedTypeFactories = new ArrayList<ExtendedTypeFactory>();
-        }
-
         extendedTypeFactories.add(factory);
     }
 
@@ -144,18 +156,15 @@ public class ExtendedTypeMap {
      * @since 1.2
      */
     public void removeFactory(ExtendedTypeFactory factory) {
-        if (factory != null && extendedTypeFactories != null) {
-            // nullify for consistency
-            if (extendedTypeFactories.remove(factory) && extendedTypeFactories.isEmpty()) {
-                extendedTypeFactories = null;
-            }
+        if (factory != null) {
+            extendedTypeFactories.remove(factory);
         }
     }
 
     /**
      * Adds a new type to the list of registered types. If there is another type
-     * registered for a class described by the <code>type</code> argument, the old
-     * handler is overridden by the new one.
+     * registered for a class described by the <code>type</code> argument, the old handler
+     * is overridden by the new one.
      */
     public void registerType(ExtendedType type) {
         typeMap.put(type.getClassName(), type);
@@ -176,13 +185,13 @@ public class ExtendedTypeMap {
      * Primitive class names are internally replaced by the non-primitive counterparts.
      * The following lookup sequence is used to determine the type:
      * <ul>
-     * <li>First the methods checks for an ExtendedType explicitly registered with the
-     * map for a given class name (most common types are registered by Cayenne internally;
+     * <li>First the methods checks for an ExtendedType explicitly registered with the map
+     * for a given class name (most common types are registered by Cayenne internally;
      * users can register their own).</li>
      * <li>Second, the method tries to obtain a type by iterating through
      * {@link ExtendedTypeFactory} instances registered by users. If a factory returns a
      * non-null type, it is returned to the user and the rest of the factories are
-     * ignored. </li>
+     * ignored.</li>
      * <li>Third, the method iterates through standard {@link ExtendedTypeFactory}
      * instances that can dynamically construct extended types for serializable objects
      * and JDK 1.5 enums.</li>
@@ -192,6 +201,10 @@ public class ExtendedTypeMap {
      * <i>Note that for array types class name must be in the form 'MyClass[]'</i>.
      */
     public ExtendedType getRegisteredType(String javaClassName) {
+        
+        if(javaClassName == null) {
+            return getDefaultType();
+        }
 
         String nonPrimitive = classesForPrimitives.get(javaClassName);
         if (nonPrimitive != null) {
@@ -216,6 +229,10 @@ public class ExtendedTypeMap {
     }
 
     ExtendedType getExplictlyRegisteredType(String className) {
+
+        if (className == null) {
+            throw new NullPointerException("Null className");
+        }
         return typeMap.get(className);
     }
 
@@ -296,13 +313,12 @@ public class ExtendedTypeMap {
         }
 
         // lookup in user factories first
-        if (extendedTypeFactories != null) {
-            for (ExtendedTypeFactory factory : extendedTypeFactories) {
 
-                ExtendedType type = factory.getType(typeClass);
-                if (type != null) {
-                    return type;
-                }
+        for (ExtendedTypeFactory factory : extendedTypeFactories) {
+
+            ExtendedType type = factory.getType(typeClass);
+            if (type != null) {
+                return type;
             }
         }
 

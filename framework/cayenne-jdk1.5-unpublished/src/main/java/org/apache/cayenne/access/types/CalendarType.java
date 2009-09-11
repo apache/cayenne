@@ -88,7 +88,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
                 break;
         }
 
-        if (rs.wasNull()) {
+        if (val == null) {
             return null;
         }
 
@@ -128,7 +128,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
                 break;
         }
 
-        if (rs.wasNull()) {
+        if (val == null) {
             return null;
         }
 

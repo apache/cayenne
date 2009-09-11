@@ -30,10 +30,11 @@ import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * A convenience superclass of ExtendedType implementations. Implements
- * {@link #setJdbcObject(PreparedStatement, Object, int, int, int)}in a generic fashion
- * by calling "setObject(..)" on PreparedStatement. Some adapters may need to override
- * this behavior as it doesn't work consistently across all JDBC drivers.
+ * {@link #setJdbcObject(PreparedStatement, Object, int, int, int)}in a generic fashion by
+ * calling "setObject(..)" on PreparedStatement. Some adapters may need to override this
+ * behavior as it doesn't work consistently across all JDBC drivers.
  * 
+ * @deprecated since 3.0, as not common superclass for ExtendedTypes is deemed necessary.
  */
 public abstract class AbstractType implements ExtendedType {
 

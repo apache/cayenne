@@ -57,7 +57,7 @@ public class IntegerType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setInt(pos, ((Integer) value).intValue());
+            statement.setInt(pos, ((Number) value).intValue());
         }
     }
 

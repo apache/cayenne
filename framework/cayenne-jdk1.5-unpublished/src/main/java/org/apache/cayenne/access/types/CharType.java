@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.types;
 
 import java.io.BufferedReader;
@@ -39,9 +38,8 @@ import org.apache.cayenne.validation.ValidationResult;
 /**
  * Handles <code>java.lang.String</code>, mapping it as either of JDBC types - CLOB or
  * (VAR)CHAR. Can be configured to trim trailing spaces.
- * 
  */
-public class CharType extends AbstractType {
+public class CharType implements ExtendedType {
 
     private static final int BUF_SIZE = 8 * 1024;
 
@@ -56,7 +54,6 @@ public class CharType extends AbstractType {
     /**
      * Returns "java.lang.String".
      */
-    @Override
     public String getClassName() {
         return String.class.getName();
     }
@@ -67,7 +64,6 @@ public class CharType extends AbstractType {
      * @since 1.1
      * @deprecated since 3.0 as validation should not be done at the DataNode level.
      */
-    @Override
     public boolean validateProperty(
             Object source,
             String property,
@@ -103,7 +99,6 @@ public class CharType extends AbstractType {
     }
 
     /** Return trimmed string. */
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         String val = null;
@@ -128,7 +123,6 @@ public class CharType extends AbstractType {
     }
 
     /** Return trimmed string. */
-    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
 
@@ -156,7 +150,6 @@ public class CharType extends AbstractType {
         return val;
     }
 
-    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,
@@ -164,14 +157,7 @@ public class CharType extends AbstractType {
             int type,
             int precision) throws Exception {
 
-        // if this is a CLOB column, set the value as "String"
-        // instead. This should work with most drivers
-        if (type == Types.CLOB) {
-            st.setString(pos, (String) val);
-        }
-        else {
-            super.setJdbcObject(st, val, pos, type, precision);
-        }
+        st.setString(pos, (String) val);
     }
 
     protected String readClob(Clob clob) throws IOException, SQLException {
@@ -226,8 +212,8 @@ public class CharType extends AbstractType {
     }
 
     /**
-     * Returns <code>true</code> if 'materializeObject' method should trim trailing
-     * spaces from the CHAR columns. This addresses an issue with some JDBC drivers (e.g.
+     * Returns <code>true</code> if 'materializeObject' method should trim trailing spaces
+     * from the CHAR columns. This addresses an issue with some JDBC drivers (e.g.
      * Oracle), that return Strings for CHAR columsn padded with spaces.
      */
     public boolean isTrimmingChars() {

@@ -17,18 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.dba.hsqldb;
 
-import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.types.DefaultType;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
@@ -50,16 +46,8 @@ import org.apache.cayenne.query.SQLAction;
  *        test-hsqldb.jdbc.url = jdbc:hsqldb:hsql://serverhostname
  *        test-hsqldb.jdbc.driver = org.hsqldb.jdbcDriver
  * </pre>
- * 
  */
 public class HSQLDBAdapter extends JdbcAdapter {
-
-    @Override
-    protected void configureExtendedTypes(ExtendedTypeMap map) {
-        super.configureExtendedTypes(map);
-        map.registerType(new ShortType());
-        map.registerType(new ByteType());
-    }
 
     /**
      * Generate fully-qualified name for 1.8 and on. Subclass generates unqualified name.
@@ -67,7 +55,9 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * @since 1.2
      */
     protected String getTableName(DbEntity entity) {
-        QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(entity
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
         return context.quoteFullyQualifiedName(entity);
     }
 
@@ -78,7 +68,9 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     protected String getSchemaName(DbEntity entity) {
         if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
+            QuotingStrategy context = getQuotingStrategy(entity
+                    .getDataMap()
+                    .isQuotingSQLIdentifiers());
             return context.quoteString(entity.getSchema()) + ".";
         }
 
@@ -104,9 +96,10 @@ public class HSQLDBAdapter extends JdbcAdapter {
     @Override
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         boolean status;
-        if(source.getDataMap()!=null && source.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
@@ -123,7 +116,10 @@ public class HSQLDBAdapter extends JdbcAdapter {
         buf.append(" ADD CONSTRAINT ");
 
         buf.append(context.quoteString(getSchemaName(source)));
-        String name = "U_" + source.getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+        String name = "U_"
+                + source.getName()
+                + "_"
+                + (long) (System.currentTimeMillis() / (Math.random() * 100000));
 
         buf.append(context.quoteString(name));
         buf.append(" UNIQUE (");
@@ -151,9 +147,11 @@ public class HSQLDBAdapter extends JdbcAdapter {
     @Override
     public String createFkConstraint(DbRelationship rel) {
         boolean status;
-        if ((rel.getSourceEntity().getDataMap() != null) && rel.getSourceEntity().getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if ((rel.getSourceEntity().getDataMap() != null)
+                && rel.getSourceEntity().getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
@@ -169,8 +167,11 @@ public class HSQLDBAdapter extends JdbcAdapter {
         // hsqldb requires the ADD CONSTRAINT statement
         buf.append(" ADD CONSTRAINT ");
         buf.append(getSchemaName((DbEntity) rel.getSourceEntity()));
-        String name = "U_" + rel.getSourceEntity().getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
-        
+        String name = "U_"
+                + rel.getSourceEntity().getName()
+                + "_"
+                + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+
         buf.append(context.quoteString(name));
         buf.append(" FOREIGN KEY (");
 
@@ -217,72 +218,22 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        //CAY-1095: if the column is type double, temporarily set the max length to 0 to 
-        //avoid adding precision information.
+        // CAY-1095: if the column is type double, temporarily set the max length to 0 to
+        // avoid adding precision information.
         if (column.getType() == Types.DOUBLE && column.getMaxLength() > 0) {
             int len = column.getMaxLength();
             column.setMaxLength(0);
-            super.createTableAppendColumn(sqlBuffer,column);
+            super.createTableAppendColumn(sqlBuffer, column);
             column.setMaxLength(len);
-        } else {
-            super.createTableAppendColumn(sqlBuffer,column);
+        }
+        else {
+            super.createTableAppendColumn(sqlBuffer, column);
         }
     }
 
-
-    
     @Override
     public MergerFactory mergerFactory() {
         return new HSQLMergerFactory();
     }
 
-    final class ShortType extends DefaultType {
-
-        ShortType() {
-            super(Short.class.getName());
-        }
-
-        @Override
-        public void setJdbcObject(
-                PreparedStatement st,
-                Object val,
-                int pos,
-                int type,
-                int precision) throws Exception {
-
-            if (val == null) {
-                super.setJdbcObject(st, val, pos, type, precision);
-            }
-            else {
-
-                short s = ((Number) val).shortValue();
-                st.setShort(pos, s);
-            }
-        }
-    }
-    
-    final class ByteType extends DefaultType {
-
-        ByteType() {
-            super(Byte.class.getName());
-        }
-
-        @Override
-        public void setJdbcObject(
-                PreparedStatement st,
-                Object val,
-                int pos,
-                int type,
-                int precision) throws Exception {
-
-            if (val == null) {
-                super.setJdbcObject(st, val, pos, type, precision);
-            }
-            else {
-
-                byte b = ((Number) val).byteValue();
-                st.setByte(pos, b);
-            }
-        }
-    }
 }

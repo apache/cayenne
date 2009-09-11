@@ -16,37 +16,64 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.sqlite;
+package org.apache.cayenne.access.types;
 
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.access.types.AbstractType;
-import org.apache.cayenne.access.types.DefaultType;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.validation.BeanValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * This ExtendedType is used by SQLite as often the types of columns of the result sets
- * can't be determined on the fly, and {@link DefaultType} for Object class throws on
- * NULLs.
+ * This is a default ExtendedType that relies on JDBC driver to determine the result type.
  * 
  * @since 3.0
  */
-class SQLiteObjectType extends AbstractType {
+public class ObjectType implements ExtendedType {
 
-    @Override
     public String getClassName() {
         return Object.class.getName();
     }
 
-    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getObject(index);
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getObject(index);
+    }
+
+    public void setJdbcObject(
+            PreparedStatement statement,
+            Object value,
+            int pos,
+            int type,
+            int scale) throws Exception {
+        if (scale != -1) {
+            statement.setObject(pos, value, type, scale);
+        }
+        else {
+            statement.setObject(pos, value, type);
+        }
+    }
+
+    public boolean validateProperty(
+            Object source,
+            String property,
+            Object value,
+            DbAttribute dbAttribute,
+            ValidationResult validationResult) {
+        if (dbAttribute.isMandatory() && value == null) {
+            validationResult.addFailure(new BeanValidationFailure(source, property, "'"
+                    + property
+                    + "' must be not null"));
+            return false;
+        }
+
+        return true;
     }
 
 }

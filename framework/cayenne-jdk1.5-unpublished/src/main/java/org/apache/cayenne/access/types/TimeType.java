@@ -18,41 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import java.math.BigInteger;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Time;
 
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * @since 3.0
  */
-public class BigIntegerType implements ExtendedType {
+public class TimeType implements ExtendedType {
 
     public String getClassName() {
-        return BigInteger.class.getName();
+        return Time.class.getName();
     }
 
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
-        Object object = rs.getObject(index);
-        if (object == null) {
-            return null;
-        }
-
-        return new BigInteger(object.toString());
+        return rs.getTime(index);
     }
 
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
-        Object object = rs.getObject(index);
-        if (object == null) {
-            return null;
-        }
-
-        return new BigInteger(object.toString());
+        return rs.getTime(index);
     }
 
     public void setJdbcObject(
@@ -60,18 +50,13 @@ public class BigIntegerType implements ExtendedType {
             Object value,
             int pos,
             int type,
-            int precision) throws Exception {
+            int scale) throws Exception {
 
         if (value == null) {
             statement.setNull(pos, type);
         }
-        else if (TypesMapping.isNumeric(type)) {
-            statement.setLong(pos, ((BigInteger) value).longValue());
-        }
         else {
-            throw new IllegalArgumentException(
-                    "Can't map BigInteger to a non-numeric type: "
-                            + TypesMapping.getSqlNameByType(type));
+            statement.setTime(pos, (Time) value);
         }
     }
 
@@ -84,6 +69,13 @@ public class BigIntegerType implements ExtendedType {
             Object value,
             DbAttribute dbAttribute,
             ValidationResult validationResult) {
+        if (dbAttribute.isMandatory() && value == null) {
+            validationResult.addFailure(new BeanValidationFailure(source, property, "'"
+                    + property
+                    + "' must be not null"));
+            return false;
+        }
+
         return true;
     }
 }

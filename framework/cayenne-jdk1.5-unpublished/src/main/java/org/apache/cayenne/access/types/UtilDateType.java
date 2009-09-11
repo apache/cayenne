@@ -33,14 +33,12 @@ import org.apache.cayenne.validation.ValidationResult;
 /**
  * Maps <code>java.util.Date</code> to any of the three database date/time types: TIME,
  * DATE, TIMESTAMP.
- * 
  */
-public class UtilDateType extends AbstractType {
+public class UtilDateType implements ExtendedType {
 
     /**
      * Returns "java.util.Date".
      */
-    @Override
     public String getClassName() {
         return Date.class.getName();
     }
@@ -52,7 +50,6 @@ public class UtilDateType extends AbstractType {
      * @since 1.1
      * @deprecated since 3.0 as validation should not be done at the DataNode level.
      */
-    @Override
     public boolean validateProperty(
             Object source,
             String property,
@@ -77,7 +74,6 @@ public class UtilDateType extends AbstractType {
                             + TypesMapping.getSqlNameByType(type));
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         Date val = null;
 
@@ -108,10 +104,9 @@ public class UtilDateType extends AbstractType {
                 break;
         }
 
-        return (rs.wasNull()) ? null : new Date(val.getTime());
+        return val == null ? null : new Date(val.getTime());
     }
 
-    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
         Object val = null;
@@ -144,17 +139,21 @@ public class UtilDateType extends AbstractType {
         // so lets cast it to Date,
         // if it is not date, ClassCastException will be thrown,
         // which is what we want
-        return (cs.wasNull()) ? null : new java.util.Date(((java.util.Date) val)
-                .getTime());
+        return val == null ? null : new java.util.Date(((java.util.Date) val).getTime());
     }
 
-    @Override
     public void setJdbcObject(
-            PreparedStatement st,
-            Object val,
+            PreparedStatement statement,
+            Object value,
             int pos,
             int type,
-            int precision) throws Exception {
-        super.setJdbcObject(st, convertToJdbcObject(val, type), pos, type, precision);
+            int scale) throws Exception {
+
+        if (value == null) {
+            statement.setNull(pos, type);
+        }
+        else {
+            statement.setObject(pos, convertToJdbcObject(value, type), type);
+        }
     }
 }

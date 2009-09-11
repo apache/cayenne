@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.openbase;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
@@ -28,8 +29,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.DefaultType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
@@ -44,17 +45,16 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * DbAdapter implementation for <a href="http://www.openbase.com">OpenBase</a>.
- * Sample connection settings to use with OpenBase are shown below:
+ * DbAdapter implementation for <a href="http://www.openbase.com">OpenBase</a>. Sample
+ * connection settings to use with OpenBase are shown below:
  * 
-<pre>
-openbase.cayenne.adapter = org.apache.cayenne.dba.openbase.OpenBaseAdapter
-openbase.jdbc.username = test
-openbase.jdbc.password = secret
-openbase.jdbc.url = jdbc:openbase://serverhostname/cayenne
-openbase.jdbc.driver = com.openbase.jdbc.ObDriver
-</pre>
- * 
+ * <pre>
+ * openbase.cayenne.adapter = org.apache.cayenne.dba.openbase.OpenBaseAdapter
+ * openbase.jdbc.username = test
+ * openbase.jdbc.password = secret
+ * openbase.jdbc.url = jdbc:openbase://serverhostname/cayenne
+ * openbase.jdbc.driver = com.openbase.jdbc.ObDriver
+ * </pre>
  * 
  * @since 1.1
  */
@@ -64,7 +64,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
         // init defaults
         this.setSupportsUniqueConstraints(false);
     }
-    
+
     /**
      * Uses special action builder to create the right action.
      * 
@@ -80,7 +80,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
-        // Byte handling doesn't work on read... 
+        // Byte handling doesn't work on read...
         // need special converter
         map.registerType(new OpenBaseByteType());
 
@@ -89,12 +89,12 @@ public class OpenBaseAdapter extends JdbcAdapter {
 
     @Override
     public DbAttribute buildAttribute(
-        String name,
-        String typeName,
-        int type,
-        int size,
-        int scale,
-        boolean allowNulls) {
+            String name,
+            String typeName,
+            int type,
+            int size,
+            int scale,
+            boolean allowNulls) {
 
         // OpenBase makes no distinction between CHAR and VARCHAR
         // so lets use VARCHAR, since it seems more generic
@@ -113,7 +113,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
         return "go";
     }
 
-    /** 
+    /**
      * Returns null, since views are not yet supported in openbase.
      */
     @Override
@@ -122,7 +122,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
         return null;
     }
 
-    /** 
+    /**
      * Returns OpenBase-specific translator for queries.
      */
     @Override
@@ -131,22 +131,24 @@ public class OpenBaseAdapter extends JdbcAdapter {
     }
 
     /**
-      * Creates and returns a primary key generator. Overrides superclass 
-      * implementation to return an
-      * instance of OpenBasePkGenerator that uses built-in multi-server primary key generation.
-      */
+     * Creates and returns a primary key generator. Overrides superclass implementation to
+     * return an instance of OpenBasePkGenerator that uses built-in multi-server primary
+     * key generation.
+     */
     @Override
     protected PkGenerator createPkGenerator() {
         return new OpenBasePkGenerator(this);
     }
 
     /**
-      * Returns a SQL string that can be used to create database table
-      * corresponding to <code>ent</code> parameter.
-      */
+     * Returns a SQL string that can be used to create database table corresponding to
+     * <code>ent</code> parameter.
+     */
     @Override
     public String createTable(DbEntity ent) {
-        QuotingStrategy context = getQuotingStrategy(ent.getDataMap().isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(ent
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
         StringBuilder buf = new StringBuilder();
 
         buf.append("CREATE TABLE ");
@@ -168,8 +170,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
 
             // attribute may not be fully valid, do a simple check
             if (at.getType() == TypesMapping.NOT_DEFINED) {
-                throw new CayenneRuntimeException(
-                    "Undefined type for attribute '"
+                throw new CayenneRuntimeException("Undefined type for attribute '"
                         + ent.getFullyQualifiedName()
                         + "."
                         + at.getName()
@@ -178,8 +179,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
 
             String[] types = externalTypesForJdbcType(at.getType());
             if (types == null || types.length == 0) {
-                throw new CayenneRuntimeException(
-                    "Undefined type for attribute '"
+                throw new CayenneRuntimeException("Undefined type for attribute '"
                         + ent.getFullyQualifiedName()
                         + "."
                         + at.getName()
@@ -224,8 +224,8 @@ public class OpenBaseAdapter extends JdbcAdapter {
     }
 
     /**
-     * Returns a SQL string that can be used to create
-     * a foreign key constraint for the relationship.
+     * Returns a SQL string that can be used to create a foreign key constraint for the
+     * relationship.
      */
     @Override
     public String createFkConstraint(DbRelationship rel) {
@@ -238,13 +238,13 @@ public class OpenBaseAdapter extends JdbcAdapter {
         DbEntity targetEntity = (DbEntity) rel.getTargetEntity();
         String toMany = (!rel.isToMany()) ? "'1'" : "'0'";
 
-        // TODO: doesn't seem like OpenBase supports compound joins... 
+        // TODO: doesn't seem like OpenBase supports compound joins...
         // need to doublecheck that
 
         int joinsLen = rel.getJoins().size();
         if (joinsLen == 0) {
-            throw new CayenneRuntimeException(
-                "Relationship has no joins: " + rel.getName());
+            throw new CayenneRuntimeException("Relationship has no joins: "
+                    + rel.getName());
         }
         else if (joinsLen > 1) {
             // ignore extra joins
@@ -253,36 +253,47 @@ public class OpenBaseAdapter extends JdbcAdapter {
         DbJoin join = rel.getJoins().get(0);
 
         buf
-            .append("INSERT INTO _SYS_RELATIONSHIP (")
-            .append("dest_table, dest_column, source_table, source_column, ")
-            .append("block_delete, cascade_delete, one_to_many, operator, relationshipName")
-            .append(") VALUES ('")
-            .append(sourceEntity.getFullyQualifiedName())
-            .append("', '")
-            .append(join.getSourceName())
-            .append("', '")
-            .append(targetEntity.getFullyQualifiedName())
-            .append("', '")
-            .append(join.getTargetName())
-            .append("', 0, 0, ")
-            .append(toMany)
-            .append(", '=', '")
-            .append(rel.getName())
-            .append("')");
+                .append("INSERT INTO _SYS_RELATIONSHIP (")
+                .append("dest_table, dest_column, source_table, source_column, ")
+                .append(
+                        "block_delete, cascade_delete, one_to_many, operator, relationshipName")
+                .append(") VALUES ('")
+                .append(sourceEntity.getFullyQualifiedName())
+                .append("', '")
+                .append(join.getSourceName())
+                .append("', '")
+                .append(targetEntity.getFullyQualifiedName())
+                .append("', '")
+                .append(join.getTargetName())
+                .append("', 0, 0, ")
+                .append(toMany)
+                .append(", '=', '")
+                .append(rel.getName())
+                .append("')");
 
         return buf.toString();
     }
 
     // OpenBase JDBC driver has trouble reading "integer" as byte
     // this converter addresses such problem
-    static class OpenBaseByteType extends DefaultType {
+    static class OpenBaseByteType extends ByteType {
+
         OpenBaseByteType() {
-            super(Byte.class.getName());
+            super(true);
         }
 
         @Override
         public Object materializeObject(ResultSet rs, int index, int type)
-            throws Exception {
+                throws Exception {
+
+            // read value as int, and then narrow it down
+            int val = rs.getInt(index);
+            return (rs.wasNull()) ? null : Byte.valueOf((byte) val);
+        }
+
+        @Override
+        public Object materializeObject(CallableStatement rs, int index, int type)
+                throws Exception {
 
             // read value as int, and then narrow it down
             int val = rs.getInt(index);
@@ -291,18 +302,18 @@ public class OpenBaseAdapter extends JdbcAdapter {
     }
 
     static class OpenBaseCharType extends CharType {
+
         OpenBaseCharType() {
             super(false, true);
         }
 
         @Override
         public void setJdbcObject(
-            PreparedStatement st,
-            Object val,
-            int pos,
-            int type,
-            int precision)
-            throws Exception {
+                PreparedStatement st,
+                Object val,
+                int pos,
+                int type,
+                int precision) throws Exception {
 
             // These to types map to "text"; and when setting "text" as object
             // OB assumes that the object is the actual CLOB... weird
@@ -314,7 +325,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             }
         }
     }
-    
+
     @Override
     public MergerFactory mergerFactory() {
         return new OpenBaseMergerFactory();

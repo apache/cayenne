@@ -23,6 +23,10 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.validation.BeanValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
+
 /**
  * Handles <code>java.lang.Byte</code> type mapping. Can be configured to recast
  * java.lang.Byte to java.lang.Integer when binding values to PreparedStatement. This is a
@@ -31,7 +35,7 @@ import java.sql.ResultSet;
  * 
  * @since 1.0.3
  */
-public class ByteType extends AbstractType {
+public class ByteType implements ExtendedType {
 
     protected boolean widenBytes;
 
@@ -39,36 +43,56 @@ public class ByteType extends AbstractType {
         this.widenBytes = widenBytes;
     }
 
-    @Override
     public String getClassName() {
         return Byte.class.getName();
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         byte b = rs.getByte(index);
-        return (rs.wasNull()) ? null : new Byte(b);
+        return (rs.wasNull()) ? null : b;
     }
 
-    @Override
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         byte b = st.getByte(index);
-        return (st.wasNull()) ? null : Byte.valueOf(b);
+        return (st.wasNull()) ? null : b;
     }
 
-    @Override
     public void setJdbcObject(
-            PreparedStatement st,
-            Object val,
+            PreparedStatement statement,
+            Object value,
             int pos,
             int type,
             int precision) throws Exception {
 
-        if (widenBytes && (val instanceof Byte)) {
-            val = Integer.valueOf(((Byte) val).intValue());
+        if (value == null) {
+            statement.setNull(pos, type);
+        }
+        else {
+
+            Byte b = (Byte) value;
+            if (widenBytes) {
+                statement.setInt(pos, b.intValue());
+            }
+            else {
+                statement.setByte(pos, b.byteValue());
+            }
+        }
+    }
+
+    public boolean validateProperty(
+            Object source,
+            String property,
+            Object value,
+            DbAttribute dbAttribute,
+            ValidationResult validationResult) {
+        if (dbAttribute.isMandatory() && value == null) {
+            validationResult.addFailure(new BeanValidationFailure(source, property, "'"
+                    + property
+                    + "' must be not null"));
+            return false;
         }
 
-        super.setJdbcObject(st, val, pos, type, precision);
+        return true;
     }
 }

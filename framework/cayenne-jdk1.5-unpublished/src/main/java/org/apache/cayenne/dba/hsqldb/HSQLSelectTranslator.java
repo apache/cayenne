@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.hsqldb;
 
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 1.2

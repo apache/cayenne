@@ -28,6 +28,7 @@ CAY-1261 Auto-inject values in NEW objects with declared qualifiers
 CAY-1263 Cayenne Oracle adapter should automatically strip IN clauses with more than 1000 elements
 CAY-1268 Implement 'setStatementFetchSize' for RelationshipQuery
 CAY-1270 Merge primary key changes
+CAY-1273 Replace DefaultType with dedicated types
 
 Bug Fixes Since M6:
 

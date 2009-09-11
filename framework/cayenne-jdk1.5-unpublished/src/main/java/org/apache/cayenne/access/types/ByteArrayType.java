@@ -37,11 +37,10 @@ import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or
- * (VAR)BINARY. Can be configured to trim trailing zero bytes.
- * 
+ * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or (VAR)BINARY.
+ * Can be configured to trim trailing zero bytes.
  */
-public class ByteArrayType extends AbstractType {
+public class ByteArrayType implements ExtendedType {
 
     private static final int BUF_SIZE = 8 * 1024;
 
@@ -75,7 +74,6 @@ public class ByteArrayType extends AbstractType {
         this.trimmingBytes = trimmingBytes;
     }
 
-    @Override
     public String getClassName() {
         return "byte[]";
     }
@@ -86,7 +84,6 @@ public class ByteArrayType extends AbstractType {
      * @since 1.1
      * @deprecated since 3.0 as validation should not be done at the DataNode level.
      */
-    @Override
     public boolean validateProperty(
             Object source,
             String property,
@@ -120,7 +117,6 @@ public class ByteArrayType extends AbstractType {
         return true;
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         byte[] bytes = null;
@@ -142,7 +138,6 @@ public class ByteArrayType extends AbstractType {
         return bytes;
     }
 
-    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
 
@@ -168,13 +163,12 @@ public class ByteArrayType extends AbstractType {
         return bytes;
     }
 
-    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,
             int pos,
             int type,
-            int precision) throws Exception {
+            int scale) throws Exception {
 
         // if this is a BLOB column, set the value as "bytes"
         // instead. This should work with most drivers
@@ -187,7 +181,12 @@ public class ByteArrayType extends AbstractType {
             }
         }
         else {
-            super.setJdbcObject(st, val, pos, type, precision);
+            if (scale != -1) {
+                st.setObject(pos, val, type, scale);
+            }
+            else {
+                st.setObject(pos, val, type);
+            }
         }
     }
 

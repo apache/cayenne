@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.ObjectType;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -59,7 +60,6 @@ public class SQLiteAdapter extends JdbcAdapter {
         map.registerType(new SQLiteBigDecimalType());
         map.registerType(new SQLiteFloatType());
         map.registerType(new SQLiteByteArrayType());
-        map.registerType(new SQLiteObjectType());
         map.registerType(new SQLiteCalendarType(GregorianCalendar.class));
         map.registerType(new SQLiteCalendarType(Calendar.class));
     }
