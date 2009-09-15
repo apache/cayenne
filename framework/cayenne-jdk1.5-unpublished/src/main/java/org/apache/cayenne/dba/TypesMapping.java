@@ -452,8 +452,14 @@ public class TypesMapping {
         // this does not always produce the correct result. See for instance CAY-1052 - PG
         // drivers from 8.2 and newer decided that the scale of "0" means "undefined", not
         // really zero.
-        if (type == Types.NUMERIC && scale == 0) {
-            type = Types.INTEGER;
+        if (type == Types.NUMERIC && scale == 0) { //SQL integer's max value is 2^31-1, which has length of 10 
+            if (length < 10) {
+                type = Types.INTEGER;
+            }
+            else if (length < 19) { //SQL's BIGINT max value is 2^63-1, which has length of 19
+                type = Types.BIGINT;
+            }
+            
         }
 
         return sqlEnumJava.get(Integer.valueOf(type));

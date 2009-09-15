@@ -71,6 +71,13 @@ public class TypesMappingTest extends CayenneCase {
         assertEquals(Types.INTEGER, TypesMapping.getSqlTypeByJava(Integer.TYPE));
         assertEquals(Types.BIGINT, TypesMapping.getSqlTypeByJava(Long.TYPE));
     }
+    
+    public void testGetJavaBySqlType() {
+        assertEquals(TypesMapping.JAVA_INTEGER, TypesMapping.getJavaBySqlType(Types.NUMERIC, 5, 0));
+        assertEquals(TypesMapping.JAVA_LONG, TypesMapping.getJavaBySqlType(Types.NUMERIC, 15, 0));
+        assertEquals(TypesMapping.JAVA_BIGDECIMAL, TypesMapping.getJavaBySqlType(Types.NUMERIC, 25, 0));
+        assertEquals(TypesMapping.JAVA_BIGDECIMAL, TypesMapping.getJavaBySqlType(Types.NUMERIC, 25, 5));
+    }
 
     public void testTypeInfoCompleteness() throws Exception {
         // check counts
