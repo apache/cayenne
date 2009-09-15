@@ -48,6 +48,7 @@ CAY-1259 Wrong Mapping for NUMERIC Type
 CAY-1265 error while search inheritance relationship
 CAY-1274 CreateTableToDb should not create existing AUTO_PK_SUPPORT
 CAY-1275 Merge set-not-null to Oracle through modeler fails if auto adapter is set
+CAY-1277 Prefetching may cause a root object to got from COMMITTED to MODIFIED state
 
 ----------------------------------
 Release: 3.0M6

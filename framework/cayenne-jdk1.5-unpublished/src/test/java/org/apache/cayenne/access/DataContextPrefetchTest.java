@@ -464,6 +464,9 @@ public class DataContextPrefetchTest extends DataContextCase {
             // testing null to-one target
             Painting p4 = (Painting) results.get(3);
             assertNull(p4.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY));
+
+            // there was a bug marking an object as dirty when clearing the relationships
+            assertEquals(PersistenceState.COMMITTED, p4.getPersistenceState());
         }
         finally {
             unblockQueries();

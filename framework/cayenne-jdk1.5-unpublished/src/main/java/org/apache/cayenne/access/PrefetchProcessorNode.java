@@ -138,7 +138,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         while (it.hasNext()) {
             Object object = it.next();
             if (incoming.readPropertyDirectly(object) instanceof Fault) {
-                incoming.writeProperty(object, null, null);
+                incoming.writePropertyDirectly(object, null, null);
             }
         }
     }
