@@ -125,7 +125,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * null parameter will unbind currently bound DataContext.
      * 
      * @since 1.1
-     * @deprecated since 3.0, replaced by BaseContex#getThreadObjectContext().
+     * @deprecated since 3.0, replaced by BaseContex#bindThreadObjectContext().
      */
     @Deprecated
     public static void bindThreadDataContext(DataContext context) {
