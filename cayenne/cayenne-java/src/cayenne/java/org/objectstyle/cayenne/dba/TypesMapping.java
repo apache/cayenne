@@ -436,7 +436,11 @@ public class TypesMapping {
     public static String getJavaBySqlType(int type, int length, int precision) {
 
         if (type == Types.NUMERIC && precision == 0) {
-            type = Types.INTEGER;
+            if (length < 10) {
+                type = Types.INTEGER;
+            } else if (length < 19) {
+                type = Types.BIGINT;
+            }
         }
         return (String) sqlEnumJava.get(new Integer(type));
     }
