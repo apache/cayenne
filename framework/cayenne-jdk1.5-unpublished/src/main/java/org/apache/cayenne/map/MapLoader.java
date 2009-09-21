@@ -158,6 +158,7 @@ public class MapLoader extends DefaultHandler {
     private Map<String, StartClosure> startTagOpMap;
     private Map<String, EndClosure> endTagOpMap;
     private String currentTag;
+    private Attributes currentAttributes;
     private StringBuilder charactersBuffer;
     private Map<String, Object> mapProperties;
 
@@ -680,16 +681,34 @@ public class MapLoader extends DefaultHandler {
         catch (SAXException e) {
             dataMap = null;
             throw new CayenneRuntimeException(
-                    "Wrong DataMap format, last processed tag: <" + currentTag,
+                    "Wrong DataMap format, last processed tag: " + constructCurrentStateString(),
                     Util.unwindException(e));
         }
         catch (Exception e) {
             dataMap = null;
             throw new CayenneRuntimeException(
-                    "Error loading DataMap, last processed tag: <" + currentTag,
+                    "Error loading DataMap, last processed tag: " + constructCurrentStateString(),
                     Util.unwindException(e));
         }
         return dataMap;
+    }
+    
+    /**
+     * Constructs error message for displaying as exception message
+     */
+    private Appendable constructCurrentStateString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<").append(currentTag);
+        
+        if (currentAttributes != null) {
+            for (int i = 0; i < currentAttributes.getLength(); i++) {
+                sb.append(" ").append(currentAttributes.getLocalName(i)).append("=").
+                    append("\"").append(currentAttributes.getValue(i)).append("\"");
+            }
+        }
+        sb.append(">");
+        
+        return sb;
     }
 
     /**
@@ -788,7 +807,7 @@ public class MapLoader extends DefaultHandler {
             String qName,
             Attributes attributes) throws SAXException {
 
-        rememberCurrentTag(localName);
+        rememberCurrentState(localName, attributes);
 
         StartClosure op = startTagOpMap.get(localName);
         if (op != null) {
@@ -805,7 +824,7 @@ public class MapLoader extends DefaultHandler {
             op.execute();
         }
 
-        resetCurrentTag();
+        resetCurrentState();
         charactersBuffer = null;
     }
 
@@ -1352,12 +1371,14 @@ public class MapLoader extends DefaultHandler {
         }
     }
 
-    private void rememberCurrentTag(String tag) {
+    private void rememberCurrentState(String tag, Attributes attrs) {
         currentTag = tag;
+        currentAttributes = attrs;
     }
 
-    private void resetCurrentTag() {
+    private void resetCurrentState() {
         currentTag = null;
+        currentAttributes = null;
     }
 
     /**
