@@ -290,6 +290,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * @deprecated since 3.0 use {@link #lastPathComponent(Expression, Map)} method that
      *             supports aliases.
      */
+    @Deprecated
     public Object lastPathComponent(Expression path) {
 
         PathComponent<Attribute, Relationship> last = lastPathComponent(
@@ -403,7 +404,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
 
         public CayenneMapEntry next() {
             String pathComp = toks.nextToken();
-
+            
             // see if this is an attribute
             Attribute attr = currentEnt.getAttribute(pathComp);
             if (attr != null) {
@@ -422,7 +423,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             Relationship rel = currentEnt.getRelationship(pathComp);
             if (rel != null) {
                 currentEnt = rel.getTargetEntity();
-                return rel;
+                if (currentEnt != null || !toks.hasMoreTokens()) { //otherwise an exception will be thrown
+                    return rel;
+                }
             }
 
             // build error message

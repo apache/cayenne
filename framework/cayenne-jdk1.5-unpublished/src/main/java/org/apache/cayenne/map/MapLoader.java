@@ -1078,7 +1078,7 @@ public class MapLoader extends DefaultHandler {
         objRelationship.setUsedForLocking(TRUE
                 .equalsIgnoreCase(atts.getValue("", "lock")));
         objRelationship
-                .setDbRelationshipPath((atts.getValue("", "db-relationship-path")));
+                .setDeferredDbRelationshipPath((atts.getValue("", "db-relationship-path")));
         objRelationship.setCollectionType(collectionType);
         objRelationship.setMapKey(mapKey);
         source.addRelationship(objRelationship);

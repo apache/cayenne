@@ -14,5 +14,6 @@
 	<db-relationship name="listOfM2E2" source="CROSSDB_M1E1" target="CROSSDB_M2E2" toMany="true">
 		<db-attribute-pair source="ID" target="M1E1_ID"/>
 	</db-relationship>
+	<obj-relationship name="flattened" source="CrossdbM1E1" target="CrossdbM2E1" deleteRule="Deny" db-relationship-path="listOfM2E2.toM2E1"/>
 	<obj-relationship name="listOfM2E2" source="CrossdbM1E1" target="CrossdbM2E2" db-relationship-path="listOfM2E2"/>
 </data-map>

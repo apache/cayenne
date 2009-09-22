@@ -53,6 +53,12 @@ public class ObjRelationship extends Relationship {
     protected boolean usedForLocking;
 
     protected List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(2);
+    
+    /**
+     * Db-relationships path that is set but not yet parsed (turned into List<DbRelationship>)
+     * Used during map loading
+     */
+    String deferredPath;
 
     /**
      * Stores the type of collection mapped by a to-many relationship. Null for to-one
@@ -227,6 +233,7 @@ public class ObjRelationship extends Relationship {
      * Returns an immutable list of underlying DbRelationships.
      */
     public List<DbRelationship> getDbRelationships() {
+        refreshFromDeferredPath();
         return Collections.unmodifiableList(dbRelationships);
     }
 
@@ -234,6 +241,7 @@ public class ObjRelationship extends Relationship {
      * Appends a DbRelationship to the existing list of DbRelationships.
      */
     public void addDbRelationship(DbRelationship dbRel) {
+        refreshFromDeferredPath();
         if (dbRel.getName() == null) {
             throw new IllegalArgumentException("DbRelationship has no name");
         }
@@ -265,6 +273,7 @@ public class ObjRelationship extends Relationship {
      * Removes the relationship <code>dbRel</code> from the list of relationships.
      */
     public void removeDbRelationship(DbRelationship dbRel) {
+        refreshFromDeferredPath();
         if (dbRelationships.remove(dbRel)) {
             this.recalculateReadOnlyValue();
             this.recalculateToManyValue();
@@ -272,6 +281,7 @@ public class ObjRelationship extends Relationship {
     }
 
     public void clearDbRelationships() {
+        deferredPath = null;
         this.dbRelationships.clear();
         this.readOnly = false;
         this.toMany = false;
@@ -389,12 +399,14 @@ public class ObjRelationship extends Relationship {
      * @return flag indicating if the relationship is read only or not
      */
     public boolean isReadOnly() {
+        refreshFromDeferredPath();
         recalculateReadOnlyValue();
         return readOnly;
     }
 
     @Override
     public boolean isToMany() {
+        refreshFromDeferredPath();
         recalculateToManyValue();
         return super.isToMany();
     }
@@ -466,6 +478,8 @@ public class ObjRelationship extends Relationship {
      * @since 1.1
      */
     public String getDbRelationshipPath() {
+        refreshFromDeferredPath();
+        
         // build path on the fly
         if (getDbRelationships().isEmpty()) {
             return null;
@@ -528,6 +542,26 @@ public class ObjRelationship extends Relationship {
     public void setDbRelationshipPath(String relationshipPath) {
         if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
             refreshFromPath(relationshipPath);
+        }
+    }
+    
+    /**
+     * Sets relationship path, but does not trigger its conversion to List<DbRelationship>
+     * For internal purposes, primarily datamap loading
+     */
+    void setDeferredDbRelationshipPath(String relationshipPath) {
+        if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
+            deferredPath = relationshipPath;
+        }
+    }
+    
+    /**
+     * Loads path from "deferredPath" variable (if specified)
+     */
+    synchronized void refreshFromDeferredPath() {
+        if (deferredPath != null) {
+            refreshFromPath(deferredPath);
+            deferredPath = null;
         }
     }
 
