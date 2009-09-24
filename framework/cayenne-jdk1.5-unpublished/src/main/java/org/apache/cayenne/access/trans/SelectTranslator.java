@@ -378,6 +378,9 @@ public class SelectTranslator extends QueryAssembler {
         };
 
         descriptor.visitAllProperties(visitor);
+        
+        //stack should be reset, because all root table attributes go with "t0" table alias
+        resetJoinStack();
 
         // add remaining needed attrs from DbEntity
         DbEntity table = getRootDbEntity();
