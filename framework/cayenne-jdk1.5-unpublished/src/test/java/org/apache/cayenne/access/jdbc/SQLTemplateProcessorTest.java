@@ -240,6 +240,6 @@ public class SQLTemplateProcessorTest extends BasicCase {
 
     protected void assertBindingPrecision(int expectedPrecision, Object binding) {
         assertTrue("Not a binding!", binding instanceof ParameterBinding);
-        assertEquals(expectedPrecision, ((ParameterBinding) binding).getPrecision());
+        assertEquals(expectedPrecision, ((ParameterBinding) binding).getScale());
     }
 }

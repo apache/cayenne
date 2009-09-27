@@ -40,7 +40,7 @@ import org.apache.velocity.runtime.parser.node.Node;
  * <pre>
  * #bind(value) - e.g. #bind($xyz)
  * #bind(value jdbc_type_name) - e.g. #bind($xyz 'VARCHAR'). This is the most common and useful form.
- * #bind(value jdbc_type_name, precision) - e.g. #bind($xyz 'VARCHAR' 2)
+ * #bind(value jdbc_type_name, scale) - e.g. #bind($xyz 'VARCHAR' 2)
  * </pre>
  * <p>
  * Other examples:
@@ -89,13 +89,13 @@ public class BindDirective extends Directive {
 
         Object value = getChild(context, node, 0);
         Object type = getChild(context, node, 1);
-        int precision = ConversionUtil.toInt(getChild(context, node, 2), -1);
+        int scale = ConversionUtil.toInt(getChild(context, node, 2), -1);
         String typeString = type != null ? type.toString() : null;
 
         if (value instanceof Collection) {
             Iterator<?> it = ((Collection) value).iterator();
             while (it.hasNext()) {
-                render(context, writer, node, it.next(), typeString, precision);
+                render(context, writer, node, it.next(), typeString, scale);
 
                 if (it.hasNext()) {
                     writer.write(',');
@@ -103,7 +103,7 @@ public class BindDirective extends Directive {
             }
         }
         else {
-            render(context, writer, node, value, typeString, precision);
+            render(context, writer, node, value, typeString, scale);
         }
 
         return true;
@@ -118,7 +118,7 @@ public class BindDirective extends Directive {
             Node node,
             Object value,
             String typeString,
-            int precision) throws IOException, ParseErrorException {
+            int scale) throws IOException, ParseErrorException {
 
         int jdbcType = TypesMapping.NOT_DEFINED;
         if (typeString != null) {
@@ -142,7 +142,7 @@ public class BindDirective extends Directive {
                     + node.getColumn());
         }
 
-        render(context, writer, new ParameterBinding(value, jdbcType, precision));
+        render(context, writer, new ParameterBinding(value, jdbcType, scale));
     }
 
     protected void render(

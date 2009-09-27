@@ -25,22 +25,34 @@ package org.apache.cayenne.access.jdbc;
  * @since 1.1
  */
 public class ParameterBinding {
+
     protected int jdbcType;
-    protected int precision;
+    protected int scale;
     protected Object value;
 
-    public ParameterBinding(Object value, int jdbcType, int precision) {
+    public ParameterBinding(Object value, int jdbcType, int scale) {
         this.value = value;
         this.jdbcType = jdbcType;
-        this.precision = precision;
+        this.scale = scale;
     }
 
     public int getJdbcType() {
         return jdbcType;
     }
 
+    /**
+     * @deprecated since 3.0 use {@link #getScale()}.
+     */
+    @Deprecated
     public int getPrecision() {
-        return precision;
+        return scale;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public int getScale() {
+        return scale;
     }
 
     public Object getValue() {
@@ -51,8 +63,19 @@ public class ParameterBinding {
         jdbcType = i;
     }
 
+    /**
+     * @since 3.0
+     */
+    public void setScale(int i) {
+        scale = i;
+    }
+
+    /**
+     * @deprecated since 3.0 use {@link #setScale(int)}.
+     */
+    @Deprecated
     public void setPrecision(int i) {
-        precision = i;
+        scale = i;
     }
 
     public void setValue(Object object) {

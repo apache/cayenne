@@ -348,7 +348,7 @@ public class SQLTemplateAction implements SQLAction {
                         bindings[i].getValue(),
                         i + 1,
                         bindings[i].getJdbcType(),
-                        bindings[i].getPrecision());
+                        bindings[i].getScale());
             }
         }
 
