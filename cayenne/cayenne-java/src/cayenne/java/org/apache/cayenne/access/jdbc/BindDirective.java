@@ -92,6 +92,9 @@ public class BindDirective extends Directive {
         }
         else if (value != null) {
             jdbcType = TypesMapping.getSqlTypeByJava(value.getClass());
+        } else {
+            // value is null, set JDBC type to NULL
+        	jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
         }
 
         if (jdbcType == TypesMapping.NOT_DEFINED) {
