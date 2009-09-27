@@ -74,6 +74,7 @@ public class TypesMapping {
     public static final String SQL_VARBINARY = "VARBINARY";
     public static final String SQL_VARCHAR = "VARCHAR";
     public static final String SQL_OTHER = "OTHER";
+    public static final String SQL_NULL = "NULL";
 
     // char constants for Java data types
     public static final String JAVA_LONG = "java.lang.Long";
@@ -137,6 +138,7 @@ public class TypesMapping {
         sqlStringType.put(SQL_VARBINARY, Integer.valueOf(Types.VARBINARY));
         sqlStringType.put(SQL_VARCHAR, Integer.valueOf(Types.VARCHAR));
         sqlStringType.put(SQL_OTHER, Integer.valueOf(Types.OTHER));
+        sqlStringType.put(SQL_NULL, Integer.valueOf(Types.NULL));
 
         sqlEnumType.put(Integer.valueOf(Types.ARRAY), SQL_ARRAY);
         sqlEnumType.put(Integer.valueOf(Types.BIGINT), SQL_BIGINT);
@@ -162,6 +164,7 @@ public class TypesMapping {
         sqlEnumType.put(Integer.valueOf(Types.VARBINARY), SQL_VARBINARY);
         sqlEnumType.put(Integer.valueOf(Types.VARCHAR), SQL_VARCHAR);
         sqlEnumType.put(Integer.valueOf(Types.OTHER), SQL_OTHER);
+        sqlEnumType.put(Integer.valueOf(Types.NULL), SQL_NULL);
 
         sqlEnumJava.put(Integer.valueOf(Types.BIGINT), JAVA_LONG);
         sqlEnumJava.put(Integer.valueOf(Types.BINARY), JAVA_BYTES);

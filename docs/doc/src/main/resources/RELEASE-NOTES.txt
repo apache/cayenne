@@ -50,6 +50,7 @@ CAY-1274 CreateTableToDb should not create existing AUTO_PK_SUPPORT
 CAY-1275 Merge set-not-null to Oracle through modeler fails if auto adapter is set
 CAY-1277 Prefetching may cause a root object to got from COMMITTED to MODIFIED state
 CAY-1278 Project with cross-datamap flattenned relationships fails to load
+CAY-1279 Passing null values in query parameters
 
 ----------------------------------
 Release: 3.0M6

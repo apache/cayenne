@@ -424,6 +424,24 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         Painting p2 = (Painting) objects.get(1);
         assertEquals(33002, DataObjectUtils.intPKForObject(p2));
     }
+    
+    public void testBindEqualNull() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        String template = "SELECT * FROM PAINTING t0"
+                + " WHERE t0.ARTIST_ID #bindEqual($id) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        query.setParameters(Collections.singletonMap("id", null));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Painting p = (Painting) objects.get(0);
+        assertEquals(33003, DataObjectUtils.intPKForObject(p));
+    }
 
     public void testFetchLimit() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
