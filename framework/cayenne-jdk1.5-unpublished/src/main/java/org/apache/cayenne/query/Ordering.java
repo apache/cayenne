@@ -39,24 +39,29 @@ import org.apache.commons.collections.ComparatorUtils;
  * as a specification for building <em>ORDER BY</em> clause of a SelectQuery query. Note
  * that in case of in-memory sorting, Ordering can be used with any JavaBeans, not just
  * DataObjects.
- * 
  */
 public class Ordering implements Comparator<Object>, Serializable, XMLSerializable {
-
     /**
      * Symbolic representation of ascending ordering criterion.
+     * 
+     * @deprecated Use SortOrder.ASCENDING instead.
      */
+    @Deprecated
     public static final boolean ASC = true;
 
     /**
      * Symbolic representation of descending ordering criterion.
+     * 
+     * @deprecated Use SortOrder.DESCENDING instead.
      */
+    @Deprecated
     public static final boolean DESC = false;
 
     protected String sortSpecString;
     protected transient Expression sortSpec;
-    protected boolean ascending;
-    protected boolean caseInsensitive;
+    protected SortOrder sortOrder;
+//    protected boolean ascending;
+//    protected boolean caseInsensitive;
     protected boolean pathExceptionSuppressed = false;
     protected boolean nullSortedFirst = true;
 
@@ -73,24 +78,40 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
     public Ordering() {
     }
 
+    @Deprecated
     public Ordering(String sortPathSpec, boolean ascending) {
         this(sortPathSpec, ascending, false);
     }
 
-    public Ordering(String sortPathSpec, boolean ascending, boolean caseInsensitive) {
+    /**
+     * @since 3.0
+     */
+    public Ordering(String sortPathSpec, SortOrder sortOrder) {
         setSortSpecString(sortPathSpec);
-        this.ascending = ascending;
-        this.caseInsensitive = caseInsensitive;
+        setSortOrder(sortOrder);
     }
 
+    @Deprecated
+    public Ordering(String sortPathSpec, boolean ascending, boolean caseInsensitive) {
+        setSortSpecString(sortPathSpec);
+        setAscending(ascending);
+        setCaseInsensitive(caseInsensitive);
+//        this.ascending = ascending;
+//        this.caseInsensitive = caseInsensitive;
+    }
+
+    @Deprecated
     public Ordering(Expression sortExpression, boolean ascending) {
         this(sortExpression, ascending, false);
     }
 
+    @Deprecated
     public Ordering(Expression sortExpression, boolean ascending, boolean caseInsensitive) {
         setSortSpec(sortExpression);
-        this.ascending = ascending;
-        this.caseInsensitive = caseInsensitive;
+        setAscending(ascending);
+        setCaseInsensitive(caseInsensitive);
+//        this.ascending = ascending;
+//        this.caseInsensitive = caseInsensitive;
     }
 
     /**
@@ -154,24 +175,119 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
         return sortSpecString;
     }
 
-    /** Returns true if sorting is done in ascending order. */
-    public boolean isAscending() {
-        return ascending;
+    /**
+     * Sets the sort order for this ordering.
+     * 
+     * @since 3.0
+     */
+    public void setSortOrder(SortOrder order) {
+        this.sortOrder = order;
     }
 
-    /** Sets <code>ascending</code> property of this Ordering. */
+    /** Returns true if sorting is done in ascending order. */
+    public boolean isAscending() {
+        return sortOrder == null || sortOrder == SortOrder.ASCENDING || sortOrder == SortOrder.ASCENDING_INSENSITIVE;
+    }
+
+    /**
+     * Returns true if the sorting is done in descending order.
+     * 
+     * @since 3.0
+     */
+    public boolean isDescending() {
+        return !isAscending();
+    }
+
+    /**
+     * Sets <code>ascending</code> property of this Ordering.
+     * 
+     * @deprecated Use setSortOrder() or setAscending() or setDescending().
+     */
+    @Deprecated
     public void setAscending(boolean ascending) {
-        this.ascending = ascending;
+        if (ascending)
+            setAscending();
+        else
+            setDescending();
+    }
+
+    /**
+     * If the sort order is DESCENDING or DESCENDING_INSENSITIVE, sets
+     * the sort order to ASCENDING or ASCENDING_INSENSITIVE, respectively.
+     * 
+     * @since 3.0
+     */
+    public void setAscending() {
+        if (sortOrder == null || sortOrder == SortOrder.DESCENDING)
+            setSortOrder(SortOrder.ASCENDING);
+        else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
+            setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
+    }
+
+    /**
+     * If the sort order is ASCENDING or ASCENDING_INSENSITIVE, sets
+     * the sort order to DESCENDING or DESCENDING_INSENSITIVE, respectively.
+     * 
+     * @since 3.0
+     */
+    public void setDescending() {
+        if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
+            setSortOrder(SortOrder.DESCENDING);
+        else if (sortOrder == SortOrder.ASCENDING_INSENSITIVE)
+            setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
     }
 
     /** Returns true if the sorting is case insensitive */
     public boolean isCaseInsensitive() {
-        return caseInsensitive;
+        return !isCaseSensitive();
     }
 
-    /** Sets <code>caseInsensitive</code> property of this Ordering. */
+    /**
+     * Returns true if the sorting is case sensitive.
+     * 
+     * @since 3.0
+     */
+    public boolean isCaseSensitive() {
+        return sortOrder == null || sortOrder == SortOrder.ASCENDING || sortOrder == SortOrder.DESCENDING;
+    }
+
+    /**
+     * Sets <code>caseInsensitive</code> property of this Ordering.
+     * 
+     * @deprecated Use setSortOrder() or setCaseInsensitive() or setCaseSensitive().
+     */
+    @Deprecated
     public void setCaseInsensitive(boolean caseInsensitive) {
-        this.caseInsensitive = caseInsensitive;
+        if (caseInsensitive)
+            setCaseInsensitive();
+        else
+            setCaseSensitive();
+    }
+
+    /**
+     * If the sort order is ASCENDING or DESCENDING, sets the sort order to
+     * ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE, respectively.
+     * 
+     * @since 3.0
+     */
+    public void setCaseInsensitive() {
+        if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
+            setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
+        else if (sortOrder == SortOrder.DESCENDING)
+            setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
+    }
+
+    /**
+     * If the sort order is ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE,
+     * sets the sort order to ASCENDING or DESCENDING, respectively.
+     * 
+     * @since 3.0
+     */
+    public void setCaseSensitive() {
+        if (sortOrder == null || sortOrder == SortOrder.ASCENDING_INSENSITIVE)
+            setSortOrder(SortOrder.ASCENDING);
+        else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
+            setSortOrder(SortOrder.DESCENDING);
     }
 
     /**
@@ -222,7 +338,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 			if (pathExceptionSuppressed && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
 				//do nothing, we expect this 
 			} else {
-				//rethrow
+				//re-throw
 				throw e;
 			}
 		}
@@ -246,7 +362,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
             return nullSortedFirst? 1:-1;
         }
 
-        if (this.caseInsensitive) {
+        if (isCaseInsensitive()) {
             // TODO: to upper case should probably be defined as a separate expression
             // type
             value1 = ConversionUtil.toUpperCase(value1);
@@ -255,7 +371,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 
         int compareResult = ConversionUtil.toComparable(value1).compareTo(
                 ConversionUtil.toComparable(value2));
-        return (ascending) ? compareResult : -compareResult;
+        return (isAscending()) ? compareResult : -compareResult;
     }
 
     /**
@@ -266,11 +382,11 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.print("<ordering");
 
-        if (!ascending) {
+        if (isDescending()) {
             encoder.print(" descending=\"true\"");
         }
 
-        if (caseInsensitive) {
+        if (isCaseInsensitive()) {
             encoder.print(" ignore-case=\"true\"");
         }
 
