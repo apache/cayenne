@@ -74,7 +74,7 @@ public class LifecycleCallbackRegistry {
      * methods in this class can be used to register arbitrary listeners.
      */
     public void addDefaultListener(LifecycleListener listener) {
-        addDefaultListener(LifecycleEvent.PRE_ADD, listener, "prePersist");
+        addDefaultListener(LifecycleEvent.PRE_ADD, listener, "preAdd");
         addDefaultListener(LifecycleEvent.POST_PERSIST, listener, "postPersist");
         addDefaultListener(LifecycleEvent.PRE_REMOVE, listener, "preRemove");
         addDefaultListener(LifecycleEvent.POST_REMOVE, listener, "postRemove");

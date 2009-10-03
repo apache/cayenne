@@ -161,7 +161,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         }
     }
 
-    public void testPrePersistCallback() throws Exception {
+    public void testPreAddCallback() throws Exception {
 
         ClientServerChannel csChannel = new ClientServerChannel(getDomain());
 
@@ -225,7 +225,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         }
     }
 
-    public void testPrePersistOnObjectCallback() throws Exception {
+    public void testPreAddOnObjectCallback() throws Exception {
 
         TestClientServerChannel csChannel = new TestClientServerChannel(getDomain());
 
