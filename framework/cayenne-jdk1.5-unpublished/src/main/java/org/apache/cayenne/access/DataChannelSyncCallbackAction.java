@@ -159,6 +159,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         @Override
         protected boolean hasListeners() {
             return !(callbackRegistry.isEmpty(LifecycleEvent.PRE_UPDATE)
+                    && callbackRegistry.isEmpty(LifecycleEvent.PRE_PERSIST)
                     && callbackRegistry.isEmpty(LifecycleEvent.POST_UPDATE)
                     && callbackRegistry.isEmpty(LifecycleEvent.POST_REMOVE) && callbackRegistry
                     .isEmpty(LifecycleEvent.POST_PERSIST));
@@ -166,6 +167,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
         @Override
         void applyPreCommit() {
+            apply(LifecycleEvent.PRE_PERSIST, persisted);
             apply(LifecycleEvent.PRE_UPDATE, updated);
         }
 

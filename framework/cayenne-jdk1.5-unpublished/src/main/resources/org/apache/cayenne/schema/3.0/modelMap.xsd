@@ -41,7 +41,7 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:query"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:entity-listener"/>
 			</xs:sequence>
-			<xs:attribute name="project-version" use="required" type="xs:decimal"/>
+			<xs:attribute name="project-version" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="db-entity">
@@ -90,6 +90,7 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:entity-listener"/>
 				
 				<!--  Callbacks -->
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-add"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-persist"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-persist"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-update"/>
@@ -268,6 +269,7 @@
 	<xs:element name="entity-listener">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-add"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-persist"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-persist"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-update"/>
@@ -290,6 +292,11 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="post-update">
+		<xs:complexType>
+			<xs:attribute name="method-name" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pre-add">
 		<xs:complexType>
 			<xs:attribute name="method-name" use="required" type="xs:string"/>
 		</xs:complexType>

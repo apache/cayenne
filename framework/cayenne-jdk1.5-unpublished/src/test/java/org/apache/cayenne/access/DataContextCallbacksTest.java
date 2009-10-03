@@ -38,7 +38,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         resolver.getCallbackRegistry().clear();
     }
 
-    public void testPrePersistCallbacks() {
+    public void testPreAddCallbacks() {
         LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
@@ -48,16 +48,13 @@ public class DataContextCallbacksTest extends CayenneCase {
         // no callbacks
         Artist a1 = context.newObject(Artist.class);
         assertNotNull(a1);
-        assertFalse(a1.isPrePersisted());
+        assertFalse(a1.isPreAdded());
 
-        registry.addListener(
-                LifecycleEvent.PRE_ADD,
-                Artist.class,
-                "prePersistCallback");
+        registry.addListener(LifecycleEvent.PRE_ADD, Artist.class, "preAddCallback");
 
         Artist a2 = context.newObject(Artist.class);
         assertNotNull(a2);
-        assertTrue(a2.isPrePersisted());
+        assertTrue(a2.isPreAdded());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
@@ -68,13 +65,52 @@ public class DataContextCallbacksTest extends CayenneCase {
 
         Artist a3 = context.newObject(Artist.class);
         assertNotNull(a3);
-        assertTrue(a3.isPrePersisted());
+        assertTrue(a3.isPreAdded());
 
         assertSame(a3, listener2.getPublicCalledbackEntity());
 
         Painting p3 = context.newObject(Painting.class);
         assertNotNull(p3);
-        assertFalse(p3.isPrePersisted());
+        assertFalse(p3.isPreAdded());
+        assertSame(a3, listener2.getPublicCalledbackEntity());
+    }
+
+    public void testPrePersistCallbacks() {
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        DataContext context = createDataContext();
+
+        // no callbacks
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("1");
+        assertFalse(a1.isPrePersisted());
+        context.commitChanges();
+        assertFalse(a1.isPrePersisted());
+
+        registry.addListener(
+                LifecycleEvent.PRE_PERSIST,
+                Artist.class,
+                "prePersistCallback");
+
+        Artist a2 = context.newObject(Artist.class);
+        a2.setArtistName("2");
+        assertFalse(a2.isPrePersisted());
+        context.commitChanges();
+        assertTrue(a2.isPrePersisted());
+
+        MockCallingBackListener listener2 = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.PRE_PERSIST,
+                Artist.class,
+                listener2,
+                "publicCallback");
+
+        Artist a3 = context.newObject(Artist.class);
+        a3.setArtistName("3");
+        assertNull(listener2.getPublicCalledbackEntity());
+        context.commitChanges();
         assertSame(a3, listener2.getPublicCalledbackEntity());
     }
 
@@ -90,7 +126,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         a1.setArtistName("XX");
         context.commitChanges();
         context.deleteObject(a1);
-        assertFalse(a1.isPrePersisted());
+        assertFalse(a1.isPreAdded());
         assertFalse(a1.isPreRemoved());
 
         registry
@@ -100,7 +136,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         a2.setArtistName("XX");
         context.commitChanges();
         context.deleteObject(a2);
-        assertFalse(a2.isPrePersisted());
+        assertFalse(a2.isPreAdded());
         assertTrue(a2.isPreRemoved());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
@@ -114,7 +150,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         a3.setArtistName("XX");
         context.commitChanges();
         context.deleteObject(a3);
-        assertFalse(a3.isPrePersisted());
+        assertFalse(a3.isPreAdded());
         assertTrue(a3.isPreRemoved());
 
         assertSame(a3, listener2.getPublicCalledbackEntity());
@@ -123,7 +159,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         p3.setPaintingTitle("XX");
         context.commitChanges();
         context.deleteObject(p3);
-        assertFalse(p3.isPrePersisted());
+        assertFalse(p3.isPreAdded());
         assertFalse(p3.isPreRemoved());
         assertSame(a3, listener2.getPublicCalledbackEntity());
     }

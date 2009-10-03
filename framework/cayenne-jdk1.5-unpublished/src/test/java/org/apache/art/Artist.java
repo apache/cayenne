@@ -26,6 +26,7 @@ public class Artist extends _Artist {
 
     protected transient ValidationDelegate validationDelegate;
     protected boolean validateForSaveCalled;
+    protected boolean preAdded;
     protected boolean prePersisted;
     protected boolean preRemoved;
     protected boolean preUpdated;
@@ -51,6 +52,7 @@ public class Artist extends _Artist {
     }
 
     public void resetCallbackFlags() {
+        preAdded = false;
         prePersisted = false;
         preRemoved = false;
         preUpdated = false;
@@ -69,6 +71,10 @@ public class Artist extends _Artist {
         super.validateForSave(validationResult);
     }
 
+    public void preAddCallback() {
+        preAdded = true;
+    }
+    
     public void prePersistCallback() {
         prePersisted = true;
     }
@@ -97,6 +103,10 @@ public class Artist extends _Artist {
         postLoaded++;
     }
 
+    public boolean isPreAdded() {
+        return preAdded;
+    }
+    
     public boolean isPrePersisted() {
         return prePersisted;
     }
