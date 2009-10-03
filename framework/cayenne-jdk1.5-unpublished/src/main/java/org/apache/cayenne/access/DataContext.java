@@ -733,7 +733,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleEvent.PRE_PERSIST,
+                LifecycleEvent.PRE_ADD,
                 object);
 
         return object;
@@ -874,7 +874,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleEvent.PRE_PERSIST,
+                LifecycleEvent.PRE_ADD,
                 persistent);
     }
 

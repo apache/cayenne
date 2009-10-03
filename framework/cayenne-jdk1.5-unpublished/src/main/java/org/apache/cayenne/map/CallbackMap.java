@@ -73,6 +73,10 @@ public class CallbackMap implements Serializable {
         return callbacks[LifecycleEvent.POST_UPDATE.ordinal()];
     }
 
+    public CallbackDescriptor getPreAdd() {
+        return callbacks[LifecycleEvent.PRE_ADD.ordinal()];
+    }
+    
     public CallbackDescriptor getPrePersist() {
         return callbacks[LifecycleEvent.PRE_PERSIST.ordinal()];
     }
@@ -86,6 +90,7 @@ public class CallbackMap implements Serializable {
     }
 
     public void encodeCallbacksAsXML(XMLEncoder encoder) {
+        printMethods(getPreAdd(), "pre-add", encoder);
         printMethods(getPrePersist(), "pre-persist", encoder);
         printMethods(getPostPersist(), "post-persist", encoder);
         printMethods(getPreUpdate(), "pre-update", encoder);

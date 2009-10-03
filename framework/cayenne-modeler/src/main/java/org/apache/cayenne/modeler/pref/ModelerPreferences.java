@@ -16,25 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.modeler.pref;
 
-import junit.framework.TestCase;
+public class ModelerPreferences extends _ModelerPreferences {
 
-public class CallbackDescriptorTest extends TestCase {
+    private static ModelerPreferences instance;
 
-    public void testConstructor() {
-        CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.POST_LOAD);
-        assertEquals(LifecycleEvent.POST_LOAD, m.getCallbackType());
+    private ModelerPreferences() {
     }
 
-    public void testAddCallbackMethod() {
-        CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.PRE_ADD);
-        assertEquals(0, m.getCallbackMethods().size());
-        m.addCallbackMethod("a");
-        assertEquals(1, m.getCallbackMethods().size());
-        m.addCallbackMethod("b");
-        assertEquals(2, m.getCallbackMethods().size());
-        m.addCallbackMethod("a");
-        assertEquals(2, m.getCallbackMethods().size());
+    public static ModelerPreferences getInstance() {
+        if (instance == null) {
+            instance = new ModelerPreferences();
+        }
+
+        return instance;
     }
 }

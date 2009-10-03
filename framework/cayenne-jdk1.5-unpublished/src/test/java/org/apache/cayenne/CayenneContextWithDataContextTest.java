@@ -187,7 +187,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 public void postUpdate(Object entity) {
                 }
 
-                public void prePersist(Object entity) {
+                public void preAdd(Object entity) {
                     flag[0] = true;
                 }
 
@@ -236,7 +236,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
         try {
             callbackRegistry.addListener(
-                    LifecycleEvent.PRE_PERSIST,
+                    LifecycleEvent.PRE_ADD,
                     MtTable1.class,
                     "prePersistMethod");
 
@@ -288,7 +288,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 public void postUpdate(Object entity) {
                 }
 
-                public void prePersist(Object entity) {
+                public void preAdd(Object entity) {
                 }
 
                 public void preRemove(Object entity) {
@@ -345,7 +345,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 public void postUpdate(Object entity) {
                 }
 
-                public void prePersist(Object entity) {
+                public void preAdd(Object entity) {
                 }
 
                 public void preRemove(Object entity) {

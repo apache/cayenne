@@ -41,7 +41,7 @@ import org.apache.cayenne.project.validator.Validator;
  */
 public abstract class Project {
 
-    public static final String CURRENT_PROJECT_VERSION = "3.0";
+    public static final String CURRENT_PROJECT_VERSION = "3.0.0.1";
     static final int UPGRADE_STATUS_OLD = -1;
     static final int UPGRADE_STATUS_CURRENT = 0;
     static final int UPGRADE_STATUS_NEW = 1;

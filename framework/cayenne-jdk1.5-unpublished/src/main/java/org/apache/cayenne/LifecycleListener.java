@@ -30,7 +30,7 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
  */
 public interface LifecycleListener {
 
-    void prePersist(Object entity);
+    void preAdd(Object entity);
 
     void postPersist(Object entity);
 

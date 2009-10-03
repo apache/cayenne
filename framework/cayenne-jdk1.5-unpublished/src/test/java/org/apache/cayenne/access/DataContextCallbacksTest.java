@@ -51,7 +51,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         assertFalse(a1.isPrePersisted());
 
         registry.addListener(
-                LifecycleEvent.PRE_PERSIST,
+                LifecycleEvent.PRE_ADD,
                 Artist.class,
                 "prePersistCallback");
 
@@ -61,7 +61,7 @@ public class DataContextCallbacksTest extends CayenneCase {
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                LifecycleEvent.PRE_PERSIST,
+                LifecycleEvent.PRE_ADD,
                 Artist.class,
                 listener2,
                 "publicCallback");

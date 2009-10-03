@@ -116,7 +116,7 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
         try {
 
             registry.addListener(
-                    LifecycleEvent.PRE_PERSIST,
+                    LifecycleEvent.PRE_ADD,
                     MtTable1.class,
                     new ClientChannelServerDiffsListener1(),
                     "prePersist");

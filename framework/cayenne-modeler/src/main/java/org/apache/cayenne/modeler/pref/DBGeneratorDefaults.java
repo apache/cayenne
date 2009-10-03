@@ -38,6 +38,7 @@ public class DBGeneratorDefaults extends _DBGeneratorDefaults {
     /**
      * An initialization callback.
      */
+    @Override
     public void prePersist() {
         setCreateFK(Boolean.TRUE);
         setCreatePK(Boolean.TRUE);

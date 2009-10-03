@@ -165,7 +165,9 @@ public class OpenProjectAction extends ProjectAction {
 
         // perform upgrade
         logObj.info("Will upgrade project " + project.getMainFile());
+        getProjectController().getProjectWatcher().pauseWatching();
         project.upgrade();
+        getProjectController().getProjectWatcher().reconfigure();
         return true;
     }
 }

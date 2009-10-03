@@ -45,9 +45,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class MapLoader extends DefaultHandler {
 
-    // TODO: andrus, 7/17/2006 - these variables, and project upgrade logic should be
-    // refactored out of the MapLoader. In fact we should either modify raw XML during the
-    // upgrade, or implement some consistent upgrade API across various loaders
+    // TODO: andrus, 7/17/2006 - move upgrade logic out of here
     final static String _1_2_PACKAGE_PREFIX = "org.objectstyle.cayenne.";
     final static String _2_0_PACKAGE_PREFIX = "org.apache.cayenne.";
 
@@ -88,6 +86,7 @@ public class MapLoader extends DefaultHandler {
 
     // lifecycle listeners and callbacks related
     public static final String ENTITY_LISTENER_TAG = "entity-listener";
+    public static final String PRE_ADD_TAG = "pre-add";
     public static final String PRE_PERSIST_TAG = "pre-persist";
     public static final String POST_PERSIST_TAG = "post-persist";
     public static final String PRE_UPDATE_TAG = "pre-update";
@@ -139,6 +138,7 @@ public class MapLoader extends DefaultHandler {
     public static final String JAVA_CLASS_ROOT = "java-class";
 
     // Reading from XML
+    private String mapVersion;
     private DataMap dataMap;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
@@ -151,6 +151,7 @@ public class MapLoader extends DefaultHandler {
     private Procedure procedure;
     private QueryLoader queryBuilder;
     private String sqlKey;
+
     private String descending;
     private String ignoreCase;
 
@@ -165,6 +166,14 @@ public class MapLoader extends DefaultHandler {
         // compile tag processors.
         startTagOpMap = new HashMap<String, StartClosure>(40);
         endTagOpMap = new HashMap<String, EndClosure>(40);
+
+        startTagOpMap.put(DATA_MAP_TAG, new StartClosure() {
+
+            @Override
+            void execute(Attributes attributes) throws SAXException {
+                processStartDataMap(attributes);
+            }
+        });
 
         startTagOpMap.put(DB_ENTITY_TAG, new StartClosure() {
 
@@ -347,6 +356,14 @@ public class MapLoader extends DefaultHandler {
             @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartEntitylistener(attributes);
+            }
+        });
+
+        startTagOpMap.put(PRE_ADD_TAG, new StartClosure() {
+
+            @Override
+            void execute(Attributes attributes) throws SAXException {
+                processStartPreAdd(attributes);
             }
         });
 
@@ -567,6 +584,10 @@ public class MapLoader extends DefaultHandler {
         });
     }
 
+    private void processStartDataMap(Attributes attributes) {
+        this.mapVersion = attributes.getValue("", "project-version");
+    }
+
     private void processStartEntitylistener(Attributes attributes) {
         entityListener = new EntityListener(attributes.getValue("", "class"));
         if (objEntity != null) {
@@ -583,15 +604,38 @@ public class MapLoader extends DefaultHandler {
         entityListener = null;
     }
 
-    private void processStartPrePersist(Attributes attributes) {
+    private void processStartPreAdd(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
         if (entityListener != null) {
             // new "entity-listener" tag as a child of "obj-entity"
-            entityListener.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
+            entityListener.getCallbackMap().getPreAdd().addCallbackMethod(methodName);
         }
         else if (objEntity != null) {
             // new callback tags - children of "obj-entity"
-            objEntity.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
+            objEntity.getCallbackMap().getPreAdd().addCallbackMethod(methodName);
+        }
+    }
+
+    private void processStartPrePersist(Attributes attributes) {
+
+        // 3.0 -> 3.0.0.1 upgrade hack... treat pre-persist as pre-add
+        // only 3.0 used "pre-persist" in a "pre-add" sense
+        if ("3.0".equals(mapVersion)) {
+            processStartPreAdd(attributes);
+        }
+        else {
+
+            String methodName = attributes.getValue("", "method-name");
+
+            if (entityListener != null) {
+                // new "entity-listener" tag as a child of "obj-entity"
+                entityListener.getCallbackMap().getPrePersist().addCallbackMethod(
+                        methodName);
+            }
+            else if (objEntity != null) {
+                // new callback tags - children of "obj-entity"
+                objEntity.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
+            }
         }
     }
 
@@ -1329,6 +1373,7 @@ public class MapLoader extends DefaultHandler {
         }
 
         mapProperties = null;
+        mapVersion = null;
     }
 
     private void processEndObjEntity() {

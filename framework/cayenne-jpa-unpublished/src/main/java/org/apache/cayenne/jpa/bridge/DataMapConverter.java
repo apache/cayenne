@@ -244,7 +244,7 @@ public class DataMapConverter {
         }
 
         if (jpaListener.getPrePersist() != null) {
-            listener.getCallbackMap().getPrePersist().addCallbackMethod(
+            listener.getCallbackMap().getPreAdd().addCallbackMethod(
                     jpaListener.getPrePersist().getMethodName());
         }
 
@@ -763,7 +763,7 @@ public class DataMapConverter {
             }
 
             if (jpaEntity.getPrePersist() != null) {
-                cayenneEntity.getCallbackMap().getPrePersist().addCallbackMethod(
+                cayenneEntity.getCallbackMap().getPreAdd().addCallbackMethod(
                         jpaEntity.getPrePersist().getMethodName());
             }
 

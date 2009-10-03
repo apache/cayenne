@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map project-version="3.0">
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
 	<property name="defaultLockType" value="optimistic"/>
 	<property name="defaultPackage" value="org.apache.cayenne.modeler.pref"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.pref.PreferenceDetail"/>
@@ -63,7 +66,7 @@
 		<obj-attribute name="createTables" type="java.lang.Boolean" db-attribute-path="create_tables"/>
 		<obj-attribute name="dropPK" type="java.lang.Boolean" db-attribute-path="drop_pk"/>
 		<obj-attribute name="dropTables" type="java.lang.Boolean" db-attribute-path="drop_tables"/>
-		<pre-persist method-name="prePersist"/>
+		<pre-add method-name="prePersist"/>
 	</obj-entity>
 	<obj-entity name="DataMapDefaults" className="org.apache.cayenne.modeler.pref.DataMapDefaults" lock-type="optimistic" dbEntityName="data_map_defaults" superClassName="org.apache.cayenne.pref.PreferenceDetail">
 		<obj-attribute name="generatePairs" type="java.lang.Boolean" db-attribute-path="generate_pairs"/>
@@ -71,7 +74,7 @@
 		<obj-attribute name="subclassTemplate" type="java.lang.String" db-attribute-path="subclass_template"/>
 		<obj-attribute name="superclassPackage" type="java.lang.String" db-attribute-path="superclass_package_suffix"/>
 		<obj-attribute name="superclassTemplate" type="java.lang.String" db-attribute-path="superclass_template"/>
-		<pre-persist method-name="prePersist"/>
+		<pre-add method-name="prePersist"/>
 	</obj-entity>
 	<obj-entity name="DataNodeDefaults" className="org.apache.cayenne.modeler.pref.DataNodeDefaults" lock-type="optimistic" dbEntityName="data_node_defaults" superClassName="org.apache.cayenne.pref.PreferenceDetail">
 		<obj-attribute name="localDataSource" type="java.lang.String" db-attribute-path="local_data_source"/>

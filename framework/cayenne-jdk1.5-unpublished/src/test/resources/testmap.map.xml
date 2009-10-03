@@ -2,7 +2,7 @@
 <data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
-  project-version="3.0">
+  project-version="3.0.0.1">
 	<property name="defaultPackage" value="org.apache.art"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
 	<property name="clientSupported" value="true"/>
@@ -255,7 +255,7 @@
 		<obj-attribute name="artistName" type="java.lang.String"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
 		<entity-listener class="org.apache.art.EntityListenerObjEntity">
-			<pre-persist method-name="prePersistEntityListener"/>
+			<pre-add method-name="prePersistEntityListener"/>
 			<post-persist method-name="postPersistEntityListener"/>
 			<pre-update method-name="preUpdateEntityListener"/>
 			<post-update method-name="postUpdateEntityListener"/>
@@ -263,7 +263,7 @@
 			<post-remove method-name="postRemoveEntityListener"/>
 			<post-load method-name="postLoadEntityListener"/>
 		</entity-listener>
-		<pre-persist method-name="prePersistEntityObjEntity"/>
+		<pre-add method-name="prePersistEntityObjEntity"/>
 		<post-persist method-name="postPersistEntityObjEntity"/>
 		<pre-update method-name="preUpdateEntityObjEntity"/>
 		<post-update method-name="postUpdateEntityObjEntity"/>
@@ -644,8 +644,8 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
-		<pre-persist method-name="prePersistDataMap1"/>
-		<pre-persist method-name="prePersistDataMap2"/>
+		<pre-add method-name="prePersistDataMap1"/>
+		<pre-add method-name="prePersistDataMap2"/>
 		<post-persist method-name="postPersistDataMap"/>
 		<pre-update method-name="preUpdateDataMap"/>
 		<post-update method-name="postUpdateDataMap"/>
