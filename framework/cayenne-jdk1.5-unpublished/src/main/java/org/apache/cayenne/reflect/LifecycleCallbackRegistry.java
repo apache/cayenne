@@ -97,7 +97,7 @@ public class LifecycleCallbackRegistry {
      * methods in this class can be used to register arbitrary listeners.
      */
     public void addListener(Class<?> entityClass, LifecycleListener listener) {
-        addListener(LifecycleEvent.PRE_ADD, entityClass, listener, "prePersist");
+        addListener(LifecycleEvent.PRE_ADD, entityClass, listener, "preAdd");
         addListener(LifecycleEvent.POST_PERSIST, entityClass, listener, "postPersist");
         addListener(LifecycleEvent.PRE_REMOVE, entityClass, listener, "preRemove");
         addListener(LifecycleEvent.POST_REMOVE, entityClass, listener, "postRemove");
