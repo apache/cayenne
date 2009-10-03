@@ -29,6 +29,7 @@ CAY-1263 Cayenne Oracle adapter should automatically strip IN clauses with more 
 CAY-1268 Implement 'setStatementFetchSize' for RelationshipQuery
 CAY-1270 Merge primary key changes
 CAY-1273 Replace DefaultType with dedicated types
+CAY-1281 Lifecycle callbacks reorganization
 
 Bug Fixes Since M6:
 

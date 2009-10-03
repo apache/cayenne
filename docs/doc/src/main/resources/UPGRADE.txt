@@ -1,5 +1,9 @@
 Apache Cayenne Upgrade Information
 ==================================
+UPGRADING FROM 3.0M6
+
+* Per CAY-1281 pre-persist callback was renamed to post-add (while pre-persist now has a different meaning).
+  To upgrade your project, open it in the Modeler and agree to perform an automated upgrade.
 
 UPGRADING FROM 3.0M5
 
