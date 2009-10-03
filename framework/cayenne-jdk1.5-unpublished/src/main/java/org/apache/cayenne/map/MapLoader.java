@@ -151,7 +151,6 @@ public class MapLoader extends DefaultHandler {
     private Procedure procedure;
     private QueryLoader queryBuilder;
     private String sqlKey;
-    private String ejbqlKey;
     private String descending;
     private String ignoreCase;
 
@@ -292,7 +291,6 @@ public class MapLoader extends DefaultHandler {
             @Override
             void execute(Attributes attributes) throws SAXException {
                 charactersBuffer = new StringBuilder();
-                processStartEjbqlQuery(attributes);
             }
         });
 
@@ -681,33 +679,40 @@ public class MapLoader extends DefaultHandler {
         catch (SAXException e) {
             dataMap = null;
             throw new CayenneRuntimeException(
-                    "Wrong DataMap format, last processed tag: " + constructCurrentStateString(),
+                    "Wrong DataMap format, last processed tag: "
+                            + constructCurrentStateString(),
                     Util.unwindException(e));
         }
         catch (Exception e) {
             dataMap = null;
             throw new CayenneRuntimeException(
-                    "Error loading DataMap, last processed tag: " + constructCurrentStateString(),
+                    "Error loading DataMap, last processed tag: "
+                            + constructCurrentStateString(),
                     Util.unwindException(e));
         }
         return dataMap;
     }
-    
+
     /**
      * Constructs error message for displaying as exception message
      */
     private Appendable constructCurrentStateString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<").append(currentTag);
-        
+
         if (currentAttributes != null) {
             for (int i = 0; i < currentAttributes.getLength(); i++) {
-                sb.append(" ").append(currentAttributes.getLocalName(i)).append("=").
-                    append("\"").append(currentAttributes.getValue(i)).append("\"");
+                sb
+                        .append(" ")
+                        .append(currentAttributes.getLocalName(i))
+                        .append("=")
+                        .append("\"")
+                        .append(currentAttributes.getValue(i))
+                        .append("\"");
             }
         }
         sb.append(">");
-        
+
         return sb;
     }
 
@@ -913,10 +918,6 @@ public class MapLoader extends DefaultHandler {
         this.sqlKey = convertClassNameFromV1_2(atts.getValue("", "adapter-class"));
     }
 
-    private void processStartEjbqlQuery(Attributes atts) throws SAXException {
-        this.ejbqlKey = convertClassNameFromV1_2(atts.getValue("", "adapter-class"));
-    }
-
     private void processStartObjEntity(Attributes atts) {
         objEntity = new ObjEntity(atts.getValue("", "name"));
         objEntity.setClassName(atts.getValue("", "className"));
@@ -1077,8 +1078,9 @@ public class MapLoader extends DefaultHandler {
         objRelationship.setDeleteRule(deleteRule);
         objRelationship.setUsedForLocking(TRUE
                 .equalsIgnoreCase(atts.getValue("", "lock")));
-        objRelationship
-                .setDeferredDbRelationshipPath((atts.getValue("", "db-relationship-path")));
+        objRelationship.setDeferredDbRelationshipPath((atts.getValue(
+                "",
+                "db-relationship-path")));
         objRelationship.setCollectionType(collectionType);
         objRelationship.setMapKey(mapKey);
         source.addRelationship(objRelationship);
@@ -1241,7 +1243,6 @@ public class MapLoader extends DefaultHandler {
 
     private void processEndEjbqlQuery() throws SAXException {
         queryBuilder.setEjbql(charactersBuffer.toString());
-        ejbqlKey = null;
     }
 
     private void processEndQuerySQL() {
