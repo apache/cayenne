@@ -28,7 +28,7 @@ public class CallbackDescriptorTest extends TestCase {
     }
 
     public void testAddCallbackMethod() {
-        CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.PRE_ADD);
+        CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.POST_ADD);
         assertEquals(0, m.getCallbackMethods().size());
         m.addCallbackMethod("a");
         assertEquals(1, m.getCallbackMethods().size());

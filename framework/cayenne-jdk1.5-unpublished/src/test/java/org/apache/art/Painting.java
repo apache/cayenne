@@ -24,18 +24,18 @@ import org.apache.cayenne.validation.ValidationResult;
 public class Painting extends org.apache.art.auto._Painting {
     protected boolean validateForSaveCalled;
 
-    protected boolean preAdded;
+    protected boolean postAdded;
     protected boolean preRemoved;
     protected boolean preUpdated;
 
     public void resetCallbackFlags() {
-        preAdded = false;
+        postAdded = false;
         preRemoved = false;
         preUpdated = false;
     }
 
-    public void preAddCallback() {
-        preAdded = true;
+    public void postAddCallback() {
+        postAdded = true;
     }
 
     public void preRemoveCallback() {
@@ -46,8 +46,8 @@ public class Painting extends org.apache.art.auto._Painting {
         preUpdated = true;
     }
 
-    public boolean isPreAdded() {
-        return preAdded;
+    public boolean isPostAdded() {
+        return postAdded;
     }
 
     public boolean isPreRemoved() {

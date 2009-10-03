@@ -86,7 +86,7 @@ public class MapLoader extends DefaultHandler {
 
     // lifecycle listeners and callbacks related
     public static final String ENTITY_LISTENER_TAG = "entity-listener";
-    public static final String PRE_ADD_TAG = "pre-add";
+    public static final String POST_ADD_TAG = "post-add";
     public static final String PRE_PERSIST_TAG = "pre-persist";
     public static final String POST_PERSIST_TAG = "post-persist";
     public static final String PRE_UPDATE_TAG = "pre-update";
@@ -359,11 +359,11 @@ public class MapLoader extends DefaultHandler {
             }
         });
 
-        startTagOpMap.put(PRE_ADD_TAG, new StartClosure() {
+        startTagOpMap.put(POST_ADD_TAG, new StartClosure() {
 
             @Override
             void execute(Attributes attributes) throws SAXException {
-                processStartPreAdd(attributes);
+                processStartPostAdd(attributes);
             }
         });
 
@@ -604,24 +604,24 @@ public class MapLoader extends DefaultHandler {
         entityListener = null;
     }
 
-    private void processStartPreAdd(Attributes attributes) {
+    private void processStartPostAdd(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
         if (entityListener != null) {
             // new "entity-listener" tag as a child of "obj-entity"
-            entityListener.getCallbackMap().getPreAdd().addCallbackMethod(methodName);
+            entityListener.getCallbackMap().getPostAdd().addCallbackMethod(methodName);
         }
         else if (objEntity != null) {
             // new callback tags - children of "obj-entity"
-            objEntity.getCallbackMap().getPreAdd().addCallbackMethod(methodName);
+            objEntity.getCallbackMap().getPostAdd().addCallbackMethod(methodName);
         }
     }
 
     private void processStartPrePersist(Attributes attributes) {
 
-        // 3.0 -> 3.0.0.1 upgrade hack... treat pre-persist as pre-add
-        // only 3.0 used "pre-persist" in a "pre-add" sense
+        // 3.0 -> 3.0.0.1 upgrade hack... treat pre-persist as post-add
+        // only 3.0 used "pre-persist" in a "post-add" sense
         if ("3.0".equals(mapVersion)) {
-            processStartPreAdd(attributes);
+            processStartPostAdd(attributes);
         }
         else {
 

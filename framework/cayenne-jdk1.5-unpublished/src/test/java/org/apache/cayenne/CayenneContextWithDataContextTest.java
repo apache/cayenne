@@ -161,7 +161,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         }
     }
 
-    public void testPreAddCallback() throws Exception {
+    public void testPostAddCallback() throws Exception {
 
         ClientServerChannel csChannel = new ClientServerChannel(getDomain());
 
@@ -187,7 +187,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 public void postUpdate(Object entity) {
                 }
 
-                public void preAdd(Object entity) {
+                public void postAdd(Object entity) {
                     flag[0] = true;
                 }
 
@@ -225,7 +225,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         }
     }
 
-    public void testPreAddOnObjectCallback() throws Exception {
+    public void testPostAddOnObjectCallback() throws Exception {
 
         TestClientServerChannel csChannel = new TestClientServerChannel(getDomain());
 
@@ -236,7 +236,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
         try {
             callbackRegistry.addListener(
-                    LifecycleEvent.PRE_ADD,
+                    LifecycleEvent.POST_ADD,
                     MtTable1.class,
                     "prePersistMethod");
 
@@ -288,7 +288,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 public void postUpdate(Object entity) {
                 }
 
-                public void preAdd(Object entity) {
+                public void postAdd(Object entity) {
                 }
 
                 public void preRemove(Object entity) {
@@ -345,7 +345,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 public void postUpdate(Object entity) {
                 }
 
-                public void preAdd(Object entity) {
+                public void postAdd(Object entity) {
                 }
 
                 public void preRemove(Object entity) {

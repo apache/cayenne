@@ -85,7 +85,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      */
     protected JComboBox callbackTypeCombo = CayenneWidgetFactory.createComboBox(
             new Object[] {
-                    new CallbackType(LifecycleEvent.PRE_ADD, "pre-add"),
+                    new CallbackType(LifecycleEvent.POST_ADD, "post-add"),
                     new CallbackType(LifecycleEvent.PRE_PERSIST, "pre-persist"),
                     new CallbackType(LifecycleEvent.POST_PERSIST, "post-persist"),
                     new CallbackType(LifecycleEvent.PRE_UPDATE, "pre-update"),

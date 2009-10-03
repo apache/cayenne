@@ -255,7 +255,7 @@
 		<obj-attribute name="artistName" type="java.lang.String"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
 		<entity-listener class="org.apache.art.EntityListenerObjEntity">
-			<pre-add method-name="prePersistEntityListener"/>
+			<post-add method-name="prePersistEntityListener"/>
 			<post-persist method-name="postPersistEntityListener"/>
 			<pre-update method-name="preUpdateEntityListener"/>
 			<post-update method-name="postUpdateEntityListener"/>
@@ -263,7 +263,7 @@
 			<post-remove method-name="postRemoveEntityListener"/>
 			<post-load method-name="postLoadEntityListener"/>
 		</entity-listener>
-		<pre-add method-name="prePersistEntityObjEntity"/>
+		<post-add method-name="prePersistEntityObjEntity"/>
 		<post-persist method-name="postPersistEntityObjEntity"/>
 		<pre-update method-name="preUpdateEntityObjEntity"/>
 		<post-update method-name="postUpdateEntityObjEntity"/>
@@ -644,8 +644,8 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
-		<pre-add method-name="prePersistDataMap1"/>
-		<pre-add method-name="prePersistDataMap2"/>
+		<post-add method-name="prePersistDataMap1"/>
+		<post-add method-name="prePersistDataMap2"/>
 		<post-persist method-name="postPersistDataMap"/>
 		<pre-update method-name="preUpdateDataMap"/>
 		<post-update method-name="postUpdateDataMap"/>
