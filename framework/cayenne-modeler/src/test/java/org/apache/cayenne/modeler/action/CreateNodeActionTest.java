@@ -42,7 +42,7 @@ public class CreateNodeActionTest extends TestCase {
             return;
         }
 
-        DataNode node = action.createDataNode(new DataDomain("DD"));
+        DataNode node = action.buildDataNode(new DataDomain("DD"));
 
         assertNotNull(node);
         assertNotNull(node.getName());

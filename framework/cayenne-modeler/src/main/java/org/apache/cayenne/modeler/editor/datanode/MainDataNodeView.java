@@ -29,6 +29,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -49,11 +51,12 @@ public class MainDataNodeView extends JPanel {
     public MainDataNodeView() {
 
         // create widgets
-        this.dataNodeName = new JTextField();
-        this.factories = new JComboBox();
-        this.localDataSources = new JComboBox();
+        this.dataNodeName = CayenneWidgetFactory.createUndoableTextField();
+        this.factories = CayenneWidgetFactory.createUndoableComboBox();
+        
+        this.localDataSources = CayenneWidgetFactory.createUndoableComboBox();
 
-        this.schemaUpdateStrategy = new JComboBox();
+        this.schemaUpdateStrategy = CayenneWidgetFactory.createUndoableComboBox();
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
 

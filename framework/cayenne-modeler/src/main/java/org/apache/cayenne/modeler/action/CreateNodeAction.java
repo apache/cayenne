@@ -33,6 +33,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerDbAdapter;
 import org.apache.cayenne.project.NamedObjectFactory;
@@ -42,6 +43,8 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  */
 public class CreateNodeAction extends CayenneAction {
+
+    
 
     public static String getActionName() {
         return "Create DataNode";
@@ -64,34 +67,42 @@ public class CreateNodeAction extends CayenneAction {
      * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
      */
     public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
-        DataDomain domain = mediator.getCurrentDataDomain();
-
-        // use domain name as DataNode base, as node names must be unique across the
-        // project...
         DataNode node = buildDataNode();
-        fireDataNodeEvent(this, mediator, domain, node);
+        createDataNode(getProjectController().getCurrentDataDomain(), node);
+        application.getUndoManager().addEdit(
+                new CreateNodeUndoableEdit(application, getProjectController()
+                        .getCurrentDataDomain(), node));
     }
-    
+
+    public void createDataNode(DataDomain domain, DataNode node) {
+        domain.addNode(node);
+        getProjectController().fireDataNodeEvent(
+                new DataNodeEvent(this, node, MapEvent.ADD));
+        getProjectController().fireDataNodeDisplayEvent(
+                new DataNodeDisplayEvent(this, domain, node));
+    }
+
     /**
-     * Fires events when a obj entity was added
+     * Returns <code>true</code> if path contains a DataDomain object.
      */
-    static void fireDataNodeEvent(Object src, ProjectController mediator, DataDomain domain,
-            DataNode node) {
-        mediator.fireDataNodeEvent(new DataNodeEvent(src, node, MapEvent.ADD));
-        mediator.fireDataNodeDisplayEvent(new DataNodeDisplayEvent(src, domain, node));
+    public boolean enableForPath(ProjectPath path) {
+        if (path == null) {
+            return false;
+        }
+
+        return path.firstInstanceOf(DataDomain.class) != null;
     }
 
     /**
      * Creates a new DataNode, adding to the current domain, but doesn't send any events.
      */
-    protected DataNode buildDataNode() {
+    public DataNode buildDataNode() {
         ProjectController mediator = getProjectController();
         DataDomain domain = mediator.getCurrentDataDomain();
 
         // use domain name as DataNode base, as node names must be unique across the
         // project...
-        DataNode node = createDataNode(domain);
+        DataNode node = buildDataNode(domain);
 
         ProjectDataSource src = new ProjectDataSource(new DataSourceInfo());
         node.setDataSource(src);
@@ -100,15 +111,14 @@ public class CreateNodeAction extends CayenneAction {
         // by default create JDBC Node
         node.setDataSourceFactory(DriverDataSourceFactory.class.getName());
         node.setSchemaUpdateStrategyName(SkipSchemaUpdateStrategy.class.getName());
-        
-        domain.addNode(node);
+
         return node;
     }
 
     /**
      * A factory method that makes a new DataNode.
      */
-    protected DataNode createDataNode(DataDomain domain) {
+    DataNode buildDataNode(DataDomain domain) {
         String name = NamedObjectFactory.createName(DataNode.class, domain, domain
                 .getName()
                 + "Node");
@@ -121,16 +131,5 @@ public class CreateNodeAction extends CayenneAction {
                 return dataSource;
             }
         };
-    }
-
-    /**
-     * Returns <code>true</code> if path contains a DataDomain object.
-     */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        return path.firstInstanceOf(DataDomain.class) != null;
     }
 }

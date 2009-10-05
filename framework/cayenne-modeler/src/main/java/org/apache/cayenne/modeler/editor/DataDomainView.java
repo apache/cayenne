@@ -42,6 +42,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.datadomain.CacheSyncConfigController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.pref.Domain;
@@ -111,7 +112,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         this.objectValidation = new JCheckBox();
         this.externalTransactions = new JCheckBox();
 
-        this.queryCacheFactory = new JComboBox();
+        this.queryCacheFactory = CayenneWidgetFactory.createUndoableComboBox();
 
         this.sharedCache = new JCheckBox();
         this.remoteUpdates = new JCheckBox();
@@ -344,6 +345,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
         Configuration configuration = ((ApplicationProject) Application.getProject())
                 .getConfiguration();
+        
         DataDomain domain = projectController.getCurrentDataDomain();
 
         DataDomain matchingDomain = configuration.getDomain(newName);

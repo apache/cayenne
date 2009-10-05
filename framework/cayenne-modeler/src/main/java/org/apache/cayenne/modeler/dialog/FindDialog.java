@@ -47,6 +47,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.editor.EditorView;
@@ -161,8 +162,11 @@ public class FindDialog extends CayenneController {
         table.getSelectionModel().setSelectionInterval(0, 0);
     }
 
-    public static void jumpToResult(Object[] path, EditorView editor) {
-
+    public static void jumpToResult(Object[] path) {
+    	EditorView editor = ((CayenneModelerFrame) Application.getInstance()
+                .getFrameController()
+                .getView()).getView();
+    	
         if (path[path.length - 1] instanceof Entity) {
 
             /** Make selection in a project tree, open correspondent entity tab */
@@ -239,10 +243,6 @@ public class FindDialog extends CayenneController {
 
     private class JumpToResultActionListener implements MouseListener {
 
-        private EditorView editor = ((CayenneModelerFrame) application
-                .getFrameController()
-                .getView()).getView();
-
         public void mouseClicked(MouseEvent e) {
             JTable table = (JTable) e.getSource();
             Integer selectedLine = table.getSelectionModel().getLeadSelectionIndex();
@@ -250,7 +250,7 @@ public class FindDialog extends CayenneController {
             Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(label);
 
             Object[] path = (Object[]) paths.get(index);
-            jumpToResult(path, editor);
+            jumpToResult(path);
         }
 
         public void mouseEntered(MouseEvent e) {
@@ -268,10 +268,6 @@ public class FindDialog extends CayenneController {
 
     private class JumpToResultsKeyListener implements KeyListener {
 
-        private EditorView editor = ((CayenneModelerFrame) application
-                .getFrameController()
-                .getView()).getView();
-
         public void keyPressed(KeyEvent e) {
 
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -283,7 +279,7 @@ public class FindDialog extends CayenneController {
                         label);
 
                 Object[] path = (Object[]) paths.get(index);
-                jumpToResult(path, editor);
+                jumpToResult(path);
             }
         }
 

@@ -28,6 +28,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateDbEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
@@ -35,6 +36,8 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  */
 public class CreateDbEntityAction extends CayenneAction {
+
+    
 
     public static String getActionName() {
         return "Create DbEntity";
@@ -59,11 +62,15 @@ public class CreateDbEntityAction extends CayenneAction {
      */
     public void performAction(ActionEvent e) {
         ProjectController mediator = getProjectController();
-        DbEntity entity = createEntity(mediator.getCurrentDataMap());
 
-        fireDbEntityEvent(this, mediator, entity);
+        DataMap map = mediator.getCurrentDataMap();
+        DbEntity entity = (DbEntity) NamedObjectFactory.createObject(DbEntity.class, map);
+
+        createEntity(map, entity);
+
+        application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(map, entity));
     }
-    
+
     /**
      * Fires events when a db entity was added
      */
@@ -79,11 +86,11 @@ public class CreateDbEntityAction extends CayenneAction {
     /**
      * Constructs and returns a new DbEntity. Entity returned is added to the DataMap.
      */
-    protected DbEntity createEntity(DataMap map) {
-        DbEntity entity = (DbEntity) NamedObjectFactory.createObject(DbEntity.class, map);
+    public void createEntity(DataMap map, DbEntity entity) {
+        ProjectController mediator = getProjectController();
         entity.setSchema(map.getDefaultSchema());
         map.addDbEntity(entity);
-        return entity;
+        fireDbEntityEvent(this, mediator, entity);
     }
 
     /**

@@ -47,7 +47,6 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.texen.util.PropertiesUtil;
 
 /**
  * A panel that supports editing the properties of a GenericSelectQuery.
@@ -113,7 +112,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
             }
         };
 
-        cacheStrategy = CayenneWidgetFactory.createComboBox();
+        cacheStrategy = CayenneWidgetFactory.createUndoableComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
         cacheGroups = new TextAdapter(new JTextField()) {
 

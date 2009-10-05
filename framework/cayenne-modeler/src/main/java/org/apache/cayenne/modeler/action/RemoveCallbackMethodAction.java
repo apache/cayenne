@@ -28,6 +28,9 @@ import org.apache.cayenne.modeler.Application;
  * @version 1.0 Oct 30, 2007
  */
 public class RemoveCallbackMethodAction extends AbstractRemoveCallbackMethodAction {
+    
+    
+
     /**
      * unique action name
      */

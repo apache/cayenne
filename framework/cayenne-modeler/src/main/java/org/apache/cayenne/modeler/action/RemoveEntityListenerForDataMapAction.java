@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
@@ -32,6 +33,8 @@ import org.apache.cayenne.modeler.event.EntityListenerEvent;
  * @version 1.0 Oct 30, 2007
  */
 public class RemoveEntityListenerForDataMapAction extends RemoveAction {
+    
+    
     /**
      * unique action name
      */
@@ -70,15 +73,16 @@ public class RemoveEntityListenerForDataMapAction extends RemoveAction {
         if (getProjectController().getCurrentListenerClass() != null) {
             if (dialog.shouldDelete("entity listener", getProjectController()
                     .getCurrentListenerClass())) {
-                removeDefaultEntityListener();
+                
+                String listenerClass = getProjectController().getCurrentListenerClass();
+                removeEntityListener(getProjectController().getCurrentDataMap(), listenerClass);
             }
         }
     }
 
-    protected void removeDefaultEntityListener() {
-        String listenerClass = getProjectController().getCurrentListenerClass();
+    public void removeEntityListener(DataMap map, String listenerClass) {
         if (listenerClass != null) {
-            getProjectController().getCurrentDataMap().removeDefaultEntityListener(listenerClass);
+            map.removeDefaultEntityListener(listenerClass);
 
             getProjectController().fireEntityListenerEvent(
                     new EntityListenerEvent(

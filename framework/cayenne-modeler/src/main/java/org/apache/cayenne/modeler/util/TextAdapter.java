@@ -29,9 +29,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
@@ -46,6 +48,7 @@ public abstract class TextAdapter {
     protected JTextComponent textComponent;
     protected String defaultToolTip;
     protected boolean modelUpdateDisabled;
+    protected UndoableEditListener undoableListener;
 
     public TextAdapter(JTextField textField) {
         this(textField, true, false, true);
@@ -53,6 +56,7 @@ public abstract class TextAdapter {
 
     public TextAdapter(JTextField textField, boolean checkOnFocusLost,
             boolean checkOnTyping, boolean checkOnEnter) {
+
         this(textField, true, false);
 
         if (checkOnEnter) {
@@ -72,10 +76,14 @@ public abstract class TextAdapter {
 
     public TextAdapter(JTextComponent textComponent, boolean checkOnFocusLost,
             boolean checkOnTyping) {
+
         this.errorColor = ValidatorDialog.WARNING_COLOR;
         this.defaultBGColor = textComponent.getBackground();
         this.defaultToolTip = textComponent.getToolTipText();
         this.textComponent = textComponent;
+        
+        this.undoableListener = new JTextFieldUndoListener(this.textComponent);
+        this.textComponent.getDocument().addUndoableEditListener(this.undoableListener);
 
         if (checkOnFocusLost) {
             textComponent.setInputVerifier(new InputVerifier() {
@@ -129,13 +137,21 @@ public abstract class TextAdapter {
      */
     public void setText(String text) {
         modelUpdateDisabled = true;
+
+        this.textComponent
+                .getDocument()
+                .removeUndoableEditListener(this.undoableListener);
+
         try {
             clear();
             textComponent.setText(text);
         }
         finally {
             modelUpdateDisabled = false;
+            this.textComponent.getDocument().addUndoableEditListener(
+                    this.undoableListener);
         }
+
     }
 
     protected void updateModel() {

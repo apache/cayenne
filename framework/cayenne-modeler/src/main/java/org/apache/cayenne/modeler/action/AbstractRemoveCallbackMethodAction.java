@@ -35,6 +35,8 @@ import org.apache.cayenne.modeler.event.CallbackMethodEvent;
  */
 public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
 
+    
+
     /**
      * Constructor.
      *
@@ -87,14 +89,21 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
         String[] callbackMethods = mediator.getCurrentCallbackMethods();
 
         for (String callbackMethod : callbackMethods) {
-            getCallbackMap().getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethod);
-            CallbackMethodEvent e = new CallbackMethodEvent(
-                    actionEvent.getSource(),
-                    null,
-                    callbackMethod,
-                    MapEvent.REMOVE);
-            mediator.fireCallbackMethodEvent(e);
+            removeCallbackMethod(getCallbackMap(), callbackType, callbackMethod);
         }
+    }
+    
+    public void removeCallbackMethod(CallbackMap map, CallbackType callbackType, String method) {
+        ProjectController mediator = getProjectController();
+        map.getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(method);
+        
+        CallbackMethodEvent e = new CallbackMethodEvent(
+                this,
+                null,
+                method,
+                MapEvent.REMOVE);
+        
+        mediator.fireCallbackMethodEvent(e);
     }
     
     /**

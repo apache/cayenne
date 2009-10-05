@@ -33,6 +33,8 @@ import org.apache.cayenne.modeler.event.EntityListenerEvent;
  * @version 1.0 Oct 30, 2007
  */
 public class RemoveEntityListenerAction extends RemoveAction {
+    
+    
     /**
      * unique action name
      */
@@ -73,15 +75,17 @@ public class RemoveEntityListenerAction extends RemoveAction {
 
             if (dialog.shouldDelete("entity listener", getProjectController()
                     .getCurrentListenerClass())) {
-                removeEntityListener();
+                
+                ObjEntity objEnt = getProjectController().getCurrentObjEntity();
+                String listenerClass = getProjectController().getCurrentListenerClass();
+                
+                removeEntityListener(objEnt, listenerClass);
             }
         }
     }
 
-    protected void removeEntityListener() {
-        ObjEntity objEnt = getProjectController().getCurrentObjEntity();
-        String listenerClass = getProjectController().getCurrentListenerClass();
-
+    public void removeEntityListener(ObjEntity objEnt, String listenerClass) {
+      
         objEnt.removeEntityListener(listenerClass);
 
         getProjectController().fireEntityListenerEvent(

@@ -48,6 +48,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.query.QueryTypeController;
+import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
+import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
 import org.apache.cayenne.project.ProjectPath;
@@ -100,14 +102,23 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             Object currentObject = getProjectController().getCurrentObject();
 
             if (content != null && currentObject != null) {
+                
+                PasteCompoundUndoableEdit undoableEdit = new PasteCompoundUndoableEdit();
+                DataDomain domain = getProjectController().getCurrentDataDomain();
+                DataMap map = getProjectController().getCurrentDataMap();
+                
                 if (content instanceof List) {
                     for (Object o : (List) content) {
                         paste(currentObject, o);
+                        undoableEdit.addEdit(new PasteUndoableEdit(domain, map, currentObject, o));
                     }
                 }
                 else {
                     paste(currentObject, content);
+                    undoableEdit.addEdit(new PasteUndoableEdit(domain, map, currentObject, content));
                 }
+                
+                application.getUndoManager().addEdit(undoableEdit);
             }
         }
         catch (UnsupportedFlavorException ufe) {
@@ -117,13 +128,17 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             ErrorDebugDialog.guiException(ex);
         }
     }
+    
+    private void paste(Object where, Object content) {
+    	paste(where, content, getProjectController().getCurrentDataDomain(), getProjectController().getCurrentDataMap()); 
+    }
 
     /**
      * Pastes single object
      */
-    protected void paste(Object where, Object content) {
+    public void paste(Object where, Object content, DataDomain domain, DataMap map) {
         final ProjectController mediator = getProjectController();
-        final DataDomain domain = mediator.getCurrentDataDomain();
+      
 
         /**
          * Add a little intelligence - if a tree leaf is selected, we can paste to a
@@ -331,7 +346,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
                 dbEntity.addAttribute(attr);
                 CreateAttributeAction
-                        .fireDbAttributeEvent(this, mediator, dbEntity, attr);
+                        .fireDbAttributeEvent(this, mediator, domain, mediator.getCurrentDataMap(), dbEntity, attr);
             }
             else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
@@ -364,7 +379,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 objEntity.addAttribute(attr);
                 CreateAttributeAction.fireObjAttributeEvent(
                         this,
-                        mediator,
+                        mediator, domain, mediator.getCurrentDataMap(), 
                         objEntity,
                         attr);
             }

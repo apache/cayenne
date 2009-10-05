@@ -36,6 +36,8 @@ import org.apache.cayenne.project.ProjectPath;
  */
 public class CreateProcedureParameterAction extends CayenneAction {
 
+    
+
     public static String getActionName() {
     	return "Create Parameter";
     }

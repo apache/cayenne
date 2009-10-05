@@ -23,18 +23,22 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.map.EntityListener;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.EntityListenerEvent;
+import org.apache.cayenne.modeler.undo.CreateEntityListenerUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-
 
 /**
  * Action class for creating entity listeners on an ObjEntity
- *
+ * 
  * @version 1.0 Oct 30, 2007
  */
 public class CreateObjEntityListenerAction extends CayenneAction {
+
+    
+
     /**
      * unique action name
      */
@@ -42,7 +46,7 @@ public class CreateObjEntityListenerAction extends CayenneAction {
 
     /**
      * Constructor.
-     *
+     * 
      * @param application Application instance
      */
     public CreateObjEntityListenerAction(Application application) {
@@ -51,7 +55,7 @@ public class CreateObjEntityListenerAction extends CayenneAction {
 
     /**
      * Constructor for extending classes.
-     *
+     * 
      * @param actionName unique action name
      * @param application Application instance
      */
@@ -75,7 +79,7 @@ public class CreateObjEntityListenerAction extends CayenneAction {
 
     /**
      * checks whether the new name of listener class already exists
-     *
+     * 
      * @param className entered class name
      * @return true or false
      */
@@ -84,41 +88,36 @@ public class CreateObjEntityListenerAction extends CayenneAction {
     }
 
     /**
-     * adds new entity listener
-     * @param listener new EntityListener instance
-     */
-    protected void addEntityListener(EntityListener listener) {
-        getProjectController().getCurrentObjEntity().addEntityListener(listener);
-    }
-
-    /**
      * base entity listenre creation logic
-     *
+     * 
      * @param e event
      */
     public void performAction(ActionEvent e) {
-        String listenerClass = JOptionPane.showInputDialog("Please enter listener class:");
+        String listenerClass = JOptionPane
+                .showInputDialog("Please enter listener class:");
         if (listenerClass != null && listenerClass.trim().length() > 0) {
             if (isListenerClassAlreadyExists(listenerClass)) {
                 JOptionPane.showMessageDialog(
                         null,
                         "Listener class already exists.",
                         "Error creating entity listener",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                        JOptionPane.ERROR_MESSAGE);
             }
             else {
-                addEntityListener(new EntityListener(listenerClass));
-                getProjectController().fireEntityListenerEvent(
-                        new EntityListenerEvent(
-                                CreateObjEntityListenerAction.this,
-                                listenerClass,
-                                listenerClass,
-                                MapEvent.ADD
-                        )
-                );
+                ObjEntity objEntity = getProjectController().getCurrentObjEntity();
+                EntityListener listener = new EntityListener(listenerClass);
+                createEntityListener(objEntity, listener);
+                application.getUndoManager().addEdit(
+                        new CreateEntityListenerUndoableEdit(objEntity, listener));
             }
         }
     }
-}
 
+    public void createEntityListener(ObjEntity objEntity, EntityListener listener) {
+        objEntity.addEntityListener(listener);
+
+        getProjectController().fireEntityListenerEvent(
+                new EntityListenerEvent(CreateObjEntityListenerAction.this, listener
+                        .getClassName(), listener.getClassName(), MapEvent.ADD));
+    }
+}

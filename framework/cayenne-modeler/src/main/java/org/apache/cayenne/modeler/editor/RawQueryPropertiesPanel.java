@@ -109,7 +109,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         dataObjects = new JCheckBox();
 
-        entities = CayenneWidgetFactory.createComboBox();
+        entities = CayenneWidgetFactory.createUndoableComboBox();
         entities.setRenderer(CellRenderers.listRendererWithIcons());
 
         this.setLayout(new BorderLayout());

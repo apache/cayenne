@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -32,7 +34,7 @@ public class AdapterView extends JPanel {
     protected JTextField customAdapter;
 
     public AdapterView() {
-        this.customAdapter = new JTextField();
+        this.customAdapter = CayenneWidgetFactory.createUndoableTextField();
 
         // assemble
 

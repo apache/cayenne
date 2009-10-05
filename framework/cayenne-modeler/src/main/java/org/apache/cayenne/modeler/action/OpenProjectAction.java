@@ -73,7 +73,7 @@ public class OpenProjectAction extends ProjectAction {
         if (getProjectController() != null && !checkSaveOnClose()) {
             return;
         }
-
+       
         File f = null;
         if (e.getSource() instanceof FileMenuItem) {
             FileMenuItem menu = (FileMenuItem) e.getSource();
@@ -101,6 +101,8 @@ public class OpenProjectAction extends ProjectAction {
 
             openProject(f);
         }
+        
+        application.getUndoManager().discardAllEdits();
     }
 
     /** Opens specified project file. File must already exist. */

@@ -34,6 +34,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
+import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.NamingStrategyPreferences;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -175,9 +177,13 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
     }
 
     public void generateAction() {
+        
         ProjectController mediator = application
                 .getFrameController()
                 .getProjectController();
+        
+        InferRelationshipsUndoableEdit undoableEdit = new InferRelationshipsUndoableEdit();
+        
         for (InferRelationships temp : selectedEntities) {
             DbRelationship rel = new DbRelationship(uniqueRelName(temp.getSource(), temp
                     .getName()));
@@ -194,6 +200,8 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             rel.addJoin(join);
             rel.setToMany(temp.isToMany());
             temp.getSource().addRelationship(rel);
+            
+            undoableEdit.addEdit(new CreateRelationshipUndoableEdit(temp.getSource(), new DbRelationship[] { rel }));
         }
         JOptionPane.showMessageDialog(this.getView(), getSelectedEntitiesSize()
                 + " relationships generated");

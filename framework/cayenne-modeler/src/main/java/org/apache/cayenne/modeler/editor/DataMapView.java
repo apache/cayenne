@@ -107,7 +107,7 @@ public class DataMapView extends JPanel {
         };
 
         location = new JLabel();
-        nodeSelector = CayenneWidgetFactory.createComboBox();
+        nodeSelector = CayenneWidgetFactory.createUndoableComboBox();
         nodeSelector.setRenderer(CellRenderers.listRendererWithIcons());
 
         updateDefaultSchema = new JButton("Update...");

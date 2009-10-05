@@ -216,7 +216,7 @@ public class SQLTemplateMainTab extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = CayenneWidgetFactory.createComboBox();
+            labelCase = CayenneWidgetFactory.createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(new ActionListener() {

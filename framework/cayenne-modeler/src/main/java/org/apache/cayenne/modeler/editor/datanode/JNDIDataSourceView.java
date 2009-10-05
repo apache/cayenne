@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -35,7 +37,7 @@ public class JNDIDataSourceView extends JPanel {
 
     public JNDIDataSourceView() {
 
-        jndiPath = new JTextField();
+        jndiPath = CayenneWidgetFactory.createUndoableTextField();
 
         // assemble
         FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");

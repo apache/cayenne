@@ -29,6 +29,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
@@ -39,6 +40,8 @@ import org.apache.cayenne.util.NameConverter;
 /**
  */
 public class CreateObjEntityAction extends CayenneAction {
+
+    
 
     public static String getActionName() {
         return "Create ObjEntity";
@@ -115,12 +118,24 @@ public class CreateObjEntityAction extends CayenneAction {
         merger.synchronizeWithDbEntity(entity);
 
         fireObjEntityEvent(this, mediator, dataMap, entity);
+
+        application.getUndoManager().addEdit(
+                new CreateObjEntityUndoableEdit(dataMap, entity));
     }
-    
+
+    public void createObjEntity(DataMap dataMap, ObjEntity entity) {
+        ProjectController mediator = getProjectController();
+        dataMap.addObjEntity(entity);
+        fireObjEntityEvent(this, mediator, dataMap, entity);
+    }
+
     /**
      * Fires events when a obj entity was added
      */
-    static void fireObjEntityEvent(Object src, ProjectController mediator, DataMap dataMap,
+    static void fireObjEntityEvent(
+            Object src,
+            ProjectController mediator,
+            DataMap dataMap,
             ObjEntity entity) {
         mediator.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(

@@ -32,7 +32,9 @@ import org.apache.cayenne.project.Project;
  */
 public class RevertAction extends CayenneAction {
 
-    public static String getActionName() {
+    
+
+	public static String getActionName() {
         return "Revert";
     }
 
@@ -72,5 +74,7 @@ public class RevertAction extends CayenneAction {
                     .getAction(NewProjectAction.getActionName())
                     .performAction(e);
         }
+        
+        application.getUndoManager().discardAllEdits();
     }
 }

@@ -345,7 +345,7 @@ public class JCayenneTextPane extends JPanel {
 
     class JTextPaneScrollable extends JTextPane {
 
-        private static final long serialVersionUID = 1L;
+        
 
         public JTextPaneScrollable(EditorKit editorKit) {
             // Set editor kit

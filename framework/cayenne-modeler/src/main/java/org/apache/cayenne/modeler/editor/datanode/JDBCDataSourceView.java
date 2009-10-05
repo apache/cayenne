@@ -26,6 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -49,12 +51,12 @@ public class JDBCDataSourceView extends JPanel {
 
     public JDBCDataSourceView() {
 
-        driver           = new JTextField();
-        url              = new JTextField();
-        userName         = new JTextField();
+        driver           = CayenneWidgetFactory.createUndoableTextField();
+        url              = CayenneWidgetFactory.createUndoableTextField();
+        userName         = CayenneWidgetFactory.createUndoableTextField();
         password         = new JPasswordField();
-        minConnections   = new JTextField(6);
-        maxConnections   = new JTextField(6);
+        minConnections   = CayenneWidgetFactory.createUndoableTextField(6);
+        maxConnections   = CayenneWidgetFactory.createUndoableTextField(6);
         syncWithLocal    = new JButton("Sync with Local");
         syncWithLocal.setToolTipText("Update from local DataSource");
 

@@ -28,24 +28,17 @@ import java.util.regex.Pattern;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.dialog.FindDialog;
-import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
 
 public class FindAction extends CayenneAction {
-    private java.util.List paths;
+    private java.util.List<Object> paths;
 
     public static String getActionName() {
         return "Find";
@@ -62,7 +55,7 @@ public class FindAction extends CayenneAction {
     public void performAction(ActionEvent e) {
         JTextField source = (JTextField) e.getSource();
 
-        paths = new ArrayList();
+        paths = new ArrayList<Object>();
         if (!source.getText().trim().equals("")) {
             Pattern pattern = Pattern.compile(source.getText().trim(), Pattern.CASE_INSENSITIVE);
 
@@ -90,8 +83,7 @@ public class FindAction extends CayenneAction {
             int index = 0;
             if (it.hasNext()) {
                 Object[] path = (Object[]) it.next();
-                EditorView editor =  ((CayenneModelerFrame) getApplication().getFrameController().getView()).getView();
-                FindDialog.jumpToResult(path, editor);
+                FindDialog.jumpToResult(path);
             }   
         }
     }

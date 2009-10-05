@@ -88,10 +88,10 @@ public class PasswordEncoderView extends JPanel{
     
     public PasswordEncoderView(){
         
-        this.passwordEncoder  = new JComboBox();
-        this.passwordLocation = new JComboBox();
-        this.passwordSource   = new JTextField();
-        this.passwordKey      = new JTextField();
+        this.passwordEncoder  = CayenneWidgetFactory.createUndoableComboBox();
+        this.passwordLocation = CayenneWidgetFactory.createUndoableComboBox();
+        this.passwordSource   = CayenneWidgetFactory.createUndoableTextField();
+        this.passwordKey      = CayenneWidgetFactory.createUndoableTextField();
         
 
         
@@ -99,7 +99,7 @@ public class PasswordEncoderView extends JPanel{
         passwordEncoder.setModel(new DefaultComboBoxModel(PasswordEncoding.standardEncoders));
         passwordEncoder.setEditable(true);
 
-        passwordLocation = CayenneWidgetFactory.createComboBox();
+        passwordLocation = CayenneWidgetFactory.createUndoableComboBox();
         passwordLocation.setRenderer(new PasswordLocationRenderer());
 
         DefaultComboBoxModel passwordLocationModel = new DefaultComboBoxModel(PASSWORD_LOCATIONS);

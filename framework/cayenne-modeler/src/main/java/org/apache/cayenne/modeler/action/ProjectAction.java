@@ -85,6 +85,9 @@ public class ProjectAction extends CayenneAction {
         CayenneModelerController controller = Application
                 .getInstance()
                 .getFrameController();
+        
+        application.getUndoManager().discardAllEdits();
+        
         controller.projectClosedAction();
 
         return true;

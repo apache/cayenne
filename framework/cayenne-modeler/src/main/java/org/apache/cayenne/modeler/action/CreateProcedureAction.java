@@ -28,6 +28,7 @@ import org.apache.cayenne.map.event.ProcedureEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
@@ -37,6 +38,8 @@ import org.apache.cayenne.project.ProjectPath;
  * 
  */
 public class CreateProcedureAction extends CayenneAction {
+
+    
 
     public static String getActionName() {
         return "Create Stored Procedure";
@@ -48,15 +51,25 @@ public class CreateProcedureAction extends CayenneAction {
 
     public void performAction(ActionEvent e) {
         ProjectController mediator = getProjectController();
-        Procedure procedure = createProcedure(mediator.getCurrentDataMap());
+        DataMap map = mediator.getCurrentDataMap();
 
-        fireProcedureEvent(this, mediator, mediator.getCurrentDataMap(), procedure);
+        Procedure procedure = (Procedure) NamedObjectFactory.createObject(
+                Procedure.class,
+                map);
+
+        createProcedure(map, procedure);
+
+        application.getUndoManager().addEdit(
+                new CreateProcedureUndoableEdit(map, procedure));
     }
-    
+
     /**
      * Fires events when a procedure was added
      */
-    static void fireProcedureEvent(Object src, ProjectController mediator, DataMap dataMap,
+    static void fireProcedureEvent(
+            Object src,
+            ProjectController mediator,
+            DataMap dataMap,
             Procedure procedure) {
         mediator.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
         mediator.fireProcedureDisplayEvent(new ProcedureDisplayEvent(
@@ -66,14 +79,11 @@ public class CreateProcedureAction extends CayenneAction {
                 mediator.getCurrentDataDomain()));
     }
 
-    protected Procedure createProcedure(DataMap map) {
-        Procedure procedure = (Procedure) NamedObjectFactory.createObject(
-                Procedure.class,
-                map);
+    public void createProcedure(DataMap map, Procedure procedure) {
+        ProjectController mediator = getProjectController();
         procedure.setSchema(map.getDefaultSchema());
-
         map.addProcedure(procedure);
-        return procedure;
+        fireProcedureEvent(this, mediator, map, procedure);
     }
 
     /**

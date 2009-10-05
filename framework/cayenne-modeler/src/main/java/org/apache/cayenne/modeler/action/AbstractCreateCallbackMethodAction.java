@@ -26,19 +26,22 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
+import org.apache.cayenne.modeler.undo.CreateCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.NameConverter;
 
 /**
  * Base class for creating callback methods
- *
+ * 
  * @version 1.0 Oct 28, 2007
  */
 public abstract class AbstractCreateCallbackMethodAction extends CayenneAction {
 
+    
+
     /**
      * Constructor.
-     *
+     * 
      * @param actionName unique action name
      * @param application Application instance
      */
@@ -60,40 +63,59 @@ public abstract class AbstractCreateCallbackMethodAction extends CayenneAction {
 
     /**
      * performs adding new callback method
+     * 
      * @param e event
      */
     public final void performAction(ActionEvent e) {
         CallbackType callbackType = getProjectController().getCurrentCallbackType();
 
-        //generate methodName
+        // generate methodName
         String methodNamePrefix = toMethodName(callbackType.getType());
         String methodName;
-        //now that we're generating the method names based on the callback type, check to see if the
-        //raw prefix, no numbers, is taken.
-        if (!getCallbackMap().getCallbackDescriptor(callbackType.getType()).getCallbackMethods().contains(methodNamePrefix)) {
+        // now that we're generating the method names based on the callback type, check to
+        // see if the
+        // raw prefix, no numbers, is taken.
+        if (!getCallbackMap()
+                .getCallbackDescriptor(callbackType.getType())
+                .getCallbackMethods()
+                .contains(methodNamePrefix)) {
             methodName = methodNamePrefix;
-        } else {
+        }
+        else {
             int counter = 1;
             do {
                 methodName = methodNamePrefix + counter;
                 counter++;
-            } while(getCallbackMap().getCallbackDescriptor(callbackType.getType()).getCallbackMethods().contains(methodName));
+            } while (getCallbackMap()
+                    .getCallbackDescriptor(callbackType.getType())
+                    .getCallbackMethods()
+                    .contains(methodName));
         }
 
-        getCallbackMap().getCallbackDescriptor(callbackType.getType()).addCallbackMethod(methodName);
+        createCallbackMethod(getCallbackMap(), callbackType, methodName);
+        application.getUndoManager().addEdit(
+                new CreateCallbackMethodUndoableEdit(
+                        getCallbackMap(),
+                        callbackType,
+                        methodName));
+    }
+
+    public void createCallbackMethod(
+            CallbackMap map,
+            CallbackType callbackType,
+            String methodName) {
+        map.getCallbackDescriptor(callbackType.getType()).addCallbackMethod(methodName);
 
         CallbackMethodEvent ce = new CallbackMethodEvent(
-                e.getSource(),
+                this,
                 null,
                 methodName,
-                MapEvent.ADD
-        );
+                MapEvent.ADD);
 
         getProjectController().fireCallbackMethodEvent(ce);
     }
 
     private String toMethodName(LifecycleEvent event) {
-        return "on" + NameConverter.underscoredToJava(event.name(),true);
+        return "on" + NameConverter.underscoredToJava(event.name(), true);
     }
 }
-

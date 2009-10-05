@@ -27,11 +27,16 @@ import org.apache.cayenne.modeler.Application;
  * @version 1.0 Oct 30, 2007
  */
 public class CreateCallbackMethodAction extends AbstractCreateCallbackMethodAction {
+    
     /**
      * unique action name
      */
     public static final String ACTION_NAME = "Create callback method";
-
+    
+    public static String getActionName() {
+        return ACTION_NAME;
+    }
+    
     /**
      * Constructor.
      *

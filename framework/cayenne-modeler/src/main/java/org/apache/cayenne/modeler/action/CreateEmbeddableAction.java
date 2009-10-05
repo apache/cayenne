@@ -27,6 +27,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
@@ -48,21 +49,23 @@ public class CreateEmbeddableAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        createEmbeddable();
-    }
-
-    private void createEmbeddable() {
         ProjectController mediator = getProjectController();
 
         DataMap dataMap = mediator.getCurrentDataMap();
+
         Embeddable embeddable = (Embeddable) NamedObjectFactory.createObject(
                 Embeddable.class,
                 mediator.getCurrentDataMap());
 
+        createEmbeddable(dataMap, embeddable);
 
+        application.getUndoManager().addEdit(
+                new CreateEmbeddableUndoableEdit(dataMap, embeddable));
+    }
+
+    public void createEmbeddable(DataMap dataMap, Embeddable embeddable) {
         dataMap.addEmbeddable(embeddable);
-
-        fireEmbeddableEvent(this, mediator, dataMap, embeddable);
+        fireEmbeddableEvent(this, getProjectController(), dataMap, embeddable);
     }
 
     static void fireEmbeddableEvent(
@@ -71,7 +74,9 @@ public class CreateEmbeddableAction extends CayenneAction {
             DataMap dataMap,
             Embeddable embeddable) {
 
-        mediator.fireEmbeddableEvent(new EmbeddableEvent(src, embeddable, MapEvent.ADD), dataMap);
+        mediator.fireEmbeddableEvent(
+                new EmbeddableEvent(src, embeddable, MapEvent.ADD),
+                dataMap);
         EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
                 src,
                 embeddable,

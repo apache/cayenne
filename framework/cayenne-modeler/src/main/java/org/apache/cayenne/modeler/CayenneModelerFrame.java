@@ -74,11 +74,13 @@ import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.ProjectAction;
+import org.apache.cayenne.modeler.action.RedoAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
+import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.editor.EditorView;
@@ -197,6 +199,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         fileMenu.add(getAction(RevertAction.getActionName()).buildMenu());
         fileMenu.addSeparator();
         
+        editMenu.add(getAction(UndoAction.getActionName()).buildMenu());
+        editMenu.add(getAction(RedoAction.getActionName()).buildMenu());
         editMenu.add(getAction(CutAction.getActionName()).buildMenu());
         editMenu.add(getAction(CopyAction.getActionName()).buildMenu());
         editMenu.add(getAction(PasteAction.getActionName()).buildMenu());
@@ -366,6 +370,11 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolBar.add(getAction(CopyAction.getActionName()).buildButton());
         toolBar.add(getAction(PasteAction.getActionName()).buildButton());
 
+        toolBar.addSeparator();
+        
+        toolBar.add(getAction(UndoAction.getActionName()).buildButton());
+        toolBar.add(getAction(RedoAction.getActionName()).buildButton());
+        
         toolBar.addSeparator();
 
         toolBar.add(getAction(CreateDomainAction.getActionName()).buildButton());

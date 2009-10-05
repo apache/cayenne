@@ -19,26 +19,31 @@
 
 package org.apache.cayenne.modeler.editor;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JToolBar;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.tree.TreeModel;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.QueryEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEdit;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.query.PrefetchTreeNode;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.tree.TreeModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Subclass of the SelectQueryOrderingTab configured to work with prefetches.
@@ -54,20 +59,37 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
         JButton add = new JButton("Add Prefetch", ModelerUtil
                 .buildIcon("icon-move_up.gif"));
+        
         add.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-                addPrefetch();
+            	String prefetch = getSelectedPath();
+                
+            	if (prefetch == null) {
+                    return;
+                }
+            	
+                addPrefetch(prefetch);
+                
+                Application.getInstance().getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
             }
 
         });
 
         JButton remove = new JButton("Remove Prefetch", ModelerUtil
                 .buildIcon("icon-move_down.gif"));
+        
         remove.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                removePrefetch();
+            	int selection = table.getSelectedRow();
+                
+            	if (selection < 0) {
+                    return;
+                }
+
+            	String prefetch = (String) table.getModel().getValueAt(selection, 0);
+            	
+                removePrefetch(prefetch);
             }
 
         });
@@ -97,12 +119,8 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         return new PrefetchModel();
     }
 
-    void addPrefetch() {
-        String prefetch = getSelectedPath();
-        if (prefetch == null) {
-            return;
-        }
-
+    public void addPrefetch(String prefetch) {
+        
         // check if such prefetch already exists
         if (selectQuery.getPrefetchTree() != null) {
 
@@ -113,24 +131,19 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         }
 
         selectQuery.addPrefetch(prefetch);
-
+       
         // reset the model, since it is immutable
         table.setModel(createTableModel());
-        mediator.fireQueryEvent(new QueryEvent(SelectQueryPrefetchTab.this, selectQuery));
+        
+        mediator.fireQueryEvent(new QueryEvent(this, selectQuery));
     }
 
-    void removePrefetch() {
-        int selection = table.getSelectedRow();
-        if (selection < 0) {
-            return;
-        }
-
-        String prefetch = (String) table.getModel().getValueAt(selection, 0);
+    public void removePrefetch(String prefetch) {
         selectQuery.removePrefetch(prefetch);
 
         // reset the model, since it is immutable
         table.setModel(createTableModel());
-        mediator.fireQueryEvent(new QueryEvent(SelectQueryPrefetchTab.this, selectQuery));
+        mediator.fireQueryEvent(new QueryEvent(this, selectQuery));
     }
 
     boolean isToMany(String prefetch) {

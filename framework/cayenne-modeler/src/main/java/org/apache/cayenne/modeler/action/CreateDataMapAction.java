@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
@@ -35,9 +36,11 @@ import org.apache.cayenne.project.ProjectPath;
  */
 public class CreateDataMapAction extends CayenneAction {
 
-	public static String getActionName() {
-		return "Create DataMap";
-	}
+    
+
+    public static String getActionName() {
+        return "Create DataMap";
+    }
 
     public CreateDataMapAction(Application application) {
         super(getActionName(), application);
@@ -47,27 +50,32 @@ public class CreateDataMapAction extends CayenneAction {
         return "icon-datamap.gif";
     }
 
-    /** Calls addDataMap() or creates new data map if no data node selected.*/
-    protected void createDataMap() {
+    /** Calls addDataMap() or creates new data map if no data node selected. */
+    public void createDataMap(DataDomain domain, DataMap map) {
         ProjectController mediator = getProjectController();
-        DataDomain currentDomain = mediator.getCurrentDataDomain();
-        
-        // use domain name as DataMap base, as map names must be unique across the project...
-        DataMap map =
-            (DataMap) NamedObjectFactory.createObject(
-                DataMap.class,
-                currentDomain,
-                currentDomain.getName() + "Map");
         mediator.addDataMap(this, map);
     }
 
     public void performAction(ActionEvent e) {
-        createDataMap();
+        ProjectController mediator = getProjectController();
+        DataDomain currentDomain = mediator.getCurrentDataDomain();
+
+        // use domain name as DataMap base, as map names must be unique across the
+        // project...
+        DataMap map = (DataMap) NamedObjectFactory.createObject(
+                DataMap.class,
+                currentDomain,
+                currentDomain.getName() + "Map");
+
+        createDataMap(currentDomain, map);
+
+        application.getUndoManager().addEdit(
+                new CreateDataMapUndoableEdit(currentDomain, map));
     }
 
     /**
-    * Returns <code>true</code> if path contains a DataDomain object.
-    */
+     * Returns <code>true</code> if path contains a DataDomain object.
+     */
     public boolean enableForPath(ProjectPath path) {
         if (path == null) {
             return false;

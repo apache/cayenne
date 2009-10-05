@@ -22,6 +22,8 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
@@ -68,7 +70,7 @@ public class ImportDBAction extends DBWizardAction {
         Connection connection = connectWizard.getConnection();
         DbAdapter adapter = connectWizard.getAdapter();
         DBConnectionInfo dataSourceInfo = connectWizard.getConnectionInfo();
-        
+
         // from here pass control to DbLoaderHelper, running it from a thread separate
         // from EventDispatch
 
@@ -81,8 +83,16 @@ public class ImportDBAction extends DBWizardAction {
 
             public void run() {
                 helper.execute();
+
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    public void run() {
+                        application.getUndoManager().discardAllEdits();
+                    }
+                });
             }
         });
+        
         th.start();
     }
 

@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.autorelationship.InferRelationshipsController;
-import org.apache.cayenne.modeler.dialog.codegen.CodeGeneratorController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
 

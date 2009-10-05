@@ -21,14 +21,23 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.query.QueryTypeController;
+import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.1
  */
 public class CreateQueryAction extends CayenneAction {
+
+    
 
     public static String getActionName() {
         return "Create Query";
@@ -51,5 +60,20 @@ public class CreateQueryAction extends CayenneAction {
 
     protected void createQuery() {
         new QueryTypeController(getProjectController()).startup();
+    }
+    
+    public void createQuery(DataDomain domain, DataMap dataMap, Query query) {
+        dataMap.addQuery(query);
+        // notify listeners
+        fireQueryEvent(this, getProjectController(), domain, dataMap, query);
+    }
+     
+    /**
+     * Fires events when a query was added
+     */
+    public static void fireQueryEvent(Object src, ProjectController mediator, DataDomain domain,
+            DataMap dataMap, Query query) {
+        mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD, dataMap));
+        mediator.fireQueryDisplayEvent(new QueryDisplayEvent(src, query, dataMap, domain));
     }
 }

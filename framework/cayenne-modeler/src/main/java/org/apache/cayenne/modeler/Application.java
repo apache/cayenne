@@ -29,6 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
+import javax.swing.undo.UndoManager;
 
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.util.AdapterMapping;
@@ -84,6 +85,8 @@ public class Application {
     protected String preferencesDB;
     protected BindingFactory bindingFactory;
     protected AdapterMapping adapterMapping;
+    
+    protected UndoManager undoManager;
 
     // This is for OS X support
     private boolean isQuittingApplication = false;
@@ -146,6 +149,13 @@ public class Application {
     public ActionManager getActionManager() {
         return actionManager;
     }
+    
+    /**
+     * Returns undo-edits controller.
+     */
+    public UndoManager getUndoManager() {
+        return undoManager;
+    }
 
     /**
      * Returns controller for the main frame.
@@ -175,6 +185,7 @@ public class Application {
         // init actions before the frame, as it will attempt to build menus out of
         // actions.
         this.actionManager = new ActionManager(this);
+        this.undoManager = new org.apache.cayenne.modeler.undo.CayenneUndoManager(this);
 
         // ...create main frame
         this.frameController = new CayenneModelerController(this, initialProject);

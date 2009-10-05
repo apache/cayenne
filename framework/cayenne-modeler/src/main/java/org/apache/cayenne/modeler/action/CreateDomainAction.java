@@ -27,6 +27,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateDomainUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.NamedObjectFactory;
@@ -35,6 +36,8 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  */
 public class CreateDomainAction extends CayenneAction {
+
+    
 
     public static String getActionName() {
         return "Create DataDomain";
@@ -54,18 +57,24 @@ public class CreateDomainAction extends CayenneAction {
     }
 
     public void performAction(ActionEvent e) {
-        createDomain();
-    }
-
-    protected void createDomain() {
-        // only ApplicationProjects can have domains, so this cast is reasonable
         ApplicationProject project = (ApplicationProject) getCurrentProject();
-
         ProjectController mediator = getProjectController();
+
         DataDomain domain = (DataDomain) NamedObjectFactory.createObject(
                 DataDomain.class,
                 project.getConfiguration());
+
         domain.getEntityResolver().setIndexedByClass(false);
+
+        createDomain(domain);
+
+        application.getUndoManager().addEdit(new CreateDomainUndoableEdit(domain));
+    }
+
+    public void createDomain(DataDomain domain) {
+        ApplicationProject project = (ApplicationProject) getCurrentProject();
+        ProjectController mediator = getProjectController();
+
         project.getConfiguration().addDomain(domain);
         mediator.fireDomainEvent(new DomainEvent(this, domain, MapEvent.ADD));
         mediator.fireDomainDisplayEvent(new DomainDisplayEvent(this, domain));

@@ -34,6 +34,7 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.undo.CayenneTableModelUndoableEdit;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +48,7 @@ public abstract class CayenneTableModel extends AbstractTableModel {
     protected ProjectController mediator;
     protected Object eventSource;
     protected List objectList;
-    
+
     private static Log logObj = LogFactory.getLog(CayenneTableModel.class);
 
     /**
@@ -55,6 +56,7 @@ public abstract class CayenneTableModel extends AbstractTableModel {
      */
     public CayenneTableModel(ProjectController mediator, Object eventSource,
             java.util.List objectList) {
+        
         super();
         this.eventSource = eventSource;
         this.mediator = mediator;
@@ -65,8 +67,14 @@ public abstract class CayenneTableModel extends AbstractTableModel {
 
     public void setValueAt(Object newVal, int row, int col) {
         try {
-            if (!Util.nullSafeEquals(newVal, getValueAt(row, col))) {
+            
+            Object oldValue = getValueAt(row, col);
+            if (!Util.nullSafeEquals(newVal, oldValue)) {
+                
                 setUpdatedValueAt(newVal, row, col);
+                
+                this.mediator.getApplication().getUndoManager().addEdit(
+                        new CayenneTableModelUndoableEdit(this, oldValue, newVal, row, col));
             }
         }
         catch (IllegalArgumentException e) {

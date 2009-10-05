@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
  */
 public class DocumentationAction extends CayenneAction {
 
-    private static final long serialVersionUID = 1L;
+    
 
     public final static String getActionName() {
         return "Documentation";

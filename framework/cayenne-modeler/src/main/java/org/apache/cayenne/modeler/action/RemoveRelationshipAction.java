@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
@@ -32,101 +31,108 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
+import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * Removes currently selected relationship from either the DbEntity or ObjEntity.
+ * Removes currently selected relationship from either the DbEntity or
+ * ObjEntity.
  * 
  */
-public class RemoveRelationshipAction extends RemoveAction implements MultipleObjectsAction {
+public class RemoveRelationshipAction extends RemoveAction implements
+		MultipleObjectsAction {
 
-    private final static String ACTION_NAME = "Remove Relationship";
-    
-    /**
-     * Name of action if multiple rels are selected
-     */
-    private final static String ACTION_NAME_MULTIPLE = "Remove Relationships";
+	
 
-    public static String getActionName() {
-        return ACTION_NAME;
-    }
-    
-    public String getActionName(boolean multiple) {
-        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
-    }
+	private final static String ACTION_NAME = "Remove Relationship";
 
-    public RemoveRelationshipAction(Application application) {
-        super(ACTION_NAME, application);
-    }
+	/**
+	 * Name of action if multiple rels are selected
+	 */
+	private final static String ACTION_NAME_MULTIPLE = "Remove Relationships";
 
-    /**
-     * Returns <code>true</code> if last object in the path contains a removable
-     * relationship.
-     */
-    @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
+	public static String getActionName() {
+		return ACTION_NAME;
+	}
 
-        return path.getObject() instanceof Relationship;
-    }
+	public String getActionName(boolean multiple) {
+		return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
+	}
 
-    @Override
-    public void performAction(ActionEvent e, boolean allowAsking) {
-        ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
+	public RemoveRelationshipAction(Application application) {
+		super(ACTION_NAME, application);
+	}
 
-        ObjRelationship[] rels = getProjectController().getCurrentObjRelationships();
-        if (rels != null && rels.length > 0) {
-            if ((rels.length == 1 && dialog.shouldDelete("ObjRelationship", rels[0].getName()))
-                || (rels.length > 1 && dialog.shouldDelete("selected ObjRelationships"))) {
-                removeObjRelationships();
-            }
-        }
-        else {
-            DbRelationship[] dbRels = getProjectController().getCurrentDbRelationships();
-            if (dbRels != null && dbRels.length > 0) {
-                if ((dbRels.length == 1 && dialog.shouldDelete("DbRelationship", dbRels[0].getName()))
-                    || (dbRels.length > 1 && dialog.shouldDelete("selected DbRelationships"))) {
-                    removeDbRelationships();
-                }
-            }            
-        }
-    }
+	/**
+	 * Returns <code>true</code> if last object in the path contains a removable
+	 * relationship.
+	 */
+	@Override
+	public boolean enableForPath(ProjectPath path) {
+		if (path == null) {
+			return false;
+		}
 
-    protected void removeObjRelationships() {
-        ProjectController mediator = getProjectController();
-        ObjEntity entity = mediator.getCurrentObjEntity();
-        ObjRelationship[] rels = mediator.getCurrentObjRelationships();
+		return path.getObject() instanceof Relationship;
+	}
 
-        for (ObjRelationship rel : rels) {
-            entity.removeRelationship(rel.getName());
-            RelationshipEvent e = new RelationshipEvent(
-                    Application.getFrame(),
-                    rel,
-                    entity,
-                    MapEvent.REMOVE);
-            mediator.fireObjRelationshipEvent(e);
-        }
-    }
+	@Override
+	public void performAction(ActionEvent e, boolean allowAsking) {
+		ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
+		ProjectController mediator = getProjectController();
 
-    protected void removeDbRelationships() {
-        ProjectController mediator = getProjectController();
-        DbEntity entity = mediator.getCurrentDbEntity();
-        DbRelationship[] rels = mediator.getCurrentDbRelationships();
+		ObjRelationship[] rels = getProjectController()
+				.getCurrentObjRelationships();
+		if (rels != null && rels.length > 0) {
+			if ((rels.length == 1 && dialog.shouldDelete("ObjRelationship",
+					rels[0].getName()))
+					|| (rels.length > 1 && dialog
+							.shouldDelete("selected ObjRelationships"))) {
+				ObjEntity entity = mediator.getCurrentObjEntity();
+				removeObjRelationships(entity, rels);
+				Application.getInstance().getUndoManager().addEdit(
+						new RemoveRelationshipUndoableEdit(entity, rels));
+			}
+		} else {
+			DbRelationship[] dbRels = getProjectController()
+					.getCurrentDbRelationships();
+			if (dbRels != null && dbRels.length > 0) {
+				if ((dbRels.length == 1 && dialog.shouldDelete(
+						"DbRelationship", dbRels[0].getName()))
+						|| (dbRels.length > 1 && dialog
+								.shouldDelete("selected DbRelationships"))) {
+					DbEntity entity = mediator.getCurrentDbEntity();
+					removeDbRelationships(entity, dbRels);
+					Application.getInstance().getUndoManager().addEdit(
+							new RemoveRelationshipUndoableEdit(entity, dbRels));
+				}
+			}
+		}
+	}
 
-        for (DbRelationship rel : rels) {
-            entity.removeRelationship(rel.getName());
+	public void removeObjRelationships(ObjEntity entity, ObjRelationship[] rels) {
+		ProjectController mediator = getProjectController();
 
-            RelationshipEvent e = new RelationshipEvent(
-                    Application.getFrame(),
-                    rel,
-                    entity,
-                    MapEvent.REMOVE);
-            mediator.fireDbRelationshipEvent(e);
-        }
-        
-        ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
-    }
+		for (ObjRelationship rel : rels) {
+			entity.removeRelationship(rel.getName());
+			RelationshipEvent e = new RelationshipEvent(Application.getFrame(),
+					rel, entity, MapEvent.REMOVE);
+			mediator.fireObjRelationshipEvent(e);
+		}
+	}
+
+	public void removeDbRelationships(DbEntity entity, DbRelationship[] rels) {
+		ProjectController mediator = getProjectController();
+
+		for (DbRelationship rel : rels) {
+			entity.removeRelationship(rel.getName());
+
+			RelationshipEvent e = new RelationshipEvent(Application.getFrame(),
+					rel, entity, MapEvent.REMOVE);
+			mediator.fireDbRelationshipEvent(e);
+		}
+
+		ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
+	}
 }

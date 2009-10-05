@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.util;
 
 import java.awt.Color;
@@ -38,6 +37,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
 
 import org.apache.cayenne.modeler.ModelerPreferences;
+import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
@@ -68,7 +68,7 @@ public class CayenneWidgetFactory {
     public static JComboBox createComboBox(Collection<String> model, boolean sort) {
         return createComboBox(model.toArray(), sort);
     }
-    
+
     /**
      * Creates a new JComboBox with an array of model objects.
      */
@@ -82,7 +82,7 @@ public class CayenneWidgetFactory {
         comboBox.setModel(new DefaultComboBoxModel(model));
         return comboBox;
     }
-    
+
     /**
      * Creates a new JComboBox.
      */
@@ -91,17 +91,45 @@ public class CayenneWidgetFactory {
         initFormWidget(comboBox);
         comboBox.setBackground(Color.WHITE);
         comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
-                
+        return comboBox;
+    }
+
+    /**
+     * Creates undoable JComboBox.
+     * 
+     */
+    public static JComboBox createUndoableComboBox() {
+        JComboBox comboBox = new JComboBox();
+        initFormWidget(comboBox);
+        comboBox.addItemListener(new JComboBoxUndoListener());
+        comboBox.setBackground(Color.WHITE);
+        comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
         return comboBox;
     }
     
+    /**
+     * Creates undoable JTextField.
+     * 
+     */
+    public static JTextField createUndoableTextField() {
+        return new JTextFieldUndoable();
+    }
+    
+    /**
+     * Creates undoable JTextField.
+     * 
+     */
+    public static JTextField createUndoableTextField(int size) {
+        return new JTextFieldUndoable(size);
+    }
+
     /**
      * Creates cell editor for text field
      */
     public static DefaultCellEditor createCellEditor(JTextField textField) {
         return new CayenneCellEditor(textField);
     }
-    
+
     /**
      * Creates cell editor for a table with combo as editor component. Type of this editor
      * depends on auto-completion behavior of JComboBox
@@ -109,12 +137,13 @@ public class CayenneWidgetFactory {
      * @param combo JComboBox to be used as editor component
      */
     public static TableCellEditor createCellEditor(JComboBox combo) {
-        if (Boolean.TRUE.equals(combo.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {
+        if (Boolean.TRUE.equals(combo
+                .getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {
             return new ComboBoxCellEditor(combo);
         }
-        
+
         DefaultCellEditor editor = new DefaultCellEditor(combo);
-        editor.setClickCountToStart(1);        
+        editor.setClickCountToStart(1);
 
         return editor;
     }
@@ -179,7 +208,7 @@ public class CayenneWidgetFactory {
     public static JButton createButton(String text) {
         return new JButton(text);
     }
-    
+
     /**
      * Creates and returns a JEdit text component with syntax highlighing
      */
@@ -188,29 +217,29 @@ public class CayenneWidgetFactory {
         if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
             area.setInputHandler(new MacInputHandler());
         }
-        
+
         return area;
     }
-    
-//    public static JSQLTextPane createJSQLTextPane() {
-//        JSQLTextPane area = new JSQLTextPane();
-//        return area;
-//    }
- 
+
+    // public static JSQLTextPane createJSQLTextPane() {
+    // JSQLTextPane area = new JSQLTextPane();
+    // return area;
+    // }
+
     public static JCayenneTextPane createJEJBQLTextPane() {
         JCayenneTextPane area = new JCayenneTextPane(new EJBQLSyntaxConstant());
         return area;
     }
- 
-    
+
     /**
      * Class for enabling Mac OS X keys
      */
     private static class MacInputHandler extends DefaultInputHandler {
+
         MacInputHandler() {
             addDefaultKeyBindings();
         }
-        
+
         /**
          * Sets up the default key bindings.
          */
@@ -243,23 +272,23 @@ public class CayenneWidgetFactory {
 
             addKeyBinding("LEFT", PREV_CHAR);
             addKeyBinding("S+LEFT", SELECT_PREV_CHAR);
-            addKeyBinding("A+LEFT", PREV_WORD); //option + left
-            addKeyBinding("AS+LEFT", SELECT_PREV_WORD); //option + shift + left
+            addKeyBinding("A+LEFT", PREV_WORD); // option + left
+            addKeyBinding("AS+LEFT", SELECT_PREV_WORD); // option + shift + left
             addKeyBinding("RIGHT", NEXT_CHAR);
             addKeyBinding("S+RIGHT", SELECT_NEXT_CHAR);
-            addKeyBinding("A+RIGHT", NEXT_WORD); //option + right
-            addKeyBinding("AS+RIGHT", SELECT_NEXT_WORD); //option + shift + right
+            addKeyBinding("A+RIGHT", NEXT_WORD); // option + right
+            addKeyBinding("AS+RIGHT", SELECT_NEXT_WORD); // option + shift + right
             addKeyBinding("UP", PREV_LINE);
             addKeyBinding("S+UP", SELECT_PREV_LINE);
             addKeyBinding("DOWN", NEXT_LINE);
             addKeyBinding("S+DOWN", SELECT_NEXT_LINE);
 
             addKeyBinding("M+ENTER", REPEAT);
-            
+
             // Clipboard
-            addKeyBinding("M+C", CLIP_COPY); //command + c
-            addKeyBinding("M+V", CLIP_PASTE); //command + v
-            addKeyBinding("M+X", CLIP_CUT); //command + x
+            addKeyBinding("M+C", CLIP_COPY); // command + c
+            addKeyBinding("M+V", CLIP_PASTE); // command + v
+            addKeyBinding("M+X", CLIP_CUT); // command + x
         }
     }
 }

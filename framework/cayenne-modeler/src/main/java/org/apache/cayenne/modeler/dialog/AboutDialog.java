@@ -50,7 +50,7 @@ import org.scopemvc.util.UIStrings;
 // triad, though it might be beneficial to use strings file
 public class AboutDialog extends JFrame implements FocusListener, KeyListener, MouseListener {
 
-    private static final long serialVersionUID = 1L;
+    
     private JLabel license, info;
     private static String infoString;
     private static ImageIcon logoImage;

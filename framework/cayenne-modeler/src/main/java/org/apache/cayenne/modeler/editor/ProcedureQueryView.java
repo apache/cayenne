@@ -100,7 +100,7 @@ public class ProcedureQueryView extends JPanel {
             }
         };
 
-        queryRoot = CayenneWidgetFactory.createComboBox();
+        queryRoot = CayenneWidgetFactory.createUndoableComboBox();
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
@@ -271,7 +271,7 @@ public class ProcedureQueryView extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = CayenneWidgetFactory.createComboBox();
+            labelCase = CayenneWidgetFactory.createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(new ActionListener() {

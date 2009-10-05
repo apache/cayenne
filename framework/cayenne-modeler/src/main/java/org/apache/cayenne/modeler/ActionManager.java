@@ -75,6 +75,7 @@ import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.ProjectAction;
+import org.apache.cayenne.modeler.action.RedoAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
@@ -88,6 +89,7 @@ import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
+import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
@@ -99,7 +101,7 @@ import org.apache.cayenne.project.ProjectPath;
 public class ActionManager {
 
     static final Collection<String> SPECIAL_ACTIONS = Arrays.asList(SaveAction
-            .getActionName());
+            .getActionName(), UndoAction.getActionName(), RedoAction.getActionName());
 
     // search action added to project actions
     static final Collection<String> PROJECT_ACTIONS = Arrays.asList(RevertAction
@@ -116,7 +118,6 @@ public class ActionManager {
                 CreateNodeAction.getActionName(),
                 ImportDBAction.getActionName(),
                 ImportEOModelAction.getActionName(),
-                
                 PasteAction.getActionName()));
     }
     
@@ -246,6 +247,14 @@ public class ActionManager {
         registerAction(new CopyRelationshipAction(application));
         registerAction(new CopyProcedureParameterAction(application));
         registerAction(new PasteAction(application));
+        
+        UndoAction undoAction = new UndoAction(application); 
+        undoAction.setEnabled(false);
+        registerAction(undoAction);
+        
+        RedoAction redoAction = new RedoAction(application);
+        redoAction.setEnabled(false);
+        registerAction(redoAction);
         
         registerAction(new CreateEmbeddableAction(application));
     }
