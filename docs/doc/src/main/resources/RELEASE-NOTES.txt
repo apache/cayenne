@@ -52,6 +52,7 @@ CAY-1275 Merge set-not-null to Oracle through modeler fails if auto adapter is s
 CAY-1277 Prefetching may cause a root object to got from COMMITTED to MODIFIED state
 CAY-1278 Project with cross-datamap flattenned relationships fails to load
 CAY-1279 Passing null values in query parameters
+CAY-1285 Update Cayenne Modeler's code generation panel to resize correctly.
 CAY-1286 Update Cayenne Modeler's validation errors panel to resize correctly.
 
 ----------------------------------

@@ -72,7 +72,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:70dlu, 3dlu, 150dlu, 3dlu, pref",
+                        "right:70dlu, 3dlu, fill:150dlu:grow, 3dlu, pref",
                         "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"));
         builder.setDefaultDialogBorder();
 
