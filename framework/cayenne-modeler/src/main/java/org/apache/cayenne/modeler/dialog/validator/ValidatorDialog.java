@@ -119,7 +119,7 @@ public class ValidatorDialog extends CayenneDialog {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "fill:200dlu:grow",
-                "pref, 3dlu, top:40dlu:grow"));
+                "pref, 3dlu, fill:40dlu:grow"));
 
         builder.setDefaultDialogBorder();
 
