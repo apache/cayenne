@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -102,12 +103,23 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
         if (Util.nullSafeEquals(newClassName, embeddable.getClassName())) {
             return;
         }
-
-        // completely new name, set new name for entity
-        EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable.getClassName());
-        embeddable.setClassName(newClassName);
         
-        mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
+        if(newClassName == null){
+            throw new ValidationException("Entity name is required.");
+        }  else if (embeddable.getDataMap().getEmbeddable(newClassName) == null) {
+            // completely new name, set new name for embeddable
+            EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable.getClassName());
+            embeddable.setClassName(newClassName);
+            
+            mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
+        } else {
+            // there is an embeddable with the same name
+            throw new ValidationException("There is another embeddable with name '"
+                    + newClassName
+                    + "'.");
+        }
+
+      
     }
 
     public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {

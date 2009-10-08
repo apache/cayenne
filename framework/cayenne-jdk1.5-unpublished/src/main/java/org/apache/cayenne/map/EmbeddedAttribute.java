@@ -36,7 +36,6 @@ import org.apache.cayenne.util.XMLEncoder;
  */
 public class EmbeddedAttribute extends ObjAttribute {
 
-    protected String type;
     protected SortedMap<String, String> attributeOverrides;
 
     public EmbeddedAttribute() {

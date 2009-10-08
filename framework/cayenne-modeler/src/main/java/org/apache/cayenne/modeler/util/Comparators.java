@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
@@ -146,14 +147,17 @@ public class Comparators {
             else if (o instanceof ObjEntity) {
                 return 2;
             }
-            else if (o instanceof DbEntity) {
+            else if (o instanceof Embeddable) {
                 return 3;
             }
-            else if (o instanceof Procedure) {
+            else if (o instanceof DbEntity) {
                 return 4;
             }
-            else if (o instanceof Query) {
+            else if (o instanceof Procedure) {
                 return 5;
+            }
+            else if (o instanceof Query) {
+                return 6;
             }
             else {
                 // this should trap nulls among other things

@@ -578,6 +578,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
 
         embeddablesMap.put(embeddable.getClassName(), embeddable);
+        embeddable.setDataMap(this);
     }
 
     /**

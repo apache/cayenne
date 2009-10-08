@@ -19,8 +19,13 @@
 package org.apache.cayenne.modeler.dialog.objentity;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -30,12 +35,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class ObjAttributeInfoDialogView extends JDialog {
 
@@ -52,18 +63,38 @@ public class ObjAttributeInfoDialogView extends JDialog {
     protected JLabel currentPathLabel;
     protected JLabel sourceEntityLabel;
     protected JComboBox targCombo;
-    
-    static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
 
-    public ObjAttributeInfoDialogView() {
+    protected JComboBox type;
+    protected JPanel typeManagerPane;
+
+    protected CayenneTable overrideAttributeTable;
+
+    ProjectController mediator;
+
+    static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
+    
+    static final String EMBEDDABLE_PANEL = "EMBEDDABLE_PANEL"; 
+    static final String FLATTENED_PANEL = "FLATTENED_PANEL"; 
+
+    public ObjAttributeInfoDialogView(ProjectController mediator) {
+
+        this.mediator = mediator;
 
         // create widgets
         this.cancelButton = new JButton("Close");
         this.saveButton = new JButton("Done");
         this.selectPathButton = new JButton("Select path");
+
         this.attributeName = new JTextField(25);
         this.currentPathLabel = new JLabel();
         this.sourceEntityLabel = new JLabel();
+
+        this.type = CayenneWidgetFactory.createComboBox(ModelerUtil
+                .getRegisteredTypeNames(), false);
+        AutoCompletion.enable(type, false, true);
+        type.getRenderer();
+
+        overrideAttributeTable = new CayenneTable();
 
         saveButton.setEnabled(false);
         cancelButton.setEnabled(true);
@@ -75,12 +106,14 @@ public class ObjAttributeInfoDialogView extends JDialog {
         setLayout(new BorderLayout());
 
         CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(
+        final PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, 300dlu, 3dlu, fill:min(120dlu;pref)",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
+                        "right:max(50dlu;pref), 3dlu, fill:min(200dlu;pref), 15dlu, right:max(30dlu;pref), 3dlu, 185dlu, "
+                                + "3dlu, 20dlu, 3dlu, fill:min(70dlu;pref)",
+                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 6dlu, p, 6dlu, p, 3dlu, fill:p:grow"));
         builder.setDefaultDialogBorder();
-        builder.addSeparator("ObjAttribute Information", cc.xywh(1, 1, 5, 1));
+        builder.addSeparator("ObjAttribute Information", cc.xywh(1, 1, 11, 1));
+
         builder.addLabel("Attribute:", cc.xy(1, 3));
         builder.add(attributeName, cc.xywh(3, 3, 1, 1));
 
@@ -93,29 +126,111 @@ public class ObjAttributeInfoDialogView extends JDialog {
         builder.addLabel("Target:", cc.xy(1, 9));
         builder.add(targCombo, cc.xywh(3, 9, 1, 1));
 
-        builder.addSeparator("Mapping to DbRelationships", cc.xywh(1, 11, 5, 1));
+        builder.addLabel("Type:", cc.xy(1, 11));
+        builder.add(type, cc.xywh(3, 11, 1, 1));
+
+        builder.addSeparator("Mapping to Attributes", cc.xywh(1, 13, 10, 1));
+
+        typeManagerPane = new JPanel();
+        typeManagerPane.setLayout(new CardLayout());
+
+        final FormLayout fL = new FormLayout(
+                "483dlu ",
+                "p, 3dlu, fill:min(128dlu;pref):grow");
+
+        // panel for Flattened attribute
+        final PanelBuilder builderPathPane = new PanelBuilder(fL);
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
         buttonsPane.add(selectPathButton);
 
-        builder.add(buttonsPane, cc.xywh(1, 13, 5, 1));
+        builderPathPane.add(buttonsPane, cc.xywh(1, 1, 1, 1));
         pathBrowser = new ObjAttributePathBrowser(selectPathButton, saveButton);
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
-        builder.add(new JScrollPane(
+        builderPathPane.add(new JScrollPane(
                 pathBrowser,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 15, 5, 3));
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 3, 1, 1));
+
+        // panel for embeddable attribute
+        final FormLayout fLEmb = new FormLayout(
+                "483dlu ",
+                "fill:min(140dlu;pref):grow");
+
+        final PanelBuilder embeddablePane = new PanelBuilder(fLEmb);
+
+        embeddablePane.add(new JScrollPane(overrideAttributeTable,
+              JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+              JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
+              cc.xywh(1, 1, 1, 1));
+
+        typeManagerPane.add(builderPathPane.getPanel(), FLATTENED_PANEL);
+        typeManagerPane.add(embeddablePane.getPanel(), EMBEDDABLE_PANEL);
+
+        builder.add(typeManagerPane, cc.xywh(1, 15, 11, 1));
 
         add(builder.getPanel(), BorderLayout.CENTER);
+
+        this.addComponentListener(new ComponentListener() {
+
+            int height;
+
+            public void componentHidden(ComponentEvent e) {
+            }
+
+            public void componentMoved(ComponentEvent e) {
+            }
+
+            public void componentResized(ComponentEvent e) {
+                int delta = e.getComponent().getHeight() - height;
+                if (delta < 0) {
+                    fL.setRowSpec(3, new RowSpec("fill:min(10dlu;pref):grow"));
+                    fLEmb.setRowSpec(1, new RowSpec("fill:min(10dlu;pref):grow"));
+                }
+            }
+
+            public void componentShown(ComponentEvent e) {
+                height = e.getComponent().getHeight();
+            }
+        });
+
         add(PanelFactory.createButtonPanel(new JButton[] {
                 saveButton, cancelButton
         }), BorderLayout.SOUTH);
-    }
-    
 
-    
-    
+        type.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                boolean isType = false;
+                String[] typeNames = ModelerUtil.getRegisteredTypeNames();
+                for (int i = 0; i < typeNames.length; i++) {
+                    if (type.getSelectedItem() == null || typeNames[i].equals(type.getSelectedItem().toString())) {
+                        isType = true;
+                    }
+                }
+
+                if (isType) {
+                    ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, FLATTENED_PANEL);
+                }
+                else {
+                    ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, EMBEDDABLE_PANEL);
+                    getCurrentPathLabel().setText("");
+                    
+                }
+            }
+
+        });
+    }
+
+    public CayenneTable getOverrideAttributeTable() {
+        return overrideAttributeTable;
+    }
+
+    public JComboBox getType() {
+        return type;
+    }
+
     public JComboBox getTargCombo() {
         return targCombo;
     }

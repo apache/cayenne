@@ -252,19 +252,44 @@ public abstract class NamedObjectFactory {
     }
 
     static class EmbeddableFactory extends NamedObjectFactory {
+        
+        private String nameBase;
+        
+        
+        public String getNameBase() {
+            return nameBase;
+        }
+
+        
+        public void setNameBase(String nameBase) {
+            this.nameBase = nameBase;
+        }
+
         @Override
         protected String nameBase() {
-            return "Package.UntitledObjEntity";
+            System.out.println("nameBase");
+            if(getNameBase()==null){
+                setNameBase("UntitledEmbeddable");
+            }
+            return getNameBase();
+           
         }
 
         @Override
         protected Object create(String name, Object namingContext) {
+            DataMap map = (DataMap) namingContext;
+            if(map.getDefaultPackage() != null){
+                return new Embeddable(map.getDefaultPackage() + "." + name);
+            }
             return new Embeddable(name);
         }
 
         @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             DataMap map = (DataMap) namingContext;
+            if(map.getDefaultPackage() != null){
+                return map.getEmbeddable((map.getDefaultPackage() + "." + name)) != null;
+            }
             return map.getEmbeddable(name) != null;
         }
     }

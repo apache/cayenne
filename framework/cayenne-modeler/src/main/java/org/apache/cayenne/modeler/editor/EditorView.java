@@ -86,18 +86,23 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     protected Container detailPanel;
     protected CardLayout detailLayout;
     private ProjectTreeView treePanel;
+    
+    private DbEntityTabbedView dbDetailView;
+    private ObjEntityTabbedView objDetailView;
+    private EmbeddableTabbedView embeddableView;
 
+    
     public ProjectTreeView getProjectTreeView() {
         return treePanel;
     }
 
-    private DbEntityTabbedView dbDetailView;
-
+    public EmbeddableTabbedView getEmbeddableView() {
+        return embeddableView;
+    }
+    
     public DbEntityTabbedView getDbDetailView() {
         return dbDetailView;
     }
-
-    private ObjEntityTabbedView objDetailView;
 
     public ObjEntityTabbedView getObjDetailView() {
         return objDetailView;
@@ -153,7 +158,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         Component ejbqlQueryView = new EjbqlTabbedView(eventController);
         detailPanel.add(ejbqlQueryView, EJBQL_QUERY_VIEW);
 
-        Component embeddableView = new EmbeddableTabbedView(eventController);
+        embeddableView = new EmbeddableTabbedView(eventController);
         detailPanel.add(new JScrollPane(embeddableView), EMBEDDABLE_VIEW);
 
         objDetailView = new ObjEntityTabbedView(eventController);

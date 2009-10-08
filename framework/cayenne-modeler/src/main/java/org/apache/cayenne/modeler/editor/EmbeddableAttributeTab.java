@@ -19,8 +19,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.util.EventObject;
 import java.util.List;
 
@@ -28,12 +26,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.cayenne.map.DataMap;
@@ -95,7 +91,6 @@ public class EmbeddableAttributeTab extends JPanel implements
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
-        table.setDefaultRenderer(String.class, new CellRenderer());
 
         /**
          * Create and install a popup
@@ -261,51 +256,4 @@ public class EmbeddableAttributeTab extends JPanel implements
 
     public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
     }
-
-    // custom renderer used for inherited attributes highlighting
-    final class CellRenderer extends DefaultTableCellRenderer {
-
-        @Override
-        public Component getTableCellRendererComponent(
-                JTable table,
-                Object value,
-                boolean isSelected,
-                boolean hasFocus,
-                int row,
-                int column) {
-
-            super.getTableCellRendererComponent(
-                    table,
-                    value,
-                    isSelected,
-                    hasFocus,
-                    row,
-                    column);
-
-            EmbeddableAttributeTableModel model = (EmbeddableAttributeTableModel) table
-                    .getModel();
-            EmbeddableAttribute attribute = model.getEmbeddableAttribute(row);
-            if (column != EmbeddableAttributeTableModel.INHERITED) {
-
-                if (!model.isCellEditable(row, column)) {
-                    setForeground(Color.GRAY);
-                }
-                else {
-                    setForeground(isSelected && !hasFocus ? table
-                            .getSelectionForeground() : table.getForeground());
-                }
-
-                setIcon(null);
-            }
-            else {
-                setText("");
-            }
-            setBackground(isSelected && !hasFocus
-                    ? table.getSelectionBackground()
-                    : table.getBackground());
-
-            return this;
-        }
-    }
-
 }

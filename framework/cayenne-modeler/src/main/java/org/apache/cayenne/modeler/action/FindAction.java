@@ -29,6 +29,8 @@ import javax.swing.JTextField;
 
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
@@ -36,6 +38,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.query.Query;
 
 public class FindAction extends CayenneAction {
     private java.util.List<Object> paths;
@@ -69,6 +72,12 @@ public class FindAction extends CayenneAction {
                 else if (o instanceof Attribute && matchFound(((Attribute) o).getName(), pattern))
                     paths.add(path.getPath());
                 else if (o instanceof Relationship && matchFound(((Relationship) o).getName(), pattern))
+                    paths.add(path.getPath());
+                else if (o instanceof Query && matchFound(((Query) o).getName(), pattern))
+                    paths.add(path.getPath());
+                else if (o instanceof Embeddable && matchFound(((Embeddable) o).getClassName(), pattern))
+                    paths.add(path.getPath());
+                else if (o instanceof EmbeddableAttribute && matchFound(((EmbeddableAttribute) o).getName(), pattern))
                     paths.add(path.getPath());
             }
         }

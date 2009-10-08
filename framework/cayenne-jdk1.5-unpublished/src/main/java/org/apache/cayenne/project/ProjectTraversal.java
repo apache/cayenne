@@ -91,6 +91,9 @@ public class ProjectTraversal {
         else if (rootNode instanceof Entity) {
             this.traverseEntities(Collections.singletonList(rootNode).iterator(), path);
         }
+        else if (rootNode instanceof Embeddable) {
+            this.traverseEmbeddable(Collections.singletonList(rootNode).iterator(), path);
+        }
         else if (rootNode instanceof Attribute) {
             this.traverseAttributes(Collections.singletonList(rootNode).iterator(), path);
         }
@@ -101,9 +104,6 @@ public class ProjectTraversal {
         }
         else if (rootNode instanceof DataNode) {
             this.traverseNodes(Collections.singletonList(rootNode).iterator(), path);
-        }
-        else if (rootNode instanceof Embeddable) {
-            this.traverseEmbeddable(Collections.singletonList(rootNode).iterator(), path);
         }
         else {
             String nodeClass = (rootNode != null)
@@ -177,8 +177,8 @@ public class ProjectTraversal {
 
             if (handler.shouldReadChildren(map, path)) {
                 this.traverseEntities(map.getObjEntities().iterator(), mapPath);
-                this.traverseEntities(map.getDbEntities().iterator(), mapPath);
                 this.traverseEmbeddable(map.getEmbeddables().iterator(), mapPath);
+                this.traverseEntities(map.getDbEntities().iterator(), mapPath);                
                 this.traverseProcedures(map.getProcedures().iterator(), mapPath);
                 this.traverseQueries(map.getQueries().iterator(), mapPath);
             }

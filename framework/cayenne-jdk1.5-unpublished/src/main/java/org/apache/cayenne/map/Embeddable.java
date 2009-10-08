@@ -41,6 +41,7 @@ public class Embeddable implements XMLSerializable, Serializable {
 
     protected String className;
     protected SortedMap<String, EmbeddableAttribute> attributes;
+    protected DataMap dataMap;
 
     public Embeddable() {
         this(null);
@@ -49,6 +50,16 @@ public class Embeddable implements XMLSerializable, Serializable {
     public Embeddable(String className) {
         this.attributes = new TreeMap<String, EmbeddableAttribute>();
         this.className = className;
+    }
+
+    
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+
+    
+    public void setDataMap(DataMap dataMap) {
+        this.dataMap = dataMap;
     }
 
     /**

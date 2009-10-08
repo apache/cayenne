@@ -49,10 +49,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.query.SelectQuery;
+
 
 /**
  * Swing component displaying results produced by search feature.
@@ -73,7 +76,7 @@ public class FindDialogView extends JDialog {
     }
 
     public FindDialogView(Map objEntityNames, Map dbEntityNames, Map attrNames,
-            Map relatNames) {
+            Map relatNames, Map queryNames, Map embeddableNames, Map embeddableAttributeNames) {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -81,7 +84,10 @@ public class FindDialogView extends JDialog {
         if (objEntityNames.isEmpty()
                 && dbEntityNames.isEmpty()
                 && attrNames.isEmpty()
-                && relatNames.isEmpty()) {
+                && relatNames.isEmpty()
+                && queryNames.isEmpty()
+                && embeddableNames.isEmpty()
+                && embeddableAttributeNames.isEmpty()) {
             panel.add(new JLabel("Nothing found!"));
         }
         else {
@@ -90,7 +96,10 @@ public class FindDialogView extends JDialog {
             int sizeDataVector = objEntityNames.size()
                     + dbEntityNames.size()
                     + attrNames.size()
-                    + relatNames.size();
+                    + relatNames.size()
+                    + queryNames.size()
+                    + embeddableNames.size()
+                    + embeddableAttributeNames.size();
 
             Object[][] dataVector = new Object[sizeDataVector][];
 
@@ -100,18 +109,31 @@ public class FindDialogView extends JDialog {
 
             dataVector = createResultTable(objEntityNames, CellRenderers
                     .iconForObject(new ObjEntity()), dataVector, curentLineInTable);
-            curentLineInTable = objEntityNames.size();
+            
+            curentLineInTable = objEntityNames.size();            
+            dataVector = createResultTable(embeddableNames, CellRenderers
+                    .iconForObject(new Embeddable()), dataVector, curentLineInTable);
+
+            curentLineInTable = curentLineInTable + embeddableNames.size();            
             dataVector = createResultTable(dbEntityNames, CellRenderers
                     .iconForObject(new DbEntity()), dataVector, curentLineInTable);
-
-            curentLineInTable = curentLineInTable + dbEntityNames.size();
+            
+            curentLineInTable = curentLineInTable + dbEntityNames.size();            
             dataVector = createResultTable(attrNames, CellRenderers
                     .iconForObject(new ObjAttribute()), dataVector, curentLineInTable);
+            
+            curentLineInTable = curentLineInTable + attrNames.size();         
+            dataVector = createResultTable(embeddableAttributeNames, CellRenderers
+                    .iconForObject(new ObjAttribute()), dataVector, curentLineInTable);
 
-            curentLineInTable = curentLineInTable + attrNames.size();
+            curentLineInTable = curentLineInTable + embeddableAttributeNames.size();
             dataVector = createResultTable(relatNames, CellRenderers
                     .iconForObject(new ObjRelationship()), dataVector, curentLineInTable);
-
+            
+            curentLineInTable = curentLineInTable + relatNames.size();
+            dataVector = createResultTable(queryNames, CellRenderers
+                    .iconForObject(new SelectQuery()), dataVector, curentLineInTable);
+            
             tableModel.setDataVector(dataVector, new Object[] {
                 ""
             });

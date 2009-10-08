@@ -925,8 +925,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         popup.add(buildMenu(CreateDataMapAction.getActionName()));
 
         popup.add(buildMenu(CreateObjEntityAction.getActionName()));
-        popup.add(buildMenu(CreateDbEntityAction.getActionName()));
         popup.add(buildMenu(CreateEmbeddableAction.getActionName()));
+        popup.add(buildMenu(CreateDbEntityAction.getActionName()));
+  
         popup.add(buildMenu(CreateProcedureAction.getActionName()));
         popup.add(buildMenu(CreateQueryAction.getActionName()));
         popup.addSeparator();

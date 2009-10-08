@@ -222,9 +222,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         projectMenu.add(getAction(CreateDataMapAction.getActionName()).buildMenu());
 
         projectMenu.add(getAction(CreateObjEntityAction.getActionName()).buildMenu());
-        projectMenu.add(getAction(CreateDbEntityAction.getActionName()).buildMenu());
-
         projectMenu.add(getAction(CreateEmbeddableAction.getActionName()).buildMenu());
+        projectMenu.add(getAction(CreateDbEntityAction.getActionName()).buildMenu());
         
         projectMenu.add(getAction(CreateProcedureAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateQueryAction.getActionName()).buildMenu());
@@ -390,9 +389,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         
         toolBar.add(getAction(CreateObjEntityAction.getActionName()).buildButton());
-      
         toolBar.add(getAction(CreateEmbeddableAction.getActionName()).buildButton());
-
         toolBar.add(getAction(CreateQueryAction.getActionName()).buildButton());
  
         toolBar.addSeparator();

@@ -42,6 +42,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -52,9 +54,13 @@ import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.query.Query;
 
 /**
  * An instance of this class is responsible for displaying search results and navigating
@@ -80,7 +86,7 @@ public class FindDialog extends CayenneController {
 
         this.paths = paths;
 
-        Map objEntityNames = new HashMap(), dbEntityNames = new HashMap(), attrNames = new HashMap(), relatNames = new HashMap();
+        Map objEntityNames = new HashMap(), dbEntityNames = new HashMap(), attrNames = new HashMap(), relatNames = new HashMap(), queryNames = new HashMap(), embeddableNames = new HashMap(), embeddableAttributeNames = new HashMap();
         Iterator it = paths.iterator();
         int index = 0;
         while (it.hasNext()) {
@@ -98,6 +104,27 @@ public class FindDialog extends CayenneController {
                         ((DbEntity) path[path.length - 1]).getName());
             }
 
+            if (path[path.length - 1] instanceof Query) {
+                queryNames.put(new Integer(index++), ((Query) path[path.length - 1])
+                        .getName());
+            }
+
+            if (path[path.length - 1] instanceof Embeddable) {
+                
+                String name = ((Embeddable) path[path.length - 1]).getClassName();
+                embeddableNames.put(
+                        new Integer(index++),
+                        name);
+            }
+            
+            if (path[path.length - 1] instanceof EmbeddableAttribute) {
+                
+                Object parentObject = ((EmbeddableAttribute) path[path.length - 1]).getEmbeddable();
+                String parName = getParentName(path, parentObject);
+                embeddableAttributeNames.put(new Integer(index++), parName
+                        + "."
+                        + ((EmbeddableAttribute) path[path.length - 1]).getName());
+            }
             if (path[path.length - 1] instanceof Attribute) {
                 Object parentObject = ((Attribute) path[path.length - 1]).getParent();
                 attrNames.put(new Integer(index++), getParentName(path, parentObject)
@@ -124,7 +151,14 @@ public class FindDialog extends CayenneController {
             }
         }
 
-        view = new FindDialogView(objEntityNames, dbEntityNames, attrNames, relatNames);
+        view = new FindDialogView(
+                objEntityNames,
+                dbEntityNames,
+                attrNames,
+                relatNames,
+                queryNames,
+                embeddableNames,
+                embeddableAttributeNames);
         initBindings();
     }
 
@@ -184,7 +218,56 @@ public class FindDialog extends CayenneController {
             if (path[path.length - 1] instanceof DbEntity)
                 editor.getDbDetailView().currentDbEntityChanged(event);
         }
+        
+        if (path[path.length - 1] instanceof Query) {
 
+            /** Make selection in a project tree, open correspondent entity tab */
+            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
+                    buildTreePath(path, editor));
+            QueryDisplayEvent event = new QueryDisplayEvent(
+                    editor.getProjectTreeView(),
+                    (Query) path[path.length - 1],
+                    (DataMap) path[path.length - 2],
+                    (DataDomain) path[path.length - 3]);
+
+            editor.currentQueryChanged(event);
+        }
+        
+        if (path[path.length - 1] instanceof Embeddable) {
+
+            /** Make selection in a project tree, open correspondent entity tab */
+            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
+                    buildTreePath(path, editor));
+            EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
+                    editor.getProjectTreeView(),
+                    (Embeddable) path[path.length - 1],
+                    (DataMap) path[path.length - 2],
+                    (DataDomain) path[path.length - 3]);
+            event.setMainTabFocus(true);
+
+            editor.currentEmbeddableChanged(event);
+        }
+        
+        if (path[path.length - 1] instanceof EmbeddableAttribute) {
+
+            /** Make selection in a project tree, open correspondent embeddable tab */
+            Object[] o = new Object[path.length - 1];
+            for (int i = 0; i < path.length - 1; i++)
+                o[i] = path[i];
+            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
+                    buildTreePath(o, editor));
+            
+            EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(
+                    editor.getProjectTreeView(),
+                    (Embeddable) path[path.length - 2],
+                    (EmbeddableAttribute) path[path.length - 1],
+                    (DataMap) path[path.length - 3],
+                    (DataDomain) path[path.length - 4]);
+            event.setMainTabFocus(true);
+
+            editor.getEmbeddableView().currentEmbeddableAttributeChanged(event);
+        }
+        
         if (path[path.length - 1] instanceof Attribute
                 || path[path.length - 1] instanceof Relationship) {
 
@@ -239,6 +322,7 @@ public class FindDialog extends CayenneController {
             event.setMainTabFocus(true);
             editor.getObjDetailView().currentObjRelationshipChanged(event);
         }
+
     }
 
     private class JumpToResultActionListener implements MouseListener {
@@ -324,6 +408,10 @@ public class FindDialog extends CayenneController {
         if (parentObject instanceof DbEntity) {
             DbEntity dbEntity = (DbEntity) parentObject;
             nameParent = dbEntity.getName();
+        }
+        if (parentObject instanceof Embeddable) {
+            Embeddable embeddable = (Embeddable) parentObject;
+            nameParent = embeddable.getClassName();
         }
         return nameParent;
     }
