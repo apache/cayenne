@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
+import org.apache.art.Painting;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
@@ -69,7 +70,7 @@ public class EJBQLQueryTest extends CayenneCase {
 
     public void testCacheStrategy() throws Exception {
         deleteTestData();
-        
+
         insertValue();
         DataContext contex = createDataContext();
         String ejbql = "select a FROM Artist a";
@@ -92,7 +93,7 @@ public class EJBQLQueryTest extends CayenneCase {
 
     public void testDataRows() throws Exception {
         deleteTestData();
-        
+
         insertValue();
         String ejbql = "select a FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -101,7 +102,7 @@ public class EJBQLQueryTest extends CayenneCase {
 
         Map row = (Map) artists.get(0);
         String artistName = (String) row.get("ARTIST_NAME");
-       
+
         assertTrue(row instanceof DataRow);
 
         Artist artist = (Artist) createDataContext().objectFromDataRow(
@@ -117,6 +118,19 @@ public class EJBQLQueryTest extends CayenneCase {
         for (int i = 0; i < 5; i++) {
             Artist obj = context.newObject(Artist.class);
             obj.setArtistName("a" + i);
+            context.commitChanges();
+        }
+    }
+
+    private void insertPaintValue() {
+        DataContext context = createDataContext();
+
+        for (int i = 0; i < 2; i++) {
+            Artist art = context.newObject(Artist.class);
+            art.setArtistName("a" + i);
+            Painting obj = context.newObject(Painting.class);
+            obj.setToArtist(art);
+            obj.setPaintingTitle("title" + i);
             context.commitChanges();
         }
     }
@@ -175,37 +189,78 @@ public class EJBQLQueryTest extends CayenneCase {
         assertTrue(md.isResolvingInherited());
         assertEquals(QueryCacheStrategy.NO_CACHE, md.getCacheStrategy());
     }
-    
-    public void testEncodeAsXML() {
+
+    public void testSelectRelationship() {
+
+        insertPaintValue();
+        DataContext contex = createDataContext();
         
+        String ejbql = "SELECT p.toArtist FROM Painting p"; 
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List result = contex.performQuery(query);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        assertEquals(Artist.class, result.get(0).getClass());
+
+        
+        String ejbql2 = "SELECT p.toArtist, p FROM Painting p"; 
+        EJBQLQuery query2 = new EJBQLQuery(ejbql2);
+
+        List result2 = contex.performQuery(query2);
+
+        assertNotNull(result2);
+        assertEquals(2, result2.size());
+        assertEquals(2, ((Object[])result2.get(0)).length);
+        
+        assertEquals(Artist.class,((Object[])result2.get(0))[0].getClass());
+        assertEquals(Painting.class,((Object[])result2.get(0))[1].getClass());
+        
+        String ejbql3 = "SELECT p.toArtist, p.paintingTitle FROM Painting p"; 
+        EJBQLQuery query3 = new EJBQLQuery(ejbql3);
+
+        List result3 = contex.performQuery(query3);
+
+        assertNotNull(result3);
+        assertEquals(2, result3.size());
+        assertEquals(2, ((Object[])result3.get(0)).length);
+        
+        assertEquals(Artist.class,((Object[])result3.get(0))[0].getClass());
+        assertEquals(String.class,((Object[])result3.get(0))[1].getClass());
+    }
+
+    public void testEncodeAsXML() {
+
         String ejbql = "select a FROM Artist a";
         String name = "Test";
-        
+
         StringWriter w = new StringWriter();
         XMLEncoder e = new XMLEncoder(new PrintWriter(w));
-        
+
         String separator = System.getProperty("line.separator");
-        
+
         StringBuffer s = new StringBuffer("<query name=\"");
         s.append(name);
         s.append("\" factory=\"");
         s.append("org.apache.cayenne.map.EjbqlBuilder");
         s.append("\">");
         s.append(separator);
-      
+
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        
+
         if (query.getEjbqlStatement() != null) {
             s.append("<ejbql><![CDATA[");
             s.append(query.getEjbqlStatement());
             s.append("]]></ejbql>");
         }
         s.append(separator);
-        s.append("</query>");     
+        s.append("</query>");
         s.append(separator);
         query.setName(name);
         query.encodeAsXML(e);
-        
+
         assertEquals(w.getBuffer().toString(), s.toString());
     }
 }

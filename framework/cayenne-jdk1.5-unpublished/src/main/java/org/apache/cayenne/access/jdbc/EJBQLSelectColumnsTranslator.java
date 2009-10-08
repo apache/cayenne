@@ -18,12 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 
 /**
  * Translator of the EJBQL select clause.
@@ -66,6 +74,62 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             }
 
             @Override
+            protected void processTerminatingRelationship(ObjRelationship relationship) {
+
+                Map<String, String> xfields = null;
+                if (context.isAppendingResultColumns()) {
+                    xfields = context.nextEntityResult().getFields();
+                }
+
+                final Map<String, String> fields = xfields;
+
+                Collection<DbAttribute> dbAttr = ((ObjEntity) relationship
+                        .getTargetEntity()).getDbEntity().getAttributes();
+
+                DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
+                DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
+
+                Iterator<DbAttribute> it = dbAttr.iterator();
+                if (dbAttr.size() > 0) {
+                    this.resolveJoin(false);
+                }
+
+                String alias = this.lastAlias != null ? lastAlias : context
+                        .getTableAlias(idPath, table.getFullyQualifiedName());
+
+                boolean first = true;
+                while (it.hasNext()) {
+
+                    context.append(!first ? ", " : " ");
+
+                    DbAttribute dbAttribute = it.next();
+
+                    if (context.isAppendingResultColumns()) {
+                        context.append(" #result('");
+                    }
+                    else {
+                        context.append(' ');
+                    }
+
+                    context.append(alias).append('.').append(dbAttribute.getName());
+
+                    if (context.isAppendingResultColumns()) {
+
+                        String javaType = TypesMapping.getJavaBySqlType(dbAttribute
+                                .getType());
+                        String columnLabel = fields.get(dbAttribute.getName());
+
+                        context.append("' '").append(javaType).append("' '").append(
+                                columnLabel).append("' '").append(columnLabel).append(
+                                "' " + dbAttribute.getType()).append(")");
+                    }
+
+                    first = false;
+                }
+
+            }
+
+            @Override
             protected void processTerminatingAttribute(ObjAttribute attribute) {
                 DbEntity table = currentEntity.getDbEntity();
                 String alias = this.lastAlias != null ? lastAlias : context
@@ -100,7 +164,6 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 }
             }
         };
-
         expression.visit(pathTranslator);
         return false;
     }
@@ -111,4 +174,5 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 context));
         return false;
     }
+
 }

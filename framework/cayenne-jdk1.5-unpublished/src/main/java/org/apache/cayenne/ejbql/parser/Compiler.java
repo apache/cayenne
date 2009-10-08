@@ -84,11 +84,57 @@ class Compiler {
     CompiledExpression compile(String source, EJBQLExpression parsed) {
         parsed.visit(new CompilationVisitor());
 
+        Map<EJBQLPath, Integer> pathsInSelect = new HashMap<EJBQLPath, Integer>();
+
+        if (parsed != null) {
+            for (int i = 0; i < parsed.getChildrenCount(); i++) {
+                if (parsed.getChild(i) instanceof EJBQLSelectClause) {
+
+                    EJBQLExpression parsedTemp = parsed.getChild(i);
+                    boolean stop = false;
+
+                    while (parsedTemp.getChildrenCount() > 0 && !stop) {
+                        EJBQLExpression newParsedTemp = null;
+                        for (int j = 0; j < parsedTemp.getChildrenCount(); j++) {
+                            if (parsedTemp.getChild(j) instanceof EJBQLSelectExpression) {
+                                for (int k = 0; k < parsedTemp
+                                        .getChild(j)
+                                        .getChildrenCount(); k++) {
+
+                                    if (parsedTemp.getChild(j).getChild(k) instanceof EJBQLPath) {
+                                        pathsInSelect.put((EJBQLPath) parsedTemp
+                                                .getChild(j)
+                                                .getChild(k), j);
+
+                                    }
+                                }
+                            }
+                            else {
+                                if (parsedTemp.getChild(j).getChildrenCount() == 0) {
+                                    stop = true;
+                                }
+                                else {
+                                    newParsedTemp = parsedTemp.getChild(j);
+                                }
+                            }
+                        }
+
+                        if (!stop && newParsedTemp != null) {
+                            parsedTemp = newParsedTemp;
+                        }
+                        else {
+                            stop = true;
+                        }
+                    }
+                }
+            }
+        }
+
         // postprocess paths, now that all id vars are resolved
         if (paths != null) {
+            int elenent = 0;
             for (EJBQLPath path : paths) {
                 String id = normalizeIdPath(path.getId());
-
                 ClassDescriptor descriptor = descriptorsById.get(id);
                 if (descriptor == null) {
                     throw new EJBQLException("Unmapped id variable: " + id);
@@ -96,22 +142,41 @@ class Compiler {
 
                 StringBuilder buffer = new StringBuilder(id);
 
+                ObjRelationship incoming = null;
+                String pathRelationshipString = "";
+
                 for (int i = 1; i < path.getChildrenCount(); i++) {
 
                     String pathChunk = path.getChild(i).getText();
                     buffer.append('.').append(pathChunk);
 
                     Property property = descriptor.getProperty(pathChunk);
-                    if (property instanceof ArcProperty) {
-                        ObjRelationship incoming = ((ArcProperty) property)
-                                .getRelationship();
-                        descriptor = ((ArcProperty) property).getTargetDescriptor();
-                        String pathString = buffer.substring(0, buffer.length());
 
-                        descriptorsById.put(pathString, descriptor);
-                        incomingById.put(pathString, incoming);
+                    if (property instanceof ArcProperty) {
+                        incoming = ((ArcProperty) property).getRelationship();
+                        descriptor = ((ArcProperty) property).getTargetDescriptor();
+                        pathRelationshipString = buffer.substring(0, buffer.length());
+
+                        descriptorsById.put(pathRelationshipString, descriptor);
+                        incomingById.put(pathRelationshipString, incoming);
+                        
                     }
                 }
+
+                
+                if (pathsInSelect.size() > 0
+                        && incoming != null
+                        && pathRelationshipString.length() > 0
+                        && pathRelationshipString.equals(buffer.toString())) {
+                    
+                    EJBQLIdentifier ident = new EJBQLIdentifier(0);
+                    ident.text = pathRelationshipString;
+                    
+                    resultComponents.remove(pathsInSelect.get(path).intValue());
+                    resultComponents.add(pathsInSelect.get(path).intValue(), ident);
+                    rootId = pathRelationshipString;
+                };
+                elenent++;
             }
         }
 
@@ -139,6 +204,7 @@ class Compiler {
             }
 
             compiled.setResult(mapping);
+            
         }
 
         return compiled;
@@ -147,6 +213,9 @@ class Compiler {
     private EntityResult compileEntityResult(EJBQLExpression expression, int position) {
         String id = expression.getText().toLowerCase();
         ClassDescriptor descriptor = descriptorsById.get(id);
+        if (descriptor == null) {
+            descriptor = descriptorsById.get(expression.getText());
+        }
         final EntityResult entityResult = new EntityResult(descriptor.getObjectClass());
         final String prefix = "ec" + position + "_";
         final int[] index = {
@@ -197,7 +266,8 @@ class Compiler {
         }
 
         // append inheritance discriminator columns...
-        Iterator<ObjAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
+        Iterator<ObjAttribute> discriminatorColumns = descriptor
+                .getDiscriminatorColumns();
         while (discriminatorColumns.hasNext()) {
             ObjAttribute column = discriminatorColumns.next();
 

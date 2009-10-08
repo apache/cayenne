@@ -105,7 +105,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    private void resolveJoin(boolean inner) {
+    protected void resolveJoin(boolean inner) {
 
         EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(
                 context);
@@ -209,7 +209,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         }
     }
 
-    private void processTerminatingRelationship(ObjRelationship relationship) {
+    protected void processTerminatingRelationship(ObjRelationship relationship) {
 
         if (relationship.isSourceIndependentFromTargetChange()) {
 
