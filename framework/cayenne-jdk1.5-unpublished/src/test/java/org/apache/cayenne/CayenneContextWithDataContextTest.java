@@ -196,6 +196,9 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
                 public void preUpdate(Object entity) {
                 }
+
+				public void prePersist(Object entity) {
+				}
             });
 
             ClientConnection connection = new LocalConnection(csChannel);
@@ -297,6 +300,9 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
                 public void preUpdate(Object entity) {
                 }
+
+				public void prePersist(Object entity) {
+				}
             });
 
             ClientConnection connection = new LocalConnection(csChannel);
@@ -353,6 +359,9 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
                 public void preUpdate(Object entity) {
                 }
+
+				public void prePersist(Object entity) {
+				}
             });
 
             ClientConnection connection = new LocalConnection(csChannel);
