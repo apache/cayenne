@@ -291,8 +291,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             return;
         }
 
-        if (this.dataRowCache != null && dataRowCache.getEventManager() != null) {
-            dataRowCache.getEventManager().removeListener(
+        if (this.dataRowCache != null && this.dataRowCache.getEventManager() != null) {
+            this.dataRowCache.getEventManager().removeListener(
                     this,
                     this.dataRowCache.getSnapshotEventSubject());
         }
