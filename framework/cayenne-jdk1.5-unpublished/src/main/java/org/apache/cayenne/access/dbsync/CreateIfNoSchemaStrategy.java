@@ -71,8 +71,8 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
             DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next());
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
-            gen.setShouldCreateFKConstraints(false);
-            gen.setShouldCreatePKSupport(false);
+            gen.setShouldCreateFKConstraints(true);
+            gen.setShouldCreatePKSupport(true);
             gen.setShouldDropPKSupport(false);
             try {
                 gen.runGenerator(dataNode.getDataSource());
