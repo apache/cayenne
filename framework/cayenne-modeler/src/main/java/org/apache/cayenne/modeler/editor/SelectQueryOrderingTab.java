@@ -55,6 +55,7 @@ import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -269,7 +270,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
             }
         }
 
-        selectQuery.addOrdering(new Ordering(orderingPath, Ordering.ASC));
+        selectQuery.addOrdering(new Ordering(orderingPath, SortOrder.ASCENDING));
         int index = selectQuery.getOrderings().size() - 1;
 
         OrderingModel model = (OrderingModel) table.getModel();
