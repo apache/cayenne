@@ -342,15 +342,24 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /** Adds ordering specification to this query orderings. */
+    @Deprecated
     public void addOrdering(String sortPathSpec, boolean isAscending) {
         addOrdering(new Ordering(sortPathSpec, isAscending));
     }
 
     /** Adds ordering specification to this query orderings. */
+    @Deprecated
     public void addOrdering(String sortPathSpec, boolean isAscending, boolean ignoreCase) {
         addOrdering(new Ordering(sortPathSpec, isAscending, ignoreCase));
     }
 
+    /**
+     * Adds ordering specification to this query orderings.
+     * @since 3.0
+     */
+    public void addOrdering(String sortPathSpec, SortOrder order) {
+        addOrdering(new Ordering(sortPathSpec, order));
+    }
     /**
      * Removes ordering.
      * 
