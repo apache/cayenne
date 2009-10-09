@@ -102,6 +102,12 @@ public interface ObjectContext extends Serializable {
     void deleteObject(Object object) throws DeleteDenyException;
 
     /**
+     * Deletes a collection of objects by repeatedly calling deleteObject safely
+     * (avoiding a concurrent modification exception).
+     */
+    void deleteObjects(Collection<?> objects) throws DeleteDenyException;
+
+    /**
      * A callback method that child Persistent objects are expected to call before
      * accessing property values. This callback allows ObjectContext to "inflate"
      * unresolved objects on demand and also resolve properties that rely on lazy

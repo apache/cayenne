@@ -94,6 +94,9 @@ public class MockObjectContext implements ObjectContext {
     public void deleteObject(Object object) {
     }
 
+    public void deleteObjects(Collection<?> objects) {
+    }
+
     public void registerNewObject(Object object) {
     }
 

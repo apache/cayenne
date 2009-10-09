@@ -316,6 +316,18 @@ public class CayenneContext extends BaseContext {
         new ObjectContextDeleteAction(this).performDelete((Persistent) object);
     }
 
+    public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
+        if (objects.isEmpty())
+            return;
+
+        // Don't call deleteObject() directly since it would be less efficient.
+        ObjectContextDeleteAction ocda = new ObjectContextDeleteAction(this);
+
+        // Make a copy to iterate over to avoid ConcurrentModificationException.
+        for (Persistent object : (ArrayList<Persistent>) new ArrayList(objects))
+            ocda.performDelete(object);
+    }
+
     /**
      * Creates and registers a new Persistent object instance.
      */

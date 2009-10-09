@@ -59,7 +59,7 @@ public class DeleteObjectTest extends CayenneCase {
         assertNull(artist.getObjectContext());
     }
 
-    public void testDeleteObjects() throws Exception {
+    public void testDeleteObjects1() throws Exception {
         createTestData("testDeleteObjects");
 
         List artists = context.performQuery(new SelectQuery(Artist.class));
@@ -78,6 +78,27 @@ public class DeleteObjectTest extends CayenneCase {
             DataObject object = (DataObject) it.next();
             assertEquals(PersistenceState.DELETED, object.getPersistenceState());
         }
+    }
+
+    // Similar to testDeleteObjects2, but extract ObjectContext instead of DataContext.
+    public void testDeleteObjects2() throws Exception {
+        createTestData("testDeleteObjects");
+
+        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
+        assertEquals(2, artists.size());
+
+        for (Artist object : artists)
+            assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());
+
+        artists.get(0).getObjectContext().deleteObjects(artists);
+
+        for (Artist object : artists)
+            assertEquals(PersistenceState.DELETED, object.getPersistenceState());
+
+        artists.get(0).getObjectContext().commitChanges();
+
+        for (Artist object : artists)
+            assertEquals(PersistenceState.TRANSIENT, object.getPersistenceState());
     }
 
     public void testDeleteObjectsRelationshipCollection() throws Exception {
