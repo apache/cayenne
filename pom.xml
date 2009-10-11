@@ -513,7 +513,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
+	
 	<repositories>
 		<repository>
 			<id>apache-snapshots</id>
@@ -546,6 +546,20 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
+		<pluginRepository>
+			<id>plugin-snapshots</id>
+			<name>Apache Snapshots Repository</name>
+			<url>http://repository.apache.org/snapshots/</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>weekly</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<build>
@@ -553,6 +567,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.5-SNAPSHOT</version>                                
 				<configuration>
 					<argLine>
 						-Dcayenne.test.connection=${cayenne.test.connection} -Djava.net.preferIPv4Stack=true
