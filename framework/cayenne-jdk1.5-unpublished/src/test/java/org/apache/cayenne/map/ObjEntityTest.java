@@ -26,7 +26,9 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
@@ -437,4 +439,14 @@ public class ObjEntityTest extends CayenneCase {
                                 + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"),
                 translated);
     }
+    
+    public void testTranslateNullArg() {
+        ObjectContext context = createDataContext();
+        ObjEntity entity = context.getEntityResolver().getObjEntity("Artist");
+        
+        Expression exp = ExpressionFactory.noMatchExp("dateOfBirth", null);
+        Expression translated = entity.translateToDbPath(exp);
+        
+        assertFalse(translated.match(new Artist()));
+    } 
 }

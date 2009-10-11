@@ -312,7 +312,8 @@ public abstract class SimpleNode extends Expression implements Node {
     }
 
     protected Object evaluateChild(int index, Object o) throws Exception {
-        return ((SimpleNode) jjtGetChild(index)).evaluate(o);
+    	SimpleNode node = (SimpleNode) jjtGetChild(index);
+    	return node != null ? node.evaluate(o) : null;
     }
 
     @Override
