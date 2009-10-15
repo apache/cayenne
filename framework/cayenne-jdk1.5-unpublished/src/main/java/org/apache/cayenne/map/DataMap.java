@@ -191,14 +191,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         Object clientEntities = properties.get(CLIENT_SUPPORTED_PROPERTY);
         Object clientPackageName = properties.get(DEFAULT_CLIENT_PACKAGE_PROPERTY);
         Object clientSuperclass = properties.get(DEFAULT_CLIENT_SUPERCLASS_PROPERTY);
-        Object quoteSqlIdentifier = properties.get(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY);
+        Object quoteSqlIdentifier = properties
+                .get(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY);
 
         this.defaultLockType = "optimistic".equals(lockType)
                 ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                 : ObjEntity.LOCK_TYPE_NONE;
 
         this.defaultPackage = (packageName != null) ? packageName.toString() : null;
-        this.quotingSQLIdentifiers = (quoteSqlIdentifier!=null) ? "true"
+        this.quotingSQLIdentifiers = (quoteSqlIdentifier != null) ? "true"
                 .equalsIgnoreCase(quoteSqlIdentifier.toString()) : false;
         this.defaultSchema = (schema != null) ? schema.toString() : null;
         this.defaultSuperclass = (superclass != null) ? superclass.toString() : null;
@@ -264,9 +265,14 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 1.1
      */
     public void encodeAsXML(XMLEncoder encoder) {
-        encoder.println("<data-map xmlns=\"http://cayenne.apache.org/schema/3.0/modelMap\"");
+        encoder
+                .println("<data-map xmlns=\"http://cayenne.apache.org/schema/3.0/modelMap\"");
         encoder.println("  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-        encoder.println("  xsi:schemaLocation=\"" + SCHEMA_XSD + " " + SCHEMA_XSD + ".xsd\"");
+        encoder.println("  xsi:schemaLocation=\""
+                + SCHEMA_XSD
+                + " "
+                + SCHEMA_XSD
+                + ".xsd\"");
         encoder.println("  project-version=\"" + Project.CURRENT_PROJECT_VERSION + "\">");
 
         encoder.indent(1);
@@ -287,9 +293,11 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         if (!Util.isEmptyString(defaultSuperclass)) {
             encoder.printProperty(DEFAULT_SUPERCLASS_PROPERTY, defaultSuperclass);
         }
-        
+
         if (quotingSQLIdentifiers) {
-            encoder.printProperty(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY, quotingSQLIdentifiers);
+            encoder.printProperty(
+                    DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY,
+                    quotingSQLIdentifiers);
         }
 
         if (clientSupported) {
@@ -904,11 +912,16 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
             // Remove all obj relationships referencing removed DbRelationships.
             for (ObjEntity objEnt : this.getObjEntities()) {
-                if (objEnt.getDbEntity() == dbEntityToDelete) {
+                if (dbEntityToDelete.getName().equals(objEnt.getDbEntityName())) {
                     objEnt.clearDbMapping();
                 }
                 else {
                     for (Relationship rel : objEnt.getRelationships()) {
+                                               
+                        if (getObjEntity(rel.getTargetEntityName()).getDbEntityName() == null) {
+                            objEnt.clearDbMapping();
+                            break;
+                        }
                         for (DbRelationship dbRel : ((ObjRelationship) rel)
                                 .getDbRelationships()) {
                             if (dbRel.getTargetEntity() == dbEntityToDelete) {

@@ -45,8 +45,8 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>.
- * <h3>Foreign Key Constraint Handling</h3>
+ * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>. <h3>
+ * Foreign Key Constraint Handling</h3>
  * <p>
  * Foreign key constraints are supported by InnoDB engine and NOT supported by MyISAM
  * engine. This adapter by default assumes MyISAM, so
@@ -54,41 +54,40 @@ import org.apache.cayenne.query.SQLAction;
  * Users can manually change this by calling <em>setSupportsFkConstraints(true)</em> or
  * better by using an {@link org.apache.cayenne.dba.AutoAdapter}, i.e. not entering the
  * adapter name at all for the DataNode, letting Cayenne guess it in runtime. In the later
- * case Cayenne will check the <em>table_type</em> MySQL variable to detect whether
- * InnoDB is the default, and configure the adapter accordingly.
+ * case Cayenne will check the <em>table_type</em> MySQL variable to detect whether InnoDB
+ * is the default, and configure the adapter accordingly.
  * <h3>Sample Connection Settings</h3>
  * <ul>
  * <li>Adapter name: org.apache.cayenne.dba.mysql.MySQLAdapter</li>
  * <li>DB URL: jdbc:mysql://serverhostname/dbname</li>
  * <li>Driver Class: com.mysql.jdbc.Driver</li>
  * </ul>
- * 
  */
 public class MySQLAdapter extends JdbcAdapter {
-    
+
     final static String DEFAULT_STORAGE_ENGINE = "InnoDB";
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "`";
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
     protected String storageEngine;
- 
+
     public MySQLAdapter() {
 
         // init defaults
         this.storageEngine = DEFAULT_STORAGE_ENGINE;
-        
+
         setSupportsFkConstraints(true);
         setSupportsUniqueConstraints(true);
-        setSupportsGeneratedKeys(true); 
-        initIdentifiersQuotes(); 
+        setSupportsGeneratedKeys(true);
+        initIdentifiersQuotes();
     }
- 
+
     @Override
-    public void initIdentifiersQuotes(){
+    public void initIdentifiersQuotes() {
         this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
         this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
     }
-    
+
     /**
      * Uses special action builder to create the right action.
      * 
@@ -105,9 +104,11 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public String dropTable(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers()); 
+        QuotingStrategy context = getQuotingStrategy(table
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
         StringBuffer buf = new StringBuffer("DROP TABLE IF EXISTS ");
-        buf.append(context.quoteFullyQualifiedName(table));            
+        buf.append(context.quoteFullyQualifiedName(table));
         buf.append(" CASCADE");
         return buf.toString();
     }
@@ -120,9 +121,11 @@ public class MySQLAdapter extends JdbcAdapter {
         // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK checks
         // statement
         StringBuffer buf = new StringBuffer();
-        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
-        buf.append(context.quoteFullyQualifiedName(table));            
-        
+        QuotingStrategy context = getQuotingStrategy(table
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
+        buf.append(context.quoteFullyQualifiedName(table));
+
         return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS "
                 + buf.toString()
                 + " CASCADE", "SET FOREIGN_KEY_CHECKS=1");
@@ -225,7 +228,7 @@ public class MySQLAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity entity) {
         String ddlSQL = super.createTable(entity);
-        
+
         if (storageEngine != null) {
             ddlSQL += " ENGINE=" + storageEngine;
         }
@@ -244,11 +247,12 @@ public class MySQLAdapter extends JdbcAdapter {
     @Override
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
         boolean status;
-            if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
-                status= true;
-            } else {
-                status = false;
-            }
+        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
+            status = false;
+        }
         QuotingStrategy context = getQuotingStrategy(status);
         // must move generated to the front...
         List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
@@ -291,7 +295,8 @@ public class MySQLAdapter extends JdbcAdapter {
 
                     while (columns.hasNext()) {
                         column = columns.next();
-                        sqlBuffer.append(", ").append( context.quoteString(column.getName()));
+                        sqlBuffer.append(", ").append(
+                                context.quoteString(column.getName()));
                     }
 
                     sqlBuffer.append(")");

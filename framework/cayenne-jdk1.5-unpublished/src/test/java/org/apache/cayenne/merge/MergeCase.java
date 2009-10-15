@@ -117,18 +117,15 @@ public class MergeCase extends CayenneCase {
      */
     private void filterDataMap(DataNode node, DataMap map) {
         // copied from AbstractAccessStack.dbEntitiesInInsertOrder
-        boolean excludeLOB = !getAccessStackAdapter().supportsLobs();
-        boolean excludeBinPK = !getAccessStackAdapter().supportsBinaryPK();
+        boolean excludeBinPK = getAccessStackAdapter().supportsBinaryPK();
 
-        if (!(excludeLOB || excludeBinPK)) {
+        if (!excludeBinPK) { 
             return;
         }
 
         List<DbEntity> entitiesToRemove = new ArrayList<DbEntity>();
 
         for (DbEntity ent : map.getDbEntities()) {
-
-            if (excludeBinPK) {
                 for (DbAttribute attr : ent.getAttributes()) {
                     // check for BIN PK or FK to BIN Pk
                     if (attr.getType() == Types.BINARY
@@ -140,8 +137,6 @@ public class MergeCase extends CayenneCase {
                             break;
                         }
                     }
-                }
-
             }
         }
 

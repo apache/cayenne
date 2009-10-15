@@ -28,6 +28,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTIn;
 import org.apache.cayenne.exp.parser.ASTList;
 import org.apache.cayenne.exp.parser.ASTNegate;
+import org.apache.cayenne.exp.parser.ASTNot;
 import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.commons.collections.Transformer;
@@ -47,10 +48,21 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
         if (rootNode == null) {
             return;
         }
-        
-        //trimming INs
+
+        boolean isNot = false;
+        if (rootNode instanceof ASTNot) {
+            if (rootNode.getOperandCount() == 1) {
+                rootNode = ((Expression) rootNode.getOperand(0));
+                isNot = true;
+            }
+        }
+
         rootNode = rootNode.transform(new INTrimmer());
-        
+
+        if (isNot) {
+            rootNode = rootNode.notExp();
+        }
+
         rootNode.traverse(this);
     }
     

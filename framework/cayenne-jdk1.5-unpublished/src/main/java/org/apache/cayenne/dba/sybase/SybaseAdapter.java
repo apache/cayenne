@@ -117,8 +117,13 @@ public class SybaseAdapter extends JdbcAdapter {
                 sqlType = Types.VARBINARY;
             }
         }
-
-        super.bindParameter(statement, object, pos, sqlType, precision);
+        
+        if (object == null && sqlType==0) {
+            statement.setNull(pos, Types.VARCHAR);
+        }
+        else {
+            super.bindParameter(statement, object, pos, sqlType, precision);
+        }
     }
     
     @Override

@@ -20,6 +20,8 @@
 package org.apache.cayenne.dba.db2;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -37,28 +39,25 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 
-
 /**
  * DbAdapter implementation for the <a href="http://www.ibm.com/db2/"> DB2 RDBMS </a>.
  * Sample connection settings to use with DB2 are shown below:
  * 
  * <pre>
- *  
+ * 
  *       test-db2.cayenne.adapter = org.apache.cayenne.dba.db2.DB2Adapter
  *       test-db2.jdbc.username = test
  *       test-db2.jdbc.password = secret
  *       test-db2.jdbc.url = jdbc:db2://servername:50000/databasename
  *       test-db2.jdbc.driver = com.ibm.db2.jcc.DB2Driver
- *   
- * </pre>
  * 
+ * </pre>
  */
 public class DB2Adapter extends JdbcAdapter {
 
-    
     /**
-     * Creates a DB2 specific PK Generator.    
-     */   
+     * Creates a DB2 specific PK Generator.
+     */
     protected PkGenerator createPkGenerator() {
         return new DB2PkGenerator(this);
     }
@@ -83,16 +82,17 @@ public class DB2Adapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
         boolean status;
-        if(ent.getDataMap()!=null && ent.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (ent.getDataMap() != null && ent.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
-        
+
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
-        buf.append(context.quoteFullyQualifiedName(ent)); 
+        buf.append(context.quoteFullyQualifiedName(ent));
 
         buf.append(" (");
 
@@ -206,8 +206,26 @@ public class DB2Adapter extends JdbcAdapter {
             }
         }
     }
+
     @Override
     public MergerFactory mergerFactory() {
         return new DB2MergerFactory();
     }
+
+    @Override
+    public void bindParameter(
+            PreparedStatement statement,
+            Object object,
+            int pos,
+            int sqlType,
+            int precision) throws SQLException, Exception {
+
+        if (object == null && (sqlType == 0 || sqlType == Types.BOOLEAN)) {
+            statement.setNull(pos, Types.VARCHAR);
+        }
+        else {
+            super.bindParameter(statement, object, pos, sqlType, precision);
+        }
+    }
+
 }

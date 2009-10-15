@@ -23,7 +23,6 @@ import java.sql.PreparedStatement;
 
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * Select translator that implements Oracle-specific optimizations.

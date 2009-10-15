@@ -165,7 +165,9 @@ final class FlattenedArcKey {
 
         int i = pk.size();
         for (DbAttribute attribute : joinEntity.getPrimaryKeys()) {
+            sql.append("#result('");
             sql.append(attribute.getName());
+            sql.append("')");
             if (--i > 0) {
                 sql.append(", ");
             }

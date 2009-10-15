@@ -55,8 +55,12 @@ public class SybaseMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ADD ");
-
+                boolean magnatory = column.isMandatory();
+                column.setMandatory(false);
                 adapter.createTableAppendColumn(sqlBuffer, column);
+                if(magnatory){
+                    column.setMandatory(magnatory);
+                }
                 return Collections.singletonList(sqlBuffer.toString());
             }
 

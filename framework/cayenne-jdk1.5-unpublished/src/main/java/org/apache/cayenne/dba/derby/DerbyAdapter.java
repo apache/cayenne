@@ -20,6 +20,8 @@
 
 package org.apache.cayenne.dba.derby;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -190,6 +192,23 @@ public class DerbyAdapter extends JdbcAdapter {
     @Override
     public MergerFactory mergerFactory() {
         return new DerbyMergerFactory();
+    }
+    
+    @Override
+    public void bindParameter(
+        PreparedStatement statement,
+        Object object,
+        int pos,
+        int sqlType,
+        int precision)
+        throws SQLException, Exception {
+
+        if (object == null && sqlType==0) {
+            statement.setNull(pos, Types.VARCHAR);
+        }
+        else {
+            super.bindParameter(statement, object, pos, sqlType, precision);
+        }
     }
 
 }
