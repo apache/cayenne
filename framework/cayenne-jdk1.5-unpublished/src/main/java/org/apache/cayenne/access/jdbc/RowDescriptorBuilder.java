@@ -63,103 +63,142 @@ public class RowDescriptorBuilder {
     public RowDescriptor getDescriptor(ExtendedTypeMap typeMap) throws SQLException,
             IllegalStateException {
 
-        // explicitly-set columns take precedence over the columns derived from
-        // ResultSetMetadata
+        ColumnDescriptor[] columnsForRD;
 
-        ColumnDescriptor[] columns;
-
-        if (this.columns != null) {
-            columns = columnsFromPresetColumns();
+        if (this.resultSetMetadata != null) {
+            // do merge between explicitly-set columns and ResultSetMetadata
+            // explicitly-set columns take precedence
+            columnsForRD = mergeResultSetAndPresetColumns();
         }
-        else if (this.resultSetMetadata != null) {
-            columns = columnsFromResultSet();
+        else if (this.columns != null) {
+            // use explicitly-set columns
+            columnsForRD = this.columns;
         }
         else {
             throw new IllegalStateException(
                     "Can't build RowDescriptor, both 'columns' and 'resultSetMetadata' are null");
         }
 
-        ExtendedType[] converters = new ExtendedType[columns.length];
-        for (int i = 0; i < columns.length; i++) {
-            converters[i] = typeMap.getRegisteredType(columns[i].getJavaClass());
+        performTransformAndTypeOverride(columnsForRD);
+        ExtendedType[] converters = new ExtendedType[columnsForRD.length];
+        for (int i = 0; i < columnsForRD.length; i++) {
+            converters[i] = typeMap.getRegisteredType(columnsForRD[i].getJavaClass());
         }
 
-        return new RowDescriptor(columns, converters);
+        return new RowDescriptor(columnsForRD, converters);
     }
 
-    protected ColumnDescriptor[] columnsFromPresetColumns() {
-        int len = columns.length;
+    /**
+     * @return array of columns for ResultSet with overriding ColumnDescriptors from
+     *         'columns' Note: column will be overlooked, if column name is empty
+     */
+    protected ColumnDescriptor[] mergeResultSetAndPresetColumns() throws SQLException {
+
+        int rsLen = resultSetMetadata.getColumnCount();
+        if (rsLen == 0) {
+            throw new CayenneRuntimeException("'ResultSetMetadata' is empty.");
+        }
+
+        int columnLen = (columns != null) ? columns.length : 0;
+
+        if (rsLen < columnLen) {
+            throw new CayenneRuntimeException(
+                    "'ResultSetMetadata' has less elements then 'columns'.");
+        }
+        else if (rsLen == columnLen) {
+            // 'columns' contains ColumnDescriptor for every column
+            // in resultSetMetadata. This return is for optimization.
+            return columns;
+        }
+
+        ColumnDescriptor[] rsColumns = new ColumnDescriptor[rsLen];
+
+        int outputLen = 0;
+        for (int i = 0; i < rsLen; i++) {
+            String rowkey = resolveDataRowKeyFromResultSet(i + 1);
+            if (rowkey.length() == 0) {
+                // escape this ColumnDescriptor, cause column name is empty
+                continue;
+            }
+            // resolve column descriptor from 'columns' or create new
+            rsColumns[outputLen] = getColumnDescriptor(rowkey, columns, i + 1);
+            outputLen++;
+        }
+        if (outputLen < rsLen) {
+            // cut ColumnDescriptor array
+            ColumnDescriptor[] rsColumnsCut = new ColumnDescriptor[outputLen];
+            System.arraycopy(rsColumns, 0, rsColumnsCut, 0, outputLen);
+            return rsColumnsCut;
+        }
+
+        return rsColumns;
+    }
+
+    /**
+     * @return ColumnDescriptor from columnArray, if columnArray contains descriptor for
+     *         this column, or new ColumnDescriptor.
+     */
+    private ColumnDescriptor getColumnDescriptor(
+            String rowKey,
+            ColumnDescriptor[] columnArray,
+            int position) throws SQLException {
+        int len = (columnArray != null) ? columnArray.length : 0;
+        // go through columnArray to find ColumnDescriptor for specified column
+        for (int i = 0; i < len; i++) {
+            if (columnArray[i] != null) {
+                String columnRowKey = columnArray[i].getDataRowKey();
+                
+                // TODO: andrus, 10/14/2009 - 'equalsIgnoreCase' check can result in
+                // subtle bugs in DBs with case-sensitive column names (or when quotes are
+                // used to force case sensitivity). Alternatively using 'equals' may miss
+                // columns in case-insensitive situations.
+                if (columnRowKey != null && columnRowKey.equalsIgnoreCase(rowKey)) {
+                    return columnArray[i];
+                }
+            }
+        }
+        // columnArray doesn't contain ColumnDescriptor for specified column
+        return new ColumnDescriptor(
+                rowKey,
+                resultSetMetadata.getColumnType(position),
+                resultSetMetadata.getColumnClassName(position));
+    }
+
+    /**
+     * Return not empty string with ColumnLabel or ColumnName or "column_" + position for
+     * for specified (by it's position) column in ResultSetMetaData.
+     */
+    private String resolveDataRowKeyFromResultSet(int position) throws SQLException {
+        String name = resultSetMetadata.getColumnLabel(position);
+        if (name == null || name.length() == 0) {
+            name = resultSetMetadata.getColumnName(position);
+            if (name == null) {
+                name = "";
+            }
+        }
+        return name;
+    }
+
+    private void performTransformAndTypeOverride(ColumnDescriptor[] columnArray) {
+        int len = columnArray.length;
 
         if (caseTransformer != null) {
             for (int i = 0; i < len; i++) {
 
-                String oldLabel = columns[i].getDataRowKey();
-                String oldName = columns[i].getName();
-
-                String newLabel = (String) caseTransformer.transform(oldLabel);
-                columns[i].setDataRowKey(newLabel);
-
-                // do we even need to check this?
-                if (oldName.equals(oldLabel)) {
-                    columns[i].setName(newLabel);
-                }
+                columnArray[i].setDataRowKey((String) caseTransformer
+                        .transform(columnArray[i].getDataRowKey()));
+                columnArray[i].setName((String) caseTransformer.transform(columnArray[i]
+                        .getName()));
             }
         }
-
         if (typeOverrides != null) {
             for (int i = 0; i < len; i++) {
-
-                String type = typeOverrides.get(columns[i].getName());
-
+                String type = typeOverrides.get(columnArray[i].getName());
                 if (type != null) {
-                    columns[i].setJavaClass(type);
+                    columnArray[i].setJavaClass(type);
                 }
             }
         }
-
-        return this.columns;
-    }
-
-    protected ColumnDescriptor[] columnsFromResultSet() throws SQLException {
-
-        int len = resultSetMetadata.getColumnCount();
-        if (len == 0) {
-            throw new CayenneRuntimeException("No columns in ResultSet.");
-        }
-
-        ColumnDescriptor[] columns = new ColumnDescriptor[len];
-
-        for (int i = 0; i < len; i++) {
-
-            int position = i + 1;
-            String name = resultSetMetadata.getColumnLabel(position);
-            if (name == null || name.length() == 0) {
-                name = resultSetMetadata.getColumnName(position);
-
-                if (name == null || name.length() == 0) {
-                    name = "column_" + position;
-                }
-            }
-
-            if (caseTransformer != null) {
-                name = (String) caseTransformer.transform(name);
-            }
-
-            int jdbcType = resultSetMetadata.getColumnType(position);
-
-            String javaClass = null;
-            if (typeOverrides != null) {
-                javaClass = typeOverrides.get(name);
-            }
-
-            if (javaClass == null) {
-                javaClass = resultSetMetadata.getColumnClassName(position);
-            }
-
-            columns[i] = new ColumnDescriptor(name, jdbcType, javaClass);
-        }
-
-        return columns;
     }
 
     /**
@@ -192,11 +231,11 @@ public class RowDescriptorBuilder {
         if (typeOverrides == null) {
             typeOverrides = new HashMap<String, String>();
         }
-        
+
         typeOverrides.put(columnName, type);
         return this;
     }
-    
+
     public boolean isOverriden(String columnName) {
         return typeOverrides != null && typeOverrides.containsKey(columnName);
     }

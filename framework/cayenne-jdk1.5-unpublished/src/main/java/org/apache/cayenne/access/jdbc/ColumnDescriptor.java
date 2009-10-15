@@ -210,7 +210,7 @@ public class ColumnDescriptor implements Serializable {
     }
 
     /**
-     * Retunrs column name. Name is an unqualified column name in a query.
+     * Returns column name. Name is an unqualified column name in a query.
      */
     public String getName() {
         return name;

@@ -32,6 +32,7 @@ CAY-1270 Merge primary key changes
 CAY-1273 Replace DefaultType with dedicated types
 CAY-1276 CreateIfNoSchemaStrategy create no PK support
 CAY-1281 Lifecycle callbacks reorganization
+CAY-1282 Use #result as optional directive for only few columns (not all)
 
 Bug Fixes Since M6:
 

@@ -269,41 +269,38 @@ public class SQLTemplateAction implements SQLAction {
             SQLStatement compiled,
             ResultSet resultSet) throws SQLException {
         RowDescriptorBuilder builder = new RowDescriptorBuilder();
+		builder.setResultSet(resultSet);
 
         // SQLTemplate #result columns take precedence over other ways to determine the
         // type
         if (compiled.getResultColumns().length > 0) {
             builder.setColumns(compiled.getResultColumns());
         }
-        else {
-            builder.setResultSet(resultSet);
 
-            ObjEntity entity = queryMetadata.getObjEntity();
-            if (entity != null) {
-
-                // TODO: andrus 2008/03/28 support flattened attributes with aliases...
-                for (ObjAttribute attribute : entity.getAttributes()) {
-                    String column = attribute.getDbAttributePath();
-                    if (column == null || column.indexOf('.') > 0) {
-                        continue;
-                    }
-                    builder.overrideColumnType(column, attribute.getType());
+        ObjEntity entity = queryMetadata.getObjEntity();
+        if (entity != null) {
+            // TODO: andrus 2008/03/28 support flattened attributes with aliases...
+            for (ObjAttribute attribute : entity.getAttributes()) {
+                String column = attribute.getDbAttributePath();
+                if (column == null || column.indexOf('.') > 0) {
+                    continue;
                 }
+                builder.overrideColumnType(column, attribute.getType());
             }
+        }
 
-            // override numeric Java types based on JDBC defaults for DbAttributes, as
-            // Oracle
-            // ResultSetMetadata is not very precise about NUMERIC distinctions...
-            // (BigDecimal vs Long vs. Integer)
-            if (dbEntity != null) {
-                for (DbAttribute attribute : dbEntity.getAttributes()) {
+        // override numeric Java types based on JDBC defaults for DbAttributes, as
+        // Oracle
+        // ResultSetMetadata is not very precise about NUMERIC distinctions...
+        // (BigDecimal vs Long vs. Integer)
+        if (dbEntity != null) {
+            for (DbAttribute attribute : dbEntity.getAttributes()) {
 
-                    if (!builder.isOverriden(attribute.getName())
-                            && TypesMapping.isNumeric(attribute.getType())) {
+                if (!builder.isOverriden(attribute.getName())
+                        && TypesMapping.isNumeric(attribute.getType())) {
 
-                        builder.overrideColumnType(attribute.getName(), TypesMapping
-                                .getJavaBySqlType(attribute.getType()));
-                    }
+                    builder.overrideColumnType(attribute.getName(), TypesMapping
+                            .getJavaBySqlType(attribute.getType()));
                 }
             }
         }
