@@ -546,6 +546,20 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
+		<pluginRepository>
+					<id>objectstyle-snapshots</id>
+					<name>ObjectStyle Snapshots Repository</name>
+					<url>http://objectstyle.org/maven2</url>
+					<layout>default</layout>
+					<snapshots>
+						<enabled>true</enabled>
+						<updatePolicy>weekly</updatePolicy>
+						<checksumPolicy>ignore</checksumPolicy>
+					</snapshots>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+				</pluginRepository>
 	</pluginRepositories>
 
 	<build>
