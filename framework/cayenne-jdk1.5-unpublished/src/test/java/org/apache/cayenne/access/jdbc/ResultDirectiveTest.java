@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -58,7 +59,7 @@ public class ResultDirectiveTest extends CayenneCase {
         Map<String, Object> selectResult = selectForQuery(sql);
 
         assertEquals(artist.get("ARTIST_ID"), selectResult.get("ARTIST_ID"));
-        assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME"));
+        assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
     }
 
     public void testWithMixedDirectiveUse1() throws Exception {
@@ -69,7 +70,7 @@ public class ResultDirectiveTest extends CayenneCase {
         Map<String, Object> selectResult = selectForQuery(sql);
 
         assertEquals(artist.get("ARTIST_ID"), selectResult.get("ARTIST_ID"));
-        assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME"));
+        assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
     }
 
     public void testWithMixedDirectiveUse2() throws Exception {
@@ -85,6 +86,7 @@ public class ResultDirectiveTest extends CayenneCase {
 
     private Map<String, Object> selectForQuery(String sql) {
         SQLTemplate template = new SQLTemplate(Artist.class, sql);
+        template.setColumnNamesCapitalization(CapsStrategy.UPPER);
         MockOperationObserver observer = new MockOperationObserver();
         getDomain().performQueries(Collections.singletonList(template), observer);
 

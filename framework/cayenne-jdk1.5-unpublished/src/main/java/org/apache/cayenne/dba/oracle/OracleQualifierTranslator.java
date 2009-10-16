@@ -28,14 +28,13 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTIn;
 import org.apache.cayenne.exp.parser.ASTList;
 import org.apache.cayenne.exp.parser.ASTNegate;
-import org.apache.cayenne.exp.parser.ASTNot;
 import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.commons.collections.Transformer;
 
 /**
- * Oracle qualifier translator. In particular, trims INs with more than 1000 elements 
- * to an OR-set of INs with <= 1000 elements 
+ * Oracle qualifier translator. In particular, trims INs with more than 1000 elements to
+ * an OR-set of INs with <= 1000 elements
  */
 public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 
@@ -48,43 +47,33 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
         if (rootNode == null) {
             return;
         }
-
-        boolean isNot = false;
-        if (rootNode instanceof ASTNot) {
-            if (rootNode.getOperandCount() == 1) {
-                rootNode = ((Expression) rootNode.getOperand(0));
-                isNot = true;
-            }
-        }
-
         rootNode = rootNode.transform(new INTrimmer());
-
-        if (isNot) {
-            rootNode = rootNode.notExp();
-        }
-
         rootNode.traverse(this);
     }
-    
+
     public static class INTrimmer implements Transformer {
+
         public Expression trimmedInExpression(Expression exp, int maxInSize) {
             Expression list = (Expression) exp.getOperand(1);
             Object[] objects = (Object[]) list.evaluate(null);
-            
+
             if (objects.length <= maxInSize) {
                 return exp;
             }
-            
-            Expression trimmed = trimmedInExpression((ASTPath) exp.getOperand(0), objects, maxInSize);
+
+            Expression trimmed = trimmedInExpression(
+                    (ASTPath) exp.getOperand(0),
+                    objects,
+                    maxInSize);
             if (exp instanceof ASTNotIn) {
                 return new ASTNegate(trimmed);
             }
             return trimmed;
         }
-        
+
         Expression trimmedInExpression(ASTPath path, Object[] values, int maxInSize) {
             Expression res = null;
-            
+
             List<Object> in = new ArrayList<Object>(maxInSize);
             for (Object v : values) {
                 in.add(v);

@@ -53,7 +53,12 @@ public abstract class AggregateConditionNode extends SimpleNode {
         // no children or a single child
         switch (condition.getOperandCount()) {
             case 1 :
-                return condition.getOperand(0);
+                if (condition instanceof ASTNot) {
+                    return condition;
+                }
+                else {
+                    return condition.getOperand(0);
+                }
             case 0 :
                 return PRUNED_NODE;
             default :

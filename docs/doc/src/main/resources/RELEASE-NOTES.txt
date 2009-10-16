@@ -58,6 +58,7 @@ CAY-1278 Project with cross-datamap flattenned relationships fails to load
 CAY-1279 Passing null values in query parameters
 CAY-1285 Update Cayenne Modeler's code generation panel to resize correctly.
 CAY-1286 Update Cayenne Modeler's validation errors panel to resize correctly.
+CAY-1293 Beta 1 Test Failures
 
 ----------------------------------
 Release: 3.0M6

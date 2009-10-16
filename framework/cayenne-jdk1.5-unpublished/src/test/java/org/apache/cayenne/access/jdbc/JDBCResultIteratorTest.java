@@ -21,7 +21,6 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
