@@ -197,7 +197,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6</version>
 				<configuration>
 					<!-- must use ${project.build.directory}, as using relative path "target/sources" confuses the plugin -->
 					<sourcepath>${project.build.directory}/sources</sourcepath>

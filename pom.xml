@@ -546,20 +546,6 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
-		<pluginRepository>
-			<id>plugin-snapshots</id>
-			<name>Apache Snapshots Repository</name>
-			<url>http://repository.apache.org/snapshots/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>weekly</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
 	</pluginRepositories>
 
 	<build>
@@ -573,6 +559,10 @@
 						-Dcayenne.test.connection=${cayenne.test.connection} -Djava.net.preferIPv4Stack=true
 					</argLine>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -633,16 +623,9 @@
 					<showPackage>false</showPackage>
 					<links>
 						<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-						<link>
-							http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
-						</link>
-						<link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
-						<link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
-						<link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
-						<link>http://jakarta.apache.org/commons/logging/api/</link>
-						<link>http://jakarta.apache.org/commons/pool/apidocs/</link>
-						<link>http://www.junit.org/junit/javadoc/</link>
-						<link>http://jakarta.apache.org/regexp/apidocs/</link>
+						<link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_1/</link>
+						<link>http://commons.apache.org/dbcp/apidocs/</link>
+						<link>http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/</link>
 					</links>
 				</configuration>
 			</plugin>
