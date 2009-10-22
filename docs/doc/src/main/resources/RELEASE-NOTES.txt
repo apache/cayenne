@@ -33,6 +33,8 @@ CAY-1273 Replace DefaultType with dedicated types
 CAY-1276 CreateIfNoSchemaStrategy create no PK support
 CAY-1281 Lifecycle callbacks reorganization
 CAY-1282 Use #result as optional directive for only few columns (not all)
+CAY-1283 Update Ordering to take enums instead of boolean flags.
+CAY-1288 Add deleteObjects() to ObjectContext
 
 Bug Fixes Since M6:
 
