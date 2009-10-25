@@ -39,10 +39,9 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
     private Embeddable embeddable;
 
     // Columns
-    static final int INHERITED = 0;
-    static final int OBJ_ATTRIBUTE = 1;
-    static final int OBJ_ATTRIBUTE_TYPE = 2;
-    static final int DB_ATTRIBUTE = 3;
+    static final int OBJ_ATTRIBUTE = 0;
+    static final int OBJ_ATTRIBUTE_TYPE = 1;
+    static final int DB_ATTRIBUTE = 2;
 
     private CellEditorForAttributeTable cellEditor;
 
@@ -94,13 +93,11 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
     }
 
     public int getColumnCount() {
-        return 4;
+        return 3;
     }
 
     public String getColumnName(int column) {
         switch (column) {
-            case INHERITED:
-                return "In";
             case OBJ_ATTRIBUTE:
                 return "ObjAttribute";
             case OBJ_ATTRIBUTE_TYPE:
@@ -115,10 +112,7 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
     public Object getValueAt(int row, int column) {
         EmbeddableAttribute attribute = getEmbeddableAttribute(row);
 
-        if (column == INHERITED) {
-            return null;
-        }
-        else if (column == OBJ_ATTRIBUTE) {
+        if (column == OBJ_ATTRIBUTE) {
             return attribute.getName();
         }
         else if (column == OBJ_ATTRIBUTE_TYPE) {

@@ -424,91 +424,91 @@ public class ObjAttributeInfoDialog extends CayenneController implements
     }
 
     public boolean setPath(boolean isChange) {
-        StringBuilder attributePath = new StringBuilder();
-        StringBuilder pathStr = new StringBuilder();
-        if (((ObjEntity) attribute.getEntity()).getDbEntity() != null) {
-            TreePath path = view.getPathBrowser().getSelectionPath();
 
-            if (path.getLastPathComponent() instanceof DbAttribute) {
-                Object[] pathComponents = path.getPath();
-                for (int i = 0; i < pathComponents.length; i++) {
-                    boolean attrOrRel = true;
-                    if (pathComponents[i] instanceof DbAttribute) {
-                        pathStr.append(((DbAttribute) pathComponents[i]).getName());
-                        attributePath.append(((DbAttribute) pathComponents[i]).getName());
-                    }
-                    else if (pathComponents[i] instanceof DbRelationship) {
-                        pathStr.append(((DbRelationship) pathComponents[i]).getName());
-                        attributePath.append(((DbRelationship) pathComponents[i])
-                                .getName());
-                    }
-                    else {
-                        attrOrRel = false;
-                    }
-
-                    if (i != pathComponents.length - 1 && attrOrRel) {
-                        pathStr.append(" -> ");
-                        attributePath.append(".");
-                    }
-                }
-            }
-        }
-        else {
-            view.getCurrentPathLabel().setText("");
+        if (isChange()) {
+            attributeSaved.setType(view.getType().getSelectedItem().toString());
+            attributeSaved.setName(view.getAttributeName().getText());
         }
 
-        view.getCurrentPathLabel().setText(pathStr.toString());
+        if (!(attributeSaved instanceof EmbeddedAttribute)
+                || isRegistredType(attributeSaved.getType())) {
 
-        if (attribute.getDbAttributePath() != null
-                && !embeddableNames.contains(view.getType().getSelectedItem().toString())) {
-            if (!attribute.getDbAttributePath().equals(attributePath.toString())
-                    || isChange()) {
+            StringBuilder attributePath = new StringBuilder();
+            StringBuilder pathStr = new StringBuilder();
+            if (((ObjEntity) attribute.getEntity()).getDbEntity() != null) {
+                TreePath path = view.getPathBrowser().getSelectionPath();
 
-                if (isRegistredType(attributeSaved.getType())) {
-                    attributeSaved.setDbAttributePath(attributePath.toString());
-                }
-                else {
-                    attributeSaved.setDbAttributePath("");
-                }
-                attributeSaved.setName(view.getAttributeName().getText());
-                attributeSaved.setType(view.getType().getSelectedItem().toString());
+                if (path.getLastPathComponent() instanceof DbAttribute) {
+                    Object[] pathComponents = path.getPath();
+                    for (int i = 0; i < pathComponents.length; i++) {
+                        boolean attrOrRel = true;
+                        if (pathComponents[i] instanceof DbAttribute) {
+                            pathStr.append(((DbAttribute) pathComponents[i]).getName());
+                            attributePath.append(((DbAttribute) pathComponents[i])
+                                    .getName());
+                        }
+                        else if (pathComponents[i] instanceof DbRelationship) {
+                            pathStr
+                                    .append(((DbRelationship) pathComponents[i])
+                                            .getName());
+                            attributePath.append(((DbRelationship) pathComponents[i])
+                                    .getName());
+                        }
+                        else {
+                            attrOrRel = false;
+                        }
 
-                if (!attribute.getDbAttributePath().equals(attributePath.toString())
-                        && isChange) {
-                    model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
-                }
-
-                return true;
-            }
-        }
-        else {
-            if (attributePath.length() > 0 || isChange()) {
-                if (isRegistredType(attributeSaved.getType())) {
-                    attributeSaved.setDbAttributePath(attributePath.toString());
-                }
-                else {
-                    attributeSaved.setDbAttributePath("");
-
-                    if (attributeSaved instanceof EmbeddedAttribute) {
-
-                        if (embeddableModel.isAttributeOverrideChange()) {
-                            Map<String, String> overrides = ((EmbeddedAttribute) attributeSaved)
-                                    .getAttributeOverrides();
-                            Map<String, String> currentOverrAttr = getCurrentOverrideAttribute();
-                            compareAndSetOverrideInEmbeddedAttribute(
-                                    attributeSaved,
-                                    overrides,
-                                    currentOverrAttr);
+                        if (i != pathComponents.length - 1 && attrOrRel) {
+                            pathStr.append(" -> ");
+                            attributePath.append(".");
                         }
                     }
+                }
+            }
+            else {
+                view.getCurrentPathLabel().setText("");
+            }
 
+            view.getCurrentPathLabel().setText(pathStr.toString());
+
+            if (attribute.getDbAttributePath() != null
+                    && !embeddableNames.contains(view
+                            .getType()
+                            .getSelectedItem()
+                            .toString())) {
+                if (!attribute.getDbAttributePath().equals(attributePath.toString())) {
+
+                    if (isRegistredType(attributeSaved.getType())) {
+                        attributeSaved.setDbAttributePath(attributePath.toString());
+                    }
+                    else {
+                        attributeSaved.setDbAttributePath("");
+                    }
+
+                    if (!attribute.getDbAttributePath().equals(attributePath.toString())
+                            && isChange) {
+                        model.setUpdatedValueAt(
+                                attributeSaved.getDbAttributePath(),
+                                row,
+                                3);
+                    }
+                    return true;
                 }
-                attributeSaved.setType(view.getType().getSelectedItem().toString());
-                attributeSaved.setName(view.getAttributeName().getText());
-                if (attributePath.length() > 0 && isChange) {
-                    model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+            }
+            else {
+                if (attributePath.length() > 0
+                        || (attribute instanceof EmbeddedAttribute && !(attributeSaved instanceof EmbeddedAttribute))) {
+
+                    attributeSaved.setDbAttributePath(attributePath.toString());
+                    if (attributePath.length() == 0) {
+                        model.setUpdatedValueAt(
+                                attributeSaved.getDbAttributePath(),
+                                row,
+                                3);
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
             }
         }
         return false;
@@ -532,73 +532,117 @@ public class ObjAttributeInfoDialog extends CayenneController implements
     public void saveMapping() {
 
         if (setPath(false)) {
+
             if (JOptionPane.showConfirmDialog(
                     (Component) getView(),
                     "You have changed Db Attribute path. Do you want it to be saved?",
                     "Save ObjAttribute",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 
-                if ((attributeSaved instanceof EmbeddedAttribute && !(attribute instanceof EmbeddedAttribute))
-                        || (!(attributeSaved instanceof EmbeddedAttribute) && attribute instanceof EmbeddedAttribute)) {
-                    model.getEntity().removeAttribute(attribute.getName());
-                    model.getEntity().addAttribute(attributeSaved);
-
-                    mediator.fireObjEntityEvent(new EntityEvent(
-                            this,
-                            model.getEntity(),
-                            MapEvent.CHANGE));
-
-                    EntityDisplayEvent event = new EntityDisplayEvent(
-                            this,
-                            mediator.getCurrentObjEntity(),
-                            mediator.getCurrentDataMap(),
-                            mediator.getCurrentDataDomain());
-
-                    mediator.fireObjEntityDisplayEvent(event);
-
-                    mediator.fireObjAttributeEvent(new AttributeEvent(
-                            this,
-                            attributeSaved,
-                            model.getEntity(),
-                            MapEvent.CHANGE));
-
-                    AttributeDisplayEvent eventAttr = new AttributeDisplayEvent(
-                            this,
-                            attributeSaved,
-                            mediator.getCurrentObjEntity(),
-                            mediator.getCurrentDataMap(),
-                            mediator.getCurrentDataDomain());
-
-                    mediator.fireObjAttributeDisplayEvent(eventAttr);
-
+                if (attribute instanceof EmbeddedAttribute) {
+                    changeAttributeObject();
                 }
-
-                if ((attributeSaved instanceof EmbeddedAttribute && attribute instanceof EmbeddedAttribute)
-                        || (!(attributeSaved instanceof EmbeddedAttribute) && !(attribute instanceof EmbeddedAttribute))) {
+                else {
                     model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
                     model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
-                    model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
                 }
 
+                model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+            }
+            else {
+                model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
+                model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
+            }
+        }
+        else {
+
+            if ((attributeSaved instanceof EmbeddedAttribute && !(attribute instanceof EmbeddedAttribute))
+                    || (!(attributeSaved instanceof EmbeddedAttribute) && attribute instanceof EmbeddedAttribute)) {
+                changeAttributeObject();
+            }
+            else if ((attributeSaved instanceof EmbeddedAttribute && attribute instanceof EmbeddedAttribute)
+                    || (!(attributeSaved instanceof EmbeddedAttribute) && !(attribute instanceof EmbeddedAttribute))) {
+
                 if (attributeSaved instanceof EmbeddedAttribute
-                        && attribute instanceof EmbeddedAttribute) {
+                        && embeddableModel.isAttributeOverrideChange()) {
+                    Map<String, String> overrides = ((EmbeddedAttribute) attributeSaved)
+                            .getAttributeOverrides();
+                    Map<String, String> currentOverrAttr = getCurrentOverrideAttribute();
 
-                    if (embeddableModel.isAttributeOverrideChange()) {
-                        Map<String, String> overrides;
-                        overrides = ((EmbeddedAttribute) attribute)
-                                .getAttributeOverrides();
-                        Map<String, String> currentOverrAttr = ((EmbeddedAttribute) attributeSaved)
-                                .getAttributeOverrides();
+                    compareAndSetOverrideInEmbeddedAttribute(
+                            attributeSaved,
+                            overrides,
+                            currentOverrAttr);
+                }
 
-                        compareAndSetOverrideInEmbeddedAttribute(
-                                attribute,
-                                overrides,
-                                currentOverrAttr);
-                    }
+                model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
+                model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
+                model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+            }
+
+            if (attributeSaved instanceof EmbeddedAttribute
+                    && attribute instanceof EmbeddedAttribute) {
+
+                model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+                if (embeddableModel.isAttributeOverrideChange()) {
+                    Map<String, String> overrides;
+                    overrides = ((EmbeddedAttribute) attribute).getAttributeOverrides();
+                    Map<String, String> currentOverrAttr = ((EmbeddedAttribute) attributeSaved)
+                            .getAttributeOverrides();
+
+                    compareAndSetOverrideInEmbeddedAttribute(
+                            attribute,
+                            overrides,
+                            currentOverrAttr);
                 }
             }
         }
         closeAction();
+    }
+
+    private void changeAttributeObject() {
+
+        if (attributeSaved instanceof EmbeddedAttribute
+                && embeddableModel.isAttributeOverrideChange()) {
+            Map<String, String> overrides = ((EmbeddedAttribute) attributeSaved)
+                    .getAttributeOverrides();
+            Map<String, String> currentOverrAttr = getCurrentOverrideAttribute();
+            compareAndSetOverrideInEmbeddedAttribute(
+                    attributeSaved,
+                    overrides,
+                    currentOverrAttr);
+        }
+        if (attributeSaved instanceof EmbeddedAttribute) {
+            attributeSaved.setDbAttributePath(null);
+            model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+        }
+
+        model.getEntity().removeAttribute(attribute.getName());
+        model.getEntity().addAttribute(attributeSaved);
+
+        mediator.fireObjEntityEvent(new EntityEvent(
+                this,
+                model.getEntity(),
+                MapEvent.CHANGE));
+
+        EntityDisplayEvent event = new EntityDisplayEvent(this, mediator
+                .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
+                .getCurrentDataDomain());
+
+        mediator.fireObjEntityDisplayEvent(event);
+
+        mediator.fireObjAttributeEvent(new AttributeEvent(this, attributeSaved, model
+                .getEntity(), MapEvent.CHANGE));
+
+        AttributeDisplayEvent eventAttr = new AttributeDisplayEvent(
+                this,
+                attributeSaved,
+                mediator.getCurrentObjEntity(),
+                mediator.getCurrentDataMap(),
+                mediator.getCurrentDataDomain());
+
+        mediator.fireObjAttributeDisplayEvent(eventAttr);
+
     }
 
     public Map<String, String> getCurrentOverrideAttribute() {
@@ -857,7 +901,5 @@ public class ObjAttributeInfoDialog extends CayenneController implements
             ((EmbeddedAttribute) attribute).addAttributeOverride(key, currentOverrAttr
                     .get(key));
         }
-
     }
-
 }

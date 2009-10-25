@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -40,7 +40,6 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * Validator of a single node in a project object tree. <i>Do not confuse with
  * org.apache.cayenne.access.DataNode. </i>
- * 
  */
 public abstract class TreeNodeValidator {
 
@@ -54,6 +53,7 @@ public abstract class TreeNodeValidator {
     protected static final DbEntityValidator dbEntityValidator = new DbEntityValidator();
     protected static final DbAttributeValidator dbAttrValidator = new DbAttributeValidator();
     protected static final DbRelationshipValidator dbRelValidator = new DbRelationshipValidator();
+    protected static final EmbeddableAttributeValidator embeddableAttributeValidator = new EmbeddableAttributeValidator();
 
     protected static final ProcedureValidator procedureValidator = new ProcedureValidator();
 
@@ -71,11 +71,11 @@ public abstract class TreeNodeValidator {
     public static void validate(ProjectPath path, Validator validator) {
         Object validatedObj = path.getObject();
         TreeNodeValidator validatorObj = null;
-        if (validatedObj instanceof EmbeddedAttribute) {
-            //TODO
-            return;
+
+        if (validatedObj instanceof EmbeddableAttribute) {
+            validatorObj = embeddableAttributeValidator;
         }
-        if (validatedObj instanceof ObjAttribute) {
+        else if (validatedObj instanceof ObjAttribute) {
             validatorObj = objAttrValidator;
         }
         else if (validatedObj instanceof ObjRelationship) {

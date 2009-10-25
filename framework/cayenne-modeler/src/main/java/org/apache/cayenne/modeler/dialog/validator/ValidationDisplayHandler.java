@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
@@ -26,6 +25,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -37,11 +37,12 @@ import org.apache.cayenne.query.Query;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** 
+/**
  * Superclass of CayenneModeler validation messages.
  * 
  */
 public abstract class ValidationDisplayHandler {
+
     private static Log logObj = LogFactory.getLog(ValidationDisplayHandler.class);
 
     public static final int NO_ERROR = ValidationInfo.VALID;
@@ -57,6 +58,9 @@ public abstract class ValidationDisplayHandler {
         ValidationDisplayHandler msg = null;
         if (validatedObj instanceof Attribute) {
             msg = new AttributeErrorMsg(result);
+        }
+        else if (validatedObj instanceof EmbeddableAttribute) {
+            msg = new EmbeddableAttributeErrorMsg(result);
         }
         else if (validatedObj instanceof Relationship) {
             msg = new RelationshipErrorMsg(result);
@@ -95,8 +99,8 @@ public abstract class ValidationDisplayHandler {
         this.validationInfo = validationInfo;
     }
 
-    /** 
-     * Fires event to display the screen where error should be corrected. 
+    /**
+     * Fires event to display the screen where error should be corrected.
      */
     public abstract void displayField(ProjectController mediator, JFrame frame);
 
@@ -105,7 +109,7 @@ public abstract class ValidationDisplayHandler {
         return validationInfo.getMessage();
     }
 
-    /** Returns the severity of the error message.*/
+    /** Returns the severity of the error message. */
     public int getSeverity() {
         return validationInfo.getSeverity();
     }
@@ -131,6 +135,7 @@ public abstract class ValidationDisplayHandler {
     }
 
     private static final class NullHanlder extends ValidationDisplayHandler {
+
         NullHanlder(ValidationInfo info) {
             super(info);
         }

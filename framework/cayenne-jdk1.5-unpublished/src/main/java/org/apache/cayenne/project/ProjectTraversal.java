@@ -28,6 +28,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.Relationship;
@@ -93,6 +94,9 @@ public class ProjectTraversal {
         }
         else if (rootNode instanceof Embeddable) {
             this.traverseEmbeddable(Collections.singletonList(rootNode).iterator(), path);
+        }
+        else if (rootNode instanceof EmbeddableAttribute) {
+            this.traverseEmbeddableAttributes(Collections.singletonList(rootNode).iterator(), path);
         }
         else if (rootNode instanceof Attribute) {
             this.traverseAttributes(Collections.singletonList(rootNode).iterator(), path);
@@ -198,7 +202,7 @@ public class ProjectTraversal {
             handler.projectNode(entPath);
 
             if (handler.shouldReadChildren(emd, path)) {
-                this.traverseAttributes(emd.getAttributes().iterator(), entPath);
+                this.traverseEmbeddableAttributes(emd.getAttributes().iterator(), entPath);
             }
         }
     }
@@ -268,6 +272,18 @@ public class ProjectTraversal {
 
         while (attributes.hasNext()) {
             handler.projectNode(path.appendToPath(attributes.next()));
+        }
+    }
+    
+    public void traverseEmbeddableAttributes(Iterator emAttributes, ProjectPath path) {
+        if (sort) {
+            emAttributes = Util.sortedIterator(
+                    emAttributes,
+                    ProjectTraversal.mapObjectComparator);
+        }
+
+        while (emAttributes.hasNext()) {
+            handler.projectNode(path.appendToPath(emAttributes.next()));
         }
     }
 

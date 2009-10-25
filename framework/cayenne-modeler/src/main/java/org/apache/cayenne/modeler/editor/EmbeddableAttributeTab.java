@@ -171,10 +171,6 @@ public class EmbeddableAttributeTab extends JPanel implements
     }
 
     private void setUpTableStructure(EmbeddableAttributeTableModel model) {
-        TableColumn inheritanceColumn = table.getColumnModel().getColumn(
-                EmbeddableAttributeTableModel.INHERITED);
-        inheritanceColumn.setMinWidth(20);
-        inheritanceColumn.setMaxWidth(20);
 
         TableColumn nameColumn = table.getColumnModel().getColumn(
                 EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);

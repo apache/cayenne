@@ -81,7 +81,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.mediator = mediator;
 
         // create widgets
-        this.cancelButton = new JButton("Close");
+        this.cancelButton = new JButton("Cancel");
         this.saveButton = new JButton("Done");
         this.selectPathButton = new JButton("Select path");
 

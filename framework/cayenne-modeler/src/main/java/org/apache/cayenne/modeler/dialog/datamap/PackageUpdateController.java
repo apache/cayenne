@@ -19,10 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.event.AttributeEvent;
+import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
@@ -74,6 +81,25 @@ public class PackageUpdateController extends DefaultsPreferencesController {
             defaultPackage = defaultPackage + '.';
         }
 
+        Map<String, String> oldNameEmbeddableToNewName = new HashMap<String,String>();
+        
+        for (Embeddable embeddable : dataMap.getEmbeddables()) {
+            
+            String oldName = embeddable.getClassName();
+            
+            Pattern p = Pattern.compile("[.]");
+            String[] tokens = p.split(oldName);
+            String className = tokens[tokens.length-1];
+            
+            if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
+                EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable.getClassName());
+                String newClassName = defaultPackage + className;
+                oldNameEmbeddableToNewName.put(oldName, newClassName);
+                embeddable.setClassName(newClassName);
+                mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
+            }
+        }
+        
         for (ObjEntity entity : dataMap.getObjEntities()) {
             String oldName = getClassName(entity);
 
@@ -81,6 +107,16 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                 String className = extractClassName(Util.isEmptyString(oldName) ? entity
                         .getName() : oldName);
                 setClassName(entity, defaultPackage + className);
+            }
+            
+            for(ObjAttribute attribute: entity.getAttributes()){
+                if(attribute instanceof EmbeddedAttribute){
+                    if(oldNameEmbeddableToNewName.size()>0 && oldNameEmbeddableToNewName.containsKey(attribute.getType())){
+                        attribute.setType(oldNameEmbeddableToNewName.get(attribute.getType()));
+                        AttributeEvent ev = new AttributeEvent(this, attribute, entity);
+                        mediator.fireObjAttributeEvent(ev);
+                    }
+                }
             }
         }
 

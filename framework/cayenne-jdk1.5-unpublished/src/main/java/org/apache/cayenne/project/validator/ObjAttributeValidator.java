@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.project.validator;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.project.ProjectPath;
@@ -70,9 +77,55 @@ public class ObjAttributeValidator extends TreeNodeValidator {
             validator.registerWarning("ObjAttribute has no type.", path);
         }
 
-        if (attribute.getEntity() instanceof ObjEntity && ((ObjEntity)attribute.getEntity()).isAbstract()) {
-            //nothing, abstract entity does not have to define a dbAttribute
-        } else if (attribute.getDbAttribute() == null) {
+        if (attribute.getEntity() instanceof ObjEntity
+                && ((ObjEntity) attribute.getEntity()).isAbstract()) {
+            // nothing, abstract entity does not have to define a dbAttribute
+        }
+        else if (attribute instanceof EmbeddedAttribute) {
+            Map<String, String> attrOverrides = ((EmbeddedAttribute) attribute)
+                    .getAttributeOverrides();
+            Embeddable emb = ((EmbeddedAttribute) attribute).getEmbeddable();
+            if (emb == null && ((EmbeddedAttribute) attribute).getType() != null) {
+                validator.registerWarning(
+                        "EmbeddedAttribute has incorrect Embeddable.",
+                        path);
+            }
+            else if (emb == null && ((EmbeddedAttribute) attribute).getType() == null) {
+                validator.registerWarning("EmbeddedAttribute has no Embeddable.", path);
+            }
+
+            if (emb != null) {
+                Collection<EmbeddableAttribute> embAttributes = emb.getAttributes();
+
+                Iterator<EmbeddableAttribute> it = embAttributes.iterator();
+                while (it.hasNext()) {
+                    EmbeddableAttribute embAttr = (EmbeddableAttribute) it.next();
+                    String dbAttributeName;
+                    if (attrOverrides.size() > 0
+                            && attrOverrides.containsKey(embAttr.getName())) {
+                        dbAttributeName = attrOverrides.get(embAttr.getName());
+                    }
+                    else {
+                        dbAttributeName = embAttr.getDbAttributeName();
+                    }
+
+                    if (dbAttributeName == "" || dbAttributeName == null) {
+                        validator.registerWarning(
+                                "EmbeddedAttribute has no DbAttribute mapping.",
+                                path);
+                    }
+                    else if (((ObjEntity) attribute.getEntity())
+                            .getDbEntity()
+                            .getAttribute(dbAttributeName) == null) {
+                        validator.registerWarning(
+                                "EmbeddedAttribute has incorrect DbAttribute mapping.",
+                                path);
+                    }
+                }
+            }
+
+        }
+        else if (attribute.getDbAttribute() == null) {
             validator.registerWarning("ObjAttribute has no DbAttribute mapping.", path);
         }
         // can't support generated meaningful attributes for now; besides they don't make
@@ -82,5 +135,6 @@ public class ObjAttributeValidator extends TreeNodeValidator {
             validator.registerWarning("ObjAttribute is mapped to a generated PK: "
                     + attribute.getDbAttributeName(), path);
         }
+
     }
 }
