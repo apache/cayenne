@@ -94,7 +94,7 @@
 
 <p>Depending on how the DataSource is mapped in the container, you may optionally need to add a "resource-ref" entry to the <tt>web.xml</tt> file:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;resource-ref&gt;
    &lt;res-ref-name&gt;jdbc/myds&lt;/res-ref-name&gt;
    &lt;res-type&gt;javax.sql.DataSource&lt;/res-type&gt;
@@ -108,7 +108,7 @@
 
 <h4><a name="UsingJNDI-Tomcat5.5Configuration"></a>Tomcat 5.5 Configuration</h4>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;Context path="/myapp" docBase="myapp"&gt;
   &lt;Resource name="jdbc/myds" auth="Container"
           type="javax.sql.DataSource" driverClassName="oracle.jdbc.driver.OracleDriver"

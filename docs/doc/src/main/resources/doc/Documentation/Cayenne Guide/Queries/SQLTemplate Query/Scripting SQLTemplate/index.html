@@ -69,23 +69,24 @@
 </div>
 <div id="ConfluenceContent"><p>SQLTemplate's internal SQL string is a dynamic script that is processed at runtime to generate PreparedStatement SQL code. Dynamic nature of SQLTemplate makes possible a few important things - it allows to bind parameters on the fly; it provides a way to pass extra information to Cayenne that is not included in the SQL text; it supports including/excluding chunks of SQL depending on runtime parameters.</p>
 
-<p>Scripting of SQL strings is done using <span class="nobr"><a href="http://jakarta.apache.org/velocity" title="Visit page outside Confluence" rel="nofollow">Jakarta Velocity<sup><img class="rendericon" src="../../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. Velocity was chosen primarily for its concise template language (no XML tags within SQL!) that doesn't conflict with the SQL syntax. When creating dynamic SQL template, all standard Velocity directives are available, including <tt>#set</tt>, <tt>#foreach</tt>, <tt>#if</tt>. However due to the nature of the SQL and the need to integrate it with Cayenne runtime, only a few Cayenne custom directives are normally used. These directives (<tt>#bind</tt>..., <tt>#result</tt>, <tt>#chain</tt>, <tt>#chunk</tt>) are described below.</p>
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Directive Syntax Note</b><br />Velocity directives start with pound sign (#) and have their parameters separated by space, not comma. E.g. <tt>#bind('SOMESTRING' 'VARCHAR')</tt>.</td></tr></table>
+<p>Scripting of SQL strings is done using <a href="http://velocity.apache.org" rel="nofollow">Apache Velocity</a>. Velocity was chosen primarily for its concise template language (no XML tags within SQL!) that doesn't conflict with the SQL syntax. When creating dynamic SQL template, all standard Velocity directives are available, including <tt>#set</tt>, <tt>#foreach</tt>, <tt>#if</tt>. However due to the nature of the SQL and the need to integrate it with Cayenne runtime, only a few Cayenne custom directives are normally used. These directives (<tt>#bind</tt>..., <tt>#result</tt>, <tt>#chain</tt>, <tt>#chunk</tt>) are described below.</p>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Directive Syntax Note</b><br />Velocity directives start with pound sign (#) and have their parameters separated by space, not comma. E.g. <tt>#bind('SOMESTRING' 'VARCHAR')</tt>.</td></tr></table></div>
 
 <h3><a name="ScriptingSQLTemplate-NamedParameters"></a>Named Parameters</h3>
 <p><tt>SQLTemplate.setParameters(java.util.Map)</tt> allows setting a number of named parameters that are used to build parts of the query. During template processing by Velocity all keys in the parameters map are available as variables. For example if the map contains a key "name", its value can be referenced as "$name" in the template. Value of the parameter will be inserted in the SQL unmodified:</p>
 
 <h5><a name="ScriptingSQLTemplate-NamedParametersExample"></a>Named Parameters Example</h5>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// build SQLTemplate
 </span><span class="code-object">String</span> sql = <span class="code-quote">"delete from $tableName"</span>;
-SQLTemplate delete = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql, <span class="code-keyword">false</span>);
+SQLTemplate delete = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
 ...
 <span class="code-comment">// <span class="code-keyword">this</span> will create a query <span class="code-quote">"delete from ARTIST"</span>
 </span>delete.setParameters(Collections.singletonMap(<span class="code-quote">"tableName"</span>, <span class="code-quote">"ARTIST"</span>));
 ...
 <span class="code-comment">// <span class="code-keyword">this</span> will create a query <span class="code-quote">"delete from PAINTING"</span>
-</span>delete.setParameters(Collections.singletonMap(<span class="code-quote">"tableName"</span>, <span class="code-quote">"PAINTING"</span>));</pre>
+</span>delete.setParameters(Collections.singletonMap(<span class="code-quote">"tableName"</span>, <span class="code-quote">"PAINTING"</span>));
+</pre>
 </div></div>
 
 <h3><a name="ScriptingSQLTemplate-DescribingtheResults%23resultDirective"></a>Describing the Results - #result Directive</h3>
@@ -99,22 +100,31 @@ SQLTemplate delete = <span class="code-keyword">new</span> SQLTemplate(Artist.cl
 </ul>
 
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Generally "javaType" argument is a fully-qualified Java class name for a given result column. However for simplicity most common Java types used in JDBC can be specified without a package. These include all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger. So "#result('A' 'String')", "#result('B' 'java.lang.String')" and "#result('C' 'int')" are all valid.</td></tr></table>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Generally "javaType" argument is a fully-qualified Java class name for a given result column. However for simplicity most common Java types used in JDBC can be specified without a package. These include all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger. So "#result('A' 'String')", "#result('B' 'java.lang.String')" and "#result('C' 'int')" are all valid.</td></tr></table></div>
 
-<p>While "select * from" queries may work just fine, in most cases it is a good idea to explicitly describe results.</p>
+<p>While "select * from" queries may work just fine, in many cases it is a good idea to explicitly describe results.</p>
 
 <h5><a name="ScriptingSQLTemplate-%23resultExamples"></a>#result Examples</h5>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// build selecting SQLTemplate
 </span><span class="code-object">String</span> sql = <span class="code-quote">"SELECT"</span>
    + <span class="code-quote">" #result('ARTIST_ID' '<span class="code-object">int</span>'),"</span>
    + <span class="code-quote">" #result('ARTIST_NAME' '<span class="code-object">String</span>'),"</span>
    + <span class="code-quote">" #result('DATE_OF_BIRTH' 'java.util.Date')"</span>
    + <span class="code-quote">" FROM ARTIST"</span>;
-SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql, <span class="code-keyword">true</span>);
+SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
 ...
 DataContext context...;
-List artists = context.performQuery(select);</pre>
+List artists = context.performQuery(select);
+</pre>
+</div></div>
+
+<p>Note that it is possible to mix columns described via #result() with regular columns. Columns without an explicit #result() directive will be mapped automatically using JDBC metadata.  E.g.:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// build selecting SQLTemplate
+</span><span class="code-object">String</span> sql = <span class="code-quote">"SELECT"</span>
+   + <span class="code-quote">" #result('ARTIST_ID' '<span class="code-object">long</span>'),"</span>
+   + <span class="code-quote">" ARTIST_NAME, DATE_OF_BIRTH FROM ARTIST"</span>;</pre>
 </div></div>
 
 <h3><a name="ScriptingSQLTemplate-BindingParameters%23bindDirective"></a>Binding Parameters - #bind Directive</h3>
@@ -123,15 +133,15 @@ List artists = context.performQuery(select);</pre>
 <ul>
 	<li><tt>#bind(value)</tt> - e.g. <tt>#bind($xyz)</tt> or <tt>#bind('somestring')</tt></li>
 	<li><tt>#bind(value jdbcTypeName)</tt> - e.g. <tt>#bind($xyz 'VARCHAR')</tt>. Second argument is the name of JDBC type for this binding. Valid JDBC types are defined in java.sql.Types class. This form is the the most common and useful. It is generally preferred to the single argument form, as it explicitly tells what type of JDBC value this binding is.</li>
-	<li><tt>#bind(value jdbcTypeName precision)</tt> - e.g. <tt>#bind($xyz 'DECIMAL' 2)</tt></li>
+	<li><tt>#bind(value jdbcTypeName scale)</tt> - e.g. <tt>#bind($xyz 'DECIMAL' 2)</tt></li>
 </ul>
 
 
 <h5><a name="ScriptingSQLTemplate-%23binddirectiveexample"></a>#bind directive example</h5>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// build SQLTemplate
 </span><span class="code-object">String</span> sql = <span class="code-quote">"update ARTIST set ARTIST_NAME = #bind($name) where ARTIST_ID = #bind($id)"</span>;
-SQLTemplate update = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql, <span class="code-keyword">false</span>);
+SQLTemplate update = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
 ...
 <span class="code-comment">// set parameters and run it...
 </span>Map parameters = <span class="code-keyword">new</span> HashMap();
@@ -140,16 +150,17 @@ parameters.put(<span class="code-quote">"id"</span>, <span class="code-keyword">
 update.setParameters(parameters);
 
 DataContext context...;
-context.performNonSelectingQuery(update);</pre>
+context.performNonSelectingQuery(update);
+</pre>
 </div></div>
 
 <p>SQLTemplate also supports binding Collections for building <tt>IN ( .. )</tt> queries. In any of the <tt>#bind</tt> invocation formats above, you may specify a Collection of values in place of <tt>value</tt>, and Cayenne will automatically expand it.</p>
 
 <h5><a name="ScriptingSQLTemplate-Collectionexample"></a>Collection example</h5>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// build SQLTemplate
 </span><span class="code-object">String</span> sql = "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST WHERE ARTIST_NAME IN (#bind($names))
-SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql, <span class="code-keyword">false</span>);
+SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
 ...
 <span class="code-comment">// set parameters and run it...
 </span>Map parameters = <span class="code-keyword">new</span> HashMap();
@@ -157,7 +168,8 @@ parameters.put(<span class="code-quote">"names"</span>, Arrays.asList(<span clas
 select.setParameters(parameters);
 
 DataContext context...;
-List artists = context.performQuery(select);</pre>
+List artists = context.performQuery(select);
+</pre>
 </div></div>
 
 
@@ -167,16 +179,16 @@ List artists = context.performQuery(select);</pre>
 <ul>
 	<li><tt>#bindEqual(value)</tt>, <tt>#bindNotEqual(value)</tt></li>
 	<li><tt>#bindEqual(value jdbcTypeName)</tt>, <tt>#bindNotEqual(value jdbcTypeName)</tt></li>
-	<li><tt>#bindEqual(value jdbcTypeName precision)</tt>, <tt>#bindNotEqual(value jdbcTypeName precision)</tt></li>
+	<li><tt>#bindEqual(value jdbcTypeName scale)</tt>, <tt>#bindNotEqual(value jdbcTypeName scale)</tt></li>
 </ul>
 
 
 <h5><a name="ScriptingSQLTemplate-NullValueExamples"></a>Null Value Examples</h5>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// build SQLTemplate
 </span><span class="code-comment">// note that <span class="code-quote">"="</span> is ommitted <span class="code-keyword">for</span> the second binding, since it is a part of the directive
 </span><span class="code-object">String</span> sql = "update ARTIST set ARTIST_NAME = #bind($name) where ARTIST_ID #bindEqual($id);
-SQLTemplate update = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql, <span class="code-keyword">false</span>);
+SQLTemplate update = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
 ...
 <span class="code-comment">// set parameters and run it...
 </span>Map parameters = <span class="code-keyword">new</span> HashMap();
@@ -188,14 +200,15 @@ DataContext context...;
 
 <span class="code-comment">// after binding processing PrepapredStatement SQL will look like 
 </span><span class="code-comment">// <span class="code-quote">"update ARTIST set ARTIST_NAME = ? where ARTIST_ID = ?"</span>
-</span>context.performNonSelectingQuery(update);</pre>
+</span>context.performNonSelectingQuery(update);
+</pre>
 </div></div>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// build SQLTemplate
 </span><span class="code-comment">// note that <span class="code-quote">"!="</span> is omitted <span class="code-keyword">for</span> the second binding, since it is a part of the directive
 </span><span class="code-object">String</span> sql = <span class="code-quote">"update ARTIST set ARTIST_NAME = #bind($name) where ARTIST_ID #bindNotEqual($id)"</span>;
-SQLTemplate update = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql, <span class="code-keyword">false</span>);
+SQLTemplate update = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
 ...
 <span class="code-comment">// set parameters and run it...
 </span>Map parameters = <span class="code-keyword">new</span> HashMap();
@@ -207,7 +220,8 @@ DataContext context...;
 
 <span class="code-comment">// after binding processing PrepapredStatement SQL will look like 
 </span><span class="code-comment">// <span class="code-quote">"update ARTIST set ARTIST_NAME = ? where ARTIST_ID IS NOT NULL"</span>
-</span>context.performNonSelectingQuery(update);</pre>
+</span>context.performNonSelectingQuery(update);
+</pre>
 </div></div>
 
 <h3><a name="ScriptingSQLTemplate-BindingPersistentObjectValues%23bindObjectEqualand%23bindObjectNotEqualdirectives"></a>Binding Persistent Object Values - #bindObjectEqual and #bindObjectNotEqual directives</h3>
@@ -222,7 +236,7 @@ DataContext context...;
 
 <p>An <tt>"object"</tt> argument can be one of Persistent, ObjectId or Map. <tt>"columns"</tt> and <tt>"idColumns"</tt> can be of type Object[], Collection or Object. What these directives do is build the SQL to match <tt>"columns"</tt> (i.e. the columns from the SQL query) against <tt>"idColumns"</tt> (i.e. the names of the PK columns for a given entity) for a given object. E.g.:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-object">String</span> sql = <span class="code-quote">"SELECT * FROM PAINTING t0"</span>
                 + <span class="code-quote">" WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID"</span>;
 SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
@@ -233,7 +247,7 @@ select.setParameters(Collections.singletonMap(<span class="code-quote">"a"</span
 
 <p>In case of compound PK, arrays can be used for the last two parameters:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-object">String</span> sql = <span class="code-quote">"SELECT * FROM TABLE_X t0"</span>
                 + <span class="code-quote">" WHERE #bindObjectEqual($a ['t0.FK1', 't0.FK2'] ['PK1', 'PK2'] )"</span>;
 SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(TableX.class, sql);</pre>
@@ -249,7 +263,7 @@ SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(TableX.cl
 
 <p>E.g.:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-object">String</span> sql = <span class="code-quote">"SELECT * FROM PAINTING WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID"</span>;
 SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);</pre>
 </div></div>
@@ -257,7 +271,7 @@ SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.cl
 <h3><a name="ScriptingSQLTemplate-BuildingDynamicSQL%23chainand%23chunkDirectives"></a>Building Dynamic SQL - #chain and #chunk Directives</h3>
 <p>Often it is desirable to exclude parts of the WHERE clause if some parameters are null or not set. This task is not trivial considering the semantics of a SQL statement. Consider this fairly simple example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-object">String</span> sql = <span class="code-quote">"SELECT DISTINCT"</span>
    + <span class="code-quote">" #result('ARTIST_ID' '<span class="code-object">int</span>'),"</span>
    + <span class="code-quote">" #result('ARTIST_NAME' '<span class="code-object">String</span>'),"</span>
@@ -265,12 +279,13 @@ SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.cl
    + <span class="code-quote">" FROM ARTIST t0"</span>
    + <span class="code-quote">" WHERE ARTIST_NAME LIKE #bind($name)"</span>
    + <span class="code-quote">" OR ARTIST_ID &gt; #bind($id)"</span>;
-SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);</pre>
+SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
+</pre>
 </div></div>
 
 <p>It would be nice to exclude ARTIST_NAME matching if "name" parameter is null, exclude ARTIST_ID matching if "id" is null, and exclude the whole WHERE clause if both are null. <tt>#chain</tt> and <tt>#chunk</tt> directives are used for this purpose. Each logical piece is wrapped in a conditional "chunk", and a number of chunks are grouped in a chain. If chain contains no chunks it doesn't render anything enclosed in it.</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-object">String</span> sql = <span class="code-quote">"SELECT DISTINCT"</span>
    + <span class="code-quote">" #result('ARTIST_ID' '<span class="code-object">int</span>'),"</span>
    + <span class="code-quote">" #result('ARTIST_NAME' '<span class="code-object">String</span>'),"</span>
@@ -281,7 +296,8 @@ SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.cl
 </span>   + <span class="code-quote">" #chunk($name) ARTIST_NAME LIKE #bind($name) #end"</span> <span class="code-comment">// ARTIST_NAME <span class="code-quote">"chunk"</span>
 </span>   + <span class="code-quote">" #chunk($id) ARTIST_ID &gt; #bind($id) #end"</span>          <span class="code-comment">// ARTIST_ID <span class="code-quote">"chunk"</span>
 </span>   + <span class="code-quote">" #end"</span>;                                            <span class="code-comment">// end of chain
-</span>SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);</pre>
+</span>SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.class, sql);
+</pre>
 </div></div>
 </div>
 </div>

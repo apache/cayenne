@@ -60,7 +60,7 @@
 <div id="ConfluenceContent">
 <p>A big part of commit operation is updating peer DataContexts with the changes committed to the database. The conext synchronization operation has <tt>O(N)</tt> performance, where <tt>N</tt> is the number of peer DataContexts. In a web application <tt>N</tt> is often the number of concurrent sessions, which can be quite big. The throughout of high volume applications can be  improved by turning off peer synchronization. One possible way to do that is via a custom <a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html" title="DataContextFactory">DataContextFactory</a>:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class IsolatedDataContextFactory <span class="code-keyword">implements</span> DataContextFactory {
 
     <span class="code-keyword">public</span> DataContext createDataContext(DataChannel parent, ObjectStore objectStore) {
@@ -74,9 +74,9 @@
 
 <p>Of course doing this may result in some stale data in the peer DataContexts, so a decision whether to use this particular technique should be made based on the application specifics. Also a factory can have logic to selectively turn off synchronization for a subset of DataContexts based on some criteria.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='tipMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Don't use this for idle applications</b><br />Note that this optimization does not affect percieved user commit time, as synchronization is done in a separate thread. It only affects the overall throughput. So it only makes sense if your application already utilizes close to a 100% of CPU.</td></tr></table>
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Don't use this for idle applications</b><br />Note that this optimization does not affect percieved user commit time, as synchronization is done in a separate thread. It only affects the overall throughput. So it only makes sense if your application already utilizes close to a 100% of CPU.</td></tr></table></div>
 
-<p><em>Further improvements in this area are tracked via <span class="nobr"><a href="http://issues.apache.org/cayenne/browse/CAY-554" title="Visit page outside Confluence" rel="nofollow">CAY-554 Jira issue<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</em></p></div>
+<p><em>Further improvements in this area are tracked via <a href="http://issues.apache.org/cayenne/browse/CAY-554" rel="nofollow">CAY-554 Jira issue</a>.</em></p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

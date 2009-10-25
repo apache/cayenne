@@ -51,16 +51,15 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="LifecycleCallbacks-LifecycleCallbacks"></a>Lifecycle Callbacks</h2>
 
-<p>Users can register callback methods that will be invoked during the lifecycle of persistent objects. Callback mechanism matches closely the one defined in the <a href="http://cwiki.apache.org/confluence/confluence/display/CAYJPA/JPA+Guide" title="JPA Guide">JPA Specification</a> (except that it works with JDK 1.4 and allows preconfigured listeners). There are seven lifecycle callbacks described below (PrePersist, PostPersist, PreUpdate, PostUpdate, PreRemove, PostRemove, PostLoad). There are two types of invocations for each one of them: <b>callback on a persistent object</b> itself or a <b>callback on  an arbitrary listener object</b>.</p>
+<p>Users can register callback methods that will be invoked during the lifecycle of persistent objects. Callback mechanism is similar to the one defined in the <a href="http://cwiki.apache.org/confluence/confluence/display/CAYJPA/JPA+Guide" title="JPA Guide">JPA Specification</a>, however there are some noteable differences introduced to better follow the Cayenne object lifecycle. There are eight lifecycle callbacks described below (PostAdd, PrePersist, PostPersist, PreUpdate, PostUpdate, PreRemove, PostRemove, PostLoad). Each one cab be invoked as a <b>callback on a persistent object</b> itself or as a <b>callback on an arbitrary listener object</b>.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Callbacks feature supercedes the following 1.2/2.0 features:</b><br />
-<ul>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Callbacks feature supercedes the following 1.2/2.0 features:</b><br /><ul>
 	<li>Interception of object state transitions inside <tt>"Persistent.setPersistenceState()"</tt>.</li>
-	<li>Event mechanism defined in <tt>"org.apache.cayenne.access.event"</tt> package. Scheduled for removal in 3.0.</li>
+	<li>Event mechanism defined in <tt>"org.apache.cayenne.access.event"</tt> package that was removed in 3.0.</li>
 	<li><tt>"DataObject.validateForX"</tt> - it is a good idea to use it strictly for validation; updating the state before commit should be done via callbacks.</li>
 	<li><tt>"DataObject.fetchFinished()"</tt> - scheduled for removal in 3.0</li>
 </ul>
-</td></tr></table>
+</td></tr></table></div>
 
 <h2><a name="LifecycleCallbacks-CallbackMethodSemantics"></a>Callback Method Semantics</h2>
 
@@ -70,14 +69,14 @@
 	<li>It looks like <tt>"void method(Type entityObject)"</tt> <em>for listener classes</em>.</li>
 	<li>A callback method can have an arbitrary name.</li>
 	<li>A callback method can use public, private, protected or default access.</li>
-	<li>They must NOT be static.</li>
+	<li>It must NOT be static.</li>
 	<li>Callback methods are polymorphic - registering a callback on a superclass (even if the superclass does not map to an entity) will ensure the callback will be invoked on all entity subclasses, using the overriding subclass method if applicable.</li>
 </ul>
 
 
 <p>Callback on persistent object example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class Artist { 
    ...
 
@@ -91,7 +90,7 @@
 
 <p>Callback on a listener class example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class MyListener { 
    ...
 
@@ -102,8 +101,9 @@
 }</pre>
 </div></div>
 
-<h2><a name="LifecycleCallbacks-TypesofCallbacks"></a>Types of Callbacks</h2>
+<p>Note that empty callback methods are generated as a part of persistent class generation (either with <a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html" title="maven2-cgen">Maven</a>, <a href="../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html" title="cgen">Ant</a> or CayenneModeler).</p>
 
+<h2><a name="LifecycleCallbacks-TypesofCallbacks"></a>Types of Callbacks</h2>
 
 <p>Valid callback types are defined as Java enumerated constants in the <tt>org.apache.cayenne.map.LifecycleEvent</tt> enumeration.</p>
 
@@ -113,8 +113,12 @@
 <th class='confluenceTh'>Invoked...</th>
 </tr>
 <tr>
-<td class='confluenceTd'>PrePersist</td>
+<td class='confluenceTd'>PostAdd</td>
 <td class='confluenceTd'>Within <tt>"ObjectContext.newObject()"</tt> after ObjectId and ObjectContext are set.</td>
+</tr>
+<tr>
+<td class='confluenceTd'>PrePersist</td>
+<td class='confluenceTd'>Prior to commit (and prior to "validateFor*") within <tt>"ObjectContext.commitChanges()"</tt> and <tt>"ObjectContext.commitChangesToParent()"</tt></td>
 </tr>
 <tr>
 <td class='confluenceTd'>PreRemove</td>
@@ -149,10 +153,10 @@
 
 <h2><a name="LifecycleCallbacks-RegisteringCallbacks"></a>Registering Callbacks</h2>
 
-<p>Normally listeners and persistent object callbacks are mapped in the Modeler, but here we'll show how to do that in the code. Callbacks can be registered with <tt>LifecycleCallbackRegistry</tt>, which is shared by all contexts within DataDomain.</p>
+<p>Normally listeners and persistent object callbacks are mapped in the Modeler, but this can also be done in the code. Callbacks are registered with <tt>LifecycleCallbackRegistry</tt>, which is shared by all contexts within a DataDomain.</p>
 
 <p>Obtaining the shared registry instance:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 ...
 DataDomain domain = ...
@@ -163,7 +167,7 @@ LifecycleCallbackRegistry registry = domain.getEntityResolver().getCallbackRegis
 <p>Registry obtained this way already contains callbacks mapped in the DataMap. To add extra callbacks in runtimes, use various <tt>addListener(...)</tt>  methods. </p>
 
 <p>Adding a listener object that implements <tt>LifecycleListener</tt> interface:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.LifecycleListener
 
 <span class="code-keyword">public</span> class MyListener <span class="code-keyword">implements</span> LifecycleListener {
@@ -183,7 +187,7 @@ LifecycleCallbackRegistry registry = domain.getEntityResolver().getCallbackRegis
 </div></div>
 
 <p>Adding a listener of an arbitrary class</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class MyOtherListener {
 	
 	<span class="code-comment">// note that callback method doesn't have to be 
@@ -215,7 +219,7 @@ registry.addListener(LifecycleListener.PRE_UPDATE, Artist.class, listener, <span
 </div></div>
 
 <p>Finally a persistent object can implement callbacks as well, being notified of its own events:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// <span class="code-quote">"<span class="code-keyword">extends</span> _Artist"</span> implies <span class="code-quote">"<span class="code-keyword">implements</span> Persistent"</span> via a superclass
 </span><span class="code-keyword">public</span> class Artist <span class="code-keyword">extends</span> _Artist {
 	

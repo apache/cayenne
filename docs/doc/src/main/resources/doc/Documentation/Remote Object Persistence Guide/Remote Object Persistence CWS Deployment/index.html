@@ -47,13 +47,13 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="RemoteObjectPersistenceCWSDeployment-CWSDeploymentwithHessian"></a>CWS Deployment with Hessian</h2>
 
-<p><span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">Hessian-based<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> Cayenne Web Service is a regular Java web application that contains Cayenne mapping file and persistent objects. What makes it a web service is a HessianServlet mapped via web.xml that handles requests from Cayenne Client Tier applications.</p>
+<p><a href="http://www.caucho.com/hessian/" rel="nofollow">Hessian-based</a> Cayenne Web Service is a regular Java web application that contains Cayenne mapping file and persistent objects. What makes it a web service is a HessianServlet mapped via web.xml that handles requests from Cayenne Client Tier applications.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='tipMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Client tier Java classes have to be present on the server together with server DataObjects. So you'll end up with two sets of objects mapped to the same set of entities. Hopefully we will get rid of this inconvenience in the future releases.</td></tr></table>
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Client tier Java classes have to be present on the server together with server DataObjects. So you'll end up with two sets of objects mapped to the same set of entities. Hopefully we will get rid of this inconvenience in the future releases.</td></tr></table></div>
 
 <h3><a name="RemoteObjectPersistenceCWSDeployment-AtypicalCWSapplication.warfile%3A"></a>A typical CWS application .war file:</h3>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>myapp/
   WEB-INF/
      web.xml
@@ -81,7 +81,7 @@
 
 <ul>
 	<li><em>(optional)</em> Configuring session timout other than the default (timeout value is in <b>minutes</b>):
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;session-config&gt;
    &lt;session-timeout&gt;10&lt;/session-timeout&gt;
 &lt;/session-config&gt;</pre>
@@ -91,7 +91,7 @@
 
 <ul>
 	<li>Declaring a HessianServlet
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;servlet&gt;
    &lt;servlet-name&gt;cayenne&lt;/servlet-name&gt;
    &lt;servlet-class&gt;org.apache.cayenne.remote.hessian.service.HessianServlet&lt;/servlet-class&gt;
@@ -128,7 +128,7 @@
 
 <ul>
 	<li><em>(Optional)</em> Configuring HTTP basic authentication:
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;security-constraint&gt;
    &lt;web-resource-collection&gt;
       &lt;web-resource-name&gt;Cayenne Web Service&lt;/web-resource-name&gt;

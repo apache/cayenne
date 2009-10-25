@@ -56,7 +56,7 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="ModelingEnumerations-MappingandModelingJavaEnumerations"></a>Mapping and Modeling Java Enumerations</h2>
 
-<p>Cayenne natively supports Java 1.5 <span class="nobr"><a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html" title="Visit page outside Confluence" rel="nofollow">custom enumerations<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.  There are two levels of support.  The more flexible method is to implement the Cayenne ExtendedEnumeration interface and provide the database value for each enumeration.  The advantage of implementing this interface is it allows you to specify the exact database value represented by each enumeration and the enumerations are not order-fragile.  If you do not implement this interface, Cayenne will use a fallback approach and only use the enum's actual name (for a text column) or the ordinal position (for a numeric column, which is fragile).</p>
+<p>Cayenne natively supports Java 1.5 <a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html" rel="nofollow">custom enumerations</a>.  There are two levels of support.  The more flexible method is to implement the Cayenne ExtendedEnumeration interface and provide the database value for each enumeration.  The advantage of implementing this interface is it allows you to specify the exact database value represented by each enumeration and the enumerations are not order-fragile.  If you do not implement this interface, Cayenne will use a fallback approach and only use the enum's actual name (for a text column) or the ordinal position (for a numeric column, which is fragile).</p>
 
 <p>Regardless of which incarnation you use, in Cayenne Modeler's ObjEntity editor, under the Attributes tab, give the full class name for your enumeration under the Java Type column.  This column is pre-filled with java.lang.String, etc., but you can provide your own Java type there:</p>
 
@@ -72,7 +72,7 @@
 
 <p>Here is an example mapping enumerations to integers:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.ExtendedEnumeration;
 
 <span class="code-keyword">public</span> <span class="code-keyword">enum</span> Color <span class="code-keyword">implements</span> ExtendedEnumeration {
@@ -96,7 +96,7 @@
 
 <p>An example mapping enumerations to strings:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.ExtendedEnumeration;
 
 <span class="code-keyword">public</span> <span class="code-keyword">enum</span> State <span class="code-keyword">implements</span> ExtendedEnumeration {
@@ -120,7 +120,7 @@
 
 <p>The final example illustrates how the database can store one value, but you might want to utilize a different internal value for calculations or some other purpose:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.ExtendedEnumeration;
 
 <span class="code-keyword">public</span> <span class="code-keyword">enum</span> InterestTerm <span class="code-keyword">implements</span> ExtendedEnumeration
@@ -156,7 +156,7 @@
 
 <p>Cayenne's support for standard enumerations maps the enum's actual name (if a string column) or the ordinal position (if a numeric column).  Given the Color example declared this way:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">enum</span> Color {
   RED, GREEN, BLUE;
 }</pre>

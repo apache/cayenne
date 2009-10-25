@@ -60,13 +60,13 @@
 <div id="ConfluenceContent"><p>There are cases when the result sets are so large that even when fetching data rows, application can run out of memory. For instance, a user may be creating a report that requires in-memory processing of hundreds of thousands of database rows. In such cases normal Cayenne behavior of reading the whole java.sql.ResultSet in the memory before returning it to the user may result in an application exhausing all memory and crashing.</p>
 
 <p>Cayenne solves this by allowing to obtain results in the form of ResultIterator. ResultIterator is connected to an open java.sql.ResultSet, therefore its methods may throw checked exceptions. ResultIterator returns data rows (not DataObjects) one at a time, reading them on demand from the open ResultSet. Each data row can be converted to a DataObject or accessed directly. Open ResultIterator locks the database connection, therefore <b>ResultIterator always requires explicit closing in the user code</b>.</p>
-<table cellpadding='5' width='85%' cellspacing='8px' class='warningMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>In web applications, programmers must ensure that no open ResultIterators are kept between HTTP requests. Failure to do so may result in too many database connections being locked, thus quickly exhausting connection pool. In general, an application with Web GUI is NOT a good candidate for implementation using ResultIterators.</td></tr></table>
+<div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>In web applications, programmers must ensure that no open ResultIterators are kept between HTTP requests. Failure to do so may result in too many database connections being locked, thus quickly exhausting connection pool. In general, an application with Web GUI is NOT a good candidate for implementation using ResultIterators.</td></tr></table></div>
 
 <p>When working with open ResultIterator, users still can perform any other database operations: select queries, traversing object relationships, etc. Any parallel data operation will internally check out an unused connection from the connection pool as it would normally do, while ResultIterator still locks its own connection.</p>
 
 <p>ResultIterator annotated example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> java.util.List;
 <span class="code-keyword">import</span> java.util.Map;
 <span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
@@ -106,7 +106,8 @@ ResultIterator it = <span class="code-keyword">null</span>;
        closeEx.printStackTrace();
    }
 }
-...</pre>
+...
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

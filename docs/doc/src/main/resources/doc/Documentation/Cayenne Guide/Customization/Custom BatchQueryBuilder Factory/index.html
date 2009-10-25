@@ -18,14 +18,14 @@
 -->
 <html>
   <head>
-    <title>Apache Cayenne Documentation - maven2-modeler</title>
+    <title>Apache Cayenne Documentation - Custom BatchQueryBuilder Factory</title>
     <style type="text/css">@import "../../../../style.css";</style>
   </head>
 <body>
   <div class="header">
     <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
     <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
-    <span class="pagetitle">maven2-modeler</span>
+    <span class="pagetitle">Custom BatchQueryBuilder Factory</span>
   </div>
 <div id="cayenne_toc">
 <ul>
@@ -43,40 +43,44 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a><ul>
-<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html">maven2-cgen</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html">maven2-cdbgen</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbimport/index.html">maven2-cdbimport</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html">maven2-modeler</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom DbAdapter/index.html">Custom DbAdapter</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Extended Types/index.html">Extended Types</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom Query Cache Provider/index.html">Custom Query Cache Provider</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom BatchQueryBuilder Factory/index.html">Custom BatchQueryBuilder Factory</a><ul>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p><tt>modeler</tt> is an Maven 2 mojo that runs the latest version of Cayenne Modeler.  It saves you from having to download the modeler and installing it manually, which is really nice if you're following the latest changes in the snapshot builds.</p>
-
-<p>There is no configuration of this plugin, but you do need to add to add the plugin to your POM:</p>
-
+<div id="ConfluenceContent"><p>Cayenne allows plugging user-defined behavior to the process of performing commit actions in ObjectContext. Imagine situation when you need to perform UPDATE queries to mark records in database as deleted, instead of using common DELETE queries, e.g. something like</p>
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
-<pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
-    <span class="code-tag">&lt;plugins&gt;</span>
-        <span class="code-tag">&lt;plugin&gt;</span>
-            <span class="code-tag">&lt;groupId&gt;</span>org.apache.cayenne.plugins<span class="code-tag">&lt;/groupId&gt;</span>
-      	    <span class="code-tag">&lt;artifactId&gt;</span>maven-cayenne-modeler-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
-        <span class="code-tag">&lt;/plugin&gt;</span>
-    <span class="code-tag">&lt;/plugins&gt;</span>
-<span class="code-tag">&lt;/build&gt;</span>
+<pre class="code-java">UPDATE ARTIST SET DELETED = <span class="code-keyword">true</span> WHERE ARTIST_ID = 1987
 </pre>
 </div></div>
-
-<p>It can be started from the root of your project by running:</p>
-
+<p>instead of</p>
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
-<pre class="code-java">$ mvn cayenne-modeler:run
+<pre class="code-java">DELETE FROM ARTIST WHERE ARTIST_ID = 1987
 </pre>
-</div></div></div>
+</div></div>
+<p>In such cases you need to intercept Cayenne's process of generating SQL queries. This can be obtained by providing custom <tt>org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory</tt> to a DataDomain, for example:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataDomain domain = Configuration.getSharedConfiguration().getDomain();
+domain.setQueryBuilderFactory(<span class="code-keyword">new</span> SoftDeleteQueryBuilderFactory());
+</pre>
+</div></div>
+<p><tt>org.apache.cayenne.access.jdbc.SoftDeleteQueryBuilderFactory</tt> is a custom factory built into Cayenne which replaces DELETE queries with UPDATEs as described above.</p>
+
+<p>You can plug in your own factories. BatchQueryBuilderFactory interface is very simple and contains methods for creating query builders for objects that were inserted, updated or deleted:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">public</span> BatchQueryBuilder createInsertQueryBuilder(DbAdapter adapter);
+<span class="code-keyword">public</span> BatchQueryBuilder createUpdateQueryBuilder(DbAdapter adapter);
+<span class="code-keyword">public</span> BatchQueryBuilder createDeleteQueryBuilder(DbAdapter adapter);
+</pre>
+</div></div>
+<p>Note that BatchQueryBuilder factory only affects queries being created during commit for NEW, MODIFIED or DELETED objects in ObjectContext. It has no effect on database modifications that are made with, say, EJBQLQuery or SQLTemplate.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

@@ -136,21 +136,15 @@
 
 <h3><a name="cdbimport-Example"></a>Example</h3>
 
-<p>Load the Ant task <em>(note: if you already loaded all Cayenne tasks via an antlib taskdef <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html" title="Ant Tasks">described before</a>, this step is not needed)</em>: </p>
-<div class="code"><div class="codeContent">
-<pre class="code-xml"><span class="code-tag">&lt;taskdef name=<span class="code-quote">"cdbimport"</span> classname=<span class="code-quote">"org.apache.cayenne.tools.DbImporterTask"</span>&gt;</span>
-    <span class="code-tag">&lt;classpath refid=<span class="code-quote">"classpath"</span>/&gt;</span>
-<span class="code-tag">&lt;/taskdef&gt;</span></pre>
-</div></div>
-
 <p>Here is an example of using <tt>cdbimport</tt> to create DB schema objects on a local HSQLDB.</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml">&lt;cdbimport map=<span class="code-quote">"${context.dir}/WEB-INF/DefaultMap.map.xml"</span> 
     adapter=<span class="code-quote">"org.apache.cayenne.dba.hsqldb.HSQLDBAdapter"</span>
     driver=<span class="code-quote">"org.hsqldb.jdbcDriver"</span> 
     url=<span class="code-quote">"jdbc:hsqldb:hsql://localhost/bookmarker"</span> 
-    username=<span class="code-quote">"sa"</span>/&gt;</pre>
+    username=<span class="code-quote">"sa"</span>/&gt;
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

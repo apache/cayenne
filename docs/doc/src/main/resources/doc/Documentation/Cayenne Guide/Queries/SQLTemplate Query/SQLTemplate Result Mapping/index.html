@@ -73,14 +73,14 @@
 
 <p>To get either DataObjects or DataRows, not much configuration is needed:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"SELECT * FROM ARTIST"</span>);
 
 <span class="code-comment">// List of Artist
 </span>List artists = context.performQuery(query);</pre>
 </div></div>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"SELECT * FROM ARTIST"</span>);
 
 <span class="code-comment">// *** Force DataRows
@@ -94,7 +94,7 @@
 
 <p>To select a list of scalar values, you will need to use a SQLResultSetMapping class to tell Cayenne how to deal with it:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(Painting.class, <span class="code-quote">"SELECT ESTIMATED_PRICE P FROM PAINTING"</span>);
 
 <span class="code-comment">// *** let Cayenne know that result is a scalar
@@ -108,7 +108,7 @@ query.setResultSetMapping(rsMap);
 
 <p>Or if the query nature guarantees only a single row in the result (aggregate query), do this:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(Painting.class, <span class="code-quote">"SELECT SUM(ESTIMATED_PRICE) S FROM PAINTING"</span>);
 
 <span class="code-comment">// *** let Cayenne know that result is a scalar
@@ -124,7 +124,7 @@ query.setResultSetMapping(rsMap);
 
 <p>SQLResultSetMapping can be used to fetch a mix of objects and scalars. In this case the result will be <tt>Object[]</tt> that contains scalars and objects in the order they were configured in SQLResultSetMapping:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"SELECT t0.ARTIST_ID, t0.NAME, t0.DATE_OF_BIRTH, COUNT(t1.PAINTING_ID) C "</span> +
       <span class="code-quote">"FROM ARTIST t0 LEFT JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) "</span> +
       <span class="code-quote">"GROUP BY t0.ARTIST_ID, t0.NAME, t0.DATE_OF_BIRTH"</span>);

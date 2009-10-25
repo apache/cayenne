@@ -65,7 +65,7 @@
 
 <p>A new DataContext instance normally can be created using the following code:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 DataContext context = DataContext.createDataContext();</pre>
@@ -77,7 +77,7 @@ DataContext context = DataContext.createDataContext();</pre>
 
 <p>A web application can be configured to automatically create a new instance of DataContext for each new HttpSession, and set it as a session attribute. Retrieving it from a session is done with the following code:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.ServletUtil;
 <span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
@@ -92,16 +92,17 @@ DataContext context = ServletUtil.getSessionContext(session);</pre>
 
 <p>An application can bind a DataContext to a current execution thread. Later on the code that needs DB access can retrieve this DataContext without making any assumptions about the environment. This approach is universal and works in all types of applications (web, standalone, etc.). Previously bound DataContext can be retrieved by calling <tt>DataContext.getThreadDataContext()</tt> static method. If no DataContext was bound to the current thread, this method throws IllegalStateException:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 <span class="code-comment">// we are positive there is DataContext in the current thread, and <span class="code-keyword">do</span> not want
 </span><span class="code-comment">// to handle possible exception...
-</span>DataContext context = DataContext.getThreadDataContext();</pre>
+</span>DataContext context = DataContext.getThreadDataContext();
+</pre>
 </div></div>
 
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 <span class="code-comment">// we want to handle the condition of no thread context...
@@ -123,7 +124,7 @@ DataContext context = ServletUtil.getSessionContext(session);</pre>
 
 <p>Considering that behind the scenes a source of DataContext instances is an object called DataDomain, Cayenne allows creation of multiple DataDomains per project. Each DataDomain would support a single "customer". Creation of DataContext in this case is done using DataDomain name as a parameter:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 

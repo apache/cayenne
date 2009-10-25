@@ -57,7 +57,7 @@
 <p>Now lets get back to the <tt>"cayenne-tutorial"</tt> project that contains a web application. </p>
 
 <ul>
-	<li>Add <tt>hessian.jar</tt> to the list of project libraries by right clicking the <tt>"cayenne-tutorial"</tt> project, selecting <tt>"Java Build Path &gt; Libraries"</tt> and clicking "Add External Jar" button on the right. As a reminder, Hessian jar can be downloaded <span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">from here<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> if you haven't done this already.</li>
+	<li>Add <tt>hessian.jar</tt> to the list of project libraries by right clicking the <tt>"cayenne-tutorial"</tt> project, selecting <tt>"Java Build Path &gt; Libraries"</tt> and clicking "Add External Jar" button on the right. As a reminder, Hessian jar can be downloaded <a href="http://www.caucho.com/hessian/" rel="nofollow">from here</a> if you haven't done this already.</li>
 </ul>
 
 
@@ -66,7 +66,7 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>web.xml</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>web.xml</b></div><div class="codeContent panelContent">
 <pre class="code-java">...
 &lt;servlet&gt;
     &lt;servlet-name&gt;cayenne-service&lt;/servlet-name&gt;
@@ -83,7 +83,7 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>web.xml</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>web.xml</b></div><div class="codeContent panelContent">
 <pre class="code-java">&lt;?xml version=<span class="code-quote">"1.0"</span> encoding=<span class="code-quote">"utf-8"</span>?&gt;
  &lt;!DOCTYPE web-app
    PUBLIC <span class="code-quote">"-<span class="code-comment">//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"</span>
@@ -124,7 +124,7 @@
 
 
 <ul>
-	<li>Web application URLs (e.g. <span class="nobr"><a href="http://localhost:8080/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>) should continue to work as before, but let's try the service URL: <span class="nobr"><a href="http://localhost:8080/cayenne-service" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/cayenne-service<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. You will see "Hessian Requires POST" error message in the browser, that means that the service is alive, but you need a client other than the web browser to access it.</li>
+	<li>Web application URLs (e.g. <a href="http://localhost:8080/" rel="nofollow">http://localhost:8080/</a>) should continue to work as before, but let's try the service URL: <a href="http://localhost:8080/cayenne-service" rel="nofollow">http://localhost:8080/cayenne-service</a>. You will see "Hessian Requires POST" error message in the browser, that means that the service is alive, but you need a client other than the web browser to access it.</li>
 </ul>
 
 

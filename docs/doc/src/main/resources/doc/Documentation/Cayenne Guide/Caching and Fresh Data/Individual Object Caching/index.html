@@ -71,31 +71,34 @@
 
 <ul>
 	<li><em>Perform a query to refetch one or more objects.</em> Any of the Cayenne selecting queries would refresh previously cached objects:
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Artist a = ...;
 <span class="code-comment">// <span class="code-quote">"a"</span> gets stale, we need to refresh it
 </span>SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class, ...);
 List&lt;Artist&gt; artists = context.performQuery(query);
-<span class="code-comment">// <span class="code-keyword">if</span> the query result includes <span class="code-quote">"a"</span>, object <span class="code-quote">"a"</span> is now refreshed</span></pre>
+<span class="code-comment">// <span class="code-keyword">if</span> the query result includes <span class="code-quote">"a"</span>, object <span class="code-quote">"a"</span> is now refreshed</span>
+</pre>
 </div></div> </li>
 </ul>
 
 
 <ul>
 	<li><em>Use <a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Prefetching/index.html" title="Prefetching">prefetching</a> to refresh to-many relationships and related objects</em>. Cayenne selecting query would only refresh the "root" objects (objects of type "Artist" in the example above), including their "simple" properties and to-one relationships. To refresh to-many relationships, including to-many collection contents, and each of the related objects, a user must specify a prefetch on a given relationship. E.g.:
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// to refresh a list of paintings attached to the Artist, use a prefetch:
-</span>query.addPrefetch(Artist.PAINTINGS_PROPERTY);</pre>
+</span>query.addPrefetch(Artist.PAINTINGS_PROPERTY);
+</pre>
 </div></div></li>
 </ul>
 
 
 <ul>
 	<li><em>Use <a href="../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html" title="ObjectIdQuery">ObjectIdQuery</a> to refresh a single object.</em> There is a special query that allows to refresh a single object - ObjectIdQuery. Specify "CACHE_REFRESH" caching strategy to ensure a DB fetch is performed. This requires manually creating an ObjectId:
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectId id = <span class="code-keyword">new</span> ObjectId(<span class="code-quote">"Artist"</span>, Artist.ID_PK_COLUMN, 5);
 ObjectIdQuery query = <span class="code-keyword">new</span> ObjectIdQuery(id, <span class="code-keyword">false</span>, ObjectIdQuery.CACHE_REFRESH);
-Artist a = (Artist) DataObjectUtils.objectForQuery(query);</pre>
+Artist a = (Artist) DataObjectUtils.objectForQuery(query);
+</pre>
 </div></div></li>
 </ul>
 </div>

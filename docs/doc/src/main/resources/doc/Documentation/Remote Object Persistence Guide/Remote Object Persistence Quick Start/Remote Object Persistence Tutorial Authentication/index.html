@@ -63,7 +63,7 @@
 </ul>
 
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>cayenne-user: secret,cayenne-service-user</pre>
 </div></div>
 
@@ -74,7 +74,7 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>jetty-run-config.xml</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>jetty-run-config.xml</b></div><div class="codeContent panelContent">
 <pre class="code-java">&lt;?xml version=<span class="code-quote">"1.0"</span>  encoding=<span class="code-quote">"UTF-8"</span>?&gt;
 &lt;!DOCTYPE Configure PUBLIC <span class="code-quote">"-<span class="code-comment">//Mort Bay Consulting//DTD Configure//EN"</span> <span class="code-quote">"http://jetty.mortbay.org/configure.dtd"</span>&gt;
 </span>
@@ -142,8 +142,9 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>"web.xml"</b></div><div class="codeContent">
-<pre class="code-java">&lt;security-constraint&gt;
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>"web.xml"</b></div><div class="codeContent panelContent">
+<pre class="code-java">    
+    &lt;security-constraint&gt;
         &lt;web-resource-collection&gt;
             &lt;web-resource-name&gt;CayenneService&lt;/web-resource-name&gt;
             &lt;url-pattern&gt;/cayenne-service&lt;/url-pattern&gt;
@@ -168,7 +169,7 @@
 </ul>
 
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>Exception in thread "main" org.apache.cayenne.CayenneRuntimeException: [v.2.0.1 September 23 2006] Error establishing remote session. URL - http://localhost:8080/cayenne-service
 	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:257)
 	at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:147)
@@ -183,7 +184,7 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(<span class="code-quote">"http:<span class="code-comment">//localhost:8080/cayenne-service"</span>, 
 </span>   <span class="code-quote">"cayenne-user"</span>,
    <span class="code-quote">"secret"</span>, 

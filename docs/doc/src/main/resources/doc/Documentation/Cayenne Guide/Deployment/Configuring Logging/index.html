@@ -58,9 +58,9 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>Cayenne logging is based on Jakarta Apache <span class="nobr"><a href="http://jakarta.apache.org/commons/logging/" title="Visit page outside Confluence" rel="nofollow">commons-logging package<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. Commons-logging allows users to choose their own logging provider, such as Log4J or <tt>java.util.logging</tt>. Below is an example of a <span class="nobr"><a href="http://logging.apache.org/log4j/docs/" title="Visit page outside Confluence" rel="nofollow">Log4J-based<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> configuration of the most important Cayenne logger that turns on and off SQL tracing:</p>
+<div id="ConfluenceContent"><p>Cayenne logging is based on Jakarta Apache <a href="http://jakarta.apache.org/commons/logging/" rel="nofollow">commons-logging package</a>. Commons-logging allows users to choose their own logging provider, such as Log4J or <tt>java.util.logging</tt>. Below is an example of a <a href="http://logging.apache.org/log4j/docs/" rel="nofollow">Log4J-based</a> configuration of the most important Cayenne logger that turns on and off SQL tracing:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre># Turn SQL tracing on
 log4j.logger.org.apache.cayenne.access.QueryLogger = INFO
 
@@ -71,7 +71,7 @@ log4j.logger.org.apache.cayenne.access.QueryLogger = WARN
 
 <p>Another example shows how to trace Cayenne configuration loading. Cayenne XML files may contain errors, or maybe missing or inaccessible by the application; there maybe lots of other reasons why Cayenne fails to startup, from missing JDBC drivers to misspelled database URLs. This logger helps you to debug it:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>log4j.logger.org.apache.cayenne.conf = DEBUG
 log4j.logger.org.apache.cayenne.util = DEBUG
 </pre>

@@ -86,19 +86,20 @@
 
 <p>An example of getting a guranteed fresh object:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectId id = <span class="code-keyword">new</span> ObjectId(<span class="code-quote">"Artist"</span>, Artist.ARTIST_ID_PK_COLUMN, 55);
 
 <span class="code-comment">// <span class="code-keyword">this</span> constructor implicitly uses <span class="code-quote">"CACHE_REFRESH"</span> policy, so a fresh object will be returned
 </span>ObjectIdQuery query = <span class="code-keyword">new</span> ObjectIdQuery(id);
 
 DataContext context = ...
-Artist object = (Artist) DataObjectUtils.objectForQuery(context, query);</pre>
+Artist object = (Artist) DataObjectUtils.objectForQuery(context, query);
+</pre>
 </div></div>
 
 <p>An example of checking whether an object is already cached:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectId id = <span class="code-keyword">new</span> ObjectId(<span class="code-quote">"Artist"</span>, Artist.ARTIST_ID_PK_COLUMN, 55);
 ObjectIdQuery query = <span class="code-keyword">new</span> ObjectIdQuery(id, <span class="code-keyword">false</span>, ObjectIdQuery.CACHE_NO_REFRESH);
 
@@ -109,7 +110,8 @@ Artist object = (Artist) DataObjectUtils.objectForQuery(context, query);
 </span>}
 <span class="code-keyword">else</span> {
   <span class="code-comment">// cached
-</span>}</pre>
+</span>}
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

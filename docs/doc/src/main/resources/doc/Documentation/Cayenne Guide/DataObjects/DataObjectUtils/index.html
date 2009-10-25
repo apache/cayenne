@@ -63,18 +63,19 @@
 </div>
 <div id="ConfluenceContent"><p>DataObjectUtils class provides an important and easy to use facility to obtain a primary key value from a DataObject and to locate a DataObject in the database for a known primary key. Both operations work in a generic fashion and do not require primary key to be an object property.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='warningMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Security Warning</b><br />DataObjectUtils make it very easy to use a primary key value as a universal "code" for an object in web forms and URLs. This opens a potential security hole in the interface. If application code is not careful enough, a malicious user can gain access to the information she is not allowed to see (e.g. other people's accounts) simply by trying a series of sequential numbers. So, for example, it is probably okay to use product PK to build a bookmarkable link to a catalog product, but it may not be appropriate to do that for a private user profile record.</td></tr></table>
+<div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Security Warning</b><br />DataObjectUtils make it very easy to use a primary key value as a universal "code" for an object in web forms and URLs. This opens a potential security hole in the interface. If application code is not careful enough, a malicious user can gain access to the information she is not allowed to see (e.g. other people's accounts) simply by trying a series of sequential numbers. So, for example, it is probably okay to use product PK to build a bookmarkable link to a catalog product, but it may not be appropriate to do that for a private user profile record.</td></tr></table></div>
 
 <p>DataObjectUtils API is really straightforward and self-explanatory. It supports the most common case of a single column integer primary key, but also a more generic case of an arbitrary PK (that can also be compound, i.e. consist of more than one column). Here is an example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// obtain PK to build a bookmarkable artist page URL
 </span>Artist artist = ...;
 <span class="code-object">int</span> artistID = DataObjectUtils.intPKForObject(artist);
-<span class="code-object">String</span> artistURL = <span class="code-quote">"http:<span class="code-comment">//www.example.org/catalogapp/artists?a="</span> + artistID;</span></pre>
+<span class="code-object">String</span> artistURL = <span class="code-quote">"http:<span class="code-comment">//www.example.org/catalogapp/artists?a="</span> + artistID;</span>
+</pre>
 </div></div>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// find an artist from URL parameters
 </span>HttpServletRequest request = ...;
 DataContext context = ...;
@@ -82,7 +83,8 @@ DataContext context = ...;
 
 <span class="code-keyword">if</span>(idString != <span class="code-keyword">null</span>) {
   Artist artist = DataObjectUtils.objectForPK(context, Artist.class, <span class="code-object">Integer</span>.parseInt(idString));
-}</pre>
+}
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

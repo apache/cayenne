@@ -64,7 +64,7 @@
 
 <p>Cayenne can persist Java objects that implement <tt>org.apache.cayenne.Persistent</tt> interface. The interface requires for an object to provide getters and setters for three bean properties: <tt>objectId</tt>, <a href="../../../../Documentation/Cayenne Guide/Design/Persistent Object Lifecycle/index.html" title="Persistent Object Lifecycle"><tt>persistenceState</tt></a> and <tt>objectContext</tt>:</p>
 
-<div class="code"><div class="codeHeader"><b>Persistent.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Persistent.java</b></div><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">interface</span> Persistent <span class="code-keyword">extends</span> Serializable {
     ObjectId getObjectId();
 
@@ -128,7 +128,7 @@
 
 <p>If entity A has a relationship to entity B and entity B has a relationshop back to entity A, Cayenne would maintain consistency of the reverse relationship automatically. Consider this example of a many-to-one relationship, written in a form of a unit test:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">A a1;
 B b1;
 B b2;

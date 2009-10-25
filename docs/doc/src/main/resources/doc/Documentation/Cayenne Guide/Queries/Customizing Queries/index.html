@@ -67,7 +67,7 @@
 
 <p>The interface defines the following methods (ommitting irrelevant deprecated ones):</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">interface</span> Query <span class="code-keyword">extends</span> Serializable {
 
     <span class="code-object">String</span> getName();
@@ -104,7 +104,7 @@
 
 <p>One customization strategy is an "indirect" query that encapsulates some user-defined operation and in runtime resolves to one or more standard Cayenne queries. Indirect queries can be created from scratch or by extending <tt>org.apache.cayenne.query.IndirectQuery</tt>. As an example lets implement a "CountQuery" query that returns a number of rows in a given table:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class CountQuery <span class="code-keyword">extends</span> IndirectQuery {
 	<span class="code-keyword">protected</span> <span class="code-object">Class</span> objectClass;
 
@@ -132,7 +132,7 @@
 
 <p>Now you can run the query like that:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">CountQuery query = <span class="code-keyword">new</span> CountQuery(Artist.class);
 DataContext context = DataContext.createDataContext();
 

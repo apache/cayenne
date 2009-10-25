@@ -56,7 +56,7 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="AntTasks-Anttasks"></a>Ant tasks</h2>
 
-<p>Cayenne ships with Ant tasks that provide Ant frontend to a number of useful operations in Cayenne.  These tasks are part of the cayenne-tools JAR, which must be available on the ant classpath. The following tasks are included:</p>
+<p>Cayenne ships with Ant tasks that provide Ant frontend to a number of useful operations in Cayenne.  These tasks are part of the cayenne-tools JAR. The following tasks are included:</p>
 
 <ul>
 	<li><b><a href="../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html" title="cgen">cgen</a></b> - Java class generator</li>
@@ -68,15 +68,26 @@
 
 
 <h3><a name="AntTasks-ImportingCayenneTasksinbuild.xml"></a>Importing Cayenne Tasks in build.xml</h3>
-<p>Cayenne tasks above can be imported individually using Ant taskdef, as described in each task documentation page. However the users of Ant 1.6 and newer can take advantage of Antlib Ant feature. <span class="nobr"><a href="http://ant.apache.org/manual/CoreTypes/antlib.html" title="Visit page outside Confluence" rel="nofollow">Antlib<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> allows 3rd party tasks and types to be defined easily. Cayenne has an embedded antlib.xml descriptor file in the package <tt>org.apache.cayenne.tools</tt>. All of Cayenne's Ant tasks can be defined at once using the following definition in your Ant build file:</p>
 
-<div class="code"><div class="codeContent">
+<p>All Cayenne tasks above can be imported at once with "typedef". First a user needs to define Classpath structure to include cayenne-tools and a few depdendencies. Here they are shown relative to the Cayenne distro folder. In a real project they may be copied to the appropriate project folders and referenced accordingly:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-xml"><span class="code-tag">&lt;path id=<span class="code-quote">"classpath"</span>&gt;</span>
+   <span class="code-tag">&lt;fileset dir=<span class="code-quote">"lib"</span> &gt;</span>
+      <span class="code-tag">&lt;include name=<span class="code-quote">"cayenne-tools-X.X.jar"</span> /&gt;</span>
+      <span class="code-tag">&lt;include name=<span class="code-quote">"cayenne-server-X.X.jar"</span> /&gt;</span>
+      <span class="code-tag">&lt;include name=<span class="code-quote">"third-party/vpp-2.2.1.jar"</span> /&gt;</span>
+   <span class="code-tag">&lt;/fileset&gt;</span>
+<span class="code-tag">&lt;/path&gt;</span></pre>
+</div></div>
+
+<p>And then import all tasks with "typedef", referencing Antlib descriptor in Cayenne:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml"><span class="code-tag">&lt;typedef resource=<span class="code-quote">"org/apache/cayenne/tools/antlib.xml"</span>&gt;</span> 
    <span class="code-tag">&lt;classpath refid=<span class="code-quote">"classpath"</span>/&gt;</span> 
 <span class="code-tag">&lt;/typedef&gt;</span></pre>
 </div></div>
-
-<p>When using the Antlib construct, omit the <tt>&lt;taskdef&gt;</tt> elements shown in the examples of each task, as the antlib.xml file defines all of the Cayenne Ant tasks. </p>
 
 <h3><a name="AntTasks-Sections"></a>Sections</h3>
 

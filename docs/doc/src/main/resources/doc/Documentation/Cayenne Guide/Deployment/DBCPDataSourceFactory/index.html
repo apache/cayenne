@@ -58,7 +58,7 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>As an alternative to a simple and easy-to-use DataSource bundled with Cayenne, it is possible to configure a more feature-rich DataSource based on Apache Jakarta <span class="nobr"><a href="http://jakarta.apache.org/commons/dbcp" title="Visit page outside Confluence" rel="nofollow">commons-dbcp<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. To enable commons-dbcp pool, select <tt>DBCPDataSourceFactory</tt> in the Modeler for a DataNode:</p>
+<div id="ConfluenceContent"><p>As an alternative to a simple and easy-to-use DataSource bundled with Cayenne, it is possible to configure a more feature-rich DataSource based on Apache Jakarta <a href="http://jakarta.apache.org/commons/dbcp" rel="nofollow">commons-dbcp</a>. To enable commons-dbcp pool, select <tt>DBCPDataSourceFactory</tt> in the Modeler for a DataNode:</p>
 
 <p><img src="dbcp-step1.jpg" align="absmiddle" border="0" /></p>
 
@@ -68,7 +68,7 @@
 
 <p>Here is an example of such properties file contents:</p>
 
-<div class="code"><div class="codeHeader"><b>sample-dbcp.properties</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>sample-dbcp.properties</b></div><div class="codeContent panelContent">
 <pre class="code-java">cayenne.dbcp.driverClassName=com.mysql.jdbc.Driver
 cayenne.dbcp.url=jdbc:mysql:<span class="code-comment">//localhost/cayenne
 </span>cayenne.dbcp.username=john

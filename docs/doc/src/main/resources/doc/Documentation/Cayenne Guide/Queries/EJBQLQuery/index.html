@@ -69,7 +69,7 @@
 
 <p>Details of the syntax are available in various JPA literature. Here is an example of an EJBQL query:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">select p from Painting p WHERE p.estimatedPrice &gt; 3000</pre>
 </div></div>
 
@@ -81,7 +81,7 @@
 
 <p>Creating an EJBQLQuery is simple - just pass a valid EJBQL string to the constructor:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">EJBQLQuery query = <span class="code-keyword">new</span> EJBQLQuery(<span class="code-quote">"select a FROM Artist a"</span>);</pre>
 </div></div> 
 
@@ -89,7 +89,7 @@
 
 <p>Select objects:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">List artists = context.performQuery(query);</pre>
 </div></div>
 

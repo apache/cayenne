@@ -66,7 +66,7 @@
 <h3><a name="Relationships-ToOneRelationships"></a>To-One Relationships</h3>
 
 <p>"Get" methods for to-one relationships return the target Persistent object. If the object is not in memory yet, it will be fetched on first access. Modifying to-one relationships is no different from modifying attributes - just a simple call to a "set" method:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Painting painting;
 
 <span class="code-comment">// obtain artist <span class="code-keyword">for</span> a given painting
@@ -77,17 +77,17 @@
 painting.setToArtist(newArtist);
 
 <span class="code-comment">// or remove Artist at all...
-</span><span class="code-comment">// painting.setToArtist(<span class="code-keyword">null</span>);</span></pre>
+</span><span class="code-comment">// painting.setToArtist(<span class="code-keyword">null</span>);</span>
+</pre>
 </div></div>
-<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
-<p>When adding or removing an object from any kind of relationship, Cayenne will locate and modify an existing reverse relationship as appropriate.</p></td></tr></table>
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>When adding or removing an object from any kind of relationship, Cayenne will locate and modify an existing reverse relationship as appropriate.</p></td></tr></table></div>
 
 <h3><a name="Relationships-ToManyRelationships"></a>To-Many Relationships</h3>
 
 <p>"Get" methods for to-many relationships return various collections of Persistent objects. To-many relationships can be mapped as Lists (default), Collections, Sets or Maps. Below we may refer to all four types of mappings as "collections", although strictly speaking Map is not a Collection in Java.</p>
 
 <p>Just like individual Persistent objects, relationship collections are also resolved on first access (e.g. when a user tries to read an element from a collection or obtains an Iterator). For modification there are special "addTo..." and "removeFrom..." methods:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Artist artist;
 
 <span class="code-comment">// obtain a list of paintings
@@ -101,12 +101,13 @@ painting.setToArtist(newArtist);
 
 <span class="code-comment">// add a <span class="code-keyword">new</span> painting
 </span>Painting newPainting = (Painting)context.newObject(Painting.class);
-artist.addToPaintingArray(newPainting);</pre>
+artist.addToPaintingArray(newPainting);
+</pre>
 </div></div>
 
 <p>Not much difference in managing Map relationships. Let's assume that Artist's paintings are modeled as a map, keyed by painting name:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Artist artist;
 
 <span class="code-comment">// obtain a map of paintings
@@ -127,12 +128,13 @@ artist.addToPaintingArray(newPainting);</pre>
 </span><span class="code-comment">// unless the key is object id:
 </span>newPainting.setName(<span class="code-quote">"New Painting"</span>);
 
-artist.addToPaintingMap(newPainting);</pre>
+artist.addToPaintingMap(newPainting);
+</pre>
 </div></div>
 
 <p>There's one caveat though - if an object property that is used as a map key changes, the object is remapped in the relationship only after the context is committed:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Painting girl = (Painting) paintings.get(<span class="code-quote">"Girl"</span>);
 girl.setName(<span class="code-quote">"New Name"</span>);
 
@@ -160,7 +162,9 @@ girl.setName(<span class="code-quote">"New Name"</span>);
 
 <span class="code-keyword">if</span>(paintings.get(<span class="code-quote">"New Name"</span>) != <span class="code-keyword">null</span>) {
    <span class="code-comment">// now <span class="code-keyword">true</span>
-</span>}</pre>
+</span>}
+
+</pre>
 </div></div>
 
 

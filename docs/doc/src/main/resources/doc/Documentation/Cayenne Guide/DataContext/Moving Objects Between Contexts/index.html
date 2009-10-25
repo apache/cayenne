@@ -62,7 +62,7 @@
 <div id="ConfluenceContent"><h2><a name="MovingObjectsBetweenContexts-MovingObjectsBetweenContexts"></a>Moving Objects Between Contexts</h2>
 <p>Each instance of a DataObject belongs to only one DataContext for the duration of the object lifecycle. Sometimes there maybe a need to transfer a list of objects from one DataContext to another. The goal of this operation is to be able to use such objects in relationships with objects of the target DataContext. Most common use for this feature is the following. An application may have a "shared" DataContext that is used to fetch "static" read only lookup data. To avoid fetching the same data over and over again for each session, objects from the shared DataContext can be transferred to a session DataContext by calling <tt>DataContext.localObject()</tt>:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext sessionContext = DataContext.getThreadDataContext();
 
 HttpSession session; <span class="code-comment">// assume <span class="code-keyword">this</span> exists

@@ -73,7 +73,7 @@
 
 <p>Data rows example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> java.util.List;
 <span class="code-keyword">import</span> java.util.Map;
 <span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
@@ -94,7 +94,8 @@ List artistRows = ctxt.performQuery(q);
 
 <span class="code-comment">// convert row to an artist
 </span>Artist artist = (Artist)ctxt.objectFromDataRow(<span class="code-quote">"Artist"</span>, row);
-...</pre>
+...
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

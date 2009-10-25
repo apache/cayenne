@@ -61,14 +61,15 @@
 
 <ul>
 	<li>You can optionally define some additional helper functions within your extended type which Hessian will use.
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">private</span> <span class="code-object">Object</span> writeReplace() <span class="code-keyword">throws</span> ObjectStreamException {
 	<span class="code-comment">// <span class="code-keyword">return</span> some object which Hessian will serialize instead of your extended type
 </span>}
 
 <span class="code-keyword">private</span> <span class="code-object">Object</span> readResolve() <span class="code-keyword">throws</span> ObjectStreamException {
 	<span class="code-comment">// <span class="code-keyword">return</span> the <span class="code-keyword">final</span> object in its deserialised form
-</span>}</pre>
+</span>}
+</pre>
 </div></div>
 <p>Note that the functions are private - that is fine and encouraged since these functions should not normally be available to a subclass.</p></li>
 </ul>

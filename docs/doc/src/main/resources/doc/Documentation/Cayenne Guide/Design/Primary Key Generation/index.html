@@ -102,7 +102,8 @@
 
 <h3><a name="PrimaryKeyGeneration-PrimaryKeyProvidedbyDatabaseonINSERT"></a>Primary Key Provided by Database on INSERT</h3>
 
-<p>Sometimes databases have their own proprietary mechanism to generate a primary key when a new row is inserted. This feature is called "auto increment" or "identity column". Cayenne supports such primary keys out of the box. For this mechanism to be invoked, PK DbAttributes must be marked as "generated" in the Modeler. Currently MySQL and SQLServer adapters have this feature turned on by default.</p>
+<p>Sometimes databases have their own proprietary mechanism to generate a primary key when a new row is inserted. This feature is called "auto increment" or "identity column". Cayenne supports such primary keys out of the box. For this mechanism to be invoked, the DbEntity primary key generation must be marked as "Database-Generated" in the Modeler. Currently MySQL and SQLServer adapters have this feature turned on by default.<br/>
+<img src="Picture 1.png" align="absmiddle" border="0" /></p>
 
 <h3><a name="PrimaryKeyGeneration-CayenneGeneratedPrimaryKey"></a>Cayenne Generated Primary Key</h3>
 
@@ -121,7 +122,7 @@
 
 <p>To generate the necessary database objects for the primary key autogeneration, use CayenneModeler and follow the instructions given <a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/Generate Primary Key Support/index.html" title="Generate Primary Key Support">here</a>.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Cayenne only supports automatic PK generation for a single column per table.</td></tr></table>
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Cayenne only supports automatic PK generation for a single column per table.</td></tr></table></div>
 
 <h3><a name="PrimaryKeyGeneration-Sections"></a>Sections</h3>
 

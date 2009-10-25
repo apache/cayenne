@@ -65,7 +65,7 @@
 
 <p>Paged query example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> java.util.List;
 <span class="code-keyword">import</span> java.util.Map;
 <span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
@@ -94,10 +94,11 @@ q.setPageSize(50);
 
 <span class="code-comment">// This is safe and will NOT trigger a full fetch
 </span><span class="code-object">int</span> size = artistRows.size();
-...</pre>
+...
+</pre>
 </div></div>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='tipMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Combining data rows and paginated queries</b><br />Cayenne supports combining both performance optimizations in the same query - fetching data rows (see previous chapters) and paginated queries. So if users work with tabular data and don't care much about real objects, combining the two approaches would improve speed and memory use even more. </td></tr></table></div>
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Combining data rows and paginated queries</b><br />Cayenne supports combining both performance optimizations in the same query - fetching data rows (see previous chapters) and paginated queries. So if users work with tabular data and don't care much about real objects, combining the two approaches would improve speed and memory use even more. </td></tr></table></div></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

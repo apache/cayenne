@@ -59,7 +59,7 @@
 </div>
 <div id="ConfluenceContent"><p>Before we start discussing how to build expressions, it is important to understand one group of expressions widely used in Cayenne: <em>path expressions</em>. There are two types of path expressions: object path used to navigate graphs of Java objects that follow Java Bean property naming conventions and database path used to navigate the database schema. General form of path expressions is the following:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>[db:]segment[+][.segment[+]...]</pre>
 </div></div>
 
@@ -80,7 +80,7 @@
 </ul>
 
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">What Does 'navigation' Means</b><br />The term "navigation" in the description above could mean different things depending on the context. For instance, when evaluating an expression in memory, "navigating" an object path would simply return the value of a corresponding object property. When the same expression is used in a select query qualifier, it resolves to the name of a table column used in a WHERE clause of a generated SQL statement.</td></tr></table>
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>What Does 'navigation' Means</b><br />The term "navigation" in the description above could mean different things depending on the context. For instance, when evaluating an expression in memory, "navigating" an object path would simply return the value of a corresponding object property. When the same expression is used in a select query qualifier, it resolves to the name of a table column used in a WHERE clause of a generated SQL statement.</td></tr></table></div>
 
 <h3><a name="PathExpressions-DatabasePathExpressions"></a>Database Path Expressions</h3>
 <p>Database Path Expressions provide an easy way to navigate through DB table joins. Instead of complex join semantics such expressions utilize the names of DbRelationships defined in Cayenne DataMap. Translating the above object path examples into the DB realm, database path expressions might look like this:</p>

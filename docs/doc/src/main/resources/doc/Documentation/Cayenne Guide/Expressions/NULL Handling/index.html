@@ -61,15 +61,16 @@
 
 <p>For example:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// <span class="code-keyword">this</span> expression will be translated by Cayenne to the SQL like:
 </span><span class="code-comment">// ...WHERE BIRTH_DATE IS NOT NULL
-</span>Expression exp = ExpressionFactory.noMatchExp(<span class="code-quote">"birthDate"</span>, <span class="code-keyword">null</span>);</pre>
+</span>Expression exp = ExpressionFactory.noMatchExp(<span class="code-quote">"birthDate"</span>, <span class="code-keyword">null</span>);
+</pre>
 </div></div>
 
 <p>When a query is executed with this qualifier, the a SQL String similar to the following will be generated:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>... WHERE t0.BIRTH_DATE IS NOT NULL</pre>
 </div></div></div>
 </div>

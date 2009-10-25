@@ -64,7 +64,7 @@
 <div id="ConfluenceContent">
 <p><tt>RelationshipQuery</tt> is used by Cayenne internally to fetch object(s) related to a single given object via a mapped ObjRelationship. In some cases the query can be used directly in the application, e.g. if we want to refresh related objects.</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectId id = <span class="code-keyword">new</span> ObjectId(<span class="code-quote">"Artist"</span>, <span class="code-quote">"ARTIST_ID"</span>, 55);
 RelationshipQuery query = <span class="code-keyword">new</span> RelationshipQuery(id, <span class="code-quote">"paintingArray"</span>, <span class="code-keyword">true</span>);
 List paintings = context.performQuery(query);</pre>

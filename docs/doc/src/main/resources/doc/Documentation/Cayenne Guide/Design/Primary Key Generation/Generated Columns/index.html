@@ -72,10 +72,11 @@
 
 <p>If you know that your driver supports generated keys API, but Cayenne assumes it does not, you can change this setting manually:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataNode node = ...
 JdbcAdapter adapter = (JdbcAdapter) node.getAdapter();
-adapter.setSupportsGeneratedKeys(<span class="code-keyword">true</span>);</pre>
+adapter.setSupportsGeneratedKeys(<span class="code-keyword">true</span>);
+</pre>
 </div></div>
 
 <p>Use of generated keys for PK is configured for each DbEntity individually in CayenneModeler:</p>
@@ -105,8 +106,8 @@ adapter.setSupportsGeneratedKeys(<span class="code-keyword">true</span>);</pre>
 </ul>
 
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">MS SQLServer Note</b><br /><br/>
-MS drivers prior to 2005 version do not support generated columns, while newer drivers and <span class="nobr"><a href="http://jtds.sourceforge.net" title="Visit page outside Confluence" rel="nofollow">jTDS<sup><img class="rendericon" src="../../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> support it just fine. Cayenne can automatically detect the driver type and configure SQLServerAdapter, but only when AutoAdapter is used. To make sure auto-detection works, clear the "Custom Adapter" field for the corresponding DataNode in the Modeler.</td></tr></table></div>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>MS SQLServer Note</b><br /><br/>
+MS drivers prior to 2005 version do not support generated columns, while newer drivers and <a href="http://jtds.sourceforge.net" rel="nofollow">jTDS</a> support it just fine. Cayenne can automatically detect the driver type and configure SQLServerAdapter, but only when AutoAdapter is used. To make sure auto-detection works, clear the "Custom Adapter" field for the corresponding DataNode in the Modeler.</td></tr></table></div></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

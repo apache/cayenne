@@ -90,7 +90,7 @@
 
 <p>Custom validation method implementation would normally append any failures to the provided ValidationResult instance. After validating all non-committed objects, DataContext (or rather its ObjectStore) will check if the ValidationResult is not empty, and throw an exception if there is at least one failure. Typical custom validation method would look like that:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class Painting <span class="code-keyword">extends</span> _Painting {
    ...
    <span class="code-keyword">protected</span> void validateForSave(ValidationResult validationResult) {
@@ -105,7 +105,8 @@
 </span>      }
    }
    ...
-}</pre>
+}
+</pre>
 </div></div>
 
 <h2><a name="DataObjectValidation-ValidationMethodswithSideEffects"></a>Validation Methods with Side Effects</h2>

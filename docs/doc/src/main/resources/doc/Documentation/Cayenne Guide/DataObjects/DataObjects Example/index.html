@@ -62,7 +62,7 @@
 </ul>
 </div>
 <div id="ConfluenceContent"><p>As discussed in <a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html" title="DataObjects">DataContext</a> chapter, any changes made to the DataObjects via "set*" methods are synchronized with the database by calling <tt>DataContext.commitChanges</tt>. Here is an example showing how the <tt>Painting</tt> object is fetched, modified and saved back. The following modifications are performed: the price of the first retrieved painting is doubled, a new painting is added that belongs to the same artist as the painting fetched before:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> java.math.BigDecimal;
 <span class="code-keyword">import</span> java.util.List;
 <span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
@@ -106,10 +106,11 @@ List realExpensiveArt = ctxt.performQuery(q);
   <span class="code-comment">// save all the changes we've made so far
 </span>  ctxt.commitChanges();
 }
-...</pre>
+...
+</pre>
 </div></div>
 <p>If SQL tracing is turned on, and depending on the preexisting data in the database, the following SQL statements might be printed to console during the commit phase:</p>
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>[main 12-22 15:50:19] QueryLogger: --- will run 2 queries.
 [main 12-22 15:50:19] QueryLogger: INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE,
  ARTIST_ID) VALUES (?, ?, ?, ?) [params: 200, 'Sunset as it is', 5000000, 10]

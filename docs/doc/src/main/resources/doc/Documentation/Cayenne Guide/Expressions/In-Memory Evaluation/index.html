@@ -70,11 +70,11 @@
 </ul>
 
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='warningMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Limitation of In-Memory Expressions</b><br />Current limitation of in-memory expressions is that no collections are permitted in the object property path. In case of DataObjects that means that path containing to-many relationships may not work for in-memory evaluation.</td></tr></table>
+<div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Limitation of In-Memory Expressions</b><br />Current limitation of in-memory expressions is that no collections are permitted in the object property path. In case of DataObjects that means that path containing to-many relationships may not work for in-memory evaluation.</td></tr></table></div>
 
 <p>Here is an example of evaluating expression with a single object:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class User <span class="code-keyword">extends</span> CayenneDataObject {
      <span class="code-keyword">public</span> <span class="code-object">String</span> getName() {
          ...
@@ -100,14 +100,16 @@ NonPersistentUser nonPersistentBean;
 
 <span class="code-keyword">if</span>(exp.match(nonPersistentBean)) {
     <span class="code-comment">// <span class="code-keyword">do</span> something <span class="code-keyword">else</span>
-</span>}</pre>
+</span>}
+</pre>
 </div></div>
 
 <p>Another example - using expression to filter a list objects:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Expression exp = ExpressionFactory.likeExp(<span class="code-quote">"artistName"</span>, <span class="code-quote">"A%"</span>);  
-List startWithA = exp.filterObjects(artists);</pre>
+List startWithA = exp.filterObjects(artists);
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

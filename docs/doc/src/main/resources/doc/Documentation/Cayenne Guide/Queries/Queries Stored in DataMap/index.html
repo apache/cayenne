@@ -65,7 +65,7 @@
 <p>To facilitate reuse of queries users can assign symbolic names to them and store such named queries in a DataMap. Normally this is done by <a href="../../../../Documentation/Modeler Guide/Modeling Queries/index.html" title="Modeling Queries">creating a query in CayenneModeler</a>. Storing queries in a DataMap reduces the amount of code and speeds up query creation process.</p>
 
 <p>This example shows how to get a shared instance of a stored query, and use it as a template for customized query.</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext context = ... <span class="code-comment">// assume <span class="code-keyword">this</span> exists
 </span>
 <span class="code-comment">// 1. lookup prototype
@@ -79,14 +79,16 @@ params.put(<span class="code-quote">"aname"</span>, <span class="code-quote">"Mo
 SelectQuery query = prototype.queryWithParameters(params);
 
 <span class="code-comment">// 3. execute query
-</span>List objects = context.performQuery(query);</pre>
+</span>List objects = context.performQuery(query);
+</pre>
 </div></div>
 <p>DataContext supports running a named query with preset parameters directly:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext context = ... <span class="code-comment">// assume <span class="code-keyword">this</span> exists
 </span>
 <span class="code-comment">// <span class="code-quote">"<span class="code-keyword">false</span>"</span> indicates that a cached result should be used <span class="code-keyword">if</span> available 
-</span>List objects = context.performQuery(<span class="code-quote">"MySelect"</span>, <span class="code-keyword">false</span>);</pre>
+</span>List objects = context.performQuery(<span class="code-quote">"MySelect"</span>, <span class="code-keyword">false</span>);
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

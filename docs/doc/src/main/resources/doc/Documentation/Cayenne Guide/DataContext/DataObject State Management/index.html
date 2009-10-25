@@ -73,7 +73,7 @@
 
 <p>Whenever a selecting query is executed by a DataContext, all fetched objects are automatically registered with this DataContext. On the other hand, newly created objects must be registered explicitly:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 DataContext context; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
@@ -87,7 +87,7 @@ context.registerNewObject(artist);
 
 <p>This code can be simplified - object creation and registrations steps can be combined in one method call:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 DataContext context; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
@@ -103,7 +103,7 @@ Artist artist = (Artist) context.newObject(Artist.class);</pre>
 
 <p>When a new object is inserted to the DataContext as described above, it becomes "NEW":</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 DataContext context; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
@@ -114,21 +114,21 @@ DataContext context; <span class="code-comment">// assume <span class="code-keyw
 
 <p>When a DataContext is committed, such object becomes "COMMITTED":</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// artist will become PersistenceState.COMMITTED
 </span>context.commitChanges();</pre>
 </div></div>
 
 <p>When any of the attributes or relationships of the fetched or committed object are changed, such an object becomes MODIFIED:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// <span class="code-keyword">this</span> will change the object state to PersistenceState.MODIFIED
 </span>artist.setName(<span class="code-quote">"NewName"</span>);</pre>
 </div></div>
 
 <p>When a fetched or committed object is explicitly deleted from the DataContext, object becomes DELETED:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// <span class="code-keyword">this</span> will change the object state to PersistenceState.DELETED
 </span>context.deleteObject(artist);</pre>
 </div></div>

@@ -56,7 +56,7 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><table cellpadding='5' width='85%' cellspacing='8px' class='warningMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Deprecation Warning</b><br />cdeploy is deprecated in 3.0 and will be removed in subsequent releases</td></tr></table>
+<div id="ConfluenceContent"><div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Deprecation Warning</b><br />cdeploy is deprecated in 3.0 and will be removed in subsequent releases</td></tr></table></div>
 
 <p><tt>cdeploy</tt> is an Ant task that configures Cayenne connection information in existing jar files that contain Cayenne project information. It is useful for the automation of deployment of Cayenne-based frameworks in different environments.</p>
 
@@ -126,23 +126,20 @@ Nested node Parameters:</p>
 
 <h3><a name="cdeploy-Examples"></a>Examples</h3>
 
-<p>Load the Ant task <em>(note: if you already loaded all Cayenne tasks via an antlib taskdef <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html" title="Ant Tasks">described before</a>, this step is not needed)</em>: </p>
-<div class="code"><div class="codeContent">
-<pre class="code-xml"><span class="code-tag">&lt;taskdef name=<span class="code-quote">"cdeploy"</span> classname=<span class="code-quote">"org.apache.cayenne.tools.DeploymentConfigurator"</span>/&gt;</span></pre>
-</div></div>
-
 <p>Here is an example of using <tt>cdeploy</tt> to regenerate a jar file called "business.jar" with connection info located in "alt.driver.xml":</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml"><span class="code-tag">&lt;cdeploy src=<span class="code-quote">"business.jar"</span>&gt;</span>
     <span class="code-tag">&lt;node name=<span class="code-quote">"main-node"</span> driverFile=<span class="code-quote">"alt.driver.xml"</span>/&gt;</span>
-<span class="code-tag">&lt;/cdeploy&gt;</span></pre>
+<span class="code-tag">&lt;/cdeploy&gt;</span>
+</pre>
 </div></div>
 
 <p>An example of using <tt>cdeploy</tt> to redeploy a 3rd party library that contains DataMaps, but may not contain cayenne.xml:</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-xml"><span class="code-tag">&lt;cdeploy src=<span class="code-quote">"business.jar"</span> altProjectFile=<span class="code-quote">"my-cayenne.xml"</span>/&gt;</span></pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-xml"><span class="code-tag">&lt;cdeploy src=<span class="code-quote">"business.jar"</span> altProjectFile=<span class="code-quote">"my-cayenne.xml"</span>/&gt;</span>
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

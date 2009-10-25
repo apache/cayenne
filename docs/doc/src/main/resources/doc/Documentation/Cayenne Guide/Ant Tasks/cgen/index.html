@@ -168,7 +168,7 @@
 </tr>
 <tr>
 <td class='confluenceTd'>config</td>
-<td class='confluenceTd'>CGen with version="1.2" also supports <span class="nobr"><a href="http://vpp.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">VPP<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> config nested elements for configuring the velocity template engine and adding objects to the velocity template. You can also reference a vppconfig element declared outside of the CGen task, but you'll need to insure that both <tt>vppconfig</tt> and <tt>cgen</tt> have been loaded with the same classloader by using the same ant taskdef loaderRef value for both tasks. See the <span class="nobr"><a href="http://vpp.sourceforge.net/manual/vppconfig.html" title="Visit page outside Confluence" rel="nofollow">VPP VPPConfig Manual<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> page for complete information.</td>
+<td class='confluenceTd'>CGen with version="1.2" also supports <a href="http://vpp.sourceforge.net/" rel="nofollow">VPP</a> config nested elements for configuring the velocity template engine and adding objects to the velocity template. You can also reference a vppconfig element declared outside of the CGen task, but you'll need to insure that both <tt>vppconfig</tt> and <tt>cgen</tt> have been loaded with the same classloader by using the same ant taskdef loaderRef value for both tasks. See the <a href="http://vpp.sourceforge.net/manual/vppconfig.html" rel="nofollow">VPP VPPConfig Manual</a> page for complete information.</td>
 <td class='confluenceTd'>No</td>
 </tr>
 </tbody></table>
@@ -176,18 +176,20 @@
 <h3><a name="cgen-Examples"></a>Examples</h3>
 
 <p>Here is an example of using CGen to generate subclass/superclass pairs from DataMap located in "src/datamap.xml". All generated subclasses and superclasses will be saved in the same directory "src/java/dobj" regardless of their package names:</p>
-<div class="code"><div class="codeContent">
-<pre class="code-xml"><span class="code-tag">&lt;cgen map=<span class="code-quote">"src/datamap.xml"</span> destDir=<span class="code-quote">"src/java/dobj"</span> usepkgpath=<span class="code-quote">"false"</span>/&gt;</span></pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-xml"><span class="code-tag">&lt;cgen map=<span class="code-quote">"src/datamap.xml"</span> destDir=<span class="code-quote">"src/java/dobj"</span> usepkgpath=<span class="code-quote">"false"</span>/&gt;</span>
+</pre>
 </div></div>
 <p>Here is an example of using CGen to generate html pages for all entities starting with "Artist" in the DataMap:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml">&lt;cgen map=<span class="code-quote">"src/datamap.xml"</span> destDir=<span class="code-quote">"src/doc/web"</span> makepairs=<span class="code-quote">"false"</span> usepkgpath=<span class="code-quote">"false"</span>
-    template=<span class="code-quote">"EntityReport.vm"</span> includeEntities=<span class="code-quote">"Artist*"</span> outputPattern=<span class="code-quote">"*Report.html"</span>/&gt;</pre>
+    template=<span class="code-quote">"EntityReport.vm"</span> includeEntities=<span class="code-quote">"Artist*"</span> outputPattern=<span class="code-quote">"*Report.html"</span>/&gt;
+</pre>
 </div></div>
 
 <p>Here is an example of using CGen with a nested config element:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml">&lt;cgen map=<span class="code-quote">"src/datamap.xml"</span>
     destDir=<span class="code-quote">"src/doc/web"</span>
     makepairs=<span class="code-quote">"false"</span>
@@ -201,12 +203,13 @@
             <span class="code-tag">&lt;tool key=<span class="code-quote">"myToolName"</span> className=<span class="code-quote">"org.myDomain.MyTool"</span> /&gt;</span>
         <span class="code-tag">&lt;/context&gt;</span>
     <span class="code-tag">&lt;/config&gt;</span>
-<span class="code-tag">&lt;/cgen&gt;</span></pre>
+<span class="code-tag">&lt;/cgen&gt;</span>
+</pre>
 </div></div>
 
 <p>Here is an example of using CGen with vppconfig:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml">&lt;typedef name=<span class="code-quote">"vppconfig"</span>
     classname=<span class="code-quote">"foundrylogic.vpp.VPPConfig"</span>
     loaderref=<span class="code-quote">"aclasspathloader"</span>&gt;
@@ -228,7 +231,8 @@
     includeEntities=<span class="code-quote">"Artist*"</span>
     outputPattern=<span class="code-quote">"*Report.html"</span>&gt;
     <span class="code-tag">&lt;config refid=<span class="code-quote">"myconfig"</span> /&gt;</span>
-<span class="code-tag">&lt;/cgen&gt;</span></pre>
+<span class="code-tag">&lt;/cgen&gt;</span>
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

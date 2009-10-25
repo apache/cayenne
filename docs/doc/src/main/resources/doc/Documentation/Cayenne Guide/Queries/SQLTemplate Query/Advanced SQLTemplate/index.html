@@ -77,7 +77,7 @@
 
 <p>Here is the API to force Cayenne to follow the naming convention (also available as a dropdown in the Modeler). <em>Note that you shouldn't bother with this unless you are getting CayenneRuntimeExceptions when fetching with SQLTemplate.</em></p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(<span class="code-quote">"SELECT * FROM ARTIST"</span>);
 query.setColumnNamesCapitalization(CapsStrategy.LOWER);
 List objects = context.performQuery(query);</pre>
@@ -85,7 +85,7 @@ List objects = context.performQuery(query);</pre>
 
 <p>or </p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(<span class="code-quote">"SELECT * FROM ARTIST"</span>);
 query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 List objects = context.performQuery(query);</pre>
@@ -96,7 +96,7 @@ List objects = context.performQuery(query);</pre>
 
 <p><a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/Prefetching/index.html" title="Prefetching">Prefetching</a> allows to fetch related objects of different kinds in a single query run. SQLTemplate uses "joint" prefetching. However Cayenne expects the user to provide special naming of the result columns to be able to instantiate persistent objects from the result set. Columns belonging to the "root" entity of the query should use unqualified names corresponding to the root DbEntity columns, for each related entity column names must be prefixed with relationship name and a dot (e.g. "toArtist.ID"). Column naming can be controlled with "#result" directive. E.g.:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SQLTemplate q = <span class="code-keyword">new</span> SQLTemplate(
                 Artist.class,
                 <span class="code-quote">"SELECT distinct "</span>

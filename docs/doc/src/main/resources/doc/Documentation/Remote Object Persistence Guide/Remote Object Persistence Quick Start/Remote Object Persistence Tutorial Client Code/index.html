@@ -87,9 +87,10 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
-<pre class="code-java">ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(<span class="code-quote">"http:<span class="code-comment">//localhost:8080/cayenne-service"</span>);
-</span>DataChannel channel = <span class="code-keyword">new</span> ClientChannel(connection);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
+<pre class="code-java">		ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(<span class="code-quote">"http:<span class="code-comment">//localhost:8080/cayenne-service"</span>);
+</span>DataChannel channel = <span class="code-keyword">new</span> ClientChannel(connection);
+</pre>
 </div></div>
 
 <p>This is all you need to connect to the remote service. Note that DataChannel abstraction is used on the server as well, it is just not as visible - DataDomain implements DataChannel.</p>
@@ -103,13 +104,13 @@
 </ul>
 
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext context = DataContext.createDataContext();</pre>
 </div></div>
 
 <p>with this</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectContext context = <span class="code-keyword">new</span> CayenneContext(channel);</pre>
 </div></div>
 
@@ -122,7 +123,7 @@
 
 <p>The only remaining error is caused by this line:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">picasso.setDateOfBirthString(<span class="code-quote">"18811025"</span>);</pre>
 </div></div>
 
@@ -141,7 +142,7 @@
 </ul>
 
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>ul 4, 2006 2:18:23 PM org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Connecting to [http://localhost:8080/cayenne-service] - dedicated session.
 Jul 4, 2006 2:18:24 PM org.apache.cayenne.remote.hessian.HessianConnection connect

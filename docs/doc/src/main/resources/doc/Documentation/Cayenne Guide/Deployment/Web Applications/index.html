@@ -62,7 +62,7 @@
 
 <p>When deploying an application in a web container it is possible to follow the procedure for the standalone applications, i.e. put all XML files in the application CLASSPATH (e.g. in "mywebapp/WEB-INF/classes/", but DON'T put it in container shared locations!). Session DataContext can be obtained via ServletUtil:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">HttpSession session = ...;
 DataContext context = ServletUtil.getSessionContext(session);</pre>
 </div></div>
@@ -73,7 +73,7 @@ DataContext context = ServletUtil.getSessionContext(session);</pre>
 
 <p>Adding the following filter to the <tt>web.xml</tt> would automate Cayenne setup in the web application:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;filter&gt;
     &lt;filter-name&gt;CayenneFilter&lt;/filter-name&gt;
     &lt;filter-class&gt;org.apache.cayenne.conf.WebApplicationContextFilter&lt;/filter-class&gt;
@@ -85,15 +85,15 @@ DataContext context = ServletUtil.getSessionContext(session);</pre>
 </pre>
 </div></div>
 
-<p>The filter will ensure that for each matching request a DataContext is bound to the request thread. So you can retrieve it anywhere in the application, even if you don't have a reference to the web environment:</p>
+<p>The filter will ensure that for each matching request a ObjectContext (which is actually a DataContext instance) is bound to the request thread. So you can retrieve it anywhere in the application, even if you don't have a reference to the web environment:</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java">DataContext context = DataContext.getThreadDataContext();</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ObjectContext context = BaseContext.getThreadObjectContext();</pre>
 </div></div>
 
 <p>Filter can match a specific URL as shown above, or a specific servlet:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;servlet&gt;
    &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
    &lt;servlet-class&gt;org.example.MyServlet&lt;/servlet-class&gt;
@@ -113,7 +113,7 @@ DataContext context = ServletUtil.getSessionContext(session);</pre>
 
 <p>Additionally the filter supports putting files in <tt>myapp/WEB-INF/</tt> directory instead of the CLASSPATH, so a .war file may look like this:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>index.jsp
 WEB-INF/cayenne.xml
 WEB-INF/xyz.map.xml
@@ -122,7 +122,7 @@ WEB-INF/lib/...</pre>
 
 <p>Actually, Cayenne files can be stored in any subdirectory of <tt>myapp/WEB-INF/</tt>. To specify a subdirectory, you'll need to add <tt>&lt;context-param&gt;</tt> named <tt>cayenne.configuration.path</tt> to your application descriptor:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;context-param&gt;
     &lt;param-name&gt;cayenne.configuration.path&lt;/param-name&gt;
     &lt;param-value&gt;/WEB-INF/config/cayenne-files&lt;/param-value&gt;

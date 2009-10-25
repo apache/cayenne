@@ -57,11 +57,12 @@
 
 <p>In addition to caching individual objects, Cayenne can cache query results. Just like with object cache, the actual caching happens behind the scenes, so users only need to declare the desired cache policy, either in the code or via the Modeler:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class, /* some qualifier */);
 query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 query.setCacheGroups(<span class="code-quote">"artists"</span>, <span class="code-quote">"recent_exhibits"</span>);
-List&lt;Artist&gt; artists = context.performQuery(query);</pre>
+List&lt;Artist&gt; artists = context.performQuery(query);
+</pre>
 </div></div>
 
 <p>This query runs against the DB for the first time. Later if this query (or another query with the same parameters) is run again, the result is quickly returned from cache, and no DB access is performed.</p>
@@ -88,10 +89,10 @@ List&lt;Artist&gt; artists = context.performQuery(query);</pre>
 
 <h4><a name="QueryResultCaching-AdvancedCacheProviderOSCache"></a>Advanced Cache Provider - OSCache</h4>
 
-<p>A much more advanced cache provider can be installed via <tt>org.apache.cayenne.cache.OSQueryCacheFactory</tt>. The actual cache is using <span class="nobr"><a href="http://www.opensymphony.com/oscache/" title="Visit page outside Confluence" rel="nofollow">OSCache<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> by OpenSymphony, so <a href="../../../../Documentation/Cayenne Guide/Installation/JAR Files and Dependencies/index.html" title="JAR Files and Dependencies">OSCache jars</a> need to be added to the application classpath. Cache configuration should be created outside Cayenne tools (e.g. in a text editor or in Eclipse) in a file called <br/>
-<tt>"oscache.properties"</tt>. This file should be placed in the application classpath. The file format follows a regular java properties file. Here is an example that shows some of its capabilities, and demonstrates how to configure cache policies per cache group. More standard properties are discussed in the <span class="nobr"><a href="http://www.opensymphony.com/oscache/wiki/Configuration.html" title="Visit page outside Confluence" rel="nofollow">OSCache documentation<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</p>
+<p>A much more advanced cache provider can be installed via <tt>org.apache.cayenne.cache.OSQueryCacheFactory</tt>. The actual cache is using <a href="http://www.opensymphony.com/oscache/" rel="nofollow">OSCache</a> by OpenSymphony, so <a href="../../../../Documentation/Cayenne Guide/Installation/JAR Files and Dependencies/index.html" title="JAR Files and Dependencies">OSCache jars</a> need to be added to the application classpath. Cache configuration should be created outside Cayenne tools (e.g. in a text editor or in Eclipse) in a file called <br/>
+<tt>"oscache.properties"</tt>. This file should be placed in the application classpath. The file format follows a regular java properties file. Here is an example that shows some of its capabilities, and demonstrates how to configure cache policies per cache group. More standard properties are discussed in the <a href="http://www.opensymphony.com/oscache/wiki/Configuration.html" rel="nofollow">OSCache documentation</a>.</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre># OSCache standard configuration:
                        
 #cache.memory=true
@@ -126,7 +127,7 @@ cayenne.group.artists.cron = 10 1 * * *
 
 <p>The first step is to find a place where an explicit cache update should be triggered. Usually this is done via <a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">post commit callbacks</a>. A callback or a listener method would gain access to the QueryCache instance and call "removeGroup" for all groups that need to be invalidated. Here is where careful selection of query cache groups pays off. E.g. we may have tagged all queries fetching deceased artists with "classics" and all modern artists as "modern". The Artist entity can map a callback method similar to this:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">void onCommit() {
    QueryCache cache = ((BaseContext) getObjectContext()).getQueryCache();
    <span class="code-keyword">if</span>(isModern()) {
@@ -141,14 +142,14 @@ cayenne.group.artists.cron = 10 1 * * *
 
 <p>This will ensure that subsequent "performQuery" calls will not use stale data, and the cache gets lazily refreshed.</p>
 
-<p>The above approach is applicable to both LRU Map and OSCache. As expected, OSCache gives us extra capabilities in this area as well. As we've mentioned already, sending object change notifications between (possibly remote) Cayenne stacks is inefficient most of the time. Not so with OSCache. It can send remote invalidation notifications that are simply cache group names, so they create very little network traffic. Also on the receiving end invalidation is processed lazily, so no extra CPU cycles are immediately needed for the application to process an event. OSCache comes with support for JavaGroups and JMS notifications. To enable it add one of the following entries to <tt>"oscache.properties"</tt> per <span class="nobr"><a href="http://www.opensymphony.com/oscache/wiki/Clustering.html" title="Visit page outside Confluence" rel="nofollow">OSCache clustering guide<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> :</p>
+<p>The above approach is applicable to both LRU Map and OSCache. As expected, OSCache gives us extra capabilities in this area as well. As we've mentioned already, sending object change notifications between (possibly remote) Cayenne stacks is inefficient most of the time. Not so with OSCache. It can send remote invalidation notifications that are simply cache group names, so they create very little network traffic. Also on the receiving end invalidation is processed lazily, so no extra CPU cycles are immediately needed for the application to process an event. OSCache comes with support for JavaGroups and JMS notifications. To enable it add one of the following entries to <tt>"oscache.properties"</tt> per <a href="http://www.opensymphony.com/oscache/wiki/Clustering.html" rel="nofollow">OSCache clustering guide</a> :</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JMSBroadcastingListener
 # other JMS paramaters go here...</pre>
 </div></div>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener
 # other JavaGroups paramaters go here...</pre>
 </div></div>

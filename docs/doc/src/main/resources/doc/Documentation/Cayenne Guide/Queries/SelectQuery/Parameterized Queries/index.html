@@ -68,11 +68,11 @@
 </ul>
 </div>
 <div id="ConfluenceContent"><p>SelectQuery objects can be rather complex. They may contain long qualifiers and lots of tuning parameters. Parameterized Queries feature addresses reusability of complex queries. With this feature, for each group of queries that differ only in the values used in the qualifier, a developer may create a single shared "prototype" or "template" query, and use it later as a factory for other queries. All settings configured in the prototype object will be passed to the final queries. Qualifier of the prototype query may use named parameters that are substituted for real values when a final query is created from the prototype.</p>
-<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>"Prototype" queries are normally created in CayenneModeler and stored in the DataMap XML file. "Queries Stored in DataMap" chapter describes how to use such templates. This chapter shows how to create them on the spot using the API calls.</td></tr></table>
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>"Prototype" queries are normally created in CayenneModeler and stored in the DataMap XML file. "Queries Stored in DataMap" chapter describes how to use such templates. This chapter shows how to create them on the spot using the API calls.</td></tr></table></div>
 
 <p>Building a prototype query using <tt>Expression.fromString(..)</tt>:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.exp.Expression;
 <span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
 ...
@@ -81,12 +81,13 @@
 
 <span class="code-comment">// build a query prototype of a query - simply another select query
 </span>SelectQuery proto = <span class="code-keyword">new</span> SelectQuery(Painting.class, qual);
-proto.setDistinct(<span class="code-keyword">true</span>);</pre>
+proto.setDistinct(<span class="code-keyword">true</span>);
+</pre>
 </div></div>
 
 <p>Same example but using ExpressionFactory:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> java.util.*;
 <span class="code-keyword">import</span> org.apache.cayenne.exp.Expression;
 <span class="code-keyword">import</span> org.apache.cayenne.exp.ExpressionFactory;
@@ -104,7 +105,8 @@ Expression qual = ExpressionFactory.joinExp(Expression.OR, list);
 
 <span class="code-comment">// build a query prototype of a query - simply another select query
 </span>SelectQuery proto = <span class="code-keyword">new</span> SelectQuery(Painting.class, qual);
-proto.setDistinct(<span class="code-keyword">true</span>);</pre>
+proto.setDistinct(<span class="code-keyword">true</span>);
+</pre>
 </div></div>
 <p>Prototype built in the example above can be used to create other queries. Relevalnt API is:</p>
 
@@ -118,7 +120,7 @@ proto.setDistinct(<span class="code-keyword">true</span>);</pre>
 
 <p>Example of using queryWithParameters is shown below:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> java.util.Map;
 <span class="code-keyword">import</span> java.util.HashMap;
 <span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
@@ -139,7 +141,8 @@ SelectQuery query1 = proto.queryWithParameters(params1);
 params2.put(<span class="code-quote">"aname"</span>, <span class="code-quote">"Monet"</span>);
 params2.put(<span class="code-quote">"pname"</span>, <span class="code-quote">"The Beach at Trouville"</span>);
 SelectQuery query2 = proto.queryWithParameters(params2);
-...</pre>
+... 
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

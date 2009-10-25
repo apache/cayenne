@@ -54,7 +54,7 @@
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Tips/index.html">Modeling Tips</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><table cellpadding='5' width='85%' cellspacing='8px' class='warningMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>This page and the inheritance features in Cayenne are a work in progress. Features are described here which are not yet available in a release of Cayenne. They are subject to change before final release.</td></tr></table>
+<div id="ConfluenceContent"><div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>This page and the inheritance features in Cayenne are a work in progress. Features are described here which are not yet available in a release of Cayenne. They are subject to change before final release.</td></tr></table></div>
 
 <h3><a name="Inheritanceoverview-Whyuseinheritance%3F"></a>Why use inheritance?</h3>
 
@@ -63,10 +63,11 @@ We will use a simple example from school database to illustrate the concepts: a 
 
 <p><img src="inheritance-example.png" align="absmiddle" border="0" /></p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">abstract</span> class Person <span class="code-keyword">extends</span> PersistentObject {}
 <span class="code-keyword">public</span> class Teacher <span class="code-keyword">extends</span> Person {}
-<span class="code-keyword">public</span> class Student <span class="code-keyword">extends</span> Person {}</pre>
+<span class="code-keyword">public</span> class Student <span class="code-keyword">extends</span> Person {}
+</pre>
 </div></div>
 
 <p>Some possibilities are immediately obvious: you may wish to write a messaging system which sends emails to both Students and Teachers. Rather than deal with the two classes separately, now you can move the emailAddress attribute to the Person superclass. Your messaging framework can now work with Person, irrespective if they are students, tutors or any other subclasss of Person. Or perhaps you want to be able to link book loans to both Students and Teachers. You can do this by moving the relationship with book loans into the Person superclass.</p>
@@ -143,12 +144,13 @@ Primary key: in superclass. Copied into subclass to form the one-to-one join.</p
 
 <p>Sometimes you don't need inheritance but rather you want Cayenne to give you a simple way to define an interface for your classes. The regular Student and Teacher classes both need to implement emailAddress attributes so that you have a consistent way to access that attribute.</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">interface</span> Address {
 	<span class="code-keyword">public</span> <span class="code-object">String</span> getEmailAddress();
 }
 <span class="code-keyword">public</span> class Teacher <span class="code-keyword">extends</span> PersistentObject <span class="code-keyword">implements</span> Address {}
-<span class="code-keyword">public</span> class Student <span class="code-keyword">extends</span> PersistentObject <span class="code-keyword">implements</span> Address {}</pre>
+<span class="code-keyword">public</span> class Student <span class="code-keyword">extends</span> PersistentObject <span class="code-keyword">implements</span> Address {}
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

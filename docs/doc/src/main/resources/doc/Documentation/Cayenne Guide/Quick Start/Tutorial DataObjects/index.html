@@ -64,7 +64,7 @@
 <div id="ConfluenceContent"><p>Persistent classes in Cayenne implement a <a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html" title="DataObjects">DataObject interface</a>. If you inspect any of classes <a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Generate Database and Java Classes/index.html" title="Tutorial Generate Database and Java Classes">generated earlier</a> in this tutorial (e.g. <tt>cayenne.tutorial.Artist</tt>), you'll see that it extends a class with the name that starts with underscore (<tt>cayenne.tutorial.auto._Artist</tt>), which in turn extends from <tt>org.apache.cayenne.CayenneDataObject</tt>. Splitting each persistent class into user-customizable subclass (Xyz) and a generated superclass (_Xyz) is a useful technique to avoid overwriting of the custom code when refreshing classes from the mapping model.</p>
 
 <p>Let's add a utility method to the Artist class that sets Artist date of birth, taking a string argument for the date:</p>
-<div class="code"><div class="codeHeader"><b>Artist.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Artist.java</b></div><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">package</span> cayenne.tutorial;
 
 <span class="code-keyword">import</span> java.text.ParseException;
@@ -108,7 +108,7 @@
 
 <p>An object is created and registered with DataContext using "newObject" method. (Note that objects must be registered with DataContext to be persisted and to allow relationships with other objects.) Add this code to the "main" method:</p>
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">Artist picasso = (Artist) context.newObject(Artist.class);
 picasso.setName(<span class="code-quote">"Pablo Picasso"</span>);
 picasso.setDateOfBirthString(<span class="code-quote">"18811025"</span>);</pre>
@@ -116,7 +116,7 @@ picasso.setDateOfBirthString(<span class="code-quote">"18811025"</span>);</pre>
 
 <p>Note that at this point "picasso" object is only stored in memory and is not saved in teh database. Let's continue by adding a Metropolitan Museum gallery object and a few Picasso paintings:</p>
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">Gallery metropolitan = (Gallery) context.newObject(Gallery.class);
 metropolitan.setName(<span class="code-quote">"Metropolitan Museum of Art"</span>); 
 
@@ -129,7 +129,7 @@ stein.setName(<span class="code-quote">"Gertrude Stein"</span>);</pre>
 
 <p>Now we can link the objects together, establishing relationships. Note that in each case below relationships are automatically estabslished in both directions (e.g. <tt>picasso.addToPaintings(girl)</tt> has exactly the same effect as <tt>girl.setToArtist(picasso)</tt>).</p>
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">picasso.addToPaintings(girl);
 picasso.addToPaintings(stein);
         
@@ -139,13 +139,13 @@ stein.setGallery(metropolitan);</pre>
 
 <p>Now lets save all five new objects:</p>
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">context.commitChanges();</pre>
 </div></div>
 
 <p>Now you can run the application again as described <a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial DataContext/index.html" title="Tutorial DataContext">here</a>. The new output will look like this:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>INFO  QueryLogger: Created connection pool: jdbc:derby:/Users/andrus/Desktop/testdb;create=true
 	Driver class: org.apache.derby.jdbc.EmbeddedDriver
 	Min. connections in the pool: 1

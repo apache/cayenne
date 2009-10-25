@@ -62,10 +62,11 @@
 
 <p>In a standalone Java application, DefaultConfiguration is used to locate and load configuration files. This approach does not require any additional setup. Shared configuration instance can simply be obtained by calling <tt>getSharedConfiguration()</tt>:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.Configuration;
 ...           
-Configuration conf = Configuration.getSharedConfiguration();</pre>
+Configuration conf = Configuration.getSharedConfiguration();
+</pre>
 </div></div>
 
 <p>DefaultConfiguration will expect cayenne.xml file to be located in the CLASSPATH. The same is true for DataMaps referenced in cayenne.xml. Their location is resolved relative to CLASSPATH as well. To make these files available to Cayenne, you can simply include them in the root of your application jar file (read <a href="../../../../Documentation/Cayenne Guide/Deployment/Customizing Configuration/index.html" title="Customizing Configuration">Customizing Configuration</a> on how to change that).</p>
@@ -76,19 +77,21 @@ Configuration conf = Configuration.getSharedConfiguration();</pre>
 
 <p>In a setup that relies on shared Configuration a DataContext can be created by calling <tt>DataContext.createDataContext()</tt> static method that internally uses shared configuration:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
-DataContext context = DataContext.createDataContext();</pre>
+DataContext context = DataContext.createDataContext();
+</pre>
 </div></div>
 
 <p>Later a DataContext can be passed around in the code explicitly, or it can be bound to an execution thread, making it accessible to all code being run within this thread (e.g. this can be a Swing event thread):</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 ...
 DataContext context = DataContext.createDataContext();
-DataContext.bindThreadDataContext(context);</pre>
+DataContext.bindThreadDataContext(context);
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

@@ -67,6 +67,7 @@
 
 <ul>
 	<li><tt>cayenne-client-x.x.jar</tt> - a subset of cayenne-server.jar trimmed for use on the client in an <a href="../../../../Documentation/Remote Object Persistence Guide/index.html" title="Remote Object Persistence Guide">ROP application</a>.</li>
+	<li><tt>cayenne-tools-x.x.jar</tt> - Ant tasks</li>
 	<li><tt>cayenne-agent-x.x.jar</tt> - a Java instrumentation agent that is used to enhance POJO persistent classes.</li>
 	<li><tt>cayenne-modeler-x.x.jar</tt> - CayenneModeler runtime library. Most applications won't ever use it. It is only needed for the <a href="../../../../Documentation/Cayenne Guide/Deployment/Using JNDI/index.html" title="Using JNDI">local JNDI hack</a>.</li>
 </ul>
@@ -75,10 +76,10 @@
 <p>When using <tt>cayenne-server-x.x.jar</tt> you'll need a few third party jars (all included in <tt>"lib/third-party"</tt> directory of the distribution):</p>
 
 <ul>
-	<li><span class="nobr"><a href="http://objectstyle.org/ashwood/" title="Visit page outside Confluence" rel="nofollow">ObjectStyle Ashwood Graph Library<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 2.0</li>
-	<li><span class="nobr"><a href="http://jakarta.apache.org/velocity/" title="Visit page outside Confluence" rel="nofollow">Apache Velocity Template Engine<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.3 (and all its dependencies bundled with velocity-dep)</li>
-	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/collections" title="Visit page outside Confluence" rel="nofollow">Apache Commons Collections<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.1</li>
-	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/logging/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Logging<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.1</li>
+	<li><a href="http://objectstyle.org/ashwood/" rel="nofollow">ObjectStyle Ashwood Graph Library</a>, version 2.0</li>
+	<li><a href="http://jakarta.apache.org/velocity/" rel="nofollow">Apache Velocity Template Engine</a>, version 1.3 (and all its dependencies bundled with velocity-dep)</li>
+	<li><a href="http://jakarta.apache.org/commons/collections" rel="nofollow">Apache Commons Collections</a>, version 3.1</li>
+	<li><a href="http://jakarta.apache.org/commons/logging/" rel="nofollow">Apache Commons Logging</a>, version 1.1</li>
 </ul>
 
 
@@ -89,12 +90,12 @@
 <p>One or more of the following libraries may be needed depending on how you use Cayenne:</p>
 
 <ul>
-	<li><span class="nobr"><a href="http://ant.apache.org/" title="Visit page outside Confluence" rel="nofollow">Apache Ant<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.6 or newer. Needed for <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html" title="Ant Tasks">Cayenne Ant Tasks</a>.</li>
-	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/pool/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Pool<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.2 and <span class="nobr"><a href="http://jakarta.apache.org/commons/dbcp/" title="Visit page outside Confluence" rel="nofollow">Apache Commons DBCP<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.2.1. Needed if you use DBCPDataSourceFactory for one of the DataNodes.</li>
-	<li><span class="nobr"><a href="http://www.jgroups.org/" title="Visit page outside Confluence" rel="nofollow">JGroups<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 2.2.7 or newer. Needed if you plan to use remote notifications via JGroups transport.</li>
-	<li><span class="nobr"><a href="http://java.sun.com/products/jms/" title="Visit page outside Confluence" rel="nofollow">Java Messaging Service (JMS)<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. Needed if you plan to use remote notifications via JMS transport.</li>
-	<li><span class="nobr"><a href="http://vpp.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">Foundry Logic VPP Library<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 2.2.1. Needed for <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html" title="cgen">advanced class generation options</a> with Ant.</li>
-	<li><span class="nobr"><a href="http://www.opensymphony.com/oscache/" title="Visit page outside Confluence" rel="nofollow">OSCache<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> version 2.3.2 or newer. Needed if you plan to use OSCache as your <a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/Query Result Caching/index.html" title="Query Result Caching">query results cache provider</a>.</li>
+	<li><a href="http://ant.apache.org/" rel="nofollow">Apache Ant</a>, version 1.6 or newer. Needed for <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html" title="Ant Tasks">Cayenne Ant Tasks</a>.</li>
+	<li><a href="http://jakarta.apache.org/commons/pool/" rel="nofollow">Apache Commons Pool</a>, version 1.2 and <a href="http://jakarta.apache.org/commons/dbcp/" rel="nofollow">Apache Commons DBCP</a>, version 1.2.1. Needed if you use DBCPDataSourceFactory for one of the DataNodes.</li>
+	<li><a href="http://www.jgroups.org/" rel="nofollow">JGroups</a>, version 2.2.7 or newer. Needed if you plan to use remote notifications via JGroups transport.</li>
+	<li><a href="http://java.sun.com/products/jms/" rel="nofollow">Java Messaging Service (JMS)</a>. Needed if you plan to use remote notifications via JMS transport.</li>
+	<li><a href="http://vpp.sourceforge.net/" rel="nofollow">Foundry Logic VPP Library</a>, version 2.2.1 (included in <tt>"lib/third-party"</tt> directory of the distribution). Needed for <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html" title="cgen">class generation options</a> with Ant.</li>
+	<li><a href="http://www.opensymphony.com/oscache/" rel="nofollow">OSCache</a> version 2.3.2 or newer. Needed if you plan to use OSCache as your <a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/Query Result Caching/index.html" title="Query Result Caching">query results cache provider</a>.</li>
 </ul>
 </div>
 </div>

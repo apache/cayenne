@@ -68,17 +68,18 @@
 
 <p>Similar to the Java EE approach, Cayenne transactions are bound to the current thread for the duration of the execution. For instance this is how Cayenne does an internal check of whether there is a transaction in progress:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.Transaction;
 ...
 Transaction currentTx = Transaction.getThreadTransaction();
 <span class="code-keyword">if</span>(currentTx != <span class="code-keyword">null</span>) {
   <span class="code-comment">// transaction in process...
-</span>}</pre>
+</span>}
+</pre>
 </div></div>
 
 <p>When a Transaction is created inside Cayenne, it is immediately bound to the thread:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Transaction tx = ...;
 Transaction.bindThreadTransaction(tx);</pre>
 </div></div>
@@ -96,7 +97,7 @@ Transaction.bindThreadTransaction(tx);</pre>
 
 <p>Later in <b>step 4</b> DataNodes will attach any of the Connections they obtains to the ongoing transaction:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> java.sql.Connection;
 ...
 Connection connection = ...
@@ -106,7 +107,7 @@ currentTx.addConnection(<span class="code-quote">"someKey"</span>, connection);<
 <h3><a name="UnderstandingTransactions-TransactionLifecycleCallbacks%3ATransactionDelegate"></a>Transaction Lifecycle Callbacks: TransactionDelegate</h3>
 
 <p>If you want to execute some custom code, such as Cayenne queries or raw JDBC queries at certain points in transaction lifecycle, you need to implement a <tt>org.apache.cayenne.access.TransactionDelegate</tt> callback interface:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">public</span> class MyTxCallback <span class="code-keyword">implements</span> TransactionDelegate {
 
     <span class="code-keyword">public</span> <span class="code-object">boolean</span> willCommit(Transaction transaction) {
@@ -138,13 +139,15 @@ currentTx.addConnection(<span class="code-quote">"someKey"</span>, connection);<
     <span class="code-keyword">public</span> <span class="code-object">boolean</span> willAddConnection(Transaction transaction, Connection connection) {
         <span class="code-keyword">return</span> <span class="code-keyword">true</span>;
     }
-}</pre>
+}
+</pre>
 </div></div>
 
 <p>Then an instance can be registered with the DataDomain. </p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataDomain domain = Configuration.getSharedConfiguration().getDomain();
-domain.setTransactionDelegate(<span class="code-keyword">new</span> MyTxCallback());</pre>
+domain.setTransactionDelegate(<span class="code-keyword">new</span> MyTxCallback());
+</pre>
 </div></div>
 
 <p>The delegate is shared by all DataContexts.</p>
@@ -153,17 +156,18 @@ domain.setTransactionDelegate(<span class="code-keyword">new</span> MyTxCallback
 
 <p>If the application needs to define its own transactional scope (e.g. wrap more than one <tt>DataContext.commitChanges()</tt> in a single database transaction), an explict <tt>org.apache.cayenne.access.Transaction</tt> can be started. It will serve as a simple substitute for the JTA transactions (of course JTA UserTransaction can be used instead if desired).</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>If the user code starts a Transaction, it <b>must</b> explicitly invoke "commit/rollback" methods and unbind the Transaction from the current thread when it is finished. Failure to do that may result in connection leaks. Of course if Cayenne starts an implicit transaction, it does the cleanup internally on its own.</td></tr></table>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>If the user code starts a Transaction, it <b>must</b> explicitly invoke "commit/rollback" methods and unbind the Transaction from the current thread when it is finished. Failure to do that may result in connection leaks. Of course if Cayenne starts an implicit transaction, it does the cleanup internally on its own.</td></tr></table></div>
 
 <p>Below is an example of user-controlled Transaction code. First it obtains a new transaction from the DataDomain (alternatively users can create Transaction subclasses of their own):</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataDomain domain = Configuration.getSharedConfiguration().getDomain();
-Transaction tx = domain.createTransaction();</pre>
+Transaction tx = domain.createTransaction();
+</pre>
 </div></div>
 
 <p>As we must finish transaction regardless of the outcome, wrap the rest of the code in try/catch/finally. Don't foget to bind/unbind the transaction, so that Cayenne stack is aware of it:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Transaction.bindThreadTransaction(tx);
 
 <span class="code-keyword">try</span> {
@@ -185,7 +189,8 @@ Transaction tx = domain.createTransaction();</pre>
         <span class="code-keyword">catch</span> (Exception rollbackEx) {
         }
     }
-}</pre>
+}
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

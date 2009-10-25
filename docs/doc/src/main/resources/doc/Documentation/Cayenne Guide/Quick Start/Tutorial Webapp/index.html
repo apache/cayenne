@@ -74,10 +74,10 @@
 
 <p>For detailed discussion of web application deployment, check <a href="../../../../Documentation/Cayenne Guide/Deployment/Web Applications/index.html" title="Web Applications">this page</a>.</p>
 
-<p>To run the web application from Eclipse, we will use <span class="nobr"><a href="http://code.google.com/p/run-jetty-run/" title="Visit page outside Confluence" rel="nofollow">run-jetty-run plugin<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. If you prefer another way to start web applications (e.g. via Eclipse WTP), it should work as well.</p>
+<p>To run the web application from Eclipse, we will use <a href="http://code.google.com/p/run-jetty-run/" rel="nofollow">run-jetty-run plugin</a>. If you prefer another way to start web applications (e.g. via Eclipse WTP), it should work as well.</p>
 
 <ul>
-	<li>Install <tt>run-jetty-run</tt> plugin via Eclipse "Software Updates" function, following <span class="nobr"><a href="http://code.google.com/p/run-jetty-run/wiki/GettingStarted" title="Visit page outside Confluence" rel="nofollow">instructions on run-jetty-run website<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</li>
+	<li>Install <tt>run-jetty-run</tt> plugin via Eclipse "Software Updates" function, following <a href="http://code.google.com/p/run-jetty-run/wiki/GettingStarted" rel="nofollow">instructions on run-jetty-run website</a>.</li>
 </ul>
 
 
@@ -91,7 +91,7 @@
 
 <p>The following is the contents of <tt>web.xml</tt>. All the DataContext magic described above is achieved by WebApplicationContextFilter.</p>
 
-<div class="code"><div class="codeHeader"><b>web.xml</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>web.xml</b></div><div class="codeContent panelContent">
 <pre class="code-java">&lt;?xml version=<span class="code-quote">"1.0"</span> encoding=<span class="code-quote">"utf-8"</span>?&gt;
  &lt;!DOCTYPE web-app
    PUBLIC <span class="code-quote">"-<span class="code-comment">//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"</span>
@@ -117,7 +117,7 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>webapp/index.jsp</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>webapp/index.jsp</b></div><div class="codeContent panelContent">
 <pre class="code-java">&lt;%@ page language=<span class="code-quote">"java"</span> contentType=<span class="code-quote">"text/html"</span> %&gt;
 &lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"cayenne.tutorial.*"</span> %&gt;
 &lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.*"</span> %&gt;
@@ -162,7 +162,7 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>webapp/detail.jsp</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>webapp/detail.jsp</b></div><div class="codeContent panelContent">
 <pre class="code-java">&lt;%@ page language=<span class="code-quote">"java"</span> contentType=<span class="code-quote">"text/html"</span> %&gt;
 &lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"cayenne.tutorial.*"</span> %&gt;
 &lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.*"</span> %&gt;
@@ -242,11 +242,11 @@
 <ul>
 	<li>Click "Apply" and "Run".</li>
 	<li>You will see some Cayenne logs, indicating that the filter was loaded and Cayenne is successfully runing in web app.</li>
-	<li>Now go to <span class="nobr"><a href="http://localhost:8080/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> URL. You should see "No artists found message" in the web browser and the following output in the Eclipse console:</li>
+	<li>Now go to <a href="http://localhost:8080/" rel="nofollow">http://localhost:8080/</a> URL. You should see "No artists found message" in the web browser and the following output in the Eclipse console:</li>
 </ul>
 
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>INFO  QueryLogger: --- will run 1 query.
 INFO  QueryLogger: Opening connection: jdbc:derby:/Users/andrus/Desktop/testdb;create=true
 	Login: null

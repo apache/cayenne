@@ -60,7 +60,7 @@
 <p>Previous chapter showed how to select a single set of data rows using a ProcedureQuery. In a more general case stored procedures can return multiple sets of data, either as ResultSets or via OUT parameters, execute update/delete/insert queries, etc. To collect the results of execution of such stored procedure, you need to run a query using context's <tt>"performGenericQuery"</tt> method and inspect returned QueryResponse.</p>
 
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext ctxt;
 
 <span class="code-comment">// <span class="code-quote">"my_procedure"</span> is a name of a stored procedure,
@@ -85,14 +85,15 @@ query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-k
           <span class="code-object">int</span>[] updateCounts = result.currentUpdateCount();
           <span class="code-comment">// ...
 </span>     }
-}</pre>
+}
+</pre>
 </div></div>
 
 <h3><a name="ExecutingaStoredProcedure-UsingQueryResponsetoReadOUTParameters"></a>Using QueryResponse to Read OUT Parameters</h3>
 
 <p>Stored Procedure can return data back to the application as ResultSets or via OUT parameters. To simplify the processing of the query output, QueryResponse treats OUT parameters as if it was a separate ResultSet. If a stored procedure declares any OUT or INOUT parameters, QueryResponse will contain their returned values in the very first result list:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext ctxt;
 
 <span class="code-comment">// <span class="code-quote">"my_procedure"</span> is a name of a stored procedure,
@@ -111,7 +112,8 @@ query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-k
 
 <span class="code-keyword">if</span>(outList.size() &gt;  0) {
     Map outParameterValues = (Map) outList.get(0);
-}</pre>
+}
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

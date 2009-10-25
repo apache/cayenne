@@ -71,12 +71,12 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">SelectQuery select1 = <span class="code-keyword">new</span> SelectQuery(Painting.class);
 List paintings1 = context.performQuery(select1);</pre>
 </div></div>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>INFO  QueryLogger: SELECT t0.NAME, t0.ARTIST_ID, t0.GALLERY_ID, t0.ID FROM PAINTING t0
 INFO  QueryLogger: === returned 2 rows. - took 20 ms.</pre>
 </div></div>
@@ -86,7 +86,7 @@ INFO  QueryLogger: === returned 2 rows. - took 20 ms.</pre>
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
                 Painting.NAME_PROPERTY,
                 <span class="code-quote">"gi%"</span>);
@@ -94,7 +94,7 @@ SelectQuery select2 = <span class="code-keyword">new</span> SelectQuery(Painting
 List paintings2 = context.performQuery(select2);</pre>
 </div></div>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>INFO  QueryLogger: SELECT t0.NAME, t0.ARTIST_ID, t0.GALLERY_ID, t0.ID FROM PAINTING t0 
                              WHERE UPPER(t0.NAME) LIKE UPPER(?) [bind: 'gi%']
 INFO  QueryLogger: === returned 1 row. - took 28 ms.</pre>
@@ -105,7 +105,7 @@ INFO  QueryLogger: === returned 1 row. - took 28 ms.</pre>
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">Calendar c = <span class="code-keyword">new</span> GregorianCalendar();
 c.set(c.get(Calendar.YEAR) - 100, 0, 1, 0, 0, 0);
 
@@ -115,7 +115,7 @@ SelectQuery select3 = <span class="code-keyword">new</span> SelectQuery(Painting
 List paintings3 = context.performQuery(select3);</pre>
 </div></div>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>INFO  QueryLogger: SELECT t0.NAME, t0.ARTIST_ID, t0.GALLERY_ID, t0.ID FROM PAINTING t0, ARTIST t1 
                              WHERE t0.ARTIST_ID = t1.ID AND (t1.DATE_OF_BIRTH &lt; ?) [bind: '1906-01-01 00:00:00.3']
 INFO  QueryLogger: === returned 2 rows. - took 31 ms.</pre>

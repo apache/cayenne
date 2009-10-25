@@ -50,6 +50,7 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom Query Cache Provider/index.html">Custom Query Cache Provider</a><ul>
 </ul>
 </li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom BatchQueryBuilder Factory/index.html">Custom BatchQueryBuilder Factory</a></li>
 </ul>
 </li>
 </ul>
@@ -58,22 +59,24 @@
 
 <p>Assuming you have some cache management library that you want to integrate with Cayenne, you need to implement a <tt>'org.apache.cayenne.cache.QueryCacheFactory'</tt> interface that creates an instance of <tt>'org.apache.cayenne.cache.QueryCache'</tt> that is a facade to your cache engine.</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">class MyFactory <span class="code-keyword">implements</span> QueryCacheFactory {
    <span class="code-keyword">public</span> QueryCache getQueryCache(Map properties) {
       <span class="code-keyword">return</span> <span class="code-keyword">new</span> MyQueryCache(properties);
    }
-}</pre>
+}
+</pre>
 </div></div>
 
 <p>Custom factory can be set on the DataDomain:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataDomain domain = Configuration.getSharedConfiguration().getDomain();
-domain.setQueryCacheFactory(<span class="code-keyword">new</span> MyFactory());</pre>
+domain.setQueryCacheFactory(<span class="code-keyword">new</span> MyFactory());
+</pre>
 </div></div>
 
-<p><em>TODO: pending <span class="nobr"><a href="https://issues.apache.org/cayenne/browse/CAY-825" title="Visit page outside Confluence" rel="nofollow">CAY-825 implementation<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, setting custom factory should be possible via CayenneModeler.</em> </p></div>
+<p><em>TODO: pending <a href="https://issues.apache.org/cayenne/browse/CAY-825" rel="nofollow">CAY-825 implementation</a>, setting custom factory should be possible via CayenneModeler.</em> </p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

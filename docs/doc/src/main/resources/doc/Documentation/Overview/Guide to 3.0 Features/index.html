@@ -41,14 +41,14 @@
 <div id="ConfluenceContent"><p>This page highlights the new features and changes introduced in 3.0 release, roughly corresponding to the latest released milestone. It is a high level overview and as such is by no means complete. Consult RELEASE-NOTES.txt file included in each release for the full list of changes.</p>
 
 <ul>
-	<li><a href="#Guideto3.0Features-DistributionContentsStructure" title="Distribution Contents Structure on Guide to 3.0 Features">Distribution Contents Structure</a></li>
-	<li><a href="#Guideto3.0Features-CayenneJPAProvider" title="Cayenne JPA Provider on Guide to 3.0 Features">Cayenne JPA Provider</a></li>
-	<li><a href="#Guideto3.0Features-ObjectRelationalMapping" title="Object Relational Mapping on Guide to 3.0 Features">Object Relational Mapping</a></li>
-	<li><a href="#Guideto3.0Features-CayennePersistenceAPI" title="Cayenne Persistence API on Guide to 3.0 Features">Cayenne Persistence API</a></li>
-	<li><a href="#Guideto3.0Features-RemoteObjectPersistence" title="Remote Object Persistence on Guide to 3.0 Features">Remote Object Persistence</a></li>
-	<li><a href="#Guideto3.0Features-CayenneModeler" title="CayenneModeler on Guide to 3.0 Features">CayenneModeler</a></li>
-	<li><a href="#Guideto3.0Features-DeploymentandRuntime" title="Deployment and Runtime on Guide to 3.0 Features">Deployment and Runtime</a></li>
-	<li><a href="#Guideto3.0Features-Tools" title="Tools on Guide to 3.0 Features">Tools</a></li>
+	<li><a href="#Guideto3.0Features-DistributionContentsStructure">Distribution Contents Structure</a></li>
+	<li><a href="#Guideto3.0Features-CayenneJPAProvider">Cayenne JPA Provider</a></li>
+	<li><a href="#Guideto3.0Features-ObjectRelationalMapping">Object Relational Mapping</a></li>
+	<li><a href="#Guideto3.0Features-CayennePersistenceAPI">Cayenne Persistence API</a></li>
+	<li><a href="#Guideto3.0Features-RemoteObjectPersistence">Remote Object Persistence</a></li>
+	<li><a href="#Guideto3.0Features-CayenneModeler">CayenneModeler</a></li>
+	<li><a href="#Guideto3.0Features-DeploymentandRuntime">Deployment and Runtime</a></li>
+	<li><a href="#Guideto3.0Features-Tools">Tools</a></li>
 </ul>
 
 
@@ -63,7 +63,7 @@
 
 <h2><a name="Guideto3.0Features-CayenneJPAProvider"></a>Cayenne JPA Provider</h2>
 
-<p><em>Note that Cayenne JPA provider work has been frozen and it IS NOT included in 3.0. If you have further questions or would like to give a hand with the JPA work, please send a note to <span class="nobr"><a href="http://cayenne.apache.org/mailing-lists.html" title="Visit page outside Confluence" rel="nofollow">developer mailing list<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</em></p>
+<p><em>Note that Cayenne JPA provider work has been frozen and it IS NOT included in 3.0. If you have further questions or would like to give a hand with the JPA work, please send a note to <a href="http://cayenne.apache.org/mailing-lists.html" rel="nofollow">developer mailing list</a>.</em></p>
 
 <h2><a name="Guideto3.0Features-ObjectRelationalMapping"></a>Object Relational Mapping</h2>
 
@@ -73,15 +73,13 @@
 
 <h3><a name="Guideto3.0Features-DataMapDTDReplacedwithSchema"></a>DataMap DTD Replaced with Schema</h3>
 
-<p>A schema is now available <span class="nobr"><a href="http://cayenne.apache.org/schema/3.0/modelMap.html" title="Visit page outside Confluence" rel="nofollow">here<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> for the DataMap XML format.</p>
+<p>A schema is now available <a href="http://cayenne.apache.org/schema/3.0/modelMap.html" rel="nofollow">here</a> for the DataMap XML format.</p>
 
 <h3><a name="Guideto3.0Features-Embeddables"></a>Embeddables</h3>
-<p><em>(as of M6 there's no Modeler support)</em></p>
 
 <p>Added a new mapping artifact - Embeddable, that allows to map composite objects to a single table. </p>
 
 <h3><a name="Guideto3.0Features-FlattenedAttributes"></a>Flattened Attributes</h3>
-<p><em>(as of M6 there's no Modeler support)</em></p>
 
 <p>Just like with "flattened" relationships, now there is a way to map an ObjAttribute that spans one or more DbRelationships and is mapped to a column of a joined table.</p>
 
@@ -113,7 +111,7 @@
 
 <p>While you can still use DataContext directly, we encourage you to avoid direct dependency on DataContext throughout your code, and instead use <tt>org.apache.cayenne.ObjectContext</tt> interface. E.g.:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectContext context = DataContext.createDataContext();</pre>
 </div></div>
 
@@ -133,7 +131,7 @@
 
 <h3><a name="Guideto3.0Features-EntityLifecycleCallbacks"></a>Entity Lifecycle Callbacks</h3>
 
-<p>Cayenne lifecycle callbacks are similar to callbacks defined in the JPA specification. This is a feature that allows to perform custom operations at certain points in the object lifecycle. For more details see <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">this page</a>.</p>
+<p>Cayenne lifecycle callbacks are similar (but not identical) to callbacks defined in the JPA specification. This is a feature that allows to perform custom operations at certain points in the object lifecycle. For more details see <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">this page</a>.</p>
 
 <h3><a name="Guideto3.0Features-GeneralQueryImprovements"></a>General Query Improvements</h3>
 
@@ -168,8 +166,8 @@
 
 <ul>
 	<li>Added support for "long" primary keys (vs. "int" PK used previously)</li>
-	<li>Added adapter for <span class="nobr"><a href="http://www.sqlite.org/" title="Visit page outside Confluence" rel="nofollow">SQLite<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> database.</li>
-	<li>Added adapter for <span class="nobr"><a href="http://www.h2database.com/" title="Visit page outside Confluence" rel="nofollow">H2<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> database.</li>
+	<li>Added adapter for <a href="http://www.sqlite.org/" rel="nofollow">SQLite</a> database.</li>
+	<li>Added adapter for <a href="http://www.h2database.com/" rel="nofollow">H2</a> database.</li>
 	<li>Added stored procedure support on MySQL.</li>
 	<li>Changed default table type on MySQL to InnoDB, added MySQL FK constraints support in the Modeler.</li>
 	<li>Turned on update query batching on SQL Server and Derby.</li>
@@ -187,12 +185,9 @@
 
 <ul>
 	<li>Joint prefetches are switched to OUTER joins, removing the major limitation to their use.</li>
+	<li>Disjoint to-many prefetches no longer have a limitation preventing their use if a query qualifier spanned prefetched relationships.</li>
 </ul>
 
-
-<h3><a name="Guideto3.0Features-POJOPersistence"></a>POJO Persistence</h3>
-
-<p><em>(status: experimental. Unlikely to be production ready in 3.0)</em></p>
 
 <h2><a name="Guideto3.0Features-RemoteObjectPersistence"></a>Remote Object Persistence</h2>
 
@@ -205,6 +200,8 @@
 
 <h2><a name="Guideto3.0Features-CayenneModeler"></a>CayenneModeler</h2>
 
+<div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Upgrade Warning</b><br />Saving projects with CayenneModeler v.3.0 will render them uneditable with earlier versions of the Modeler</td></tr></table></div>
+
 <p>The Modeler underwent significant changes with the goal to improve usability and look-and-feel.</p>
 
 <ul>
@@ -213,6 +210,8 @@
 	<li>Added combo auto-completion</li>
 	<li>Added a usable and good looking welcome screen</li>
 	<li>Added contextual menus</li>
+	<li>Added support for flattened attributes</li>
+	<li>Added copy/paste support</li>
 	<li>Added detection of project file changes on disk</li>
 	<li>Added multi-item selection</li>
 	<li>Added ability to specify password encryption mechanism</li>
@@ -229,6 +228,8 @@
 	<li>Added EJBQL Query mapping capabilities, with synatx highlighting.</li>
 	<li>Added support for quoting of SQL Identifiers</li>
 	<li>The Modeler can be <a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html" title="maven2-modeler">started from Maven</a></li>
+	<li>Added "Infer Relationships" operation to automatically create DbRelationships based on PK/FK naming conventions.</li>
+	<li>Added support for mapping Embeddable objects.</li>
 </ul>
 
 
@@ -240,6 +241,7 @@
 <ul>
 	<li>Paginated query algorithm is changed, resulting in very significant performance improvements on large data sets (this also improves ROP paginated query performance). This includes faster query times and much smaller memory footprint of an unresolved list.</li>
 	<li>Reduced the scope of lock on a shared cache during commit, that should result in improved concurrency.</li>
+	<li>Queries using disjoint to-many and joint to-one prefetching now work significantly faster.</li>
 	<li>ROP new context creation speed is improved, as EntityResolver is cached on the client after first retrieval.</li>
 	<li>ROP uses a "diff compression" algorithm on commit, reducing the amount of data passed around.</li>
 </ul>
@@ -257,7 +259,7 @@
 
 <p>Cayenne no longer has a Log4J dependency. Instead it uses Jakarta commons-logging, as described <a href="../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html" title="Configuring Logging">here</a>. Note that 2.0 Log4J configurations should continue to work, although now it is a user responsibility to bootstrap Log4J - Cayenne will no longer do it for you. E.g. you can do this on startup:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">org.apache.log4j.PropertyConfigurator.configure(<span class="code-quote">"cayenne-log.properties"</span>);</pre>
 </div></div>
 
@@ -266,8 +268,6 @@
 <p>Cayenne now supports optional quoting of SQL identifiers in the generated SQL. This has been a very popular request in the past. Identifier quoting can be turned on per DataMap in the Modeler (look for "Quote SQL Identifiers" checkbox). This will allow to map column names that contain spaces, non-ascii characters, reserved words, etc., i.e. the schemas that could not be mapped with Cayenne before.</p>
 
 <h3><a name="Guideto3.0Features-AbilitytoDetectMissing%2FPartialSchemaandAutoGenerateSchemainRuntime"></a>Ability to Detect Missing/Partial Schema and Auto Generate Schema in Runtime</h3>
-
-<p><em>(status: as of M6 column consistency checks)</em></p>
 
 <p>DataNode has a new attribute in the Modeler - "Schema Update Strategy". This allows to specify runtime behavior in regards to schema consistency checking. The default behavior is "do nothing" (<tt>org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy</tt>). Alternatively Cayenne can create the schema if none is found or throw an exception if schema inconsistencies are detected.</p>
 

@@ -57,10 +57,11 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>The Expression class (<tt>org.apache.cayenne.exp.Expression</tt>) provides <tt>Expression.fromString(String)</tt> as a convenience method to create expressions of arbitrary complexity.  The structure of expressions is fairly intuitive, with the <span class="nobr"><a href="http://incubator.apache.org/cayenne/1_2/grammar/ExpressionParser.html" title="Visit page outside Confluence" rel="nofollow">formal grammar<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> showing the formal syntax and operators currently supported, but this topic is devoted to showing examples of usage.  To demonstrate, an expression that matches Paintings with names that start with "A" and a price less than $1000.00 can be written as:</p>
+<div id="ConfluenceContent"><p>The Expression class (<tt>org.apache.cayenne.exp.Expression</tt>) provides <tt>Expression.fromString(String)</tt> as a convenience method to create expressions of arbitrary complexity.  The structure of expressions is fairly intuitive, with the <a href="http://incubator.apache.org/cayenne/1_2/grammar/ExpressionParser.html" rel="nofollow">formal grammar</a> showing the formal syntax and operators currently supported, but this topic is devoted to showing examples of usage.  To demonstrate, an expression that matches Paintings with names that start with "A" and a price less than $1000.00 can be written as:</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java">Expression e = Expression.fromString(<span class="code-quote">"paintingTitle like 'A%' and estimatedPrice &lt; 1000"</span>);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Expression e = Expression.fromString(<span class="code-quote">"paintingTitle like 'A%' and estimatedPrice &lt; 1000"</span>);
+</pre>
 </div></div>
 
 <p>As you can see, the Expression class provides an easy way to specify the <tt>WHERE</tt> portion of a database query.</p>
@@ -69,47 +70,51 @@
 
 <p>Expressions used as query qualifiers must use binary operators:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// valid qualifier
 </span>Expression e1 = Expression.fromString(<span class="code-quote">"artistName like 'A%'"</span>);
 
 <span class="code-comment">// INVALID QUALIFIER - <span class="code-keyword">this</span> will result in a SQL exception even
 </span><span class="code-comment">// though it is still a valid Cayenne expression
-</span>Expression e2 = Expression.fromString(<span class="code-quote">"artistName"</span>);</pre>
+</span>Expression e2 = Expression.fromString(<span class="code-quote">"artistName"</span>);
+</pre>
 </div></div>
 
 <h3><a name="BuildingExpressions-CharacterConstants"></a>Character Constants</h3>
 
 <p>Character constants should be enclosed in single or double quotes:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// e1 and e2 are equivalent
 </span>Expression e1 = Expression.fromString(<span class="code-quote">"name = 'ABC'"</span>);
-Expression e2 = Expression.fromString(<span class="code-quote">"name = \"</span>ABC\"");</pre>
+Expression e2 = Expression.fromString(<span class="code-quote">"name = \"</span>ABC\"");
+</pre>
 </div></div>
 
 <h3><a name="BuildingExpressions-CaseSensitive"></a>Case Sensitive</h3>
 
 <p>Predefined expression operators are all case sensitive and are usually lowercase.  Complex words mostly follow the "Java naming style":</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// correct
 </span>Expression e1 = Expression.fromString(<span class="code-quote">"artistName likeIgnoreCase 'A%'"</span>);
 
 <span class="code-comment">// INCORRECT - will result in ParseException
-</span>Expression e2 = Expression.fromString(<span class="code-quote">"artistName LIKEIGNORECASE 'A%'"</span>);</pre>
+</span>Expression e2 = Expression.fromString(<span class="code-quote">"artistName LIKEIGNORECASE 'A%'"</span>);
+</pre>
 </div></div>
 
 <h3><a name="BuildingExpressions-Groupings"></a>Groupings</h3>
 
 <p>Grouping of operations is done with parenthesis:</p>
-<div class="code"><div class="codeContent">
-<pre class="code-java">Expression e1 = Expression.fromString(<span class="code-quote">"value = (estimatedPrice + 250.00) * 3"</span>);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Expression e1 = Expression.fromString(<span class="code-quote">"value = (estimatedPrice + 250.00) * 3"</span>);
+</pre>
 </div></div>
 
 <h3><a name="BuildingExpressions-Prefixes"></a>Prefixes</h3>
 
 <p>Object expressions are unquoted strings, <b>optionally</b> prefixed by "obj:".  Database expressions are unquoted strings, <b>always</b> prefixed with "db:":</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// object path
 </span>Expression e1 = Expression.fromString(<span class="code-quote">"artistName = 'Salvador Dali'"</span>);
 
@@ -117,7 +122,8 @@ Expression e2 = Expression.fromString(<span class="code-quote">"name = \"</span>
 </span>Expression e2 = Expression.fromString(<span class="code-quote">"obj:artistName = 'Salvador Dali'"</span>);
 
 <span class="code-comment">// database path, <span class="code-quote">"db:"</span> prefix is mandatory
-</span>Expression e3 = Expression.fromString(<span class="code-quote">"db:ARTIST_NAME = 'Salvador Dali'"</span>);</pre>
+</span>Expression e3 = Expression.fromString(<span class="code-quote">"db:ARTIST_NAME = 'Salvador Dali'"</span>);
+</pre>
 </div></div>
 
 <p>Please note that "obj:" and "db:" are case sensitive.</p>
@@ -126,7 +132,7 @@ Expression e2 = Expression.fromString(<span class="code-quote">"name = \"</span>
 <h3><a name="BuildingExpressions-NamedParameterExpressions"></a>Named Parameter Expressions</h3>
 
 <p>Expressions can have named parameters (names that start with "$").  Parameterized expressions are an easy way to create reusable expression templates:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">final</span> Expression template = Expression.fromString(<span class="code-quote">"artistName = $name"</span>);
 SelectQuery query;
 List values;
@@ -138,11 +144,12 @@ values = dataContext.performQuery(query);
 ...
 params.put(<span class="code-quote">"name"</span>, <span class="code-quote">"Monet"</span>);
 query = <span class="code-keyword">new</span> SelectQuery(Artist.class, template.expWithParameters(params));
-values = dataContext.performQuery(query);</pre>
+values = dataContext.performQuery(query);
+</pre>
 </div></div>
 
 <p>To create a named parameterized expression with a LIKE clause, the wildcard(s) must be part of the values in the Map and not the expression string itself:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">final</span> Expression template = Expression.fromString(<span class="code-quote">"artistName like $name"</span>);
 SelectQuery query;
 List values;
@@ -151,14 +158,15 @@ Map params = <span class="code-keyword">new</span> HashMap();
 params.put(<span class="code-quote">"name"</span>, <span class="code-quote">"Salvi%"</span>);
 query = <span class="code-keyword">new</span> SelectQuery(Artist.class, template.expWithParameters(params));
 values = dataContext.performQuery(query);
-...</pre>
+...
+</pre>
 </div></div>
 
 <h3><a name="BuildingExpressions-KeyPathExpressions"></a>Key Path Expressions</h3>
 
 <p>A very powerful feature of Cayenne's expressions are the ability to specify relationships in the expression string as a "dotted" key path.  Cayenne will automatically determine all the join information.  For example, if basing a query off the Painting:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">final</span> Expression template = Expression.fromString(<span class="code-quote">"artist.artistName = $artist and gallery.galleryName = $gallery"</span>);
 SelectQuery query;
 List values;
@@ -168,12 +176,13 @@ params.put(<span class="code-quote">"artist"</span>, <span class="code-quote">"S
 params.put(<span class="code-quote">"gallery"</span>, <span class="code-quote">"Louvre"</span>);
 query = <span class="code-keyword">new</span> SelectQuery(Artist.class, template.expWithParameters(params));
 values = dataContext.performQuery(query);
-...</pre>
+...
+</pre>
 </div></div>
 
 <p>Note that the key path can contain multiple "dots" in the name &#8211; there is no predefined limit.  Also, the parameter doesn't have to be a String (or Number/etc), it can also be a Cayenne DataObject if you already have one in memory:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">final</span> Expression template = Expression.fromString(<span class="code-quote">"artist.artistName = $artist and gallery = $gallery"</span>);
 SelectQuery query;
 List values;
@@ -183,14 +192,15 @@ params.put(<span class="code-quote">"artist"</span>, <span class="code-quote">"S
 params.put(<span class="code-quote">"gallery"</span>, gallery); <span class="code-comment">// gallery = instance of Gallery
 </span>query = <span class="code-keyword">new</span> SelectQuery(Artist.class, template.expWithParameters(params));
 values = dataContext.performQuery(query);
-...</pre>
+...
+</pre>
 </div></div>
 
 <h3><a name="BuildingExpressions-OptionalNamedParameterValues"></a>Optional Named Parameter Values</h3>
 
 <p>Cayenne by default automatically omits parts of an expression which have no matching value.  Using the expression from above:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">final</span> Expression template = Expression.fromString(<span class="code-quote">"artist.artistName = $artist and gallery.galleryName = $gallery"</span>);
 SelectQuery query;
 List values;
@@ -199,7 +209,8 @@ Map params = <span class="code-keyword">new</span> HashMap();
 params.put(<span class="code-quote">"artist"</span>, <span class="code-quote">"Salvador Dali"</span>);
 query = <span class="code-keyword">new</span> SelectQuery(Artist.class, template.expWithParameters(params));
 values = dataContext.performQuery(query);
-...</pre>
+...
+</pre>
 </div></div>
 
 <p>Even though the specified expression has two named parameters, the "gallery" key has been omitted.  Cayenne will automatically translate the expression into <tt>"artist.artistName = $artist"</tt> (which becomes <tt>"artist.artistName = 'Salvador Dali'"</tt>).  This feature allows a restrictive search qualifier to be written and prompt the user for search criteria.  If the user leaves values out, the expression can automatically widen to be a less restrictive search by omitting the keys for the map.</p></div>

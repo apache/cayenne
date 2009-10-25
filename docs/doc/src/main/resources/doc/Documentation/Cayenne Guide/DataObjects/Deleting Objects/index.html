@@ -61,27 +61,29 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>As discussed before, an object must be deleted in the DataContext to trigger a removal of the corresponding row from the database on commit. There are few simple ways to delete individual objects and collections of objects. Quite naturally, a delete operation changes the object state to PersistenceState.DELETED. However there maybe other consequences of such operation for the overall object graph. Such consequences are controlled via <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Delete Rules/index.html" title="Delete Rules">delete rules</a> configured for object relationships. Properly configuring delete rules will simplify the application code, as you no longer need to track related objects and do the right thing with them. Other delete rule effects are discussed for each DataContext deletion method individually.</p>
+<div id="ConfluenceContent"><p>As discussed before, an object must be deleted in the DataContext to trigger a removal of the corresponding row from the database on commit. There are few simple ways to delete individual objects and collections of objects. Quite naturally, a delete operation changes the object state to PersistenceState.DELETED. However there maybe other consequences of such operation for the overall object graph. Such consequences are controlled via <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Delete Rules/index.html" title="Delete Rules">Delete Rules</a> configured for object relationships. Properly configuring delete rules will simplify the application code, as you no longer need to track related objects and do the right thing with them. Other delete rule effects are discussed for each DataContext deletion method individually.</p>
 
 <h5><a name="DeletingObjects-Deletingasingleobject"></a>Deleting a single object</h5>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext context = ...;
 Artist artist = ....;
 
 <span class="code-comment">// <span class="code-keyword">this</span> will trigger delete rules <span class="code-keyword">for</span> artist, <span class="code-keyword">if</span> any
-</span>context.deleteObject(artist);</pre>
+</span>context.deleteObject(artist);
+</pre>
 </div></div>
 <h5><a name="DeletingObjects-Deletingacollectionofobjects"></a>Deleting a collection of objects</h5>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext context = ...;
 Artist artist = ....;
 
-context.deleteObjects(artist.getPaintings());</pre>
+context.deleteObjects(artist.getPaintings());
+</pre>
 </div></div>
 <h5><a name="DeletingObjects-DeletinginanIterator"></a>Deleting in an Iterator</h5>
 <p>This case can be complicated if an iteration is performed over a relationship list and an object being deleted has a nullify delete rule. Such combination may result in ConcurrencyModificationExceptions as collection underlying the iterator is being modified. If ALL objects in the collection have to be deleted, use "deleteObjects()" method shown above - it will do the right thing. If only a subset of collection objects has to be deleted, you can use the following technique:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext context = ...;
 Artist artist = ....;
 
@@ -96,7 +98,8 @@ Iterator it = artist.getPaintings().iterator();
       <span class="code-comment">// now <span class="code-keyword">do</span> the actual delete
 </span>      context.deleteObject(object); 
    }
-}</pre>
+}
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

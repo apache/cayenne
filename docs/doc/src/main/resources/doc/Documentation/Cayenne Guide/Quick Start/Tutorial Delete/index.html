@@ -83,7 +83,7 @@
 </ul>
 
 
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java">Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY, <span class="code-quote">"Pablo Picasso"</span>);
 SelectQuery select = <span class="code-keyword">new</span> SelectQuery(Artist.class, qualifier);
 
@@ -91,7 +91,7 @@ Artist picasso = (Artist) DataObjectUtils.objectForQuery(context, select);</pre>
 </div></div>
 
 <p>Now let's delete the artist:</p>
-<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Main.java</b></div><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">if</span> (picasso != <span class="code-keyword">null</span>) {
     context.deleteObject(picasso);
     context.commitChanges();
@@ -100,7 +100,7 @@ Artist picasso = (Artist) DataObjectUtils.objectForQuery(context, select);</pre>
 
 <p>Since we set up "Cascade" delete rule for the Artist.paintings relationships, Cayenne will automatically delete all paintings of this artist. So when your run the app you'll see this output:</p>
 
-<div class="preformatted"><div class="preformattedContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>INFO  QueryLogger: --- will run 2 queries.
 INFO  QueryLogger: --- transaction started.
 INFO  QueryLogger: DELETE FROM PAINTING WHERE ID = ?

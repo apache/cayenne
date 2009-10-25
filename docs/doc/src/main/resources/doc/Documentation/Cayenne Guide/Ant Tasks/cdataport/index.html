@@ -107,15 +107,7 @@
 <h5><a name="cdataport-Examples"></a>Examples</h5>
 <p>Here is an example of using <tt>cdataport</tt> to port data using all source DataMaps, excluding DBEntities with name matching "BILL_*":</p>
 
-<p>Load the Ant task <em>(note: if you already loaded all Cayenne tasks via an antlib taskdef <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html" title="Ant Tasks">described before</a>, this step is not needed)</em>: </p>
-<div class="code"><div class="codeContent">
-<pre class="code-xml"><span class="code-tag">&lt;taskdef name=<span class="code-quote">"cdataport"</span> classname=<span class="code-quote">"org.apache.cayenne.tools.DataPortTask"</span>&gt;</span>
-     <span class="code-tag">&lt;classpath refid=<span class="code-quote">"classpath"</span>/&gt;</span>
-<span class="code-tag">&lt;/taskdef&gt;</span></pre>
-</div></div>
-
-<p>Invoke the Ant task:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml"><span class="code-tag">&lt;cdataport projectFile=<span class="code-quote">"subdir/cayenne.xml"</span> srcNode=<span class="code-quote">"ProductionNode"</span> destNode=<span class="code-quote">"DevNode"</span> excludeTables=<span class="code-quote">"BILL_*"</span>/&gt;</span></pre>
 </div></div></div>
 </div>

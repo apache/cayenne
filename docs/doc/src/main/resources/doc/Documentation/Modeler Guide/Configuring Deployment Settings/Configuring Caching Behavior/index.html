@@ -73,13 +73,11 @@
 
 <p>Configuration that allows to notify other applications about changes made by an application and to listen for such changes made by others. This type of configuration incurs the most overhead, because it will constantly send and receive synchronization messages, but it is also the most powerful configuration. Cayenne currently supports the use of JMS and JavaGroups frameworks for synchronization, and also allows users to create their own transport mechanism. </p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
-<p>Cayenne distribution archive does not include JavaGroups or JMS libraries. Those must be downloaded and installed separately. However until deployment phase, Cayenne does not require those libraries to be installed. </p></td></tr></table>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>Cayenne distribution archive does not include JavaGroups or JMS libraries. Those must be downloaded and installed separately. However until deployment phase, Cayenne does not require those libraries to be installed. </p></td></tr></table></div>
 
 <p>To configure distributed cache sharing, check "Remote Change Notifications" checkbox, and click "Configure" button to select and configure the type of transport to use.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='tipMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
-<p>Synchronization is only done between remote DataDomains with the same name. Note that for JavaGroups configuration, a combination of multicast address and port must be unique for each DataDomain name.</p></td></tr></table>
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>Synchronization is only done between remote DataDomains with the same name. Note that for JavaGroups configuration, a combination of multicast address and port must be unique for each DataDomain name.</p></td></tr></table></div>
 
 <h3><a name="ConfiguringCachingBehavior-ChoosingJavaGroupsoverJMS"></a>Choosing JavaGroups over JMS</h3>
 

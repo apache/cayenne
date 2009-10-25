@@ -59,11 +59,11 @@
 <div id="ConfluenceContent"><p>A lifecycle of a persistent object can be represented as a number of states and transitions between them. These states are formally defined as "int" constants in <tt>org.apache.cayenne.PersistenceState</tt> class. Transitions between states (see the diagram below) occur in response to the application interacting with either persistent objects or Cayenne context. Whenever a transition occurs, Cayenne automatically updates "persistenceState" property of all affected objects by calling <tt>setPersistenceState()</tt>.</p>
 
 <table class="sectionMacro" border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr>
-<td class="confluenceTd"  valign="top">
+<td class="confluenceTd" valign="top">
 <p>A new object state transformations:<br/>
 <img src="new-persistent-object.png" align="absmiddle" border="0" /></p></td>
 
-<td class="confluenceTd"  valign="top">
+<td class="confluenceTd" valign="top">
 <p>A fetched or committed object state transformations:<br/>
 <img src="fetched-persistent-object.png" align="absmiddle" border="0" /></p></td></tr></tbody></table>
 

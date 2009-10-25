@@ -101,19 +101,20 @@
 
 
 <p>SelectQuery provides constructors for all three types. For example:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
 ...
 <span class="code-comment">// <span class="code-keyword">this</span> is a valid Cayenne query that would allow to fetch
 </span><span class="code-comment">// all records from the ARTIST table as Artist objects
-</span>SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);</pre>
+</span>SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);
+</pre>
 </div></div>
 <p>Other components of the SelectQuery are discussed in the following sections.</p>
 
 <h3><a name="SelectQuery-ExecutingSelectQueries"></a>Executing SelectQueries</h3>
 
 <p>As mentioned earlier, queries are executed via <tt>DataContext.performQuery()</tt>. For instance to fetch all Artists existing in the database the following code is used:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
 <span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
 <span class="code-keyword">import</span> java.util.List;
@@ -123,7 +124,8 @@ DataContext ctxt; <span class="code-comment">// assume <span class="code-keyword
 
 <span class="code-comment">// The query would fetch *ALL* rows from the ARTIST table
 </span><span class="code-comment">// The list returned contains Artist objects, one object per row
-</span>List artists = ctxt.performQuery(query);</pre>
+</span>List artists = ctxt.performQuery(query);
+</pre>
 </div></div>
 <p>There is a special case when a query is run using <tt>DataContext.performIteratedQuery()</tt>. This is discussed in "Performance Tuning" chapter.</p>
 

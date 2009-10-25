@@ -61,9 +61,24 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
-<p>Flattened relationships represent relationship between two types of DataObjects that is not direct in the underlying relational storage. Instead it is mapped across one or more "join" tables. Still from the application point of view there is no diffrence in working with flattened relationships compared to the "normal" ones. Cayenne internally figures out how to build the needed query joins to retrieve related objects. On adding or removing an object to/from a flattened relationship via a corresponding "addTo..." / "removeFrom..." method an appropriate join record is created or removed.</p>
-<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Flattened Relationships Limitations</b><br />Currently only many-to-many flattened relatationships with a single join table can be modified. All other types of flattened relationships can be used as "read-only". This is reflected in the DataObject code generated for such relationships - no set/addTo/RemoveFrom methods are created for read-only relationships.</td></tr></table></div>
+<div id="ConfluenceContent"><p>Flattened relationships are a fancy term for a relationship which involves three or more tables in the database. Lets say you have Artists and Exhibits. They are joined with a many-many join table called Artist_Exhibit, because many Artists could collaborate on one Exhibit and each Artist might be part of many Exhibits. Now you could map these as separate joins and end up with Java code which looks like this:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">artist.getArtistExhibits().getExhibits()
+</pre>
+</div></div>
+
+<p>but with a flattened join, it is even simpler:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">artist.getExhibits()
+</pre>
+</div></div>
+
+<p>From the application point of view there is no difference in working with flattened relationships compared to the "normal" ones. Cayenne internally figures out how to build the needed query joins to retrieve related objects. On adding or removing an object to/from a flattened relationship via a corresponding "addTo..." / "removeFrom..." method an appropriate join record is created or removed.</p>
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Flattened Relationships Limitations</b><br />Only many-to-many flattened relatationships with a single join table can be modified. All other types of flattened relationships can be used as "read-only". This is reflected in the DataObject code generated for such relationships - no set/addTo/RemoveFrom methods are created for read-only relationships.</td></tr></table></div>
+
+<p>See this documentation on how to <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/CayenneModeler Flattened Relationships/index.html" title="CayenneModeler Flattened Relationships">create flattened relationships in Cayenne Modeler</a></p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

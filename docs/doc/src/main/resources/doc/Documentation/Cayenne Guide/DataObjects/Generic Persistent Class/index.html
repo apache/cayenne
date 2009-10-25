@@ -65,15 +65,14 @@
 
 <p>Each kind of persistent objects (such as "Artist" or "Painting") is described in Cayenne by a single ObjEntity. The most common and useful scenario is mapping an ObjEntity to a "specialized" Java class, one class per entity. But there is an alternative - use a single generic persistent object class to map any entity.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='tipMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Generic DataObject hints</b><br />
-<ul>
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Generic DataObject hints</b><br /><ul>
 	<li>Accessing generic objects is done via DataObject API (see examples below).</li>
 	<li>The simplest "generic" object class for all practical purposes is <tt>CayenneDataObject</tt>.</li>
 	<li>"Concrete" DataObject classes are by definition "generic" as they implement <tt>DataObject</tt>.</li>
 </ul>
-</td></tr></table>
+</td></tr></table></div>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='tipMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">When to Use Generic Objects</b><br />Generic objects are not type-safe and are not convenient for manual coding. Most applications should stick to concrete classes. Generic objects are useful in cases when all persistent properties are not fully known at compile time. It is also possible to use a hybrid approach when new persistent properties are added to the existing concrete class at runtime.</td></tr></table>
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>When to Use Generic Objects</b><br />Generic objects are not type-safe and are not convenient for manual coding. Most applications should stick to concrete classes. Generic objects are useful in cases when all persistent properties are not fully known at compile time. It is also possible to use a hybrid approach when new persistent properties are added to the existing concrete class at runtime.</td></tr></table></div>
 
 <h2><a name="GenericPersistentClass-MappinginCayenneModeler"></a>Mapping in CayenneModeler</h2>
 
@@ -90,53 +89,60 @@
 
 <p>Create a new object:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataContext context = ...;
-DataObject author = (DataObject) context.newObject(<span class="code-quote">"Person"</span>);</pre>
+DataObject author = (DataObject) context.newObject(<span class="code-quote">"Person"</span>);
+</pre>
 </div></div>
 
 <p>Create a new object when using a generic ObjectContext that does not define "newObject(String)" method. In this case we must set ObjectId explicitly - this will tell Cayenne what entity the generic object belongs to:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectContext context = ...;
 DataObject author = <span class="code-keyword">new</span> CayenneDataObject();
 author.setObjectId(<span class="code-keyword">new</span> ObjectId(<span class="code-quote">"Person"</span>));
-context.registerNewObject(author);</pre>
+context.registerNewObject(author);
+</pre>
 </div></div>
 
 
 <p>Build SelectQuery:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Expression e = ExpressionFactory.likeIgnoreCaseExp(<span class="code-quote">"subject"</span>, <span class="code-quote">"%first%"</span>);
-SelectQuery q = <span class="code-keyword">new</span> SelectQuery(<span class="code-quote">"Message"</span>, e);</pre>
+SelectQuery q = <span class="code-keyword">new</span> SelectQuery(<span class="code-quote">"Message"</span>, e);
+</pre>
 </div></div>
 
 <h4><a name="GenericPersistentClass-UseDataObjectAPItoread%2Fwritethevaluesinsteadorgetters%2Fsetters."></a>Use DataObject API to read/write the values instead or getters/setters.</h4>
 
 <p>Determine object entity name:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataObject object = ...;
-<span class="code-object">String</span> entityName = object.getObjectId().getEntityName();</pre>
+<span class="code-object">String</span> entityName = object.getObjectId().getEntityName();
+</pre>
 </div></div>
 
 <p>Read a simple property value (attribute or relationship):</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java"><span class="code-object">String</span> subject = (<span class="code-object">String</span>) object.readProperty(<span class="code-quote">"subject"</span>);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-object">String</span> subject = (<span class="code-object">String</span>) object.readProperty(<span class="code-quote">"subject"</span>);
+</pre>
 </div></div>
 
 <p>Read a "nested" property value spanning a chain of DataObjects:</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java"><span class="code-object">String</span> name = (<span class="code-object">String</span>) object.readNestedProperty(<span class="code-quote">"author.lastName"</span>);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-object">String</span> name = (<span class="code-object">String</span>) object.readNestedProperty(<span class="code-quote">"author.lastName"</span>);
+</pre>
 </div></div>
 
 <p>Modify a property value:</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java">object.writeProperty(<span class="code-quote">"subject"</span>, <span class="code-quote">"Post On Topic"</span>);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">object.writeProperty(<span class="code-quote">"subject"</span>, <span class="code-quote">"Post On Topic"</span>);
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

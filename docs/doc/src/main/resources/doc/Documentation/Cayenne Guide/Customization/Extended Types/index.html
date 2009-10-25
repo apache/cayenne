@@ -50,6 +50,7 @@
 </ul>
 </li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom Query Cache Provider/index.html">Custom Query Cache Provider</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom BatchQueryBuilder Factory/index.html">Custom BatchQueryBuilder Factory</a></li>
 </ul>
 </li>
 </ul>
@@ -59,7 +60,7 @@
 <h3><a name="ExtendedTypes-SupportingNonStandardTypes"></a>Supporting Non-Standard Types</h3>
 
 <p><tt>org.apache.cayenne.access.types.ExtendedType</tt> interface serves to integrate a custom attribute type to Cayenne. An implementation must provide <tt>ExtendedType.getClassName()</tt> method that returns a fully qualified Java class name for the supported custom type, and a number of methods that convert data between JDBC and custom type. Installing an ExtendedType currently has to be done in the code, some time during Cayenne startup (modeler support will be added in the future). The following code sample demonstrates this procedure:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-comment">// create custom ExtendedType instance
 </span>ExtendedType customType = <span class="code-keyword">new</span> MyCustomType();
 
@@ -69,7 +70,8 @@
 </span>DataNode node = domain.getNode(<span class="code-quote">"node_name"</span>);
 
 <span class="code-comment">// install ExtendedType
-</span>node.getAdapter().getExtendedTypes().registerType(customType);</pre>
+</span>node.getAdapter().getExtendedTypes().registerType(customType);
+</pre>
 </div></div>
 
 <h3><a name="ExtendedTypes-DbAdaptersandExtendedTypes"></a>DbAdapters and Extended Types</h3>

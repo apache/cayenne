@@ -162,7 +162,7 @@
 
 <p>Load the Maven 2 plugin and configure the <tt>cgen</tt> mojo: </p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
     <span class="code-tag">&lt;plugins&gt;</span>
         <span class="code-tag">&lt;plugin&gt;</span>
@@ -181,11 +181,17 @@
       	    <span class="code-tag">&lt;/executions&gt;</span>
         <span class="code-tag">&lt;/plugin&gt;</span>
     <span class="code-tag">&lt;/plugins&gt;</span>
-<span class="code-tag">&lt;/build&gt;</span></pre>
+<span class="code-tag">&lt;/build&gt;</span>
+</pre>
 </div></div>
 
-<p>Here is an example of using CGen to generate Persistent subclass/superclass pairs from DataMap located in "main/resources/datamap.map.xml":</p>
-<div class="code"><div class="codeContent">
+<p>Here is an example of using CGen to generate Persistent subclass/superclass pairs from DataMap located in "main/resources/datamap.map.xml".</p>
+
+
+<div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>There's an intermittent problem when using Maven/cgen in Eclipse with m2eclipse plugin that requires placing &lt;configuration&gt;..&lt;/configuration&gt; at the plugin level, instead of execution level.</td></tr></table></div>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
     <span class="code-tag">&lt;plugins&gt;</span>
         <span class="code-tag">&lt;plugin&gt;</span>
@@ -205,13 +211,12 @@
       	    <span class="code-tag">&lt;/executions&gt;</span>
         <span class="code-tag">&lt;/plugin&gt;</span>
     <span class="code-tag">&lt;/plugins&gt;</span>
-<span class="code-tag">&lt;/build&gt;</span></pre>
+<span class="code-tag">&lt;/build&gt;</span>
+</pre>
 </div></div>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='warningMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>The follow example includes the use of Velocity template overriding, which is not yet functional in the plugin.</td></tr></table>
-
 <p>Here is an example of using CGen to generate html pages for all entities starting with "Artist" in the DataMap:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
     <span class="code-tag">&lt;plugins&gt;</span>
         <span class="code-tag">&lt;plugin&gt;</span>
@@ -236,7 +241,8 @@
       	    <span class="code-tag">&lt;/executions&gt;</span>
         <span class="code-tag">&lt;/plugin&gt;</span>
     <span class="code-tag">&lt;/plugins&gt;</span>
-<span class="code-tag">&lt;/build&gt;</span></pre>
+<span class="code-tag">&lt;/build&gt;</span>
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

@@ -49,12 +49,12 @@
 <h3><a name="RemoteObjectPersistenceCodingClient-ConnectingtotheService"></a>Connecting to the Service</h3>
 
 <p>Creating connection with a dedicated server-side context peer and no authentication:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(<span class="code-quote">"http:<span class="code-comment">//localhost:8080/myapp/myservice"</span>);</span></pre>
 </div></div>
 
 <p>HessianConnection also supports HTTP basic authentication:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(
           <span class="code-quote">"https:<span class="code-comment">//localhost:8080/myapp/mysecureservice"</span>, 
 </span>          <span class="code-quote">"username"</span>,
@@ -64,7 +64,7 @@
 
 <p>Finally a "shared" or "chat" session can be created when multiple client contexts share the same server-side context:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-object">String</span> myChatRoom = <span class="code-quote">"xyz"</span>;
 ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(
           <span class="code-quote">"https:<span class="code-comment">//localhost:8080/myapp/mysecureservice"</span>, 
@@ -77,7 +77,7 @@ ClientConnection connection = <span class="code-keyword">new</span> HessianConne
 
 
 <p>Once a <tt>ClientConnection</tt> is created, an ObjectContext instance can be obtained like this: </p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataChannel channel = <span class="code-keyword">new</span> ClientChannel(connection);
 ObjectContext context = <span class="code-keyword">new</span> CayenneContext(channel);</pre>
 </div></div>
@@ -89,7 +89,7 @@ ObjectContext context = <span class="code-keyword">new</span> CayenneContext(cha
 
 <p>Cayenne ORM Tier and CWS Client Tier can be deployed together in the same virtual machine. This may be needed to speed up development, but also to achieve consistency and reuse of CWS client objects between thin clients and web applications. The solution is to use ClientServerChannel on top of a regular Cayenne stack:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataDomain defaultDomain = Configuration.getSharedConfiguration().getDomain();
 DataChannel serverChannel = <span class="code-keyword">new</span> ClientServerChannel(defaultDomain);
 ObjectContext context = <span class="code-keyword">new</span> CayenneContext(serverChannel);
@@ -99,7 +99,7 @@ ObjectContext context = <span class="code-keyword">new</span> CayenneContext(ser
 
 <p>To fully emulate CWS behavior, we can add serialization to the picture:</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">DataDomain defaultDomain = Configuration.getSharedConfiguration().getDomain();
 DataChannel serverChannel = <span class="code-keyword">new</span> ClientServerChannel(defaultDomain);
 ClientConnection connector = <span class="code-keyword">new</span> LocalConnection(

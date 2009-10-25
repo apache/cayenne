@@ -63,7 +63,7 @@
 </div>
 <div id="ConfluenceContent"><p>Cayenne provides a way to cache query results, avoiding unneeded database trips for the frequently used queries. Caching policy is configured per query. Policy can be set via the API or in CayenneModeler.</p>
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Upgrading to Cayenne 1.2 and Newer</b><br /><tt>org.apache.cayenne.query.GenericSelectQuery</tt> interface that defined cache policy types is deprecated. Cache policies are now a part of the new <tt>org.apache.cayenne.query.QueryMetadata</tt> interface.</td></tr></table>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Upgrading to Cayenne 1.2 and Newer</b><br /><tt>org.apache.cayenne.query.GenericSelectQuery</tt> interface that defined cache policy types is deprecated. Cache policies are now a part of the new <tt>org.apache.cayenne.query.QueryMetadata</tt> interface.</td></tr></table></div>
 
 <p>The following cache policies are supported:</p>
 
@@ -108,7 +108,7 @@
 <p>Users must set two Query parameters to configure caching - query <b>name</b> that is used as a key to result cache and query <b>cache policy</b> (one of the policies above). Note that if two unrelated queries have the same name, they will hit the same cache entry. This is not a bug, this is a feature that should be taken into consideration when naming queries.</p>
 
 <p>Below we will create a query and set its caching policy to LOCAL_CACHE:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);
 
 <span class="code-comment">// set query name that will be used as a unique key to perform result caching
@@ -121,27 +121,30 @@
 DataContext context = ... <span class="code-comment">// assume <span class="code-keyword">this</span> exists
 </span>
 <span class="code-comment">// there is probably no cache at <span class="code-keyword">this</span> point, so the query will hit the database
-</span>List objects = context.performQuery(query);</pre>
+</span>List objects = context.performQuery(query);
+</pre>
 </div></div>
 
 <p>Reruning the query in the same DataContext at a later time will be much faster as it will be hitting the cache:</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java">List objects1 = context.performQuery(query);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">List objects1 = context.performQuery(query);
+</pre>
 </div></div>
 
 <p>Here we want to refresh the cache, but still keep caching the fresh result:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">query.setCachePolicy(GenericSelectQuery.LOCAL_CACHE_REFRESH);
 
-List objects2 = context.performQuery(query);</pre>
+List objects2 = context.performQuery(query);
+</pre>
 </div></div>
 
 <p>The example above shows caching with <tt>SelectQuery</tt>, but it works exactly the same way for <tt>SQLTemplate</tt> and <tt>ProcedureQuery</tt>. Similarly <tt>SHARED_CACHE</tt> and <tt>SHARED_CACHE_REFRESH</tt> cache policies create cache shared by all DataDontexts that work with a given DataDomain. </p>
 
 
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Upgrading to Cayenne 1.2 and Newer</b><br /><br/>
-Cache refreshing API has changed in 1.2. Cayenne 1.1 relied on the use of <tt>SelectQuery.setRefreshingObjects(..)</tt> to determine whether to expire cached result lists. This is no longer the case (setting this flag only refreshes <b>individual objects</b> as it should, and has no effect whatsoever on list caching). Instead caching and cache refreshing is controlled by the cache policy as described above.</td></tr></table>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Upgrading to Cayenne 1.2 and Newer</b><br /><br/>
+Cache refreshing API has changed in 1.2. Cayenne 1.1 relied on the use of <tt>SelectQuery.setRefreshingObjects(..)</tt> to determine whether to expire cached result lists. This is no longer the case (setting this flag only refreshes <b>individual objects</b> as it should, and has no effect whatsoever on list caching). Instead caching and cache refreshing is controlled by the cache policy as described above.</td></tr></table></div>
 
 
 <h3><a name="CachingQueryResults-QueriesMappedinCayenneModeler"></a>Queries Mapped in CayenneModeler</h3>
@@ -152,27 +155,31 @@ Cache refreshing API has changed in 1.2. Cayenne 1.1 relied on the use of <tt>Se
 
 <p>Then it can be executed via DataContext:</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java">List objects1 = context.performQuery(<span class="code-quote">"MyQuery"</span>, <span class="code-keyword">false</span>);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">List objects1 = context.performQuery(<span class="code-quote">"MyQuery"</span>, <span class="code-keyword">false</span>);
+</pre>
 </div></div>
 
 <p>The second "false" parameter above indicated that if possible, cached result should be used. Now if we want to force refresh, it can be changed to true (for just this invocation - this does not affect the underlying saved query)</p>
 
-<div class="code"><div class="codeContent">
-<pre class="code-java">List objects2 = context.performQuery(<span class="code-quote">"MyQuery"</span>, <span class="code-keyword">true</span>);</pre>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">List objects2 = context.performQuery(<span class="code-quote">"MyQuery"</span>, <span class="code-keyword">true</span>);
+</pre>
 </div></div>
 
 <p>Note that parameterized named queries will still work correctly with the cache. We've already mentioned that the users must ensure that two queries must have different names if they fetch logically different data. This is NOT the case with queries stored in the DataMap. If you run the same named query with different sets of parameters, Cayenne will internally generate unique cache keys for each distinct parameter set.</p>
 
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Map parameters = Collections.singletonMap(<span class="code-quote">"key"</span>, <span class="code-quote">"value1"</span>);
-List objects1 = context.performQuery(<span class="code-quote">"MyQuery"</span>, parameters, <span class="code-keyword">false</span>);</pre>
+List objects1 = context.performQuery(<span class="code-quote">"MyQuery"</span>, parameters, <span class="code-keyword">false</span>);
+</pre>
 </div></div>
 
 <p>Now if we run the same query with a different set of parameters, Cayenne will do the right thing and create a separate entry in the cache:</p>
-<div class="code"><div class="codeContent">
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">Map parameters = Collections.singletonMap(<span class="code-quote">"key"</span>, <span class="code-quote">"value2"</span>);
-List objects2 = context.performQuery(<span class="code-quote">"MyQuery"</span>, parameters, <span class="code-keyword">false</span>);</pre>
+List objects2 = context.performQuery(<span class="code-quote">"MyQuery"</span>, parameters, <span class="code-keyword">false</span>);
+</pre>
 </div></div>
 
 </div>
