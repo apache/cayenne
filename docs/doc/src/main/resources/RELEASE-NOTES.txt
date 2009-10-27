@@ -8,6 +8,14 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.0 beta 2
+Date: 
+----------------------------------
+Bug Fixes Since B1:
+
+CAY-1292 Modeler does not allow to unset/change entity inheritance
+
+----------------------------------
 Release: 3.0 beta 1
 Date: 
 ----------------------------------
