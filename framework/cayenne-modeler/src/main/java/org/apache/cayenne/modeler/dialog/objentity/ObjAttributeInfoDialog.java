@@ -376,7 +376,6 @@ public class ObjAttributeInfoDialog extends CayenneController implements
 
     private void rebuildTable() {
         String typeName = null;
-
         Collection<EmbeddableAttribute> embAttrTempCopy = new ArrayList<EmbeddableAttribute>();
 
         if (attributeSaved.getType() != null) {

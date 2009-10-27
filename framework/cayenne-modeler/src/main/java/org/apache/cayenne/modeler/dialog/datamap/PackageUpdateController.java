@@ -57,7 +57,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
      */
     public void startup() {
         SPanel view = new DefaultsPreferencesDialog(ALL_CONTROL, UNINIT_CONTROL);
-        view.setTitle("Update ObjEntities Java Package");
+        view.setTitle("Update ObjEntities and Embeddables Java Package");
         setView(view);
         super.startup();
     }
