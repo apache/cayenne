@@ -267,9 +267,12 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 ObjEntity entity = mediator.getCurrentObjEntity();
 
                 if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
-                    List<ObjAttribute> duplicateAttributes = getDuplicatedAttributes((ObjEntity) superEntity);
+                    List<ObjAttribute> duplicateAttributes = null;
+                    if(name!=null){
+                        duplicateAttributes = getDuplicatedAttributes((ObjEntity) superEntity);
+                    }
 
-                    if (duplicateAttributes.size() > 0) {
+                    if (duplicateAttributes!=null && duplicateAttributes.size() > 0) {
                         DuplicatedAttributesDialog.showDialog(Application.getFrame(), duplicateAttributes, (ObjEntity) superEntity, entity);
                         if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
                             superEntityCombo.setSelectedItem(entity.getSuperEntity());
