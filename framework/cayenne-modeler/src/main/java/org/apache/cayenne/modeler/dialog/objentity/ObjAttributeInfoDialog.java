@@ -44,6 +44,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.tree.TreePath;
 
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -100,18 +101,18 @@ public class ObjAttributeInfoDialog extends CayenneController implements
         this.row = row;
         this.stringToEmbeddables = new HashMap<String, Embeddable>();
         this.embeddableNames = new ArrayList<String>();
-        Iterator it = mediator.getProject().treeNodes();
+        
+        Iterator it = mediator.getCurrentDataDomain().getDataMaps().iterator();
         while (it.hasNext()) {
-            ProjectPath path = (ProjectPath) it.next();
-            Object o = path.getObject();
-            Object[] p = path.getPath();
-            if (o instanceof Embeddable) {
-                Embeddable emb = (Embeddable) p[p.length - 1];
+            DataMap dataMap = (DataMap) it.next();
+            Iterator<Embeddable> embs = dataMap.getEmbeddables().iterator();
+            while (embs.hasNext()) {
+                Embeddable emb = (Embeddable) embs.next();
                 stringToEmbeddables.put(emb.getClassName(), emb);
                 embeddableNames.add(emb.getClassName());
             }
         }
-
+        
         initController(model.getAttribute(row));
     }
 

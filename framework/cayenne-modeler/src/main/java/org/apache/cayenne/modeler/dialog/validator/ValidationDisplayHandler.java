@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
@@ -56,7 +57,10 @@ public abstract class ValidationDisplayHandler {
         Object validatedObj = result.getValidatedObject();
 
         ValidationDisplayHandler msg = null;
-        if (validatedObj instanceof Attribute) {
+        if (validatedObj instanceof Embeddable) {
+            msg = new EmbeddableErrorMsg(result);
+        }
+        else if (validatedObj instanceof Attribute) {
             msg = new AttributeErrorMsg(result);
         }
         else if (validatedObj instanceof EmbeddableAttribute) {
