@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Bug Fixes Since B1:
 
+CAY-1067 likeIgnoreCase is not supported for CLOBs in MS SQL adapter
 CAY-1292 Modeler does not allow to unset/change entity inheritance
 
 ----------------------------------
