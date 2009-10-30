@@ -80,6 +80,35 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
             }
         }
     }
+    
+    @Override
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr) throws IOException {
+        Expression node = peek(1);
+
+        boolean likeCI = node != null
+                && dbAttr.getType() == Types.CLOB
+                && (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
+
+        if (likeCI) {
+            try {
+                out.append("CAST(");
+            }
+            catch (IOException ioex) {
+                throw new CayenneRuntimeException("Error appending content", ioex);
+            }
+        }
+
+        super.processColumnWithQuoteSqlIdentifiers(dbAttr);
+
+        if (likeCI) {
+            try {
+                out.append(" AS NVARCHAR(MAX))");
+            }
+            catch (IOException ioex) {
+                throw new CayenneRuntimeException("Error appending content", ioex);
+            }
+        }
+    }
 
     @Override
     public void endNode(Expression node, Expression parentNode) {
