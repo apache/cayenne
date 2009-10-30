@@ -45,6 +45,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -186,13 +187,12 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         List<String> embeddableNames = new ArrayList<String>();
         List<String> typeNames = new ArrayList<String>();
 
-        Iterator it = mediator.getProject().treeNodes();
+        Iterator it = mediator.getCurrentDataDomain().getDataMaps().iterator();
         while (it.hasNext()) {
-            ProjectPath path = (ProjectPath) it.next();
-            Object o = path.getObject();
-            Object[] p = path.getPath();
-            if (o instanceof Embeddable) {
-                Embeddable emb = (Embeddable) p[p.length - 1];
+            DataMap dataMap = (DataMap) it.next();
+            Iterator<Embeddable> embs = dataMap.getEmbeddables().iterator();
+            while (embs.hasNext()) {
+                Embeddable emb = (Embeddable) embs.next();
                 embeddableNames.add(emb.getClassName());
             }
         }
