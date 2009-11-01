@@ -117,17 +117,11 @@ abstract class ApplicationUpgradeHandler {
             String loadedVersion = project.getProjectVersion();
             int versionState = compareVersion(loadedVersion);
             if (versionState < 0) {
-                String versionLabel = (loadedVersion != null) ? loadedVersion : "?";
-                appendMessages.add("Newer Project Version Detected: \""
-                        + versionLabel
-                        + "\"");
+                appendMessages.add("Newer Project Version Detected");
                 return Project.UPGRADE_STATUS_NEW;
             }
             else if (versionState > 0) {
-                String versionLabel = (loadedVersion != null) ? loadedVersion : "?";
-                appendMessages.add("Older Project Version Detected: \""
-                        + versionLabel
-                        + "\"");
+                appendMessages.add("Older Project Version Detected");
                 return Project.UPGRADE_STATUS_OLD;
             }
             else {
