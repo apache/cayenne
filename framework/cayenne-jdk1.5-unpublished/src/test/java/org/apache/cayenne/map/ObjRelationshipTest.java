@@ -147,7 +147,7 @@ public class ObjRelationshipTest extends CayenneCase {
         // attempt to resolve must fail - relationship is outside of context,
         // plus the path is random
         try {
-            relationship.refreshFromPath("dummy.path");
+            relationship.refreshFromPath("dummy.path", false);
             fail("refresh over a dummy path should have failed.");
         }
         catch (ExpressionException ex) {
@@ -171,7 +171,7 @@ public class ObjRelationshipTest extends CayenneCase {
         dbEntity1.addRelationship(dummyR);
         dbEntity2.addRelationship(pathR);
 
-        relationship.refreshFromPath("dummy.path");
+        relationship.refreshFromPath("dummy.path", false);
 
         List<DbRelationship> resolvedPath = relationship.getDbRelationships();
         assertEquals(2, resolvedPath.size());

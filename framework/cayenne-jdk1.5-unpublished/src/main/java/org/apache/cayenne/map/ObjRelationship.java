@@ -541,7 +541,7 @@ public class ObjRelationship extends Relationship {
      */
     public void setDbRelationshipPath(String relationshipPath) {
         if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
-            refreshFromPath(relationshipPath);
+            refreshFromPath(relationshipPath, false);
         }
     }
     
@@ -560,7 +560,7 @@ public class ObjRelationship extends Relationship {
      */
     synchronized void refreshFromDeferredPath() {
         if (deferredPath != null) {
-            refreshFromPath(deferredPath);
+            refreshFromPath(deferredPath, true);
             deferredPath = null;
         }
     }
@@ -608,7 +608,7 @@ public class ObjRelationship extends Relationship {
     /**
      * Rebuild a list of relationships if String relationshipPath has changed.
      */
-    final void refreshFromPath(String dbRelationshipPath) {
+    final void refreshFromPath(String dbRelationshipPath, boolean stripInvalid) {
         synchronized (this) {
 
             // remove existing relationships
@@ -634,7 +634,9 @@ public class ObjRelationship extends Relationship {
                     }
                 }
                 catch (ExpressionException ex) {
-                    throw ex;
+                	if (!stripInvalid) {
+                		throw ex;
+                	}
                 }
             }
 
