@@ -25,8 +25,10 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -43,6 +45,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
@@ -68,6 +72,7 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Detail view of the ObjEntity attributes.
@@ -178,6 +183,33 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     public void initComboBoxes(ObjAttributeTableModel model) {
+
+        List<String> embeddableNames = new ArrayList<String>();
+        List<String> typeNames = new ArrayList<String>();
+
+        Iterator it = mediator.getCurrentDataDomain().getDataMaps().iterator();
+        while (it.hasNext()) {
+            DataMap dataMap = (DataMap) it.next();
+            Iterator<Embeddable> embs = dataMap.getEmbeddables().iterator();
+            while (embs.hasNext()) {
+                Embeddable emb = (Embeddable) embs.next();
+                embeddableNames.add(emb.getClassName());
+            }
+        }
+        
+        String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
+        for(int i=0; i< registeredTypes.length; i++){
+            typeNames.add(registeredTypes[i]);
+        }
+        typeNames.addAll(embeddableNames);
+     
+        TableColumn typeColumn = table.getColumnModel().getColumn(
+                ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
+
+        JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(typeNames.toArray(), false);
+        AutoCompletion.enable(javaTypesCombo, false, true);
+        typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
+
         TableColumn dbNameColumn = table.getColumnModel().getColumn(
                 ObjAttributeTableModel.DB_ATTRIBUTE);
         dbNameColumn.setMinWidth(150);
@@ -190,6 +222,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
             model.setCellEditor(nameAttr, table);
             model.setComboBoxes(nameAttr, ObjAttributeTableModel.DB_ATTRIBUTE);
         }
+
     }
 
     /**
@@ -307,11 +340,6 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         TableColumn typeColumn = table.getColumnModel().getColumn(
                 ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
         typeColumn.setMinWidth(150);
-
-        JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(ModelerUtil
-                .getRegisteredTypeNames(), false);
-        AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
 
         TableColumn lockColumn = table.getColumnModel().getColumn(
                 ObjAttributeTableModel.LOCKING);

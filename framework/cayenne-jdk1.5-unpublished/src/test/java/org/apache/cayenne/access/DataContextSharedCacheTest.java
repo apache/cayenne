@@ -605,7 +605,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
 
         context.invalidateObjects(Collections.singletonList(artist));
         // wait long enough for non-blocking events to be processed
-        Thread.sleep(1);
+        Thread.sleep(10);
 
         // original context
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());

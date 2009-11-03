@@ -20,9 +20,12 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import org.apache.cayenne.dba.TypesMapping;
@@ -30,11 +33,16 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.event.AttributeEvent;
+import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -247,7 +255,53 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             fireTableCellUpdated(row, column);
         }
         else if (column == OBJ_ATTRIBUTE_TYPE) {
+            String oldType = attribute.getType();
             attribute.setType(value != null ? value.toString() : null);
+            String newType = attribute.getType();
+            String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
+            Collection<String> registeredTypesList =  Arrays.asList(registeredTypes); ;
+            if(oldType!=null && newType!=null && ! (registeredTypesList.contains(oldType) == registeredTypesList.contains(newType))){
+                ObjAttribute attributeNew;
+                if(registeredTypesList.contains(newType)){
+                    attributeNew = new ObjAttribute();
+                } else {
+                    attributeNew = new EmbeddedAttribute();
+                    attribute.setDbAttributePath(null);
+                }
+                
+                attributeNew.setDbAttributePath(attribute.getDbAttributePath());
+                attributeNew.setName(attribute.getName());
+                attributeNew.setEntity(attribute.getEntity());
+                attributeNew.setParent(attribute.getParent());
+                attributeNew.setType(attribute.getType());
+                attributeNew.setUsedForLocking(attribute.isUsedForLocking());
+                Entity ent = attribute.getEntity();
+                ent.removeAttribute(attribute.getName());
+                ent.addAttribute(attributeNew);
+                
+                mediator.fireObjEntityEvent(new EntityEvent(
+                        this,
+                        ent,
+                        MapEvent.CHANGE));
+
+                EntityDisplayEvent ev = new EntityDisplayEvent(this, mediator
+                        .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
+                        .getCurrentDataDomain());
+
+                mediator.fireObjEntityDisplayEvent(ev);
+
+                mediator.fireObjAttributeEvent(new AttributeEvent(this, attributeNew, ent, MapEvent.CHANGE));
+
+                AttributeDisplayEvent eventAttr = new AttributeDisplayEvent(
+                        this,
+                        attributeNew,
+                        mediator.getCurrentObjEntity(),
+                        mediator.getCurrentDataMap(),
+                        mediator.getCurrentDataDomain());
+
+                mediator.fireObjAttributeDisplayEvent(eventAttr);
+            }
+            
             fireTableCellUpdated(row, column);
         }
         else if (column == LOCKING) {

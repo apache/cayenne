@@ -108,11 +108,10 @@ public class ObjAttributeInfoDialogView extends JDialog {
         CellConstraints cc = new CellConstraints();
         final PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(200dlu;pref), 15dlu, right:max(30dlu;pref), 3dlu, 185dlu, "
-                                + "3dlu, 20dlu, 3dlu, fill:min(70dlu;pref)",
+                        "right:max(50dlu;pref), 3dlu, 200dlu, 15dlu, right:max(30dlu;pref), 3dlu, 200dlu",
                         "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 6dlu, p, 6dlu, p, 3dlu, fill:p:grow"));
         builder.setDefaultDialogBorder();
-        builder.addSeparator("ObjAttribute Information", cc.xywh(1, 1, 11, 1));
+        builder.addSeparator("ObjAttribute Information", cc.xywh(1, 1, 7, 1));
 
         builder.addLabel("Attribute:", cc.xy(1, 3));
         builder.add(attributeName, cc.xywh(3, 3, 1, 1));
@@ -129,13 +128,13 @@ public class ObjAttributeInfoDialogView extends JDialog {
         builder.addLabel("Type:", cc.xy(1, 11));
         builder.add(type, cc.xywh(3, 11, 1, 1));
 
-        builder.addSeparator("Mapping to Attributes", cc.xywh(1, 13, 10, 1));
+        builder.addSeparator("Mapping to Attributes", cc.xywh(1, 13, 7, 1));
 
         typeManagerPane = new JPanel();
         typeManagerPane.setLayout(new CardLayout());
 
         final FormLayout fL = new FormLayout(
-                "483dlu ",
+                "493dlu ",
                 "p, 3dlu, fill:min(128dlu;pref):grow");
 
         // panel for Flattened attribute
@@ -155,7 +154,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
         // panel for embeddable attribute
         final FormLayout fLEmb = new FormLayout(
-                "483dlu ",
+                "493dlu ",
                 "fill:min(140dlu;pref):grow");
 
         final PanelBuilder embeddablePane = new PanelBuilder(fLEmb);
@@ -168,7 +167,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         typeManagerPane.add(builderPathPane.getPanel(), FLATTENED_PANEL);
         typeManagerPane.add(embeddablePane.getPanel(), EMBEDDABLE_PANEL);
 
-        builder.add(typeManagerPane, cc.xywh(1, 15, 11, 1));
+        builder.add(typeManagerPane, cc.xywh(1, 15, 7, 1));
 
         add(builder.getPanel(), BorderLayout.CENTER);
 

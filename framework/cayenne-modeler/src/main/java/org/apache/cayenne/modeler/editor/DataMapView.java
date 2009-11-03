@@ -615,7 +615,7 @@ public class DataMapView extends JPanel {
             return;
         }
 
-        if (dataMap.getObjEntities().size() > 0) {
+        if (dataMap.getObjEntities().size() > 0 || dataMap.getEmbeddables().size() > 0) {
             new PackageUpdateController(eventController, dataMap, false).startup();
         }
     }
