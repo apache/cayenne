@@ -8,17 +8,8 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
-Release: 3.0 beta 2
-Date: 
-----------------------------------
-Bug Fixes Since B1:
-
-CAY-1067 likeIgnoreCase is not supported for CLOBs in MS SQL adapter
-CAY-1292 Modeler does not allow to unset/change entity inheritance
-
-----------------------------------
 Release: 3.0 beta 1
-Date: 26 October 2009
+Date: 3 November 2009
 ----------------------------------
 
 Changes/New Features Since M6:
@@ -49,6 +40,7 @@ CAY-1288 Add deleteObjects() to ObjectContext
 Bug Fixes Since M6:
 
 CAY-1009 Bogus runtime relationships can mess up commit
+CAY-1067 likeIgnoreCase is not supported for CLOBs in MS SQL adapter
 CAY-1169 Weird behavior when adding entity via merging
 CAY-1177 Outer join syntax causes exception with Expression.filterObjects()
 CAY-1224 reverse engineering partially changed schema shows empty error messge window
@@ -70,6 +62,7 @@ CAY-1278 Project with cross-datamap flattenned relationships fails to load
 CAY-1279 Passing null values in query parameters
 CAY-1285 Update Cayenne Modeler's code generation panel to resize correctly.
 CAY-1286 Update Cayenne Modeler's validation errors panel to resize correctly.
+CAY-1292 Modeler does not allow to unset/change entity inheritance
 CAY-1293 Beta 1 Test Failures
 
 ----------------------------------
