@@ -134,8 +134,8 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         detailPanel.add(new JPanel(), EMPTY_VIEW);
 
-        Component domainView = new DataDomainTabbedView(eventController);
-        detailPanel.add(domainView, DOMAIN_VIEW);
+        Component domainView = new DataDomainView(eventController);
+        detailPanel.add(new JScrollPane(domainView), DOMAIN_VIEW);
 
         DataNodeEditor nodeController = new DataNodeEditor(eventController);
         detailPanel.add(nodeController.getView(), NODE_VIEW);

@@ -29,24 +29,6 @@
 	<packaging>jar</packaging>
 	<name>Cayenne Aggregated Server Jar</name>
 	<description>An aggregation of 1.5 and JPA modules.</description>
-	
-	<repositories>
-  	<repository>
- 		<id>NIC Repository</id>
-		<name>NIC Repository</name>
-		<url>file:////intelserv/mavenrepo</url>
-		<layout>default</layout>
-		<snapshots>
-			<enabled>true</enabled>
-			<updatePolicy>weekly</updatePolicy>
-			<checksumPolicy>ignore</checksumPolicy>
-		</snapshots>
-		<releases>
-			<enabled>true</enabled>
-		</releases>
-	</repository>
-  </repositories>
-	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>

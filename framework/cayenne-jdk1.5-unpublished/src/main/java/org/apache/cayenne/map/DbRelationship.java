@@ -45,7 +45,6 @@ public class DbRelationship extends Relationship {
     /**
      * @deprecated since 3.0 - unused
      */
-    @Deprecated
     public static final EventSubject PROPERTY_DID_CHANGE = EventSubject.getSubject(
             DbRelationship.class,
             "PropertyDidChange");
@@ -477,25 +476,10 @@ public class DbRelationship extends Relationship {
     /**
      * @deprecated since 3.0 - unused.
      */
-    @Deprecated
     protected void firePropertyDidChange() {
         RelationshipEvent event = new RelationshipEvent(this, this, this
                 .getSourceEntity());
         EventManager.getDefaultManager().postEvent(event, PROPERTY_DID_CHANGE);
-    }
-    
-    /**
-     * @return whether the relationship is mandatory
-     * @since 3.1
-     */
-    public boolean isMandatory() {
-        for (DbJoin join : getJoins()) {
-            DbAttribute source = join.getSource();
-            if (source.isMandatory()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     final static class JoinTransformers {

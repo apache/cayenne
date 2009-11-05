@@ -109,7 +109,6 @@ import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
-import org.apache.cayenne.modeler.graph.GraphBuilderRegistry;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -270,18 +269,12 @@ public class ProjectController extends CayenneController {
      * loading the changes
      */
     protected ProjectWatchdog watchdog;
-    
-    /**
-     * Registry for graph builders
-     */
-    protected GraphBuilderRegistry graphBuilderRegistry;
 
     public ProjectController(CayenneModelerController parent) {
         super(parent);
         this.listenerList = new EventListenerList();
         controllerStateHistory = new CircularArray(maxHistorySize);
         currentState = new ControllerState();
-        graphBuilderRegistry = new GraphBuilderRegistry(this);
     }
 
     @Override
@@ -666,25 +659,13 @@ public class ProjectController extends CayenneController {
     public void addDataMapListener(DataMapListener listener) {
         listenerList.add(DataMapListener.class, listener);
     }
-    
-    public void removeDataMapListener(DataMapListener listener) {
-        listenerList.remove(DataMapListener.class, listener);
-    }
 
     public void addDbEntityListener(DbEntityListener listener) {
         listenerList.add(DbEntityListener.class, listener);
     }
-    
-    public void removeDbEntityListener(DbEntityListener listener) {
-        listenerList.remove(DbEntityListener.class, listener);
-    }
 
     public void addObjEntityListener(ObjEntityListener listener) {
         listenerList.add(ObjEntityListener.class, listener);
-    }
-    
-    public void removeObjEntityListener(ObjEntityListener listener) {
-        listenerList.remove(ObjEntityListener.class, listener);
     }
 
     public void addDbEntityDisplayListener(DbEntityDisplayListener listener) {
@@ -707,10 +688,6 @@ public class ProjectController extends CayenneController {
     public void addDbAttributeListener(DbAttributeListener listener) {
         listenerList.add(DbAttributeListener.class, listener);
     }
-    
-    public void removeDbAttributeListener(DbAttributeListener listener) {
-        listenerList.remove(DbAttributeListener.class, listener);
-    }
 
     public void addDbAttributeDisplayListener(DbAttributeDisplayListener listener) {
         listenerList.add(DbAttributeDisplayListener.class, listener);
@@ -718,10 +695,6 @@ public class ProjectController extends CayenneController {
 
     public void addObjAttributeListener(ObjAttributeListener listener) {
         listenerList.add(ObjAttributeListener.class, listener);
-    }
-    
-    public void removeObjAttributeListener(ObjAttributeListener listener) {
-        listenerList.remove(ObjAttributeListener.class, listener);
     }
 
     public void addObjAttributeDisplayListener(ObjAttributeDisplayListener listener) {
@@ -731,10 +704,6 @@ public class ProjectController extends CayenneController {
     public void addDbRelationshipListener(DbRelationshipListener listener) {
         listenerList.add(DbRelationshipListener.class, listener);
     }
-    
-    public void removeDbRelationshipListener(DbRelationshipListener listener) {
-        listenerList.remove(DbRelationshipListener.class, listener);
-    }
 
     public void addDbRelationshipDisplayListener(DbRelationshipDisplayListener listener) {
         listenerList.add(DbRelationshipDisplayListener.class, listener);
@@ -742,10 +711,6 @@ public class ProjectController extends CayenneController {
 
     public void addObjRelationshipListener(ObjRelationshipListener listener) {
         listenerList.add(ObjRelationshipListener.class, listener);
-    }
-    
-    public void removeObjRelationshipListener(ObjRelationshipListener listener) {
-        listenerList.remove(ObjRelationshipListener.class, listener);
     }
 
     public void addObjRelationshipDisplayListener(ObjRelationshipDisplayListener listener) {
@@ -1308,7 +1273,7 @@ public class ProjectController extends CayenneController {
                 currentState.domain = e.getDomain();
                 currentState.node = e.getDataNode();
                 currentState.map = e.getDataMap();
-                currentState.embeddable = e.getEmbeddable();
+                currentState.embeddable = (Embeddable) e.getEmbeddable();
             }
         }
 
@@ -1532,7 +1497,7 @@ public class ProjectController extends CayenneController {
                 clearState();
                 currentState.domain = ev.getDomain();
                 currentState.map = ev.getDataMap();
-                currentState.embeddable = ev.getEmbeddable();
+                currentState.embeddable = (Embeddable) ev.getEmbeddable();
             }
             currentState.embAttrs = new EmbeddableAttribute[ev.getEmbeddableAttributes().length];
             System.arraycopy(
@@ -1939,12 +1904,5 @@ public class ProjectController extends CayenneController {
                             + e.getId());
             }
         }
-    }
-    
-    /**
-     * Returns registry of graph builders
-     */
-    public GraphBuilderRegistry getGraphBuilderRegistry() {
-        return graphBuilderRegistry;
     }
 }

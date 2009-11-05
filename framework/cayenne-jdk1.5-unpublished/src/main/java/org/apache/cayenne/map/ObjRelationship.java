@@ -163,7 +163,6 @@ public class ObjRelationship extends Relationship {
      * Returns a "complimentary" ObjRelationship going in the opposite direction. Returns
      * null if no such relationship is found.
      */
-    @Override
     public ObjRelationship getReverseRelationship() {
 
         // reverse the list
@@ -783,26 +782,5 @@ public class ObjRelationship extends Relationship {
      */
     public void setMapKey(String mapKey) {
         this.mapKey = mapKey;
-    }
-    
-    /**
-     * @return whether the relationship is mandatory
-     * @since 3.1
-     */
-    @Override
-    public boolean isMandatory() {
-        if (dbRelationships.size() == 0) {
-            return false;
-        }
-        
-        if (isSourceIndependentFromTargetChange()) {
-            return false;
-        }
-        
-        if (dbRelationships.isEmpty()) {
-            return false;
-        }
-        
-        return dbRelationships.get(0).isMandatory();
     }
 }

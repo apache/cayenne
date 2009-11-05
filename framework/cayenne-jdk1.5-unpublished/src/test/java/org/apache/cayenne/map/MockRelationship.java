@@ -38,14 +38,4 @@ public class MockRelationship extends Relationship {
 
     public void encodeAsXML(XMLEncoder encoder) {
     }
-
-    @Override
-    public Relationship getReverseRelationship() {
-        return null;
-    }
-
-    @Override
-    public boolean isMandatory() {
-        return false;
-    }
 }

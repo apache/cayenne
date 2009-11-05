@@ -110,7 +110,7 @@ public class CayenneModelerController extends CayenneController {
         Domain prefDomain = application.getPreferenceDomain().getSubdomain(
                 frame.getClass());
         ComponentGeometry geometry = ComponentGeometry.getPreference(prefDomain);
-        geometry.bind(frame, 650, 550, 0);
+        geometry.bind(frame, 650, 550, 30);
     }
 
     private boolean processDropAction(Transferable transferable) {
