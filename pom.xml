@@ -576,6 +576,9 @@
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.6</version>
+				<configuration>
+					<detectOfflineLinks>false</detectOfflineLinks>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
