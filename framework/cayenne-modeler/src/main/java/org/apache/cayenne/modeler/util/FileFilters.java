@@ -223,4 +223,42 @@ public class FileFilters {
             return "*" + EOModelFileFilter.EOM_SUFFIX;
         }
     }
+    
+    public static ExtensionFileFilter getExtensionFileFilter(String extension, String description) {
+        return new ExtensionFileFilter(extension, description);
+    }
+    
+    /**
+     * Filter that allows directories and files with specified extension
+     */
+    public static final class ExtensionFileFilter extends FileFilter {
+        String extension;
+        
+        String description;
+        
+        public ExtensionFileFilter(String extension, String description) {
+            this.extension = extension;
+            this.description = description;
+        }
+        
+        @Override
+        public boolean accept(File f) {
+            if (f.isDirectory()) {
+                return true;
+            }
+            
+            return f.getName().toLowerCase().endsWith("." + extension);
+        }
+
+        @Override
+        public String getDescription() {
+            return description + " (*." + extension + ")";
+        }
+        
+        
+        public String getExtension() {
+            return extension;
+        }
+        
+    }
 }

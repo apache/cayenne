@@ -335,7 +335,7 @@ public class EntityMapLoader {
                         if (absPath.length() > rootPathLength + suffixLen) {
                             classes.add(absPath.substring(
                                     rootPathLength,
-                                    absPath.length() - suffixLen).replace('/', '.'));
+                                    absPath.length() - suffixLen).replace(File.separatorChar, '.'));
                         }
                     }
                 }
@@ -359,7 +359,7 @@ public class EntityMapLoader {
                 if (name.endsWith(".class")) {
                     int suffixLen = ".class".length();
                     classes.add(name.substring(0, name.length() - suffixLen).replace(
-                            '/',
+                            File.separatorChar,
                             '.'));
                 }
             }

@@ -89,6 +89,11 @@ public class SaveAsAction extends CayenneAction {
         getProjectController().getProjectWatcher().pauseWatching();
         
         p.save();
+        
+        /**
+         * Save graph data as well
+         */
+        getProjectController().getGraphBuilderRegistry().save();
 
         // update preferences domain key
         preference.rename(p.getMainFile().getAbsolutePath());
