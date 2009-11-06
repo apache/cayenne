@@ -35,7 +35,6 @@ import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.omg.PortableServer.AdapterActivator;
 
 /**
  * A sequence-based PK generator used by {@link DB2Adapter}.
@@ -46,6 +45,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     protected DB2PkGenerator() {
         super();
     }
@@ -59,6 +59,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * @deprecated since 2.0 - other generators do not expose the default prefix.
      */
+    @Deprecated
     public static final String SEQUENCE_PREFIX = "S_";
 
     /**
@@ -102,6 +103,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
 
