@@ -263,4 +263,10 @@ public class EJBQLQueryTest extends CayenneCase {
 
         assertEquals(w.getBuffer().toString(), s.toString());
     }
+    
+    public void testNullParameter() {
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x");
+        query.setParameter("x", null);
+        createDataContext().performQuery(query);
+    }
 }
