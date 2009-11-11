@@ -8,6 +8,15 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.0 RC 1
+Date: 
+----------------------------------
+
+Bug Fixes Since beta1:
+
+CAY-1305 EJBQL doesn't support null parameters
+
+----------------------------------
 Release: 3.0 beta 1
 Date: 3 November 2009
 ----------------------------------

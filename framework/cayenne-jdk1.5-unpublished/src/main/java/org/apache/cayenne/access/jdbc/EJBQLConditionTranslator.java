@@ -48,6 +48,7 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.Property;
 
 /**
  * @since 3.0
@@ -705,13 +706,14 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                     throw new EJBQLException("Unmapped id variable: " + id);
                 }
                 String pathChunk = translator.lastPathComponent;
-                AttributeProperty property = (AttributeProperty) descriptor
-                        .getProperty(pathChunk);
-                String atrType = property.getAttribute().getType();
+                
+                Property property = descriptor.getProperty(pathChunk);
+                if (property instanceof AttributeProperty) {
+                    String atrType = ((AttributeProperty) property).getAttribute().getType();
 
-                type = TypesMapping.getSqlNameByType(TypesMapping
-                        .getSqlTypeByJava(atrType));
-
+                    type = TypesMapping.getSqlNameByType(TypesMapping
+                            .getSqlTypeByJava(atrType));
+                }
             }
             context.popMarker();
 
