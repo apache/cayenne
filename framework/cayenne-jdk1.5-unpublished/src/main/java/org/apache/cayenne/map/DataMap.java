@@ -99,23 +99,24 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 1.1
      */
     public static final String DEFAULT_LOCK_TYPE_PROPERTY = "defaultLockType";
-    
+
     public static final String DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY = "quoteSqlIdentifiers";
-    
+
     /**
-     * The namespace in which the data map XML file will be created. This is also the URI to locate a copy of the schema document.
+     * The namespace in which the data map XML file will be created. This is also the URI
+     * to locate a copy of the schema document.
      */
     public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/3.0/modelMap";
-    
+
     protected String name;
     protected String location;
     protected MappingNamespace namespace;
 
     protected Boolean quotingSQLIdentifiers;
-    
+
     protected String defaultSchema;
     protected String defaultPackage;
- 
+
     protected String defaultSuperclass;
     protected int defaultLockType;
 
@@ -143,9 +144,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 3.0
      */
     public void setQuotingSQLIdentifiers(boolean quotingSqlIdentifiers) {
-        this.quotingSQLIdentifiers = quotingSqlIdentifiers;        
+        this.quotingSQLIdentifiers = quotingSqlIdentifiers;
     }
-    
+
     /**
      * Creates a new unnamed DataMap.
      */
@@ -917,11 +918,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
                 }
                 else {
                     for (Relationship rel : objEnt.getRelationships()) {
-                                               
-                        if (getObjEntity(rel.getTargetEntityName()).getDbEntityName() == null) {
-                            objEnt.clearDbMapping();
-                            break;
-                        }
                         for (DbRelationship dbRel : ((ObjRelationship) rel)
                                 .getDbRelationships()) {
                             if (dbRel.getTargetEntity() == dbEntityToDelete) {
