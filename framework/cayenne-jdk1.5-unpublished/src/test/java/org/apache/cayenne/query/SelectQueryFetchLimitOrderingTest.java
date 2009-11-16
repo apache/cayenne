@@ -33,7 +33,7 @@ public class SelectQueryFetchLimitOrderingTest extends CayenneCase {
       
 
         SelectQuery query = new SelectQuery("Artist");
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, true);
+        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         query.setFetchLimit(4);
         

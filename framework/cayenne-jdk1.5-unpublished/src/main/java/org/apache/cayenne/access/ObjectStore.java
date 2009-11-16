@@ -46,16 +46,7 @@ import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.graph.NodeDeleteOperation;
 import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.graph.NodePropertyChangeOperation;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -185,11 +176,12 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         if (objectDiff == null) {
 
             Persistent object = objectMap.get(nodeId);
-            
+
             if (object == null) {
-                throw new CayenneRuntimeException("No object is registered in context with Id " + nodeId);
+                throw new CayenneRuntimeException(
+                        "No object is registered in context with Id " + nodeId);
             }
-            
+
             if (object.getPersistenceState() == PersistenceState.COMMITTED) {
                 object.setPersistenceState(PersistenceState.MODIFIED);
 
@@ -239,20 +231,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     public int registeredObjectsCount() {
         return objectMap.size();
-    }
-
-    /**
-     * Returns a number of query results cached by this object store. Note that each
-     * result is a list and can possibly contain a large number of entries.
-     * 
-     * @since 1.2
-     * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
-     */
-    @Deprecated
-    public int cachedQueriesCount() {
-        return context != null && context.getQueryCache() != null ? context
-                .getQueryCache()
-                .size() : 0;
     }
 
     /**
@@ -315,24 +293,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     /**
-     * Invalidates a collection of DataObjects. Changes objects state to HOLLOW.
-     * 
-     * @deprecated since 3.0, use {@link DataContext#invalidateObjects(Collection)} or
-     *             {@link RefreshQuery}.
-     */
-    @Deprecated
-    public synchronized void objectsInvalidated(Collection objects) {
-        if (context != null) {
-            context.invalidateObjects(objects);
-        }
-    }
-
-    /**
      * Evicts a collection of DataObjects from the ObjectStore, invalidates the underlying
      * cache snapshots. Changes objects state to TRANSIENT. This method can be used for
      * manual cleanup of Cayenne cache.
-     * 
-     * @see #objectsInvalidated(Collection)
      */
     // this method is exactly the same as "objectsInvalidated", only additionally it
     // throws out registered objects
@@ -411,31 +374,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         // reset changes ... using new HashMap to allow event listeners to analyze the
         // original changes map after the rollback
         this.changes = new HashMap<Object, ObjectDiff>();
-    }
-
-    /**
-     * Updates snapshots in the underlying DataRowStore. If <code>refresh</code> is true,
-     * all snapshots in <code>snapshots</code> will be loaded into DataRowStore,
-     * regardless of the existing cache state. If <code>refresh</code> is false, only
-     * missing snapshots are loaded. This method is normally called internally by the
-     * DataContext owning the ObjectStore to update the caches after a select query.
-     * 
-     * @param objects a list of object whose snapshots need to be updated.
-     * @param snapshots a list of snapshots. Must be of the same length and use the same
-     *            order as <code>objects</code> list.
-     * @param refresh controls whether existing cached snapshots should be replaced with
-     *            the new ones.
-     * @since 1.1
-     * @deprecated since 3.0 unused
-     */
-    @Deprecated
-    public void snapshotsUpdatedForObjects(List objects, List snapshots, boolean refresh) {
-        DataRowStore cache = getDataRowCache();
-        if (cache != null) {
-            synchronized (this) {
-                cache.snapshotsUpdatedForObjects(objects, snapshots, refresh);
-            }
-        }
     }
 
     /**
@@ -537,32 +475,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     /**
-     * Starts tracking the registration of new objects from this ObjectStore. Used in
-     * conjunction with unregisterNewObjects() to control garbage collection when an
-     * instance of ObjectStore is used over a longer time for batch processing.
-     * 
-     * @deprecated since 3.0 as ObjectStore holds weak reference to unmodified objects and
-     *             this feature is useless.
-     */
-    @Deprecated
-    public synchronized void startTrackingNewObjects() {
-        // noop
-    }
-
-    /**
-     * Unregisters the newly registered DataObjects from this objectStore. Used in
-     * conjunction with startTrackingNewObjects() to control garbage collection when an
-     * instance of ObjectStore is used over a longer time for batch processing.
-     * 
-     * @deprecated since 3.0 as ObjectStore holds weak reference to unmodified objects and
-     *             this feature is useless.
-     */
-    @Deprecated
-    public synchronized void unregisterNewObjects() {
-        // noop
-    }
-
-    /**
      * Returns a snapshot for ObjectId from the underlying snapshot cache. If cache
      * contains no snapshot, a null is returned.
      * 
@@ -577,34 +489,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         }
         else {
             return null;
-        }
-    }
-
-    /**
-     * Returns cached query results for a given query, or null if no results are cached.
-     * Note that ObjectStore will only lookup results in its local cache, and not the
-     * shared cache associated with the underlying DataRowStore.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
-     */
-    @Deprecated
-    public synchronized List getCachedQueryResult(String name) {
-        return context != null && context.getQueryCache() != null ? context
-                .getQueryCache()
-                .get(new CacheQueryMetadata(name)) : null;
-    }
-
-    /**
-     * Caches a list of query results.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
-     */
-    @Deprecated
-    public synchronized void cacheQueryResult(String name, List results) {
-        if (context != null) {
-            context.getQueryCache().put(new CacheQueryMetadata(name), results);
         }
     }
 
@@ -715,19 +599,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                 ? (ObjectContext) event.getPostedBy()
                 : null;
         context.fireDataChannelChanged(originatingContext, diff);
-    }
-
-    /**
-     * Initializes object with data from cache or from the database, if this object is not
-     * fully resolved.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0 use
-     *             {@link ObjectContext#prepareForAccess(Persistent, String, boolean)}.
-     */
-    @Deprecated
-    public void resolveHollow(Persistent object) {
-        context.prepareForAccess(object, null, false);
     }
 
     void processIdChange(Object nodeId, Object newId) {
@@ -1156,108 +1027,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         public void undo(GraphChangeHandler handler) {
             throw new UnsupportedOperationException();
-        }
-    }
-
-    /**
-     * @deprecated since 3.0 as this inner class is used to provide backwards
-     *             compatibility for some deprecated methods.
-     */
-    @Deprecated
-    final class CacheQueryMetadata implements QueryMetadata {
-
-        private String cacheKey;
-
-        CacheQueryMetadata(String cacheKey) {
-            this.cacheKey = cacheKey;
-        }
-
-        public String getCacheKey() {
-            return cacheKey;
-        }
-
-        public List<Object> getResultSetMapping() {
-            return null;
-        }
-
-        public Query getOrginatingQuery() {
-            return null;
-        }
-
-        public String[] getCacheGroups() {
-            return null;
-        }
-
-        public String getCachePolicy() {
-            return null;
-        }
-
-        public QueryCacheStrategy getCacheStrategy() {
-            return null;
-        }
-
-        public DataMap getDataMap() {
-            return null;
-        }
-
-        public DbEntity getDbEntity() {
-            return null;
-        }
-
-        public int getFetchLimit() {
-            return 0;
-        }
-
-        public int getFetchOffset() {
-            return 0;
-        }
-
-        /**
-         * @deprecated since 3.0
-         */
-        @Deprecated
-        public int getFetchStartIndex() {
-            return getFetchOffset();
-        }
-
-        public ObjEntity getObjEntity() {
-            return null;
-        }
-
-        public ClassDescriptor getClassDescriptor() {
-            return null;
-        }
-
-        public int getPageSize() {
-            return 0;
-        }
-
-        public PrefetchTreeNode getPrefetchTree() {
-            return null;
-        }
-
-        public Map<String, String> getPathSplitAliases() {
-            return null;
-        }
-
-        public Procedure getProcedure() {
-            return null;
-        }
-
-        public boolean isFetchingDataRows() {
-            return false;
-        }
-
-        public boolean isRefreshingObjects() {
-            return false;
-        }
-
-        public boolean isResolvingInherited() {
-            return false;
-        }
-
-        public int getStatementFetchSize() {
-            return 0;
         }
     }
 }

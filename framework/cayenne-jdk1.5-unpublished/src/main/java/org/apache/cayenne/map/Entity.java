@@ -283,28 +283,6 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             String relationshipPath);
 
     /**
-     * Convenience method returning the last component in the path iterator, either an
-     * {@link ObjAttribute} or an {@link ObjRelationship}.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0 use {@link #lastPathComponent(Expression, Map)} method that
-     *             supports aliases.
-     */
-    @Deprecated
-    public Object lastPathComponent(Expression path) {
-
-        PathComponent<Attribute, Relationship> last = lastPathComponent(
-                path,
-                Collections.EMPTY_MAP);
-        if (last != null) {
-            return last.getAttribute() != null ? last.getAttribute() : last
-                    .getRelationship();
-        }
-
-        return null;
-    }
-
-    /**
      * Convenience method returning the last component in the path iterator. If the last
      * component is an alias, it is fully resolved down to the last ObjRelationship.
      * 

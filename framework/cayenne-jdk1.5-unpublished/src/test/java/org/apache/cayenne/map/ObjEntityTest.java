@@ -114,29 +114,6 @@ public class ObjEntityTest extends CayenneCase {
         assertEquals(attr.isMandatory(), attr.getDbAttribute().isMandatory());
     }
 
-    /**
-     * @deprecated since 3.0 as the method being tested is deprecated.
-     */
-    @Deprecated
-    public void testLastPathComponentLegacy() {
-        ObjEntity artistE = getObjEntity("Artist");
-
-        Object lastAttribute = artistE.lastPathComponent(Expression
-                .fromString("paintingArray.paintingTitle"));
-        assertTrue(lastAttribute instanceof ObjAttribute);
-        assertEquals("paintingTitle", ((ObjAttribute) lastAttribute).getName());
-
-        Object lastRelationship = artistE.lastPathComponent(Expression
-                .fromString("paintingArray.toGallery"));
-        assertTrue(lastRelationship instanceof ObjRelationship);
-        assertEquals("toGallery", ((ObjRelationship) lastRelationship).getName());
-
-        Object lastLeftJoinRelationship = artistE.lastPathComponent(new ASTObjPath(
-                "paintingArray+.toGallery+"));
-        assertTrue(lastLeftJoinRelationship instanceof ObjRelationship);
-        assertEquals("toGallery", ((ObjRelationship) lastLeftJoinRelationship).getName());
-    }
-
     public void testLastPathComponent() {
         ObjEntity artistE = getObjEntity("Artist");
 
@@ -439,14 +416,14 @@ public class ObjEntityTest extends CayenneCase {
                                 + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"),
                 translated);
     }
-    
+
     public void testTranslateNullArg() {
         ObjectContext context = createDataContext();
         ObjEntity entity = context.getEntityResolver().getObjEntity("Artist");
-        
+
         Expression exp = ExpressionFactory.noMatchExp("dateOfBirth", null);
         Expression translated = entity.translateToDbPath(exp);
-        
+
         assertFalse(translated.match(new Artist()));
-    } 
+    }
 }

@@ -24,6 +24,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.horizontalinherit.SubEntity1;
 import org.apache.cayenne.unit.InheritanceCase;
 
@@ -87,7 +88,7 @@ public class HorizontalInheritanceTest extends InheritanceCase {
         createDataContext().performGenericQuery(inserts);
 
         SelectQuery select = new SelectQuery(SubEntity1.class);
-        select.addOrdering(SubEntity1.SUB_ENTITY_STRING_ATTR_PROPERTY, true);
+        select.addOrdering(SubEntity1.SUB_ENTITY_STRING_ATTR_PROPERTY, SortOrder.ASCENDING);
 
         List<SubEntity1> result = createDataContext().performQuery(select);
         assertEquals(2, result.size());

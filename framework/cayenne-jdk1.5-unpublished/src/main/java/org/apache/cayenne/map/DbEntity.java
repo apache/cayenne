@@ -173,14 +173,6 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     }
 
     /**
-     * @deprecated since 3.0 use {@link #getPrimaryKeys()} that returns a collection.
-     */
-    @Deprecated
-    public List<DbAttribute> getPrimaryKey() {
-        return new ArrayList<DbAttribute>(getPrimaryKeys());
-    }
-
-    /**
      * Returns a Collection of all attributes that either belong to this DbEntity or
      * inherited.
      */
@@ -209,19 +201,6 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      * @since 3.0
      */
     public void addAttribute(DbAttribute attr) {
-        super.addAttribute(attr);
-        this.dbAttributeAdded(new AttributeEvent(this, attr, this, MapEvent.ADD));
-    }
-
-    /**
-     * Overrides super to fire an AttributeEvent.
-     * 
-     * @deprecated in favour of {@link #addAttribute(DbAttribute attr)}. Scheduled for
-     *             removal in Cayenne 4.
-     */
-    @Override
-    @Deprecated
-    public void addAttribute(Attribute attr) {
         super.addAttribute(attr);
         this.dbAttributeAdded(new AttributeEvent(this, attr, this, MapEvent.ADD));
     }

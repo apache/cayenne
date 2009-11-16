@@ -25,8 +25,8 @@ import org.apache.art.Painting;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextOuterJoinsTest extends CayenneCase {
@@ -44,7 +44,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         missingToManyQuery.andQualifier(ExpressionFactory.matchExp(
                 Artist.GROUP_ARRAY_PROPERTY + Entity.OUTER_JOIN_INDICATOR,
                 null));
-        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
         assertEquals(1, artists.size());
@@ -59,7 +59,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         missingToManyQuery.andQualifier(ExpressionFactory.matchExp(
                 Artist.PAINTING_ARRAY_PROPERTY + Entity.OUTER_JOIN_INDICATOR,
                 null));
-        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
         assertEquals(2, artists.size());
@@ -72,7 +72,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         mixedConditionQuery.orQualifier(ExpressionFactory.matchExp(
                 Artist.ARTIST_NAME_PROPERTY,
                 "AA1"));
-        mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         artists = createDataContext().performQuery(mixedConditionQuery);
         assertEquals(3, artists.size());
@@ -87,7 +87,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
 
         SelectQuery missingToManyQuery = new SelectQuery(Artist.class);
         missingToManyQuery.andQualifier(Expression.fromString("paintingArray+ = null"));
-        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
         assertEquals(2, artists.size());
@@ -100,7 +100,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         mixedConditionQuery.orQualifier(ExpressionFactory.matchExp(
                 Artist.ARTIST_NAME_PROPERTY,
                 "AA1"));
-        mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         artists = createDataContext().performQuery(mixedConditionQuery);
         assertEquals(3, artists.size());
@@ -115,7 +115,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(Painting.class);
 
-        query.addOrdering("toArtist+.artistName", Ordering.DESC);
+        query.addOrdering("toArtist+.artistName", SortOrder.DESCENDING);
 
         List<Artist> paintings = createDataContext().performQuery(query);
         assertEquals(3, paintings.size());

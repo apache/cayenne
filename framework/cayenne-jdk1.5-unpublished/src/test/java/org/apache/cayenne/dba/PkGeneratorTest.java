@@ -71,28 +71,4 @@ public class PkGeneratorTest extends CayenneCase {
             pkList.add(pk);
         }
     }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testBinaryPK1() throws Exception {
-        if (!(pkGen instanceof JdbcPkGenerator)) {
-            return;
-        }
-
-        DbEntity artistEntity = getDbEntity("ARTIST");
-        assertNull(((JdbcPkGenerator) pkGen).binaryPK(artistEntity));
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testBinaryPK2() throws Exception {
-        if (!(pkGen instanceof JdbcPkGenerator)) {
-            return;
-        }
-
-        DbEntity binPKEntity = getDbEntity("BINARY_PK_TEST1");
-        assertNotNull(((JdbcPkGenerator) pkGen).binaryPK(binPKEntity));
-    }
 }

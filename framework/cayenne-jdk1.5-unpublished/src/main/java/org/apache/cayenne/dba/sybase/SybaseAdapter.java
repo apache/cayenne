@@ -33,25 +33,23 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.merge.MergerFactory;
 
-/** 
+/**
  * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
- *
  */
 public class SybaseAdapter extends JdbcAdapter {
 
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "[";
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "]";
-    
+
     /**
-    * 
-    * @since 3.0
-    */
+     * @since 3.0
+     */
     @Override
-    public void initIdentifiersQuotes(){
+    public void initIdentifiersQuotes() {
         this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
         this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
     }
-    
+
     /**
      * @since 3.0
      */
@@ -59,7 +57,7 @@ public class SybaseAdapter extends JdbcAdapter {
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
         return new SybaseEJBQLTranslatorFactory();
     }
-    
+
     /**
      * Returns word "go".
      * 
@@ -69,10 +67,10 @@ public class SybaseAdapter extends JdbcAdapter {
     public String getBatchTerminator() {
         return "go";
     }
-    
+
     /**
-     * Installs appropriate ExtendedTypes as converters for passing values
-     * between JDBC and Java layers.
+     * Installs appropriate ExtendedTypes as converters for passing values between JDBC
+     * and Java layers.
      */
     @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
@@ -89,24 +87,22 @@ public class SybaseAdapter extends JdbcAdapter {
         map.registerType(new ByteType(true));
     }
 
-    /** 
-     * Creates and returns a primary key generator. 
-     * Overrides superclass implementation to return an
-     * instance of SybasePkGenerator.
+    /**
+     * Creates and returns a primary key generator. Overrides superclass implementation to
+     * return an instance of SybasePkGenerator.
      */
     @Override
     protected PkGenerator createPkGenerator() {
-        return new SybasePkGenerator();
+        return new SybasePkGenerator(this);
     }
 
     @Override
     public void bindParameter(
-        PreparedStatement statement,
-        Object object,
-        int pos,
-        int sqlType,
-        int precision)
-        throws SQLException, Exception {
+            PreparedStatement statement,
+            Object object,
+            int pos,
+            int sqlType,
+            int precision) throws SQLException, Exception {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters
         if (object == null) {
@@ -117,15 +113,15 @@ public class SybaseAdapter extends JdbcAdapter {
                 sqlType = Types.VARBINARY;
             }
         }
-        
-        if (object == null && sqlType==0) {
+
+        if (object == null && sqlType == 0) {
             statement.setNull(pos, Types.VARCHAR);
         }
         else {
             super.bindParameter(statement, object, pos, sqlType, precision);
         }
     }
-    
+
     @Override
     public MergerFactory mergerFactory() {
         return new SybaseMergerFactory();

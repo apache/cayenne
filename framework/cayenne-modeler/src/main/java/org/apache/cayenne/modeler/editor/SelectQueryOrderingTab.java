@@ -64,9 +64,9 @@ import org.apache.cayenne.util.CayenneMapEntry;
  */
 public class SelectQueryOrderingTab extends JPanel implements PropertyChangeListener {
 
-    //property for split pane divider size
-    private static final String SPLIT_DIVIDER_LOCATION_PROPERTY = "query.orderings.divider.location"; 
-    
+    // property for split pane divider size
+    private static final String SPLIT_DIVIDER_LOCATION_PROPERTY = "query.orderings.divider.location";
+
     static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
     static final Dimension TABLE_DIM = new Dimension(460, 60);
 
@@ -97,22 +97,23 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
-        
-        PreferenceDetail detail = getDomain().
-            getDetail(getDividerLocationProperty(), false);
-        
+
+        PreferenceDetail detail = getDomain().getDetail(
+                getDividerLocationProperty(),
+                false);
+
         int defLocation = Application.getFrame().getHeight() / 2;
-        int location = detail != null ? 
-                detail.getIntProperty(getDividerLocationProperty(), defLocation) : defLocation; 
+        int location = detail != null ? detail.getIntProperty(
+                getDividerLocationProperty(),
+                defLocation) : defLocation;
 
         /**
-         * As of CAY-888 #3 main pane is now a JSplitPane.
-         * Top component is a bit larger.
+         * As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
          */
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, this);
         mainPanel.setDividerLocation(location);
-        
+
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());
 
@@ -142,7 +143,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
             return;
         }
 
-        if (!(((SelectQuery)query).getRoot() instanceof Entity)) {
+        if (!(((SelectQuery) query).getRoot() instanceof Entity)) {
             processInvalidModel("SelectQuery has no root set.");
             return;
         }
@@ -183,7 +184,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         browser = new MultiColumnBrowser();
         browser.setPreferredColumnSize(BROWSER_CELL_DIM);
         browser.setDefaultRenderer();
-        
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(createToolbar(), BorderLayout.NORTH);
         panel.add(new JScrollPane(
@@ -191,10 +192,10 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
                 JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
 
-        //setting minimal size, otherwise scrolling looks awful, because of 
-        //VERTICAL_SCROLLBAR_NEVER strategy
+        // setting minimal size, otherwise scrolling looks awful, because of
+        // VERTICAL_SCROLLBAR_NEVER strategy
         panel.setMinimumSize(panel.getPreferredSize());
-        
+
         return panel;
     }
 
@@ -362,47 +363,55 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
             switch (column) {
                 case 1:
-                    ordering.setAscending(((Boolean) value).booleanValue());
-                    mediator.fireQueryEvent(new QueryEvent(
-                            SelectQueryOrderingTab.this,
-                            selectQuery));
+                    if (((Boolean) value).booleanValue()) {
+                        ordering.setAscending();
+                    }
+                    else {
+                        ordering.setDescending();
+                    }
                     break;
                 case 2:
-                    ordering.setCaseInsensitive(((Boolean) value).booleanValue());
-                    mediator.fireQueryEvent(new QueryEvent(
-                            SelectQueryOrderingTab.this,
-                            selectQuery));
+                    if (((Boolean) value).booleanValue()) {
+                        ordering.setCaseInsensitive();
+                    }
+                    else {
+                        ordering.setCaseSensitive();
+                    }
                     break;
                 default:
                     throw new IndexOutOfBoundsException("Invalid editable column: "
                             + column);
             }
 
+            mediator.fireQueryEvent(new QueryEvent(
+                    SelectQueryOrderingTab.this,
+                    selectQuery));
         }
     }
 
     /**
-     * Updates split pane divider location in properties 
+     * Updates split pane divider location in properties
      */
     public void propertyChange(PropertyChangeEvent evt) {
         if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(evt.getPropertyName())) {
             int value = (Integer) evt.getNewValue();
-            
-            PreferenceDetail detail = getDomain().
-                getDetail(getDividerLocationProperty(), true);
+
+            PreferenceDetail detail = getDomain().getDetail(
+                    getDividerLocationProperty(),
+                    true);
             detail.setIntProperty(getDividerLocationProperty(), value);
         }
     }
-    
+
     /**
-     * Returns name of a property for divider location. 
+     * Returns name of a property for divider location.
      */
     protected String getDividerLocationProperty() {
         return SPLIT_DIVIDER_LOCATION_PROPERTY;
     }
-    
+
     protected Domain getDomain() {
-        //note: getClass() returns different values for Orderings and Prefetches tabs
+        // note: getClass() returns different values for Orderings and Prefetches tabs
         return Application.getInstance().getPreferenceDomain().getSubdomain(getClass());
     }
 }

@@ -25,8 +25,8 @@ import java.util.List;
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextOrderingTest extends CayenneCase {
@@ -59,8 +59,8 @@ public class DataContextOrderingTest extends CayenneCase {
         context.commitChanges();
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.DESC);
-        query.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, Ordering.DESC);
+        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.DESCENDING);
+        query.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, SortOrder.DESCENDING);
 
         List<Artist> list = context.performQuery(query);
         assertEquals(3, list.size());
@@ -106,8 +106,8 @@ public class DataContextOrderingTest extends CayenneCase {
         query1.andQualifier(ExpressionFactory.noMatchExp(
                 Artist.PAINTING_ARRAY_PROPERTY,
                 null));
-        query1.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.DESC);
-        query1.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, Ordering.DESC);
+        query1.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.DESCENDING);
+        query1.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, SortOrder.DESCENDING);
 
         List<Artist> list1 = context.performQuery(query1);
         assertEquals(2, list1.size());

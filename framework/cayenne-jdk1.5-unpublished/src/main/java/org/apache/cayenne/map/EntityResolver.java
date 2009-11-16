@@ -651,31 +651,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Looks in the DataMap's that this object was created with for the DbEntity that
-     * services the specified class
-     * 
-     * @return the required DbEntity, or null if none matches the specifier
-     * @deprecated since 3.0 - lookup DbEntity via ObjEntity instead.
-     */
-    @Deprecated
-    public synchronized DbEntity lookupDbEntity(Class<?> aClass) {
-        ObjEntity oe = lookupObjEntity(aClass);
-        return oe != null ? oe.getDbEntity() : null;
-    }
-
-    /**
-     * Looks in the DataMap's that this object was created with for the DbEntity that
-     * services the specified data Object
-     * 
-     * @return the required DbEntity, or null if none matches the specifier
-     * @deprecated since 3.0 - lookup DbEntity via ObjEntity instead.
-     */
-    @Deprecated
-    public synchronized DbEntity lookupDbEntity(Persistent dataObject) {
-        return lookupDbEntity(dataObject.getClass());
-    }
-
-    /**
      * Returns EntityInheritanceTree representing inheritance hierarchy that starts with a
      * given ObjEntity as root, and includes all its subentities. If ObjEntity has no
      * known subentities, null is returned.
@@ -745,18 +720,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return lookupObjEntity(object.getClass());
-    }
-
-    /**
-     * Looks in the DataMap's that this object was created with for the ObjEntity that
-     * maps to the services the class with the given name
-     * 
-     * @return the required ObjEntity or null if there is none that matches the specifier
-     * @deprecated since 3.0 - use getObjEntity() instead.
-     */
-    @Deprecated
-    public synchronized ObjEntity lookupObjEntity(String entityName) {
-        return _lookupObjEntity(entityName);
     }
 
     public Procedure lookupProcedure(Query q) {

@@ -36,7 +36,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -175,19 +174,11 @@ public class DataContextExtrasTest extends CayenneCase {
 
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception
-        PkGenerator newGenerator = new JdbcPkGenerator() {
-
-            @Override
-            public Object generatePkForDbEntity(DataNode node, DbEntity ent)
-                    throws Exception {
-                throw new CayenneRuntimeException("Synthetic error....");
-            }
-
-            @Override
-            public Object generatePk(DataNode node, DbAttribute pk)
-                    throws Exception {
-                throw new CayenneRuntimeException("Synthetic error....");
-            }
+        PkGenerator newGenerator = new JdbcPkGenerator(new JdbcAdapter()) {
+          @Override
+            public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
+                throw new CayenneRuntimeException("Intentional");
+            }  
         };
 
         PkGenerator oldGenerator = getNode().getAdapter().getPkGenerator();

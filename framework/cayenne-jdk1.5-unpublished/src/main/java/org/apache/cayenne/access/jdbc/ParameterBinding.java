@@ -41,14 +41,6 @@ public class ParameterBinding {
     }
 
     /**
-     * @deprecated since 3.0 use {@link #getScale()}.
-     */
-    @Deprecated
-    public int getPrecision() {
-        return scale;
-    }
-
-    /**
      * @since 3.0
      */
     public int getScale() {
@@ -67,14 +59,6 @@ public class ParameterBinding {
      * @since 3.0
      */
     public void setScale(int i) {
-        scale = i;
-    }
-
-    /**
-     * @deprecated since 3.0 use {@link #setScale(int)}.
-     */
-    @Deprecated
-    public void setPrecision(int i) {
         scale = i;
     }
 

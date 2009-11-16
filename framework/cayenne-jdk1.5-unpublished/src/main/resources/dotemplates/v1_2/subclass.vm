@@ -27,12 +27,12 @@
 ##    importUtils - class for import statement management: See org.apache.cayenne.gen.ImportUtils
 ##
 ##
-${importUtils.setPackage($entityUtils.subPackageName)}##
-${importUtils.addReservedType("${entityUtils.subPackageName}.${entityUtils.subClassName}")}##
-${importUtils.addType("${entityUtils.superPackageName}.${entityUtils.superClassName}")}##
+${importUtils.setPackage($subPackageName)}##
+${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
+${importUtils.addType("${superPackageName}.${superClassName}")}##
 ${importUtils.generate()}
 
-public#if("true" == "${object.getIsAbstract()}") abstract#end class ${entityUtils.subClassName} extends ${entityUtils.superClassName} {
+public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${superClassName} {
 
 ##callbacks
 #foreach($cbname in ${entityUtils.callbackNames})

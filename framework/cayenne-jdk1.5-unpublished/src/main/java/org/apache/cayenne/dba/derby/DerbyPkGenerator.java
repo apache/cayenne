@@ -38,20 +38,14 @@ import org.apache.cayenne.map.DbEntity;
  * @since 1.2
  */
 public class DerbyPkGenerator extends JdbcPkGenerator {
-    
-    /**
-     * @deprecated since 3.0
-     */
-    DerbyPkGenerator(){        
-    }
-    
-    DerbyPkGenerator(JdbcAdapter adapter){
+
+    DerbyPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 
     static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT"
             + " WHERE TABLE_NAME = ? FOR UPDATE";
-    
+
     /**
      * @since 3.0
      */
@@ -88,57 +82,7 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
                 throw new CayenneException("More than one PK record for table: "
                         + entity.getName());
             }
-            
-            rs.close();
 
-            select.close();
-            c.commit();
-
-            return nextId;
-        }
-        finally {
-            c.close();
-        }
-    
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity entity) throws Exception {
-
-        if (QueryLogger.isLoggable()) {
-            QueryLogger.logQuery(SELECT_QUERY, Collections
-                    .singletonList(entity.getName()));
-        }
-
-        Connection c = node.getDataSource().getConnection();
-
-        try {
-            PreparedStatement select = c.prepareStatement(
-                    SELECT_QUERY,
-                    ResultSet.TYPE_FORWARD_ONLY,
-                    ResultSet.CONCUR_UPDATABLE);
-
-            select.setString(1, entity.getName());
-            ResultSet rs = select.executeQuery();
-
-            if (!rs.next()) {
-                throw new CayenneException("PK lookup failed for table: "
-                        + entity.getName());
-            }
-
-            int nextId = rs.getInt(1);
-
-            rs.updateInt(1, nextId + pkCacheSize);
-            rs.updateRow();
-
-            if (rs.next()) {
-                throw new CayenneException("More than one PK record for table: "
-                        + entity.getName());
-            }
-            
             rs.close();
 
             select.close();

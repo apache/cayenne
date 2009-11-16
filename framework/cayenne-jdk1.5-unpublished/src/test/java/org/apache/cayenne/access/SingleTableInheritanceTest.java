@@ -24,6 +24,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
@@ -106,7 +107,7 @@ public class SingleTableInheritanceTest extends PeopleCase {
         createDataContext().performGenericQuery(insert);
 
         SelectQuery select = new SelectQuery(AbstractPerson.class);
-        select.addOrdering("db:" + AbstractPerson.PERSON_ID_PK_COLUMN, true);
+        select.addOrdering("db:" + AbstractPerson.PERSON_ID_PK_COLUMN, SortOrder.ASCENDING);
         select.setPageSize(3);
 
         List<AbstractPerson> results = createDataContext().performQuery(select);

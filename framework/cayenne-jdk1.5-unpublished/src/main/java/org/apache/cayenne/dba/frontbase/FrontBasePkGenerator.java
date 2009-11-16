@@ -38,13 +38,6 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 public class FrontBasePkGenerator extends JdbcPkGenerator {
 
-    /**
-     * @deprecated since 3.0
-     */
-    public FrontBasePkGenerator() {
-        super();
-    }
-    
     public FrontBasePkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
@@ -133,27 +126,5 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
         Map row = (Map) results.get(0);
         Number pk = (Number) row.get("UNIQUE");
         return pk.longValue();
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity entity) throws Exception {
-        String template = "SELECT #result('UNIQUE' 'int') FROM " + entity.getName();
-
-        SQLTemplate query = new SQLTemplate(entity, template);
-        QueryResult observer = new QueryResult();
-        node.performQueries(Collections.singleton((Query) query), observer);
-
-        List results = observer.getFirstRows(query);
-        if (results.size() != 1) {
-            throw new CayenneRuntimeException("Error fetching PK. Expected one row, got "
-                    + results.size());
-        }
-
-        Map row = (Map) results.get(0);
-        Number pk = (Number) row.get("UNIQUE");
-        return pk.intValue();
     }
 }

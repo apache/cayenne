@@ -64,17 +64,6 @@ public class SQLTemplateAction implements SQLAction {
     protected DbEntity dbEntity;
 
     /**
-     * @deprecated since 3.0 use a
-     *             {@link #SQLTemplateAction(SQLTemplate, DbAdapter, EntityResolver)}
-     *             constructor.
-     */
-    @Deprecated
-    public SQLTemplateAction(SQLTemplate query, DbAdapter adapter) {
-        this.query = query;
-        this.adapter = adapter;
-    }
-
-    /**
      * @since 3.0
      */
     public SQLTemplateAction(SQLTemplate query, DbAdapter adapter,
@@ -269,7 +258,7 @@ public class SQLTemplateAction implements SQLAction {
             SQLStatement compiled,
             ResultSet resultSet) throws SQLException {
         RowDescriptorBuilder builder = new RowDescriptorBuilder();
-		builder.setResultSet(resultSet);
+        builder.setResultSet(resultSet);
 
         // SQLTemplate #result columns take precedence over other ways to determine the
         // type
@@ -352,24 +341,6 @@ public class SQLTemplateAction implements SQLAction {
         if (queryMetadata.getStatementFetchSize() != 0) {
             preparedStatement.setFetchSize(queryMetadata.getStatementFetchSize());
         }
-    }
-
-    /**
-     * Always returns true.
-     * 
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public boolean isRemovingLineBreaks() {
-        return true;
-    }
-
-    /**
-     * @deprecated since 3.0 - does nothing
-     */
-    @Deprecated
-    public void setRemovingLineBreaks(boolean removingLineBreaks) {
-
     }
 
     /**

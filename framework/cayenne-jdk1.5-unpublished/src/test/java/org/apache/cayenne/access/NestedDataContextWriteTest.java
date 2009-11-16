@@ -30,8 +30,8 @@ import org.apache.art.PaintingInfo;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class NestedDataContextWriteTest extends CayenneCase {
@@ -114,7 +114,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, true);
+        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
         List objects = childContext.performQuery(query);
 
         assertEquals(4, objects.size());
@@ -186,7 +186,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, true);
+        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
         List objects = childContext.performQuery(query);
 
         assertEquals(4, objects.size());
@@ -223,7 +223,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, true);
+        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
         List objects = childContext.performQuery(query);
 
         assertEquals(4, objects.size());
@@ -290,7 +290,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Painting.class);
-        query.addOrdering(Painting.PAINTING_TITLE_PROPERTY, true);
+        query.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
         List objects = childContext.performQuery(query);
 
         assertEquals(6, objects.size());

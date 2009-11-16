@@ -34,11 +34,8 @@ import org.apache.cayenne.util.Invocation;
  * This class acts as bridge between an Object that wants to inform others about its
  * current state or a change thereof (Publisher) and a list of objects interested in the
  * Subject (Listeners).
- * 
  */
 public class EventManager {
-
-    private static volatile EventManager defaultManager;
 
     public static final int DEFAULT_DISPATCH_THREAD_COUNT = 5;
 
@@ -48,26 +45,6 @@ public class EventManager {
     protected boolean singleThread;
     protected volatile boolean stopped;
     List<DispatchThread> dispatchThreads;
-
-    /**
-     * Returns the shared EventManager. It is created on demand on the first call to this
-     * method. Cayenne internally doesn't use default EventManager. Instead Configuration
-     * EventManager is propagated to DataDomains and DataContexts.
-     * 
-     * @return EventManager the shared EventManager instance
-     * @deprecated since 3.0 users should create their own instances of EventManager using
-     *             constructor and share them as appropriate for their target use.
-     */
-    public static EventManager getDefaultManager() {
-        if (defaultManager == null) {
-            synchronized (EventManager.class) {
-                if (defaultManager == null) {
-                    defaultManager = new EventManager(2);
-                }
-            }
-        }
-        return defaultManager;
-    }
 
     /**
      * Creates a multithreaded EventManager using default thread count.
@@ -286,8 +263,8 @@ public class EventManager {
      * 
      * @param listener the object to be unregistered
      * @param subject the subject from which the listener is to be unregistered
-     * @return <code>true</code> if <code>listener</code> could be removed for the
-     *         given subject, else returns <code>false</code>.
+     * @return <code>true</code> if <code>listener</code> could be removed for the given
+     *         subject, else returns <code>false</code>.
      */
     public boolean removeListener(Object listener, EventSubject subject) {
         return this.removeListener(listener, subject, null);
@@ -301,8 +278,8 @@ public class EventManager {
      * @param subject the subject from which the listener is to be unregistered
      * @param sender the object whose events the listener was interested in;
      *            <code>null</code> means 'any sender'.
-     * @return <code>true</code> if <code>listener</code> could be removed for the
-     *         given subject, else returns <code>false</code>.
+     * @return <code>true</code> if <code>listener</code> could be removed for the given
+     *         subject, else returns <code>false</code>.
      */
     public boolean removeListener(Object listener, EventSubject subject, Object sender) {
         if (listener == null || subject == null) {

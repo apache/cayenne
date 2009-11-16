@@ -28,7 +28,6 @@ import org.apache.cayenne.query.Query;
 
 /**
  * A noop ObjectContext used for unit testing.
- *
  */
 public class MockObjectContext implements ObjectContext {
 
@@ -98,13 +97,6 @@ public class MockObjectContext implements ObjectContext {
     }
 
     public void registerNewObject(Object object) {
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public void prepareForAccess(Persistent persistent, String property) {
     }
 
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {

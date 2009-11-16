@@ -456,7 +456,7 @@ public class EOModelProcessor {
                 }
 
                 // set name instead of the actual attribute, as it may be inherited....
-                attr.setDbAttributeName(dbAttrName);
+                attr.setDbAttributePath(dbAttrName);
                 objEntity.addAttribute(attr);
             }
         }

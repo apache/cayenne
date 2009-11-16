@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.relationship.ClobMaster;
 import org.apache.cayenne.unit.RelationshipCase;
 
@@ -47,11 +48,11 @@ public class CAY_115Test extends RelationshipCase {
         DataContext context = createDataContext();
 
         SelectQuery noDistinct = new SelectQuery(ClobMaster.class);
-        noDistinct.addOrdering(ClobMaster.NAME_PROPERTY, true);
+        noDistinct.addOrdering(ClobMaster.NAME_PROPERTY, SortOrder.ASCENDING);
 
         SelectQuery distinct = new SelectQuery(ClobMaster.class);
         distinct.setDistinct(true);
-        distinct.addOrdering(ClobMaster.NAME_PROPERTY, true);
+        distinct.addOrdering(ClobMaster.NAME_PROPERTY, SortOrder.ASCENDING);
 
         List noDistinctResult = context.performQuery(noDistinct);
         List distinctResult = context.performQuery(distinct);

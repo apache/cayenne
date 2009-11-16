@@ -91,14 +91,6 @@ class RangeQuery implements Query {
             public int getFetchOffset() {
                 return fetchOffset;
             }
-            
-            /**
-             * @deprecated since 3.0
-             */
-            @Deprecated
-            public int getFetchStartIndex() {
-                return getFetchOffset();
-            }
 
             public int getFetchLimit() {
                 return fetchLimit;
@@ -142,16 +134,12 @@ class RangeQuery implements Query {
             public Procedure getProcedure() {
                 throw new UnsupportedOperationException();
             }
-            
+
             public Map<String, String> getPathSplitAliases() {
                 throw new UnsupportedOperationException();
             }
 
             public boolean isRefreshingObjects() {
-                throw new UnsupportedOperationException();
-            }
-
-            public boolean isResolvingInherited() {
                 throw new UnsupportedOperationException();
             }
 

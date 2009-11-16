@@ -24,10 +24,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.Address;
 import org.apache.cayenne.testdo.inherit.BaseEntity;
@@ -166,7 +166,7 @@ public class InheritanceTest extends PeopleCase {
 
         SelectQuery query = new SelectQuery(PersonNotes.class);
         query.addPrefetch(PersonNotes.PERSON_PROPERTY);
-        query.addOrdering(PersonNotes.NOTES_PROPERTY, Ordering.ASC);
+        query.addOrdering(PersonNotes.NOTES_PROPERTY, SortOrder.ASCENDING);
 
         List<PersonNotes> notes = createDataContext().performQuery(query);
         assertEquals(2, notes.size());

@@ -76,7 +76,7 @@ class QueryMetadataWrapper implements QueryMetadata {
     public Procedure getProcedure() {
         return info.getProcedure();
     }
-    
+
     /**
      * @since 3.0
      */
@@ -133,19 +133,7 @@ class QueryMetadataWrapper implements QueryMetadata {
         return b != null && b.booleanValue();
     }
 
-    /**
-     * @deprecated since 3.0 as super is deprecated.
-     */
-    @Deprecated
     public boolean isRefreshingObjects() {
-        return true;
-    }
-
-    /**
-     * @deprecated since 3.0 inheritance resolving is not optional.
-     */
-    @Deprecated
-    public boolean isResolvingInherited() {
         return true;
     }
 
@@ -160,14 +148,6 @@ class QueryMetadataWrapper implements QueryMetadata {
 
     public int getFetchOffset() {
         return info.getFetchOffset();
-    }
-    
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public int getFetchStartIndex() {
-        return getFetchOffset();
     }
 
     public int getFetchLimit() {

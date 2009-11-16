@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -31,7 +30,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -85,44 +83,6 @@ public class OptimisticLockException extends CayenneRuntimeException {
         SelectQuery query = new SelectQuery(rootEntity, qualifier);
         query.setFetchingDataRows(true);
         return (Map<?, ?>) DataObjectUtils.objectForQuery(context, query);
-    }
-    
-    /**
-     * Retrieves fresh snapshot for the failed row. Null row indicates that it was
-     * deleted.
-     * 
-     * @deprecated since 3.0 use {@link #getFreshSnapshot(ObjectContext)} instead.
-     */
-    public Map getFreshSnapshot(QueryEngine engine) {
-
-        // extract PK from the qualifierSnapshot and fetch a row
-        // for PK, ignoring other locking attributes...
-
-        Expression qualifier = null;
-        for (DbAttribute attribute : rootEntity.getPrimaryKeys()) {
-            Expression attributeQualifier = ExpressionFactory.matchDbExp(attribute
-                    .getName(), qualifierSnapshot.get(attribute.getName()));
-
-            qualifier = (qualifier != null)
-                    ? qualifier.andExp(attributeQualifier)
-                    : attributeQualifier;
-        }
-
-        SelectQuery query = new SelectQuery(rootEntity, qualifier);
-        query.setFetchingDataRows(true);
-        QueryResult observer = new QueryResult();
-        engine.performQueries(Collections.singletonList((Query) query), observer);
-        List results = observer.getFirstRows(query);
-
-        if (results == null || results.isEmpty()) {
-            return null;
-        }
-        else if (results.size() > 1) {
-            throw new CayenneRuntimeException("More than one row for ObjectId.");
-        }
-        else {
-            return (Map) results.get(0);
-        }
     }
 
     /**

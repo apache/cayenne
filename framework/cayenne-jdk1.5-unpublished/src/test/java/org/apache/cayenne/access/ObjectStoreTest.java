@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Gallery;
@@ -58,42 +56,6 @@ public class ObjectStoreTest extends CayenneCase {
         o3.setObjectId(new ObjectId("T", "key3", "v3"));
         context.getObjectStore().registerNode(o3.getObjectId(), o3);
         assertEquals(2, context.getObjectStore().registeredObjectsCount());
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testCachedQueriesCount() throws Exception {
-        DataContext context = createDataContext();
-        assertEquals(0, context.getObjectStore().cachedQueriesCount());
-
-        context.getObjectStore().cacheQueryResult("result", new ArrayList());
-        assertEquals(1, context.getObjectStore().cachedQueriesCount());
-
-        // test refreshing the cache
-        context.getObjectStore().cacheQueryResult("result", new ArrayList());
-        assertEquals(1, context.getObjectStore().cachedQueriesCount());
-
-        // test new entry
-        context.getObjectStore().cacheQueryResult("result2", new ArrayList());
-        assertEquals(2, context.getObjectStore().cachedQueriesCount());
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testCachedQueryResult() throws Exception {
-        DataContext context = createDataContext();
-        assertNull(context.getObjectStore().getCachedQueryResult("result"));
-
-        List result = new ArrayList();
-        context.getObjectStore().cacheQueryResult("result", result);
-        assertSame(result, context.getObjectStore().getCachedQueryResult("result"));
-
-        // test refreshing the cache
-        List freshResult = new ArrayList();
-        context.getObjectStore().cacheQueryResult("result", freshResult);
-        assertSame(freshResult, context.getObjectStore().getCachedQueryResult("result"));
     }
 
     public void testObjectsUnregistered() throws Exception {

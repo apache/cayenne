@@ -161,13 +161,6 @@ public class DbLoader {
     }
 
     /**
-     * @deprecated since 3.0 in favor of {@link #getConnection()}.
-     */
-    public Connection getCon() {
-        return getConnection();
-    }
-
-    /**
      * Returns a name of a generic class that should be used for all ObjEntities. The most
      * common generic class is {@link org.apache.cayenne.CayenneDataObject}. If generic
      * class name is null (which is the default), DbLoader will assign each entity a

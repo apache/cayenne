@@ -21,7 +21,6 @@ package org.apache.cayenne.util;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.InputStream;
 
 import junit.framework.TestCase;
 
@@ -45,42 +44,6 @@ public class ResourceLocatorTest extends TestCase {
     protected void tearDown() throws java.lang.Exception {
         if (!fTmpFileInCurrentDir.delete())
             throw new Exception("Error deleting temporary file: " + fTmpFileInCurrentDir);
-    }
-
-    /**
-     * @deprecated since 3.0 unused
-     */
-    public void testFindResourceInCurrentDirectory() throws java.lang.Exception {
-        InputStream in = ResourceLocator.findResourceInFileSystem(fTmpFileName);
-        try {
-            assertNotNull(in);
-        }
-        finally {
-            in.close();
-        }
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testClassBaseUrl() throws java.lang.Exception {
-        String me = ResourceLocator.classBaseUrl(this.getClass());
-        assertNotNull(me);
-        assertTrue("Expected 'jar:' or 'file:' URL, got " + me, me.startsWith("jar:")
-                || me.startsWith("file:"));
-    }
-
-    /**
-     * @deprecated since 3.0 unused
-     */
-    public void testFindResourceInClasspath() throws java.lang.Exception {
-        InputStream in = ResourceLocator.findResourceInClasspath("testfile1.txt");
-        try {
-            assertNotNull(in);
-        }
-        finally {
-            in.close();
-        }
     }
 
     public void testFindResourceWithCustomClassPath() throws java.lang.Exception {

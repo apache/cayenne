@@ -29,6 +29,7 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class ExpressionFactoryTest extends CayenneCase {
@@ -268,7 +269,7 @@ public class ExpressionFactoryTest extends CayenneCase {
         assertTrue(query.getQualifier().match(res));
         
         query.setQualifier(ExpressionFactory.matchAnyExp(a1, a3));
-        query.addOrdering("artistName", true);
+        query.addOrdering("artistName", SortOrder.ASCENDING);
         List<Persistent> list = dc.performQuery(query);
         assertEquals(list.size(), 2);
         assertSame(list.get(0), a1);

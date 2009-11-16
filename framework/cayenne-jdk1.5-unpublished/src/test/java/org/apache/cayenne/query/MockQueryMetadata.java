@@ -29,7 +29,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class MockQueryMetadata implements QueryMetadata {
-    
+
     public List<Object> getResultSetMapping() {
         return null;
     }
@@ -45,7 +45,7 @@ public class MockQueryMetadata implements QueryMetadata {
     public Procedure getProcedure() {
         return null;
     }
-    
+
     public Map<String, String> getPathSplitAliases() {
         return null;
     }
@@ -54,26 +54,18 @@ public class MockQueryMetadata implements QueryMetadata {
         return null;
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public String getCachePolicy() {
-        return null;
-    }
-    
     public QueryCacheStrategy getCacheStrategy() {
         return null;
     }
-    
+
     public String getCacheKey() {
         return null;
     }
-    
+
     public String[] getCacheGroups() {
         return null;
     }
-    
+
     public ClassDescriptor getClassDescriptor() {
         return null;
     }
@@ -93,17 +85,9 @@ public class MockQueryMetadata implements QueryMetadata {
     public int getPageSize() {
         return 0;
     }
-    
+
     public int getFetchOffset() {
         return -1;
-    }
-    
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public int getFetchStartIndex() {
-        return getFetchOffset();
     }
 
     public int getFetchLimit() {
@@ -113,7 +97,7 @@ public class MockQueryMetadata implements QueryMetadata {
     public PrefetchTreeNode getPrefetchTree() {
         return null;
     }
-    
+
     public Query getOrginatingQuery() {
         return null;
     }

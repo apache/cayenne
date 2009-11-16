@@ -32,6 +32,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class NestedDataContextReadTest extends CayenneCase {
@@ -346,7 +347,7 @@ public class NestedDataContextReadTest extends CayenneCase {
 
         // run an ordered query, so we can address specific objects directly by index
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, true);
+        q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
         List childSources = child.performQuery(q);
         assertEquals(5, childSources.size());
 
@@ -405,7 +406,7 @@ public class NestedDataContextReadTest extends CayenneCase {
                 new Integer(33001));
 
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, true);
+        q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
 
         List results = child.performQuery(q);
@@ -439,7 +440,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         ObjectContext child = parent.createChildContext();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, true);
+        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
 
         List results = child.performQuery(q);

@@ -37,6 +37,7 @@ import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -150,13 +151,8 @@ class IncrementalSelectQuery extends SelectQuery {
     }
 
     @Override
-    public void addOrdering(String sortPathSpec, boolean isAscending, boolean ignoreCase) {
-        query.addOrdering(sortPathSpec, isAscending, ignoreCase);
-    }
-
-    @Override
-    public void addOrdering(String sortPathSpec, boolean isAscending) {
-        query.addOrdering(sortPathSpec, isAscending);
+    public void addOrdering(String sortPathSpec, SortOrder order) {
+        query.addOrdering(sortPathSpec, order);
     }
 
     @Override
@@ -264,24 +260,6 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.isFetchingDataRows();
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    @Override
-    public boolean isRefreshingObjects() {
-        return query.isRefreshingObjects();
-    }
-
-    /**
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    @Override
-    public boolean isResolvingInherited() {
-        return query.isResolvingInherited();
-    }
-
     @Override
     public void orQualifier(Expression e) {
         query.orQualifier(e);
@@ -350,24 +328,6 @@ class IncrementalSelectQuery extends SelectQuery {
     @Override
     public void setQualifier(Expression qualifier) {
         query.setQualifier(qualifier);
-    }
-
-    /**
-     * @deprecated since 3.0 as wrapped method is also deprecated.
-     */
-    @Deprecated
-    @Override
-    public void setRefreshingObjects(boolean flag) {
-        query.setRefreshingObjects(flag);
-    }
-
-    /**
-     * @deprecated since 3.0 as wrapped method is also deprecated.
-     */
-    @Deprecated
-    @Override
-    public void setResolvingInherited(boolean b) {
-        query.setResolvingInherited(b);
     }
 
     @Override

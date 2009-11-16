@@ -30,11 +30,9 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.Query;
@@ -1186,72 +1184,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
-     * Attribute property changed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
-     */
-    @Deprecated
-    public void dbAttributeChanged(AttributeEvent e) {
-        Entity entity = e.getEntity();
-        if (entity instanceof DbEntity) {
-            ((DbEntity) entity).dbAttributeChanged(e);
-        }
-    }
-
-    /**
-     * New attribute has been created/added.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
-     */
-    @Deprecated
-    public void dbAttributeAdded(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Attribute has been removed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
-     */
-    @Deprecated
-    public void dbAttributeRemoved(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship property changed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
-     */
-    @Deprecated
-    public void dbRelationshipChanged(RelationshipEvent e) {
-        Entity entity = e.getEntity();
-        if (entity instanceof DbEntity) {
-            ((DbEntity) entity).dbRelationshipChanged(e);
-        }
-    }
-
-    /**
-     * Relationship has been created/added.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
-     */
-    @Deprecated
-    public void dbRelationshipAdded(RelationshipEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship has been removed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
-     */
-    @Deprecated
-    public void dbRelationshipRemoved(RelationshipEvent e) {
-        // does nothing currently
-    }
-
-    /**
      * ObjEntity property changed. May be name, attribute or relationship added or
      * removed, etc. Attribute and relationship property changes are handled in respective
      * listeners.
@@ -1290,66 +1222,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
     /** Entity has been removed. */
     public void objEntityRemoved(EntityEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Attribute property changed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
-     */
-    @Deprecated
-    public void objAttributeChanged(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * New attribute has been created/added.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
-     */
-    @Deprecated
-    public void objAttributeAdded(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Attribute has been removed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
-     */
-    @Deprecated
-    public void objAttributeRemoved(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship property changed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
-     */
-    @Deprecated
-    public void objRelationshipChanged(RelationshipEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship has been created/added.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
-     */
-    @Deprecated
-    public void objRelationshipAdded(RelationshipEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship has been removed.
-     * 
-     * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
-     */
-    @Deprecated
-    public void objRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }
 }

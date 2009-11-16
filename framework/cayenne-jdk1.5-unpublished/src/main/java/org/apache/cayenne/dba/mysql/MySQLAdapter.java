@@ -201,7 +201,7 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     protected PkGenerator createPkGenerator() {
-        return new MySQLPkGenerator();
+        return new MySQLPkGenerator(this);
     }
 
     /**

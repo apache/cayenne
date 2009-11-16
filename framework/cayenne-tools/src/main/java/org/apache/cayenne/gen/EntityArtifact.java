@@ -20,11 +20,7 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.velocity.VelocityContext;
-
-import java.util.Collection;
-import java.util.ArrayList;
 
 /**
  * {@link Artifact} facade for an ObjEntity.
@@ -33,17 +29,9 @@ import java.util.ArrayList;
  */
 public class EntityArtifact implements Artifact {
 
-    /**
-     * @deprecated since 3.0 "OBJECT" should be used instead, as the root key in the
-     *             template is not necessarily ObjEntity. Still preserved for ObjEntities
-     *             for backwards compatibility.
-     */
-    public static String OBJ_ENTITY_KEY = "objEntity";
     public static String ENTITY_UTILS_KEY = "entityUtils";
 
     protected ObjEntity entity;
-
-    private Collection<String> callbackNames;
 
     public EntityArtifact(ObjEntity entity) {
         this.entity = entity;
@@ -105,8 +93,6 @@ public class EntityArtifact implements Artifact {
                 (String) context.get(SUB_PACKAGE_KEY));
 
         context.put(ENTITY_UTILS_KEY, metadata);
-        context.put(OBJ_ENTITY_KEY, entity);
     }
-
 
 }

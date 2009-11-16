@@ -129,7 +129,6 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Creates a DataDomain and assigns it a name.
      */
     public DataDomain(String name) {
-        DataContextFaults.init();
         setName(name);
         resetProperties();
     }
@@ -142,9 +141,6 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @param properties A Map containing domain configuration properties.
      */
     public DataDomain(String name, Map properties) {
-
-        // keeping deprecated fault singletons for backwards compatibility
-        DataContextFaults.init();
         setName(name);
         initWithProperties(properties);
     }

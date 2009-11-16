@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.event.EventSubject;
-import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,16 +35,8 @@ import org.apache.commons.collections.Transformer;
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based on one or
  * more primary key/foreign key pairs.
- * 
  */
 public class DbRelationship extends Relationship {
-
-    /**
-     * @deprecated since 3.0 - unused
-     */
-    public static final EventSubject PROPERTY_DID_CHANGE = EventSubject.getSubject(
-            DbRelationship.class,
-            "PropertyDidChange");
 
     // The columns through which the join is implemented.
     protected List<DbJoin> joins = new ArrayList<DbJoin>(2);
@@ -227,7 +216,7 @@ public class DbRelationship extends Relationship {
      */
     public boolean isToPK() {
         for (DbJoin join : getJoins()) {
-            
+
             DbAttribute target = join.getTarget();
             if (target == null) {
                 return false;
@@ -240,7 +229,7 @@ public class DbRelationship extends Relationship {
 
         return false;
     }
-    
+
     /**
      * @since 3.0
      */
@@ -273,9 +262,9 @@ public class DbRelationship extends Relationship {
     }
 
     /**
-     * Returns <code>true</code> if relationship from source to target points to
-     * dependent primary key. Dependent PK is a primary key column of the destination
-     * table that is also a FK to the source column.
+     * Returns <code>true</code> if relationship from source to target points to dependent
+     * primary key. Dependent PK is a primary key column of the destination table that is
+     * also a FK to the source column.
      */
     public boolean isToDependentPK() {
         return toDependentPK;
@@ -471,15 +460,6 @@ public class DbRelationship extends Relationship {
      */
     public void setToMany(boolean toMany) {
         this.toMany = toMany;
-    }
-
-    /**
-     * @deprecated since 3.0 - unused.
-     */
-    protected void firePropertyDidChange() {
-        RelationshipEvent event = new RelationshipEvent(this, this, this
-                .getSourceEntity());
-        EventManager.getDefaultManager().postEvent(event, PROPERTY_DID_CHANGE);
     }
 
     final static class JoinTransformers {

@@ -27,9 +27,9 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
@@ -97,7 +97,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         CayenneContext clientContext = new CayenneContext(channel);
 
         SelectQuery query = new SelectQuery(ClientMtTableBool.class);
-        query.addOrdering("db:" + MtTableBool.ID_PK_COLUMN, true);
+        query.addOrdering("db:" + MtTableBool.ID_PK_COLUMN, SortOrder.ASCENDING);
 
         List<ClientMtTableBool> results = clientContext.performQuery(query);
         assertTrue(results.get(1).isBlablacheck());
@@ -471,7 +471,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         createTestData("testMeaningfulPK");
 
         SelectQuery query = new SelectQuery(ClientMtMeaningfulPk.class);
-        query.addOrdering(ClientMtMeaningfulPk.PK_PROPERTY, Ordering.DESC);
+        query.addOrdering(ClientMtMeaningfulPk.PK_PROPERTY, SortOrder.DESCENDING);
 
         UnitLocalConnection connection = new UnitLocalConnection(new ClientServerChannel(
                 getDomain()), LocalConnection.HESSIAN_SERIALIZATION);
@@ -496,7 +496,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 new Integer(1));
 
         SelectQuery q = new SelectQuery(ClientMtTable2.class);
-        q.addOrdering(ClientMtTable2.GLOBAL_ATTRIBUTE_PROPERTY, true);
+        q.addOrdering(ClientMtTable2.GLOBAL_ATTRIBUTE_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
 
         List results = context.performQuery(q);
@@ -561,7 +561,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         CayenneContext context = new CayenneContext(channel);
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, true);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
 
         List results = context.performQuery(q);
@@ -616,7 +616,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         CayenneContext context = new CayenneContext(channel);
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, true);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
 
         List results = context.performQuery(q);

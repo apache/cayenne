@@ -32,7 +32,6 @@ import org.apache.cayenne.util.PersistentObjectList;
  * A list that holds objects for to-many relationships. All operations, except for
  * resolving the list from DB, are not synchronized. The safest way to implement custom
  * synchronization is to synchronize on parent ObjectStore.
- * 
  */
 public class ToManyList extends PersistentObjectList implements Serializable {
 
@@ -50,17 +49,6 @@ public class ToManyList extends PersistentObjectList implements Serializable {
         }
     }
 
-    /**
-     * Returns a name of relationship for this list.
-     * 
-     * @since 1.1
-     * @deprecated use {@link #getRelationshipName()} method
-     */
-    @Deprecated
-    public String getRelationship() {
-        return getRelationshipName();
-    }
-
     // ====================================================
     // Standard List Methods.
     // ====================================================
@@ -73,7 +61,7 @@ public class ToManyList extends PersistentObjectList implements Serializable {
     // Tracking list modifications, and resolving it
     // on demand
     // ====================================================
-    
+
     @Override
     protected boolean shouldAddToRemovedFromUnresolvedList(Object object) {
         // No point in adding a new or transient object -- these will never be fetched
@@ -92,29 +80,29 @@ public class ToManyList extends PersistentObjectList implements Serializable {
     public String toString() {
         return getClass().getName() + "@" + System.identityHashCode(this);
     }
-    
+
     @Override
     protected void postprocessAdd(Collection collection) {
-        //no need for this operation for DataObjects...
+        // no need for this operation for DataObjects...
     }
 
     @Override
     protected void postprocessRemove(Collection collection) {
-        //no need for this operation for DataObjects...
+        // no need for this operation for DataObjects...
     }
 
     @Override
     protected void postprocessAdd(Object addedObject) {
-        //no need for this operation for DataObjects...
+        // no need for this operation for DataObjects...
     }
 
     @Override
     protected void postprocessRemove(Object removedObject) {
-        //no need for this operation for DataObjects...
+        // no need for this operation for DataObjects...
     }
-    
+
     @Override
     protected void updateReverse(List resolved) {
-        //no need for this operation for DataObjects...
+        // no need for this operation for DataObjects...
     }
 }

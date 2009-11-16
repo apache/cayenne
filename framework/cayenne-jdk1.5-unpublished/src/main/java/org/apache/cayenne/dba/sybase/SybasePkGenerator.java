@@ -36,21 +36,13 @@ import org.apache.cayenne.map.DbEntity;
  * Primary key generator implementation for Sybase. Uses a lookup table named
  * "AUTO_PK_SUPPORT" and a stored procedure "auto_pk_for_table" to search and increment
  * primary keys for tables.
- * 
  */
 public class SybasePkGenerator extends JdbcPkGenerator {
-    
-    /**
-     * @deprecated since 3.0
-     */
-    protected SybasePkGenerator() {
-        super();
-    }
-    
+
     protected SybasePkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
-    
+
     @Override
     protected String pkTableCreateString() {
         StringBuilder buf = new StringBuilder();
@@ -77,7 +69,6 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      *       NEXT_ID DECIMAL(19,0) NOT NULL
      *    )
      * </pre>
-     * 
      * <p>
      * 2. Executed under any circumstances.
      * </p>
@@ -88,19 +79,18 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      *    DROP PROCEDURE auto_pk_for_table 
      * END
      * </pre>
-     * 
      * <p>
      * 3. Executed under any circumstances.
      * </p>
      * CREATE PROCEDURE auto_pk_for_table
      * 
      * <pre>
-     * @tname VARCHAR(32),
-     * @pkbatchsize INT AS BEGIN BEGIN TRANSACTION UPDATE AUTO_PK_SUPPORT set NEXT_ID =
+     * &#064;tname VARCHAR(32),
+     * &#064;pkbatchsize INT AS BEGIN BEGIN TRANSACTION UPDATE AUTO_PK_SUPPORT set NEXT_ID =
      *              NEXT_ID +
-     * @pkbatchsize WHERE TABLE_NAME =
-     * @tname SELECT NEXT_ID from AUTO_PK_SUPPORT where NEXT_ID =
-     * @tname COMMIT END 
+     * &#064;pkbatchsize WHERE TABLE_NAME =
+     * &#064;tname SELECT NEXT_ID from AUTO_PK_SUPPORT where NEXT_ID =
+     * &#064;tname COMMIT END
      * </pre>
      * 
      * @param node node that provides access to a DataSource.
@@ -208,72 +198,6 @@ public class SybasePkGenerator extends JdbcPkGenerator {
                         throw new CayenneRuntimeException(
                                 "Error generating pk for DbEntity "
                                         + entity.getName()
-                                        + ", no result set from stored procedure.");
-                    }
-                }
-                finally {
-                    statement.close();
-                }
-            }
-            finally {
-                connection.close();
-            }
-        }
-        finally {
-            Transaction.bindThreadTransaction(transaction);
-        }
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
-        // handle CAY-588 - get connection that is separate from the connection in the
-        // current transaction.
-
-        // TODO (andrus, 7/6/2006) Note that this will still work in a pool with a single
-        // connection, as PK generator is invoked early in the transaction, before the
-        // connection is grabbed for commit... So maybe promote this to other adapters in
-        // 3.0?
-
-        Transaction transaction = Transaction.getThreadTransaction();
-        Transaction.bindThreadTransaction(null);
-
-        try {
-
-            Connection connection = node.getDataSource().getConnection();
-            try {
-                CallableStatement statement = connection
-                        .prepareCall("{call auto_pk_for_table(?, ?)}");
-                try {
-                    statement.setString(1, ent.getName());
-                    statement.setInt(2, super.getPkCacheSize());
-
-                    // can't use "executeQuery"
-                    // per http://jtds.sourceforge.net/faq.html#expectingResultSet
-                    statement.execute();
-                    if (statement.getMoreResults()) {
-                        ResultSet rs = statement.getResultSet();
-
-                        try {
-                            if (rs.next()) {
-                                return rs.getInt(1);
-                            }
-                            else {
-                                throw new CayenneRuntimeException(
-                                        "Error generating pk for DbEntity "
-                                                + ent.getName());
-                            }
-                        }
-                        finally {
-                            rs.close();
-                        }
-                    }
-                    else {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity "
-                                        + ent.getName()
                                         + ", no result set from stored procedure.");
                     }
                 }

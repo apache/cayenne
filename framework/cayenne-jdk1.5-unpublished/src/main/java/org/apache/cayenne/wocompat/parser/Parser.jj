@@ -77,29 +77,6 @@ public class Parser {
            return null;
         }
     }
-    
-    /**
-     * @deprecated since 3.0, use 'object(String)' instead.
-     */
-    public Object object() throws ParseException {
-        return object("");
-    }
-    
-    /**
-     * @deprecated since 3.0, use 'map(String)' instead.
-     */
-    public final java.util.HashMap dictionary()
-                                   throws ParseException {
-            return (java.util.HashMap) map("");                       
-    }
-    
-    /**
-     * @deprecated since 3.0, use 'collection(String)' instead.
-     */
-    public final java.util.ArrayList array()
-                                   throws ParseException {
-            return (java.util.ArrayList) collection("");                       
-    }
 }
 PARSER_END(Parser)
 

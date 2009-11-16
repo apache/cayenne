@@ -39,10 +39,10 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 
 /**
  */
@@ -138,7 +138,7 @@ public class DataContextPrefetchTest extends DataContextCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addPrefetch("artistExhibitArray").setSemantics(
                 PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         List artists = context.performQuery(q);
 
@@ -176,7 +176,7 @@ public class DataContextPrefetchTest extends DataContextCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addPrefetch("artistExhibitArray").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         List artists = context.performQuery(q);
 
@@ -443,7 +443,7 @@ public class DataContextPrefetchTest extends DataContextCase {
         Expression e = ExpressionFactory.likeExp("toArtist.artistName", "a%");
         SelectQuery q = new SelectQuery(Painting.class, e);
         q.addPrefetch(Painting.TO_PAINTING_INFO_PROPERTY);
-        q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, true);
+        q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
 
         List results = context.performQuery(q);
 

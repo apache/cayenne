@@ -21,7 +21,6 @@ package org.apache.cayenne.access.types;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -122,16 +121,6 @@ public class ExtendedTypeMap {
     }
 
     /**
-     * Returns ExtendedTypeFactories registered with this instance.
-     * 
-     * @since 1.2
-     * @deprecated since 3.0 unused
-     */
-    public Collection<ExtendedTypeFactory> getFactories() {
-        return Collections.unmodifiableCollection(extendedTypeFactories);
-    }
-
-    /**
      * Adds an ExtendedTypeFactory that will be consulted if no direct mapping for a given
      * class exists. This feature can be used to map interfaces.
      * <p>
@@ -201,8 +190,8 @@ public class ExtendedTypeMap {
      * <i>Note that for array types class name must be in the form 'MyClass[]'</i>.
      */
     public ExtendedType getRegisteredType(String javaClassName) {
-        
-        if(javaClassName == null) {
+
+        if (javaClassName == null) {
             return getDefaultType();
         }
 
@@ -277,14 +266,6 @@ public class ExtendedTypeMap {
         }
 
         return types;
-    }
-
-    /**
-     * @deprecated since 3.0 - use {@link #createType(String)} instead.
-     * @since 1.2
-     */
-    protected ExtendedType getDefaultType(String javaClassName) {
-        return createType(javaClassName);
     }
 
     /**

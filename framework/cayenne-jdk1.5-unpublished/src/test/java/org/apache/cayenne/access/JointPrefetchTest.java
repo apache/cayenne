@@ -43,6 +43,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -61,7 +62,7 @@ public class JointPrefetchTest extends CayenneCase {
 
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addOrdering("db:PAINTING_ID", true);
+        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setFetchingDataRows(true);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
@@ -163,7 +164,7 @@ public class JointPrefetchTest extends CayenneCase {
 
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addOrdering("db:PAINTING_ID", true);
+        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 

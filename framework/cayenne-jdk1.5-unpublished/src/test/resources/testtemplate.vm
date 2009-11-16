@@ -1,5 +1,5 @@
 ## Test Velocity template
-${importUtils.setPackage($entityUtils.subPackageName)}##
+${importUtils.setPackage($subPackageName)}##
 ${importUtils.generate()}
 
 import java.util.List;
@@ -10,4 +10,4 @@ import org.apache.cayenne.*;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class ${entityUtils.subClassName} extends CayenneDataObject {
+public class ${subClassName} extends CayenneDataObject {

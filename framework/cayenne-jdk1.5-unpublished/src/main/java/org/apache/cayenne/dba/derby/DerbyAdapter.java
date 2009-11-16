@@ -72,7 +72,7 @@ public class DerbyAdapter extends JdbcAdapter {
 
     @Override
     protected PkGenerator createPkGenerator() {
-        return new DerbyPkGenerator();
+        return new DerbyPkGenerator(this);
     }
 
     /**

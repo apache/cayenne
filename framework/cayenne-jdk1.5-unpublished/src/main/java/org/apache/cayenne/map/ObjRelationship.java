@@ -28,7 +28,6 @@ import java.util.ListIterator;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
@@ -53,10 +52,10 @@ public class ObjRelationship extends Relationship {
     protected boolean usedForLocking;
 
     protected List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(2);
-    
+
     /**
-     * Db-relationships path that is set but not yet parsed (turned into List<DbRelationship>)
-     * Used during map loading
+     * Db-relationships path that is set but not yet parsed (turned into
+     * List<DbRelationship>) Used during map loading
      */
     String deferredPath;
 
@@ -446,15 +445,6 @@ public class ObjRelationship extends Relationship {
     }
 
     /**
-     * @deprecated since 3.0 as ObjRelationship no longer reacts to DbRelationship events.
-     */
-    @Deprecated
-    public void dbRelationshipDidChange(RelationshipEvent event) {
-        recalculateToManyValue();
-        recalculateReadOnlyValue();
-    }
-
-    /**
      * Returns whether this attribute should be used for locking.
      * 
      * @since 1.1
@@ -479,7 +469,7 @@ public class ObjRelationship extends Relationship {
      */
     public String getDbRelationshipPath() {
         refreshFromDeferredPath();
-        
+
         // build path on the fly
         if (getDbRelationships().isEmpty()) {
             return null;
@@ -544,7 +534,7 @@ public class ObjRelationship extends Relationship {
             refreshFromPath(relationshipPath, false);
         }
     }
-    
+
     /**
      * Sets relationship path, but does not trigger its conversion to List<DbRelationship>
      * For internal purposes, primarily datamap loading
@@ -554,7 +544,7 @@ public class ObjRelationship extends Relationship {
             deferredPath = relationshipPath;
         }
     }
-    
+
     /**
      * Loads path from "deferredPath" variable (if specified)
      */
@@ -634,9 +624,9 @@ public class ObjRelationship extends Relationship {
                     }
                 }
                 catch (ExpressionException ex) {
-                	if (!stripInvalid) {
-                		throw ex;
-                	}
+                    if (!stripInvalid) {
+                        throw ex;
+                    }
                 }
             }
 

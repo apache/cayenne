@@ -41,17 +41,10 @@ import org.apache.cayenne.map.DbKeyGenerator;
  */
 public class PostgresPkGenerator extends OraclePkGenerator {
 
-    /**
-     * @deprecated since 3.0
-     */
-    protected PostgresPkGenerator() {
-        super();
-    }
-    
     protected PostgresPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
-    
+
     @Override
     protected String createSequenceString(DbEntity ent) {
         // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
@@ -112,68 +105,20 @@ public class PostgresPkGenerator extends OraclePkGenerator {
     }
 
     /**
-     * Generates primary key by calling Oracle sequence corresponding to the
-     * <code>dbEntity</code>. Executed SQL looks like this:
-     * 
-     * <pre>
-     *     SELECT nextval(pk_table_name)
-     * </pre>
-     * 
-     * @deprecated since 3.0
-     */
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
-
-        DbKeyGenerator pkGenerator = ent.getPrimaryKeyGenerator();
-        String pkGeneratingSequenceName;
-        if (pkGenerator != null
-                && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null)
-            pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
-            pkGeneratingSequenceName = sequenceName(ent);
-
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-                String sql = "SELECT nextval('" + pkGeneratingSequenceName + "')";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + ent.getName());
-                    }
-                    return rs.getInt(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
-    }
-
-    /**
      * Fetches a list of existing sequences that might match Cayenne generated ones.
      */
     @Override
     protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
         boolean status;
-        if(node.getDataMap(node.getName())!=null && node.getDataMap(node.getName()).isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (node.getDataMap(node.getName()) != null
+                && node.getDataMap(node.getName()).isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
+        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
 
         // check existing sequences
         Connection con = node.getDataSource().getConnection();
@@ -186,7 +131,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
                 ResultSet rs = sel.executeQuery(sql);
                 try {
                     List<String> sequenceList = new ArrayList<String>();
-                    while (rs.next()) {                        
+                    while (rs.next()) {
                         sequenceList.add(context.quoteString(rs.getString(1)));
                     }
                     return sequenceList;

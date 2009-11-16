@@ -189,8 +189,8 @@ public class PreferenceDetail extends CayenneDataObject {
 
         // force creation of otherId
         if (otherId.isTemporary() && !otherId.isReplacementIdAttached()) {
-            DbEntity entity = getObjectContext().getEntityResolver().lookupDbEntity(
-                    domainPreference);
+            DbEntity entity = getObjectContext().getEntityResolver().lookupObjEntity(
+                    domainPreference).getDbEntity();
 
             DataNode node = ((DataContext) getObjectContext())
                     .getParentDataDomain()

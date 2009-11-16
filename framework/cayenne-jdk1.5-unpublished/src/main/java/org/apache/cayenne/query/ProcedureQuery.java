@@ -364,42 +364,6 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *             redundant, although it is still being taken into account. It will be
-     *             removed in the later versions of Cayenne.
-     */
-    @Deprecated
-    public boolean isRefreshingObjects() {
-        return metaData.isRefreshingObjects();
-    }
-
-    /**
-     * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *             redundant, although it is still being taken into account. It will be
-     *             removed in the later versions of Cayenne.
-     */
-    @Deprecated
-    public void setRefreshingObjects(boolean flag) {
-        // noop
-    }
-
-    /**
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public boolean isResolvingInherited() {
-        return true;
-    }
-
-    /**
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public void setResolvingInherited(boolean b) {
-        // noop
-    }
-
-    /**
      * Adds a named parameter to the internal map of parameters.
      * 
      * @since 1.1

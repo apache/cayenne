@@ -31,34 +31,6 @@ import java.io.Serializable;
  */
 public abstract class Fault implements Serializable {
 
-    /**
-     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
-     *             by the Cayenne configuration.
-     */
-    protected static Fault toOneFault;
-
-    /**
-     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
-     *             by the Cayenne configuration.
-     */
-    protected static Fault toManyFault;
-
-    /**
-     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
-     *             by the Cayenne configuration.
-     */
-    public static Fault getToOneFault() {
-        return toOneFault;
-    }
-
-    /**
-     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
-     *             by the Cayenne configuration.
-     */
-    public static Fault getToManyFault() {
-        return toManyFault;
-    }
-
     protected Fault() {
     }
 

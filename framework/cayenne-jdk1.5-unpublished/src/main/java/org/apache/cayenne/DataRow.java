@@ -19,14 +19,10 @@
 
 package org.apache.cayenne;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 
@@ -120,23 +116,6 @@ public class DataRow extends HashMap<String, Object> {
     }
 
     /**
-     * Creates an ObjectId from the values in the snapshot. If needed attributes are
-     * missing in a snapshot, CayenneRuntimeException is thrown.
-     * 
-     * @deprecated since 3.0 - unused
-     */
-    public ObjectId createObjectId(ObjEntity entity) {
-        return createObjectId(entity.getName(), entity.getDbEntity());
-    }
-
-    /**
-     * @deprecated since 3.0 - unused.
-     */
-    public ObjectId createObjectId(String entityName, DbEntity entity) {
-        return createObjectId(entityName, entity, null);
-    }
-
-    /**
      * Returns an ObjectId of an object on the other side of the to-one relationship, for
      * this DataRow representing a source of relationship. Returns null if snapshot FK
      * columns indicate a null to-one relationship.
@@ -149,70 +128,6 @@ public class DataRow extends HashMap<String, Object> {
 
         Map<String, Object> target = relationship.targetPkSnapshotWithSrcSnapshot(this);
         return (target != null) ? new ObjectId(entityName, target) : null;
-    }
-
-    /**
-     * Extracts PK columns prefixed with some path. If namePrefix is null or empty, no
-     * prefixing is done.
-     * <p>
-     * Prefixing is useful when extracting an ObjectId of a target row from a row obtained
-     * via prefetching. namePrefix must omit the "db:" prefix and must end with ".", e.g.
-     * "TO_ARTIST.PAINTING_ARRAY."
-     * </p>
-     * 
-     * @since 1.2
-     * @deprecated since 3.0 - unused.
-     */
-    public ObjectId createObjectId(String entityName, DbEntity entity, String namePrefix) {
-
-        boolean prefix = namePrefix != null && namePrefix.length() > 0;
-
-        // ... handle special case - PK.size == 1
-        // use some not-so-significant optimizations...
-
-        Collection<DbAttribute> pk = entity.getPrimaryKeys();
-        if (pk.size() == 1) {
-            DbAttribute attribute = pk.iterator().next();
-
-            String key = (prefix) ? namePrefix + attribute.getName() : attribute
-                    .getName();
-
-            Object val = this.get(key);
-            if (val == null) {
-                throw new CayenneRuntimeException("Null value for '"
-                        + key
-                        + "'. Snapshot: "
-                        + this
-                        + ". Prefix: "
-                        + namePrefix);
-            }
-
-            // PUT without a prefix
-            return new ObjectId(entityName, attribute.getName(), val);
-        }
-
-        // ... handle generic case - PK.size > 1
-
-        Map<String, Object> idMap = new HashMap<String, Object>(pk.size() * 2);
-        for (DbAttribute attribute : pk) {
-            String key = (prefix) ? namePrefix + attribute.getName() : attribute
-                    .getName();
-
-            Object val = this.get(key);
-            if (val == null) {
-                throw new CayenneRuntimeException("Null value for '"
-                        + key
-                        + "'. Snapshot: "
-                        + this
-                        + ". Prefix: "
-                        + namePrefix);
-            }
-
-            // PUT without a prefix
-            idMap.put(attribute.getName(), val);
-        }
-
-        return new ObjectId(entityName, idMap);
     }
 
     @Override

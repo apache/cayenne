@@ -31,8 +31,8 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -55,7 +55,7 @@ public class DataContextPrefetchExtrasTest extends CayenneCase {
 
         SelectQuery q = new SelectQuery(CharPkTestEntity.class);
         q.addPrefetch("charFKs");
-        q.addOrdering(CharPkTestEntity.OTHER_COL_PROPERTY, Ordering.ASC);
+        q.addOrdering(CharPkTestEntity.OTHER_COL_PROPERTY, SortOrder.ASCENDING);
 
         List pks = context.performQuery(q);
         assertEquals(2, pks.size());

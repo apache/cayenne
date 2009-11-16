@@ -37,7 +37,6 @@ import org.apache.commons.collections.Transformer;
 
 /**
  * An extension of ObjEntity used to accomodate extra EOModel entity properties.
- * 
  */
 public class EOObjEntity extends ObjEntity {
 
@@ -52,48 +51,6 @@ public class EOObjEntity extends ObjEntity {
 
     public EOObjEntity(String name) {
         super(name);
-    }
-
-    /**
-     * @deprecated since 2.0 use setSubclass()
-     */
-    public void setHasSuperClass(boolean value) {
-        setSubclass(value);
-    }
-
-    /**
-     * @deprecated since 2.0 use isSubclass()
-     */
-    public boolean getHasSuperClass() {
-        return isSubclass();
-    }
-
-    /**
-     * @deprecated since 2.0 use setServerOnly()
-     */
-    public void setIsClientEntity(boolean value) {
-        setServerOnly(!value);
-    }
-
-    /**
-     * @deprecated since 2.0 use !isServerOnly()
-     */
-    public boolean getIsClientEntity() {
-        return !isServerOnly();
-    }
-
-    /**
-     * @deprecated since 2.0 use setAbstractEntity()
-     */
-    public void setIsAbstractEntity(boolean value) {
-        setAbstractEntity(value);
-    }
-
-    /**
-     * @deprecated since 2.0 use isAbstractEntity()
-     */
-    public boolean getIsAbstractEntity() {
-        return isAbstractEntity();
     }
 
     /**

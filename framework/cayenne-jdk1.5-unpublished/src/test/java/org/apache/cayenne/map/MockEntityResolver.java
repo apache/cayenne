@@ -44,9 +44,4 @@ public class MockEntityResolver extends EntityResolver {
     public synchronized ObjEntity lookupObjEntity(Query q) {
         return mockObjEntity;
     }
-
-    @Override
-    public synchronized ObjEntity lookupObjEntity(String entityName) {
-        return mockObjEntity;
-    }
 }

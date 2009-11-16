@@ -38,29 +38,14 @@ import org.apache.cayenne.map.DbEntity;
 
 /**
  * A sequence-based PK generator used by {@link DB2Adapter}.
- * 
  */
 public class DB2PkGenerator extends JdbcPkGenerator {
 
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    protected DB2PkGenerator() {
-        super();
-    }
-    
     DB2PkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 
     private static final String _SEQUENCE_PREFIX = "S_";
-
-    /**
-     * @deprecated since 2.0 - other generators do not expose the default prefix.
-     */
-    @Deprecated
-    public static final String SEQUENCE_PREFIX = "S_";
 
     /**
      * @since 3.0
@@ -86,45 +71,6 @@ public class DB2PkGenerator extends JdbcPkGenerator {
                                 "Error generating pk for DbEntity " + entity.getName());
                     }
                     return rs.getLong(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
-
-        String pkGeneratingSequenceName = sequenceName(ent);
-
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-                String sql = "SELECT NEXTVAL FOR "
-                        + pkGeneratingSequenceName
-                        + " FROM SYSIBM.SYSDUMMY1";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + ent.getName());
-                    }
-                    return rs.getInt(1);
                 }
                 finally {
                     rs.close();
@@ -170,16 +116,17 @@ public class DB2PkGenerator extends JdbcPkGenerator {
 
         for (DbEntity ent : dbEntities) {
             String name;
-            if(ent.getDataMap().isQuotingSQLIdentifiers()){
+            if (ent.getDataMap().isQuotingSQLIdentifiers()) {
                 DbEntity tempEnt = new DbEntity();
-                DataMap dm = new DataMap();                
+                DataMap dm = new DataMap();
                 dm.setQuotingSQLIdentifiers(false);
                 tempEnt.setDataMap(dm);
                 tempEnt.setName(ent.getName());
                 name = sequenceName(tempEnt);
-            } else {
+            }
+            else {
                 name = sequenceName(ent);
-            }    
+            }
             if (sequences.contains(name)) {
                 runUpdate(node, dropSequenceString(ent));
             }
@@ -241,31 +188,34 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      */
     protected String sequenceName(DbEntity entity) {
         boolean status;
-        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
+        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
         String entName = entity.getName();
         String seqName = _SEQUENCE_PREFIX + entName;
 
         if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            if(context!=null){
-                seqName = context.quoteString(entity.getSchema()) +
-                 "." + context.quoteString(seqName);
-           } else {
+            if (context != null) {
+                seqName = context.quoteString(entity.getSchema())
+                        + "."
+                        + context.quoteString(seqName);
+            }
+            else {
                 seqName = entity.getSchema() + "." + seqName;
-           }
+            }
         }
-        
+
         return context.quoteString(seqName);
     }
 
     /**
      * Returns DROP SEQUENCE statement.
      */
-    protected String dropSequenceString(DbEntity entity) {       
+    protected String dropSequenceString(DbEntity entity) {
         return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT ";
     }
 

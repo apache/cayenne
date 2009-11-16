@@ -34,10 +34,8 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.NameConverter;
 import org.apache.cayenne.util.Util;
@@ -1201,66 +1199,6 @@ public class ObjEntity extends Entity implements ObjEntityListener {
 
     /** Entity has been removed. */
     public void objEntityRemoved(EntityEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Attribute property changed.
-     * 
-     * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
-     */
-    @Deprecated
-    public void objAttributeChanged(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * New attribute has been created/added.
-     * 
-     * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
-     */
-    @Deprecated
-    public void objAttributeAdded(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Attribute has been removed.
-     * 
-     * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
-     */
-    @Deprecated
-    public void objAttributeRemoved(AttributeEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship property changed.
-     * 
-     * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
-     */
-    @Deprecated
-    public void objRelationshipChanged(RelationshipEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship has been created/added.
-     * 
-     * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
-     */
-    @Deprecated
-    public void objRelationshipAdded(RelationshipEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship has been removed.
-     * 
-     * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
-     */
-    @Deprecated
-    public void objRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }
 

@@ -28,7 +28,8 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A DataSourceFactory that creates a connection pool based on Apache Jakarta <a
  * href="http://jakarta.apache.org/commons/dbcp/">commons-dbcp</a>. If you are using this
- * factory, commons-pool and commons-dbcp jars must be present in runtime. <p/>
+ * factory, commons-pool and commons-dbcp jars must be present in runtime.
+ * <p/>
  * DBCPDataSourceFactory can be selected in the Modeler for a DataNode. DBCP pool
  * configuration is done via a properties file that is specified in the modeler. See this
  * <a href="http://cwiki.apache.org/CAYDOC/DBCPDataSourceFactory">wiki page</a> for the
@@ -39,16 +40,6 @@ import org.apache.commons.logging.LogFactory;
 public class DBCPDataSourceFactory implements DataSourceFactory {
 
     private static final Log logger = LogFactory.getLog(DBCPDataSourceFactory.class);
-
-    /**
-     * @deprecated since 2.0 - this information is now private.
-     */
-    public static final String PROPERTY_PREFIX = "cayenne.dbcp.";
-
-    /**
-     * @deprecated since 2.0 - this information is now private.
-     */
-    public static final String PS_PROPERTY_PREFIX = PROPERTY_PREFIX + "ps.";
 
     protected Configuration parentConfiguration;
 

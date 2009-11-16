@@ -27,9 +27,9 @@ import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -51,7 +51,7 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
         SelectQuery q = new SelectQuery("Artist");
         q.setPageSize(6);
         q.setFetchingDataRows(true);
-        q.addOrdering("db:ARTIST_ID", Ordering.ASC);
+        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
 
         query = q;
         list = new SimpleIdIncrementalFaultList(super.createDataContext(), query);

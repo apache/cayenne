@@ -36,6 +36,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -316,7 +317,7 @@ public class SQLTemplateActionTest extends CayenneCase {
 
         MockOperationObserver observer = new MockOperationObserver();
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering("db:ARTIST_ID", true);
+        query.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         getDomain().performQueries(Collections.singletonList(query), observer);
 
         List data = observer.rowsForQuery(query);

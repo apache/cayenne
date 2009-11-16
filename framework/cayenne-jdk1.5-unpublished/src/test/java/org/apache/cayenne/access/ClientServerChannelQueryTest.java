@@ -27,8 +27,8 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.NamedQuery;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -65,7 +65,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         createTestData("testPaginatedQueryServerCacheOverflow");
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, Ordering.ASC);
+        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         query.setPageSize(3);
 
         List<?> results = context.performQuery(query);
@@ -141,7 +141,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         createTestData("prepare");
 
         SelectQuery q = new SelectQuery("MtTable1");
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, true);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         List<?> results = context.performQuery(q);
 
         assertEquals(2, results.size());
@@ -154,7 +154,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         // result wasn't coincidental.
 
         q.clearOrderings();
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, false);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.DESCENDING);
         List<?> results1 = context.performQuery(q);
 
         assertEquals(2, results1.size());

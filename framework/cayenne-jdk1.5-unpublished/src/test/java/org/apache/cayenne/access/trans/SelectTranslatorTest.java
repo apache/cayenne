@@ -36,10 +36,10 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class SelectTranslatorTest extends CayenneCase {
@@ -52,7 +52,7 @@ public class SelectTranslatorTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.likeExp(
                 "artistName",
                 "a%"));
-        q.addOrdering("dateOfBirth", Ordering.ASC);
+        q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
 
         Template test = new Template() {
 
@@ -110,7 +110,7 @@ public class SelectTranslatorTest extends CayenneCase {
             
             //testing outer join!!
             q = new SelectQuery(Painting.class);
-            q.addOrdering("toArtist+.artistName", true);
+            q.addOrdering("toArtist+.artistName", SortOrder.ASCENDING);
             test.test(q);
             context.performQuery(q);
             
@@ -491,7 +491,7 @@ public class SelectTranslatorTest extends CayenneCase {
             SelectQuery q = new SelectQuery(Artist.class);
             DbEntity entity = getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            q.addOrdering("dateOfBirth", Ordering.ASC);
+            q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
 
             Template test = new Template() {
 

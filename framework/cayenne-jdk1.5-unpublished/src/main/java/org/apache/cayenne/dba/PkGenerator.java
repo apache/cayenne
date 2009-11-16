@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbEntity;
 
 /**
  * Defines methods to support automatic primary key generation.
- * 
  */
 public interface PkGenerator {
 
@@ -62,14 +61,6 @@ public interface PkGenerator {
      * primary key generation. No actual database operations are performed.
      */
     List<String> dropAutoPkStatements(List<DbEntity> dbEntities);
-
-    /**
-     * Generates new (unique and non-repeating) primary key for specified DbEntity.
-     * 
-     * @param ent DbEntity for which automatic PK is generated.
-     * @deprecated since 3.0 use {@link #generatePk(DataNode, DbAttribute)}.
-     */
-    Object generatePkForDbEntity(DataNode dataNode, DbEntity ent) throws Exception;
 
     /**
      * Generates a unique and non-repeating primary key for specified PK attribute.

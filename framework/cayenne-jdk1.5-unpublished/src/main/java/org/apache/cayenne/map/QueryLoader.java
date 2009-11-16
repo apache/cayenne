@@ -28,6 +28,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SortOrder;
 
 /**
  * A builder that constructs Cayenne queries from abstract configuration information
@@ -106,11 +107,10 @@ abstract class QueryLoader {
         this.rootName = rootName;
     }
 
-    void setEjbql(String ejbql) {        
-            this.ejbql = ejbql;
+    void setEjbql(String ejbql) {
+        this.ejbql = ejbql;
     }
 
-    
     /**
      * Adds raw sql. If adapterClass parameter is not null, sets the SQL string to be
      * adapter-specific. Otherwise it is used as a default SQL string.
@@ -155,7 +155,21 @@ abstract class QueryLoader {
         }
         boolean isDescending = "true".equalsIgnoreCase(descending);
         boolean isIgnoringCase = "true".equalsIgnoreCase(ignoreCase);
-        orderings.add(new Ordering(path, !isDescending, isIgnoringCase));
+
+        SortOrder order;
+
+        if (isDescending) {
+            order = isIgnoringCase
+                    ? SortOrder.DESCENDING_INSENSITIVE
+                    : SortOrder.DESCENDING;
+        }
+        else {
+            order = isIgnoringCase
+                    ? SortOrder.ASCENDING_INSENSITIVE
+                    : SortOrder.ASCENDING;
+        }
+
+        orderings.add(new Ordering(path, order));
     }
 
     void addPrefetch(String path) {

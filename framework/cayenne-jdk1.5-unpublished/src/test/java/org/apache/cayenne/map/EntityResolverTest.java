@@ -63,28 +63,6 @@ public class EntityResolverTest extends CayenneCase {
         }
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    public void testDbEntityLookupDuplicates() {
-        AccessStack stack = CayenneResources
-                .getResources()
-                .getAccessStack("GenericStack");
-
-        DataMap generic = stack.getDataDomain().getMap("generic");
-        EntityResolver resolver = new EntityResolver(Collections.singleton(generic));
-
-        assertNull(resolver.lookupObjEntity(Object.class));
-
-        try {
-            resolver.lookupDbEntity(CayenneDataObject.class);
-            fail("two entities mapped to the same class... resolver must have thrown.");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
-        }
-    }
-
     public void testGetClientEntityResolver() {
 
         AccessStack stack = CayenneResources.getResources().getAccessStack(
@@ -107,25 +85,6 @@ public class EntityResolverTest extends CayenneCase {
         assertNotNull(clientResolver.lookupObjEntity(ClientMtTable1.class));
         assertNull(clientResolver.lookupObjEntity(MtTable1.class));
     }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testLookupDbEntityByClass() {
-        EntityResolver resolver = new EntityResolver(getDomain().getDataMaps());
-        assertIsArtistDbEntity(resolver.lookupDbEntity(Artist.class));
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testLookupDbEntityByDataobject() throws Exception {
-        EntityResolver resolver = new EntityResolver(getDomain().getDataMaps());
-        Artist artist = (Artist) this.createDataContext().newObject("Artist");
-        assertIsArtistDbEntity(resolver.lookupDbEntity(artist));
-    }
-
-    // //Test ObjEntity lookups
 
     public void testGetObjEntity() {
         EntityResolver resolver = new EntityResolver(getDomain().getDataMaps());

@@ -363,17 +363,6 @@ public class DbGenerator {
     }
 
     /**
-     * Returns an array of queries to create foreign key constraints for a particular
-     * DbEntity.
-     * 
-     * @deprecated since 3.0 as this method is used to generate both FK and UNIQUE
-     *             constraints, use 'createConstraintsQueries' instead.
-     */
-    public List<String> createFkConstraintsQueries(DbEntity table) {
-        return createConstraintsQueries(table);
-    }
-
-    /**
      * Creates FK and UNIQUE constraint statements for a given table.
      * 
      * @since 3.0

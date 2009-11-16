@@ -41,18 +41,11 @@ import org.apache.cayenne.map.DbKeyGenerator;
  * @since 1.2
  */
 public class IngresPkGenerator extends OraclePkGenerator {
-    
-    /**
-     * @deprecated since 3.0
-     */
-    protected IngresPkGenerator() {
-        super();
-    }
-    
+
     protected IngresPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
-    
+
     @Override
     protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
@@ -92,56 +85,6 @@ public class IngresPkGenerator extends OraclePkGenerator {
             con.close();
         }
     }
-    
-    /**
-     * Generates primary key by calling Oracle sequence corresponding to the
-     * <code>dbEntity</code>. Executed SQL looks like this:
-     * 
-     * <pre>
-     *     SELECT nextval(pk_table_name)
-     * </pre>
-     * 
-     * @deprecated since 3.0
-     */
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
-
-        DbKeyGenerator pkGenerator = ent.getPrimaryKeyGenerator();
-        String pkGeneratingSequenceName;
-        if (pkGenerator != null
-                && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null)
-            pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
-            pkGeneratingSequenceName = sequenceName(ent);
-
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-                String sql = "SELECT " + pkGeneratingSequenceName + ".nextval";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + ent.getName());
-                    }
-                    return rs.getInt(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
-    }
 
     @Override
     protected List<String> getExistingSequences(DataNode node) throws SQLException {
@@ -159,8 +102,8 @@ public class IngresPkGenerator extends OraclePkGenerator {
                     List<String> sequenceList = new ArrayList<String>();
                     while (rs.next()) {
                         String name = rs.getString(1);
-                        if(name != null) {
-                           sequenceList.add(name.trim());
+                        if (name != null) {
+                            sequenceList.add(name.trim());
                         }
                     }
                     return sequenceList;

@@ -222,6 +222,6 @@ public class FrontBaseAdapter extends JdbcAdapter {
 
     @Override
     protected PkGenerator createPkGenerator() {
-        return new FrontBasePkGenerator();
+        return new FrontBasePkGenerator(this);
     }
 }

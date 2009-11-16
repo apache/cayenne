@@ -44,33 +44,8 @@ import org.apache.cayenne.util.IDUtil;
  */
 public class OpenBasePkGenerator extends JdbcPkGenerator {
 
- 
-    /**
-     * @deprecated since 3.0
-     */
-    protected OpenBasePkGenerator() {
-        super();
-    }
-    
     protected OpenBasePkGenerator(JdbcAdapter adapter) {
         super(adapter);
-    }
-
-    /**
-     * Returns a non-repeating primary key for a given entity. Since OpenBase-specific
-     * mechanism is used, key caching is disabled. Instead a database operation is
-     * performed on every call.
-     * 
-     * @deprecated since 3.0
-     */
-    @Override
-    public Object generatePkForDbEntity(DataNode node, DbEntity entity) throws Exception {
-        // check for binary pk
-        Object binPK = binaryPK(entity);
-        if (binPK != null) {
-            return binPK;
-        }
-        return Integer.valueOf(pkFromDatabase(node, entity));
     }
 
     /**
@@ -146,50 +121,6 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
             con.close();
         }
 
-    }
-
-    /**
-     * Generates new (unique and non-repeating) primary key for specified DbEntity.
-     * Executed SQL looks like this:
-     * 
-     * <pre>
-     *  NEWID FOR Table Column
-     * </pre>
-     * 
-     * COLUMN must be marked as UNIQUE in order for this to work properly.
-     * 
-     * @deprecated since 3.0
-     */
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity entity) throws Exception {
-        String sql = newIDString(entity);
-        QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
-
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + entity.getName());
-                    }
-                    return rs.getInt(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
     }
 
     /**
@@ -291,15 +222,16 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
                     + "' has no PK defined.");
         }
 
-        StringBuilder buffer = new StringBuilder();        
+        StringBuilder buffer = new StringBuilder();
         buffer.append("CREATE PRIMARY KEY ");
         boolean status;
-        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
+        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
 
         buffer.append(context.quoteString(entity.getName()));
 
@@ -328,12 +260,13 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     protected String createUniquePKIndexString(DbEntity entity) {
         Collection<DbAttribute> pk = entity.getPrimaryKeys();
         boolean status;
-        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
+        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
         if (pk == null || pk.size() == 0) {
             throw new CayenneRuntimeException("Entity '"
                     + entity.getName()
@@ -345,7 +278,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         // compound PK doesn't work well with UNIQUE index...
         // create a regular one in this case
         buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ");
- 
+
         buffer.append(context.quoteString(entity.getName()));
         buffer.append(" (");
 
@@ -382,5 +315,5 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     public void setPkCacheSize(int pkCacheSize) {
         // noop, no PK caching
     }
- 
+
 }

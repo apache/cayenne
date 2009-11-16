@@ -111,28 +111,12 @@ class DefaultQueryMetadata implements QueryMetadata {
         return true;
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public boolean isResolvingInherited() {
-        return true;
-    }
-
     public int getPageSize() {
         return QueryMetadata.PAGE_SIZE_DEFAULT;
     }
 
     public int getFetchOffset() {
         return -1;
-    }
-    
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public int getFetchStartIndex() {
-        return getFetchOffset();
     }
 
     public int getFetchLimit() {

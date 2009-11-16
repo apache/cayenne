@@ -41,35 +41,18 @@ import org.apache.commons.collections.ComparatorUtils;
  * DataObjects.
  */
 public class Ordering implements Comparator<Object>, Serializable, XMLSerializable {
-    /**
-     * Symbolic representation of ascending ordering criterion.
-     * 
-     * @deprecated Use SortOrder.ASCENDING instead.
-     */
-    @Deprecated
-    public static final boolean ASC = true;
-
-    /**
-     * Symbolic representation of descending ordering criterion.
-     * 
-     * @deprecated Use SortOrder.DESCENDING instead.
-     */
-    @Deprecated
-    public static final boolean DESC = false;
 
     protected String sortSpecString;
     protected transient Expression sortSpec;
     protected SortOrder sortOrder;
-//    protected boolean ascending;
-//    protected boolean caseInsensitive;
     protected boolean pathExceptionSuppressed = false;
     protected boolean nullSortedFirst = true;
 
     /**
      * Orders a given list of objects, using a List of Orderings applied according the
      * default iteration order of the Orderings list. I.e. each Ordering with lower index
-     * is more significant than any other Ordering with higher index. List being ordered is
-     * modified in place.
+     * is more significant than any other Ordering with higher index. List being ordered
+     * is modified in place.
      */
     public static void orderList(List<?> objects, List<Ordering> orderings) {
         Collections.sort(objects, ComparatorUtils.chainedComparator(orderings));
@@ -78,40 +61,12 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
     public Ordering() {
     }
 
-    @Deprecated
-    public Ordering(String sortPathSpec, boolean ascending) {
-        this(sortPathSpec, ascending, false);
-    }
-
     /**
      * @since 3.0
      */
     public Ordering(String sortPathSpec, SortOrder sortOrder) {
         setSortSpecString(sortPathSpec);
         setSortOrder(sortOrder);
-    }
-
-    @Deprecated
-    public Ordering(String sortPathSpec, boolean ascending, boolean caseInsensitive) {
-        setSortSpecString(sortPathSpec);
-        setAscending(ascending);
-        setCaseInsensitive(caseInsensitive);
-//        this.ascending = ascending;
-//        this.caseInsensitive = caseInsensitive;
-    }
-
-    @Deprecated
-    public Ordering(Expression sortExpression, boolean ascending) {
-        this(sortExpression, ascending, false);
-    }
-
-    @Deprecated
-    public Ordering(Expression sortExpression, boolean ascending, boolean caseInsensitive) {
-        setSortSpec(sortExpression);
-        setAscending(ascending);
-        setCaseInsensitive(caseInsensitive);
-//        this.ascending = ascending;
-//        this.caseInsensitive = caseInsensitive;
     }
 
     /**
@@ -125,38 +80,41 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
             this.sortSpec = null;
         }
     }
-     
+
     /**
-     * Sets sort order for whether nulls are at the top or bottom of the resulting list. Default is true.
+     * Sets sort order for whether nulls are at the top or bottom of the resulting list.
+     * Default is true.
      * 
-     * @param nullSortedFirst true sorts nulls to the top of the list, false sorts nulls to the bottom
+     * @param nullSortedFirst true sorts nulls to the top of the list, false sorts nulls
+     *            to the bottom
      */
     public void setNullSortedFirst(boolean nullSortedFirst) {
         this.nullSortedFirst = nullSortedFirst;
     }
-    
-    /** 
+
+    /**
      * Get sort order for nulls.
      * 
-     *  @return true if nulls are sorted to the top of the list, false if sorted to the bottom
+     * @return true if nulls are sorted to the top of the list, false if sorted to the
+     *         bottom
      */
     public boolean isNullSortedFirst() {
         return nullSortedFirst;
     }
-    
+
     /**
-     * Sets whether a path with a null in the middle is ignored. For example, a sort from <code>painting</code>
-     * on <code>artist.name</code> would by default throw an exception if the artist was null.
-     * If set to true, then this is treated just like a null value.
-     * Default is false.
+     * Sets whether a path with a null in the middle is ignored. For example, a sort from
+     * <code>painting</code> on <code>artist.name</code> would by default throw an
+     * exception if the artist was null. If set to true, then this is treated just like a
+     * null value. Default is false.
      * 
      * @param pathExceptionSuppressed true to suppress exceptions and sort as null
      */
     public void setPathExceptionSupressed(boolean pathExceptionSuppressed) {
         this.pathExceptionSuppressed = pathExceptionSuppressed;
     }
-    
-    /** 
+
+    /**
      * Is a path with a null in the middle is ignored.
      * 
      * @return true is exception is suppressed and sorted as null
@@ -164,8 +122,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
     public boolean isPathExceptionSuppressed() {
         return pathExceptionSuppressed;
     }
-    
-    
+
     /**
      * Returns sortSpec string representation.
      * 
@@ -186,7 +143,9 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 
     /** Returns true if sorting is done in ascending order. */
     public boolean isAscending() {
-        return sortOrder == null || sortOrder == SortOrder.ASCENDING || sortOrder == SortOrder.ASCENDING_INSENSITIVE;
+        return sortOrder == null
+                || sortOrder == SortOrder.ASCENDING
+                || sortOrder == SortOrder.ASCENDING_INSENSITIVE;
     }
 
     /**
@@ -199,21 +158,8 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
     }
 
     /**
-     * Sets <code>ascending</code> property of this Ordering.
-     * 
-     * @deprecated Use setSortOrder() or setAscending() or setDescending().
-     */
-    @Deprecated
-    public void setAscending(boolean ascending) {
-        if (ascending)
-            setAscending();
-        else
-            setDescending();
-    }
-
-    /**
-     * If the sort order is DESCENDING or DESCENDING_INSENSITIVE, sets
-     * the sort order to ASCENDING or ASCENDING_INSENSITIVE, respectively.
+     * If the sort order is DESCENDING or DESCENDING_INSENSITIVE, sets the sort order to
+     * ASCENDING or ASCENDING_INSENSITIVE, respectively.
      * 
      * @since 3.0
      */
@@ -225,8 +171,8 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
     }
 
     /**
-     * If the sort order is ASCENDING or ASCENDING_INSENSITIVE, sets
-     * the sort order to DESCENDING or DESCENDING_INSENSITIVE, respectively.
+     * If the sort order is ASCENDING or ASCENDING_INSENSITIVE, sets the sort order to
+     * DESCENDING or DESCENDING_INSENSITIVE, respectively.
      * 
      * @since 3.0
      */
@@ -248,20 +194,9 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
      * @since 3.0
      */
     public boolean isCaseSensitive() {
-        return sortOrder == null || sortOrder == SortOrder.ASCENDING || sortOrder == SortOrder.DESCENDING;
-    }
-
-    /**
-     * Sets <code>caseInsensitive</code> property of this Ordering.
-     * 
-     * @deprecated Use setSortOrder() or setCaseInsensitive() or setCaseSensitive().
-     */
-    @Deprecated
-    public void setCaseInsensitive(boolean caseInsensitive) {
-        if (caseInsensitive)
-            setCaseInsensitive();
-        else
-            setCaseSensitive();
+        return sortOrder == null
+                || sortOrder == SortOrder.ASCENDING
+                || sortOrder == SortOrder.DESCENDING;
     }
 
     /**
@@ -278,8 +213,8 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
     }
 
     /**
-     * If the sort order is ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE,
-     * sets the sort order to ASCENDING or DESCENDING, respectively.
+     * If the sort order is ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE, sets the sort
+     * order to ASCENDING or DESCENDING, respectively.
      * 
      * @since 3.0
      */
@@ -330,36 +265,44 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
      */
     public int compare(Object o1, Object o2) {
         Expression exp = getSortSpec();
-		Object value1 = null;
-		Object value2 = null;
-		try {
-        	value1 = exp.evaluate(o1);
-		} catch (ExpressionException e) {
-			if (pathExceptionSuppressed && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
-				//do nothing, we expect this 
-			} else {
-				//re-throw
-				throw e;
-			}
-		}
-		
-		try {
-        	value2 = exp.evaluate(o2);
-		} catch (ExpressionException e) {
-			if (pathExceptionSuppressed && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
-				//do nothing, we expect this 
-			} else {
-				//rethrow
-				throw e;
-			}
-		}
+        Object value1 = null;
+        Object value2 = null;
+        try {
+            value1 = exp.evaluate(o1);
+        }
+        catch (ExpressionException e) {
+            if (pathExceptionSuppressed
+                    && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
+                // do nothing, we expect this
+            }
+            else {
+                // re-throw
+                throw e;
+            }
+        }
 
-		if (value1 == null && value2 == null) {
-		    return 0;
-		} else if (value1 == null) {
-		    return nullSortedFirst? -1:1;
-		} else if (value2 == null) {
-            return nullSortedFirst? 1:-1;
+        try {
+            value2 = exp.evaluate(o2);
+        }
+        catch (ExpressionException e) {
+            if (pathExceptionSuppressed
+                    && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
+                // do nothing, we expect this
+            }
+            else {
+                // rethrow
+                throw e;
+            }
+        }
+
+        if (value1 == null && value2 == null) {
+            return 0;
+        }
+        else if (value1 == null) {
+            return nullSortedFirst ? -1 : 1;
+        }
+        else if (value2 == null) {
+            return nullSortedFirst ? 1 : -1;
         }
 
         if (isCaseInsensitive()) {

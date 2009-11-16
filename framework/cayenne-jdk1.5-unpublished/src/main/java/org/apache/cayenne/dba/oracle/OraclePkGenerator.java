@@ -31,9 +31,9 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -52,21 +52,13 @@ import org.apache.cayenne.map.DbKeyGenerator;
  * <pre>
  * dataNode.getAdapter().getPkGenerator().setPkCacheSize(1);
  * </pre>
- * 
  */
 public class OraclePkGenerator extends JdbcPkGenerator {
 
-    /**
-     * @deprecated since 3.0
-     */
-    protected OraclePkGenerator() {
-        super();
-    }
-    
     protected OraclePkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
-    
+
     private static final String _SEQUENCE_PREFIX = "pk_";
 
     @Override
@@ -104,19 +96,20 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         while (it.hasNext()) {
             DbEntity ent = (DbEntity) it.next();
             String name;
-            if(ent.getDataMap().isQuotingSQLIdentifiers()){
+            if (ent.getDataMap().isQuotingSQLIdentifiers()) {
                 DbEntity tempEnt = new DbEntity();
-                DataMap dm = new DataMap();                
+                DataMap dm = new DataMap();
                 dm.setQuotingSQLIdentifiers(false);
                 tempEnt.setDataMap(dm);
                 tempEnt.setName(ent.getName());
                 name = stripSchemaName(sequenceName(tempEnt));
-            } else {
+            }
+            else {
                 name = stripSchemaName(sequenceName(ent));
-            }           
+            }
             if (sequences.contains(name)) {
                 runUpdate(node, dropSequenceString(ent));
-            } 
+            }
         }
     }
 
@@ -148,7 +141,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * primary key generation process for a specific DbEntity.
      */
     protected String dropSequenceString(DbEntity ent) {
-       
+
         StringBuilder buf = new StringBuilder();
         buf.append("DROP SEQUENCE ").append(sequenceName(ent));
         return buf.toString();
@@ -205,56 +198,6 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     }
 
-    /**
-     * Generates primary key by calling Oracle sequence corresponding to the
-     * <code>dbEntity</code>. Executed SQL looks like this:
-     * 
-     * <pre>
-     *   SELECT pk_table_name.nextval FROM DUAL
-     * </pre>
-     * 
-     * @deprecated since 3.0
-     */
-    @Override
-    protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
-
-        DbKeyGenerator pkGenerator = ent.getPrimaryKeyGenerator();
-        String pkGeneratingSequenceName;
-        if (pkGenerator != null
-                && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null)
-            pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
-            pkGeneratingSequenceName = sequenceName(ent);
-
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-                String sql = "SELECT " + pkGeneratingSequenceName + ".nextval FROM DUAL";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + ent.getName());
-                    }
-                    return rs.getInt(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
-    }
-
     protected int pkCacheSize(DbEntity entity) {
         // use custom generator if possible
         DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
@@ -274,12 +217,13 @@ public class OraclePkGenerator extends JdbcPkGenerator {
     /** Returns expected primary key sequence name for a DbEntity. */
     protected String sequenceName(DbEntity entity) {
         boolean status;
-        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
+        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
 
         // use custom generator if possible
         DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
@@ -295,11 +239,13 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
             if (entity.getSchema() != null && entity.getSchema().length() > 0) {
 
-                seqName = context.quoteString(entity.getSchema()) + "." + 
-                context.quoteString(seqName);
-             } else {
+                seqName = context.quoteString(entity.getSchema())
+                        + "."
+                        + context.quoteString(seqName);
+            }
+            else {
                 seqName = context.quoteString(seqName);
-             }
+            }
             return seqName;
         }
     }

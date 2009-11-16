@@ -44,6 +44,7 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 
 public class DataContextTest extends DataContextCase {
 
@@ -190,8 +191,7 @@ public class DataContextTest extends DataContextCase {
         // verify that the result is not messaged up
 
         SelectQuery query = new SelectQuery(Artist.class);
-        Ordering ordering = new Ordering("artistName", false);
-        ordering.setCaseInsensitive(true);
+        Ordering ordering = new Ordering("artistName", SortOrder.ASCENDING_INSENSITIVE);
         query.addOrdering(ordering);
         query.setDistinct(true);
 

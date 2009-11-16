@@ -28,8 +28,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
@@ -61,7 +61,7 @@ public class RemoteIncrementalFaultListTest extends CayenneCase {
         // make sure total number of objects is not divisable
         // by the page size, to test the last smaller page
         query.setPageSize(pageSize);
-        query.addOrdering("db:" + MtTable1.TABLE1_ID_PK_COLUMN, Ordering.ASC);
+        query.addOrdering("db:" + MtTable1.TABLE1_ID_PK_COLUMN, SortOrder.ASCENDING);
 
         ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
         LocalConnection connection = new LocalConnection(

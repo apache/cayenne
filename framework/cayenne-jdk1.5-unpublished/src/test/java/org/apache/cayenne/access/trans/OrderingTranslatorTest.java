@@ -21,8 +21,8 @@ package org.apache.cayenne.access.trans;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.TranslationCase;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class OrderingTranslatorTest extends CayenneCase {
@@ -32,7 +32,7 @@ public class OrderingTranslatorTest extends CayenneCase {
      */
     public void testDoTranslation1() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("artistName", Ordering.ASC);
+        q.addOrdering("artistName", SortOrder.ASCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
 
@@ -58,7 +58,7 @@ public class OrderingTranslatorTest extends CayenneCase {
      */
     public void testDoTranslation2() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("artistName", Ordering.DESC);
+        q.addOrdering("artistName", SortOrder.DESCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
 
@@ -80,11 +80,11 @@ public class OrderingTranslatorTest extends CayenneCase {
     }
 
     /**
-     * Tests ascending caese-insensitive ordering on string attribute.
+     * Tests ascending case-insensitive ordering on string attribute.
      */
     public void testDoTranslation4() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("artistName", Ordering.ASC, true);
+        q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
 
         TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
 
@@ -109,8 +109,8 @@ public class OrderingTranslatorTest extends CayenneCase {
 
     public void testDoTranslation5() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("artistName", Ordering.DESC, true);
-        q.addOrdering("paintingArray.estimatedPrice", Ordering.ASC);
+        q.addOrdering("artistName", SortOrder.DESCENDING_INSENSITIVE);
+        q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
 
@@ -141,8 +141,8 @@ public class OrderingTranslatorTest extends CayenneCase {
 
     public void testDoTranslation6() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("artistName", Ordering.ASC, true);
-        q.addOrdering("paintingArray.estimatedPrice", Ordering.ASC, true);
+        q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
+        q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING_INSENSITIVE);
 
         TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
 
@@ -175,8 +175,8 @@ public class OrderingTranslatorTest extends CayenneCase {
     public void testDoTranslation3() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
 
-        q.addOrdering("artistName", Ordering.DESC);
-        q.addOrdering("paintingArray.estimatedPrice", Ordering.ASC);
+        q.addOrdering("artistName", SortOrder.DESCENDING);
+        q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
 

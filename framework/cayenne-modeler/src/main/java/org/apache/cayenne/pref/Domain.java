@@ -176,7 +176,7 @@ public class Domain extends _Domain {
         }
 
         ObjectContext context = getObjectContext();
-        DbEntity entity = context.getEntityResolver().lookupDbEntity(javaClass);
+        DbEntity entity = context.getEntityResolver().lookupObjEntity(javaClass).getDbEntity();
         DbAttribute pk = entity.getPrimaryKeys().iterator().next();
 
         Expression qualifier = Expression.fromString("db:" + pk.getName() + " in $ids");

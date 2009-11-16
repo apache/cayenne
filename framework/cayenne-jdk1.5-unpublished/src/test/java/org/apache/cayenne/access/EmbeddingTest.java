@@ -25,6 +25,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.AccessStack;
@@ -44,7 +45,7 @@ public class EmbeddingTest extends CayenneCase {
         createTestData("testSelect");
 
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
-        query.addOrdering(EmbedEntity1.NAME_PROPERTY, true);
+        query.addOrdering(EmbedEntity1.NAME_PROPERTY, SortOrder.ASCENDING);
 
         ObjectContext context = createDataContext();
 
@@ -115,7 +116,7 @@ public class EmbeddingTest extends CayenneCase {
         createTestData("testUpdate");
 
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
-        query.addOrdering(EmbedEntity1.NAME_PROPERTY, true);
+        query.addOrdering(EmbedEntity1.NAME_PROPERTY, SortOrder.ASCENDING);
 
         ObjectContext context = createDataContext();
         List results = context.performQuery(query);
@@ -138,7 +139,7 @@ public class EmbeddingTest extends CayenneCase {
         createTestData("testUpdate");
 
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
-        query.addOrdering(EmbedEntity1.NAME_PROPERTY, true);
+        query.addOrdering(EmbedEntity1.NAME_PROPERTY, SortOrder.ASCENDING);
 
         ObjectContext context = createDataContext();
         List results = context.performQuery(query);

@@ -341,25 +341,15 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         nonNullOrderings().addAll(orderings);
     }
 
-    /** Adds ordering specification to this query orderings. */
-    @Deprecated
-    public void addOrdering(String sortPathSpec, boolean isAscending) {
-        addOrdering(new Ordering(sortPathSpec, isAscending));
-    }
-
-    /** Adds ordering specification to this query orderings. */
-    @Deprecated
-    public void addOrdering(String sortPathSpec, boolean isAscending, boolean ignoreCase) {
-        addOrdering(new Ordering(sortPathSpec, isAscending, ignoreCase));
-    }
-
     /**
      * Adds ordering specification to this query orderings.
+     * 
      * @since 3.0
      */
     public void addOrdering(String sortPathSpec, SortOrder order) {
         addOrdering(new Ordering(sortPathSpec, order));
     }
+
     /**
      * Removes ordering.
      * 
@@ -473,30 +463,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Returns refresh policy of this query. Default is <code>true</code>.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *             redundant, although it is still being taken into account. It will be
-     *             removed in the later versions of Cayenne.
-     */
-    @Deprecated
-    public boolean isRefreshingObjects() {
-        return metaData.isRefreshingObjects();
-    }
-
-    /**
-     * @since 1.1
-     * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *             redundant, although it is still being taken into account. It will be
-     *             removed in the later versions of Cayenne.
-     */
-    @Deprecated
-    public void setRefreshingObjects(boolean flag) {
-        // noop
-    }
-
-    /**
      * @since 3.0
      */
     public QueryCacheStrategy getCacheStrategy() {
@@ -570,30 +536,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      */
     public void setPageSize(int pageSize) {
         metaData.setPageSize(pageSize);
-    }
-
-    /**
-     * Returns true if objects fetched via this query should be fully resolved according
-     * to the inheritance hierarchy.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public boolean isResolvingInherited() {
-        return true;
-    }
-
-    /**
-     * Sets whether the objects fetched via this query should be fully resolved according
-     * to the inheritance hierarchy.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public void setResolvingInherited(boolean b) {
-        // noop
     }
 
     /**

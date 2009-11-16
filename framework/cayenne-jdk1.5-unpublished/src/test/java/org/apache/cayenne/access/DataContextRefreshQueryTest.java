@@ -88,7 +88,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         DataContext context = createDataContext();
 
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addOrdering("db:PAINTING_ID", true);
+        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         List paints = context.performQuery(q);
 
         Painting p1 = (Painting) paints.get(0);
@@ -135,7 +135,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         DataContext context = createDataContext();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("db:ARTIST_ID", true);
+        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         List artists = context.performQuery(q);
 
         Artist a1 = (Artist) artists.get(0);

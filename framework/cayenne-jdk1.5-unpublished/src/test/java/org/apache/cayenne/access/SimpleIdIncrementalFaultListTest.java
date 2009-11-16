@@ -30,6 +30,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -76,7 +77,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
         // make sure total number of objects is not divisable
         // by the page size, to test the last smaller page
         q.setPageSize(pageSize);
-        q.addOrdering("db:ARTIST_ID", Ordering.ASC);
+        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         query = q;
         list = new SimpleIdIncrementalFaultList<Object>(createDataContext(), query);
     }
@@ -132,7 +133,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
 
         SelectQuery q = new SelectQuery(Artist.class);
         q.setPageSize(6);
-        q.addOrdering("db:ARTIST_ID", Ordering.DESC);
+        q.addOrdering("db:ARTIST_ID", SortOrder.DESCENDING);
 
         SimpleIdIncrementalFaultList<?> list = new SimpleIdIncrementalFaultList<Object>(
                 context,
@@ -167,7 +168,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     public void testSort() throws Exception {
         prepareList(6);
 
-        new Ordering(Artist.ARTIST_NAME_PROPERTY, Ordering.DESC).orderList(list);
+        new Ordering(Artist.ARTIST_NAME_PROPERTY, SortOrder.DESCENDING).orderList(list);
 
         Iterator it = list.iterator();
         Artist previousArtist = null;

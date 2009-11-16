@@ -20,7 +20,6 @@
 package org.apache.cayenne.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -36,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Utility class to find resources (files, etc.), using a preconfigured strategy.
- * 
  */
 public class ResourceLocator implements ResourceFinder {
 
@@ -54,55 +52,6 @@ public class ResourceLocator implements ResourceFinder {
 
     // ClassLoader used for resource loading
     protected ClassLoader classLoader;
-
-    /**
-     * Returns a resource as InputStream if it is found in CLASSPATH or <code>null</code>
-     * otherwise. Lookup is normally performed in all JAR and ZIP files and directories
-     * available to the ClassLoader.
-     * 
-     * @deprecated since 3.0 unused.
-     */
-    public static InputStream findResourceInClasspath(String name) {
-        try {
-            URL url = findURLInClasspath(name);
-            if (url != null) {
-                logObj.debug("resource found in classpath: " + url);
-                return url.openStream();
-            }
-            else {
-                logObj.debug("resource not found in classpath: " + name);
-                return null;
-            }
-        }
-        catch (IOException ioex) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns a resource as InputStream if it is found in the filesystem or
-     * <code>null</code> otherwise. Lookup is first performed relative to the user's
-     * home directory (as defined by "user.home" system property), and then relative to
-     * the current directory.
-     * 
-     * @deprecated since 3.0 unused
-     */
-    public static InputStream findResourceInFileSystem(String name) {
-        try {
-            File file = findFileInFileSystem(name);
-            if (file != null) {
-                logObj.debug("resource found in file system: " + file);
-                return new FileInputStream(file);
-            }
-            else {
-                logObj.debug("resource not found in file system: " + name);
-                return null;
-            }
-        }
-        catch (IOException ioex) {
-            return null;
-        }
-    }
 
     /**
      * Looks up a file in the filesystem. First looks in the user home directory, then in
@@ -217,30 +166,6 @@ public class ResourceLocator implements ResourceFinder {
     }
 
     /**
-     * Returns a base URL as a String from which this class was loaded. This is normally a
-     * JAR or a file URL, but it is ClassLoader dependent.
-     * 
-     * @deprecated since 3.0 unused.
-     */
-    public static String classBaseUrl(Class<?> aClass) {
-        String pathToClass = aClass.getName().replace('.', '/') + ".class";
-        ClassLoader classLoader = aClass.getClassLoader();
-
-        if (classLoader == null) {
-            classLoader = ClassLoader.getSystemClassLoader();
-        }
-
-        URL selfUrl = classLoader.getResource(pathToClass);
-
-        if (selfUrl == null) {
-            return null;
-        }
-
-        String urlString = selfUrl.toExternalForm();
-        return urlString.substring(0, urlString.length() - pathToClass.length());
-    }
-
-    /**
      * Creates new ResourceLocator with default lookup policy including user home
      * directory, current directory and CLASSPATH.
      */
@@ -251,8 +176,8 @@ public class ResourceLocator implements ResourceFinder {
 
     /**
      * Returns an InputStream on the found resource using the lookup strategy configured
-     * for this ResourceLocator or <code>null</code> if no readable resource can be
-     * found for the given name.
+     * for this ResourceLocator or <code>null</code> if no readable resource can be found
+     * for the given name.
      */
     public InputStream findResourceStream(String name) {
         URL url = findResource(name);
@@ -514,8 +439,8 @@ public class ResourceLocator implements ResourceFinder {
      * Adds the given directory as a path for filesystem lookups. The directory is checked
      * for existence.
      * 
-     * @throws IllegalArgumentException if <code>path</code> is <code>null</code>,
-     *             not a directory or not readable.
+     * @throws IllegalArgumentException if <code>path</code> is <code>null</code>, not a
+     *             directory or not readable.
      */
     public void addFilesystemPath(File path) {
         if (path != null && path.isDirectory()) {

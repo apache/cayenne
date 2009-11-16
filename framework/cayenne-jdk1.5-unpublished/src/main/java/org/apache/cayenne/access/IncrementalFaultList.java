@@ -85,23 +85,6 @@ public class IncrementalFaultList<E> implements List<E> {
     // 10,000 nested expressions.
 
     /**
-     * Creates a new list copying settings from another list. Elements WILL NOT be copied
-     * or fetched.
-     * 
-     * @deprecated since 3.0 - unused
-     */
-    public IncrementalFaultList(IncrementalFaultList<E> list) {
-        this.pageSize = list.pageSize;
-        this.internalQuery = list.internalQuery;
-        this.dataContext = list.dataContext;
-        this.rootEntity = list.rootEntity;
-        this.maxFetchSize = list.maxFetchSize;
-        this.idWidth = list.idWidth;
-        this.helper = list.helper;
-        elements = Collections.synchronizedList(new ArrayList<Object>());
-    }
-
-    /**
      * Creates a new IncrementalFaultList using a given DataContext and query.
      * 
      * @param dataContext DataContext used by IncrementalFaultList to fill itself with
@@ -157,21 +140,6 @@ public class IncrementalFaultList<E> implements List<E> {
      */
     SelectQuery getInternalQuery() {
         return internalQuery;
-    }
-
-    /**
-     * Performs initialization of the internal list of objects. Only the first page is
-     * fully resolved. For the rest of the list, only ObjectIds are read.
-     * 
-     * @deprecated since 3.0 this method is not called and is deprecated in favor of
-     *             {@link #fillIn(Query, List)}, as this method performed unneeded
-     *             synchronization.
-     * @since 1.0.6
-     */
-    protected void fillIn(Query query) {
-        synchronized (elements) {
-            fillIn(query, elements);
-        }
     }
 
     /**

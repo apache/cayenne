@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.LockingCase;
@@ -311,7 +312,7 @@ public class OptimisticLockingTest extends LockingCase {
     public void testSuccessLockingOnMixed() throws Exception {
         createTestData("testLockingOnMixed");
         SelectQuery query = new SelectQuery(SimpleLockingTestEntity.class);
-        query.addOrdering(new Ordering("db:LOCKING_TEST_ID", Ordering.ASC));
+        query.addOrdering(new Ordering("db:LOCKING_TEST_ID", SortOrder.ASCENDING));
 
         List allObjects = context.performQuery(query);
         assertEquals(3, allObjects.size());

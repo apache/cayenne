@@ -26,6 +26,7 @@ import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.RemoteCayenneCase;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
@@ -278,7 +279,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         ObjectContext child = context.createChildContext();
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering("globalAttribute1", true);
+        q.addOrdering("globalAttribute1", SortOrder.ASCENDING);
         q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
 
         List results = child.performQuery(q);

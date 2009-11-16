@@ -23,7 +23,6 @@ import org.apache.cayenne.map.ObjEntity;
 
 /**
  * An ObjAttribute extension that accomodates EOModel attributes.
- * 
  */
 public class EOObjAttribute extends ObjAttribute {
 
@@ -39,13 +38,6 @@ public class EOObjAttribute extends ObjAttribute {
 
     public EOObjAttribute(String name, String type, ObjEntity parent) {
         super(name, type, parent);
-    }
-
-    /**
-     * @deprecated since 2.0 use isReadOnly().
-     */
-    public boolean getReadOnly() {
-        return isReadOnly();
     }
 
     public boolean isReadOnly() {

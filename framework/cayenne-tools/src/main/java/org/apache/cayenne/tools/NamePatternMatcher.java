@@ -48,6 +48,82 @@ public class NamePatternMatcher {
     }
 
     /**
+     * Applies preconfigured list of filters to the list, removing entities that do not
+     * pass the filter.
+     * 
+     * @deprecated since 3.0 still used by AntDataPortDelegate, which itself should
+     *             probably be deprecated
+     */
+    List<?> filter(List<?> items) {
+        if (items == null || items.isEmpty()) {
+            return items;
+        }
+
+        if ((itemIncludeFilters.length == 0) && (itemExcludeFilters.length == 0)) {
+            return items;
+        }
+
+        Iterator<?> it = items.iterator();
+        while (it.hasNext()) {
+            CayenneMapEntry entity = (CayenneMapEntry) it.next();
+
+            if (!passedIncludeFilter(entity)) {
+                it.remove();
+                continue;
+            }
+
+            if (!passedExcludeFilter(entity)) {
+                it.remove();
+            }
+        }
+
+        return items;
+    }
+
+    /**
+     * Returns true if the entity matches any one of the "include" patterns, or if there
+     * is no "include" patterns defined.
+     * 
+     * @deprecated since 3.0. still used by AntDataPortDelegate, which itself should
+     *             probably be deprecated
+     */
+    private boolean passedIncludeFilter(CayenneMapEntry item) {
+        if (itemIncludeFilters.length == 0) {
+            return true;
+        }
+
+        String itemName = item.getName();
+        for (Pattern itemIncludeFilter : itemIncludeFilters) {
+            if (itemIncludeFilter.matcher(itemName).find()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the entity does not match any one of the "exclude" patterns, or if
+     * there is no "exclude" patterns defined.
+     * 
+     * @deprecated since 3.0
+     */
+    private boolean passedExcludeFilter(CayenneMapEntry item) {
+        if (itemExcludeFilters.length == 0) {
+            return true;
+        }
+
+        String itemName = item.getName();
+        for (Pattern itemExcludeFilter : itemExcludeFilters) {
+            if (itemExcludeFilter.matcher(itemName).find()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Returns an array of Patterns. Takes a comma-separated list of patterns, attempting
      * to convert them to the java.util.regex.Pattern syntax. E.g.
      * <p>
@@ -148,38 +224,6 @@ public class NamePatternMatcher {
     }
 
     /**
-     * Applies preconfigured list of filters to the list, removing entities that do not
-     * pass the filter.
-     * 
-     * @deprecated since 3.0
-     */
-    protected List<?> filter(List<?> items) {
-        if (items == null || items.isEmpty()) {
-            return items;
-        }
-
-        if ((itemIncludeFilters.length == 0) && (itemExcludeFilters.length == 0)) {
-            return items;
-        }
-
-        Iterator<?> it = items.iterator();
-        while (it.hasNext()) {
-            CayenneMapEntry entity = (CayenneMapEntry) it.next();
-
-            if (!passedIncludeFilter(entity)) {
-                it.remove();
-                continue;
-            }
-
-            if (!passedExcludeFilter(entity)) {
-                it.remove();
-            }
-        }
-
-        return items;
-    }
-
-    /**
      * Returns true if an object matches any one of the "include" patterns, or if there is
      * no "include" patterns defined.
      * 
@@ -212,48 +256,6 @@ public class NamePatternMatcher {
 
         for (Pattern itemExcludeFilter : itemExcludeFilters) {
             if (itemExcludeFilter.matcher(item).find()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns true if the entity matches any one of the "include" patterns, or if there
-     * is no "include" patterns defined.
-     * 
-     * @deprecated since 3.0
-     */
-    protected boolean passedIncludeFilter(CayenneMapEntry item) {
-        if (itemIncludeFilters.length == 0) {
-            return true;
-        }
-
-        String itemName = item.getName();
-        for (Pattern itemIncludeFilter : itemIncludeFilters) {
-            if (itemIncludeFilter.matcher(itemName).find()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the entity does not match any one of the "exclude" patterns, or if
-     * there is no "exclude" patterns defined.
-     * 
-     * @deprecated since 3.0
-     */
-    protected boolean passedExcludeFilter(CayenneMapEntry item) {
-        if (itemExcludeFilters.length == 0) {
-            return true;
-        }
-
-        String itemName = item.getName();
-        for (Pattern itemExcludeFilter : itemExcludeFilters) {
-            if (itemExcludeFilter.matcher(itemName).find()) {
                 return false;
             }
         }

@@ -36,11 +36,8 @@ import org.apache.cayenne.query.QueryRouter;
  * the results.
  * 
  * @since 1.2
- * @deprecated since 3.0 - this class should not be public
  */
-// TODO: andrus, 7/19/2006 - why is this public? should probably be deprecated and/or
-// removed.
-public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
+class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
 
     static final boolean DONE = true;
 
@@ -73,7 +70,8 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
 
         // run categorized queries
         if (queriesByNode != null) {
-            for (final Map.Entry<QueryEngine, List<Query>> entry : queriesByNode.entrySet()) {
+            for (final Map.Entry<QueryEngine, List<Query>> entry : queriesByNode
+                    .entrySet()) {
                 QueryEngine nextNode = entry.getKey();
                 Collection<Query> nodeQueries = entry.getValue();
                 nextNode.performQueries(nodeQueries, this);

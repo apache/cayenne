@@ -68,29 +68,6 @@ public class Parser implements ParserConstants {
         }
     }
 
-    /**
-     * @deprecated since 3.0, use 'object(String)' instead.
-     */
-    public Object object() throws ParseException {
-        return object("");
-    }
-
-    /**
-     * @deprecated since 3.0, use 'map(String)' instead.
-     */
-    public final java.util.HashMap dictionary()
-                                   throws ParseException {
-            return (java.util.HashMap) map("");
-    }
-
-    /**
-     * @deprecated since 3.0, use 'collection(String)' instead.
-     */
-    public final java.util.ArrayList array()
-                                   throws ParseException {
-            return (java.util.ArrayList) collection("");
-    }
-
   final public Object object(String parentKeyPath) throws ParseException {
         Object node;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {

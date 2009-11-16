@@ -78,14 +78,6 @@ class DataDomainQuery implements Query, QueryMetadata {
         return null;
     }
 
-    /**
-     * @deprecated since 3.0 in favor of 'getCacheStrategy'.
-     */
-    @Deprecated
-    public String getCachePolicy() {
-        return null;
-    }
-
     public QueryCacheStrategy getCacheStrategy() {
         return null;
     }
@@ -104,14 +96,6 @@ class DataDomainQuery implements Query, QueryMetadata {
 
     public int getFetchOffset() {
         return 0;
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public int getFetchStartIndex() {
-        return getFetchOffset();
     }
 
     public ObjEntity getObjEntity() {

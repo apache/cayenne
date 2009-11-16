@@ -36,7 +36,7 @@ public class Oracle8AdapterTest extends TestCase {
 
     public void testFindAdapterResource() throws Exception {
 
-        URL typesURL = new Oracle8Adapter().findAdapterResource("/types.xml");
+        URL typesURL = new Oracle8Adapter().findResource("/types.xml");
         assertNotNull(typesURL);
         assertTrue("Unexpected url:" + typesURL, typesURL.toExternalForm().endsWith(
                 "types-oracle8.xml"));

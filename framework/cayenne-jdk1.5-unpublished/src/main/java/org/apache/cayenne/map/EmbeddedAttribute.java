@@ -114,7 +114,7 @@ public class EmbeddedAttribute extends ObjAttribute {
                 fullName,
                 embeddableAttribute.getType(),
                 (ObjEntity) getEntity());
-        oa.setDbAttributeName(dbPath);
+        oa.setDbAttributePath(dbPath);
         return oa;
     }
 

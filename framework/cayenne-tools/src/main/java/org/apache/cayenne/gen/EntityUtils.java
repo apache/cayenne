@@ -62,9 +62,8 @@ public class EntityUtils {
 
         this.objEntity = objEntity;
 
-
         this.callbackNames = new ArrayList<String>();
-        for(CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
+        for (CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
             callbackNames.addAll(cb.getCallbackMethods());
         }
     }
@@ -85,75 +84,9 @@ public class EntityUtils {
         this.objEntity = objEntity;
 
         this.callbackNames = new ArrayList<String>();
-        for(CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
+        for (CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
             callbackNames.addAll(cb.getCallbackMethods());
         }
-    }
-
-
-    /**
-     * Returns class name (without a package) of the sub class associated with this
-     * generator.
-     * 
-     * @deprecated since 3.0 This value is a part of velocity context and therefore is
-     *             redundant here.
-     */
-    public String getSubClassName() {
-        return subClassName;
-    }
-
-    /**
-     * Returns the super class (without a package) of the data object class associated
-     * with this generator
-     * 
-     * @deprecated since 3.0 This value is a part of velocity context and therefore is
-     *             redundant here.
-     */
-    public String getSuperClassName() {
-        return superClassName;
-    }
-
-    /**
-     * Returns the base class (without a package) of the data object class associated with
-     * this generator. Class name must not include a package.
-     * 
-     * @deprecated since 3.0 This value is a part of velocity context and therefore is
-     *             redundant here.
-     */
-    public String getBaseClassName() {
-        return baseClassName;
-    }
-
-    /**
-     * Returns Java package name of the class associated with this generator.
-     * 
-     * @deprecated since 3.0 This value is a part of velocity context and therefore is
-     *             redundant here.
-     */
-    public String getSubPackageName() {
-        return subPackageName;
-    }
-
-    /**
-     * Returns <code>superPackageName</code> property that defines a superclass's
-     * package name.
-     * 
-     * @deprecated since 3.0 This value is a part of velocity context and therefore is
-     *             redundant here.
-     */
-    public String getSuperPackageName() {
-        return superPackageName;
-    }
-
-    /**
-     * Returns <code>basePackageName</code> property that defines a baseclass's
-     * (superclass superclass) package name.
-     * 
-     * @deprecated since 3.0 This value is a part of velocity context and therefore is
-     *             redundant here.
-     */
-    public String getBasePackageName() {
-        return basePackageName;
     }
 
     /**
@@ -172,21 +105,21 @@ public class EntityUtils {
     public MappingNamespace getEntityResolver() {
         return primaryDataMap.getNamespace();
     }
-    
+
     /**
      * Returns true if current ObjEntity is defined as abstract.
      */
     public boolean isAbstract() {
         return isAbstract(objEntity);
     }
-    
+
     /**
      * Returns true if current ObjEntity is defined as abstract.
      */
     public boolean isAbstract(ObjEntity anObjEntity) {
-        if (anObjEntity == null) 
+        if (anObjEntity == null)
             return false;
-        
+
         return objEntity.isAbstract();
     }
 
@@ -196,7 +129,6 @@ public class EntityUtils {
     public boolean hasToManyRelationships() {
         return hasToManyRelationships(objEntity);
     }
-    
 
     /**
      * Returns true if an ObjEntity contains at least one toMany relationship.
@@ -297,9 +229,8 @@ public class EntityUtils {
 
     /**
      * Returns the map key type for a collection relationship of type java.util.Map.
-     *
+     * 
      * @param relationship The relationship to look up type information for.
-     *
      * @return The type of the attribute keyed on.
      */
     public String getMapKeyType(final ObjRelationship relationship) {
@@ -334,9 +265,7 @@ public class EntityUtils {
         return attribute.getType();
     }
 
-
     /**
-     *
      * @return the list of all callback names registered for the entity.
      * @since 3.0
      */

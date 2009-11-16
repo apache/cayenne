@@ -60,7 +60,7 @@ public class SelectQueryTest extends SelectQueryBase {
         int totalRows = context.performQuery(new SelectQuery(Artist.class)).size();
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, true);
+        query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING);
         query.setFetchOffset(5);
         List<Artist> results = context.performQuery(query);
 
@@ -82,7 +82,7 @@ public class SelectQueryTest extends SelectQueryBase {
         ObjectContext context = createDataContext();
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, true);
+        query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING);
         query.setFetchOffset(15);
         query.setFetchLimit(4);
         List<Artist> results = context.performQuery(query);

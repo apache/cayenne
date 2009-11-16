@@ -22,11 +22,11 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextPrefetchQualifierOverlapTest extends CayenneCase {
@@ -140,7 +140,7 @@ public class DataContextPrefetchQualifierOverlapTest extends CayenneCase {
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         query.orQualifier(ExpressionFactory.likeExp("artistName", "A%"));
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         List<Artist> result = createDataContext().performQuery(query);
         assertEquals(2, result.size());

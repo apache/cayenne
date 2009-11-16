@@ -264,9 +264,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         Object columnNamesCapitalization = properties
                 .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
         this.columnNamesCapitalization = (columnNamesCapitalization != null)
-                ? CapsStrategy.valueOf(columnNamesCapitalization
-                        .toString()
-                        .toUpperCase())
+                ? CapsStrategy
+                        .valueOf(columnNamesCapitalization.toString().toUpperCase())
                 : null;
     }
 
@@ -383,42 +382,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
     public boolean isFetchingDataRows() {
         return metaData.isFetchingDataRows();
-    }
-
-    /**
-     * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *             redundant, although it is still being taken into account. It will be
-     *             removed in the later versions of Cayenne.
-     */
-    @Deprecated
-    public boolean isRefreshingObjects() {
-        return metaData.isRefreshingObjects();
-    }
-
-    /**
-     * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *             redundant, although it is still being taken into account. It will be
-     *             removed in the later versions of Cayenne.
-     */
-    @Deprecated
-    public void setRefreshingObjects(boolean flag) {
-        // noop
-    }
-
-    /**
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public boolean isResolvingInherited() {
-        return true;
-    }
-
-    /**
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public void setResolvingInherited(boolean b) {
-        // noop
     }
 
     /**
@@ -611,15 +574,16 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     public SQLResult getResult() {
         return result;
     }
-    
+
     /**
      * Sets statement's fetch size (0 for no default size)
-     * @since 3.0 
+     * 
+     * @since 3.0
      */
     public void setStatementFetchSize(int size) {
         metaData.setStatementFetchSize(size);
     }
-    
+
     /**
      * @return statement's fetch size
      * @since 3.0

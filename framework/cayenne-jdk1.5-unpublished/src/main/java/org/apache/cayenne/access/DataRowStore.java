@@ -87,31 +87,6 @@ public class DataRowStore implements Serializable {
     protected transient EventSubject eventSubject;
 
     /**
-     * Creates new named DataRowStore with default configuration.
-     * 
-     * @deprecated since 3.0 as it instantiates an EventManager internally that can lead
-     *             to dispatch thread leaks.
-     */
-    public DataRowStore(String name) {
-        this(name, Collections.EMPTY_MAP);
-    }
-
-    /**
-     * Creates new DataRowStore with a specified name and a set of properties. If no
-     * properties are defined, default values are used.
-     * 
-     * @param name DataRowStore name. Used to idenitfy this DataRowStore in events, etc.
-     *            Can't be null.
-     * @param properties Properties map used to configure DataRowStore parameters. Can be
-     *            null.
-     * @deprecated since 3.0 as it instantiates an EventManager internally that can lead
-     *             to dispatch thread leaks.
-     */
-    public DataRowStore(String name, Map properties) {
-        this(name, properties, new EventManager());
-    }
-
-    /**
      * Creates new DataRowStore with a specified name and a set of properties. If no
      * properties are defined, default values are used.
      * 
@@ -192,7 +167,8 @@ public class DataRowStore implements Serializable {
                 EventBridgeFactory factory = (EventBridgeFactory) Class.forName(
                         eventBridgeFactory).newInstance();
 
-                Collection<EventSubject> subjects = Collections.singleton(getSnapshotEventSubject());
+                Collection<EventSubject> subjects = Collections
+                        .singleton(getSnapshotEventSubject());
                 String externalSubject = EventBridge
                         .convertToExternalSubject(getSnapshotEventSubject());
                 this.remoteNotificationsHandler = factory.createEventBridge(

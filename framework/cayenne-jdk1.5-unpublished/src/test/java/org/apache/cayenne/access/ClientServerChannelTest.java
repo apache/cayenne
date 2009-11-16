@@ -36,6 +36,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.QueryMessage;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -217,7 +218,7 @@ public class ClientServerChannelTest extends CayenneCase {
         ClientServerChannel channel = new ClientServerChannel(context);
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, true);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
 
         // must pass through the serialization pipe before running query as
@@ -255,7 +256,7 @@ public class ClientServerChannelTest extends CayenneCase {
         ClientServerChannel channel = new ClientServerChannel(context);
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, true);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
 
         // must pass through the serialization pipe before running query as

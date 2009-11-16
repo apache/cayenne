@@ -37,6 +37,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 
 /**
  * A descriptor of SelectQuery loaded from EOModel. It is an informal "decorator" of
@@ -47,16 +48,16 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class EOQuery extends SelectQuery {
 
-    protected Map<String,?> plistMap;
+    protected Map<String, ?> plistMap;
     protected Map bindings;
 
-    public EOQuery(ObjEntity root, Map<String,?> plistMap) {
+    public EOQuery(ObjEntity root, Map<String, ?> plistMap) {
         super(root);
         this.plistMap = plistMap;
         initFromPlist(plistMap);
     }
 
-    protected void initFromPlist(Map<String,?> plistMap) {
+    protected void initFromPlist(Map<String, ?> plistMap) {
 
         setDistinct("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct")));
 
@@ -76,19 +77,20 @@ public class EOQuery extends SelectQuery {
         }
 
         // sort orderings
-        List<Map<String,String>> orderings = (List<Map<String,String>>) plistMap.get("sortOrderings");
+        List<Map<String, String>> orderings = (List<Map<String, String>>) plistMap
+                .get("sortOrderings");
         if (orderings != null && !orderings.isEmpty()) {
-            for (Map<String,String> ordering : orderings) {
+            for (Map<String, String> ordering : orderings) {
                 boolean asc = !"compareDescending:".equals(ordering.get("selectorName"));
                 String key = ordering.get("key");
                 if (key != null) {
-                    addOrdering(key, asc);
+                    addOrdering(key, asc ? SortOrder.ASCENDING : SortOrder.DESCENDING);
                 }
             }
         }
 
         // qualifiers
-        Map<String,?> qualifierMap = (Map<String,?>) plistMap.get("qualifier");
+        Map<String, ?> qualifierMap = (Map<String, ?>) plistMap.get("qualifier");
         if (qualifierMap != null && !qualifierMap.isEmpty()) {
             this.setQualifier(makeQualifier(qualifierMap));
         }
@@ -104,7 +106,7 @@ public class EOQuery extends SelectQuery {
 
         // data rows - note that we do not support fetching individual columns in the
         // modeler...
-        if(plistMap.containsKey("rawRowKeyPaths")) {
+        if (plistMap.containsKey("rawRowKeyPaths")) {
             setFetchingDataRows(true);
         }
     }
@@ -221,7 +223,7 @@ public class EOQuery extends SelectQuery {
      * @param qualifierMap - FetchSpecification to translate
      * @return Expression equivalent to FetchSpecification
      */
-    public synchronized Expression makeQualifier(Map<String,?> qualifierMap) {
+    public synchronized Expression makeQualifier(Map<String, ?> qualifierMap) {
         if (qualifierMap == null) {
             return null;
         }
@@ -235,21 +237,21 @@ public class EOQuery extends SelectQuery {
      * EOFetchSpecificationParser parses EOFetchSpecifications from a WebObjects-style
      * EOModel. It recursively builds Cayenne Expression objects and assembles them into
      * the final aggregate Expression.
-     * 
      */
     static class EOFetchSpecificationParser {
+
         // Xcode/EOModeler expressions have a colon at the end of the selector name
-        // (just like standard Objective-C syntax).  WOLips does not.  Add both
+        // (just like standard Objective-C syntax). WOLips does not. Add both
         // sets to the hash map to handle both types of models.
 
         // Selector strings (Java-base).
-        static final String IS_EQUAL_TO                 = "isEqualTo";
-        static final String IS_NOT_EQUAL_TO             = "isNotEqualTo";
-        static final String IS_LIKE                     = "isLike";
-        static final String CASE_INSENSITIVE_LIKE       = "isCaseInsensitiveLike";
-        static final String IS_LESS_THAN                = "isLessThan";
-        static final String IS_LESS_THAN_OR_EQUAL_TO    = "isLessThanOrEqualTo";
-        static final String IS_GREATER_THAN             = "isGreaterThan";
+        static final String IS_EQUAL_TO = "isEqualTo";
+        static final String IS_NOT_EQUAL_TO = "isNotEqualTo";
+        static final String IS_LIKE = "isLike";
+        static final String CASE_INSENSITIVE_LIKE = "isCaseInsensitiveLike";
+        static final String IS_LESS_THAN = "isLessThan";
+        static final String IS_LESS_THAN_OR_EQUAL_TO = "isLessThanOrEqualTo";
+        static final String IS_GREATER_THAN = "isGreaterThan";
         static final String IS_GREATER_THAN_OR_EQUAL_TO = "isGreaterThanOrEqualTo";
 
         private static final String OBJ_C = ":"; // Objective-C syntax addition.
@@ -271,25 +273,42 @@ public class EOQuery extends SelectQuery {
                 selectorToExpressionBridge.put(IS_EQUAL_TO + OBJ_C, Expression.EQUAL_TO);
 
                 selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, Expression.NOT_EQUAL_TO);
-                selectorToExpressionBridge.put(IS_NOT_EQUAL_TO + OBJ_C, Expression.NOT_EQUAL_TO);
+                selectorToExpressionBridge.put(
+                        IS_NOT_EQUAL_TO + OBJ_C,
+                        Expression.NOT_EQUAL_TO);
 
                 selectorToExpressionBridge.put(IS_LIKE, Expression.LIKE);
                 selectorToExpressionBridge.put(IS_LIKE + OBJ_C, Expression.LIKE);
 
-                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, Expression.LIKE_IGNORE_CASE);
-                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE + OBJ_C, Expression.LIKE_IGNORE_CASE);
+                selectorToExpressionBridge.put(
+                        CASE_INSENSITIVE_LIKE,
+                        Expression.LIKE_IGNORE_CASE);
+                selectorToExpressionBridge.put(
+                        CASE_INSENSITIVE_LIKE + OBJ_C,
+                        Expression.LIKE_IGNORE_CASE);
 
                 selectorToExpressionBridge.put(IS_LESS_THAN, Expression.LESS_THAN);
-                selectorToExpressionBridge.put(IS_LESS_THAN + OBJ_C, Expression.LESS_THAN);
+                selectorToExpressionBridge
+                        .put(IS_LESS_THAN + OBJ_C, Expression.LESS_THAN);
 
-                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, Expression.LESS_THAN_EQUAL_TO);
-                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO + OBJ_C, Expression.LESS_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(
+                        IS_LESS_THAN_OR_EQUAL_TO,
+                        Expression.LESS_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(
+                        IS_LESS_THAN_OR_EQUAL_TO + OBJ_C,
+                        Expression.LESS_THAN_EQUAL_TO);
 
                 selectorToExpressionBridge.put(IS_GREATER_THAN, Expression.GREATER_THAN);
-                selectorToExpressionBridge.put(IS_GREATER_THAN + OBJ_C, Expression.GREATER_THAN);
+                selectorToExpressionBridge.put(
+                        IS_GREATER_THAN + OBJ_C,
+                        Expression.GREATER_THAN);
 
-                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, Expression.GREATER_THAN_EQUAL_TO);
-                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO + OBJ_C, Expression.GREATER_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(
+                        IS_GREATER_THAN_OR_EQUAL_TO,
+                        Expression.GREATER_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(
+                        IS_GREATER_THAN_OR_EQUAL_TO + OBJ_C,
+                        Expression.GREATER_THAN_EQUAL_TO);
             }
 
             return selectorToExpressionBridge;
@@ -437,7 +456,7 @@ public class EOQuery extends SelectQuery {
                 Object value = qualifierMap.get("value");
 
                 if (value instanceof Map) {
-                    Map<String,String> valueMap = (Map<String,String>) value;
+                    Map<String, String> valueMap = (Map<String, String>) value;
                     String objClass = valueMap.get("class"); // can be a
                     // qualifier class
                     // or java type

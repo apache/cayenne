@@ -113,22 +113,6 @@ public class JdbcAdapter implements DbAdapter {
      * package is searched as a failover.
      * </p>
      * 
-     * @since 1.1
-     * @deprecated since 3.0 replaced with protected method {@link #findResource(String)}.
-     */
-    public URL findAdapterResource(String name) {
-        return findResource(name);
-    }
-
-    /**
-     * * Locates and returns a named adapter resource. A resource can be an XML file, etc.
-     * <p>
-     * This implementation is based on the premise that each adapter is located in its own
-     * Java package and all resources are in the same package as well. Resource lookup is
-     * recursive, so that if DbAdapter is a subclass of another adapter, parent adapter
-     * package is searched as a failover.
-     * </p>
-     * 
      * @since 3.0
      */
     protected URL findResource(String name) {

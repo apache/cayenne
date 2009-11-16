@@ -83,12 +83,12 @@ public class SelectQueryBasicsTest extends TestCase {
         SelectQuery q = new SelectQuery();
 
         String path = "a.b.c";
-        q.addOrdering(path, Ordering.DESC);
+        q.addOrdering(path, SortOrder.DESCENDING);
         assertEquals(1, q.getOrderings().size());
 
         Ordering ord = q.getOrderings().get(0);
         assertEquals(path, ord.getSortSpec().getOperand(0));
-        assertEquals(Ordering.DESC, ord.isAscending());
+        assertEquals(false, ord.isAscending());
     }
 
     public void testDistinct() throws Exception {

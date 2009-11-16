@@ -29,7 +29,6 @@ import org.apache.commons.collections.IteratorUtils;
 
 /**
  * An ObjAttribute is a mapping descriptor of a Java class property.
- * 
  */
 public class ObjAttribute extends Attribute {
 
@@ -245,22 +244,6 @@ public class ObjAttribute extends Attribute {
     }
 
     /**
-     * Set mapped DbAttribute.
-     * 
-     * @deprecated since 3.0 - this method only works for non-flattened attributes.
-     *             'setDbAttributePath' should be used instead.
-     */
-    @Deprecated
-    public void setDbAttribute(DbAttribute dbAttribute) {
-        if (dbAttribute == null) {
-            setDbAttributePath(null);
-        }
-        else {
-            setDbAttributePath(dbAttribute.getName());
-        }
-    }
-
-    /**
      * Returns the the name of the mapped DbAttribute. This value is the same as
      * "dbAttributePath" for regular attributes mapped to columns. It is equql to the last
      * path component for the flattened attributes.
@@ -276,16 +259,6 @@ public class ObjAttribute extends Attribute {
         }
 
         return dbAttributePath.substring(lastDot + 1);
-    }
-
-    /**
-     * Sets the name of the mapped DbAttribute.
-     * 
-     * @deprecated since 3.0 use {@link #setDbAttributePath(String)}.
-     */
-    @Deprecated
-    public void setDbAttributeName(String name) {
-        setDbAttributePath(name);
     }
 
     public void setDbAttributePath(String dbAttributePath) {
@@ -306,14 +279,6 @@ public class ObjAttribute extends Attribute {
     }
 
     /**
-     * @deprecated since 3.0 use 'isFlattened'.
-     */
-    @Deprecated
-    public boolean isCompound() {
-        return isFlattened();
-    }
-
-    /**
      * Returns whether this attribute is "flattened", meaning that it points to a column
      * from an entity other than the DbEntity mapped to the parent ObjEntity.
      * 
@@ -322,18 +287,20 @@ public class ObjAttribute extends Attribute {
     public boolean isFlattened() {
         return dbAttributePath != null && dbAttributePath.indexOf('.') >= 0;
     }
-    
+
     /**
      * Returns whether this attribute is mandatory
+     * 
      * @see DbAttribute#isMandatory()
      */
     public boolean isMandatory() {
         DbAttribute dbAttribute = getDbAttribute();
         return dbAttribute == null ? false : dbAttribute.isMandatory();
     }
-    
+
     /**
      * Returns this attribute's maximum allowed length
+     * 
      * @see DbAttribute#getMaxLength()
      */
     public int getMaxLength() {

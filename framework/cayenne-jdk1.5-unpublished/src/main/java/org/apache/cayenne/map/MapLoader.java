@@ -821,17 +821,6 @@ public class MapLoader extends DefaultHandler {
     }
 
     /**
-     * Creates, configures and returns ResourceLocator object used to lookup DataMap
-     * files.
-     * 
-     * @deprecated since 3.0 use {@link #createResourceFinder()}.
-     */
-    @Deprecated
-    protected ResourceLocator configLocator() {
-        return (ResourceLocator) createResourceFinder();
-    }
-
-    /**
      * Creates, configures and returns a default ResourceFinder.
      * 
      * @since 3.0
