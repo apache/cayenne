@@ -186,7 +186,6 @@ public class EJBQLQueryTest extends CayenneCase {
 
         assertFalse(md.isFetchingDataRows());
         assertTrue(md.isRefreshingObjects());
-        assertTrue(md.isResolvingInherited());
         assertEquals(QueryCacheStrategy.NO_CACHE, md.getCacheStrategy());
     }
 

@@ -106,14 +106,6 @@ class IncrementalSelectQuery extends SelectQuery {
                 return metadata.getFetchOffset();
             }
 
-            /**
-             * @deprecated since 3.0
-             */
-            @Deprecated
-            public int getFetchStartIndex() {
-                return metadata.getFetchStartIndex();
-            }
-
             public ObjEntity getObjEntity() {
                 return metadata.getObjEntity();
             }
@@ -144,10 +136,6 @@ class IncrementalSelectQuery extends SelectQuery {
 
             public boolean isRefreshingObjects() {
                 return metadata.isRefreshingObjects();
-            }
-
-            public boolean isResolvingInherited() {
-                return metadata.isResolvingInherited();
             }
 
             public int getStatementFetchSize() {

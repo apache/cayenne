@@ -102,14 +102,6 @@ class IncrementalQuery implements Query {
                 return metadata.getFetchOffset();
             }
 
-            /**
-             * @deprecated since 3.0
-             */
-            @Deprecated
-            public int getFetchStartIndex() {
-                return metadata.getFetchStartIndex();
-            }
-
             public ObjEntity getObjEntity() {
                 return metadata.getObjEntity();
             }
@@ -138,20 +130,8 @@ class IncrementalQuery implements Query {
                 return metadata.isFetchingDataRows();
             }
 
-            /**
-             * @deprecated since 3.0
-             */
-            @Deprecated
             public boolean isRefreshingObjects() {
                 return metadata.isRefreshingObjects();
-            }
-
-            /**
-             * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-             */
-            @Deprecated
-            public boolean isResolvingInherited() {
-                return metadata.isResolvingInherited();
             }
 
             public int getStatementFetchSize() {

@@ -78,30 +78,6 @@ public interface QueryMetadata {
     public static final boolean FETCHING_DATA_ROWS_DEFAULT = false;
 
     /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public static final String REFRESHING_OBJECTS_PROPERTY = "cayenne.GenericSelectQuery.refreshingObjects";
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    public static final boolean REFRESHING_OBJECTS_DEFAULT = true;
-
-    /**
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public static final String RESOLVING_INHERITED_PROPERTY = "cayenne.GenericSelectQuery.resolvingInherited";
-
-    /**
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    public static final boolean RESOLVING_INHERITED_DEFAULT = true;
-
-    /**
      * @since 3.0
      */
     public static final String CACHE_STRATEGY_PROPERTY = "cayenne.GenericSelectQuery.cacheStrategy";
@@ -191,15 +167,6 @@ public interface QueryMetadata {
     boolean isRefreshingObjects();
 
     /**
-     * Returns true if objects fetched via this query should be fully resolved according
-     * to the inheritance hierarchy.
-     * 
-     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
-     */
-    @Deprecated
-    boolean isResolvingInherited();
-
-    /**
      * Returns query page size. Page size is a hint to Cayenne that query should be
      * performed page by page, instead of retrieving all results at once. If the value
      * returned is less than or equal to zero, no paging should occur.
@@ -213,11 +180,6 @@ public interface QueryMetadata {
      */
     int getFetchOffset();
 
-    /**
-     * @deprecated since 3.0, renamed to {@link #getFetchOffset()}.
-     */
-    @Deprecated
-    int getFetchStartIndex();
 
     /**
      * Returns the limit on the maximum number of records that can be returned by this

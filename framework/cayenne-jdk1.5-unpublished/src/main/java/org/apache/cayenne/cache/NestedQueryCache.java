@@ -157,14 +157,6 @@ public class NestedQueryCache implements QueryCache {
             return mdDelegate.getFetchOffset();
         }
 
-        /**
-         * @deprecated since 3.0
-         */
-        @Deprecated
-        public int getFetchStartIndex() {
-            return mdDelegate.getFetchStartIndex();
-        }
-
         public ObjEntity getObjEntity() {
             return mdDelegate.getObjEntity();
         }
@@ -199,10 +191,6 @@ public class NestedQueryCache implements QueryCache {
 
         public boolean isRefreshingObjects() {
             return mdDelegate.isRefreshingObjects();
-        }
-
-        public boolean isResolvingInherited() {
-            return mdDelegate.isResolvingInherited();
         }
 
         public int getStatementFetchSize() {
