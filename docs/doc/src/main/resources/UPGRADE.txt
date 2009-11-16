@@ -1,5 +1,13 @@
 Apache Cayenne Upgrade Information
 ==================================
+
+UPGRADING FROM 3.0-final
+
+* Per CAY-1310 all API deprecated in 3.0 is removed. So this may require some code cleanup.
+  Also if custom class generation templates are used, doublecheck that they are no longer
+  using removed EntityUtil methods (those were replaced by variables placed directly into
+  Velocity context)
+
 UPGRADING FROM 3.0M6
 
 * Per CAY-1281 pre-persist callback was renamed to post-add (while pre-persist now has a different meaning).
