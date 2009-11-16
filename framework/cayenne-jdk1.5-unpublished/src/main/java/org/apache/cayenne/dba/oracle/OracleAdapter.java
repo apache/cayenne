@@ -52,7 +52,6 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.UpdateBatchQuery;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS </a>. Sample
@@ -63,9 +62,8 @@ import org.apache.cayenne.validation.ValidationResult;
  *          test-oracle.jdbc.username = test
  *          test-oracle.jdbc.password = secret
  *          test-oracle.jdbc.url = jdbc:oracle:thin:@//192.168.0.20:1521/ora1 
- *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver   
+ *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver
  * </pre>
- * 
  */
 public class OracleAdapter extends JdbcAdapter {
 
@@ -126,8 +124,8 @@ public class OracleAdapter extends JdbcAdapter {
     }
 
     /**
-     * Utility method that returns <code>true</code> if the query will update at least
-     * one BLOB or CLOB DbAttribute.
+     * Utility method that returns <code>true</code> if the query will update at least one
+     * BLOB or CLOB DbAttribute.
      * 
      * @since 1.2
      */
@@ -225,19 +223,21 @@ public class OracleAdapter extends JdbcAdapter {
     }
 
     /**
-     * Returns a query string to drop a table corresponding to <code>ent</code>
-     * DbEntity. Changes superclass behavior to drop all related foreign key constraints.
+     * Returns a query string to drop a table corresponding to <code>ent</code> DbEntity.
+     * Changes superclass behavior to drop all related foreign key constraints.
      * 
      * @since 3.0
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(table
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
         StringBuffer buf = new StringBuffer("DROP TABLE ");
-        buf.append(context.quoteFullyQualifiedName(table));            
+        buf.append(context.quoteFullyQualifiedName(table));
 
         buf.append(" CASCADE CONSTRAINTS");
-        return Collections.singleton(buf.toString() );
+        return Collections.singleton(buf.toString());
     }
 
     @Override
@@ -336,19 +336,6 @@ public class OracleAdapter extends JdbcAdapter {
             return Boolean.class.getName();
         }
 
-        /**
-         * @deprecated since 3.0 as validation should not be done at the DataNode level.
-         */
-        @Deprecated
-        public boolean validateProperty(
-                Object source,
-                String property,
-                Object value,
-                DbAttribute dbAttribute,
-                ValidationResult validationResult) {
-            return true;
-        }
-
         public void setJdbcObject(
                 PreparedStatement st,
                 Object val,
@@ -385,7 +372,7 @@ public class OracleAdapter extends JdbcAdapter {
             return (st.wasNull()) ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
         }
     }
-    
+
     @Override
     public MergerFactory mergerFactory() {
         return new OracleMergerFactory();

@@ -25,8 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * An ExtendedType that handles an enum class. If Enum is mapped to a character column,
@@ -63,24 +61,6 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
 
     public String getClassName() {
         return enumClass.getName();
-    }
-
-    /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-
-        return AbstractType.validateNull(
-                source,
-                property,
-                value,
-                dbAttribute,
-                validationResult);
     }
 
     public void setJdbcObject(

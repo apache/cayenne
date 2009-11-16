@@ -20,21 +20,20 @@ package org.apache.cayenne.dba.sqlite;
 
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.access.types.AbstractType;
+import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  * @since 3.0
  */
-class SQLiteBigDecimalType extends AbstractType {
+class SQLiteBigDecimalType implements ExtendedType {
 
-    @Override
     public String getClassName() {
         return BigDecimal.class.getName();
     }
 
-    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
@@ -44,12 +43,26 @@ class SQLiteBigDecimalType extends AbstractType {
         return (string == null) ? null : new BigDecimal(string);
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
         // throws an NPE on 'getDouble' if the value is null, and also there are rounding
         // errors. So will read it as a String...
         String string = rs.getString(index);
         return (string == null) ? null : new BigDecimal(string);
+    }
+
+    public void setJdbcObject(
+            PreparedStatement st,
+            Object val,
+            int pos,
+            int type,
+            int scale) throws Exception {
+
+        if (scale != -1) {
+            st.setObject(pos, val, type, scale);
+        }
+        else {
+            st.setObject(pos, val, type);
+        }
     }
 }

@@ -24,8 +24,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * @since 3.0
@@ -73,17 +71,5 @@ public class BigIntegerType implements ExtendedType {
                     "Can't map BigInteger to a non-numeric type: "
                             + TypesMapping.getSqlNameByType(type));
         }
-    }
-
-    /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
     }
 }

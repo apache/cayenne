@@ -22,10 +22,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.BeanValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
-
 /**
  * This is a default ExtendedType that relies on JDBC driver to determine the result type.
  * 
@@ -58,22 +54,6 @@ public class ObjectType implements ExtendedType {
         else {
             statement.setObject(pos, value, type);
         }
-    }
-
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        if (dbAttribute.isMandatory() && value == null) {
-            validationResult.addFailure(new BeanValidationFailure(source, property, "'"
-                    + property
-                    + "' must be not null"));
-            return false;
-        }
-
-        return true;
     }
 
 }

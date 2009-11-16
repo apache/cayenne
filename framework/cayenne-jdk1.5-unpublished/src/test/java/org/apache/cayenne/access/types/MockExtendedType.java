@@ -23,9 +23,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
-
 public class MockExtendedType implements ExtendedType {
 
     protected Class objectClass;
@@ -40,15 +37,6 @@ public class MockExtendedType implements ExtendedType {
 
     public String getClassName() {
         return objectClass.getName();
-    }
-
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
     }
 
     public void setJdbcObject(

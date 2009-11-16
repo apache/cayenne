@@ -23,53 +23,42 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.access.types.AbstractType;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
+import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  */
-public class CAY_207StringType2 extends AbstractType {
+public class CAY_207StringType2 implements ExtendedType {
 
-    @Override
     public String getClassName() {
         return CAY_207String2.class.getName();
     }
 
-    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
-    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,
             int pos,
             int type,
-            int precision) throws Exception {
+            int scale) throws Exception {
 
         if (value instanceof CAY_207String2) {
             value = ((CAY_207String2) value).string;
         }
 
-        super.setJdbcObject(statement, value, pos, type, precision);
+        if (scale != -1) {
+            statement.setObject(pos, value, type, scale);
+        }
+        else {
+            statement.setObject(pos, value, type);
+        }
     }
 
-    @Override
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
-    }
 }
-

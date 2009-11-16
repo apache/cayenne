@@ -103,14 +103,6 @@ class DefaultQueryMetadata implements QueryMetadata {
         return null;
     }
 
-    /**
-     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
-     */
-    @Deprecated
-    public String getCachePolicy() {
-        return QueryMetadata.CACHE_POLICY_DEFAULT;
-    }
-
     public boolean isFetchingDataRows() {
         return QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
     }

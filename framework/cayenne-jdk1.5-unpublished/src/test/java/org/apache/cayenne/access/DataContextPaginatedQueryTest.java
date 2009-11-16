@@ -21,9 +21,9 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextPaginatedQueryTest extends CayenneCase {
@@ -35,8 +35,8 @@ public class DataContextPaginatedQueryTest extends CayenneCase {
         DataContext context = createDataContext();
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
-        query.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         query.setPageSize(5);
 
         List<?> results1 = context.performQuery(query);

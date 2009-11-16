@@ -21,9 +21,9 @@ package org.apache.cayenne;
 import java.util.List;
 
 import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -59,9 +59,9 @@ public class CayenneContextPaginatedListCachingTest extends CayenneCase {
         createTestData("prepare");
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, Ordering.ASC);
+        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         query.setPageSize(3);
-        query.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         List<?> result1 = context.performQuery(query);
         assertEquals(7, result1.size());

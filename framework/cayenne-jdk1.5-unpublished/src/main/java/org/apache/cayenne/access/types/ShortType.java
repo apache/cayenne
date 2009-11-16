@@ -23,10 +23,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.BeanValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
-
 /**
  * Handles <code>java.lang.Short</code> type mapping. Can be configured to recast
  * java.lang.Short to java.lang.Integer when binding values to PreparedStatement. This is
@@ -78,22 +74,5 @@ public class ShortType implements ExtendedType {
                 statement.setShort(pos, s.shortValue());
             }
         }
-    }
-
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        
-        if (dbAttribute.isMandatory() && value == null) {
-            validationResult.addFailure(new BeanValidationFailure(source, property, "'"
-                    + property
-                    + "' must be not null"));
-            return false;
-        }
-
-        return true;
     }
 }

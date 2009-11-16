@@ -23,8 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 public class StringET1ExtendedType implements ExtendedType {
 
@@ -56,17 +54,5 @@ public class StringET1ExtendedType implements ExtendedType {
         else {
             statement.setNull(pos, type);
         }
-    }
-
-    /**
-     * @deprecated
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
     }
 }

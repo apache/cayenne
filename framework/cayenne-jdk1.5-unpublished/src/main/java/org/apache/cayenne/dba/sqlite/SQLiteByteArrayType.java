@@ -22,40 +22,41 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.access.types.AbstractType;
+import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  * @since 3.0
  */
-class SQLiteByteArrayType extends AbstractType {
+class SQLiteByteArrayType implements ExtendedType {
 
-    @Override
     public String getClassName() {
         return "byte[]";
     }
 
-    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,
             int pos,
             int type,
-            int precision) throws Exception {
+            int scale) throws Exception {
 
         if (val instanceof byte[]) {
             st.setBytes(pos, (byte[]) val);
         }
         else {
-            super.setJdbcObject(st, val, pos, type, precision);
+            if (scale != -1) {
+                st.setObject(pos, val, type, scale);
+            }
+            else {
+                st.setObject(pos, val, type);
+            }
         }
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getBytes(index);
     }
 
-    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getBytes(index);

@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -69,22 +68,15 @@ public class DataNodeTest extends BasicCase {
         assertNull(node.getAdapter());
 
         JdbcAdapter a1 = new JdbcAdapter();
-        a1.setSupportsFkConstraints(true);
         node.setAdapter(a1);
 
         assertSame(a1, node.getAdapter());
         assertSame(sorter, node.getEntitySorter());
 
         JdbcAdapter a2 = new JdbcAdapter();
-        a2.setSupportsFkConstraints(false);
         node.setAdapter(a2);
 
         assertSame(a2, node.getAdapter());
-        assertSame(sorter, node.getEntitySorter());
-
-        // flip FK flag and reset the same adapter, see if sorter has changed
-        a2.setSupportsFkConstraints(true);
-        node.setAdapter(a2);
         assertSame(sorter, node.getEntitySorter());
     }
 }

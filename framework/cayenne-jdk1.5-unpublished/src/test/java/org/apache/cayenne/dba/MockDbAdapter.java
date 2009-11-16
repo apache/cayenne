@@ -57,10 +57,6 @@ public class MockDbAdapter implements DbAdapter {
         return null;
     }
 
-    public boolean supportsFkConstraints() {
-        return false;
-    }
-
     public boolean supportsUniqueConstraints() {
         return false;
     }

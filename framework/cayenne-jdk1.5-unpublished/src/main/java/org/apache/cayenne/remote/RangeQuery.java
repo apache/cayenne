@@ -113,14 +113,6 @@ class RangeQuery implements Query {
             }
 
             /**
-             * @deprecated since 3.0 in favor of 'getCacheStrategy'.
-             */
-            @Deprecated
-            public String getCachePolicy() {
-                return QueryMetadata.NO_CACHE;
-            }
-
-            /**
              * @since 3.0
              */
             public QueryCacheStrategy getCacheStrategy() {

@@ -219,9 +219,8 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         Object columnNamesCapitalization = properties
                 .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
         this.columnNamesCapitalization = (columnNamesCapitalization != null)
-                ? CapsStrategy.valueOf(columnNamesCapitalization
-                        .toString()
-                        .toUpperCase())
+                ? CapsStrategy
+                        .valueOf(columnNamesCapitalization.toString().toUpperCase())
                 : null;
 
         metaData.initWithProperties(properties);
@@ -296,23 +295,6 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         // the hashcode of the map of parameters. This way query clone can take advantage
         // of caching.
         return query;
-    }
-
-    /**
-     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
-     */
-    @Deprecated
-    public String getCachePolicy() {
-        return metaData.getCachePolicy();
-    }
-
-    /**
-     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
-     *             method.
-     */
-    @Deprecated
-    public void setCachePolicy(String policy) {
-        metaData.setCachePolicy(policy);
     }
 
     /**
@@ -537,15 +519,16 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     public void setColumnNamesCapitalization(CapsStrategy columnNameCapitalization) {
         this.columnNamesCapitalization = columnNameCapitalization;
     }
-    
+
     /**
      * Sets statement's fetch size (0 for no default size)
-     * @since 3.0 
+     * 
+     * @since 3.0
      */
     public void setStatementFetchSize(int size) {
         metaData.setStatementFetchSize(size);
     }
-    
+
     /**
      * @return statement's fetch size
      * @since 3.0

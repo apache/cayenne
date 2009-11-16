@@ -133,14 +133,6 @@ public class NestedQueryCache implements QueryCache {
             return qualifiedKey(mdDelegate.getCacheKey());
         }
 
-        /**
-         * @deprecated since 3.0 in favor of 'getCacheStrategy'.
-         */
-        @Deprecated
-        public String getCachePolicy() {
-            return mdDelegate.getCachePolicy();
-        }
-
         public QueryCacheStrategy getCacheStrategy() {
             return mdDelegate.getCacheStrategy();
         }

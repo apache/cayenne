@@ -27,8 +27,6 @@ import java.util.Date;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * Maps <code>java.util.Date</code> to any of the three database date/time types: TIME,
@@ -41,22 +39,6 @@ public class UtilDateType implements ExtendedType {
      */
     public String getClassName() {
         return Date.class.getName();
-    }
-
-    /**
-     * Always returns true indicating no validation failures. There is no date-specific
-     * validations at the moment.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
     }
 
     protected Object convertToJdbcObject(Object val, int type) throws Exception {

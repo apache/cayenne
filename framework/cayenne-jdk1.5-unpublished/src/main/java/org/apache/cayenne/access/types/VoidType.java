@@ -23,9 +23,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
-
 /**
  * A noop type that is sometimes useful to suppress extended types operations. It will set
  * and get null values.
@@ -36,18 +33,6 @@ class VoidType implements ExtendedType {
 
     public String getClassName() {
         return Void.TYPE.getName();
-    }
-
-    /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
     }
 
     public void setJdbcObject(

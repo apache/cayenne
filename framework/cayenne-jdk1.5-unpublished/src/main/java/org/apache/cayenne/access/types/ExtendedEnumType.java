@@ -29,28 +29,22 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * An ExtendedType that handles a Java Enum based upon the Cayenne
- * ExtendedEnumeration interface.  The ExtendedEnumeration interface
- * requires the developer to specify the database values for the Enum
- * being mapped.  This ExtendedType is used to auto-register those
- * Enums found in the model.
- * <p>
- * <i>Requires Java 1.5 or newer</i>
- * </p>
+ * An ExtendedType that handles a Java Enum based upon the Cayenne ExtendedEnumeration
+ * interface. The ExtendedEnumeration interface requires the developer to specify the
+ * database values for the Enum being mapped. This ExtendedType is used to auto-register
+ * those Enums found in the model.
  * 
  * @since 3.0
  */
-public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType
-{
+public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
+
     private Class<T> enumerationClass = null;
-    private Object[] values           = null;
+    private Object[] values = null;
 
     // Contains a mapping of database values (Integer or String) and the
-    // Enum for that value.  This is to facilitate mapping database values
+    // Enum for that value. This is to facilitate mapping database values
     // back to the Enum upon reading them from the database.
     private Map<Object, Enum<T>> enumerationMappings = new HashMap<Object, Enum<T>>();
 
@@ -66,8 +60,9 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType
             values = (Object[]) m.invoke(null);
 
             for (int i = 0; i < values.length; i++)
-                register((Enum<T>) values[i], ((ExtendedEnumeration) values[i]).getDatabaseValue());
-                
+                register((Enum<T>) values[i], ((ExtendedEnumeration) values[i])
+                        .getDatabaseValue());
+
         }
         catch (Exception e) {
             throw new IllegalArgumentException("Class "
@@ -123,57 +118,43 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType
     }
 
     /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return AbstractType.validateNull(
-                source,
-                property,
-                value,
-                dbAttribute,
-                validationResult);
-    }
-
-    /**
      * Register the given enum with the mapped database value.
      */
-    private void register(Enum<T> enumeration, Object databaseValue)
-    {
-      // Check for duplicates.
-      if (enumerationMappings.containsKey(databaseValue) || enumerationMappings.containsValue(enumeration))
-          throw new CayenneRuntimeException("Enumerations/values may not be duplicated.");
+    private void register(Enum<T> enumeration, Object databaseValue) {
+        // Check for duplicates.
+        if (enumerationMappings.containsKey(databaseValue)
+                || enumerationMappings.containsValue(enumeration))
+            throw new CayenneRuntimeException(
+                    "Enumerations/values may not be duplicated.");
 
-      // Store by database value/enum because we have to lookup by db value later.
-      enumerationMappings.put(databaseValue, enumeration);
+        // Store by database value/enum because we have to lookup by db value later.
+        enumerationMappings.put(databaseValue, enumeration);
     }
 
     /**
      * Lookup the giving database value and return the matching enum.
      */
-    private Enum<T> lookup(Object databaseValue)
-    {
-      if (enumerationMappings.containsKey(databaseValue) == false)
-      {
-          // All integers enums are mapped.  Not necessarily all strings.
-          if (databaseValue instanceof Integer)
-              throw new CayenneRuntimeException("Missing enumeration mapping for " + getClassName() + " with value " + databaseValue + ".");
+    private Enum<T> lookup(Object databaseValue) {
+        if (enumerationMappings.containsKey(databaseValue) == false) {
+            // All integers enums are mapped. Not necessarily all strings.
+            if (databaseValue instanceof Integer)
+                throw new CayenneRuntimeException("Missing enumeration mapping for "
+                        + getClassName()
+                        + " with value "
+                        + databaseValue
+                        + ".");
 
-          // Use the database value (a String) as the enum value.
-          return Enum.valueOf(enumerationClass, (String) databaseValue);
-      }
+            // Use the database value (a String) as the enum value.
+            return Enum.valueOf(enumerationClass, (String) databaseValue);
+        }
 
-      // Mapped value->enum exists, return it.
-      return enumerationMappings.get(databaseValue);
+        // Mapped value->enum exists, return it.
+        return enumerationMappings.get(databaseValue);
     }
 
     /**
-     * Returns the enumeration mapping for this enumerated data type.  The
-     * key is the database value, the value is the actual enum.
+     * Returns the enumeration mapping for this enumerated data type. The key is the
+     * database value, the value is the actual enum.
      */
     public Map<Object, Enum<T>> getEnumerationMappings() {
         return enumerationMappings;

@@ -24,13 +24,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
-
 /**
- * Handles <code>java.lang.Boolean</code> mapping. Note that "materialize*" methods
- * return either Boolean.TRUE or Boolean.FALSE, instead of creating new Boolean instances
- * using contructor. This makes possible identity comparison such as
+ * Handles <code>java.lang.Boolean</code> mapping. Note that "materialize*" methods return
+ * either Boolean.TRUE or Boolean.FALSE, instead of creating new Boolean instances using
+ * constructor. This makes possible identity comparison such as
  * <code>object.getBooleanProperty() == Boolean.TRUE</code>.
  * 
  * @since 1.2
@@ -39,23 +36,6 @@ public class BooleanType implements ExtendedType {
 
     public String getClassName() {
         return Boolean.class.getName();
-    }
-
-    /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return AbstractType.validateNull(
-                source,
-                property,
-                value,
-                dbAttribute,
-                validationResult);
     }
 
     public void setJdbcObject(

@@ -28,8 +28,6 @@ import java.util.GregorianCalendar;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * ExtendedType that handles {@link java.util.Calendar} fields.
@@ -175,15 +173,4 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
                             + TypesMapping.getSqlNameByType(type));
     }
 
-    /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
-    }
 }

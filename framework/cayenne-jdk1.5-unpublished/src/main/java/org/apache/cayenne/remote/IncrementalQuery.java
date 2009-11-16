@@ -80,14 +80,6 @@ class IncrementalQuery implements Query {
             }
 
             /**
-             * @deprecated since 3.0 in favor of 'getCacheStrategy'.
-             */
-            @Deprecated
-            public String getCachePolicy() {
-                return metadata.getCachePolicy();
-            }
-
-            /**
              * @since 3.0
              */
             public QueryCacheStrategy getCacheStrategy() {

@@ -19,21 +19,20 @@
 package org.apache.cayenne.dba.sqlite;
 
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.access.types.AbstractType;
+import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  * @since 3.0
  */
-class SQLiteFloatType extends AbstractType {
+class SQLiteFloatType implements ExtendedType {
 
-    @Override
     public String getClassName() {
         return Float.class.getName();
     }
 
-    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
@@ -42,11 +41,25 @@ class SQLiteFloatType extends AbstractType {
         return (n == null) ? null : new Float(n.floatValue());
     }
 
-    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
         // an object.
         Number n = (Number) rs.getObject(index);
         return (n == null) ? null : new Float(n.floatValue());
+    }
+    
+    public void setJdbcObject(
+            PreparedStatement st,
+            Object val,
+            int pos,
+            int type,
+            int scale) throws Exception {
+
+        if (scale != -1) {
+            st.setObject(pos, val, type, scale);
+        }
+        else {
+            st.setObject(pos, val, type);
+        }
     }
 }

@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import org.apache.cayenne.map.DbEntity;
+import java.util.Collection;
+import java.util.Collections;
 
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * A flavor of HSQLDBAdapter that implements workarounds for some old driver limitations.
@@ -28,15 +30,15 @@ import org.apache.cayenne.map.DbEntity;
  * @since 1.2
  */
 public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
+
     /**
      * Generate unqualified name without schema.
      * 
      * @since 1.2
      */
     @Override
-    protected String getTableName(DbEntity entity)
-    {
-        return  entity.getName();
+    protected String getTableName(DbEntity entity) {
+        return entity.getName();
     }
 
     /**
@@ -49,15 +51,10 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
         return "";
     }
 
-    /**
-     * Returns a SQL string to drop a table corresponding to <code>ent</code> DbEntity.
-     * 
-     * @since 1.2
-     */
     @Override
-    public String dropTable(DbEntity ent) {
+    public Collection<String> dropTableStatements(DbEntity table) {
         // hsqldb doesn't support schema namespaces, so remove if found
-        return "DROP TABLE " + getTableName(ent);
+        return Collections.singleton("DROP TABLE " + getTableName(table));
     }
 
     /**

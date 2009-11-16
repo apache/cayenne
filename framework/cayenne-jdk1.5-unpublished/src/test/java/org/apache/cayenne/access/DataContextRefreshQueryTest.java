@@ -27,9 +27,10 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextRefreshQueryTest extends CayenneCase {
@@ -41,7 +42,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         DataContext context = createDataContext();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("db:ARTIST_ID", true);
+        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         List artists = context.performQuery(q);
 
         Artist a1 = (Artist) artists.get(0);
@@ -187,8 +188,8 @@ public class DataContextRefreshQueryTest extends CayenneCase {
                 Painting.PAINTING_TITLE_PROPERTY,
                 "P2");
         SelectQuery q = new SelectQuery(Painting.class, qual);
-        q.addOrdering("db:PAINTING_ID", true);
-        q.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
+        q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q.setCacheGroups("X");
         List paints = context.performQuery(q);
 
@@ -244,8 +245,8 @@ public class DataContextRefreshQueryTest extends CayenneCase {
                 Painting.PAINTING_TITLE_PROPERTY,
                 "P2");
         SelectQuery q = new SelectQuery(Painting.class, qual);
-        q.addOrdering("db:PAINTING_ID", true);
-        q.setCachePolicy(QueryMetadata.SHARED_CACHE);
+        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
+        q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         q.setCacheGroups("X");
         List paints = context.performQuery(q);
 
@@ -301,8 +302,8 @@ public class DataContextRefreshQueryTest extends CayenneCase {
                 Painting.PAINTING_TITLE_PROPERTY,
                 "P2");
         SelectQuery q = new SelectQuery(Painting.class, qual);
-        q.addOrdering("db:PAINTING_ID", true);
-        q.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
+        q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q.setCacheGroups("X");
         List paints = context.performQuery(q);
 
@@ -356,7 +357,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         DataContext context = createDataContext();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering("db:ARTIST_ID", true);
+        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         List artists = context.performQuery(q);
 
         Artist a1 = (Artist) artists.get(0);

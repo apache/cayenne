@@ -63,14 +63,6 @@ public interface DbAdapter {
     SQLAction getAction(Query query, DataNode node);
 
     /**
-     * Returns true if a target database supports FK constraints.
-     * 
-     * @deprecated since 3.0 - almost all DB's support FK's now and also this flag is less
-     *             relevant for Cayenne now.
-     */
-    boolean supportsFkConstraints();
-
-    /**
      * Returns true if a target database supports UNIQUE constraints.
      * 
      * @since 1.1
@@ -89,15 +81,6 @@ public interface DbAdapter {
      * Returns <code>true</code> if the target database supports batch updates.
      */
     boolean supportsBatchUpdates();
-
-    /**
-     * Returns a SQL string that can be used to drop a database table corresponding to
-     * entity parameter.
-     * 
-     * @deprecated since 3.0 Cayenne supports 'dropTableStatements' to allow multiple
-     *             statements to be executed when dropping the table.
-     */
-    String dropTable(DbEntity entity);
 
     /**
      * Returns a collection of SQL statements needed to drop a database table.

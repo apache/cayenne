@@ -70,6 +70,7 @@ public class MySQLAdapter extends JdbcAdapter {
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
     protected String storageEngine;
+    protected boolean supportsFkConstraints;
 
     public MySQLAdapter() {
 
@@ -80,6 +81,10 @@ public class MySQLAdapter extends JdbcAdapter {
         setSupportsUniqueConstraints(true);
         setSupportsGeneratedKeys(true);
         initIdentifiersQuotes();
+    }
+
+    void setSupportsFkConstraints(boolean flag) {
+        this.supportsFkConstraints = supportsFkConstraints;
     }
 
     @Override
@@ -97,20 +102,6 @@ public class MySQLAdapter extends JdbcAdapter {
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new MySQLActionBuilder(this, node
                 .getEntityResolver()));
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    @Override
-    public String dropTable(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
-        StringBuffer buf = new StringBuffer("DROP TABLE IF EXISTS ");
-        buf.append(context.quoteFullyQualifiedName(table));
-        buf.append(" CASCADE");
-        return buf.toString();
     }
 
     /**
@@ -278,7 +269,7 @@ public class MySQLAdapter extends JdbcAdapter {
         // if FK constraints are supported, we must add indices to all FKs
         // Note that according to MySQL docs, FK indexes are created automatically when
         // constraint is defined, starting at MySQL 4.1.2
-        if (supportsFkConstraints()) {
+        if (supportsFkConstraints) {
             for (Relationship r : entity.getRelationships()) {
                 DbRelationship relationship = (DbRelationship) r;
                 if (relationship.getJoins().size() > 0

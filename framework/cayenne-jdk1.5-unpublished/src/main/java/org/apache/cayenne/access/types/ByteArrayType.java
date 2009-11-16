@@ -31,10 +31,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.MemoryBlob;
-import org.apache.cayenne.validation.BeanValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or (VAR)BINARY.
@@ -76,45 +73,6 @@ public class ByteArrayType implements ExtendedType {
 
     public String getClassName() {
         return "byte[]";
-    }
-
-    /**
-     * Validates byte[] property.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-
-        if (!(value instanceof byte[])) {
-            return true;
-        }
-
-        if (dbAttribute.getMaxLength() <= 0) {
-            return true;
-        }
-
-        byte[] bytes = (byte[]) value;
-        if (bytes.length > dbAttribute.getMaxLength()) {
-            String message = "\""
-                    + property
-                    + "\" exceeds maximum allowed length ("
-                    + dbAttribute.getMaxLength()
-                    + " bytes): "
-                    + bytes.length;
-            validationResult.addFailure(new BeanValidationFailure(
-                    source,
-                    property,
-                    message));
-            return false;
-        }
-
-        return true;
     }
 
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {

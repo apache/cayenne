@@ -27,8 +27,6 @@ import java.util.GregorianCalendar;
 
 import org.apache.cayenne.access.types.CalendarType;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * @since 3.0
@@ -41,23 +39,6 @@ class SQLiteCalendarType implements ExtendedType {
     public <T extends Calendar> SQLiteCalendarType(Class<T> calendarClass) {
         this.delegateCalendarType = new CalendarType<T>(calendarClass);
         this.delegateDateType = new SQLiteDateType();
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return delegateCalendarType.validateProperty(
-                source,
-                property,
-                value,
-                dbAttribute,
-                validationResult);
     }
 
     public String getClassName() {

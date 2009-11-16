@@ -22,9 +22,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
-
 /**
  * Decorates another ExtendedType, converting objects to other Java types.
  * 
@@ -60,23 +57,5 @@ abstract class ExtendedTypeDecorator implements ExtendedType {
             int type,
             int precision) throws Exception {
         decorated.setJdbcObject(statement, fromJavaObject(value), pos, type, precision);
-    }
-
-    /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        
-        return decorated.validateProperty(
-                source,
-                property,
-                value,
-                dbAttribute,
-                validationResult);
     }
 }

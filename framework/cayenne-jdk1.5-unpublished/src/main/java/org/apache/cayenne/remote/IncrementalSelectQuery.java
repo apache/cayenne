@@ -86,14 +86,6 @@ class IncrementalSelectQuery extends SelectQuery {
                 return metadata.getCacheGroups();
             }
 
-            /**
-             * @deprecated since 3.0 in favor of 'getCacheStrategy'.
-             */
-            @Deprecated
-            public String getCachePolicy() {
-                return metadata.getCachePolicy();
-            }
-
             public QueryCacheStrategy getCacheStrategy() {
                 return metadata.getCacheStrategy();
             }
@@ -230,11 +222,6 @@ class IncrementalSelectQuery extends SelectQuery {
     }
 
     @Override
-    public String getCachePolicy() {
-        return query.getCachePolicy();
-    }
-
-    @Override
     public int getFetchLimit() {
         return query.getFetchLimit();
     }
@@ -338,13 +325,8 @@ class IncrementalSelectQuery extends SelectQuery {
     }
 
     @Override
-    public void setCacheGroups(String[] cachGroups) {
+    public void setCacheGroups(String... cachGroups) {
         query.setCacheGroups(cachGroups);
-    }
-
-    @Override
-    public void setCachePolicy(String policy) {
-        query.setCachePolicy(policy);
     }
 
     @Override

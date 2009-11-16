@@ -24,8 +24,6 @@ import java.sql.ResultSet;
 import java.util.UUID;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * An ExtendedType to map Java UUIDs as persistent attributes.
@@ -85,18 +83,6 @@ public class UUIDType implements ExtendedType {
             throw new IllegalArgumentException("Expected java.util.UUID, got "
                     + value.getClass().getName());
         }
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        return true;
     }
 
 }

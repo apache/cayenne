@@ -23,10 +23,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.BeanValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
-
 /**
  * @since 3.0
  */
@@ -60,22 +56,4 @@ public class DateType implements ExtendedType {
         }
     }
 
-    /**
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-        if (dbAttribute.isMandatory() && value == null) {
-            validationResult.addFailure(new BeanValidationFailure(source, property, "'"
-                    + property
-                    + "' must be not null"));
-            return false;
-        }
-
-        return true;
-    }
 }

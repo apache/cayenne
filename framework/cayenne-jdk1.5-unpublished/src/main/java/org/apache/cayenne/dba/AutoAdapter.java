@@ -66,7 +66,7 @@ public class AutoAdapter implements DbAdapter {
 
     final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START = "\"";
     final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END = "\"";
-    
+
     static final List<DbAdapterFactory> defaultFactories;
     static {
         defaultFactories = new ArrayList<DbAdapterFactory>();
@@ -212,14 +212,6 @@ public class AutoAdapter implements DbAdapter {
         return getAdapter().getAction(query, node);
     }
 
-    /**
-     * @deprecated since 3.0 - almost all DB's support FK's now and also this flag is less
-     *             relevant for Cayenne now.
-     */
-    public boolean supportsFkConstraints() {
-        return getAdapter().supportsFkConstraints();
-    }
-
     public boolean supportsUniqueConstraints() {
         return getAdapter().supportsUniqueConstraints();
     }
@@ -230,13 +222,6 @@ public class AutoAdapter implements DbAdapter {
 
     public boolean supportsBatchUpdates() {
         return getAdapter().supportsBatchUpdates();
-    }
-
-    /**
-     * @deprecated since 3.0 as the decorated method is deprecated.
-     */
-    public String dropTable(DbEntity entity) {
-        return getAdapter().dropTable(entity);
     }
 
     public Collection<String> dropTableStatements(DbEntity table) {
@@ -315,7 +300,7 @@ public class AutoAdapter implements DbAdapter {
     public MergerFactory mergerFactory() {
         return getAdapter().mergerFactory();
     }
-    
+
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         getAdapter().createTableAppendColumn(sqlBuffer, column);
     }
@@ -324,14 +309,14 @@ public class AutoAdapter implements DbAdapter {
     }
 
     public String getIdentifiersStartQuote() {
-        return  DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START;
+        return DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START;
     }
 
     public String getIdentifiersEndQuote() {
-        return  DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END;
+        return DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END;
     }
 
-    public QuotingStrategy  getQuotingStrategy(boolean isQuoteStrategy) {
+    public QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) {
         return getAdapter().getQuotingStrategy(isQuoteStrategy);
     }
 

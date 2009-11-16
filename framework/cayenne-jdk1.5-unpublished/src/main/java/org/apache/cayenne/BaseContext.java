@@ -130,15 +130,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     @SuppressWarnings("unchecked")
     public abstract List performQuery(Query query);
 
-    /**
-     * @deprecated since 3.0 this method is replaced by
-     *             {@link #prepareForAccess(Persistent, String, boolean)}.
-     */
-    @Deprecated
-    public void prepareForAccess(Persistent object, String property) {
-        prepareForAccess(object, property, false);
-    }
-
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
 

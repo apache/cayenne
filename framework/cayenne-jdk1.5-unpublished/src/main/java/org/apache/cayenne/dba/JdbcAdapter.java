@@ -57,7 +57,6 @@ public class JdbcAdapter implements DbAdapter {
     protected TypesHandler typesHandler;
     protected ExtendedTypeMap extendedTypes;
     protected boolean supportsBatchUpdates;
-    protected boolean supportsFkConstraints;
     protected boolean supportsUniqueConstraints;
     protected boolean supportsGeneratedKeys;
     protected EJBQLTranslatorFactory ejbqlTranslatorFactory;
@@ -86,7 +85,6 @@ public class JdbcAdapter implements DbAdapter {
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
-        this.setSupportsFkConstraints(true);
 
         this.pkGenerator = createPkGenerator();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
@@ -196,20 +194,6 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * Returns true.
-     */
-    public boolean supportsFkConstraints() {
-        return supportsFkConstraints;
-    }
-
-    /**
-     * @since 1.1
-     */
-    public void setSupportsFkConstraints(boolean flag) {
-        this.supportsFkConstraints = flag;
-    }
-
-    /**
-     * Returns true.
      * 
      * @since 1.1
      */
@@ -225,15 +209,6 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns a SQL string to drop a table corresponding to table DbEntity.
-     * 
-     * @deprecated since 3.0 in favor of "dropTableStatements"
-     */
-    public String dropTable(DbEntity table) {
-        return dropTableStatements(table).iterator().next();
-    }
-
-    /**
      * @since 3.0
      */
     public Collection<String> dropTableStatements(DbEntity table) {
@@ -241,7 +216,7 @@ public class JdbcAdapter implements DbAdapter {
                 .getDataMap()
                 .isQuotingSQLIdentifiers());
 
-        StringBuffer buf = new StringBuffer("DROP TABLE ");
+        StringBuilder buf = new StringBuilder("DROP TABLE ");
         buf.append(context.quoteFullyQualifiedName(table));
 
         return Collections.singleton(buf.toString());

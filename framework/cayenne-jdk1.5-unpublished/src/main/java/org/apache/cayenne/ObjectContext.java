@@ -118,12 +118,6 @@ public interface ObjectContext extends Serializable {
     void prepareForAccess(Persistent object, String property, boolean lazyFaulting);
 
     /**
-     * @deprecated since 3.0 use {@link #prepareForAccess(Persistent, String, boolean)}.
-     */
-    @Deprecated
-    void prepareForAccess(Persistent object, String property);
-
-    /**
      * A callback method that child Persistent objects are expected to call from inside
      * the setter after modifying a value of a persistent property, including "simple" and
      * "arc" properties.

@@ -41,7 +41,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -517,7 +517,7 @@ public class DataContextPrefetchTest extends DataContextCase {
         SelectQuery q = new SelectQuery("Painting");
         q.addPrefetch("toArtist");
         q.setName("__testPrefetchToOneSharedCache__" + System.currentTimeMillis());
-        q.setCachePolicy(QueryMetadata.SHARED_CACHE);
+        q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         context.performQuery(q);
 
@@ -554,7 +554,7 @@ public class DataContextPrefetchTest extends DataContextCase {
         SelectQuery q = new SelectQuery("Painting");
         q.addPrefetch("toArtist");
         q.setName("__testPrefetchToOneLocalCache__" + System.currentTimeMillis());
-        q.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         context.performQuery(q);
 

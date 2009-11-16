@@ -109,15 +109,6 @@ class QueryMetadataWrapper implements QueryMetadata {
     }
 
     /**
-     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
-     */
-    @Deprecated
-    public String getCachePolicy() {
-        return (overrideExists(QueryMetadata.CACHE_POLICY_PROPERTY)) ? (String) overrides
-                .get(QueryMetadata.CACHE_POLICY_PROPERTY) : info.getCachePolicy();
-    }
-
-    /**
      * @since 3.0
      */
     public QueryCacheStrategy getCacheStrategy() {

@@ -320,23 +320,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
-     */
-    @Deprecated
-    public String getCachePolicy() {
-        return metaData.getCachePolicy();
-    }
-
-    /**
-     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
-     *             method.
-     */
-    @Deprecated
-    public void setCachePolicy(String policy) {
-        metaData.setCachePolicy(policy);
-    }
-
-    /**
      * @since 3.0
      */
     public QueryCacheStrategy getCacheStrategy() {

@@ -31,9 +31,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.validation.BeanValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * Handles <code>java.lang.String</code>, mapping it as either of JDBC types - CLOB or
@@ -56,46 +53,6 @@ public class CharType implements ExtendedType {
      */
     public String getClassName() {
         return String.class.getName();
-    }
-
-    /**
-     * Validates string property.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0 as validation should not be done at the DataNode level.
-     */
-    public boolean validateProperty(
-            Object source,
-            String property,
-            Object value,
-            DbAttribute dbAttribute,
-            ValidationResult validationResult) {
-
-        if (!(value instanceof String)) {
-            return true;
-        }
-
-        if (dbAttribute.getMaxLength() <= 0) {
-            return true;
-        }
-
-        String string = (String) value;
-        if (string.length() > dbAttribute.getMaxLength()) {
-            String message = "\""
-                    + property
-                    + "\" exceeds maximum allowed length ("
-                    + dbAttribute.getMaxLength()
-                    + " chars): "
-                    + string.length();
-            validationResult.addFailure(new BeanValidationFailure(
-                    source,
-                    property,
-                    message));
-
-            return false;
-        }
-
-        return true;
     }
 
     /** Return trimmed string. */
