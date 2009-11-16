@@ -34,7 +34,6 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -147,19 +146,10 @@ public abstract class Configuration {
      * {@link #didInitialize}.
      */
     public static void initializeSharedConfiguration(Configuration conf) {
-        // check to see whether we can proceed
-        if (!conf.canInitialize()) {
-            throw new ConfigurationException("Configuration of class "
-                    + conf.getClass().getName()
-                    + " refused to be initialized.");
-        }
-
+ 
         try {
             // initialize configuration
             conf.initialize();
-
-            // call post-initialization hook
-            conf.didInitialize();
 
             // set the initialized Configuration only after success
             Configuration.sharedConfiguration = conf;
@@ -194,53 +184,11 @@ public abstract class Configuration {
     }
 
     /**
-     * Indicates whether {@link #initialize}can be called. Returning <code>false</code>
-     * allows new instances to delay or refuse the initialization process. This
-     * impementation returns true unconditionally.
-     * 
-     * @deprecated since 3.0 - this method is redundant, as subclasses can prevent
-     *             initialization by overriding {@link #initialize()} and throwing an
-     *             exception.
-     */
-    public boolean canInitialize() {
-        return true;
-    }
-
-    /**
      * Initializes the new instance.
      * 
      * @throws Exception
      */
     public abstract void initialize() throws Exception;
-
-    /**
-     * Called after successful completion of {@link #initialize}. This implementation is
-     * a noop.
-     * 
-     * @deprecated since 3.0 subclasses are recommended to override {@link #initialize()}.
-     */
-    public void didInitialize() {
-        // noop
-    }
-
-    /**
-     * Returns the resource locator used for finding and loading resources.
-     * 
-     * @deprecated since 3.0 use/override {@link #getResourceFinder()}.
-     */
-    protected ResourceLocator getResourceLocator() {
-        ResourceFinder finder = getResourceFinder();
-        if (finder == null) {
-            return null;
-        }
-
-        if (finder instanceof ResourceLocator) {
-            return (ResourceLocator) finder;
-        }
-
-        throw new IllegalStateException("ResourceFinder is not a ResourceLocator: "
-                + finder);
-    }
 
     /**
      * Returns {@link ResourceFinder} associated with this Configuration that is to be
@@ -251,42 +199,10 @@ public abstract class Configuration {
     protected abstract ResourceFinder getResourceFinder();
 
     /**
-     * Returns a DataDomain as a stream or <code>null</code> if it cannot be found.
-     * 
-     * @deprecated since 3.0 This method is specific to subclass, so it should not be in
-     *             the superclass.
-     */
-    protected InputStream getDomainConfiguration() {
-        URL url = getResourceFinder().getResource(getDomainConfigurationName());
-        try {
-            return url != null ? url.openStream() : null;
-        }
-        catch (IOException e) {
-            throw new ConfigurationException("Can't open config file URL: " + url, e);
-        }
-    }
-
-    /**
      * Returns a DataMap with the given name or <code>null</code> if it cannot be found.
      */
     protected InputStream getMapConfiguration(String name) {
         URL url = getResourceFinder().getResource(name);
-        try {
-            return url != null ? url.openStream() : null;
-        }
-        catch (IOException e) {
-            throw new ConfigurationException("Can't open config file URL: " + url, e);
-        }
-    }
-
-    /**
-     * See 'https://svn.apache.org/repos/asf/cayenne/dataviews/trunk' for DataViews code,
-     * which is not a part of Cayenne since 3.0.
-     * 
-     * @deprecated since 3.0 as Cayenne no longer cares to read view config files.
-     */
-    protected InputStream getViewConfiguration(String location) {
-        URL url = getResourceFinder().getResource(location);
         try {
             return url != null ? url.openStream() : null;
         }
@@ -334,8 +250,7 @@ public abstract class Configuration {
      * @since 3.0
      */
     public DataSourceFactory getDataSourceFactory(String userFactoryName) {
-        // call the old implementation for backwards compatibility
-        return getDataSourceFactory();
+        return overrideFactory;
     }
 
     
@@ -346,30 +261,6 @@ public abstract class Configuration {
     
     public void setSchemaUpdateStrategy(SchemaUpdateStrategy overrideStrategy) {
         this.overrideStrategy = overrideStrategy;
-    }
-
-    
-    /**
-     * Returns an internal DataSourceFactory that will override any settings configured in
-     * XML. Subclasses may override this method to provide a special factory for
-     * DataSource creation that will take precedence over any factories configured in a
-     * Cayenne project.
-     * 
-     * @deprecated since 3.0 this method is no longer called when configuration is loaded.
-     *             Instead {@link #getDataSourceFactory(String)} is invoked, and this is
-     *             the method that should be overriden.
-     */
-    public DataSourceFactory getDataSourceFactory() {
-        return overrideFactory;
-    }
-
-    /**
-     * @deprecated since 3.0 as a more flexible mechanism for customizing
-     *             DataSourceFactory is implemented. Note that the factory set via this
-     *             method would still work, although using this method is discouraged.
-     */
-    public void setDataSourceFactory(DataSourceFactory overrideFactory) {
-        this.overrideFactory = overrideFactory;
     }
 
     /**

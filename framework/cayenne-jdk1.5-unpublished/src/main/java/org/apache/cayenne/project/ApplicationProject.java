@@ -107,18 +107,11 @@ public class ApplicationProject extends Project {
      */
     protected void loadProject() {
 
-        // try to initialize configuration
-        if (configuration.canInitialize()) {
-
-            try {
-                configuration.initialize();
-            }
-            catch (Exception e) {
-                throw new ProjectException(
-                        "Error initializaing project configuration.",
-                        e);
-            }
-            configuration.didInitialize();
+        try {
+            configuration.initialize();
+        }
+        catch (Exception e) {
+            throw new ProjectException("Error initializaing project configuration.", e);
         }
 
         // set default version

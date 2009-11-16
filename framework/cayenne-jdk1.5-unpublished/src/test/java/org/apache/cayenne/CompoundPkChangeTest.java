@@ -20,6 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class CompoundPkChangeTest extends CayenneCase {
@@ -40,90 +41,122 @@ public class CompoundPkChangeTest extends CayenneCase {
     public void testCompoundPkChangeSingleElement() throws Exception {
         DataContext context = createDataContext();
 
-        CompoundPkTestEntity dao = context
-                .newObject(CompoundPkTestEntity.class);
-        CompoundPkTestEntity refreshedDao = null;
+        CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
+        CompoundPkTestEntity refreshedObject = null;
 
-        dao.setKey1(key1v1);
-        dao.setKey2(key2v1);
-        dao.setName("testing testing");
-
-        context.commitChanges();
-        assertEquals(key1v1, dao.getObjectId().getIdSnapshot().get(
-                CompoundPkTestEntity.KEY1_PK_COLUMN));
-        assertEquals(key2v1, dao.getObjectId().getIdSnapshot().get(
-                CompoundPkTestEntity.KEY2_PK_COLUMN));
-
-        refreshedDao = (CompoundPkTestEntity) context.refetchObject(dao.getObjectId());
-        assertEquals(dao.getObjectId(), refreshedDao.getObjectId());
-
-        dao.setKey2(key2v2);
+        object.setKey1(key1v1);
+        object.setKey2(key2v1);
+        object.setName("testing testing");
 
         context.commitChanges();
-        assertEquals(key1v1, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
-        assertEquals(key2v2, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key2v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        refreshedDao = (CompoundPkTestEntity) context.refetchObject(dao.getObjectId());
-        assertEquals(dao.getObjectId(), refreshedDao.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                object.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        refreshedObject = (CompoundPkTestEntity) DataObjectUtils.objectForQuery(
+                context,
+                refetch);
+        assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
-        dao.setKey2(key2v3);
+        object.setKey2(key2v2);
 
         context.commitChanges();
-        assertEquals(key1v1, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
-        assertEquals(key2v3, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key2v2, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        refreshedDao = (CompoundPkTestEntity) context.refetchObject(dao.getObjectId());
-        assertEquals(dao.getObjectId(), refreshedDao.getObjectId());
+        ObjectIdQuery refetch1 = new ObjectIdQuery(
+                object.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        refreshedObject = (CompoundPkTestEntity) DataObjectUtils.objectForQuery(
+                context,
+                refetch1);
+        assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
+        object.setKey2(key2v3);
+
+        context.commitChanges();
+        assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
+                CompoundPkTestEntity.KEY1_PK_COLUMN));
+        assertEquals(key2v3, object.getObjectId().getIdSnapshot().get(
+                CompoundPkTestEntity.KEY2_PK_COLUMN));
+
+        ObjectIdQuery refetch2 = new ObjectIdQuery(
+                object.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        refreshedObject = (CompoundPkTestEntity) DataObjectUtils.objectForQuery(
+                context,
+                refetch2);
+        assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 
     public void testCompoundPkChangeAllElements() throws Exception {
         DataContext context = createDataContext();
 
-        CompoundPkTestEntity dao = context
-                .newObject(CompoundPkTestEntity.class);
-        CompoundPkTestEntity refreshedDao = null;
+        CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
+        CompoundPkTestEntity refreshedObject = null;
 
-        dao.setKey1(key1v1);
-        dao.setKey2(key2v1);
-        dao.setName("testing testing");
-
-        context.commitChanges();
-        assertEquals(key1v1, dao.getObjectId().getIdSnapshot().get(
-                CompoundPkTestEntity.KEY1_PK_COLUMN));
-        assertEquals(key2v1, dao.getObjectId().getIdSnapshot().get(
-                CompoundPkTestEntity.KEY2_PK_COLUMN));
-
-        refreshedDao = (CompoundPkTestEntity) context.refetchObject(dao.getObjectId());
-        assertEquals(dao.getObjectId(), refreshedDao.getObjectId());
-
-        dao.setKey1(key1v2);
-        dao.setKey2(key2v2);
+        object.setKey1(key1v1);
+        object.setKey2(key2v1);
+        object.setName("testing testing");
 
         context.commitChanges();
-        assertEquals(key1v2, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
-        assertEquals(key2v2, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key2v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        refreshedDao = (CompoundPkTestEntity) context.refetchObject(dao.getObjectId());
-        assertEquals(dao.getObjectId(), refreshedDao.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                object.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        refreshedObject = (CompoundPkTestEntity) DataObjectUtils.objectForQuery(
+                context,
+                refetch);
+        assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
-        dao.setKey1(key1v3);
-        dao.setKey2(key2v3);
+        object.setKey1(key1v2);
+        object.setKey2(key2v2);
 
         context.commitChanges();
-        assertEquals(key1v3, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key1v2, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
-        assertEquals(key2v3, dao.getObjectId().getIdSnapshot().get(
+        assertEquals(key2v2, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        refreshedDao = (CompoundPkTestEntity) context.refetchObject(dao.getObjectId());
-        assertEquals(dao.getObjectId(), refreshedDao.getObjectId());
+        ObjectIdQuery refetch1 = new ObjectIdQuery(
+                object.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        refreshedObject = (CompoundPkTestEntity) DataObjectUtils.objectForQuery(
+                context,
+                refetch1);
+        assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
+        object.setKey1(key1v3);
+        object.setKey2(key2v3);
+
+        context.commitChanges();
+        assertEquals(key1v3, object.getObjectId().getIdSnapshot().get(
+                CompoundPkTestEntity.KEY1_PK_COLUMN));
+        assertEquals(key2v3, object.getObjectId().getIdSnapshot().get(
+                CompoundPkTestEntity.KEY2_PK_COLUMN));
+
+        ObjectIdQuery refetch2 = new ObjectIdQuery(
+                object.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        refreshedObject = (CompoundPkTestEntity) DataObjectUtils.objectForQuery(
+                context,
+                refetch2);
+        assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 }

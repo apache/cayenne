@@ -19,32 +19,12 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.DataContext;
-
 /**
  * Defines basic methods for a persistent object in Cayenne.
- * 
  */
 public interface DataObject extends Persistent {
 
     public static final long DEFAULT_VERSION = Long.MIN_VALUE;
-
-    /**
-     * Returns a data context this object is registered with, or null if this object has
-     * no associated DataContext.
-     * 
-     * @deprecated since 3.0 use {@link #getObjectContext()}.
-     */
-    @Deprecated
-    public DataContext getDataContext();
-
-    /**
-     * Sets object DataContext.
-     * 
-     * @deprecated since 3.0 use {@link #setObjectContext(ObjectContext)}.
-     */
-    @Deprecated
-    public void setDataContext(DataContext ctxt);
 
     /**
      * Modifies a value of a named property without altering the object state in any way,
@@ -127,12 +107,18 @@ public interface DataObject extends Persistent {
     /**
      * Adds an object to a to-many relationship.
      */
-    public void addToManyTarget(String relationshipName, DataObject target, boolean setReverse);
+    public void addToManyTarget(
+            String relationshipName,
+            DataObject target,
+            boolean setReverse);
 
     /**
      * Removes an object from a to-many relationship.
      */
-    public void removeToManyTarget(String relationshipName, DataObject target, boolean unsetReverse);
+    public void removeToManyTarget(
+            String relationshipName,
+            DataObject target,
+            boolean unsetReverse);
 
     /**
      * Sets to-one relationship to a new value. Resolves faults if needed. This method can
@@ -149,14 +135,6 @@ public interface DataObject extends Persistent {
             String relationshipName,
             DataObject value,
             boolean setReverse);
-
-    /**
-     * @deprecated since 3.0 users must use callbacks instead. This method is no longer
-     *             invoked by Cayenne runtime.
-     * @see LifecycleListener
-     */
-    @Deprecated
-    public void fetchFinished();
 
     /**
      * Returns a version of a DataRow snapshot that was used to create this object.

@@ -265,24 +265,6 @@ public class ColumnDescriptor implements Serializable {
     }
 
     /**
-     * Returns "label" used in a DataRow for column value.
-     * 
-     * @since 1.2
-     * @deprecated since 3.0 use {@link #getDataRowKey()}
-     */
-    public String getLabel() {
-        return getDataRowKey();
-    }
-
-    /**
-     * @since 1.2
-     * @deprecated since 3.0 use {@link #setDataRowKey(String)}.
-     */
-    public void setLabel(String label) {
-        setDataRowKey(label);
-    }
-
-    /**
      * @since 3.0
      */
     public String getDataRowKey() {

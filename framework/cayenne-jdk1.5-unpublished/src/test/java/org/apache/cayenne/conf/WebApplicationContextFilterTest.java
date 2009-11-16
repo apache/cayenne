@@ -31,6 +31,8 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.BaseContext;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 
 import com.mockrunner.mock.web.MockFilterChain;
@@ -62,7 +64,7 @@ public class WebApplicationContextFilterTest extends TestCase {
 
         // check no thread DC before
         try {
-            DataContext.getThreadDataContext();
+            BaseContext.getThreadObjectContext();
             fail("There is a DataContext bound to thread already.");
         }
         catch (IllegalStateException ex) {
@@ -75,7 +77,7 @@ public class WebApplicationContextFilterTest extends TestCase {
 
         // check no thread DC after
         try {
-            DataContext.getThreadDataContext();
+            BaseContext.getThreadObjectContext();
             fail("DataContext was not unbound from the thread.");
         }
         catch (IllegalStateException ex) {
@@ -85,7 +87,7 @@ public class WebApplicationContextFilterTest extends TestCase {
 
     class TestFilter implements Filter {
 
-        DataContext threadContext;
+        ObjectContext threadContext;
 
         public void destroy() {
         }
@@ -94,7 +96,7 @@ public class WebApplicationContextFilterTest extends TestCase {
                 ServletRequest request,
                 ServletResponse response,
                 FilterChain chain) throws IOException, ServletException {
-            threadContext = DataContext.getThreadDataContext();
+            threadContext = BaseContext.getThreadObjectContext();
         }
 
         public void init(FilterConfig arg0) throws ServletException {

@@ -22,7 +22,6 @@ import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
@@ -67,9 +66,5 @@ class DataDomainActionBuilder implements SQLActionVisitor {
 
     public SQLAction sqlAction(SQLTemplate query) {
         return delegate.sqlAction(query);
-    }
-
-    public SQLAction updateAction(Query query) {
-        return delegate.updateAction(query);
     }
 }

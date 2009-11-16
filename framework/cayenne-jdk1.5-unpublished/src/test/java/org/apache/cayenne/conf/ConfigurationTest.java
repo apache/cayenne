@@ -23,7 +23,6 @@ import java.io.File;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.project.ProjectDataSourceFactory;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class ConfigurationTest extends CayenneCase {
@@ -37,18 +36,6 @@ public class ConfigurationTest extends CayenneCase {
 
         cfg.removeDomain(d1.getName());
         assertNull(cfg.getDomain(d1.getName()));
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void testOverrideFactory() throws java.lang.Exception {
-        Configuration cfg = new MockConfiguration();
-
-        assertNull(cfg.getDataSourceFactory());
-        ProjectDataSourceFactory factory = new ProjectDataSourceFactory(null);
-        cfg.setDataSourceFactory(factory);
-        assertSame(factory, cfg.getDataSourceFactory());
     }
 
     public void testDefaultConfigurationConstructorWithNullName() {

@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.conf;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.commons.logging.Log;
@@ -76,5 +78,15 @@ public class MultiProjectConfiguration extends Configuration {
     @Override
     protected ResourceFinder getResourceFinder() {
         return resourceFinder;
+    }
+    
+    protected InputStream getDomainConfiguration() {
+        URL url = getResourceFinder().getResource(getDomainConfigurationName());
+        try {
+            return url != null ? url.openStream() : null;
+        }
+        catch (IOException e) {
+            throw new ConfigurationException("Can't open config file URL: " + url, e);
+        }
     }
 }

@@ -51,32 +51,6 @@ public class ClientServerChannel implements DataChannel {
         this.serverContext = serverContext;
     }
 
-    /**
-     * @deprecated since 3.0 as DataChannel events (incorrectly called "lifecycleEvents"
-     *             in 2.0) are no longer posted by ClientServerChannel.
-     */
-    public ClientServerChannel(DataDomain domain, boolean lifecycleEventsEnabled) {
-        this(domain);
-    }
-
-    /**
-     * @deprecated Since 3.0 - always returns false. This method was a misnomer referring
-     *             to DataChannel events, not lifecycle events introduced in 3.0.
-     *             Currently ClientServerChannel posts no channel events.
-     */
-    public boolean isLifecycleEventsEnabled() {
-        return false;
-    }
-
-    /**
-     * @deprecated Since 3.0 - does nothing. This method was a misnomer referring to
-     *             DataChannel events, not lifecycle events introduced in 3.0. Currently
-     *             ClientServerChannel posts no channel events.
-     */
-    public void setLifecycleEventsEnabled(boolean lifecycleEventsEnabled) {
-
-    }
-
     public QueryResponse onQuery(ObjectContext context, Query query) {
         return new ClientServerChannelQueryAction(this, query).execute();
     }

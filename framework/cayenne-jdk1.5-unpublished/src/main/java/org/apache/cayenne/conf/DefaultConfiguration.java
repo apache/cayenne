@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.conf;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.util.ResourceLocator;
@@ -29,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Subclass of Configuration that uses the System CLASSPATH to locate resources.
- * 
  */
 public class DefaultConfiguration extends Configuration {
 
@@ -117,10 +118,14 @@ public class DefaultConfiguration extends Configuration {
         locator.addFilesystemPath(path);
     }
 
-    @Override
     protected InputStream getDomainConfiguration() {
-        // deprecation in superclass does not affect subclass...
-        return super.getDomainConfiguration();
+        URL url = getResourceFinder().getResource(getDomainConfigurationName());
+        try {
+            return url != null ? url.openStream() : null;
+        }
+        catch (IOException e) {
+            throw new ConfigurationException("Can't open config file URL: " + url, e);
+        }
     }
 
     /**
@@ -158,16 +163,6 @@ public class DefaultConfiguration extends Configuration {
 
         // log successful initialization
         logger.debug("initialize finished.");
-    }
-
-    /**
-     * Returns the default ResourceLocator configured for CLASSPATH lookups.
-     * 
-     * @deprecated since 3.0 as super is deprecated.
-     */
-    @Override
-    protected ResourceLocator getResourceLocator() {
-        return locator;
     }
 
     /**

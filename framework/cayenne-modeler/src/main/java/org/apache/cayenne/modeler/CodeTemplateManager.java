@@ -25,15 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClassGenerationAction1_1;
-import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.pref.Domain;
 
 /**
  * Manages code generation templates.
- * 
  */
 public class CodeTemplateManager {
 
@@ -46,7 +43,6 @@ public class CodeTemplateManager {
     protected List<String> standardSuperclassTemplates;
     protected Map<String, String> customTemplates;
     protected Map<String, String> standardTemplates;
-    protected Map<String, String> standardTemplates1_1;
 
     public static Domain getTemplateDomain(Application application) {
         return application.getPreferenceDomain().getSubdomain(CodeTemplateManager.class);
@@ -77,20 +73,6 @@ public class CodeTemplateManager {
         standardTemplates.put(
                 STANDARD_CLIENT_SUBCLASS,
                 ClientClassGenerationAction.SUBCLASS_TEMPLATE);
-
-        standardTemplates1_1 = new HashMap<String, String>();
-        standardTemplates1_1.put(
-                STANDARD_SERVER_SUPERCLASS,
-                ClassGenerationAction1_1.SUPERCLASS_TEMPLATE);
-        standardTemplates1_1.put(
-                STANDARD_CLIENT_SUPERCLASS,
-                ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
-        standardTemplates1_1.put(
-                STANDARD_SERVER_SUBCLASS,
-                ClassGenerationAction1_1.SUBCLASS_TEMPLATE);
-        standardTemplates1_1.put(
-                STANDARD_CLIENT_SUBCLASS,
-                ClientClassGenerationAction.SUBCLASS_TEMPLATE);
     }
 
     /**
@@ -108,21 +90,13 @@ public class CodeTemplateManager {
 
     // TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to correctly
     // assign standard templates
-    public String getTemplatePath(String name, String version) {
+    public String getTemplatePath(String name) {
         Object value = customTemplates.get(name);
         if (value != null) {
             return value.toString();
         }
 
-        Map<String, String> templates;
-        if (ClassGenerator.VERSION_1_1.equals(version)) {
-            templates = standardTemplates1_1;
-        }
-        else {
-            templates = standardTemplates;
-        }
-
-        value = templates.get(name);
+        value = standardTemplates.get(name);
         return value != null ? value.toString() : null;
     }
 

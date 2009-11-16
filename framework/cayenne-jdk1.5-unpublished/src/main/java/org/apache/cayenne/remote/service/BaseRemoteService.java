@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.remote.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -202,7 +200,6 @@ public abstract class BaseRemoteService implements RemoteService {
 
         try {
             cayenneConfig.initialize();
-            cayenneConfig.didInitialize();
         }
         catch (Exception ex) {
             throw new CayenneRuntimeException("Error starting Cayenne", ex);

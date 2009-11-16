@@ -22,8 +22,6 @@ package org.apache.cayenne.tools;
 import java.io.File;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClassGenerationAction1_1;
-import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.commons.logging.Log;
@@ -70,8 +68,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Destination directory for Java classes (ignoring their package names).
 	 * 
-	 * @parameter expression="${cgen.destDir}"
-	 *            default-value="${project.build.sourceDirectory}/java/generated-sources/cayenne"
+	 * @parameter expression="${cgen.destDir}" default-value=
+	 *            "${project.build.sourceDirectory}/java/generated-sources/cayenne"
 	 */
 	private File destDir;
 
@@ -138,8 +136,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private String outputPattern;
 
 	/**
-	 * If set to <code>true</code>, will overwrite older versions of
-	 * generated classes. Ignored unless makepairs is set to <code>false</code>.
+	 * If set to <code>true</code>, will overwrite older versions of generated
+	 * classes. Ignored unless makepairs is set to <code>false</code>.
 	 * 
 	 * @parameter expression="${cgen.overwrite}" default-value="false"
 	 */
@@ -150,8 +148,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * <code>makepairs</code> set to <code>true</code>. If omitted, each
 	 * superclass will be assigned the same package as subclass. Note that
 	 * having superclass in a different package would only make sense when
-	 * <code>usepkgpath</code> is set to <code>true</code>. Otherwise
-	 * classes from different packages will end up in the same directory.
+	 * <code>usepkgpath</code> is set to <code>true</code>. Otherwise classes
+	 * from different packages will end up in the same directory.
 	 * 
 	 * @parameter expression="${cgen.superPkg}"
 	 */
@@ -192,33 +190,19 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private String embeddableTemplate;
 
 	/**
-	 * If set to <code>true</code> (default), a directory tree will be
-	 * generated in "destDir" corresponding to the class package structure, if
-	 * set to <code>false</code>, classes will be generated in
-	 * &quot;destDir&quot; ignoring their package.
+	 * If set to <code>true</code> (default), a directory tree will be generated
+	 * in "destDir" corresponding to the class package structure, if set to
+	 * <code>false</code>, classes will be generated in &quot;destDir&quot;
+	 * ignoring their package.
 	 * 
 	 * @parameter expression="${cgen.usePkgPath}" default-value="true"
 	 */
 	private boolean usePkgPath;
 
-	/**
-	 * Specifies template location and generator behavior. &quot;1.1&quot; is
-	 * the old behavior, with templates located in &quot;dotemplates&quot; and
-	 * &quot;classgen&quot; as the only velocity context attribute.
-	 * &quot;1.2&quot; is the new behavior, with templates located in
-	 * &quot;dotemplates/v1.2&quot; and &quot;objEntity&quot;,
-	 * &quot;entityUtils&quot;, &quot;stringUtils&quot;, and
-	 * &quot;importUtils&quot; in the velocity context. (Default is
-	 * &quot;1.2&quot;.)
-	 * 
-	 * @parameter expression="${cgen.version}"
-	 * @deprecated since 3.0 as 1.1 mode is deprecated.
-	 */
-	private String version;
-
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
-		// TODO: (KJM 11/2/06) The destDir really should be added as a compilation resource for maven.
+		// TODO: (KJM 11/2/06) The destDir really should be added as a
+		// compilation resource for maven.
 		if (!destDir.exists()) {
 			destDir.mkdirs();
 		}
@@ -281,8 +265,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		ClassGenerationAction action;
 		if (client) {
 			action = new ClientClassGenerationAction();
-		} else if (ClassGenerator.VERSION_1_1.equals(version)) {
-			action = new ClassGenerationAction1_1();
 		} else {
 			action = new ClassGenerationAction();
 		}

@@ -54,14 +54,6 @@ public class MockClassDescriptor implements ClassDescriptor {
         return false;
     }
 
-    /**
-     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
-     *             instead.
-     */
-    public Iterator<Property> getProperties() {
-        return null;
-    }
-
     public Expression getEntityQualifier() {
         return null;
     }

@@ -112,14 +112,6 @@ public interface ClassDescriptor {
     Property getDeclaredProperty(String propertyName);
 
     /**
-     * Returns an Iterator over descriptor properties.
-     * 
-     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
-     *             instead.
-     */
-    Iterator<Property> getProperties();
-
-    /**
      * Returns an iterator over the properties mapped to id columns.
      * 
      * @since 3.0

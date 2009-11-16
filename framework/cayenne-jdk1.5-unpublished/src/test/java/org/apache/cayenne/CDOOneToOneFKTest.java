@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import java.util.Arrays;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.relationship.ToOneFK1;
 import org.apache.cayenne.testdo.relationship.ToOneFK2;
 import org.apache.cayenne.unit.RelationshipCase;
@@ -71,7 +72,11 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         context = createDataContext();
 
         // test database data
-        ToOneFK2 src2 = (ToOneFK2) context.refetchObject(src.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                src.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        ToOneFK2 src2 = (ToOneFK2) DataObjectUtils.objectForQuery(context, refetch);
 
         // *** TESTING THIS ***
         assertNull(src2.getToOneToFK());
@@ -83,7 +88,11 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         context = createDataContext();
 
         // test database data
-        ToOneFK2 src2 = (ToOneFK2) context.refetchObject(src.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                src.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        ToOneFK2 src2 = (ToOneFK2) DataObjectUtils.objectForQuery(context, refetch);
         assertEquals(src.getObjectId(), src2.getObjectId());
 
         // *** TESTING THIS ***
@@ -108,7 +117,11 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         context = createDataContext();
 
         // test database data
-        ToOneFK2 src2 = (ToOneFK2) context.refetchObject(src.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                src.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        ToOneFK2 src2 = (ToOneFK2) DataObjectUtils.objectForQuery(context, refetch);
         ToOneFK1 target2 = src2.getToOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
@@ -130,7 +143,11 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         context = createDataContext();
 
         // test database data
-        ToOneFK2 src2 = (ToOneFK2) context.refetchObject(src.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                src.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        ToOneFK2 src2 = (ToOneFK2) DataObjectUtils.objectForQuery(context, refetch);
         ToOneFK1 target2 = src2.getToOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
@@ -143,7 +160,11 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         src.setToOneToFK(target);
         context.commitChanges();
         context = createDataContext();
-        ToOneFK2 src2 = (ToOneFK2) context.refetchObject(src.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                src.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        ToOneFK2 src2 = (ToOneFK2) DataObjectUtils.objectForQuery(context, refetch);
 
         assertTrue(src2.readPropertyDirectly("toOneToFK") instanceof Fault);
 
@@ -164,7 +185,11 @@ public class CDOOneToOneFKTest extends RelationshipCase {
 
         // test database data
         context = createDataContext();
-        ToOneFK2 src2 = (ToOneFK2) context.refetchObject(src.getObjectId());
+        ObjectIdQuery refetch = new ObjectIdQuery(
+                src.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        ToOneFK2 src2 = (ToOneFK2) DataObjectUtils.objectForQuery(context, refetch);
         assertNull(src.getToOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
     }

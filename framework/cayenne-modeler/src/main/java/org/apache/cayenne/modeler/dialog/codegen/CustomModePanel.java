@@ -41,7 +41,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
     protected JComboBox subclassTemplate;
     protected JComboBox superclassTemplate;
     protected JCheckBox pairs;
-    protected JComboBox generatorVersion;
     protected JCheckBox overwrite;
     protected JCheckBox usePackagePath;
     protected JTextField outputPattern;
@@ -54,7 +53,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.superclassTemplate = new JComboBox();
         this.subclassTemplate = new JComboBox();
         this.pairs = new JCheckBox();
-        this.generatorVersion = new JComboBox();
         this.overwrite = new JCheckBox();
         this.usePackagePath = new JCheckBox();
         this.outputPattern = new JTextField();
@@ -73,7 +71,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
                         "right:70dlu, 3dlu, fill:150dlu:grow, 3dlu, pref",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"));
+                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"));
         builder.setDefaultDialogBorder();
 
         CellConstraints cc = new CellConstraints();
@@ -88,26 +86,23 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.addLabel("Generation Mode:", cc.xy(1, 5));
         builder.add(generationMode, cc.xy(3, 5));
 
-        builder.addLabel("Generator Version:", cc.xy(1, 7));
-        builder.add(generatorVersion, cc.xy(3, 7));
+        builder.addLabel("Subclass Template:", cc.xy(1, 7));
+        builder.add(subclassTemplate, cc.xy(3, 7));
 
-        builder.addLabel("Subclass Template:", cc.xy(1, 9));
-        builder.add(subclassTemplate, cc.xy(3, 9));
+        builder.addLabel("Superclass Template:", cc.xy(1, 9));
+        builder.add(superclassTemplate, cc.xy(3, 9));
 
-        builder.addLabel("Superclass Template:", cc.xy(1, 11));
-        builder.add(superclassTemplate, cc.xy(3, 11));
+        builder.addLabel("Output Pattern:", cc.xy(1, 11));
+        builder.add(outputPattern, cc.xy(3, 11));
 
-        builder.addLabel("Output Pattern:", cc.xy(1, 13));
-        builder.add(outputPattern, cc.xy(3, 13));
+        builder.addLabel("Make Pairs:", cc.xy(1, 13));
+        builder.add(pairs, cc.xy(3, 13));
 
-        builder.addLabel("Make Pairs:", cc.xy(1, 15));
-        builder.add(pairs, cc.xy(3, 15));
+        builder.addLabel("Overwrite Subclasses:", cc.xy(1, 15));
+        builder.add(overwrite, cc.xy(3, 15));
 
-        builder.addLabel("Overwrite Subclasses:", cc.xy(1, 17));
-        builder.add(overwrite, cc.xy(3, 17));
-
-        builder.addLabel("Use Package Path:", cc.xy(1, 19));
-        builder.add(usePackagePath, cc.xy(3, 19));
+        builder.addLabel("Use Package Path:", cc.xy(1, 17));
+        builder.add(usePackagePath, cc.xy(3, 17));
 
         JPanel links = new JPanel(new FlowLayout(FlowLayout.TRAILING));
         links.add(manageTemplatesLink);
@@ -133,10 +128,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         return superclassTemplate;
     }
 
-    public JComboBox getGeneratorVersion() {
-        return generatorVersion;
-    }
-
     public JCheckBox getOverwrite() {
         return overwrite;
     }
@@ -149,7 +140,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         return usePackagePath;
     }
 
-    
     public JTextField getOutputPattern() {
         return outputPattern;
     }

@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * FileConfiguration loads a Cayenne configuraton file from a given location in the file
  * system.
- * 
  */
 public class FileConfiguration extends DefaultConfiguration {
 
@@ -135,18 +134,6 @@ public class FileConfiguration extends DefaultConfiguration {
      */
     public void addFilesystemPath(File path) {
         locator.addFilesystemPath(path);
-    }
-
-    /**
-     * Only returns <code>true</code> when {@link #getProjectFile} does not return
-     * <code>null</code>.
-     * 
-     * @deprecated since 3.0 - superclass method is deprecated.
-     */
-    @Override
-    public boolean canInitialize() {
-        // TODO: move this to "initialize" once the deprecated method is removed
-        return this.getProjectFile() != null;
     }
 
     /**

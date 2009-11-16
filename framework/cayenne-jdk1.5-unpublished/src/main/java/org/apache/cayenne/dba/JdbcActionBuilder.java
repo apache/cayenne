@@ -24,18 +24,14 @@ import org.apache.cayenne.access.jdbc.EJBQLAction;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.jdbc.UpdateAction;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.DeleteQuery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.UpdateQuery;
 
 /**
  * A factory of default SQLActions. Adapters usually subclass JdbcActionBuilder to provide
@@ -47,19 +43,6 @@ public class JdbcActionBuilder implements SQLActionVisitor {
 
     protected JdbcAdapter adapter;
     protected EntityResolver entityResolver;
-
-    /**
-     * @deprecated since 3.0 use "JdbcActionBuilder(JdbcAdapter,EntityResolver)"
-     *             constructor instead.
-     */
-    public JdbcActionBuilder(DbAdapter adapter, EntityResolver resolver) {
-        if (!(adapter instanceof JdbcAdapter)) {
-            throw new IllegalArgumentException("Expected a non-null JdbcAdapter, got: "
-                    + adapter);
-        }
-        this.adapter = (JdbcAdapter) adapter;
-        this.entityResolver = resolver;
-    }
 
     public JdbcActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         this.adapter = adapter;
@@ -88,18 +71,6 @@ public class JdbcActionBuilder implements SQLActionVisitor {
 
     public SQLAction sqlAction(SQLTemplate query) {
         return new SQLTemplateAction(query, adapter, entityResolver);
-    }
-
-    /**
-     * @deprecated since 3.0 as the corresponding {@link UpdateQuery} and
-     *             {@link DeleteQuery} queries are deprecated.
-     */
-    public SQLAction updateAction(Query query) {
-        if (query instanceof SQLTemplate) {
-            return new SQLTemplateAction((SQLTemplate) query, adapter, entityResolver);
-        }
-
-        return new UpdateAction(query, adapter, entityResolver);
     }
 
     /**

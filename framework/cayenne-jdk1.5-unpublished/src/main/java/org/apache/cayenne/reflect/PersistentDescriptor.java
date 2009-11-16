@@ -222,24 +222,6 @@ public class PersistentDescriptor implements ClassDescriptor {
         return subclassDescriptor != null ? subclassDescriptor : this;
     }
 
-    /**
-     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
-     *             instead.
-     */
-    public Iterator<Property> getProperties() {
-        Iterator<Property> declaredIt = IteratorUtils
-                .unmodifiableIterator(declaredProperties.values().iterator());
-
-        if (getSuperclassDescriptor() == null) {
-            return declaredIt;
-        }
-        else {
-            return IteratorUtils.chainedIterator(
-                    superclassDescriptor.getProperties(),
-                    declaredIt);
-        }
-    }
-
     public Iterator<ObjAttribute> getDiscriminatorColumns() {
         return allDiscriminatorColumns != null
                 ? allDiscriminatorColumns.iterator()

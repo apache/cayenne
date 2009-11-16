@@ -21,21 +21,20 @@ package org.apache.cayenne.access;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.DeleteQuery;
-import org.apache.cayenne.query.UpdateQuery;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.SQLTemplate;
 
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes
- * refreshing relationships and attributes changed outside of Cayenne with and witout
+ * refreshing relationships and attributes changed outside of Cayenne with and without
  * prefetching.
- * 
  */
 public class DataContextRefreshingTest extends DataContextCase {
 
@@ -232,20 +231,6 @@ public class DataContextRefreshingTest extends DataContextCase {
         assertEquals(artist.getPaintingArray().size(), 1);
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    public void testRefetchRootWithAddedToManyViaRefetchObject() throws Exception {
-        Artist artist = fetchArtist("artist2", false);
-        assertEquals(artist.getPaintingArray().size(), 0);
-
-        createTestData("P2");
-
-        assertEquals(artist.getPaintingArray().size(), 0);
-        artist = (Artist) context.refetchObject(artist.getObjectId());
-        assertEquals(artist.getPaintingArray().size(), 1);
-    }
-
     public void testInvalidateThenModify() throws Exception {
         Artist artist = fetchArtist("artist2", false);
         assertNotNull(artist);
@@ -278,25 +263,38 @@ public class DataContextRefreshingTest extends DataContextCase {
     /**
      * Helper method to update a single column in a database row.
      */
-    protected void updateRow(ObjectId id, String dbAttribute, Object newValue) {
-        UpdateQuery updateQuery = new UpdateQuery();
-        updateQuery.setRoot(id.getEntityName());
-        updateQuery.addUpdAttribute(dbAttribute, newValue);
+    private void updateRow(ObjectId id, String dbAttribute, Object newValue) {
+        SQLTemplate updateQuery = new SQLTemplate(
+                id.getEntityName(),
+                "UPDATE $table SET $column = #bind($value) "
+                        + "WHERE $idColumn = #bind($id)");
 
-        // set qualifier
-        updateQuery.setQualifier(ExpressionFactory.matchAllDbExp(
-                id.getIdSnapshot(),
-                Expression.EQUAL_TO));
+        ObjEntity entity = getDomain().getEntityResolver().getObjEntity(
+                id.getEntityName());
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("table", entity.getDbEntityName());
+        parameters.put("column", dbAttribute);
+        parameters.put("value", newValue);
+        parameters.put("idColumn", id.getIdSnapshot().keySet().iterator().next());
+        parameters.put("id", id.getIdSnapshot().values().iterator().next());
+        updateQuery.setParameters(parameters);
 
         getDomain().onQuery(null, updateQuery);
     }
 
-    protected void deleteRow(ObjectId id) {
-        DeleteQuery deleteQuery = new DeleteQuery();
-        deleteQuery.setRoot(id.getEntityName());
-        deleteQuery.setQualifier(ExpressionFactory.matchAllDbExp(
-                id.getIdSnapshot(),
-                Expression.EQUAL_TO));
+    private void deleteRow(ObjectId id) {
+        SQLTemplate deleteQuery = new SQLTemplate(
+                id.getEntityName(),
+                "DELETE FROM $table " + "WHERE $idColumn = #bind($id)");
+
+        ObjEntity entity = getDomain().getEntityResolver().getObjEntity(
+                id.getEntityName());
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("table", entity.getDbEntityName());
+        parameters.put("idColumn", id.getIdSnapshot().keySet().iterator().next());
+        parameters.put("id", id.getIdSnapshot().values().iterator().next());
+        deleteQuery.setParameters(parameters);
+
         getDomain().onQuery(null, deleteQuery);
     }
 }

@@ -51,19 +51,6 @@ public class CayenneDataObjectTest extends CayenneCase {
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
     }
 
-    /**
-     * @deprecated since 3.0.
-     */
-    @Deprecated
-    public void testSetDataContext() throws Exception {
-        CayenneDataObject obj = new CayenneDataObject();
-        assertNull(obj.getDataContext());
-
-        DataContext c = new DataContext();
-        obj.setDataContext(c);
-        assertSame(c, obj.getDataContext());
-    }
-
     public void testReadNestedProperty1() throws Exception {
         Artist a = new Artist();
         assertNull(a.readNestedProperty("artistName"));

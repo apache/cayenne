@@ -34,7 +34,6 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.Fault;
@@ -60,7 +59,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.NamedQuery;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -103,34 +101,6 @@ public class DataContext extends BaseContext implements DataChannel {
      * startup before Cayenne stack is fully initialized.
      */
     protected transient String lazyInitParentDomainName;
-
-    /**
-     * Returns the DataContext bound to the current thread.
-     * 
-     * @since 1.1
-     * @return the DataContext associated with caller thread.
-     * @throws IllegalStateException if there is no DataContext bound to the current
-     *             thread.
-     * @see org.apache.cayenne.conf.WebApplicationContextFilter
-     * @deprecated since 3.0, replaced by BaseContex#getThreadObjectContext().
-     */
-    @Deprecated
-    public static DataContext getThreadDataContext() throws IllegalStateException {
-        return (DataContext) BaseContext.getThreadObjectContext();
-    }
-
-    /**
-     * Binds a DataContext to the current thread. DataContext can later be retrieved by
-     * users in the same thread by calling {@link DataContext#getThreadDataContext}. Using
-     * null parameter will unbind currently bound DataContext.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0, replaced by BaseContex#bindThreadObjectContext().
-     */
-    @Deprecated
-    public static void bindThreadDataContext(DataContext context) {
-        BaseContext.bindThreadObjectContext(context);
-    }
 
     /**
      * Factory method that creates and returns a new instance of DataContext based on
@@ -244,17 +214,6 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 3.0
      */
     public ObjectContext createChildContext() {
-        return createChildDataContext();
-    }
-
-    /**
-     * Creates and returns a new child DataContext.
-     * 
-     * @since 1.2
-     * @deprecated since 3.0 use {@link #createChildContext()}.
-     */
-    @Deprecated
-    public DataContext createChildDataContext() {
         DataContextFactory factory = getParentDataDomain().getDataContextFactory();
 
         // child ObjectStore should not have direct access to snapshot cache, so do not
@@ -566,26 +525,6 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * Converts a list of data rows to a list of DataObjects.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0 as refreshing and resolvingInheritanceHierarchy flags are
-     *             deprecated. Use {@link #objectsFromDataRows(ClassDescriptor, List)}
-     *             instead.
-     */
-    @Deprecated
-    public List objectsFromDataRows(
-            ObjEntity entity,
-            List dataRows,
-            boolean refresh,
-            boolean resolveInheritanceHierarchy) {
-
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                entity.getName());
-        return objectsFromDataRows(descriptor, dataRows);
-    }
-
-    /**
      * Converts a list of DataRows to a List of DataObject registered with this
      * DataContext.
      * 
@@ -598,32 +537,6 @@ public class DataContext extends BaseContext implements DataChannel {
                 .synchronizedObjectsFromDataRows(dataRows);
     }
 
-    /**
-     * Converts a list of DataRows to a List of DataObject registered with this
-     * DataContext.
-     * 
-     * @deprecated since 3.0 as refresh and resolveInheritanceHierarchy flags are
-     *             deprecated. Use {@link #objectsFromDataRows(ClassDescriptor, List)}
-     *             instead.
-     * @since 1.1
-     * @see DataRow
-     */
-    @Deprecated
-    public List objectsFromDataRows(
-            Class<?> objectClass,
-            List<? extends DataRow> dataRows,
-            boolean refresh,
-            boolean resolveInheritanceHierarchy) {
-        ObjEntity entity = this.getEntityResolver().lookupObjEntity(objectClass);
-
-        if (entity == null) {
-            throw new CayenneRuntimeException("Unmapped Java class: " + objectClass);
-        }
-
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                entity.getName());
-        return objectsFromDataRows(descriptor, dataRows);
-    }
 
     /**
      * Creates a DataObject from DataRow.
@@ -663,14 +576,6 @@ public class DataContext extends BaseContext implements DataChannel {
         List<?> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
 
         return (DataObject) list.get(0);
-    }
-
-    /**
-     * @deprecated since 3.0, use {@link #newObject(String)} instead.
-     */
-    @Deprecated
-    public DataObject createAndRegisterNewObject(String objEntityName) {
-        return (DataObject) newObject(objEntityName);
     }
 
     /**
@@ -737,28 +642,6 @@ public class DataContext extends BaseContext implements DataChannel {
                 object);
 
         return object;
-    }
-
-    /**
-     * Instantiates new object and registers it with itself. Object class must have a
-     * default constructor.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0, use {@link #newObject(Class)} instead.
-     */
-    @Deprecated
-    public DataObject createAndRegisterNewObject(Class objectClass) {
-        if (objectClass == null) {
-            throw new NullPointerException("DataObject class can't be null.");
-        }
-
-        ObjEntity entity = getEntityResolver().lookupObjEntity(objectClass);
-        if (entity == null) {
-            throw new IllegalArgumentException("Class is not mapped with Cayenne: "
-                    + objectClass.getName());
-        }
-
-        return createAndRegisterNewObject(entity.getName());
     }
 
     /**
@@ -929,49 +812,6 @@ public class DataContext extends BaseContext implements DataChannel {
     @Override
     public void deleteObject(Object object) throws DeleteDenyException {
         new DataContextDeleteAction(this).performDelete((Persistent) object);
-    }
-
-    /**
-     * Refetches object data for ObjectId. This method is used internally by Cayenne to
-     * resolve objects in state <code>PersistenceState.HOLLOW</code>. It can also be used
-     * to refresh certain objects.
-     * 
-     * @throws CayenneRuntimeException if object id doesn't match any records, or if there
-     *             is more than one object is fetched.
-     * @deprecated since 3.0 use {@link ObjectIdQuery} with appropriate refresh settings.
-     */
-    @Deprecated
-    public DataObject refetchObject(ObjectId oid) {
-
-        if (oid == null) {
-            throw new NullPointerException("Null ObjectId");
-        }
-
-        if (oid.isTemporary()) {
-            throw new CayenneRuntimeException("Can't refetch ObjectId "
-                    + oid
-                    + ", as it is a temporary id.");
-        }
-
-        synchronized (getObjectStore()) {
-            DataObject object = (DataObject) objectStore.getNode(oid);
-
-            // clean up any cached data for this object
-            if (object != null) {
-                this.invalidateObjects(Collections.singleton(object));
-            }
-        }
-
-        DataObject object = (DataObject) DataObjectUtils.objectForQuery(
-                this,
-                new ObjectIdQuery(oid));
-
-        if (object == null) {
-            throw new CayenneRuntimeException(
-                    "Refetch failure: no matching objects found for ObjectId " + oid);
-        }
-
-        return object;
     }
 
     /**

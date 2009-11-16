@@ -29,8 +29,6 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClassGenerationAction1_1;
-import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -74,11 +72,6 @@ public class CustomModeController extends GeneratorController {
         };
         view.getGenerationMode().setModel(new DefaultComboBoxModel(modeChoices));
 
-        Object[] versionChoices = new Object[] {
-                ClassGenerator.VERSION_1_2, ClassGenerator.VERSION_1_1
-        };
-        view.getGeneratorVersion().setModel(new DefaultComboBoxModel(versionChoices));
-
         // bind preferences and init defaults...
 
         if (Util.isEmptyString(preferences.getSuperclassTemplate())) {
@@ -92,10 +85,6 @@ public class CustomModeController extends GeneratorController {
 
         if (Util.isEmptyString(preferences.getProperty("mode"))) {
             preferences.setProperty("mode", MODE_ENTITY);
-        }
-
-        if (Util.isEmptyString(preferences.getProperty("version"))) {
-            preferences.setProperty("version", ClassGenerator.VERSION_1_2);
         }
 
         if (Util.isEmptyString(preferences.getProperty("overwrite"))) {
@@ -127,10 +116,6 @@ public class CustomModeController extends GeneratorController {
         builder.bindToComboSelection(
                 view.getGenerationMode(),
                 "preferences.property['mode']").updateView();
-
-        builder.bindToComboSelection(
-                view.getGeneratorVersion(),
-                "preferences.property['version']").updateView();
 
         builder.bindToStateChange(
                 view.getOverwrite(),
@@ -207,33 +192,23 @@ public class CustomModeController extends GeneratorController {
         return view;
     }
 
-    private String getVersion() {
-        return (String) view.getGeneratorVersion().getSelectedItem();
-    }
-
     @Override
     protected ClassGenerationAction newGenerator() {
-        return ClassGenerator.VERSION_1_1.equals(getVersion())
-                ? new ClassGenerationAction1_1()
-                : new ClassGenerationAction();
+        return new ClassGenerationAction();
     }
 
     public ClassGenerationAction createGenerator() {
 
-        mode = modesByLabel
-                .get(view.getGenerationMode().getSelectedItem())
-                .toString();
-        
+        mode = modesByLabel.get(view.getGenerationMode().getSelectedItem()).toString();
+
         ClassGenerationAction generator = super.createGenerator();
 
-        String version = getVersion();
-
         String superKey = view.getSuperclassTemplate().getSelectedItem().toString();
-        String superTemplate = templateManager.getTemplatePath(superKey, version);
+        String superTemplate = templateManager.getTemplatePath(superKey);
         generator.setSuperTemplate(superTemplate);
 
         String subKey = view.getSubclassTemplate().getSelectedItem().toString();
-        String subTemplate = templateManager.getTemplatePath(subKey, version);
+        String subTemplate = templateManager.getTemplatePath(subKey);
         generator.setTemplate(subTemplate);
 
         generator.setOverwrite(view.getOverwrite().isSelected());

@@ -112,8 +112,6 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
             throw new CayenneRuntimeException("Error connecting to preference DB.", ex);
         }
 
-        configuration.didInitialize();
-
         this.configuration = configuration;
         this.dataContext = configuration.getDomain().createDataContext();
 
@@ -236,7 +234,8 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
                 File target = new File(dbDirectory, targetBaseName + "." + ext);
                 if (fileToMove.exists()) {
                     fileToMove.renameTo(target);
-                } else {
+                }
+                else {
                     target.delete();
                 }
             }
@@ -262,7 +261,8 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
                 File target = new File(dbDirectory, targetBaseName + "." + ext);
                 if (fileToCopy.exists()) {
                     Util.copy(fileToCopy, target);
-                } else {
+                }
+                else {
                     target.delete();
                 }
             }

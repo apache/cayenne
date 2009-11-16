@@ -110,15 +110,6 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getObjectClass();
     }
 
-    /**
-     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
-     *             instead.
-     */
-    public Iterator<Property> getProperties() {
-        checkDescriptorInitialized();
-        return descriptor.getProperties();
-    }
-
     public Iterator<Property> getIdProperties() {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();

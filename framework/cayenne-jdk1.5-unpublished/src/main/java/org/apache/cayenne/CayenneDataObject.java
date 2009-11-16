@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
@@ -53,44 +52,13 @@ import org.apache.cayenne.xml.XMLSerializable;
 /**
  * A default implementation of DataObject interface. It is normally used as a superclass
  * of Cayenne persistent objects.
- * 
  */
-public class CayenneDataObject extends PersistentObject implements DataObject, Validating, XMLSerializable {
+public class CayenneDataObject extends PersistentObject implements DataObject,
+        Validating, XMLSerializable {
 
     protected long snapshotVersion = DEFAULT_VERSION;
 
     protected Map<String, Object> values = new HashMap<String, Object>();
-
-    /**
-     * Returns a DataContext that holds this object. Object becomes associated with a
-     * DataContext either when the object is fetched using a query, or when a new object
-     * is registered explicitly with a DataContext.
-     * 
-     * @deprecated since 3.0 use {@link #getObjectContext()}.
-     */
-    @Deprecated
-    public DataContext getDataContext() {
-        if (objectContext == null || objectContext instanceof DataContext) {
-            return (DataContext) objectContext;
-        }
-
-        throw new CayenneRuntimeException("ObjectContext is not a DataContext: "
-                + objectContext);
-    }
-
-    /**
-     * Sets object DataContext.
-     * 
-     * @deprecated since 3.0 use {@link #setObjectContext(ObjectContext)}.
-     */
-    @Deprecated
-    public void setDataContext(DataContext dataContext) {
-        this.objectContext = dataContext;
-
-        if (dataContext == null) {
-            this.persistenceState = PersistenceState.TRANSIENT;
-        }
-    }
 
     @Override
     public void setPersistenceState(int persistenceState) {
@@ -104,41 +72,55 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     public Object readNestedProperty(String path) {
         return readNestedProperty(this, path, tokenizePath(path), 0, 0);
     }
-    
+
     /**
-     * Recursively resolves nested property path 
+     * Recursively resolves nested property path
      */
-    private static Object readNestedProperty(CayenneDataObject dataObject, 
-        String path, String[] tokenizedPath, int tokenIndex, int pathIndex) {
-        
+    private static Object readNestedProperty(
+            CayenneDataObject dataObject,
+            String path,
+            String[] tokenizedPath,
+            int tokenIndex,
+            int pathIndex) {
+
         Object property = dataObject.readSimpleProperty(tokenizedPath[tokenIndex]);
 
-        if (tokenIndex == tokenizedPath.length - 1) { //last component
+        if (tokenIndex == tokenizedPath.length - 1) { // last component
             return property;
         }
-        
+
         pathIndex += tokenizedPath[tokenIndex].length() + 1;
         if (property == null) {
             return null;
         }
         else if (property instanceof CayenneDataObject) {
-            return readNestedProperty((CayenneDataObject) property, path, tokenizedPath, tokenIndex + 1,
-                tokenIndex);
+            return readNestedProperty(
+                    (CayenneDataObject) property,
+                    path,
+                    tokenizedPath,
+                    tokenIndex + 1,
+                    tokenIndex);
         }
         else if (property instanceof Collection) {
             /**
              * Support for collection property in the middle of the path
              */
-            Collection<Object> result = property instanceof List ?
-                    new ArrayList<Object>() : new HashSet<Object>() ;
+            Collection<Object> result = property instanceof List
+                    ? new ArrayList<Object>()
+                    : new HashSet<Object>();
             for (Object obj : (Collection<?>) property) {
                 if (obj instanceof CayenneDataObject) {
-                    Object rest = readNestedProperty((CayenneDataObject) obj, path, tokenizedPath, 
-                            tokenIndex + 1, tokenIndex);
+                    Object rest = readNestedProperty(
+                            (CayenneDataObject) obj,
+                            path,
+                            tokenizedPath,
+                            tokenIndex + 1,
+                            tokenIndex);
                     if (rest instanceof Collection) {
                         /**
-                         * We don't want nested collections.
-                         * E.g. readNestedProperty("paintingArray.paintingTitle") should return List<String>
+                         * We don't want nested collections. E.g.
+                         * readNestedProperty("paintingArray.paintingTitle") should return
+                         * List<String>
                          */
                         result.addAll((Collection<?>) rest);
                     }
@@ -176,10 +158,10 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         String[] tokenized = new String[length];
         for (int i = 0; i < length; i++) {
             String temp = tokens.nextToken();
-            if(temp.endsWith("+")){
+            if (temp.endsWith("+")) {
                 tokenized[i] = temp.substring(0, temp.length() - 1);
             }
-            else{
+            else {
                 tokenized[i] = temp;
             }
         }
@@ -368,8 +350,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Removes current object from reverse relationship of object <code>val</code> to
-     * this object.
+     * Removes current object from reverse relationship of object <code>val</code> to this
+     * object.
      */
     protected void unsetReverseRelationship(String relName, DataObject val) {
 
@@ -443,16 +425,6 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     @Override
     public String toString() {
         return toStringBuffer(new StringBuffer(), true).toString();
-    }
-
-    /**
-     * Default implementation does nothing.
-     * 
-     * @deprecated since 3.0 use callbacks.
-     * @see LifecycleListener
-     */
-    @Deprecated
-    public void fetchFinished() {
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -551,10 +523,11 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 
             ObjAttribute objAttribute = (ObjAttribute) next;
             DbAttribute dbAttribute = objAttribute.getDbAttribute();
-            
+
             if (dbAttribute == null) {
-                throw new CayenneRuntimeException("ObjAttribute '" + objAttribute.getName() +
-                    "' does not have a corresponding DbAttribute");
+                throw new CayenneRuntimeException("ObjAttribute '"
+                        + objAttribute.getName()
+                        + "' does not have a corresponding DbAttribute");
             }
 
             // pk may still be generated

@@ -28,7 +28,6 @@ import org.apache.cayenne.conf.FileConfiguration;
 
 /**
  * Subclass of FileConfiguration used in the project model.
- * 
  */
 public class ProjectConfiguration extends FileConfiguration {
 
@@ -50,14 +49,11 @@ public class ProjectConfiguration extends FileConfiguration {
         locator.setSkipHomeDirectory(true);
     }
 
-    /**
-     * Override parent implementation to prevent loading of nonexisting files.
-     * 
-     * @see FileConfiguration#canInitialize()
-     */
     @Override
-    public boolean canInitialize() {
-        return (super.canInitialize() && this.getProjectFile().isFile());
+    public void initialize() throws Exception {
+        if(getProjectFile().isFile()) {
+            super.initialize();
+        }
     }
 
     /**
@@ -80,22 +76,10 @@ public class ProjectConfiguration extends FileConfiguration {
     public DataSourceFactory getDataSourceFactory(String userFactoryName) {
         File projectDir = getProjectDirectory();
         boolean canLoad = DriverDataSourceFactory.class.getName().equals(userFactoryName);
-        ProjectDataSourceFactory factory = new ProjectDataSourceFactory(projectDir, canLoad);
+        ProjectDataSourceFactory factory = new ProjectDataSourceFactory(
+                projectDir,
+                canLoad);
         return factory;
     }
 
-    /**
-     * Returns an instance of {@link ProjectDataSourceFactory}.
-     * 
-     * @deprecated since 3.0 as the super method is deprecated as well.
-     */
-    @Override
-    public DataSourceFactory getDataSourceFactory() {
-        try {
-            return new ProjectDataSourceFactory(getProjectDirectory());
-        }
-        catch (Exception e) {
-            throw new ProjectException("Error creating DataSourceFactory.", e);
-        }
-    }
 }

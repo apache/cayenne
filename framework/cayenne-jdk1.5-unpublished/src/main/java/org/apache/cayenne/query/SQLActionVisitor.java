@@ -33,14 +33,6 @@ package org.apache.cayenne.query;
 public interface SQLActionVisitor {
 
     /**
-     * Creates an action to execute a generic update query.
-     * 
-     * @deprecated since 3.0 as the corresponding {@link UpdateQuery} and
-     *             {@link DeleteQuery} queries are deprecated.
-     */
-    SQLAction updateAction(Query query);
-
-    /**
      * Creates an action to execute a batch update query.
      */
     SQLAction batchAction(BatchQuery query);

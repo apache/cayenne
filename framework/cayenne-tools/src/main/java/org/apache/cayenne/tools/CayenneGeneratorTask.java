@@ -22,10 +22,7 @@ import java.io.File;
 
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClassGenerationAction1_1;
-import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
-import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
@@ -60,11 +57,6 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String embeddablesupertemplate;
     protected boolean usepkgpath;
 
-    /**
-     * @deprecated since 3.0
-     */
-    protected String version;
-
     public CayenneGeneratorTask() {
         this.makepairs = true;
         this.mode = ArtifactsGenerationMode.ENTITY.getLabel();
@@ -82,9 +74,6 @@ public class CayenneGeneratorTask extends CayenneTask {
         if (client) {
             action = new ClientClassGenerationAction();
             action.setContext(getVppContext());
-        }
-        else if (ClassGenerator.VERSION_1_1.equals(version)) {
-            action = new ClassGenerationAction1_1();
         }
         else {
             action = new ClassGenerationAction();
@@ -105,28 +94,6 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setUsePkgPath(usepkgpath);
 
         return action;
-    }
-
-    /**
-     * @deprecated since 3.0. Use {@link #createGeneratorAction()}.
-     */
-    protected DefaultClassGenerator createGenerator() {
-        DefaultClassGenerator gen = new DefaultClassGenerator();
-
-        gen.setClient(client);
-        gen.setDestDir(destDir);
-        gen.setEncoding(encoding);
-        gen.setMakePairs(makepairs);
-        gen.setMode(mode);
-        gen.setOutputPattern(outputPattern);
-        gen.setOverwrite(overwrite);
-        gen.setSuperPkg(superpkg);
-        gen.setSuperTemplate(supertemplate);
-        gen.setTemplate(template);
-        gen.setUsePkgPath(usepkgpath);
-        gen.setVersionString(version);
-
-        return gen;
     }
 
     /**
@@ -257,17 +224,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     /**
-     * Sets <code>version</code> property.
-     * 
-     * @deprecated since 3.0
-     */
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    /**
-     * Sets <code>encoding</code> property that allows to generate files using
-     * non-default encoding.
+     * Sets <code>encoding</code> property that allows to generate files using non-default
+     * encoding.
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
@@ -310,8 +268,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     /**
-     * Provides a <code>VPPConfig</code> object to configure. (Written with
-     * createConfig() instead of addConfig() to avoid run-time dependency on VPP).
+     * Provides a <code>VPPConfig</code> object to configure. (Written with createConfig()
+     * instead of addConfig() to avoid run-time dependency on VPP).
      */
     public Object createConfig() {
         this.vppConfig = new VPPConfig();
