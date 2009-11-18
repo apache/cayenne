@@ -569,8 +569,31 @@
 				<version>2.5-SNAPSHOT</version>                                
 				<configuration>
 					<argLine>
-						-Dcayenne.test.connection=${cayenne.test.connection} -Djava.net.preferIPv4Stack=true
+						-DcayenneTestConnection=${cayenneTestConnection} -Djava.net.preferIPv4Stack=true
 					</argLine>
+					<systemProperties>
+						<property>
+        						<name>cayenneAdapter</name>
+        						<value>${cayenneAdapter}</value>
+      						</property>
+    						 <property>
+        						<name>cayenneJdbcUsername</name>
+        						<value>${cayenneJdbcUsername}</value>
+      						</property>
+						<property>
+        						<name>cayenneJdbcPassword</name>
+        						<value>${cayenneJdbcPassword}</value>
+      						</property>
+    						 <property>
+        						<name>cayenneJdbcUrl</name>
+        						<value>${cayenneJdbcUrl}</value>
+      						</property>
+						<property>
+        						<name>cayenneJdbcDriver</name>
+        						<value>${cayenneJdbcDriver}</value>
+      						</property>
+    					</systemProperties>
+					
 				</configuration>
 			</plugin>
 			<plugin>
@@ -670,7 +693,7 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>internal_embedded_datasource</value>
 				</property>
 			</activation>
@@ -679,7 +702,7 @@
                         <id>frontbase</id>
                         <activation>
                                 <property>
-                                        <name>cayenne.test.connection</name>
+                                        <name>cayenneTestConnection</name>
                                         <value>frontbase</value>
                                 </property>
                         </activation>
@@ -696,7 +719,7 @@
                         <id>openbase</id>
                         <activation>
                                 <property>
-                                        <name>cayenne.test.connection</name>
+                                        <name>cayenneTestConnection</name>
                                         <value>openbase</value>
                                 </property>
                         </activation>
@@ -713,7 +736,7 @@
 			<id>h2</id>
 			<activation>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>h2</value>
 				</property>
 			</activation>
@@ -730,7 +753,7 @@
 			<id>mysql</id>
 			<activation>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>mysql</value>
 				</property>
 			</activation>
@@ -747,7 +770,7 @@
 			<id>oracle</id>
 			<activation>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>oracle</value>
 				</property>
 			</activation>
@@ -764,7 +787,7 @@
 			<id>postgres</id>
 			<activation>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>postgres</value>
 				</property>
 			</activation>
@@ -781,7 +804,7 @@
 			<id>derby</id>
 			<activation>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>derby</value>
 				</property>
 			</activation>
@@ -796,7 +819,7 @@
                         <id>sqlserver</id>
                         <activation>
                                 <property>
-                                        <name>cayenne.test.connection</name>
+                                        <name>cayenneTestConnection</name>
                                         <value>sqlserver</value>
                                 </property>
                         </activation>
@@ -813,7 +836,7 @@
                         <id>sybase</id>
                         <activation>
                                 <property>
-                                        <name>cayenne.test.connection</name>
+                                        <name>cayenneTestConnection</name>
                                         <value>sybase</value>
                                 </property>
                         </activation>
@@ -830,7 +853,7 @@
 			<id>sqlite</id>
 			<activation>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>sqlite</value>
 				</property>
 			</activation>
@@ -847,7 +870,7 @@
 			<id>db2</id>
 			<activation>
 				<property>
-					<name>cayenne.test.connection</name>
+					<name>cayenneTestConnection</name>
 					<value>db2</value>					
 				</property>
 			</activation>

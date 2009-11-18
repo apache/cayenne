@@ -54,7 +54,7 @@ public class CayenneResources implements BeanFactoryAware {
 
     public static final String TEST_RESOURCES_DESCRIPTOR = "spring-test-resources.xml";
 
-    public static final String CONNECTION_NAME_KEY = "cayenne.test.connection";
+    public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
     public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
     public static final String TEST_DIR_KEY = "cayenne.test.dir";
     public static final String DEFAULT_TEST_DIR = "target/testrun";
