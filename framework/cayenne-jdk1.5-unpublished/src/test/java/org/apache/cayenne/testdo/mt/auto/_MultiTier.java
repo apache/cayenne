@@ -14,6 +14,12 @@ import org.apache.cayenne.testdo.mt.MtTable1;
  */
 public class _MultiTier {
 
+    public static final String ALL_MT_TABLE1_QUERYNAME = "AllMtTable1";
+
+    public static final String MT_QUERY_WITH_LOCAL_CACHE_QUERYNAME = "MtQueryWithLocalCache";
+
+    public static final String PARAMETERIZED_MT_QUERY_WITH_LOCAL_CACHE_QUERYNAME = "ParameterizedMtQueryWithLocalCache";
+
     public List<MtTable1> performAllMtTable1(ObjectContext context ) {
         return context.performQuery(new NamedQuery("AllMtTable1"));
     }

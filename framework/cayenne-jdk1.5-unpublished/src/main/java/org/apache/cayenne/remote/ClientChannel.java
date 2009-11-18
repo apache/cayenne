@@ -24,6 +24,7 @@ import java.util.ListIterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelSyncCallbackAction;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -169,6 +170,14 @@ public class ClientChannel implements DataChannel {
             ObjectContext originatingContext,
             GraphDiff changes,
             int syncType) {
+        
+        DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
+            .getCallbackAction(
+                getEntityResolver().getCallbackRegistry(),
+                originatingContext.getGraphManager(),
+                changes,
+                syncType);
+        callbackAction.applyPreCommit();
 
         changes = diffCompressor.compress(changes);
 
@@ -221,6 +230,7 @@ public class ClientChannel implements DataChannel {
             }
         }
 
+        callbackAction.applyPostCommit();
         return replyDiff;
     }
 

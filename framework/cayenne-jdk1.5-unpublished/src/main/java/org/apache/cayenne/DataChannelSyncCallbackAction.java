@@ -16,14 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access;
+package org.apache.cayenne;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
@@ -32,10 +31,11 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
  * @since 3.0
+ * note: made public in 3.1 to be used in all tiers
  */
-abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
+public abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
-    static DataChannelSyncCallbackAction getCallbackAction(
+    public static DataChannelSyncCallbackAction getCallbackAction(
             LifecycleCallbackRegistry callbackRegistry,
             GraphManager graphManager,
             GraphDiff changes,
@@ -73,9 +73,9 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
     protected abstract boolean hasListeners();
 
-    abstract void applyPreCommit();
+    public abstract void applyPreCommit();
 
-    abstract void applyPostCommit();
+    public abstract void applyPostCommit();
 
     void apply(LifecycleEvent callbackType, Collection<?> objects) {
         if (seenIds != null && objects != null) {
@@ -166,13 +166,13 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         }
 
         @Override
-        void applyPreCommit() {
+        public void applyPreCommit() {
             apply(LifecycleEvent.PRE_PERSIST, persisted);
             apply(LifecycleEvent.PRE_UPDATE, updated);
         }
 
         @Override
-        void applyPostCommit() {
+        public void applyPostCommit() {
             apply(LifecycleEvent.POST_UPDATE, updated);
             apply(LifecycleEvent.POST_REMOVE, removed);
             apply(LifecycleEvent.POST_PERSIST, persisted);
@@ -192,12 +192,12 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         }
 
         @Override
-        void applyPreCommit() {
+        public void applyPreCommit() {
             // noop
         }
 
         @Override
-        void applyPostCommit() {
+        public void applyPostCommit() {
             apply(LifecycleEvent.POST_LOAD, updated);
             apply(LifecycleEvent.POST_LOAD, removed);
         }

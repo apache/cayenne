@@ -308,27 +308,6 @@ public class CayenneContext extends BaseContext {
     }
 
     /**
-     * Deletes an object locally, scheduling it for future deletion from the external data
-     * store.
-     */
-    @Override
-    public void deleteObject(Object object) {
-        new ObjectContextDeleteAction(this).performDelete((Persistent) object);
-    }
-
-    public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
-        if (objects.isEmpty())
-            return;
-
-        // Don't call deleteObject() directly since it would be less efficient.
-        ObjectContextDeleteAction ocda = new ObjectContextDeleteAction(this);
-
-        // Make a copy to iterate over to avoid ConcurrentModificationException.
-        for (Persistent object : (ArrayList<Persistent>) new ArrayList(objects))
-            ocda.performDelete(object);
-    }
-
-    /**
      * Creates and registers a new Persistent object instance.
      */
     @Override
@@ -527,16 +506,6 @@ public class CayenneContext extends BaseContext {
             object.setObjectId(id);
         }
 
-        // must follow this exact order of property initialization per CAY-653, i.e. have
-        // the id and the context in place BEFORE setPersistence is called
-        object.setObjectContext(this);
-        object.setPersistenceState(PersistenceState.NEW);
-        
-        synchronized (graphManager) {
-            graphManager.registerNode(id, object);
-            graphManager.nodeCreated(id);
-        }
-        
         injectInitialValue(object);
     }
 

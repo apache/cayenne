@@ -35,7 +35,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -54,7 +53,6 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -629,17 +627,8 @@ public class DataContext extends BaseContext implements DataChannel {
         // note that the order of initialization of persistence artifacts below is
         // important - do not change it lightly
         object.setObjectId(id);
-        object.setObjectContext(this);
-        object.setPersistenceState(PersistenceState.NEW);
-        getObjectStore().registerNode(id, object);
-        getObjectStore().nodeCreated(id);
         
         injectInitialValue(object);
-
-        // invoke callbacks
-        getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleEvent.POST_ADD,
-                object);
 
         return object;
     }
@@ -684,21 +673,17 @@ public class DataContext extends BaseContext implements DataChannel {
         else {
             persistent.setObjectId(new ObjectId(entity.getName()));
         }
-
-        persistent.setObjectContext(this);
-        persistent.setPersistenceState(PersistenceState.NEW);
-
-        getObjectStore().registerNode(persistent.getObjectId(), object);
-        getObjectStore().nodeCreated(persistent.getObjectId());
-
-        // now we need to find all arc changes, inject missing value holders and pull in
-        // all transient connected objects
-
+        
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 entity.getName());
         if (descriptor == null) {
             throw new IllegalArgumentException("Invalid entity name: " + entity.getName());
         }
+        
+        injectInitialValue(object);
+
+        // now we need to find all arc changes, inject missing value holders and pull in
+        // all transient connected objects
 
         descriptor.visitProperties(new PropertyVisitor() {
 
@@ -752,13 +737,6 @@ public class DataContext extends BaseContext implements DataChannel {
                 return true;
             }
         });
-        
-        injectInitialValue(object);
-
-        // invoke callbacks
-        getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleEvent.POST_ADD,
-                persistent);
     }
 
     /**
@@ -770,48 +748,6 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     public void unregisterObjects(Collection dataObjects) {
         getObjectStore().objectsUnregistered(dataObjects);
-    }
-
-    /**
-     * Schedules all objects in the collection for deletion on the next commit of this
-     * DataContext. Object's persistence state is changed to PersistenceState.DELETED;
-     * objects related to this object are processed according to delete rules, i.e.
-     * relationships can be unset ("nullify" rule), deletion operation is cascaded
-     * (cascade rule).
-     * <p>
-     * <i>"Nullify" delete rule side effect: </i> passing a collection representing
-     * to-many relationship with nullify delete rule may result in objects being removed
-     * from collection.
-     * </p>
-     * 
-     * @since 1.2
-     */
-    public void deleteObjects(Collection objects) {
-        if (objects.isEmpty()) {
-            return;
-        }
-
-        // clone object list... this maybe a relationship collection with nullify delete
-        // rule, so modifying
-        for (Persistent object : new ArrayList<Persistent>(objects)) {
-            deleteObject(object);
-        }
-    }
-
-    /**
-     * Schedules an object for deletion on the next commit of this DataContext. Object's
-     * persistence state is changed to PersistenceState.DELETED; objects related to this
-     * object are processed according to delete rules, i.e. relationships can be unset
-     * ("nullify" rule), deletion operation is cascaded (cascade rule).
-     * 
-     * @param object a persistent object that we want to delete.
-     * @throws DeleteDenyException if a DENY delete rule is applicable for object
-     *             deletion.
-     * @throws NullPointerException if object is null.
-     */
-    @Override
-    public void deleteObject(Object object) throws DeleteDenyException {
-        new DataContextDeleteAction(this).performDelete((Persistent) object);
     }
 
     /**

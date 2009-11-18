@@ -33,6 +33,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
@@ -102,8 +103,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     public abstract void commitChanges();
 
     public abstract void commitChangesToParent();
-
-    public abstract void deleteObject(Object object) throws DeleteDenyException;
 
     public abstract Collection<?> deletedObjects();
 
@@ -381,9 +380,24 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
     
     /**
-     * If ObjEntity qualifier is set, asks it to inject initial value to an object 
+     * If ObjEntity qualifier is set, asks it to inject initial value to an object.
+     * Also performs all Persistent initialization operations
      */
-    protected void injectInitialValue(Object object) {
+    protected void injectInitialValue(Object obj) {
+        // must follow this exact order of property initialization per CAY-653, i.e. have
+        // the id and the context in place BEFORE setPersistence is called
+        
+        Persistent object = (Persistent) obj;
+        
+        object.setObjectContext(this);
+        object.setPersistenceState(PersistenceState.NEW);
+        
+        GraphManager graphManager = getGraphManager();
+        synchronized (graphManager) {
+            graphManager.registerNode(object.getObjectId(), object);
+            graphManager.nodeCreated(object.getObjectId());
+        }
+        
         ObjEntity entity;
         try {
             entity = getEntityResolver().lookupObjEntity(object.getClass());
@@ -398,5 +412,37 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                 ((ValueInjector) entity.getDeclaredQualifier()).injectValue(object);
             }
         }
+        
+        // invoke callbacks
+        getEntityResolver().getCallbackRegistry().performCallbacks(
+                LifecycleEvent.POST_ADD,
+                object);
+    }
+    
+    /**
+     * Schedules an object for deletion on the next commit of this context. Object's
+     * persistence state is changed to PersistenceState.DELETED; objects related to this
+     * object are processed according to delete rules, i.e. relationships can be unset
+     * ("nullify" rule), deletion operation is cascaded (cascade rule).
+     * 
+     * @param object a persistent object that we want to delete.
+     * @throws DeleteDenyException if a DENY delete rule is applicable for object
+     *             deletion.
+     * @throws NullPointerException if object is null.
+     */
+    public void deleteObject(Object object) {
+        new ObjectContextDeleteAction(this).performDelete((Persistent) object);
+    }
+    
+    public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
+        if (objects.isEmpty())
+            return;
+
+        // Don't call deleteObject() directly since it would be less efficient.
+        ObjectContextDeleteAction ocda = new ObjectContextDeleteAction(this);
+
+        // Make a copy to iterate over to avoid ConcurrentModificationException.
+        for (Persistent object : (ArrayList<Persistent>) new ArrayList(objects))
+            ocda.performDelete(object);
     }
 }
