@@ -26,11 +26,22 @@ package org.apache.cayenne.query;
  */
 public enum SortOrder {
     /**
-     * ASCENDING = Ascending order, case sensitive.<br/>
-     * ASCENDING_INSENSITIVE = Ascending order, case insensitive<br/>
-     * DESCENDING = Descending order, case sensitive.<br>
-     * DESCENDING_INSENSITIVE = Descending order, case insensitive.<br>
+     * Ascending order, case sensitive
      */
-    ASCENDING,  ASCENDING_INSENSITIVE,
-    DESCENDING, DESCENDING_INSENSITIVE
+    ASCENDING,  
+    
+    /**
+     * Ascending order, case insensitive
+     */
+    ASCENDING_INSENSITIVE,
+    
+    /**
+     * Descending order, case sensitive
+     */
+    DESCENDING, 
+    
+    /**
+     * Descending order, case insensitive
+     */
+    DESCENDING_INSENSITIVE
 }
