@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.project.CayenneUserDir;
-import org.apache.cayenne.unit.CayenneResources;
 import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
