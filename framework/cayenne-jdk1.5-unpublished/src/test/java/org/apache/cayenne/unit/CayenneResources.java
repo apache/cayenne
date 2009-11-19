@@ -29,7 +29,6 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;

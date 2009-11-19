@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.collections.ExtendedProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.unit.ConnectionProperties;
 
 /**
  */

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.conf;
+package org.apache.cayenne.unit;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,8 +33,6 @@ import java.util.Map;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.commons.collections.ExtendedProperties;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * ConnectionProperties handles a set of DataSourceInfo objects using information stored
@@ -43,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ConnectionProperties {
 
-    private static Log logObj = LogFactory.getLog(ConnectionProperties.class);
     public static final String EMBEDDED_DATASOURCE = "internal_embedded_datasource";
     public static final String EMBEDDED_DATASOURCE_DBADAPTER = "org.apache.cayenne.dba.hsqldb.HSQLDBAdapter";
     public static final String EMBEDDED_DATASOURCE_USERNAME = "sa";
@@ -271,7 +268,7 @@ public class ConnectionProperties {
     /**
      * Creates a DataSourceInfo object from a set of properties.
      */
-    protected DataSourceInfo buildDataSourceInfo(ExtendedProperties props) {
+    public DataSourceInfo buildDataSourceInfo(ExtendedProperties props) {
         DataSourceInfo dsi = new DataSourceInfo();
 
         String adapter = props.getString(ADAPTER_KEY);
@@ -293,7 +290,7 @@ public class ConnectionProperties {
     /**
      * Returns a list of connection names configured in the properties object.
      */
-    protected List<String> extractNames(ExtendedProperties props) {
+    public List<String> extractNames(ExtendedProperties props) {
         Iterator it = props.getKeys();
         List<String> list = new ArrayList<String>();
 

@@ -39,7 +39,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
@@ -82,17 +81,17 @@ public class Provider implements PersistenceProvider {
     public static final String CREATE_SCHEMA_PROPERTY = "org.apache.cayenne.schema.create";
     public static final String DATA_SOURCE_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaDataSourceFactory";
 
-    // ... DataSource
+    // ... DataSource see ConnectionProperties
     public static final String ADAPTER_PROPERTY = "org.apache.cayenne."
-            + ConnectionProperties.ADAPTER_KEY;
+            + "adapter";
     public static final String DATA_SOURCE_DRIVER_PROPERTY = "org.apache.cayenne.datasource."
-            + ConnectionProperties.DRIVER_KEY;
+            + "jdbc.driver";
     public static final String DATA_SOURCE_URL_PROPERTY = "org.apache.cayenne.datasource."
-            + ConnectionProperties.URL_KEY;
+            + "jdbc.url";
     public static final String DATA_SOURCE_USER_NAME_PROPERTY = "org.apache.cayenne.datasource."
-            + ConnectionProperties.USER_NAME_KEY;
+            + "jdbc.username";
     public static final String DATA_SOURCE_PASSWORD_PROPERTY = "org.apache.cayenne.datasource."
-            + ConnectionProperties.PASSWORD_KEY;
+            + "jdbc.password";
     public static final String DATA_SOURCE_MIN_CONNECTIONS_PROPERTY = "org.apache.cayenne.datasource.jdbc.minConnections";
     public static final String DATA_SOURCE_MAX_CONNECTIONS_PROPERTY = "org.apache.cayenne.datasource.jdbc.maxConnections";
 
