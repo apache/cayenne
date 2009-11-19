@@ -98,11 +98,14 @@ public class ConnectionProperties {
                 ConnectionProperties cp = new ConnectionProperties(
                         new ExtendedProperties(f.getAbsolutePath()));
 
-                if ((!adapter.startsWith("$")
-                        || !usr.startsWith("$")
-                        || !pass.startsWith("$")
-                        || !url.startsWith("$") || !driver.startsWith("$"))
-                        && !System.getProperty("cayenneTestConnection").equals("null")) {
+                if (((adapter != null && !adapter.startsWith("$"))
+                        || (usr != null && !usr.startsWith("$"))
+                        || (pass != null && !pass.startsWith("$"))
+                        || (url != null && !url.startsWith("$")) || (driver != null && !driver
+                        .startsWith("$")))
+                        && (System.getProperty("cayenneTestConnection") != null && !System
+                                .getProperty("cayenneTestConnection")
+                                .equals("null"))) {
 
                     DataSourceInfo dsiOld = null;
                     if (connectionInfos.get(System.getProperty("cayenneTestConnection")) != null) {
@@ -112,31 +115,31 @@ public class ConnectionProperties {
                                 .getProperty("cayenneTestConnection"));
                     }
 
-                    if (!adapter.startsWith("$")) {
+                    if (adapter != null && !adapter.startsWith("$")) {
                         dsi.setAdapterClassName(adapter);
                     }
                     else if (dsiOld != null) {
                         dsi.setAdapterClassName(dsiOld.getAdapterClassName());
                     }
-                    if (!usr.startsWith("$")) {
+                    if (usr != null && !usr.startsWith("$")) {
                         dsi.setUserName(usr);
                     }
                     else if (dsiOld != null) {
                         dsi.setUserName(dsiOld.getUserName());
                     }
-                    if (!pass.startsWith("$")) {
+                    if (pass != null && !pass.startsWith("$")) {
                         dsi.setPassword(pass);
                     }
                     else if (dsiOld != null) {
                         dsi.setPassword(dsiOld.getPassword());
                     }
-                    if (!url.startsWith("$")) {
+                    if (url != null && !url.startsWith("$")) {
                         dsi.setDataSourceUrl(url);
                     }
                     else if (dsiOld != null) {
                         dsi.setDataSourceUrl(dsiOld.getDataSourceUrl());
                     }
-                    if (!driver.startsWith("$")) {
+                    if (driver != null && !driver.startsWith("$")) {
                         dsi.setJdbcDriver(driver);
                     }
                     else if (dsiOld != null) {
@@ -149,25 +152,28 @@ public class ConnectionProperties {
                 }
             }
             else {
-                if ((!adapter.startsWith("$")
-                        || !usr.startsWith("$")
-                        || !pass.startsWith("$")
-                        || !url.startsWith("$") || !driver.startsWith("$"))
-                        && !System.getProperty("cayenneTestConnection").equals("null")) {
+                if (((adapter != null && !adapter.startsWith("$"))
+                        || (usr != null && !usr.startsWith("$"))
+                        || (pass != null && !pass.startsWith("$"))
+                        || (url != null && !url.startsWith("$")) || (driver != null && !driver
+                        .startsWith("$")))
+                        && (System.getProperty("cayenneTestConnection") != null && !System
+                                .getProperty("cayenneTestConnection")
+                                .equals("null"))) {
 
-                    if (!adapter.startsWith("$")) {
+                    if (adapter != null && !adapter.startsWith("$") ) {
                         dsi.setAdapterClassName(adapter);
                     }
-                    if (!usr.startsWith("$")) {
+                    if (usr != null && !usr.startsWith("$")) {
                         dsi.setUserName(usr);
                     }
-                    if (!pass.startsWith("$")) {
+                    if (pass != null && !pass.startsWith("$")) {
                         dsi.setPassword(pass);
                     }
-                    if (!url.startsWith("$")) {
+                    if (url != null && !url.startsWith("$")) {
                         dsi.setDataSourceUrl(url);
                     }
-                    if (!driver.startsWith("$")) {
+                    if (driver != null && !driver.startsWith("$")) {
                         dsi.setJdbcDriver(driver);
                     }
                     connectionInfos.put(System.getProperty("cayenneTestConnection"), dsi);
