@@ -166,6 +166,12 @@
 			</roles>
 			<timezone>+3</timezone>
 		</developer>
+                <developer>
+                        <name>Olga Tkachova</name>
+                        <roles>
+                                <role>Committer</role>
+                        </roles>
+                </developer>
 	</developers>
 
 	<licenses>
