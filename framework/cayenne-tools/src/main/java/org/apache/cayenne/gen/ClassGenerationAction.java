@@ -29,10 +29,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.tools.NamePatternMatcher;
 import org.apache.commons.logging.Log;
 import org.apache.velocity.Template;
@@ -45,18 +45,19 @@ import org.apache.velocity.runtime.log.NullLogSystem;
  * @since 3.0
  */
 public class ClassGenerationAction {
+    static final String TEMPLATES_DIR_NAME = "templates/v1_2/";
 
-    public static final String SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/singleclass.vm";
-    public static final String SUBCLASS_TEMPLATE = "dotemplates/v1_2/subclass.vm";
-    public static final String SUPERCLASS_TEMPLATE = "dotemplates/v1_2/superclass.vm";
+    public static final String SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "singleclass.vm";
+    public static final String SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "subclass.vm";
+    public static final String SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "superclass.vm";
 
-    public static final String EMBEDDABLE_SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/embeddable-singleclass.vm";
-    public static final String EMBEDDABLE_SUBCLASS_TEMPLATE = "dotemplates/v1_2/embeddable-subclass.vm";
-    public static final String EMBEDDABLE_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/embeddable-superclass.vm";
+    public static final String EMBEDDABLE_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "embeddable-singleclass.vm";
+    public static final String EMBEDDABLE_SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "embeddable-subclass.vm";
+    public static final String EMBEDDABLE_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "embeddable-superclass.vm";
 
-    public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/datamap-singleclass.vm";
-    public static final String DATAMAP_SUBCLASS_TEMPLATE = "dotemplates/v1_2/datamap-subclass.vm";
-    public static final String DATAMAP_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/datamap-superclass.vm";
+    public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-singleclass.vm";
+    public static final String DATAMAP_SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-subclass.vm";
+    public static final String DATAMAP_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-superclass.vm";
 
     public static final String SUPERCLASS_PREFIX = "_";
     private static final String WILDCARD = "*";
