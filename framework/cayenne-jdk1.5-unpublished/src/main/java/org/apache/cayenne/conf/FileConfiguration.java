@@ -103,6 +103,13 @@ public class FileConfiguration extends DefaultConfiguration {
             locator.addFilesystemPath(projectDirectory);
         }
     }
+    
+    @Override
+    public void initialize() throws Exception {
+        if (getProjectFile() != null) {
+            super.initialize();
+        }
+    }
 
     /**
      * Adds the given String as a custom path for filesystem lookups. The path can be

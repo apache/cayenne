@@ -51,7 +51,7 @@ public class ProjectConfiguration extends FileConfiguration {
 
     @Override
     public void initialize() throws Exception {
-        if(getProjectFile().isFile()) {
+        if(projectFile != null && projectFile.isFile()) {
             super.initialize();
         }
     }
