@@ -31,9 +31,9 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
     public static final String SUBCLASS_TEMPLATE = "dotemplates/v1_2/client-subclass.vm";
     public static final String SUPERCLASS_TEMPLATE = "dotemplates/v1_2/client-superclass.vm";
     
-    public static final String DMAP_SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/datamap-singleclass.vm";
-    public static final String DMAP_SUBCLASS_TEMPLATE = "dotemplates/v1_2/datamap-subclass.vm";
-    public static final String DMAP_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/datamap-superclass.vm";
+    public static final String DMAP_SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/client-datamap-singleclass.vm";
+    public static final String DMAP_SUBCLASS_TEMPLATE = "dotemplates/v1_2/client-datamap-subclass.vm";
+    public static final String DMAP_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/client-datamap-superclass.vm";
     
     public static final String CLIENT_SUPERCLASS_PREFIX = "_Client";
 
