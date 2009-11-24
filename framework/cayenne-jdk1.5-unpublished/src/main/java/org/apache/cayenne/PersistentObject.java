@@ -24,6 +24,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.ToManyMapProperty;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * A convenience base superclass for concrete Persistent objects. Provides implementation
@@ -130,10 +131,10 @@ public abstract class PersistentObject implements Persistent {
      * mapped returns null.
      * 
      * @since 1.2
+     * @deprecated since 3.1 {@link org.apache.cayenne.util.Cayenne#getObjEntity(Persistent)} is used
      */
+    @Deprecated
     public ObjEntity getObjEntity() {
-        return (getObjectContext() != null) ? getObjectContext()
-                .getEntityResolver()
-                .lookupObjEntity(this) : null;
+        return Cayenne.getObjEntity(this);
     }
 }

@@ -86,18 +86,16 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
         }
 
         Object oldValue = setValueDirectly(value);
-
         if (oldValue != value) {
-            // notify ObjectContext
-            if (relationshipOwner.getObjectContext() != null) {
-                relationshipOwner.getObjectContext().propertyChanged(
-                        relationshipOwner,
-                        relationshipName,
-                        oldValue,
-                        value);
+            relationshipOwner.getObjectContext().propertyChanged(relationshipOwner, relationshipName, oldValue, value);
+    
+            if (oldValue instanceof Persistent) {
+                Cayenne.unsetReverse(relationshipOwner, relationshipName, (Persistent) oldValue);
+            }
+            if (value instanceof Persistent) {
+                Cayenne.setReverse(relationshipOwner, relationshipName, (Persistent) value);
             }
         }
-
         return oldValue;
     }
 

@@ -23,14 +23,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.map.DbAttribute;
@@ -41,7 +38,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -69,116 +66,51 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
         }
     }
 
-    public Object readNestedProperty(String path) {
-        return readNestedProperty(this, path, tokenizePath(path), 0, 0);
-    }
-
     /**
-     * Recursively resolves nested property path
+     * Returns a value of the property identified by a property path. Supports reading
+     * both mapped and unmapped properties. Unmapped properties are accessed in a manner
+     * consistent with JavaBeans specification.
+     * <p>
+     * Property path (or nested property) is a dot-separated path used to traverse object
+     * relationships until the final object is found. If a null object found while
+     * traversing path, null is returned. If a list is encountered in the middle of the
+     * path, CayenneRuntimeException is thrown. Unlike
+     * {@link #readPropertyDirectly(String)}, this method will resolve an object if it is
+     * HOLLOW.
+     * <p>
+     * Examples:
+     * </p>
+     * <ul>
+     * <li>Read this object property:<br>
+     * <code>String name = (String)artist.readNestedProperty("name");</code><br>
+     * <br>
+     * </li>
+     * <li>Read an object related to this object:<br>
+     * <code>Gallery g = (Gallery)paintingInfo.readNestedProperty("toPainting.toGallery");</code>
+     * <br>
+     * <br>
+     * </li>
+     * <li>Read a property of an object related to this object: <br>
+     * <code>String name = (String)painting.readNestedProperty("toArtist.artistName");</code>
+     * <br>
+     * <br>
+     * </li>
+     * <li>Read to-many relationship list:<br>
+     * <code>List exhibits = (List)painting.readNestedProperty("toGallery.exhibitArray");</code>
+     * <br>
+     * <br>
+     * </li>
+     * <li>Read to-many relationship in the middle of the path:<br>
+     * <code>List<String> names = (List<String>)artist.readNestedProperty("paintingArray.paintingName");</code>
+     * <br>
+     * <br>
+     * </li>
+     * </ul>
+     * 
+     * @since 1.0.5
      */
-    private static Object readNestedProperty(
-            CayenneDataObject dataObject,
-            String path,
-            String[] tokenizedPath,
-            int tokenIndex,
-            int pathIndex) {
-
-        Object property = dataObject.readSimpleProperty(tokenizedPath[tokenIndex]);
-
-        if (tokenIndex == tokenizedPath.length - 1) { // last component
-            return property;
-        }
-
-        pathIndex += tokenizedPath[tokenIndex].length() + 1;
-        if (property == null) {
-            return null;
-        }
-        else if (property instanceof CayenneDataObject) {
-            return readNestedProperty(
-                    (CayenneDataObject) property,
-                    path,
-                    tokenizedPath,
-                    tokenIndex + 1,
-                    tokenIndex);
-        }
-        else if (property instanceof Collection) {
-            /**
-             * Support for collection property in the middle of the path
-             */
-            Collection<Object> result = property instanceof List
-                    ? new ArrayList<Object>()
-                    : new HashSet<Object>();
-            for (Object obj : (Collection<?>) property) {
-                if (obj instanceof CayenneDataObject) {
-                    Object rest = readNestedProperty(
-                            (CayenneDataObject) obj,
-                            path,
-                            tokenizedPath,
-                            tokenIndex + 1,
-                            tokenIndex);
-                    if (rest instanceof Collection) {
-                        /**
-                         * We don't want nested collections. E.g.
-                         * readNestedProperty("paintingArray.paintingTitle") should return
-                         * List<String>
-                         */
-                        result.addAll((Collection<?>) rest);
-                    }
-                    else {
-                        result.add(rest);
-                    }
-                }
-            }
-            return result;
-        }
-        else {
-            // read the rest of the path via introspection
-            return PropertyUtils.getProperty(property, path.substring(pathIndex));
-        }
-    }
-
-    private static final String[] tokenizePath(String path) {
-        if (path == null) {
-            throw new NullPointerException("Null property path.");
-        }
-
-        if (path.length() == 0) {
-            throw new IllegalArgumentException("Empty property path.");
-        }
-
-        // take a shortcut for simple properties
-        if (!path.contains(".")) {
-            return new String[] {
-                path
-            };
-        }
-
-        StringTokenizer tokens = new StringTokenizer(path, ".");
-        int length = tokens.countTokens();
-        String[] tokenized = new String[length];
-        for (int i = 0; i < length; i++) {
-            String temp = tokens.nextToken();
-            if (temp.endsWith("+")) {
-                tokenized[i] = temp.substring(0, temp.length() - 1);
-            }
-            else {
-                tokenized[i] = temp;
-            }
-        }
-        return tokenized;
-    }
-
-    private final Object readSimpleProperty(String property) {
-        // side effect - resolves HOLLOW object
-        Object object = readProperty(property);
-
-        // if a null value is returned, there is still a chance to
-        // find a non-persistent property via reflection
-        if (object == null && !values.containsKey(property)) {
-            object = PropertyUtils.getProperty(this, property);
-        }
-
-        return object;
+    public Object readNestedProperty(String path) {
+        return Cayenne.readNestedProperty(this, path);
     }
 
     public Object readProperty(String propertyName) {

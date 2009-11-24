@@ -38,6 +38,8 @@ public class CodeTemplateManager {
     public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
     static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
     static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
+    
+    static final String LIGHT_SERVER_SUPERCLASS = "Light Server Superclass";
 
     protected List<String> standardSubclassTemplates;
     protected List<String> standardSuperclassTemplates;
@@ -53,6 +55,7 @@ public class CodeTemplateManager {
 
         standardSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
         standardSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
+        standardSuperclassTemplates.add(LIGHT_SERVER_SUPERCLASS);
 
         standardSubclassTemplates = new ArrayList<String>(3);
         standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
@@ -73,6 +76,9 @@ public class CodeTemplateManager {
         standardTemplates.put(
                 STANDARD_CLIENT_SUBCLASS,
                 ClientClassGenerationAction.SUBCLASS_TEMPLATE);
+        standardTemplates.put(
+                LIGHT_SERVER_SUPERCLASS,
+                ClientClassGenerationAction.LIGHT_SUPERCLASS_TEMPLATE);
     }
 
     /**

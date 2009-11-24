@@ -33,8 +33,9 @@ import org.apache.cayenne.reflect.Property;
  * processing on behalf of an ObjectContext.
  * 
  * @since 3.0
+ * TODO: make this non-public! 
  */
-public abstract class ObjectContextGraphAction implements Serializable {
+public class ObjectContextGraphAction implements Serializable {
 
     protected ObjectContext context;
 
@@ -68,11 +69,29 @@ public abstract class ObjectContextGraphAction implements Serializable {
         }
     }
 
-    protected abstract void handleArcPropertyChange(
+    protected void handleArcPropertyChange(
             Persistent object,
             ArcProperty property,
             Object oldValue,
-            Object newValue);
+            Object newValue) {
+        if (oldValue != newValue) {
+            markAsDirty(object);
+
+            if (oldValue instanceof Persistent) {
+                context.getGraphManager().arcDeleted(
+                        object.getObjectId(),
+                        ((Persistent) oldValue).getObjectId(),
+                        property.getName());
+            }
+
+            if (newValue instanceof Persistent) {
+                context.getGraphManager().arcCreated(
+                        object.getObjectId(),
+                        ((Persistent) newValue).getObjectId(),
+                        property.getName());
+            }
+        }
+    }
 
     protected void handleSimplePropertyChange(
             Persistent object,

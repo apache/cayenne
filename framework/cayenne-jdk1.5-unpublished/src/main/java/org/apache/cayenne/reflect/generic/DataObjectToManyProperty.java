@@ -123,4 +123,14 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
             writePropertyDirectly(object, null, fault);
         }
     }
+
+    public void addTargetDirectly(Object source, Object target)
+            throws PropertyException {
+        addTarget(source, target, false);
+    }
+
+    public void removeTargetDirectly(Object source, Object target)
+            throws PropertyException {
+        removeTarget(source, target, false);
+    }
 }

@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.util.PersistentObjectCollection;
 
 /**
  * A generic superclass of CollectionProperty implementations.
@@ -79,6 +80,14 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
             setReverse(source, null, target);
         }
     }
+    
+    public void addTargetDirectly(Object source, Object target) throws PropertyException {
+        ((PersistentObjectCollection) readProperty(source)).addDirectly(target);
+    }
+    
+    public void removeTargetDirectly(Object source, Object target) throws PropertyException {
+        ((PersistentObjectCollection) readProperty(source)).removeDirectly(target);
+    }
 
     public void removeTarget(Object source, Object target, boolean setReverse) {
 
@@ -131,4 +140,5 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
      */
     protected abstract ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException;
+    
 }

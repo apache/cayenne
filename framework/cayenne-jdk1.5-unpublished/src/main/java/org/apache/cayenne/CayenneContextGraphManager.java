@@ -157,38 +157,27 @@ final class CayenneContextGraphManager extends GraphMap {
 
         EntityResolver resolver = context.getEntityResolver();
 
-        // avoid processing callbacks when updating the map...
-        PropertyChangeProcessingStrategy oldChangeStrategy = context
-                .getPropertyChangeProcessingStrategy();
-        context
-                .setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.IGNORE);
+        while (it.hasNext()) {
+            ObjectId id = (ObjectId) it.next();
+            ClassDescriptor descriptor = resolver.getClassDescriptor(id
+                    .getEntityName());
 
-        try {
-            while (it.hasNext()) {
-                ObjectId id = (ObjectId) it.next();
-                ClassDescriptor descriptor = resolver.getClassDescriptor(id
-                        .getEntityName());
+            Iterator<ArcProperty> mapArcProperties = descriptor.getMapArcProperties();
+            if (mapArcProperties.hasNext()) {
 
-                Iterator<ArcProperty> mapArcProperties = descriptor.getMapArcProperties();
-                if (mapArcProperties.hasNext()) {
+                Object object = getNode(id);
 
-                    Object object = getNode(id);
+                while (mapArcProperties.hasNext()) {
+                    ArcProperty arc = mapArcProperties.next();
+                    ToManyMapProperty reverseArc = (ToManyMapProperty) arc
+                            .getComplimentaryReverseArc();
 
-                    while (mapArcProperties.hasNext()) {
-                        ArcProperty arc = mapArcProperties.next();
-                        ToManyMapProperty reverseArc = (ToManyMapProperty) arc
-                                .getComplimentaryReverseArc();
-
-                        Object source = arc.readPropertyDirectly(object);
-                        if (source != null && !reverseArc.isFault(source)) {
-                            remapTarget(reverseArc, source, object);
-                        }
+                    Object source = arc.readPropertyDirectly(object);
+                    if (source != null && !reverseArc.isFault(source)) {
+                        remapTarget(reverseArc, source, object);
                     }
                 }
             }
-        }
-        finally {
-            context.setPropertyChangeProcessingStrategy(oldChangeStrategy);
         }
     }
 

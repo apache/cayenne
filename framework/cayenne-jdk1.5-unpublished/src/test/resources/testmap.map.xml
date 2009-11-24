@@ -117,6 +117,15 @@
 		<db-attribute name="KEY2" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
 		<db-attribute name="NAME" type="VARCHAR" length="255"/>
 	</db-entity>
+	<db-entity name="CONTINENT">
+		<db-attribute name="CONTINENTD" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="COUNTRY">
+		<db-attribute name="CONTINENTID" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="COUNTRYID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
 	<db-entity name="DATE_TEST">
 		<db-attribute name="DATE_COLUMN" type="DATE"/>
 		<db-attribute name="DATE_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -332,6 +341,12 @@
 		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="Continent" className="org.apache.art.Continent" dbEntityName="CONTINENT" superClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Country" className="org.apache.art.Country" dbEntityName="COUNTRY" superClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<obj-entity name="DateTestEntity" className="org.apache.art.DateTestEntity" dbEntityName="DATE_TEST">
 		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
 		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
@@ -498,6 +513,12 @@
 		<db-attribute-pair source="KEY1" target="F_KEY1"/>
 		<db-attribute-pair source="KEY2" target="F_KEY2"/>
 	</db-relationship>
+	<db-relationship name="countries" source="CONTINENT" target="COUNTRY" toMany="true">
+		<db-attribute-pair source="CONTINENTD" target="CONTINENTID"/>
+	</db-relationship>
+	<db-relationship name="continent" source="COUNTRY" target="CONTINENT" toMany="false">
+		<db-attribute-pair source="CONTINENTID" target="CONTINENTD"/>
+	</db-relationship>
 	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</db-relationship>
@@ -568,6 +589,8 @@
 	<obj-relationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
 	<obj-relationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
 	<obj-relationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" db-relationship-path="compoundFkArray"/>
+	<obj-relationship name="countries" source="Continent" target="Country" deleteRule="Cascade" db-relationship-path="countries"/>
+	<obj-relationship name="continent" source="Country" target="Continent" deleteRule="Nullify" db-relationship-path="continent"/>
 	<obj-relationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
 	<obj-relationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
 	<obj-relationship name="exhibitArray" source="Gallery" target="Exhibit" deleteRule="Cascade" db-relationship-path="exhibitArray"/>

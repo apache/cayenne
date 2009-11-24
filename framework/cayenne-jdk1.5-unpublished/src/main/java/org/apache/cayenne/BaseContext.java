@@ -44,6 +44,7 @@ import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.util.ObjectContextGraphAction;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
@@ -92,6 +93,12 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     // reinjected later if needed
     protected transient DataChannel channel;
     protected QueryCache queryCache;
+    
+    /**
+     * Graph action that handles property changes
+     * @since 3.1
+     */
+    protected ObjectContextGraphAction graphAction;
 
     /**
      * Stores user defined properties associated with this DataContext.
@@ -99,6 +106,10 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @since 3.0
      */
     protected Map<String, Object> userProperties;
+    
+    protected BaseContext() {
+        graphAction = new ObjectContextGraphAction(this);
+    }
 
     public abstract void commitChanges();
 
@@ -232,11 +243,14 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
-    public abstract void propertyChanged(
+    public void propertyChanged(
             Persistent object,
             String property,
             Object oldValue,
-            Object newValue);
+            Object newValue) {
+
+        graphAction.handlePropertyChange(object, property, oldValue, newValue);
+    }
 
     public abstract void rollbackChanges();
 

@@ -181,7 +181,7 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
         return (objectMap != null) ? objectMap.toString() : "{<unresolved>}";
     }
 
-    void postprocessAdd(Object addedObject) {
+    protected void postprocessAdd(Object addedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -190,17 +190,22 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
                     relationshipName,
                     null,
                     addedObject);
+            
+            if (addedObject instanceof Persistent) {
+                Cayenne.setReverse(relationshipOwner, relationshipName,
+                        (Persistent) addedObject);
+            }
         }
     }
 
-    void postprocessAdd(Collection collection) {
+    protected void postprocessAdd(Collection collection) {
         Iterator it = collection.iterator();
         while (it.hasNext()) {
             postprocessAdd(it.next());
         }
     }
 
-    void postprocessRemove(Object removedObject) {
+    protected void postprocessRemove(Object removedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -209,10 +214,14 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
                     relationshipName,
                     removedObject,
                     null);
+            if (removedObject instanceof Persistent) {
+                Cayenne.unsetReverse(relationshipOwner, relationshipName,
+                        (Persistent) removedObject);
+            }
         }
     }
 
-    void postprocessRemove(Collection collection) {
+    protected void postprocessRemove(Collection collection) {
         Iterator it = collection.iterator();
         while (it.hasNext()) {
             postprocessRemove(it.next());
@@ -285,5 +294,15 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
 
     public Collection values() {
         return resolvedObjectMap().values();
+    }
+    
+    public void putDirectly(Object key, Object value) {
+        //TODO: should not resolve manually
+        resolvedObjectMap().put(key, value);
+    }
+    
+    public void removeDirectly(Object key) {
+        //TODO: should not resolve manually
+        resolvedObjectMap().remove(key);
     }
 }

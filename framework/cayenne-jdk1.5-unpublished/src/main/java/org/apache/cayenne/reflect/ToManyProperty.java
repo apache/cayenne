@@ -32,4 +32,20 @@ public interface ToManyProperty extends ArcProperty {
 
     void removeTarget(Object source, Object target, boolean setReverse)
             throws PropertyException;
+    
+    /**
+     * Adds value to collection, without triggering changing events
+     * This method is mostly for internal use
+     * @since 3.1
+     */
+    void addTargetDirectly(Object source, Object target)
+        throws PropertyException;
+
+    /**
+     * Removes value from collection, without triggering changing events
+     * This method is mostly for internal use
+     * @since 3.1
+     */
+    void removeTargetDirectly(Object source, Object target)
+        throws PropertyException;
 }

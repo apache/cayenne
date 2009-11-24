@@ -45,26 +45,9 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public class CayenneContext extends BaseContext {
 
-    /**
-     * @since 3.0
-     */
-    private static ThreadLocal<PropertyChangeProcessingStrategy> PROPERTY_CHANGE_PROCESSING_STRATEGY = new ThreadLocal<PropertyChangeProcessingStrategy>() {
-
-        @Override
-        protected PropertyChangeProcessingStrategy initialValue() {
-            return PropertyChangeProcessingStrategy.RECORD_AND_PROCESS_REVERSE_ARCS;
-        }
-    };
-
     protected EntityResolver entityResolver;
 
     CayenneContextGraphManager graphManager;
-
-    // note that it is important to reuse the same action within the property change
-    // thread to avoid a loop of "propertyChange" calls on handling reverse relationships.
-    // Here we go further and make action a thread-safe ivar that tracks its own thread
-    // state.
-    CayenneContextGraphAction graphAction;
 
     // object that merges "backdoor" changes that come from the channel.
     CayenneContextMergeHandler mergeHandler;
@@ -92,32 +75,13 @@ public class CayenneContext extends BaseContext {
      */
     public CayenneContext(DataChannel channel, boolean changeEventsEnabled,
             boolean syncEventsEnabled) {
-
-        this.graphAction = new CayenneContextGraphAction(this);
+        
         this.graphManager = new CayenneContextGraphManager(
                 this,
                 changeEventsEnabled,
                 syncEventsEnabled);
 
         setChannel(channel);
-    }
-
-    /**
-     * @since 3.0
-     */
-    // accesses a static thread local variable... still keeping the method non-static for
-    // better future portability...
-    PropertyChangeProcessingStrategy getPropertyChangeProcessingStrategy() {
-        return PROPERTY_CHANGE_PROCESSING_STRATEGY.get();
-    }
-
-    /**
-     * @since 3.0
-     */
-    // accesses a static thread local variable... still keeping the method non-static for
-    // better future portability...
-    void setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy strategy) {
-        PROPERTY_CHANGE_PROCESSING_STRATEGY.set(strategy);
     }
 
     /**
@@ -196,10 +160,6 @@ public class CayenneContext extends BaseContext {
 
     CayenneContextGraphManager internalGraphManager() {
         return graphManager;
-    }
-
-    CayenneContextGraphAction internalGraphAction() {
-        return graphAction;
     }
 
     /**
@@ -451,18 +411,6 @@ public class CayenneContext extends BaseContext {
     }
 
     @Override
-    public void propertyChanged(
-            Persistent object,
-            String property,
-            Object oldValue,
-            Object newValue) {
-
-        if (getPropertyChangeProcessingStrategy() != PropertyChangeProcessingStrategy.IGNORE) {
-            graphAction.handlePropertyChange(object, property, oldValue, newValue);
-        }
-    }
-
-    @Override
     public Collection<?> uncommittedObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes();
@@ -549,13 +497,13 @@ public class CayenneContext extends BaseContext {
 
         if (childContext) {
 
-            PropertyChangeProcessingStrategy oldStrategy = getPropertyChangeProcessingStrategy();
-            setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
+//            PropertyChangeProcessingStrategy oldStrategy = getPropertyChangeProcessingStrategy();
+//            setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
             try {
                 changes.apply(new CayenneContextChildDiffLoader(this));
             }
             finally {
-                setPropertyChangeProcessingStrategy(oldStrategy);
+//                setPropertyChangeProcessingStrategy(oldStrategy);
             }
             
             fireDataChannelChanged(originatingContext, changes);

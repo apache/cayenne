@@ -67,40 +67,22 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
                 ((ObjectId) nodeId).getEntityName());
         ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
 
-        // TODO: context strategy reset here still hides the difference between to-one and
-        // to-many per CAY-1204... hopefully it will go away if we do refactoring around
-        // property change strategy instead of using "changeX vs. changeXDirectly".
-        PropertyChangeProcessingStrategy oldStrategy = ((CayenneContext) context)
-                .getPropertyChangeProcessingStrategy();
-        ((CayenneContext) context)
-                .setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.IGNORE);
-        try {
-            property.visit(new PropertyVisitor() {
+        property.visit(new PropertyVisitor() {
 
-                public boolean visitAttribute(AttributeProperty property) {
-                    return false;
-                }
+            public boolean visitAttribute(AttributeProperty property) {
+                return false;
+            }
 
-                public boolean visitToMany(ToManyProperty property) {
-                    // connect reverse arc if the relationship is marked as "runtime"
-                    ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                    boolean autoConnectReverse = reverseArc != null
-                            && reverseArc.getRelationship().isRuntime();
+            public boolean visitToMany(ToManyProperty property) {
+                property.addTargetDirectly(source, target);
+                return false;
+            }
 
-                    property.addTarget(source, target, autoConnectReverse);
-                    return false;
-                }
-
-                public boolean visitToOne(ToOneProperty property) {
-                    property.setTarget(source, target, false);
-                    return false;
-                }
-            });
-        }
-        finally {
-            ((CayenneContext) context).setPropertyChangeProcessingStrategy(oldStrategy);
-        }
-
+            public boolean visitToOne(ToOneProperty property) {
+                property.setTarget(source, target, false);
+                return false;
+            }
+        });
         context.propertyChanged(source, (String) arcId, null, target);
     }
 
@@ -118,58 +100,43 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
                 ((ObjectId) nodeId).getEntityName());
         Property property = descriptor.getProperty(arcId.toString());
 
-        // TODO: context strategy reset here still hides the difference between to-one and
-        // to-many per CAY-1204... hopefully it will go away if we do refactoring around
-        // property change strategy instead of using "changeX vs. changeXDirectly".
-        PropertyChangeProcessingStrategy oldStrategy = ((CayenneContext) context)
-                .getPropertyChangeProcessingStrategy();
-        ((CayenneContext) context)
-                .setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.IGNORE);
         final Persistent[] target = new Persistent[1];
         target[0] = findObject(targetNodeId);
         
-        try {
-            property.visit(new PropertyVisitor() {
+        property.visit(new PropertyVisitor() {
 
-                public boolean visitAttribute(AttributeProperty property) {
-                    return false;
+            public boolean visitAttribute(AttributeProperty property) {
+                return false;
+            }
+
+            public boolean visitToMany(ToManyProperty property) {
+                ArcProperty reverseArc = property.getComplimentaryReverseArc();
+                
+                if (target[0] == null) {
+
+                    // this is usually the case when a NEW object was deleted and then
+                    // its relationships were manipulated; so try to locate the object
+                    // in the collection ... the performance of this is rather dubious
+                    // of course...
+                    target[0] = findObjectInCollection(targetNodeId, property
+                            .readProperty(source));
                 }
 
-                public boolean visitToMany(ToManyProperty property) {
-                    // connect reverse arc if the relationship is marked as "runtime"
-                    ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                    boolean autoConnectReverse = reverseArc != null
-                            && reverseArc.getRelationship().isRuntime();
-
-                    if (target[0] == null) {
-
-                        // this is usually the case when a NEW object was deleted and then
-                        // its relationships were manipulated; so try to locate the object
-                        // in the collection ... the performance of this is rather dubious
-                        // of course...
-                        target[0] = findObjectInCollection(targetNodeId, property
-                                .readProperty(source));
-                    }
-
-                    if (target[0] == null) {
-                        // ignore?
-                    }
-                    else {
-                        property.removeTarget(source, target[0], autoConnectReverse);
-                    }
-
-                    return false;
+                if (target[0] == null) {
+                    // ignore?
+                }
+                else {
+                    property.removeTargetDirectly(source, target[0]);
                 }
 
-                public boolean visitToOne(ToOneProperty property) {
-                    property.setTarget(source, null, false);
-                    return false;
-                }
-            });
-        }
-        finally {
-            ((CayenneContext) context).setPropertyChangeProcessingStrategy(oldStrategy);
-        }
+                return false;
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                property.setTarget(source, null, false);
+                return false;
+            }
+        });
 
         context.propertyChanged(source, (String) arcId, target[0], null);
     }

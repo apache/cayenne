@@ -66,7 +66,6 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
-import org.apache.cayenne.util.ObjectContextGraphAction;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -89,8 +88,6 @@ public class DataContext extends BaseContext implements DataChannel {
     protected transient EntityResolver entityResolver;
 
     protected transient DataContextMergeHandler mergeHandler;
-
-    ObjectContextGraphAction graphAction;
 
     /**
      * Stores the name of parent DataDomain. Used to defer initialization of the parent
@@ -179,8 +176,6 @@ public class DataContext extends BaseContext implements DataChannel {
             this.usingSharedSnaphsotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
         }
-
-        this.graphAction = new DataContextGraphAction(this);
     }
 
     /**
@@ -1252,18 +1247,6 @@ public class DataContext extends BaseContext implements DataChannel {
             setChannel(Configuration.getSharedConfiguration().getDomain(
                     lazyInitParentDomainName));
         }
-    }
-
-    /**
-     * @since 1.2
-     */
-    @Override
-    public void propertyChanged(
-            Persistent object,
-            String property,
-            Object oldValue,
-            Object newValue) {
-        graphAction.handlePropertyChange(object, property, oldValue, newValue);
     }
 
     /**

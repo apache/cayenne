@@ -187,17 +187,15 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
             target = context.createFault((ObjectId) targetNodeId);
         }
 
-        context.internalGraphAction().setArcChangeInProcess(true);
         try {
             if (p instanceof ToManyProperty) {
-                ((ToManyProperty) p).addTarget(source, target, false);
+                ((ToManyProperty) p).addTargetDirectly(source, target);
             }
             else {
                 p.writePropertyDirectly(source, null, target);
             }
         }
         finally {
-            context.internalGraphAction().setArcChangeInProcess(false);
         }
     }
 
@@ -223,17 +221,15 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
             target = context.createFault((ObjectId) targetNodeId);
         }
 
-        context.internalGraphAction().setArcChangeInProcess(true);
         try {
             if (p instanceof ToManyProperty) {
-                ((ToManyProperty) p).removeTarget(source, target, false);
+                ((ToManyProperty) p).removeTargetDirectly(source, target);
             }
             else {
                 p.writePropertyDirectly(source, target, null);
             }
         }
         finally {
-            context.internalGraphAction().setArcChangeInProcess(false);
         }
     }
 

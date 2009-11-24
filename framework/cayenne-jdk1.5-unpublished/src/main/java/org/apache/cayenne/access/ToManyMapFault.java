@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.Accessor;
-import org.apache.cayenne.util.PersistentObjectMap;
 
 /**
  * @since 3.0
@@ -36,6 +35,6 @@ public class ToManyMapFault extends Fault {
 
     @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        return new PersistentObjectMap(sourceObject, relationshipName, mapKeyAccessor);
+        return new ToManyMap(sourceObject, relationshipName, mapKeyAccessor);
     }
 }

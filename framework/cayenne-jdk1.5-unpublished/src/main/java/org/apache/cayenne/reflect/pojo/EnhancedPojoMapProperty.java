@@ -63,6 +63,12 @@ class EnhancedPojoMapProperty extends EnhancedPojoToManyProperty implements
             setReverse(source, null, target);
         }
     }
+    
+    @Override
+    public void addTargetDirectly(Object source, Object target) throws PropertyException {
+        PersistentObjectMap collection = (PersistentObjectMap) readProperty(source);
+        collection.putDirectly(getMapKey(target), target);
+    }
 
     @Override
     public void removeTarget(Object source, Object target, boolean setReverse) {
@@ -75,6 +81,12 @@ class EnhancedPojoMapProperty extends EnhancedPojoToManyProperty implements
         if (target != null && setReverse) {
             setReverse(source, target, null);
         }
+    }
+    
+    @Override
+    public void removeTargetDirectly(Object source, Object target) throws PropertyException {
+        PersistentObjectMap collection = (PersistentObjectMap) readProperty(source);
+        collection.removeDirectly(getMapKey(target));
     }
 
     public Object getMapKey(Object target) throws PropertyException {

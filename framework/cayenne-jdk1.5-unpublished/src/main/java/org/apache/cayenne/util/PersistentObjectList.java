@@ -35,7 +35,8 @@ import org.apache.cayenne.ValueHolder;
  * 
  * @since 1.2
  */
-public class PersistentObjectList extends RelationshipFault implements List, ValueHolder {
+public class PersistentObjectList extends RelationshipFault 
+    implements List, ValueHolder, PersistentObjectCollection {
 
     // wrapped objects list
     protected List objectList;
@@ -414,6 +415,10 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
                     relationshipName,
                     null,
                     addedObject);
+            if (addedObject instanceof Persistent) {
+                Cayenne.setReverse(relationshipOwner, relationshipName,
+                        (Persistent) addedObject);
+            }
         }
     }
 
@@ -426,11 +431,33 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
                     relationshipName,
                     removedObject,
                     null);
+            if (removedObject instanceof Persistent) {
+                Cayenne.unsetReverse(relationshipOwner, relationshipName,
+                        (Persistent) removedObject);
+            }
         }
     }
 
     @Override
     public String toString() {
         return (objectList != null) ? objectList.toString() : "[<unresolved>]";
+    }
+
+    public void addDirectly(Object target) {
+        if (isFault()) {
+            addLocal(target);
+        }
+        else {
+            objectList.add(target);
+        }
+    }
+
+    public void removeDirectly(Object target) {
+        if (isFault()) {
+            removeLocal(target);
+        }
+        else {
+            objectList.remove(target);
+        }
     }
 }
