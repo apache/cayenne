@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTooneDep;
 import org.apache.cayenne.testdo.mt.ClientMtTooneMaster;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests nested object contexts
@@ -128,7 +129,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         ClientMtTable1 modified = context.newObject(ClientMtTable1.class);
         context.commitChanges();
 
-        ClientMtTable1 peerModified = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 peerModified = (ClientMtTable1) Cayenne.objectForQuery(
                 child,
                 new ObjectIdQuery(modified.getObjectId()));
 
@@ -189,7 +190,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         ClientMtTable1 modified = context.newObject(ClientMtTable1.class);
 
         context.commitChanges();
-        int modifiedid = DataObjectUtils.intPKForObject(modified);
+        int modifiedid = Cayenne.intPKForObject(modified);
 
         // test how different object states appear in the child on select
 
@@ -211,7 +212,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
             ClientMtTable1 next = (ClientMtTable1) it.next();
             assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
 
-            int id = DataObjectUtils.intPKForObject(next);
+            int id = Cayenne.intPKForObject(next);
             if (id == modifiedid) {
                 assertEquals("a", next.getGlobalAttribute1());
             }
@@ -324,7 +325,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         context.commitChanges();
 
         ClientMtTable2 p = child.newObject(ClientMtTable2.class);
-        ClientMtTable1 aChild = (ClientMtTable1) DataObjectUtils.objectForPK(child, a
+        ClientMtTable1 aChild = (ClientMtTable1) Cayenne.objectForPK(child, a
                 .getObjectId());
         p.setGlobalAttribute("X");
         aChild.addToTable2Array(p);
@@ -352,11 +353,11 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         ObjectContext child = context.createChildContext();
         ObjectContext childPeer = context.createChildContext();
 
-        ClientMtTable2 childP1 = (ClientMtTable2) DataObjectUtils.objectForPK(child, b
+        ClientMtTable2 childP1 = (ClientMtTable2) Cayenne.objectForPK(child, b
                 .getObjectId());
 
         // trigger object creation in the peer nested DC
-        DataObjectUtils.objectForPK(childPeer, b.getObjectId());
+        Cayenne.objectForPK(childPeer, b.getObjectId());
         childP1.setTable1(null);
 
         blockQueries();
@@ -701,7 +702,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         context.commitChanges();
 
         ObjectContext child = context.createChildContext();
-        ClientMtTable1 childMt = (ClientMtTable1) DataObjectUtils.objectForPK(
+        ClientMtTable1 childMt = (ClientMtTable1) Cayenne.objectForPK(
                 child,
                 parentMt.getObjectId());
         childMt.setGlobalAttribute1("1183");

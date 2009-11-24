@@ -31,7 +31,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.DataSourceFactory;
@@ -43,6 +42,7 @@ import org.apache.cayenne.pref.DomainPreference;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * A DataSourceFactory that loads DataSources from CayenneModeler preferences. Allows
@@ -173,7 +173,7 @@ public class PreferencesDataSourceFactory implements DataSourceFactory {
         Iterator it = preferences.iterator();
         while (it.hasNext()) {
             DomainPreference pref = (DomainPreference) it.next();
-            ids.add(DataObjectUtils.pkForObject(pref));
+            ids.add(Cayenne.pkForObject(pref));
         }
 
         Expression qualifier = Expression.fromString("db:"

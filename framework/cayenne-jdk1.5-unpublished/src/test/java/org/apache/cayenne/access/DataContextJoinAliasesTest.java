@@ -25,11 +25,11 @@ import java.util.Map;
 
 import org.apache.art.Artist;
 import org.apache.art.Gallery;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextJoinAliasesTest extends CayenneCase {
 
@@ -50,8 +50,8 @@ public class DataContextJoinAliasesTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist picasso = DataObjectUtils.objectForPK(context, Artist.class, 1);
-        Artist dali = DataObjectUtils.objectForPK(context, Artist.class, 2);
+        Artist picasso = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist dali = Cayenne.objectForPK(context, Artist.class, 2);
 
         SelectQuery query = new SelectQuery(Gallery.class);
         query.andQualifier(ExpressionFactory.matchAllExp(

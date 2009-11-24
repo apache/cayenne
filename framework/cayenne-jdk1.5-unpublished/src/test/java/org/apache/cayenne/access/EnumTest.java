@@ -20,13 +20,13 @@ package org.apache.cayenne.access;
 
 import org.apache.art.Enum1;
 import org.apache.art.EnumEntity;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class EnumTest extends CayenneCase {
 
@@ -55,7 +55,7 @@ public class EnumTest extends CayenneCase {
                 EnumEntity.ENUM_ATTRIBUTE_PROPERTY,
                 Enum1.one));
 
-        EnumEntity e = (EnumEntity) DataObjectUtils.objectForQuery(context, q);
+        EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
     }
@@ -76,7 +76,7 @@ public class EnumTest extends CayenneCase {
                 "SELECT * FROM ENUM_ENTITY WHERE ENUM_ATTRIBUTE = 'one'");
         q.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-        EnumEntity e = (EnumEntity) DataObjectUtils.objectForQuery(context, q);
+        EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
     }

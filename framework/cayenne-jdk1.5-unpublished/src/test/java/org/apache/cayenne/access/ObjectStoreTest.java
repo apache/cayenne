@@ -26,11 +26,11 @@ import org.apache.art.Artist;
 import org.apache.art.Gallery;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.MockDataObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -125,7 +125,7 @@ public class ObjectStoreTest extends CayenneCase {
         //
         // The full object graph is not being re-registered during auto-registration
         // with the context.
-        Painting newP = (Painting) DataObjectUtils.objectForPK(createDataContext(), p
+        Painting newP = (Painting) Cayenne.objectForPK(createDataContext(), p
                 .getObjectId());
         assertNotNull(newP.getToGallery());
     }

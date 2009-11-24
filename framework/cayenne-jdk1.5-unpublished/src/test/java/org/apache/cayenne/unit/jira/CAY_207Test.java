@@ -55,7 +55,7 @@ public class CAY_207Test extends PeopleCase {
 
         try {
             // M1
-//            Manager o1 = DataObjectUtils.objectForPK(context, Manager.class, 1);
+//            Manager o1 = Cayenne.objectForPK(context, Manager.class, 1);
 //            assertTrue(o1 instanceof CAY_207Manager1);
 //
 //            Object p1 = o1.readProperty("clientContactType");
@@ -77,7 +77,7 @@ public class CAY_207Test extends PeopleCase {
         prepare();
 
         try {
-//            Manager o2 = DataObjectUtils.objectForPK(context, Manager.class, 2);
+//            Manager o2 = Cayenne.objectForPK(context, Manager.class, 2);
 //            assertTrue(o2 instanceof CAY_207Manager2);
 //
 //            Object p2 = o2.readProperty("clientContactType");
@@ -99,7 +99,7 @@ public class CAY_207Test extends PeopleCase {
 
         try {
             // M1
-//            Manager o1 = DataObjectUtils.objectForPK(context, CAY_207Manager1.class, 1);
+//            Manager o1 = Cayenne.objectForPK(context, CAY_207Manager1.class, 1);
 //            assertTrue(o1 instanceof CAY_207Manager1);
 //
 //            Object p1 = o1.readProperty("clientContactType");
@@ -121,7 +121,7 @@ public class CAY_207Test extends PeopleCase {
         prepare();
 
         try {
-//            Manager o2 = DataObjectUtils.objectForPK(context, CAY_207Manager2.class, 2);
+//            Manager o2 = Cayenne.objectForPK(context, CAY_207Manager2.class, 2);
 //            assertTrue(o2 instanceof CAY_207Manager2);
 //
 //            Object p2 = o2.readProperty("clientContactType");
@@ -150,7 +150,7 @@ public class CAY_207Test extends PeopleCase {
 //            // should succeed...
 //            context.commitChanges();
 //
-//            int pk = DataObjectUtils.intPKForObject(o2);
+//            int pk = Cayenne.intPKForObject(o2);
 //            String query = "SELECT #result('CLIENT_CONTACT_TYPE' 'String' 'CLIENT_CONTACT_TYPE') "
 //                    + "FROM PERSON WHERE PERSON_ID = "
 //                    + pk;

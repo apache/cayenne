@@ -26,6 +26,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.relationship.CollectionToMany;
 import org.apache.cayenne.testdo.relationship.CollectionToManyTarget;
 import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class CDOCollectionRelationshipTest extends RelationshipCase {
 
@@ -37,7 +38,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testReadToMany() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = DataObjectUtils.objectForPK(
+        CollectionToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);
@@ -49,15 +50,15 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
 
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 CollectionToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 CollectionToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 CollectionToManyTarget.class,
                 3)));
@@ -69,7 +70,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
         SelectQuery query = new SelectQuery(CollectionToMany.class, ExpressionFactory
                 .matchDbExp(CollectionToMany.ID_PK_COLUMN, new Integer(1)));
         query.addPrefetch(CollectionToMany.TARGETS_PROPERTY);
-        CollectionToMany o1 = (CollectionToMany) DataObjectUtils.objectForQuery(
+        CollectionToMany o1 = (CollectionToMany) Cayenne.objectForQuery(
                 createDataContext(),
                 query);
 
@@ -80,15 +81,15 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 CollectionToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 CollectionToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 CollectionToManyTarget.class,
                 3)));
@@ -97,7 +98,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testAddToMany() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = DataObjectUtils.objectForPK(
+        CollectionToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);
@@ -124,7 +125,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testRemoveToMany() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = DataObjectUtils.objectForPK(
+        CollectionToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);
@@ -132,7 +133,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
         Collection targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget target = DataObjectUtils
+        CollectionToManyTarget target = Cayenne
                 .objectForPK(o1.getObjectContext(), CollectionToManyTarget.class, 2);
         o1.removeFromTargets(target);
 
@@ -150,7 +151,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testAddToManyViaReverse() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = DataObjectUtils.objectForPK(
+        CollectionToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);

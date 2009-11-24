@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLFlattenedRelationshipsTest extends RelationshipCase {
 
@@ -33,7 +33,7 @@ public class DataContextEJBQLFlattenedRelationshipsTest extends RelationshipCase
                 + "WHERE f MEMBER OF ft.ft3Array AND ft = :ft";
 
         ObjectContext context = createDataContext();
-        FlattenedTest1 ft = DataObjectUtils.objectForPK(context, FlattenedTest1.class, 1);
+        FlattenedTest1 ft = Cayenne.objectForPK(context, FlattenedTest1.class, 1);
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
@@ -45,7 +45,7 @@ public class DataContextEJBQLFlattenedRelationshipsTest extends RelationshipCase
         // Set<Object> ids = new HashSet<Object>();
         // Iterator<?> it = objects.iterator();
         // while (it.hasNext()) {
-        // Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+        // Object id = Cayenne.pkForObject((Persistent) it.next());
         // ids.add(id);
         // }
         //

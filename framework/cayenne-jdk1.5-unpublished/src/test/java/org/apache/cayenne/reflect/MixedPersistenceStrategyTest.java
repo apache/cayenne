@@ -21,10 +21,10 @@ package org.apache.cayenne.reflect;
 
 import org.apache.art.MixedPersistenceStrategy;
 import org.apache.art.MixedPersistenceStrategy2;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests conflicts between field and map-based persistence.
@@ -37,7 +37,7 @@ public class MixedPersistenceStrategyTest extends CayenneCase {
         createTestData("testConflictingField");
 
         DataContext c = createDataContext();
-        MixedPersistenceStrategy object = DataObjectUtils.objectForPK(
+        MixedPersistenceStrategy object = Cayenne.objectForPK(
                 c,
                 MixedPersistenceStrategy.class,
                 1);
@@ -54,12 +54,12 @@ public class MixedPersistenceStrategyTest extends CayenneCase {
         createTestData("testConflictingField");
 
         DataContext c = createDataContext();
-        MixedPersistenceStrategy2 detail1 = DataObjectUtils.objectForPK(
+        MixedPersistenceStrategy2 detail1 = Cayenne.objectForPK(
                 c,
                 MixedPersistenceStrategy2.class,
                 1);
 
-        MixedPersistenceStrategy2 detail2 = DataObjectUtils.objectForPK(
+        MixedPersistenceStrategy2 detail2 = Cayenne.objectForPK(
                 c,
                 MixedPersistenceStrategy2.class,
                 2);

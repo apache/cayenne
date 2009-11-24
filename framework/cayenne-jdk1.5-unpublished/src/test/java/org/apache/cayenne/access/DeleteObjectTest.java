@@ -26,12 +26,12 @@ import java.util.List;
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -50,7 +50,7 @@ public class DeleteObjectTest extends CayenneCase {
     public void testDeleteObject() throws Exception {
         createTestData("testDeleteObject");
 
-        Artist artist = DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
         context.deleteObject(artist);
         assertEquals(PersistenceState.DELETED, artist.getPersistenceState());
@@ -104,7 +104,7 @@ public class DeleteObjectTest extends CayenneCase {
     public void testDeleteObjectsRelationshipCollection() throws Exception {
         createTestData("testDeleteObjectsRelationshipCollection");
 
-        Artist artist = DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
         List paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());
@@ -139,7 +139,7 @@ public class DeleteObjectTest extends CayenneCase {
     public void testDeleteObjectInIterator() throws Exception {
         createTestData("testDeleteObjectsRelationshipCollection");
 
-        Artist artist = DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
         List paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());

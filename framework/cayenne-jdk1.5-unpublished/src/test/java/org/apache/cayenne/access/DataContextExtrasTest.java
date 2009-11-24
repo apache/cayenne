@@ -27,7 +27,6 @@ import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -39,6 +38,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * "Lightweight" test cases for DataContext. These tests do not require any additional
@@ -317,7 +317,7 @@ public class DataContextExtrasTest extends CayenneCase {
         Painting p1 = (Painting) objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = DataObjectUtils.objectForPK(
+        Artist newArtist = Cayenne.objectForPK(
                 context,
                 Artist.class,
                 33002);
@@ -346,7 +346,7 @@ public class DataContextExtrasTest extends CayenneCase {
         Painting p1 = (Painting) objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = DataObjectUtils.objectForPK(
+        Artist newArtist = Cayenne.objectForPK(
                 context,
                 Artist.class,
                 33002);

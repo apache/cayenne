@@ -32,12 +32,13 @@ import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -65,7 +66,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         rsMap.addColumnResult("X");
         query.setResult(rsMap);
 
-        Object object = DataObjectUtils.objectForQuery(context, query);
+        Object object = Cayenne.objectForQuery(context, query);
         assertNotNull(object);
         assertTrue(object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
@@ -77,7 +78,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         
         String ejbql = "SELECT count(a) from Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        Object object = DataObjectUtils.objectForQuery(context, query);
+        Object object = Cayenne.objectForQuery(context, query);
         assertNotNull(object);
         assertTrue("Object class: " + object.getClass().getName(), object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
@@ -92,7 +93,7 @@ public class DataObjectUtilsTest extends CayenneCase {
 
         assertNull(context.getGraphManager().getNode(id));
 
-        Object object = DataObjectUtils.objectForQuery(context, new ObjectIdQuery(id));
+        Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
 
         assertNotNull(object);
         assertTrue(object instanceof Artist);
@@ -105,7 +106,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, new Integer(
                 44001));
 
-        Object object = DataObjectUtils.objectForQuery(context, new ObjectIdQuery(id));
+        Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
         assertNull(object);
     }
 
@@ -114,7 +115,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         DataContext context = createDataContext();
 
         // use bogus non-existent PK
-        Object object = DataObjectUtils.objectForPK(context, Artist.class, 44001);
+        Object object = Cayenne.objectForPK(context, Artist.class, 44001);
         assertNull(object);
     }
 
@@ -124,11 +125,11 @@ public class DataObjectUtilsTest extends CayenneCase {
 
         Persistent o1 = context.newObject(Artist.class);
         Persistent o2 = context.newObject(Artist.class);
-        assertSame(o1, DataObjectUtils.objectForPK(context, o1.getObjectId()));
-        assertSame(o2, DataObjectUtils.objectForPK(context, o2.getObjectId()));
+        assertSame(o1, Cayenne.objectForPK(context, o1.getObjectId()));
+        assertSame(o2, Cayenne.objectForPK(context, o2.getObjectId()));
 
         try {
-            assertNull(DataObjectUtils.objectForPK(context, new ObjectId(
+            assertNull(Cayenne.objectForPK(context, new ObjectId(
                     "Artist",
                     new byte[] {
                             1, 2, 3
@@ -146,7 +147,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         createTestData("testObjectForPKInt");
         DataContext context = createDataContext();
 
-        Object object = DataObjectUtils.objectForPK(context, new ObjectId(
+        Object object = Cayenne.objectForPK(context, new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 new Integer(33002)));
@@ -160,7 +161,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         createTestData("testObjectForPKInt");
         DataContext context = createDataContext();
 
-        Object object = DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Object object = Cayenne.objectForPK(context, Artist.class, 33002);
 
         assertNotNull(object);
         assertTrue(object instanceof Artist);
@@ -171,7 +172,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         createTestData("testObjectForPKInt");
         DataContext context = createDataContext();
 
-        Object object = DataObjectUtils.objectForPK(context, "Artist", 33002);
+        Object object = Cayenne.objectForPK(context, "Artist", 33002);
 
         assertNotNull(object);
         assertTrue(object instanceof Artist);
@@ -183,7 +184,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         DataContext context = createDataContext();
 
         Map pk = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, new Integer(33002));
-        Object object = DataObjectUtils.objectForPK(context, Artist.class, pk);
+        Object object = Cayenne.objectForPK(context, Artist.class, pk);
 
         assertNotNull(object);
         assertTrue(object instanceof Artist);
@@ -197,7 +198,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         Map pk = new HashMap();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
-        Object object = DataObjectUtils.objectForPK(
+        Object object = Cayenne.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 pk);
@@ -215,7 +216,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        Map pk = DataObjectUtils.compoundPKForObject(object);
+        Map pk = Cayenne.compoundPKForObject(object);
         assertNotNull(pk);
         assertEquals(2, pk.size());
         assertEquals("PK1", pk.get(CompoundPkTestEntity.KEY1_PK_COLUMN));
@@ -231,7 +232,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         DataObject object = (DataObject) objects.get(0);
 
         try {
-            DataObjectUtils.intPKForObject(object);
+            Cayenne.intPKForObject(object);
             fail("intPKForObject must fail for compound key");
         }
         catch (CayenneRuntimeException ex) {
@@ -248,7 +249,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         DataObject object = (DataObject) objects.get(0);
 
         try {
-            DataObjectUtils.intPKForObject(object);
+            Cayenne.intPKForObject(object);
             fail("intPKForObject must fail for non-numeric key");
         }
         catch (CayenneRuntimeException ex) {
@@ -265,7 +266,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         DataObject object = (DataObject) objects.get(0);
 
         try {
-            DataObjectUtils.pkForObject(object);
+            Cayenne.pkForObject(object);
             fail("pkForObject must fail for compound key");
         }
         catch (CayenneRuntimeException ex) {
@@ -281,7 +282,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        assertEquals(33001, DataObjectUtils.intPKForObject(object));
+        assertEquals(33001, Cayenne.intPKForObject(object));
     }
 
     public void testPKForObject() throws Exception {
@@ -292,7 +293,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        assertEquals(new Long(33001), DataObjectUtils.pkForObject(object));
+        assertEquals(new Long(33001), Cayenne.pkForObject(object));
     }
 
     public void testIntPKForObjectNonNumeric() throws Exception {
@@ -303,6 +304,6 @@ public class DataObjectUtilsTest extends CayenneCase {
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        assertEquals("CPK", DataObjectUtils.pkForObject(object));
+        assertEquals("CPK", Cayenne.pkForObject(object));
     }
 }

@@ -19,15 +19,10 @@
 
 package org.apache.cayenne;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * A collection of utility methods to work with DataObjects.
@@ -41,7 +36,9 @@ import org.apache.cayenne.query.Query;
  * </p>
  * 
  * @since 1.1
+ * @deprecated since 3.1 {@link org.apache.cayenne.util.Cayenne} class is used instead
  */
+@Deprecated
 public final class DataObjectUtils {
     
     /**
@@ -52,14 +49,7 @@ public final class DataObjectUtils {
      * @since 3.0
      */
     public static long longPKForObject(Persistent dataObject) {
-        Object value = pkForObject(dataObject);
-
-        if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: "
-                    + dataObject.getObjectId());
-        }
-
-        return ((Number) value).longValue();
+        return Cayenne.longPKForObject(dataObject);
     }
 
     /**
@@ -68,14 +58,7 @@ public final class DataObjectUtils {
      * not be converted to an int PK, an exception is thrown.
      */
     public static int intPKForObject(Persistent dataObject) {
-        Object value = pkForObject(dataObject);
-
-        if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: "
-                    + dataObject.getObjectId());
-        }
-
-        return ((Number) value).intValue();
+        return Cayenne.intPKForObject(dataObject);
     }
 
     /**
@@ -84,16 +67,7 @@ public final class DataObjectUtils {
      * thrown.
      */
     public static Object pkForObject(Persistent dataObject) {
-        Map<String, Object> pk = extractObjectId(dataObject);
-
-        if (pk.size() != 1) {
-            throw new CayenneRuntimeException("Expected single column PK, got "
-                    + pk.size()
-                    + " columns, ID: "
-                    + pk);
-        }
-
-        return pk.entrySet().iterator().next().getValue();
+        return Cayenne.pkForObject(dataObject);
     }
 
     /**
@@ -102,35 +76,7 @@ public final class DataObjectUtils {
      * of primary keys. If an object is transient, an exception is thrown.
      */
     public static Map<String, Object> compoundPKForObject(Persistent dataObject) {
-        return Collections.unmodifiableMap(extractObjectId(dataObject));
-    }
-
-    static Map<String, Object> extractObjectId(Persistent dataObject) {
-        if (dataObject == null) {
-            throw new IllegalArgumentException("Null DataObject");
-        }
-
-        ObjectId id = dataObject.getObjectId();
-        if (!id.isTemporary()) {
-            return id.getIdSnapshot();
-        }
-
-        // replacement ID is more tricky... do some sanity check...
-        if (id.isReplacementIdAttached()) {
-            ObjEntity objEntity = dataObject
-                    .getObjectContext()
-                    .getEntityResolver()
-                    .lookupObjEntity(dataObject);
-
-            if (objEntity != null) {
-                DbEntity entity = objEntity.getDbEntity();
-                if (entity != null && entity.isFullReplacementIdAttached(id)) {
-                    return id.getReplacementIdMap();
-                }
-            }
-        }
-
-        throw new CayenneRuntimeException("Can't get primary key from temporary id.");
+        return Cayenne.compoundPKForObject(dataObject);
     }
 
     /**
@@ -147,9 +93,7 @@ public final class DataObjectUtils {
             ObjectContext context,
             Class<T> dataObjectClass,
             int pk) {
-        return (T) objectForPK(
-                context,
-                buildId(context, dataObjectClass, Integer.valueOf(pk)));
+        return Cayenne.objectForPK(context, dataObjectClass, pk);
     }
 
     /**
@@ -167,7 +111,7 @@ public final class DataObjectUtils {
             Class<T> dataObjectClass,
             Object pk) {
 
-        return (T) objectForPK(context, buildId(context, dataObjectClass, pk));
+        return Cayenne.objectForPK(context, dataObjectClass, pk);
     }
 
     /**
@@ -185,13 +129,7 @@ public final class DataObjectUtils {
             Class<T> dataObjectClass,
             Map<String, ?> pk) {
 
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(dataObjectClass);
-        if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity for class: "
-                    + dataObjectClass);
-        }
-
-        return (T) objectForPK(context, new ObjectId(entity.getName(), pk));
+        return Cayenne.objectForPK(context, dataObjectClass, pk);
     }
 
     /**
@@ -205,7 +143,7 @@ public final class DataObjectUtils {
      * @see #objectForPK(ObjectContext, ObjectId)
      */
     public static Object objectForPK(ObjectContext context, String objEntityName, int pk) {
-        return objectForPK(context, buildId(context, objEntityName, Integer.valueOf(pk)));
+        return Cayenne.objectForPK(context, objEntityName, pk);
     }
 
     /**
@@ -222,7 +160,7 @@ public final class DataObjectUtils {
             ObjectContext context,
             String objEntityName,
             Object pk) {
-        return objectForPK(context, buildId(context, objEntityName, pk));
+        return Cayenne.objectForPK(context, objEntityName, pk);
     }
 
     /**
@@ -239,11 +177,7 @@ public final class DataObjectUtils {
             ObjectContext context,
             String objEntityName,
             Map<String, ?> pk) {
-        if (objEntityName == null) {
-            throw new IllegalArgumentException("Null ObjEntity name.");
-        }
-
-        return objectForPK(context, new ObjectId(objEntityName, pk));
+        return Cayenne.objectForPK(context, objEntityName, pk);
     }
 
     /**
@@ -256,10 +190,7 @@ public final class DataObjectUtils {
      * @throws CayenneRuntimeException if more than one object matched ObjectId.
      */
     public static Object objectForPK(ObjectContext context, ObjectId id) {
-        return DataObjectUtils.objectForQuery(context, new ObjectIdQuery(
-                id,
-                false,
-                ObjectIdQuery.CACHE));
+        return Cayenne.objectForPK(context, id);
     }
 
     /**
@@ -270,69 +201,7 @@ public final class DataObjectUtils {
      * @since 1.2
      */
     public static Object objectForQuery(ObjectContext context, Query query) {
-        List<?> objects = context.performQuery(query);
-
-        if (objects.size() == 0) {
-            return null;
-        }
-        else if (objects.size() > 1) {
-            throw new CayenneRuntimeException(
-                    "Expected zero or one object, instead query matched: "
-                            + objects.size());
-        }
-
-        return objects.get(0);
-    }
-
-    static ObjectId buildId(ObjectContext context, String objEntityName, Object pk) {
-        if (pk == null) {
-            throw new IllegalArgumentException("Null PK");
-        }
-
-        if (objEntityName == null) {
-            throw new IllegalArgumentException("Null ObjEntity name.");
-        }
-
-        ObjEntity entity = context.getEntityResolver().getObjEntity(objEntityName);
-        if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity: " + objEntityName);
-        }
-
-        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
-        if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains "
-                    + pkAttributes.size()
-                    + " columns, expected 1.");
-        }
-
-        String attr = pkAttributes.iterator().next();
-        return new ObjectId(objEntityName, attr, pk);
-    }
-
-    static ObjectId buildId(ObjectContext context, Class<?> dataObjectClass, Object pk) {
-        if (pk == null) {
-            throw new IllegalArgumentException("Null PK");
-        }
-
-        if (dataObjectClass == null) {
-            throw new IllegalArgumentException("Null DataObject class.");
-        }
-
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(dataObjectClass);
-        if (entity == null) {
-            throw new CayenneRuntimeException("Unmapped DataObject Class: "
-                    + dataObjectClass.getName());
-        }
-
-        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
-        if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains "
-                    + pkAttributes.size()
-                    + " columns, expected 1.");
-        }
-
-        String attr = pkAttributes.iterator().next();
-        return new ObjectId(entity.getName(), attr, pk);
+        return Cayenne.objectForQuery(context, query);
     }
 
     // not intended for instantiation

@@ -20,10 +20,10 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLIsNullTest extends CayenneCase {
 
@@ -89,7 +89,7 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
 
         List results = createDataContext().performQuery(query1);
         assertEquals(1, results.size());
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results.get(0)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
     public void testIsNotNull() throws Exception {
@@ -101,7 +101,7 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
 
         List results = createDataContext().performQuery(query1);
         assertEquals(1, results.size());
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
     public void testToOneIsNull() throws Exception {
@@ -113,7 +113,7 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
 
         List results = createDataContext().performQuery(query1);
         assertEquals(1, results.size());
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results.get(0)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
     public void testToOneIsNotNull() throws Exception {
@@ -125,6 +125,6 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
 
         List results = createDataContext().performQuery(query1);
         assertEquals(1, results.size());
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results.get(0)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 }

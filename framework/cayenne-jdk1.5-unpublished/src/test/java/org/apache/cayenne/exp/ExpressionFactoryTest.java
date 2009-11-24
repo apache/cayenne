@@ -25,12 +25,12 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class ExpressionFactoryTest extends CayenneCase {
 
@@ -264,7 +264,7 @@ public class ExpressionFactoryTest extends CayenneCase {
         SelectQuery query = new SelectQuery(Artist.class);
         
         query.setQualifier(ExpressionFactory.matchExp(a2));
-        Object res = DataObjectUtils.objectForQuery(dc, query);//exception if >1 result
+        Object res = Cayenne.objectForQuery(dc, query);//exception if >1 result
         assertSame(res, a2);
         assertTrue(query.getQualifier().match(res));
         

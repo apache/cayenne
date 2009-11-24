@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.relationship.IdMapToMany;
 import org.apache.cayenne.testdo.relationship.MapToMany;
 import org.apache.cayenne.testdo.relationship.MapToManyTarget;
 import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class CDOMapRelationshipTest extends RelationshipCase {
 
@@ -38,7 +39,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testReadToMany() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = DataObjectUtils.objectForPK(
+        MapToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);
@@ -53,15 +54,15 @@ public class CDOMapRelationshipTest extends RelationshipCase {
         assertNotNull(targets.get("B"));
         assertNotNull(targets.get("C"));
 
-        assertEquals(1, DataObjectUtils.intPKForObject((Persistent) targets.get("A")));
-        assertEquals(2, DataObjectUtils.intPKForObject((Persistent) targets.get("B")));
-        assertEquals(3, DataObjectUtils.intPKForObject((Persistent) targets.get("C")));
+        assertEquals(1, Cayenne.intPKForObject((Persistent) targets.get("A")));
+        assertEquals(2, Cayenne.intPKForObject((Persistent) targets.get("B")));
+        assertEquals(3, Cayenne.intPKForObject((Persistent) targets.get("C")));
     }
 
     public void testReadToManyId() throws Exception {
         createTestData("prepare-id");
 
-        IdMapToMany o1 = DataObjectUtils.objectForPK(
+        IdMapToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 IdMapToMany.class,
                 1);
@@ -76,11 +77,11 @@ public class CDOMapRelationshipTest extends RelationshipCase {
         assertNotNull(targets.get(new Integer(2)));
         assertNotNull(targets.get(new Integer(3)));
 
-        assertEquals(1, DataObjectUtils.intPKForObject((Persistent) targets
+        assertEquals(1, Cayenne.intPKForObject((Persistent) targets
                 .get(new Integer(1))));
-        assertEquals(2, DataObjectUtils.intPKForObject((Persistent) targets
+        assertEquals(2, Cayenne.intPKForObject((Persistent) targets
                 .get(new Integer(2))));
-        assertEquals(3, DataObjectUtils.intPKForObject((Persistent) targets
+        assertEquals(3, Cayenne.intPKForObject((Persistent) targets
                 .get(new Integer(3))));
     }
 
@@ -90,7 +91,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
         SelectQuery query = new SelectQuery(MapToMany.class, ExpressionFactory
                 .matchDbExp(MapToMany.ID_PK_COLUMN, new Integer(1)));
         query.addPrefetch(MapToMany.TARGETS_PROPERTY);
-        MapToMany o1 = (MapToMany) DataObjectUtils.objectForQuery(
+        MapToMany o1 = (MapToMany) Cayenne.objectForQuery(
                 createDataContext(),
                 query);
 
@@ -108,7 +109,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testAddToMany() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = DataObjectUtils.objectForPK(
+        MapToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);
@@ -135,7 +136,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testRemoveToMany() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = DataObjectUtils.objectForPK(
+        MapToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);
@@ -161,7 +162,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testAddToManyViaReverse() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = DataObjectUtils.objectForPK(
+        MapToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);
@@ -188,7 +189,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testModifyToManyKey() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = DataObjectUtils.objectForPK(
+        MapToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);

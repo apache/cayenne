@@ -22,12 +22,12 @@ package org.apache.cayenne.pref;
 import java.util.Properties;
 
 import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -139,9 +139,9 @@ public class PreferenceDetail extends CayenneDataObject {
             ObjectContext context = getObjectContext();
 
             if (context != null && getObjectId() != null) {
-                int pk = DataObjectUtils.intPKForObject(this);
+                int pk = Cayenne.intPKForObject(this);
 
-                domainPreference = DataObjectUtils.objectForPK(
+                domainPreference = Cayenne.objectForPK(
                         context,
                         DomainPreference.class,
                         pk);
@@ -208,6 +208,6 @@ public class PreferenceDetail extends CayenneDataObject {
             }
         }
 
-        return DataObjectUtils.intPKForObject(domainPreference);
+        return Cayenne.intPKForObject(domainPreference);
     }
 }

@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -34,6 +33,7 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class NestedDataContextReadTest extends CayenneCase {
 
@@ -76,7 +76,7 @@ public class NestedDataContextReadTest extends CayenneCase {
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001), null);
-        DataObject committed = (DataObject) DataObjectUtils.objectForQuery(
+        DataObject committed = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -84,14 +84,14 @@ public class NestedDataContextReadTest extends CayenneCase {
                         33002)));
 
         int modifiedId = 33003;
-        Artist modified = (Artist) DataObjectUtils.objectForQuery(
+        Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
         modified.setArtistName("M1");
-        DataObject deleted = (DataObject) DataObjectUtils.objectForQuery(
+        DataObject deleted = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -163,13 +163,13 @@ public class NestedDataContextReadTest extends CayenneCase {
         ObjectContext childContext = context.createChildContext();
 
         int modifiedId = 33003;
-        Artist modified = (Artist) DataObjectUtils.objectForQuery(
+        Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
-        Artist peerModified = (Artist) DataObjectUtils.objectForQuery(
+        Artist peerModified = (Artist) Cayenne.objectForQuery(
                 childContext,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -238,7 +238,7 @@ public class NestedDataContextReadTest extends CayenneCase {
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001), null);
-        DataObject committed = (DataObject) DataObjectUtils.objectForQuery(
+        DataObject committed = (DataObject) Cayenne.objectForQuery(
                 parent,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -246,14 +246,14 @@ public class NestedDataContextReadTest extends CayenneCase {
                         33002)));
 
         int modifiedId = 33003;
-        Artist modified = (Artist) DataObjectUtils.objectForQuery(
+        Artist modified = (Artist) Cayenne.objectForQuery(
                 parent,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
         modified.setArtistName("MODDED");
-        DataObject deleted = (DataObject) DataObjectUtils.objectForQuery(
+        DataObject deleted = (DataObject) Cayenne.objectForQuery(
                 parent,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -275,7 +275,7 @@ public class NestedDataContextReadTest extends CayenneCase {
             DataObject next = (DataObject) it.next();
             assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
 
-            int id = DataObjectUtils.intPKForObject(next);
+            int id = Cayenne.intPKForObject(next);
             if (id == modifiedId) {
                 assertEquals("MODDED", next.readProperty(Artist.ARTIST_NAME_PROPERTY));
             }
@@ -297,20 +297,20 @@ public class NestedDataContextReadTest extends CayenneCase {
         int committedTargetSrcId = 33004;
         int newTargetSrcId = 33005;
 
-        Painting hollowTargetSrc = DataObjectUtils.objectForPK(
+        Painting hollowTargetSrc = Cayenne.objectForPK(
                 parent,
                 Painting.class,
                 hollowTargetSrcId);
         Artist hollowTarget = hollowTargetSrc.getToArtist();
 
-        Painting modifiedTargetSrc = DataObjectUtils.objectForPK(
+        Painting modifiedTargetSrc = Cayenne.objectForPK(
                 parent,
                 Painting.class,
                 modifiedTargetSrcId);
         Artist modifiedTarget = modifiedTargetSrc.getToArtist();
         modifiedTarget.setArtistName("M1");
 
-        Painting deletedTargetSrc = DataObjectUtils.objectForPK(
+        Painting deletedTargetSrc = Cayenne.objectForPK(
                 parent,
                 Painting.class,
                 deletedTargetSrcId);
@@ -318,14 +318,14 @@ public class NestedDataContextReadTest extends CayenneCase {
         deletedTargetSrc.setToArtist(null);
         parent.deleteObject(deletedTarget);
 
-        Painting committedTargetSrc = DataObjectUtils.objectForPK(
+        Painting committedTargetSrc = Cayenne.objectForPK(
                 parent,
                 Painting.class,
                 committedTargetSrcId);
         Artist committedTarget = committedTargetSrc.getToArtist();
         committedTarget.getArtistName();
 
-        Painting newTargetSrc = DataObjectUtils.objectForPK(
+        Painting newTargetSrc = Cayenne.objectForPK(
                 parent,
                 Painting.class,
                 newTargetSrcId);

@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -31,6 +30,7 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.Cayenne;
 
 public class EmbeddingTest extends CayenneCase {
 
@@ -104,7 +104,7 @@ public class EmbeddingTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
         query.setFetchingDataRows(true);
-        DataRow row = (DataRow) DataObjectUtils.objectForQuery(context, query);
+        DataRow row = (DataRow) Cayenne.objectForQuery(context, query);
         assertNotNull(row);
         assertEquals("E11", row.get("EMBEDDED10"));
         assertEquals("E12", row.get("EMBEDDED20"));
@@ -130,7 +130,7 @@ public class EmbeddingTest extends CayenneCase {
         context.commitChanges();
         SelectQuery query1 = new SelectQuery(EmbedEntity1.class);
         query1.setFetchingDataRows(true);
-        DataRow row = (DataRow) DataObjectUtils.objectForQuery(context, query1);
+        DataRow row = (DataRow) Cayenne.objectForQuery(context, query1);
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
     }
@@ -155,7 +155,7 @@ public class EmbeddingTest extends CayenneCase {
         context.commitChanges();
         SelectQuery query1 = new SelectQuery(EmbedEntity1.class);
         query1.setFetchingDataRows(true);
-        DataRow row = (DataRow) DataObjectUtils.objectForQuery(context, query1);
+        DataRow row = (DataRow) Cayenne.objectForQuery(context, query1);
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
     }

@@ -21,8 +21,8 @@ package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -38,7 +38,7 @@ public class ObjectStoreDiffRetainingTest extends CayenneCase {
         createTestData("test");
 
         DataContext context = createDataContext();
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 2000);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
         ObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));
@@ -51,7 +51,7 @@ public class ObjectStoreDiffRetainingTest extends CayenneCase {
         createTestData("test");
 
         DataContext context = createDataContext();
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 2000);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
         ObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));

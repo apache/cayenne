@@ -18,17 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.Cayenne;
 
 public class CayenneContextRefreshQueryTest extends CayenneCase {
 
@@ -51,7 +49,7 @@ public class CayenneContextRefreshQueryTest extends CayenneCase {
 
         CayenneContext context = createClientContext();
 
-        ClientMtTable1 a = DataObjectUtils.objectForPK(context, ClientMtTable1.class, 1);
+        ClientMtTable1 a = Cayenne.objectForPK(context, ClientMtTable1.class, 1);
         assertEquals(2, a.getTable2Array().size());
 
         createTestData("testRefreshObjectToManyUpdate");

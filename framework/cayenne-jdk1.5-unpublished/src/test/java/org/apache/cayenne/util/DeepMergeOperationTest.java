@@ -64,7 +64,7 @@ public class DeepMergeOperationTest extends CayenneCase {
         a.setArtistName("AAA");
         context.commitChanges();
 
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context1, a.getObjectId());
+        Artist a1 = (Artist) Cayenne.objectForPK(context1, a.getObjectId());
         a1.setArtistName("BBB");
         DeepMergeOperation op = new DeepMergeOperation(context1);
 

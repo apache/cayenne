@@ -25,6 +25,7 @@ import org.apache.art.Artist;
 import org.apache.art.Painting1;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests DataObjects with no reverse relationships.
@@ -52,7 +53,7 @@ public class CDOMany2OneNoRevTest extends CayenneCase {
         ObjectId pid = p1.getObjectId();
         context.invalidateObjects(Arrays.asList(a1, p1));
 
-        Painting1 p2 = (Painting1) DataObjectUtils.objectForPK(context, pid);
+        Painting1 p2 = (Painting1) Cayenne.objectForPK(context, pid);
         Artist a2 = p2.getToArtist();
         assertNotNull(a2);
         assertEquals(aid, a2.getObjectId());

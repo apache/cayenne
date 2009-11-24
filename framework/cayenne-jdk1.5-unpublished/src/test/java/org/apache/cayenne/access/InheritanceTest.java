@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -40,6 +39,7 @@ import org.apache.cayenne.testdo.inherit.PersonNotes;
 import org.apache.cayenne.testdo.inherit.RelatedEntity;
 import org.apache.cayenne.testdo.inherit.SubEntity;
 import org.apache.cayenne.unit.PeopleCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * Testing Cayenne behavior with DataObject inheritance hierarchies.
@@ -65,7 +65,7 @@ public class InheritanceTest extends PeopleCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (1, 'AA', 1)"));
 
-        PersonNotes note = DataObjectUtils.objectForPK(context, PersonNotes.class, 1);
+        PersonNotes note = Cayenne.objectForPK(context, PersonNotes.class, 1);
         assertNotNull(note);
         assertNotNull(note.getPerson());
         assertTrue(note.getPerson() instanceof Employee);
@@ -88,7 +88,7 @@ public class InheritanceTest extends PeopleCase {
         query.addPrefetch(AbstractPerson.NOTES_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        AbstractPerson person = (AbstractPerson) DataObjectUtils.objectForQuery(
+        AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
                 createDataContext(),
                 query);
 
@@ -127,7 +127,7 @@ public class InheritanceTest extends PeopleCase {
         SelectQuery query = new SelectQuery(AbstractPerson.class);
         query.addPrefetch(AbstractPerson.NOTES_PROPERTY);
 
-        AbstractPerson person = (AbstractPerson) DataObjectUtils.objectForQuery(
+        AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
                 createDataContext(),
                 query);
 
@@ -195,7 +195,7 @@ public class InheritanceTest extends PeopleCase {
         query.addPrefetch(PersonNotes.PERSON_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        PersonNotes note = (PersonNotes) DataObjectUtils.objectForQuery(
+        PersonNotes note = (PersonNotes) Cayenne.objectForQuery(
                 createDataContext(),
                 query);
 
@@ -269,7 +269,7 @@ public class InheritanceTest extends PeopleCase {
         // CAY-592 - make sure modification of the address in a parallel context
         // doesn't mess up the Manager
         DataContext c2 = context.getParentDataDomain().createDataContext();
-        e = (Employee) DataObjectUtils.objectForPK(c2, e.getObjectId());
+        e = (Employee) Cayenne.objectForPK(c2, e.getObjectId());
         address = e.getAddresses().get(0);
 
         assertSame(e, address.getToEmployee());

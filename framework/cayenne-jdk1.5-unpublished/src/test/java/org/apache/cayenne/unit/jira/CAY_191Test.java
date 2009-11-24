@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.unit.jira;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.testdo.relationship.FkOfDifferentType;
 import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class CAY_191Test extends RelationshipCase {
 
@@ -34,7 +34,7 @@ public class CAY_191Test extends RelationshipCase {
         createTestData("testResolveToOneOverFKOfDifferentNumType");
 
         DataContext context = createDataContext();
-        FkOfDifferentType root = DataObjectUtils.objectForPK(
+        FkOfDifferentType root = Cayenne.objectForPK(
                 context,
                 FkOfDifferentType.class,
                 1);

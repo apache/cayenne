@@ -34,6 +34,7 @@ import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.PersistentObjectHolder;
 
 public class PersistentObjectInContextTest extends CayenneCase {
@@ -61,7 +62,7 @@ public class PersistentObjectInContextTest extends CayenneCase {
                 "MtTable1",
                 MtTable1.TABLE1_ID_PK_COLUMN,
                 new Integer(1));
-        ClientMtTable1 t1 = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 t1 = (ClientMtTable1) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(gid));
 
@@ -88,7 +89,7 @@ public class PersistentObjectInContextTest extends CayenneCase {
                 "MtTable2",
                 MtTable2.TABLE2_ID_PK_COLUMN,
                 new Integer(1));
-        ClientMtTable2 mtTable21 = (ClientMtTable2) DataObjectUtils.objectForQuery(
+        ClientMtTable2 mtTable21 = (ClientMtTable2) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(gid));
 
@@ -108,7 +109,7 @@ public class PersistentObjectInContextTest extends CayenneCase {
                 "MtTable2",
                 MtTable2.TABLE2_ID_PK_COLUMN,
                 new Integer(1));
-        ClientMtTable2 mtTable21 = (ClientMtTable2) DataObjectUtils.objectForQuery(
+        ClientMtTable2 mtTable21 = (ClientMtTable2) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(gid));
 

@@ -22,10 +22,10 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -95,7 +95,7 @@ public class DataContextSerializationTest extends CayenneCase {
         assertNotNull(deserializedContext.getEntityResolver());
         assertSame(context.getEntityResolver(), deserializedContext.getEntityResolver());
         
-        Artist a = DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
+        Artist a = Cayenne.objectForPK(deserializedContext, Artist.class, 33001);
         assertNotNull(a);
         a.setArtistName(a.getArtistName() + "___");
         deserializedContext.commitChanges();
@@ -126,7 +126,7 @@ public class DataContextSerializationTest extends CayenneCase {
                 deserializedContext.getParentDataDomain().getSharedSnapshotCache(),
                 deserializedContext.getObjectStore().getDataRowCache());
         
-        Artist a = DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
+        Artist a = Cayenne.objectForPK(deserializedContext, Artist.class, 33001);
         assertNotNull(a);
         a.setArtistName(a.getArtistName() + "___");
         

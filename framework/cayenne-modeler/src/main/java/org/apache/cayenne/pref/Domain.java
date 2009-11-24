@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -36,6 +35,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -172,7 +172,7 @@ public class Domain extends _Domain {
         Iterator it = preferences.iterator();
         while (it.hasNext()) {
             DomainPreference pref = (DomainPreference) it.next();
-            ids.add(DataObjectUtils.pkForObject(pref));
+            ids.add(Cayenne.pkForObject(pref));
         }
 
         ObjectContext context = getObjectContext();

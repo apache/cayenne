@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.testdo.relationship.FlattenedTest2;
 import org.apache.cayenne.testdo.relationship.FlattenedTest3;
 import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * Test case for objects with flattened relationships.
@@ -61,10 +62,10 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
 
         context.commitChanges();
 
-        int pk = DataObjectUtils.intPKForObject(obj01);
+        int pk = Cayenne.intPKForObject(obj01);
 
         context = createDataContext();
-        FlattenedTest1 fresh01 = DataObjectUtils.objectForPK(
+        FlattenedTest1 fresh01 = Cayenne.objectForPK(
                 context,
                 FlattenedTest1.class,
                 pk);
@@ -85,7 +86,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
         joinSelect.setFetchingDataRows(true);
         assertEquals(3, context.performQuery(joinSelect).size());
 
-        FlattenedTest1 ft1 = DataObjectUtils
+        FlattenedTest1 ft1 = Cayenne
                 .objectForPK(context, FlattenedTest1.class, 2);
 
         assertEquals("ft12", ft1.getName());
@@ -94,7 +95,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
 
         assertEquals(2, related.size());
 
-        FlattenedTest3 ft3 = DataObjectUtils
+        FlattenedTest3 ft3 = Cayenne
                 .objectForPK(context, FlattenedTest3.class, 3);
         assertTrue(related.contains(ft3));
 
@@ -211,7 +212,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     public void testFlattenedCircular() throws Exception {
         createTestData("testFlattenedCircular");
         context = createDataContext();
-        FlattenedCircular fc1 = DataObjectUtils.objectForPK(
+        FlattenedCircular fc1 = Cayenne.objectForPK(
                 context,
                 FlattenedCircular.class,
                 1);

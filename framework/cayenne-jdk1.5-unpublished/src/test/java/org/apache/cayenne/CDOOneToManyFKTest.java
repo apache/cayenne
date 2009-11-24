@@ -26,6 +26,7 @@ import org.apache.cayenne.testdo.relationship.ToManyFkDep;
 import org.apache.cayenne.testdo.relationship.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationship.ToManyRoot2;
 import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.util.Cayenne;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at
 // partial solution
@@ -51,7 +52,7 @@ public class CDOOneToManyFKTest extends RelationshipCase {
 
         context.invalidateObjects(Arrays.asList(src, target, src2));
 
-        ToManyFkRoot src1 = (ToManyFkRoot) DataObjectUtils.objectForPK(context, src
+        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(context, src
                 .getObjectId());
         assertNotNull(src1.getDeps());
         assertEquals(1, src1.getDeps().size());
@@ -60,7 +61,7 @@ public class CDOOneToManyFKTest extends RelationshipCase {
 
         context.invalidateObjects(Arrays.asList(src1, src1.getDeps().get(0)));
 
-        ToManyFkDep target2 = (ToManyFkDep) DataObjectUtils.objectForPK(context, target
+        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(context, target
                 .getObjectId());
         assertNotNull(target2.getRoot());
 

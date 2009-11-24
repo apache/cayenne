@@ -30,13 +30,13 @@ import org.apache.art.Artist;
 import org.apache.art.CompoundFkTestEntity;
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLQueryTest extends CayenneCase {
 
@@ -381,7 +381,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
 
         String ejbql = "select P from Painting P WHERE p.toArtist = :param";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -391,7 +391,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+        assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
     public void testSelectFromWhereMatchRelationshipAndScalar() throws Exception {
@@ -406,7 +406,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+        assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
     public void testSelectFromWhereMatchOnMultiColumnObject() throws Exception {
@@ -417,7 +417,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = Cayenne.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);
@@ -430,7 +430,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals(1, ps.size());
 
         CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(o1));
+        assertEquals(33002, Cayenne.intPKForObject(o1));
     }
 
     public void testSelectFromWhereMatchOnMultiColumnObjectReverse() throws Exception {
@@ -445,7 +445,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = Cayenne.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);
@@ -458,7 +458,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals(1, ps.size());
 
         CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(o1));
+        assertEquals(33002, Cayenne.intPKForObject(o1));
     }
 
     public void testSelectFromWhereNoMatchOnMultiColumnObject() throws Exception {
@@ -469,7 +469,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = Cayenne.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);
@@ -482,6 +482,6 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals(1, ps.size());
 
         CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
-        assertEquals(33001, DataObjectUtils.intPKForObject(o1));
+        assertEquals(33001, Cayenne.intPKForObject(o1));
     }
 }

@@ -22,12 +22,12 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextRelationshipQueryTest extends CayenneCase {
     
@@ -52,12 +52,12 @@ public class DataContextRelationshipQueryTest extends CayenneCase {
 
         context.performQuery(chain);
 
-        Painting p = DataObjectUtils.objectForPK(context, Painting.class, 1);
+        Painting p = Cayenne.objectForPK(context, Painting.class, 1);
 
         // resolve artist once before running non-refreshing query, to check that we do
         // not refresh the object
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
         long v = a.getSnapshotVersion();
         int writeCalls = a.getPropertyWrittenDirectly();
         assertEquals("a1", a.getArtistName());
@@ -97,12 +97,12 @@ public class DataContextRelationshipQueryTest extends CayenneCase {
 
         context.performQuery(chain);
 
-        Painting p = DataObjectUtils.objectForPK(context, Painting.class, 1);
+        Painting p = Cayenne.objectForPK(context, Painting.class, 1);
 
         // resolve artist once before running non-refreshing query, to check that we do
         // not refresh the object
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
         long v = a.getSnapshotVersion();
         int writeCalls = a.getPropertyWrittenDirectly();
         assertEquals("a1", a.getArtistName());

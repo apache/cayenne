@@ -27,12 +27,12 @@ import org.apache.art.ArtGroup;
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.art.PaintingInfo;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class NestedDataContextWriteTest extends CayenneCase {
 
@@ -54,7 +54,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         DataContext context = createDataContext();
         ObjectContext childContext = context.createChildContext();
 
-        Artist a = DataObjectUtils.objectForPK(childContext, Artist.class, 33001);
+        Artist a = Cayenne.objectForPK(childContext, Artist.class, 33001);
         Painting p = childContext.newObject(Painting.class);
         p.setPaintingTitle("X");
         a.addToPaintingArray(p);
@@ -78,13 +78,13 @@ public class NestedDataContextWriteTest extends CayenneCase {
         ObjectContext childContext = context.createChildContext();
         ObjectContext childContextPeer = context.createChildContext();
 
-        Painting childP1 = DataObjectUtils.objectForPK(
+        Painting childP1 = Cayenne.objectForPK(
                 childContext,
                 Painting.class,
                 33001);
 
         // trigger object creation in the peer nested DC
-        DataObjectUtils.objectForPK(childContextPeer, Painting.class, 33001);
+        Cayenne.objectForPK(childContextPeer, Painting.class, 33001);
         childP1.setToArtist(null);
 
         blockQueries();
@@ -342,7 +342,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
             assertEquals(PersistenceState.MODIFIED, parentModifiedToOne
                     .getPersistenceState());
             assertNotNull(parentModifiedToOne.getToArtist());
-            assertEquals(33001, DataObjectUtils.intPKForObject(parentModifiedToOne
+            assertEquals(33001, Cayenne.intPKForObject(parentModifiedToOne
                     .getToArtist()));
             assertNotNull(context.getObjectStore().getChangesByObjectId().get(
                     parentModifiedToOne.getObjectId()));

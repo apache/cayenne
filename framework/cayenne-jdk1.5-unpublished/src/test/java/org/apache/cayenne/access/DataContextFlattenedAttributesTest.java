@@ -28,12 +28,12 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.CompoundPainting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -211,16 +211,16 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
 
         context.commitChanges();
 
-        Number artistCount = (Number) DataObjectUtils.objectForQuery(
+        Number artistCount = (Number) Cayenne.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Artist a"));
         assertEquals(1, artistCount.intValue());
-        Number paintingCount = (Number) DataObjectUtils.objectForQuery(
+        Number paintingCount = (Number) Cayenne.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Painting a"));
         assertEquals(1, paintingCount.intValue());
 
-        Number galleryCount = (Number) DataObjectUtils.objectForQuery(
+        Number galleryCount = (Number) Cayenne.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Gallery a"));
         assertEquals(1, galleryCount.intValue());
@@ -245,16 +245,16 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         context.deleteObject(o1);
         context.commitChanges();
 
-        Number artistCount = (Number) DataObjectUtils.objectForQuery(
+        Number artistCount = (Number) Cayenne.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Artist a"));
         assertEquals(1, artistCount.intValue());
-        Number paintingCount = (Number) DataObjectUtils.objectForQuery(
+        Number paintingCount = (Number) Cayenne.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Painting a"));
         assertEquals(0, paintingCount.intValue());
 
-        Number galleryCount = (Number) DataObjectUtils.objectForQuery(
+        Number galleryCount = (Number) Cayenne.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Gallery a"));
         assertEquals(0, galleryCount.intValue());

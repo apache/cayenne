@@ -24,13 +24,13 @@ import java.util.Date;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests objects registration in DataContext, transferring objects between contexts and
@@ -101,7 +101,7 @@ public class DataContextObjectTrackingTest extends CayenneCase {
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001), null);
-        DataObject committed = (DataObject) DataObjectUtils.objectForQuery(
+        DataObject committed = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -109,14 +109,14 @@ public class DataContextObjectTrackingTest extends CayenneCase {
                         33002)));
 
         int modifiedId = 33003;
-        Artist modified = (Artist) DataObjectUtils.objectForQuery(
+        Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
         modified.setArtistName("MODDED");
-        DataObject deleted = (DataObject) DataObjectUtils.objectForQuery(
+        DataObject deleted = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -192,13 +192,13 @@ public class DataContextObjectTrackingTest extends CayenneCase {
         DataContext peerContext = createDataContext();
 
         int modifiedId = 33003;
-        Artist modified = (Artist) DataObjectUtils.objectForQuery(
+        Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
-        Artist peerModified = (Artist) DataObjectUtils.objectForQuery(
+        Artist peerModified = (Artist) Cayenne.objectForQuery(
                 peerContext,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",

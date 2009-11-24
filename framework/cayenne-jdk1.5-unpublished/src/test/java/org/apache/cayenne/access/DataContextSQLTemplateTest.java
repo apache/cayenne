@@ -28,7 +28,6 @@ import org.apache.art.Artist;
 import org.apache.art.CompoundFkTestEntity;
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
@@ -39,6 +38,7 @@ import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -232,7 +232,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
@@ -244,7 +244,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+        assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualShort() throws Exception {
@@ -252,7 +252,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
@@ -267,7 +267,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertTrue(objects.size() == 1 || objects.size() == 2);
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33001, DataObjectUtils.intPKForObject(p));
+        assertEquals(33001, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualFull() throws Exception {
@@ -275,7 +275,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -287,7 +287,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+        assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualFullNonArray() throws Exception {
@@ -295,7 +295,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
@@ -307,7 +307,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+        assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualNull() throws Exception {
@@ -325,7 +325,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33003, DataObjectUtils.intPKForObject(p));
+        assertEquals(33003, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualFull() throws Exception {
@@ -333,7 +333,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -347,7 +347,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertTrue(objects.size() == 1 || objects.size() == 2);
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33001, DataObjectUtils.intPKForObject(p));
+        assertEquals(33001, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualCompound() throws Exception {
@@ -359,7 +359,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 
-        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = Cayenne.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 pk);
@@ -374,7 +374,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(1, objects.size());
 
         CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
-        assertEquals(33001, DataObjectUtils.intPKForObject(p));
+        assertEquals(33001, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualCompound() throws Exception {
@@ -386,7 +386,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 
-        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = Cayenne.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 pk);
@@ -401,7 +401,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(1, objects.size());
 
         CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
-        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+        assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualNull() throws Exception {
@@ -419,10 +419,10 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(2, objects.size());
 
         Painting p1 = (Painting) objects.get(0);
-        assertEquals(33001, DataObjectUtils.intPKForObject(p1));
+        assertEquals(33001, Cayenne.intPKForObject(p1));
 
         Painting p2 = (Painting) objects.get(1);
-        assertEquals(33002, DataObjectUtils.intPKForObject(p2));
+        assertEquals(33002, Cayenne.intPKForObject(p2));
     }
     
     public void testBindEqualNull() throws Exception {
@@ -440,7 +440,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33003, DataObjectUtils.intPKForObject(p));
+        assertEquals(33003, Cayenne.intPKForObject(p));
     }
 
     public void testFetchLimit() throws Exception {

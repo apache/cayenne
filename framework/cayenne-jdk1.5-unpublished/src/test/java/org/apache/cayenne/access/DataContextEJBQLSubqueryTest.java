@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLSubqueryTest extends CayenneCase {
 
@@ -55,7 +55,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         Set ids = new HashSet();
         Iterator it = objects.iterator();
         while (it.hasNext()) {
-            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
         }
 
@@ -78,7 +78,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         Set ids = new HashSet();
         Iterator it = objects.iterator();
         while (it.hasNext()) {
-            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
         }
 
@@ -104,7 +104,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         Set ids = new HashSet();
         Iterator it = objects.iterator();
         while (it.hasNext()) {
-            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
         }
 
@@ -132,7 +132,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         Set ids = new HashSet();
         Iterator it = objects.iterator();
         while (it.hasNext()) {
-            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
         }
 
@@ -160,7 +160,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         Set ids = new HashSet();
         Iterator it = objects.iterator();
         while (it.hasNext()) {
-            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
         }
 
@@ -189,7 +189,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         Set ids = new HashSet();
         Iterator it = objects.iterator();
         while (it.hasNext()) {
-            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
         }
 

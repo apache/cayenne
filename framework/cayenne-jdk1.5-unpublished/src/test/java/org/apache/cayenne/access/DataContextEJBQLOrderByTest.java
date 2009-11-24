@@ -20,10 +20,10 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLOrderByTest extends CayenneCase {
 
@@ -37,9 +37,9 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results1 = createDataContext().performQuery(query1);
         assertEquals(3, results1.size());
 
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results1.get(0)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results1.get(1)));
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results1.get(2)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results1.get(1)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(2)));
 
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
@@ -47,9 +47,9 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results2 = createDataContext().performQuery(query2);
         assertEquals(3, results2.size());
 
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results2.get(0)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results2.get(1)));
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results2.get(2)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results2.get(1)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(2)));
     }
 
     public void testOrderByAsc() throws Exception {
@@ -62,9 +62,9 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results1 = createDataContext().performQuery(query1);
         assertEquals(3, results1.size());
 
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results1.get(0)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results1.get(1)));
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results1.get(2)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results1.get(1)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(2)));
 
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice ASC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
@@ -72,9 +72,9 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results2 = createDataContext().performQuery(query2);
         assertEquals(3, results2.size());
 
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results2.get(0)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results2.get(1)));
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results2.get(2)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results2.get(1)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(2)));
     }
 
     public void testOrderByDesc() throws Exception {
@@ -87,9 +87,9 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results1 = createDataContext().performQuery(query1);
         assertEquals(3, results1.size());
 
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results1.get(0)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results1.get(1)));
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results1.get(2)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results1.get(1)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(2)));
 
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice DESC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
@@ -97,9 +97,9 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results2 = createDataContext().performQuery(query2);
         assertEquals(3, results2.size());
 
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results2.get(0)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results2.get(1)));
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results2.get(2)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results2.get(1)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(2)));
     }
 
     public void testOrderByQualified() throws Exception {
@@ -112,8 +112,8 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results1 = createDataContext().performQuery(query1);
         assertEquals(2, results1.size());
 
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results1.get(0)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results1.get(1)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results1.get(1)));
 
         String ejbql2 = "SELECT p FROM Painting p WHERE p.estimatedPrice > 1000 ORDER BY p.estimatedPrice ASC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
@@ -121,8 +121,8 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results2 = createDataContext().performQuery(query2);
         assertEquals(2, results2.size());
 
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results2.get(0)));
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results2.get(1)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results2.get(0)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(1)));
     }
 
     public void testOrderByMultiple() throws Exception {
@@ -135,10 +135,10 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results1 = createDataContext().performQuery(query1);
         assertEquals(4, results1.size());
 
-        assertEquals(33003, DataObjectUtils.intPKForObject((Persistent) results1.get(0)));
-        assertEquals(33004, DataObjectUtils.intPKForObject((Persistent) results1.get(1)));
-        assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results1.get(2)));
-        assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results1.get(3)));
+        assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(0)));
+        assertEquals(33004, Cayenne.intPKForObject((Persistent) results1.get(1)));
+        assertEquals(33002, Cayenne.intPKForObject((Persistent) results1.get(2)));
+        assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(3)));
     }
     
     public void testOrderByPath() throws Exception {
@@ -151,8 +151,8 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results1 = createDataContext().performQuery(query1);
         assertEquals(2, results1.size());
 
-        assertEquals(33005, DataObjectUtils.intPKForObject((Persistent) results1.get(0)));
-        assertEquals(33006, DataObjectUtils.intPKForObject((Persistent) results1.get(1)));
+        assertEquals(33005, Cayenne.intPKForObject((Persistent) results1.get(0)));
+        assertEquals(33006, Cayenne.intPKForObject((Persistent) results1.get(1)));
 
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.toArtist.artistName DESC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
@@ -160,7 +160,7 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         List results2 = createDataContext().performQuery(query2);
         assertEquals(2, results2.size());
 
-        assertEquals(33006, DataObjectUtils.intPKForObject((Persistent) results2.get(0)));
-        assertEquals(33005, DataObjectUtils.intPKForObject((Persistent) results2.get(1)));
+        assertEquals(33006, Cayenne.intPKForObject((Persistent) results2.get(0)));
+        assertEquals(33005, Cayenne.intPKForObject((Persistent) results2.get(1)));
     }
 }

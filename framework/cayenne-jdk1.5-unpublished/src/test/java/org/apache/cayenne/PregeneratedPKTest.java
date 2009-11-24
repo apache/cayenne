@@ -24,6 +24,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * This test case ensures that PK pre-generated for the entity manually before commit is
@@ -52,7 +53,7 @@ public class PregeneratedPKTest extends CayenneCase {
         Object pk = a.getObjectId().getReplacementIdMap().get(Artist.ARTIST_ID_PK_COLUMN);
         assertNotNull(pk);
 
-        assertEquals(pk, DataObjectUtils.longPKForObject(a));
+        assertEquals(pk, Cayenne.longPKForObject(a));
 
         context.commitChanges();
 

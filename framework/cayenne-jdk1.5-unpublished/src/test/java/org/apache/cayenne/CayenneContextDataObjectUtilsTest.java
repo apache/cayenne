@@ -26,6 +26,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.Cayenne;
 
 public class CayenneContextDataObjectUtilsTest extends CayenneCase {
 
@@ -55,7 +56,7 @@ public class CayenneContextDataObjectUtilsTest extends CayenneCase {
                         + "(TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) "
                         + "values (1, 'g1', 's1')"));
 
-        ClientMtTable1 o = DataObjectUtils.objectForPK(context, ClientMtTable1.class, 1);
+        ClientMtTable1 o = Cayenne.objectForPK(context, ClientMtTable1.class, 1);
         assertNotNull(o);
         assertEquals("g1", o.getGlobalAttribute1());
     }

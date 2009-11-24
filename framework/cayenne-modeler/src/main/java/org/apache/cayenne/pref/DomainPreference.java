@@ -24,8 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -87,8 +87,8 @@ public class DomainPreference extends _DomainPreference {
 
         // detail object PK must match...
 
-        int pk = DataObjectUtils.intPKForObject(this);
-        PreferenceDetail preference = (PreferenceDetail) DataObjectUtils.objectForPK(
+        int pk = Cayenne.intPKForObject(this);
+        PreferenceDetail preference = (PreferenceDetail) Cayenne.objectForPK(
                 getObjectContext(),
                 javaClass,
                 pk);

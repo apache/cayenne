@@ -28,8 +28,9 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CaseDataFactory;
+import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class CayenneDataObjectInCtxtTest extends CayenneCase {
 
@@ -310,7 +311,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         // refetch
         context.invalidateObjects(Collections.singleton(object));
 
-        Artist object2 = DataObjectUtils.objectForPK(context, Artist.class, 3);
+        Artist object2 = Cayenne.objectForPK(context, Artist.class, 3);
         assertNotNull(object2);
         assertEquals("ABC1", object2.getArtistName());
     }

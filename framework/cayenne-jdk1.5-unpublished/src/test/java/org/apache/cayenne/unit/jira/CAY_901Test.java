@@ -23,11 +23,11 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.art.Gallery;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class CAY_901Test extends CayenneCase {
 
@@ -58,7 +58,7 @@ public class CAY_901Test extends CayenneCase {
         q.setColumnNamesCapitalization(CapsStrategy.UPPER);
         q.setFetchingDataRows(true);
         
-        Map row = (Map) DataObjectUtils.objectForQuery(context, q);
+        Map row = (Map) Cayenne.objectForQuery(context, q);
         assertEquals("P1", row.get("PAINTING_TITLE"));
         assertEquals(null, row.get("ARTIST_ID"));
         assertEquals(null, row.get("GALLERY_ID"));

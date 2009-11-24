@@ -24,11 +24,11 @@ import java.util.Map;
 
 import org.apache.art.MeaningfulPKDep;
 import org.apache.art.MeaningfulPKTest1;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -64,10 +64,10 @@ public class DataContextEntityWithMeaningfulPKTest extends CayenneCase {
         context.commitChanges();
 
         assertNotNull(obj.getPkAttribute());
-        assertSame(obj, DataObjectUtils.objectForPK(context, MeaningfulPKTest1.class, obj
+        assertSame(obj, Cayenne.objectForPK(context, MeaningfulPKTest1.class, obj
                 .getPkAttribute()));
 
-        int id = DataObjectUtils.intPKForObject(obj);
+        int id = Cayenne.intPKForObject(obj);
 
         Map snapshot = context.getObjectStore().getDataRowCache().getCachedSnapshot(
                 obj.getObjectId());

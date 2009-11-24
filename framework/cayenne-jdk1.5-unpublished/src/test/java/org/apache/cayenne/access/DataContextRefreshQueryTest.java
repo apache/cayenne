@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
@@ -32,6 +31,7 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextRefreshQueryTest extends CayenneCase {
 
@@ -167,7 +167,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
 
         DataContext context = createDataContext();
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33001l);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33001l);
         assertEquals(2, a.getPaintingArray().size());
 
         createTestData("testRefreshObjectToManyUpdate");
@@ -194,7 +194,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = DataObjectUtils.objectForPK(context, Painting.class, 33001);
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
         Artist a1 = p2.getToArtist();
@@ -251,7 +251,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = DataObjectUtils.objectForPK(context, Painting.class, 33001);
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
         Artist a1 = p2.getToArtist();
@@ -308,7 +308,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = DataObjectUtils.objectForPK(context, Painting.class, 33001);
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
         Artist a1 = p2.getToArtist();

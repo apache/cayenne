@@ -26,6 +26,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.Cayenne;
 
 public class CayenneContextSQLTemplateTest extends CayenneCase {
 
@@ -56,13 +57,13 @@ public class CayenneContextSQLTemplateTest extends CayenneCase {
 
         CayenneContext context = createClientContext();
 
-        assertNull(DataObjectUtils.objectForPK(context, ClientMtTable1.class, 1));
+        assertNull(Cayenne.objectForPK(context, ClientMtTable1.class, 1));
         context.performGenericQuery(new SQLTemplate(
                 ClientMtTable1.class,
                 "insert into MT_TABLE1 "
                         + "(TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) "
                         + "values (1, 'g1', 's1')"));
 
-        assertNotNull(DataObjectUtils.objectForPK(context, ClientMtTable1.class, 1));
+        assertNotNull(Cayenne.objectForPK(context, ClientMtTable1.class, 1));
     }
 }

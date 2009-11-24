@@ -28,12 +28,12 @@ import org.apache.art.BigDecimalEntity;
 import org.apache.art.BigIntegerEntity;
 import org.apache.art.DateTestEntity;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
 
@@ -334,8 +334,8 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
                 "INSERT INTO ARTIST (ARTIST_ID,ARTIST_NAME) VALUES(2, 'A  ')"));
         context.performGenericQuery(inserts);
 
-        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 1);
-        Artist a2 = DataObjectUtils.objectForPK(context, Artist.class, 2);
+        Artist a1 = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist a2 = Cayenne.objectForPK(context, Artist.class, 2);
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(a.artistName) = 'A'");

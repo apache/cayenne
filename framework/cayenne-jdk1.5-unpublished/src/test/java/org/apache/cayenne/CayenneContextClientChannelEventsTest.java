@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable5;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests peer context synchronization via ClientChannel events.
@@ -157,11 +158,11 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c1 = new CayenneContext(clientChannel);
         CayenneContext c2 = new CayenneContext(clientChannel);
 
-        ClientMtTable1 o1 = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
 
-        ClientMtTable1 o2 = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 o2 = (ClientMtTable1) Cayenne.objectForQuery(
                 c2,
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
 
@@ -191,18 +192,18 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c1 = new CayenneContext(clientChannel);
         CayenneContext c2 = new CayenneContext(clientChannel);
 
-        ClientMtTable2 o1 = (ClientMtTable2) DataObjectUtils.objectForQuery(
+        ClientMtTable2 o1 = (ClientMtTable2) Cayenne.objectForQuery(
                 c1,
                 new ObjectIdQuery(new ObjectId("MtTable2", "TABLE2_ID", 1)));
 
-        ClientMtTable2 o2 = (ClientMtTable2) DataObjectUtils.objectForQuery(
+        ClientMtTable2 o2 = (ClientMtTable2) Cayenne.objectForQuery(
                 c2,
                 new ObjectIdQuery(new ObjectId("MtTable2", "TABLE2_ID", 1)));
 
         assertEquals("g1", o1.getTable1().getGlobalAttribute1());
         assertEquals("g1", o2.getTable1().getGlobalAttribute1());
 
-        ClientMtTable1 o1r = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 o1r = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 2)));
         o1.setTable1(o1r);
@@ -229,11 +230,11 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c1 = new CayenneContext(clientChannel);
         CayenneContext c2 = new CayenneContext(clientChannel);
 
-        ClientMtTable1 o1 = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
 
-        ClientMtTable1 o2 = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 o2 = (ClientMtTable1) Cayenne.objectForQuery(
                 c2,
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
 
@@ -267,7 +268,7 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c1 = new CayenneContext(clientChannel);
         CayenneContext c2 = new CayenneContext(clientChannel);
 
-        ClientMtTable1 o1 = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
 
@@ -287,7 +288,7 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         assertFalse(c1.internalGraphManager().hasChanges());
         assertFalse(c2.internalGraphManager().hasChanges());
 
-        ClientMtTable1 o2 = (ClientMtTable1) DataObjectUtils.objectForQuery(
+        ClientMtTable1 o2 = (ClientMtTable1) Cayenne.objectForQuery(
                 c2,
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
         assertEquals(2, o2.getTable2Array().size());
@@ -308,18 +309,18 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c1 = new CayenneContext(clientChannel);
         CayenneContext c2 = new CayenneContext(clientChannel);
 
-        ClientMtTable4 o1 = (ClientMtTable4) DataObjectUtils.objectForQuery(
+        ClientMtTable4 o1 = (ClientMtTable4) Cayenne.objectForQuery(
                 c1,
                 new ObjectIdQuery(new ObjectId("MtTable4", "ID", 1)));
 
-        ClientMtTable4 o2 = (ClientMtTable4) DataObjectUtils.objectForQuery(
+        ClientMtTable4 o2 = (ClientMtTable4) Cayenne.objectForQuery(
                 c2,
                 new ObjectIdQuery(new ObjectId("MtTable4", "ID", 1)));
 
         assertEquals(2, o1.getTable5s().size());
         assertEquals(2, o2.getTable5s().size());
 
-        ClientMtTable5 o1r = (ClientMtTable5) DataObjectUtils.objectForQuery(
+        ClientMtTable5 o1r = (ClientMtTable5) Cayenne.objectForQuery(
                 c1,
                 new ObjectIdQuery(new ObjectId("MtTable5", "ID", 1)));
         o1.removeFromTable5s(o1r);

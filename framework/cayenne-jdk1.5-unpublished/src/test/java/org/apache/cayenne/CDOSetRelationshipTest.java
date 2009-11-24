@@ -26,6 +26,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.relationship.SetToMany;
 import org.apache.cayenne.testdo.relationship.SetToManyTarget;
 import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class CDOSetRelationshipTest extends RelationshipCase {
 
@@ -37,7 +38,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testReadToMany() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = DataObjectUtils.objectForPK(
+        SetToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);
@@ -49,15 +50,15 @@ public class CDOSetRelationshipTest extends RelationshipCase {
 
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 SetToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 SetToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 SetToManyTarget.class,
                 3)));
@@ -69,7 +70,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
         SelectQuery query = new SelectQuery(SetToMany.class, ExpressionFactory
                 .matchDbExp(SetToMany.ID_PK_COLUMN, new Integer(1)));
         query.addPrefetch(SetToMany.TARGETS_PROPERTY);
-        SetToMany o1 = (SetToMany) DataObjectUtils.objectForQuery(
+        SetToMany o1 = (SetToMany) Cayenne.objectForQuery(
                 createDataContext(),
                 query);
 
@@ -80,15 +81,15 @@ public class CDOSetRelationshipTest extends RelationshipCase {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 SetToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 SetToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(DataObjectUtils.objectForPK(
+        assertTrue(targets.contains(Cayenne.objectForPK(
                 o1.getObjectContext(),
                 SetToManyTarget.class,
                 3)));
@@ -97,7 +98,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testAddToMany() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = DataObjectUtils.objectForPK(
+        SetToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);
@@ -123,7 +124,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testRemoveToMany() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = DataObjectUtils.objectForPK(
+        SetToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);
@@ -131,7 +132,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
         Set targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        SetToManyTarget target = DataObjectUtils.objectForPK(o1
+        SetToManyTarget target = Cayenne.objectForPK(o1
                 .getObjectContext(), SetToManyTarget.class, 2);
         o1.removeFromTargets(target);
 
@@ -149,7 +150,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testAddToManyViaReverse() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = DataObjectUtils.objectForPK(
+        SetToMany o1 = Cayenne.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);

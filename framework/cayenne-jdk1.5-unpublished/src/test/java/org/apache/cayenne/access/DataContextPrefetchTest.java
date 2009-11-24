@@ -32,7 +32,6 @@ import org.apache.art.Painting;
 import org.apache.art.PaintingInfo;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
@@ -43,6 +42,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -458,7 +458,7 @@ public class DataContextPrefetchTest extends DataContextCase {
             assertTrue(o2 instanceof PaintingInfo);
             PaintingInfo pi2 = (PaintingInfo) o2;
             assertEquals(PersistenceState.COMMITTED, pi2.getPersistenceState());
-            assertEquals(DataObjectUtils.intPKForObject(p2), DataObjectUtils
+            assertEquals(Cayenne.intPKForObject(p2), Cayenne
                     .intPKForObject(pi2));
 
             // testing null to-one target

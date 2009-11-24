@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLJoinsTest extends CayenneCase {
 
@@ -66,7 +66,7 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
 
         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
         assertEquals(1, artists.size());
-        assertEquals(33001, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testOuterJoins() throws Exception {
@@ -82,7 +82,7 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
         Iterator it = artists.iterator();
         while (it.hasNext()) {
             Artist a = (Artist) it.next();
-            ids.add(DataObjectUtils.pkForObject(a));
+            ids.add(Cayenne.pkForObject(a));
         }
 
         assertTrue(ids.contains(33001l));
@@ -101,7 +101,7 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
                 + query.getExpression(getDomain().getEntityResolver()).getExpression());
         List artists = createDataContext().performQuery(query);
         assertEquals(1, artists.size());
-        assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testImplicitJoins() throws Exception {
@@ -117,7 +117,7 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
 
         List artists = createDataContext().performQuery(query);
         assertEquals(1, artists.size());
-        assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testPartialImplicitJoins1() throws Exception {
@@ -128,7 +128,7 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
 
         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
         assertEquals(1, artists.size());
-        assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testPartialImplicitJoins2() throws Exception {
@@ -139,7 +139,7 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
 
         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
         assertEquals(1, artists.size());
-        assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testMultipleJoinsToTheSameTable() throws Exception {
@@ -150,6 +150,6 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
 
         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
         assertEquals(1, artists.size());
-        assertEquals(33001, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 }

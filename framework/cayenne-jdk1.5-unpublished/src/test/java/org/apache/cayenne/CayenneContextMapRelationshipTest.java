@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.mt.MtMapToMany;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.Cayenne;
 
 public class CayenneContextMapRelationshipTest extends CayenneCase {
 
@@ -57,7 +58,7 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
         ObjectContext context = createClientContext();
 
         ObjectId id = new ObjectId("MtMapToMany", MtMapToMany.ID_PK_COLUMN, 1);
-        ClientMtMapToMany o1 = (ClientMtMapToMany) DataObjectUtils.objectForQuery(
+        ClientMtMapToMany o1 = (ClientMtMapToMany) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(id));
 
@@ -78,7 +79,7 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
         ObjectContext context = createClientContext();
 
         ObjectId id = new ObjectId("MtMapToMany", MtMapToMany.ID_PK_COLUMN, 1);
-        ClientMtMapToMany o1 = (ClientMtMapToMany) DataObjectUtils.objectForQuery(
+        ClientMtMapToMany o1 = (ClientMtMapToMany) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(id));
 
@@ -99,7 +100,7 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
         o1.getObjectContext().performGenericQuery(new RefreshQuery());
         assertEquals(4, o1.getTargets().size());
         
-        int newId = DataObjectUtils.intPKForObject(newTarget);
+        int newId = Cayenne.intPKForObject(newTarget);
         assertSame(newTarget, o1.getTargets().get(new Integer(newId)));
         
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());

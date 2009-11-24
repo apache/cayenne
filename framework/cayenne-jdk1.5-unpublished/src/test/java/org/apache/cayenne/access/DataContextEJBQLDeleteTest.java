@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.apache.art.MeaningfulPKTest1;
 import org.apache.art.Painting;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLDeleteTest extends CayenneCase {
     
@@ -78,9 +78,9 @@ public class DataContextEJBQLDeleteTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
 
-        assertNotNull(DataObjectUtils
+        assertNotNull(Cayenne
                 .objectForPK(createDataContext(), Painting.class, 33001));
-        assertNull(DataObjectUtils
+        assertNull(Cayenne
                 .objectForPK(createDataContext(), Painting.class, 33002));
     }
     

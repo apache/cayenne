@@ -28,11 +28,11 @@ import org.apache.art.GeneratedColumnCompMaster;
 import org.apache.art.GeneratedColumnDep;
 import org.apache.art.GeneratedColumnTest2;
 import org.apache.art.GeneratedColumnTestEntity;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 /**
  */
@@ -81,12 +81,12 @@ public class IdentityColumnsTest extends CayenneCase {
         idObject.getObjectContext().commitChanges();
 
         // this will throw an exception if id wasn't generated one way or another
-        int id = DataObjectUtils.intPKForObject(idObject);
+        int id = Cayenne.intPKForObject(idObject);
         assertTrue(id >= 0);
 
         // make sure that id is the same as id in the DB
         context.invalidateObjects(Collections.singleton(idObject));
-        GeneratedColumnTestEntity object = DataObjectUtils
+        GeneratedColumnTestEntity object = Cayenne
                 .objectForPK(context, GeneratedColumnTestEntity.class, id);
         assertNotNull(object);
         assertEquals(name, object.getName());
@@ -162,14 +162,14 @@ public class IdentityColumnsTest extends CayenneCase {
 
         int[] ids = new int[idObjects.length];
         for (int i = 0; i < idObjects.length; i++) {
-            ids[i] = DataObjectUtils.intPKForObject(idObjects[i]);
+            ids[i] = Cayenne.intPKForObject(idObjects[i]);
             assertTrue(ids[i] > 0);
         }
 
         context.invalidateObjects(Arrays.asList(idObjects));
 
         for (int i = 0; i < ids.length; i++) {
-            GeneratedColumnTestEntity object = DataObjectUtils
+            GeneratedColumnTestEntity object = Cayenne
                     .objectForPK(context, GeneratedColumnTestEntity.class, ids[i]);
             assertNotNull(object);
             assertEquals(names[i], object.getName());
@@ -202,7 +202,7 @@ public class IdentityColumnsTest extends CayenneCase {
 
             context.commitChanges();
 
-            int masterId = DataObjectUtils.intPKForObject(master);
+            int masterId = Cayenne.intPKForObject(master);
 
             ObjectId id2 = dep2.getObjectId();
 
@@ -224,7 +224,7 @@ public class IdentityColumnsTest extends CayenneCase {
 
             context.invalidateObjects(Arrays.asList(master, dep1, dep2));
 
-            Object fetchedDep2 = DataObjectUtils.objectForPK(context, id2);
+            Object fetchedDep2 = Cayenne.objectForPK(context, id2);
             assertNotNull(fetchedDep2);
         }
     }
@@ -251,20 +251,20 @@ public class IdentityColumnsTest extends CayenneCase {
         dependent.setToMaster(master2);
         context.commitChanges();
 
-        int id1 = DataObjectUtils.intPKForObject(master2);
+        int id1 = Cayenne.intPKForObject(master2);
         assertTrue(id1 >= 0);
 
-        int id2 = DataObjectUtils.intPKForObject(dependent);
+        int id2 = Cayenne.intPKForObject(dependent);
         assertTrue(id2 >= 0);
         assertEquals(id1, id2);
 
         context.invalidateObjects(Arrays.asList(master2, dependent));
 
-        assertNotNull(DataObjectUtils.objectForPK(
+        assertNotNull(Cayenne.objectForPK(
                 context,
                 GeneratedColumnTestEntity.class,
                 id1));
-        assertNotNull(DataObjectUtils.objectForPK(context, GeneratedColumnDep.class, id2));
+        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
     }
 
     public void testGeneratedDefaultValue() throws Exception {
@@ -288,10 +288,10 @@ public class IdentityColumnsTest extends CayenneCase {
         context.commitChanges();
 
         // this will throw an exception if id wasn't generated
-        int id1 = DataObjectUtils.intPKForObject(idObject);
+        int id1 = Cayenne.intPKForObject(idObject);
         assertTrue(id1 >= 0);
 
-        int id2 = DataObjectUtils.intPKForObject(dependent);
+        int id2 = Cayenne.intPKForObject(dependent);
         assertTrue(id2 >= 0);
 
         assertEquals(id1, id2);
@@ -299,10 +299,10 @@ public class IdentityColumnsTest extends CayenneCase {
         // refetch from DB
         context.invalidateObjects(Arrays.asList(idObject, dependent));
 
-        assertNotNull(DataObjectUtils.objectForPK(
+        assertNotNull(Cayenne.objectForPK(
                 context,
                 GeneratedColumnTestEntity.class,
                 id1));
-        assertNotNull(DataObjectUtils.objectForPK(context, GeneratedColumnDep.class, id2));
+        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
     }
 }

@@ -22,11 +22,11 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextObjectIdQueryTest extends CayenneCase {
 
@@ -51,13 +51,13 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
                 Artist.class,
                 "UPDATE ARTIST SET DATE_OF_BIRTH = NULL"));
 
-        long id = DataObjectUtils.longPKForObject(a);
+        long id = Cayenne.longPKForObject(a);
         ObjectIdQuery query = new ObjectIdQuery(new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 id), false, ObjectIdQuery.CACHE_REFRESH);
 
-        Artist a1 = (Artist) DataObjectUtils.objectForQuery(context, query);
+        Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
         assertNull(a1.getDateOfBirth());
         assertEquals("X", a1.getArtistName());
     }
@@ -75,13 +75,13 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
                 Artist.class,
                 "UPDATE ARTIST SET ARTIST_NAME = 'Y'"));
 
-        long id = DataObjectUtils.longPKForObject(a);
+        long id = Cayenne.longPKForObject(a);
         ObjectIdQuery query = new ObjectIdQuery(new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 id), false, ObjectIdQuery.CACHE);
 
-        Artist a1 = (Artist) DataObjectUtils.objectForQuery(context, query);
+        Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
         assertEquals("X", a1.getArtistName());
     }
     
@@ -96,7 +96,7 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
         DataContext context = createDataContext();
         context.performGenericQuery(insert);
 
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 44l);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 44l);
         assertNotNull(a.getDateOfBirth());
         assertEquals("X", a.getArtistName());
 
@@ -109,7 +109,7 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
                 Artist.ARTIST_ID_PK_COLUMN,
                 44l), false, ObjectIdQuery.CACHE_REFRESH);
 
-        Artist a1 = (Artist) DataObjectUtils.objectForQuery(context, query);
+        Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
         assertNull(a1.getDateOfBirth());
         assertEquals("X", a1.getArtistName());
     }

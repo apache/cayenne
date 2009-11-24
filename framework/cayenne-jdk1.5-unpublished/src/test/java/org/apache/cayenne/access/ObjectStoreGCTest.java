@@ -19,11 +19,11 @@
 package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
+import org.apache.cayenne.util.Cayenne;
 
 public class ObjectStoreGCTest extends CayenneCase {
 
@@ -93,7 +93,7 @@ public class ObjectStoreGCTest extends CayenneCase {
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
-        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
         a.setArtistName("Y");
         a = null;
         assertEquals(1, context.getObjectStore().registeredObjectsCount());

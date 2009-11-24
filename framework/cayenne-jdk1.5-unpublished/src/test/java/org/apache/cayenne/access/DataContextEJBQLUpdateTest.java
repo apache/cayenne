@@ -24,11 +24,11 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.art.BooleanTestEntity;
 import org.apache.art.CompoundPkTestEntity;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLUpdateTest extends CayenneCase {
 
@@ -45,7 +45,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(2l), notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX' WHERE p.paintingTitle = 'P1'";
@@ -58,7 +58,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(1l), notUpdated);
     }
 
@@ -70,7 +70,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(2l), notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX'";
@@ -83,7 +83,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
 
@@ -95,7 +95,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is not null");
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(2l), notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = NULL";
@@ -108,7 +108,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
 
@@ -122,7 +122,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
 //        EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
 //                + "WHERE p.paintingTitle is NULL or p.estimatedPrice <= 5000");
 //
-//        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+//        Object notUpdated = Cayenne.objectForQuery(context, check);
 //        assertEquals(new Long(2l), notUpdated);
 //
 //        String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = p.estimatedPrice * 2";
@@ -135,7 +135,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
 //        assertEquals(1, count.length);
 //        assertEquals(2, count[0]);
 //
-//        notUpdated = DataObjectUtils.objectForQuery(context, check);
+//        notUpdated = Cayenne.objectForQuery(context, check);
 //        assertEquals(new Long(0l), notUpdated);
 //    }
 
@@ -147,7 +147,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1");
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(2l), notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX', p.estimatedPrice = 1";
@@ -160,7 +160,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
 
@@ -172,7 +172,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1.1");
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(2l), notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = 1.1";
@@ -185,7 +185,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
 
@@ -209,7 +209,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         EJBQLQuery check = new EJBQLQuery("select count(p) from BooleanTestEntity p "
                 + "WHERE p.booleanColumn = true");
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(1l), notUpdated);
 
         String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
@@ -222,7 +222,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(3, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(3l), notUpdated);
     }
 
@@ -230,14 +230,14 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         createTestData("prepare");
 
         ObjectContext context = createDataContext();
-        Artist object = DataObjectUtils
+        Artist object = Cayenne
                 .objectForPK(context, Artist.class, 33003);
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.toArtist <> :artist");
         check.setParameter("artist", object);
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(2l), notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.toArtist = :artist";
@@ -251,7 +251,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
 
@@ -262,7 +262,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity object = DataObjectUtils.objectForPK(
+        CompoundPkTestEntity object = Cayenne.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);
@@ -271,7 +271,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
                 "select count(e) from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param");
         check.setParameter("param", object);
 
-        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(1l), notUpdated);
 
         String ejbql = "UPDATE CompoundFkTestEntity e SET e.toCompoundPk = :param";
@@ -285,7 +285,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
 
