@@ -31,8 +31,8 @@ public class MissingSessionException extends CayenneRuntimeException {
         super();
     }
 
-    public MissingSessionException(String message) {
-        super(message);
+    public MissingSessionException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
 }

@@ -17,49 +17,32 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
-/** 
- * RuntimeException subclass thrown in cases of errors during 
- * expressions creation/parsing.
- * 
+/**
+ * RuntimeException thrown on errors during expressions creation/parsing.
  */
 public class ExpressionException extends CayenneRuntimeException {
+
     protected String expressionString;
 
-    /**
-     * Constructor for ExpressionException.
-     */
     public ExpressionException() {
         super();
     }
 
-    /**
-     * Constructor for ExpressionException.
-     * @param msg
-     */
-    public ExpressionException(String msg) {
-        super(msg);
+    public ExpressionException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
-    /**
-     * Constructor for ExpressionException.
-     * @param th
-     */
-    public ExpressionException(Throwable th) {
-        super(th);
+    public ExpressionException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
-    /**
-     * Constructor for ExpressionException.
-     * @param msg
-     * @param th
-     */
-    public ExpressionException(String msg, Throwable th) {
-        super(msg, th);
+    public ExpressionException(Throwable cause) {
+        super(cause);
     }
 
     /**
@@ -67,8 +50,8 @@ public class ExpressionException extends CayenneRuntimeException {
      * 
      * @since 1.1
      */
-    public ExpressionException(String msg, String expressionString, Throwable th) {
-        super(msg, th);
+    public ExpressionException(String messageFormat, String expressionString, Throwable th, Object... messageArgs) {
+        super(messageFormat, th, messageArgs);
         this.expressionString = expressionString;
     }
 

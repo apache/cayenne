@@ -21,24 +21,21 @@ package org.apache.cayenne.swing;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
-/**
- */
 public class BindingException extends CayenneRuntimeException {
 
     public BindingException() {
         super();
     }
 
-    public BindingException(String msg) {
-        super(msg);
+    public BindingException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
-    public BindingException(Throwable th) {
-        super(th);
+    public BindingException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
-    public BindingException(String msg, Throwable th) {
-        super(msg, th);
+    public BindingException(Throwable cause) {
+        super(cause);
     }
-
 }

@@ -52,4 +52,15 @@ public class CayenneExceptionTest extends TestCase {
         assertSame(cause, ex.getCause());
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
+    
+    public void testMessageFormatting1() throws Exception {
+        CayenneException ex = new CayenneException("x%sx%sx", "a", "b");
+        assertEquals("xaxbx", ex.getUnlabeledMessage());
+    }
+    
+    public void testMessageFormatting2() throws Exception {
+        Throwable cause = new Throwable();
+        CayenneException ex = new CayenneException("x%sx%sx", cause, "a", "b");
+        assertEquals("xaxbx", ex.getUnlabeledMessage());
+    }
 }

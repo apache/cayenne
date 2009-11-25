@@ -17,12 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne;
 
 /**
  * A runtime exception thrown on failures in Cayenne configuration.
- * 
  */
 public class ConfigurationException extends CayenneRuntimeException {
 
@@ -33,24 +31,22 @@ public class ConfigurationException extends CayenneRuntimeException {
     }
 
     /**
-     * Constructs an <code>ConfigurationException</code> with the specified detail
-     * message.
-     * 
-     * @param message the detail message.
+     * Constructs an exception with the specified message with an optional list of message
+     * formatting arguments. Message formatting rules follow "String.format(..)"
+     * conventions.
      */
-    public ConfigurationException(String message) {
-        super(message);
+    public ConfigurationException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
     /**
-     * Constructs an <code>ConfigurationException</code> that wraps
-     * <code>exception</code> thrown elsewhere.
+     * Constructs an exception wrapping another exception thrown elsewhere.
      */
     public ConfigurationException(Throwable cause) {
         super(cause);
     }
 
-    public ConfigurationException(String message, Throwable cause) {
-        super(message, cause);
+    public ConfigurationException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 }

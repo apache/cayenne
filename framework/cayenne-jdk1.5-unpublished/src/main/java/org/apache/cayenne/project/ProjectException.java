@@ -17,42 +17,28 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.project;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * Runtime exception thrown on various errors within project model.
- * 
  */
 public class ProjectException extends CayenneRuntimeException {
 
-    /**
-     * Constructor for ProjectException.
-     */
     public ProjectException() {
         super();
     }
 
-    /**
-     * Constructor for ProjectException.
-     */
-    public ProjectException(String msg) {
-        super(msg);
+    public ProjectException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
-    /**
-     * Constructor for ProjectException.
-     */
-    public ProjectException(Throwable th) {
-        super(th);
+    public ProjectException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
-    /**
-     * Constructor for ProjectException.
-     */
-    public ProjectException(String msg, Throwable th) {
-        super(msg, th);
+    public ProjectException(Throwable cause) {
+        super(cause);
     }
 }

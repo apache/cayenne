@@ -33,33 +33,35 @@ public class PropertyException extends CayenneRuntimeException {
     protected Accessor accessor;
     protected Object source;
 
-    public PropertyException(String message) {
-        this(message, null);
+    public PropertyException(String messageFormat, Object... messageArgs) {
+        this(messageFormat, (Throwable) null, messageArgs);
     }
 
-    public PropertyException(String message, Throwable cause) {
-        super(message, cause);
+    public PropertyException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
-    public PropertyException(String message, Accessor accessor, Object source) {
-        this(message, accessor, source, null);
+    public PropertyException(String messageFormat, Accessor accessor, Object source,
+            Object... messageArgs) {
+        this(messageFormat, accessor, source, (Throwable) null, messageArgs);
     }
 
-    public PropertyException(String message, Accessor accessor, Object source,
-            Throwable cause) {
-        super(message, cause);
+    public PropertyException(String messageFormat, Accessor accessor, Object source,
+            Throwable cause, Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
 
         this.accessor = accessor;
         this.source = source;
     }
 
-    public PropertyException(String message, Property property, Object source) {
-        this(message, property, source, null);
+    public PropertyException(String messageFormat, Property property, Object source,
+            Object... messageArgs) {
+        this(messageFormat, property, source, (Throwable) null, messageArgs);
     }
 
-    public PropertyException(String message, Property property, Object source,
-            Throwable cause) {
-        super(message, cause);
+    public PropertyException(String messageFormat, Property property, Object source,
+            Throwable cause, Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
 
         this.property = property;
         this.source = source;

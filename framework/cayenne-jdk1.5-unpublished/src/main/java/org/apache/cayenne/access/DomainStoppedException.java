@@ -29,18 +29,20 @@ import org.apache.cayenne.CayenneRuntimeException;
 public class DomainStoppedException extends CayenneRuntimeException {
 
     public DomainStoppedException() {
+        super();
     }
 
-    public DomainStoppedException(String message) {
-        super(message);
+    public DomainStoppedException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
+    }
+
+    public DomainStoppedException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
     public DomainStoppedException(Throwable cause) {
         super(cause);
-    }
-
-    public DomainStoppedException(String message, Throwable cause) {
-        super(message, cause);
     }
 
 }

@@ -24,7 +24,6 @@ import org.apache.cayenne.util.LocalizedStringsHandler;
 /**
  * A generic checked exception that may be thrown by Cayenne framework. All checked
  * exceptions in Cayenne inherit from this class.
- * 
  */
 public class CayenneException extends Exception {
 
@@ -57,20 +56,20 @@ public class CayenneException extends Exception {
      * 
      * @param message the detail message.
      */
-    public CayenneException(String message) {
-        super(message);
+    public CayenneException(String messageFormat, Object... messageArgs) {
+        super(String.format(messageFormat, messageArgs));
     }
 
     /**
-     * Constructs an <code>CayenneException</code> that wraps a <code>cause</code>
-     * thrown elsewhere.
+     * Constructs an <code>CayenneException</code> that wraps a <code>cause</code> thrown
+     * elsewhere.
      */
     public CayenneException(Throwable cause) {
         super(cause);
     }
 
-    public CayenneException(String message, Throwable cause) {
-        super(message, cause);
+    public CayenneException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(String.format(messageFormat, messageArgs), cause);
     }
 
     /**

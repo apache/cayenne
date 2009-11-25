@@ -29,18 +29,20 @@ import org.apache.cayenne.CayenneRuntimeException;
 public class DoubleEnhanceException extends CayenneRuntimeException {
 
     public DoubleEnhanceException() {
+        super();
     }
 
-    public DoubleEnhanceException(String message) {
-        super(message);
+    public DoubleEnhanceException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
+    }
+
+    public DoubleEnhanceException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
     public DoubleEnhanceException(Throwable cause) {
         super(cause);
-    }
-
-    public DoubleEnhanceException(String message, Throwable cause) {
-        super(message, cause);
     }
 
 }

@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since 3.0:
 
 CAY-1310 Remove everything deprecated in 3.0
+CAY-1315 Formattable exceptions
 
 Bug Fixes Since 3.0:
 

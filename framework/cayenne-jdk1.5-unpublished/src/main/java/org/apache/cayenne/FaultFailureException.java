@@ -20,37 +20,25 @@
 package org.apache.cayenne;
 
 /**
- * A runtime exception thrown when <code>DataObject.resolveFault()</code> finds that no
- * matching row exists in the database for an <code>ObjectId</code>.
- * 
+ * A runtime exception thrown when during lazy object initialization Cayenne finds that no
+ * matching row exists in the database for a given ObjectId.
  */
 public class FaultFailureException extends CayenneRuntimeException {
 
-    /**
-     * Creates new FaultFailureException without detail message.
-     */
     public FaultFailureException() {
         super();
     }
 
-    /**
-     * Constructs an FaultFailureException with the specified detail message.
-     * 
-     * @param msg the detail message.
-     */
-    public FaultFailureException(String msg) {
-        super(msg);
+    public FaultFailureException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
-    /**
-     * Constructs an FaultFailureException that wraps a <code>Throwable</code> thrown
-     * elsewhere.
-     */
-    public FaultFailureException(Throwable th) {
-        super(th);
+    public FaultFailureException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
-    public FaultFailureException(String msg, Throwable th) {
-        super(msg, th);
+    public FaultFailureException(Throwable cause) {
+        super(cause);
     }
 }

@@ -28,31 +28,21 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 public class UnresolvablePathException extends CayenneRuntimeException {
 
-    /**
-     * Creates new NullInPathException without detail message.
-     */
     public UnresolvablePathException() {
         super();
     }
 
-    /**
-     * Constructs a NullInPathException with the specified detail message.
-     * 
-     * @param msg the detail message.
-     */
-    public UnresolvablePathException(String msg) {
-        super(msg);
+    public UnresolvablePathException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
-    /**
-     * Constructs a NullInPathException that wraps a <code>Throwable</code> thrown
-     * elsewhere.
-     */
-    public UnresolvablePathException(Throwable th) {
-        super(th);
+    public UnresolvablePathException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
-    public UnresolvablePathException(String msg, Throwable th) {
-        super(msg, th);
+    public UnresolvablePathException(Throwable cause) {
+        super(cause);
     }
+
 }

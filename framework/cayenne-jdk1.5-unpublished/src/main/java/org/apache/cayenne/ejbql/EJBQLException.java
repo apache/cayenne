@@ -28,22 +28,24 @@ import org.apache.cayenne.exp.ExpressionException;
 public class EJBQLException extends ExpressionException {
 
     public EJBQLException() {
-
+        super();
     }
 
-    public EJBQLException(String msg) {
-        super(msg);
+    public EJBQLException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
-    public EJBQLException(Throwable th) {
-        super(th);
+    public EJBQLException(String messageFormat, String expressionString, Throwable th,
+            Object... messageArgs) {
+        super(messageFormat, expressionString, th, messageArgs);
     }
 
-    public EJBQLException(String msg, Throwable th) {
-        super(msg, th);
+    public EJBQLException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
     }
 
-    public EJBQLException(String msg, String expressionString, Throwable th) {
-        super(msg, expressionString, th);
+    public EJBQLException(Throwable cause) {
+        super(cause);
     }
+
 }

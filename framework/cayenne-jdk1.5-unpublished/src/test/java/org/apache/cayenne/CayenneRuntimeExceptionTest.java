@@ -80,5 +80,16 @@ public class CayenneRuntimeExceptionTest extends TestCase {
             rtex.printStackTrace(new PrintWriter(w));
         }
     }
+    
+    public void testMessageFormatting1() throws Exception {
+        CayenneRuntimeException ex = new CayenneRuntimeException("x%sx%sx", "a", "b");
+        assertEquals("xaxbx", ex.getUnlabeledMessage());
+    }
+    
+    public void testMessageFormatting2() throws Exception {
+        Throwable cause = new Throwable();
+        CayenneRuntimeException ex = new CayenneRuntimeException("x%sx%sx", cause, "a", "b");
+        assertEquals("xaxbx", ex.getUnlabeledMessage());
+    }
 
 }

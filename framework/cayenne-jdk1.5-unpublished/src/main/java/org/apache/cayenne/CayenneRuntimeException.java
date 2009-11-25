@@ -22,7 +22,6 @@ package org.apache.cayenne;
 /**
  * A generic unchecked exception that may be thrown by Cayenne framework. All runtime
  * exceptions in Cayenne inherit from this class.
- * 
  */
 public class CayenneRuntimeException extends RuntimeException {
 
@@ -33,13 +32,12 @@ public class CayenneRuntimeException extends RuntimeException {
     }
 
     /**
-     * Constructs an <code>CayenneRuntimeException</code> with the specified detail
-     * message.
-     * 
-     * @param message the detail message.
+     * Constructs an exception with the specified message and an optional list of message
+     * formatting arguments. Message formatting rules follow "String.format(..)"
+     * conventions.
      */
-    public CayenneRuntimeException(String message) {
-        super(message);
+    public CayenneRuntimeException(String messageFormat, Object... messageArgs) {
+        super(String.format(messageFormat, messageArgs));
     }
 
     /**
@@ -50,8 +48,14 @@ public class CayenneRuntimeException extends RuntimeException {
         super(cause);
     }
 
-    public CayenneRuntimeException(String message, Throwable cause) {
-        super(message, cause);
+    /**
+     * Constructs an exception with the specified message and exception cause and an
+     * optional list of message formatting arguments. Message formatting rules follow
+     * "String.format(..)" conventions.
+     */
+    public CayenneRuntimeException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(String.format(messageFormat, messageArgs), cause);
     }
 
     /**
