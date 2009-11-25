@@ -111,6 +111,7 @@
 			<xs:attribute name="superEntityName" use="optional" type="xs:string"/>
 			<xs:attribute name="exclude-superclass-listeners" use="optional" type="xs:boolean"/>
 			<xs:attribute name="exclude-default-listeners" use="optional" type="xs:boolean"/>
+			<xs:attribute name="serverOnly" use="optional" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 
