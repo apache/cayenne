@@ -25,11 +25,11 @@ import java.util.Map;
 
 import org.apache.art.Artist;
 import org.apache.art.Gallery;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextJoinAliasesTest extends CayenneCase {
 

@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import java.util.Map;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
@@ -32,7 +33,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextDecoratedStackTest extends CayenneCase {
 

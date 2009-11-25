@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -30,7 +31,6 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.util.Cayenne;
 
 public class EmbeddingTest extends CayenneCase {
 

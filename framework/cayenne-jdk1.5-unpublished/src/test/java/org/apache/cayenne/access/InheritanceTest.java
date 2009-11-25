@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -39,7 +40,6 @@ import org.apache.cayenne.testdo.inherit.PersonNotes;
 import org.apache.cayenne.testdo.inherit.RelatedEntity;
 import org.apache.cayenne.testdo.inherit.SubEntity;
 import org.apache.cayenne.unit.PeopleCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * Testing Cayenne behavior with DataObject inheritance hierarchies.

@@ -26,7 +26,6 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.relationship.SetToMany;
 import org.apache.cayenne.testdo.relationship.SetToManyTarget;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class CDOSetRelationshipTest extends RelationshipCase {
 

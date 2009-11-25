@@ -28,7 +28,6 @@ import org.apache.cayenne.access.MockDataNode;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * Test case for objects with flattened relationships.

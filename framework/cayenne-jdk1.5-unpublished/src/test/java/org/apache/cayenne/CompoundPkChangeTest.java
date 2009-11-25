@@ -22,7 +22,6 @@ import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class CompoundPkChangeTest extends CayenneCase {
 

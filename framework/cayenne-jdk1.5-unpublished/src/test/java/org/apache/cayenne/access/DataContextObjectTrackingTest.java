@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
@@ -30,7 +31,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests objects registration in DataContext, transferring objects between contexts and

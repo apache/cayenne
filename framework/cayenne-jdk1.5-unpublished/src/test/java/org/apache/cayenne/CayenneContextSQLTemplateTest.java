@@ -26,7 +26,6 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.util.Cayenne;
 
 public class CayenneContextSQLTemplateTest extends CayenneCase {
 

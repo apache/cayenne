@@ -20,10 +20,10 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLOrderByTest extends CayenneCase {
 

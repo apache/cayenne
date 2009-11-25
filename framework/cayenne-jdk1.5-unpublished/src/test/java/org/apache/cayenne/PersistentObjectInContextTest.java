@@ -34,7 +34,6 @@ import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.PersistentObjectHolder;
 
 public class PersistentObjectInContextTest extends CayenneCase {

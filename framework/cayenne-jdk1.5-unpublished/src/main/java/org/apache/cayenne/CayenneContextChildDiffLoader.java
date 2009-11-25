@@ -110,8 +110,6 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
             }
 
             public boolean visitToMany(ToManyProperty property) {
-                ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                
                 if (target[0] == null) {
 
                     // this is usually the case when a NEW object was deleted and then

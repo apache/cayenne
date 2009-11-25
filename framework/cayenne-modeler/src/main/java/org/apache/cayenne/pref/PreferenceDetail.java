@@ -21,13 +21,13 @@ package org.apache.cayenne.pref;
 
 import java.util.Properties;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.Util;
 
 /**

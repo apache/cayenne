@@ -27,12 +27,12 @@ import org.apache.art.ArtGroup;
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.art.PaintingInfo;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class NestedDataContextWriteTest extends CayenneCase {
 

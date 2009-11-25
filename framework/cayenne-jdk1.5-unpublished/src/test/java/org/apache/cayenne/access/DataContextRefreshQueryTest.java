@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
@@ -31,7 +32,6 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextRefreshQueryTest extends CayenneCase {
 

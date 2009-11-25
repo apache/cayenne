@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.util;
+package org.apache.cayenne;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,25 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * Various utils for processing persistent objects and their properties
@@ -258,91 +246,6 @@ public final class Cayenne {
      
         //there is still a change to return a property via introspection
         return PropertyUtils.getProperty(p, propertyName);
-    }
-    
-    static void setReverse(
-            final Persistent sourceObject,
-            String propertyName,
-            final Persistent targetObject) {
-        
-        ArcProperty property = (ArcProperty) getClassDescriptor(sourceObject).
-            getProperty(propertyName);
-        ArcProperty reverseArc = property.getComplimentaryReverseArc();
-        if (reverseArc != null) {
-            reverseArc.visit(new PropertyVisitor() {
-
-                public boolean visitToMany(ToManyProperty property) {
-                    property.addTargetDirectly(targetObject, sourceObject);
-                    return false;
-                }
-
-                public boolean visitToOne(ToOneProperty property) {
-                    property.setTarget(targetObject, sourceObject, false);
-                    return false;
-                }
-
-                public boolean visitAttribute(AttributeProperty property) {
-                    return false;
-                }
-
-            });
-            
-            sourceObject.getObjectContext().getGraphManager().arcCreated(
-                    targetObject.getObjectId(),
-                    sourceObject.getObjectId(),
-                    reverseArc.getName());
-    
-            markAsDirty(targetObject);
-        }
-    }
-
-    static void unsetReverse(
-            final Persistent sourceObject,
-            String propertyName,
-            final Persistent targetObject) {
-        
-        ArcProperty property = (ArcProperty) getClassDescriptor(sourceObject).
-            getProperty(propertyName);
-        ArcProperty reverseArc = property.getComplimentaryReverseArc();
-        if (reverseArc != null) {
-            reverseArc.visit(new PropertyVisitor() {
-
-                public boolean visitToMany(ToManyProperty property) {
-                    property.removeTargetDirectly(targetObject, sourceObject);
-                    return false;
-                }
-
-                public boolean visitToOne(ToOneProperty property) {
-                    property.setTarget(targetObject, null, false);
-                    return false;
-                }
-
-                public boolean visitAttribute(AttributeProperty property) {
-                    return false;
-                }
-
-            });
-            
-            sourceObject.getObjectContext().getGraphManager().arcDeleted(
-                    targetObject.getObjectId(),
-                    sourceObject.getObjectId(),
-                    reverseArc.getName());
-
-            markAsDirty(targetObject);
-        }
-    }
-    
-    /**
-     * Changes object state to MODIFIED if needed, returning true if the change has
-     * occurred, false if not.
-     */
-    static boolean markAsDirty(Persistent object) {
-        if (object.getPersistenceState() == PersistenceState.COMMITTED) {
-            object.setPersistenceState(PersistenceState.MODIFIED);
-            return true;
-        }
-
-        return false;
     }
     
     /**

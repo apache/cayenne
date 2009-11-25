@@ -28,12 +28,12 @@ import org.apache.art.BigDecimalEntity;
 import org.apache.art.BigIntegerEntity;
 import org.apache.art.DateTestEntity;
 import org.apache.art.Painting;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
 

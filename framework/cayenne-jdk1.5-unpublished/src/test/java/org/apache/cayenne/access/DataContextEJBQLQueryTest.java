@@ -30,13 +30,13 @@ import org.apache.art.Artist;
 import org.apache.art.CompoundFkTestEntity;
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.art.Painting;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLQueryTest extends CayenneCase {
 

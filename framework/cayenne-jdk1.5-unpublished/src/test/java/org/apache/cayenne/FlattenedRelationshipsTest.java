@@ -32,7 +32,6 @@ import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.testdo.relationship.FlattenedTest2;
 import org.apache.cayenne.testdo.relationship.FlattenedTest3;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * Test case for objects with flattened relationships.

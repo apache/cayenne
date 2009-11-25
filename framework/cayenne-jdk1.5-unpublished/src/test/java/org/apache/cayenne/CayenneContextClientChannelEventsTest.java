@@ -30,7 +30,6 @@ import org.apache.cayenne.testdo.mt.ClientMtTable5;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests peer context synchronization via ClientChannel events.

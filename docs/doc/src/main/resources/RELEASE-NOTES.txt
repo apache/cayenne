@@ -16,6 +16,7 @@ Changes/New Features Since 3.0:
 
 CAY-1310 Remove everything deprecated in 3.0
 CAY-1315 Formattable exceptions
+CAY-1316 Deprecate DataObjectUtils and move its methods to new utility class org.apache.cayenne.Cayenne
 
 Bug Fixes Since 3.0:
 

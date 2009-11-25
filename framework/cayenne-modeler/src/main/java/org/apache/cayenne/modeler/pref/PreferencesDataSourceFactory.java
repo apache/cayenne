@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.conf.Configuration;
@@ -42,7 +43,6 @@ import org.apache.cayenne.pref.DomainPreference;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * A DataSourceFactory that loads DataSources from CayenneModeler preferences. Allows

@@ -28,11 +28,11 @@ import org.apache.art.GeneratedColumnCompMaster;
 import org.apache.art.GeneratedColumnDep;
 import org.apache.art.GeneratedColumnTest2;
 import org.apache.art.GeneratedColumnTestEntity;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  */

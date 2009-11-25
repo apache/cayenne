@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import java.util.Map;
 
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * A collection of utility methods to work with DataObjects.
@@ -36,7 +35,7 @@ import org.apache.cayenne.util.Cayenne;
  * </p>
  * 
  * @since 1.1
- * @deprecated since 3.1 {@link org.apache.cayenne.util.Cayenne} class is used instead
+ * @deprecated since 3.1 {@link org.apache.cayenne.Cayenne} class is used instead
  */
 @Deprecated
 public final class DataObjectUtils {

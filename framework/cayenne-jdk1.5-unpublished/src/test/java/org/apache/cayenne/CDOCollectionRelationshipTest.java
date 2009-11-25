@@ -26,7 +26,6 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.relationship.CollectionToMany;
 import org.apache.cayenne.testdo.relationship.CollectionToManyTarget;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class CDOCollectionRelationshipTest extends RelationshipCase {
 

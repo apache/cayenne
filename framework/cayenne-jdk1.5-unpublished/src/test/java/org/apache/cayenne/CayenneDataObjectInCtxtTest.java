@@ -30,7 +30,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CaseDataFactory;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class CayenneDataObjectInCtxtTest extends CayenneCase {
 

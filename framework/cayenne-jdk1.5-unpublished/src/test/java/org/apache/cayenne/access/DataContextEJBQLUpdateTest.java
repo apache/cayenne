@@ -24,11 +24,11 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.art.BooleanTestEntity;
 import org.apache.art.CompoundPkTestEntity;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLUpdateTest extends CayenneCase {
 

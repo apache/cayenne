@@ -26,7 +26,6 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.relationship.ToOneFK1;
 import org.apache.cayenne.testdo.relationship.ToOneFK2;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests the behavior of one-to-one relationship where to-one is pointing to an FK.

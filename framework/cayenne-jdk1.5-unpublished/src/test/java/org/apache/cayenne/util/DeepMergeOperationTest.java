@@ -20,6 +20,7 @@
 package org.apache.cayenne.util;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;

@@ -416,7 +416,7 @@ public class PersistentObjectList extends RelationshipFault
                     null,
                     addedObject);
             if (addedObject instanceof Persistent) {
-                Cayenne.setReverse(relationshipOwner, relationshipName,
+                Util.setReverse(relationshipOwner, relationshipName,
                         (Persistent) addedObject);
             }
         }
@@ -432,7 +432,7 @@ public class PersistentObjectList extends RelationshipFault
                     removedObject,
                     null);
             if (removedObject instanceof Persistent) {
-                Cayenne.unsetReverse(relationshipOwner, relationshipName,
+                Util.unsetReverse(relationshipOwner, relationshipName,
                         (Persistent) removedObject);
             }
         }

@@ -24,8 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.util.Cayenne;
 import org.apache.cayenne.util.Util;
 
 /**

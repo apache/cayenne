@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.apache.art.MeaningfulPKTest1;
 import org.apache.art.Painting;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLDeleteTest extends CayenneCase {
     

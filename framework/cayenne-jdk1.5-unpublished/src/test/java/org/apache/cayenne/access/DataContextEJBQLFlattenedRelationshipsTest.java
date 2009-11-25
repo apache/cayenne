@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class DataContextEJBQLFlattenedRelationshipsTest extends RelationshipCase {
 

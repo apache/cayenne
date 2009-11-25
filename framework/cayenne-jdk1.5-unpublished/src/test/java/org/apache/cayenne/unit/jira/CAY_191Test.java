@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.unit.jira;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.testdo.relationship.FkOfDifferentType;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class CAY_191Test extends RelationshipCase {
 

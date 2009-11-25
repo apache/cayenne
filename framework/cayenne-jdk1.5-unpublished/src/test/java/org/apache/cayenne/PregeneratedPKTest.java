@@ -24,7 +24,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * This test case ensures that PK pre-generated for the entity manually before commit is

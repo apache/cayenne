@@ -192,7 +192,7 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
                     addedObject);
             
             if (addedObject instanceof Persistent) {
-                Cayenne.setReverse(relationshipOwner, relationshipName,
+                Util.setReverse(relationshipOwner, relationshipName,
                         (Persistent) addedObject);
             }
         }
@@ -215,7 +215,7 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
                     removedObject,
                     null);
             if (removedObject instanceof Persistent) {
-                Cayenne.unsetReverse(relationshipOwner, relationshipName,
+                Util.unsetReverse(relationshipOwner, relationshipName,
                         (Persistent) removedObject);
             }
         }

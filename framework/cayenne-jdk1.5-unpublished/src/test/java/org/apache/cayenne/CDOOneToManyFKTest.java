@@ -26,7 +26,6 @@ import org.apache.cayenne.testdo.relationship.ToManyFkDep;
 import org.apache.cayenne.testdo.relationship.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationship.ToManyRoot2;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at
 // partial solution

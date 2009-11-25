@@ -24,11 +24,11 @@ import java.util.Map;
 
 import org.apache.art.MeaningfulPKDep;
 import org.apache.art.MeaningfulPKTest1;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  */

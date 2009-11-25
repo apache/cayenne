@@ -23,11 +23,11 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.art.Gallery;
 import org.apache.art.Painting;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class CAY_901Test extends CayenneCase {
 

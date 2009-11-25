@@ -52,6 +52,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -663,5 +671,90 @@ public class Util {
 
             return Class.forName("[L" + className + ";", true, classLoader);
         }
+    }
+    
+    static void setReverse(
+            final Persistent sourceObject,
+            String propertyName,
+            final Persistent targetObject) {
+        
+        ArcProperty property = (ArcProperty) Cayenne.getClassDescriptor(sourceObject).
+            getProperty(propertyName);
+        ArcProperty reverseArc = property.getComplimentaryReverseArc();
+        if (reverseArc != null) {
+            reverseArc.visit(new PropertyVisitor() {
+
+                public boolean visitToMany(ToManyProperty property) {
+                    property.addTargetDirectly(targetObject, sourceObject);
+                    return false;
+                }
+
+                public boolean visitToOne(ToOneProperty property) {
+                    property.setTarget(targetObject, sourceObject, false);
+                    return false;
+                }
+
+                public boolean visitAttribute(AttributeProperty property) {
+                    return false;
+                }
+
+            });
+            
+            sourceObject.getObjectContext().getGraphManager().arcCreated(
+                    targetObject.getObjectId(),
+                    sourceObject.getObjectId(),
+                    reverseArc.getName());
+    
+            markAsDirty(targetObject);
+        }
+    }
+
+    static void unsetReverse(
+            final Persistent sourceObject,
+            String propertyName,
+            final Persistent targetObject) {
+        
+        ArcProperty property = (ArcProperty) Cayenne.getClassDescriptor(sourceObject).
+            getProperty(propertyName);
+        ArcProperty reverseArc = property.getComplimentaryReverseArc();
+        if (reverseArc != null) {
+            reverseArc.visit(new PropertyVisitor() {
+
+                public boolean visitToMany(ToManyProperty property) {
+                    property.removeTargetDirectly(targetObject, sourceObject);
+                    return false;
+                }
+
+                public boolean visitToOne(ToOneProperty property) {
+                    property.setTarget(targetObject, null, false);
+                    return false;
+                }
+
+                public boolean visitAttribute(AttributeProperty property) {
+                    return false;
+                }
+
+            });
+            
+            sourceObject.getObjectContext().getGraphManager().arcDeleted(
+                    targetObject.getObjectId(),
+                    sourceObject.getObjectId(),
+                    reverseArc.getName());
+
+            markAsDirty(targetObject);
+        }
+    }
+    
+    /**
+     * Changes object state to MODIFIED if needed, returning true if the change has
+     * occurred, false if not.
+     */
+    static boolean markAsDirty(Persistent object) {
+        if (object.getPersistenceState() == PersistenceState.COMMITTED) {
+            object.setPersistenceState(PersistenceState.MODIFIED);
+            return true;
+        }
+
+        return false;
     }
 }

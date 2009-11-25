@@ -27,7 +27,6 @@ import org.apache.cayenne.testdo.relationship.IdMapToMany;
 import org.apache.cayenne.testdo.relationship.MapToMany;
 import org.apache.cayenne.testdo.relationship.MapToManyTarget;
 import org.apache.cayenne.unit.RelationshipCase;
-import org.apache.cayenne.util.Cayenne;
 
 public class CDOMapRelationshipTest extends RelationshipCase {
 

@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
@@ -38,7 +39,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * "Lightweight" test cases for DataContext. These tests do not require any additional

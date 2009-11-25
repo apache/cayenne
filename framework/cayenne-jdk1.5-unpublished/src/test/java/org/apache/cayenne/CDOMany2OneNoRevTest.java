@@ -25,7 +25,6 @@ import org.apache.art.Artist;
 import org.apache.art.Painting1;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Cayenne;
 
 /**
  * Tests DataObjects with no reverse relationships.
