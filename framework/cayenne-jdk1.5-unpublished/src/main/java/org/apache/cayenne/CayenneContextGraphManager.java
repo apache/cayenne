@@ -41,6 +41,7 @@ import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
+import org.apache.cayenne.util.PersistentObjectMap;
 
 /**
  * A GraphMap extension that works together with ObjectContext to track persistent object
@@ -205,12 +206,16 @@ final class CayenneContextGraphManager extends GraphMap {
         while (it.hasNext()) {
             Map.Entry<?, ?> e = (Map.Entry<?, ?>) it.next();
             if (e.getValue() == target) {
+                //this remove does not trigger event in PersistentObjectMap
                 it.remove();
                 break;
             }
         }
 
-        map.put(newKey, target);
+        //TODO: (andrey, 25/11/09 - this is a hack to prevent event triggering 
+        // (and concurrent exceptions)
+        //should find a way to get rid of type casting
+        ((PersistentObjectMap) map).putDirectly(newKey, target);
     }
 
     void graphFlushed() {
