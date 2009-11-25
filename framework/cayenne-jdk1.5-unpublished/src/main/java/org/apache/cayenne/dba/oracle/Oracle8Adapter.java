@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import java.lang.reflect.Method;
 import java.net.URL;
 
 import org.apache.cayenne.access.DataNode;
@@ -31,6 +32,36 @@ import org.apache.cayenne.query.SQLAction;
  * @since 1.2
  */
 public class Oracle8Adapter extends OracleAdapter {
+
+    private static Method outputStreamFromBlobMethod;
+    private static Method writerFromClobMethod;
+
+    static {
+        initOracle8DriverInformation();
+    }
+
+    private static void initOracle8DriverInformation() {
+        initDone = true;
+
+        // configure static information
+        try {
+            outputStreamFromBlobMethod = Class.forName("oracle.sql.BLOB").getMethod(
+                    "getBinaryOutputStream");
+            writerFromClobMethod = Class.forName("oracle.sql.CLOB").getMethod(
+                    "getCharacterOutputStream");
+        }
+        catch (Throwable th) {
+            // ignoring...
+        }
+    }
+    
+    static Method getWriterFromClobMethod() {
+        return writerFromClobMethod;
+    }
+
+    static Method getOutputStreamFromBlobMethod() {
+        return outputStreamFromBlobMethod;
+    }
 
     /**
      * Uses OracleActionBuilder to create the right action.

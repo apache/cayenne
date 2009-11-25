@@ -245,7 +245,7 @@ class OracleLOBBatchAction implements SQLAction {
      * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done using Oracle
      * driver utilities, using reflection.
      */
-    private void writeBlob(Blob blob, byte[] value) {
+    protected void writeBlob(Blob blob, byte[] value) {
 
         try {
             OutputStream out = blob.setBinaryStream(0);
@@ -267,7 +267,7 @@ class OracleLOBBatchAction implements SQLAction {
      * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done using Oracle
      * driver utilities.
      */
-    private void writeClob(Clob clob, char[] value) {
+    protected void writeClob(Clob clob, char[] value) {
         try {
 
             Writer out = clob.setCharacterStream(0);
@@ -290,7 +290,7 @@ class OracleLOBBatchAction implements SQLAction {
      * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done using Oracle
      * driver utilities.
      */
-    private void writeClob(Clob clob, String value) {
+    protected void writeClob(Clob clob, String value) {
         try {
 
             Writer out = clob.setCharacterStream(0);

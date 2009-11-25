@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.oracle;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -77,8 +76,7 @@ public class OracleAdapter extends JdbcAdapter {
 
     protected static boolean initDone;
     protected static int oracleCursorType = Integer.MAX_VALUE;
-    protected static Method outputStreamFromBlobMethod;
-    protected static Method writerFromClobMethod;
+
     protected static boolean supportsOracleLOB;
 
     static {
@@ -97,13 +95,7 @@ public class OracleAdapter extends JdbcAdapter {
             Field cursorField = oraTypes.getField("CURSOR");
             oracleCursorType = cursorField.getInt(null);
 
-            outputStreamFromBlobMethod = Class.forName("oracle.sql.BLOB").getMethod(
-                    "getBinaryOutputStream");
-
-            writerFromClobMethod = Class.forName("oracle.sql.CLOB").getMethod(
-                    "getCharacterOutputStream");
             supportsOracleLOB = true;
-
         }
         catch (Throwable th) {
             // ignoring...
