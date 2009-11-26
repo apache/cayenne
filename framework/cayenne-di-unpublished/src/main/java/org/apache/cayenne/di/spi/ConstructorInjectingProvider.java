@@ -37,8 +37,8 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
     private Constructor<? extends T> constructor;
     private DefaultInjector injector;
 
-    ConstructorInjectingProvider(Class<T> interfaceType, Class<? extends T> implementation,
-            DefaultInjector injector) {
+    ConstructorInjectingProvider(Class<T> interfaceType,
+            Class<? extends T> implementation, DefaultInjector injector) {
 
         initConstructor(implementation);
 
@@ -55,16 +55,14 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
 
     private void initConstructor(Class<? extends T> implementation) {
 
-        Constructor<? extends T>[] constructors = implementation
-                .getDeclaredConstructors();
-
-        Constructor<? extends T> lastMatch = null;
+        Constructor<?>[] constructors = implementation.getDeclaredConstructors();
+        Constructor<?> lastMatch = null;
         int lastSize = -1;
 
         // pick the first constructor with all injection-annotated parameters, or the
         // default constructor; constructor with the longest parameter list is preferred
         // if multiple matches are found
-        for (Constructor<? extends T> constructor : constructors) {
+        for (Constructor<?> constructor : constructors) {
 
             int size = constructor.getParameterTypes().length;
             if (size <= lastSize) {
@@ -100,7 +98,9 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
             }
         }
 
-        this.constructor = lastMatch;
+        // the cast is lame, but Class.getDeclaredConstructors() is not using proper
+        // generics
+        this.constructor = (Constructor<? extends T>) lastMatch;
     }
 
     public T get() {
