@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.trans.QualifierTranslator;
+import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -54,7 +56,7 @@ public class Oracle8Adapter extends OracleAdapter {
             // ignoring...
         }
     }
-    
+
     static Method getWriterFromClobMethod() {
         return writerFromClobMethod;
     }
@@ -80,5 +82,10 @@ public class Oracle8Adapter extends OracleAdapter {
         }
 
         return super.findResource(name);
+    }
+
+    @Override
+    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+        return new Oracle8QualifierTranslator(queryAssembler);
     }
 }
