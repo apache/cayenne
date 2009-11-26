@@ -16,45 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.dba.oracle;
 
-import java.net.URL;
+import java.io.IOException;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
 
 /**
- * A flavor of OracleAdapter that implements workarounds for some old driver limitations.
+ * Extends the TrimmingQualifierTranslator that Cayenne normally uses for Oracle.
+ * Overrides doAppendPart() to wrap the qualifierBuffer in parentheses if it contains an
+ * "OR" expression. This avoids a bug that can happen on Oracle8 if the query also
+ * contains a join.
  * 
- * @since 1.2
+ * @since 3.0
  */
-public class Oracle8Adapter extends OracleAdapter {
+class Oracle8QualifierTranslator extends OracleQualifierTranslator {
 
-    /**
-     * Uses OracleActionBuilder to create the right action.
-     */
-    @Override
-    public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new Oracle8ActionBuilder(this, node
-                .getEntityResolver()));
+    public Oracle8QualifierTranslator(QueryAssembler queryAssembler) {
+        super(queryAssembler);
     }
 
     @Override
-    protected URL findResource(String name) {
+    protected void doAppendPart() throws IOException {
+        super.doAppendPart();
 
-        if ("/types.xml".equals(name)) {
-            name = "/types-oracle8.xml";
+        if (out instanceof StringBuilder) {
+            StringBuilder buffer = (StringBuilder) out;
+            if (buffer.indexOf(" OR ") != -1) {
+                buffer.insert(0, '(');
+                buffer.append(')');
+            }
         }
-
-        return super.findResource(name);
-    }
-
-    @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new Oracle8QualifierTranslator(queryAssembler);
     }
 }
