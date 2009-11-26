@@ -16,29 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.runtime;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.Scopes;
+import org.apache.cayenne.runtime.resource.ClassLoaderResourceLocator;
+import org.apache.cayenne.runtime.resource.ResourceLocator;
 
 /**
+ * A DI module containing all Cayenne framework configurations.
+ * 
  * @since 3.1
  */
-public class DIException extends CayenneRuntimeException {
+public class CayenneModule implements Module {
 
-    public DIException() {
-        super();
+    public void configure(Binder binder) {
+
+        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class).in(
+                Scopes.SINGLETON);
     }
-
-    public DIException(String messageFormat, Object... messageArgs) {
-        super(messageFormat, messageArgs);
-    }
-
-    public DIException(String messageFormat, Throwable cause, Object... messageArgs) {
-        super(messageFormat, cause, messageArgs);
-    }
-
-    public DIException(Throwable cause) {
-        super(cause);
-    }
-
 }

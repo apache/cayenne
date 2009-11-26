@@ -16,23 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime.access;
-
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.di.DIException;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+package org.apache.cayenne.di;
 
 /**
  * @since 3.1
  */
-public class DataChannelProvider implements Provider<DataChannel> {
-    
-    @Inject
-    private Configuration configuration;
+public class DIException extends RuntimeException {
 
-    public DataChannel get() throws DIException {
-        return configuration.getDomain();
+    public DIException() {
+        super();
     }
+
+    public DIException(String messageFormat, Object... messageArgs) {
+        super(String.format(messageFormat, messageArgs));
+    }
+
+    public DIException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(String.format(messageFormat, cause, messageArgs));
+    }
+
+    public DIException(Throwable cause) {
+        super(cause);
+    }
+
 }

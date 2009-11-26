@@ -49,6 +49,7 @@
 			</activation>
 			<modules>
 				<module>cayenne-legal-unpublished</module>
+				<module>cayenne-di-unpublished</module>
 				<module>cayenne-jdk1.5-unpublished</module>
 				<module>cayenne-jpa-unpublished</module>
 				<module>cayenne-agent</module>
@@ -67,6 +68,7 @@
 			</activation>
 			<modules>
 				<module>cayenne-legal-unpublished</module>
+				<module>cayenne-di-unpublished</module>
 				<module>cayenne-jdk1.5-unpublished</module>
 				<module>cayenne-jdk1.6-unpublished</module>
 				<module>cayenne-jpa-unpublished</module>

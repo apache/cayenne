@@ -6,18 +6,15 @@
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>cayenne-di</artifactId>
+	<groupId>org.apache.cayenne.unpublished</groupId>
+	<artifactId>cayenne-di-unpublished</artifactId>
 	<packaging>jar</packaging>
-	<name>cayenne-di</name>
+	<name>Cayenne Dependency Injection Container</name>
+	<description>Cayenne Dependency Injection Container</description>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
-			<version>${version}</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -29,6 +26,19 @@
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>bundle-source-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

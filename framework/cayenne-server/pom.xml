@@ -32,6 +32,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-di-unpublished</artifactId>
+			<version>${version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 			<version>${version}</version>
 			<scope>provided</scope>
@@ -84,6 +90,11 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>org.apache.cayenne.unpublished</groupId>
+									<artifactId>cayenne-di-unpublished</artifactId>
+									<version>${version}</version>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.cayenne.unpublished</groupId>
 									<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 									<version>${version}</version>
 								</artifactItem>
@@ -128,6 +139,11 @@
 								</goals>
 								<configuration>
 									<artifactItems>
+										<artifactItem>
+											<groupId>org.apache.cayenne.unpublished</groupId>
+											<artifactId>cayenne-di-unpublished</artifactId>
+											<version>${version}</version>
+										</artifactItem>
 										<artifactItem>
 											<groupId>org.apache.cayenne.unpublished</groupId>
 											<artifactId>cayenne-jdk1.5-unpublished</artifactId>
