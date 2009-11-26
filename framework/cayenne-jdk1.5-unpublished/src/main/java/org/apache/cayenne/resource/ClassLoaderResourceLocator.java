@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime.resource;
+package org.apache.cayenne.resource;
 
 import java.io.IOException;
 import java.net.URL;

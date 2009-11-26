@@ -16,24 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
-import org.apache.cayenne.runtime.resource.ClassLoaderResourceLocator;
-import org.apache.cayenne.runtime.resource.ResourceLocator;
+import java.util.Map;
+
+import org.apache.cayenne.di.Inject;
 
 /**
- * A DI module containing all Cayenne framework configurations.
+ * An implementation of {@link RuntimeProperties} that returns properties that were
+ * injected via a map in constructor. Each property can be overridden via -D command line
+ * option.
  * 
  * @since 3.1
  */
-public class CayenneModule implements Module {
+public class DefaultRuntimeProperties implements RuntimeProperties {
 
-    public void configure(Binder binder) {
+    private Map<String, String> properties;
 
-        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class).in(
-                Scopes.SINGLETON);
+    public DefaultRuntimeProperties(@Inject Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public String get(String key) {
+
+        String property = System.getProperty(key);
+
+        if (property != null) {
+            return property;
+        }
+
+        return properties.get(key);
     }
 }

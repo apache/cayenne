@@ -98,8 +98,8 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
             }
         }
 
-        // the cast is lame, but Class.getDeclaredConstructors() is not using proper
-        // generics
+        // the cast is lame, but Class.getDeclaredConstructors() is not using
+        // generics in Java 5 and using <?> in Java 6, creating compilation problems.
         this.constructor = (Constructor<? extends T>) lastMatch;
     }
 

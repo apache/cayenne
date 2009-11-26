@@ -16,9 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime.resource;
+package org.apache.cayenne.resource;
 
 import java.net.URL;
+
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
 
 import junit.framework.TestCase;
 

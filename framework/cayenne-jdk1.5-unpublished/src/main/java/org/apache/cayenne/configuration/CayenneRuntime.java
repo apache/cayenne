@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
@@ -25,7 +25,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 
 /**
- * Represents an access point to a given Cayenne stack. Provides a default Cayenne
+ * Represents the main access point to a given Cayenne stack. Provides a default Cayenne
  * configuration as well as a way to customize this configuration via a built in
  * dependency injection container.
  * 
@@ -33,27 +33,46 @@ import org.apache.cayenne.di.Module;
  */
 public class CayenneRuntime {
 
+    protected String name;
     protected Injector injector;
     protected Module[] modules;
 
     /**
      * Initializes a configuration with a default CayenneModule.
+     * 
+     * @param name Runtime name. By default a configuration file name contains a runtime
+     *            name in it, to allow multiple runtimes in a single JVM. E.g. a typical
+     *            config file name has the form of "cayenne-<name>.xml".
      */
-    public CayenneRuntime() {
-        this(new CayenneModule());
+    public CayenneRuntime(String name) {
+        this(name, new CayenneModule(name));
     }
 
     /**
      * Initializes a configuration with an array of DI modules.
      */
-    public CayenneRuntime(Module... modules) {
+    public CayenneRuntime(String name, Module... modules) {
+
+        if (name == null) {
+            throw new NullPointerException("Null runtime name");
+        }
 
         if (modules == null) {
             modules = new Module[0];
         }
 
+        this.name = name;
         this.modules = modules;
         this.injector = DIBootstrap.createInjector(modules);
+    }
+
+    /**
+     * Returns runtime name. By default a configuration file name contains a runtime name
+     * in it, to allow multiple runtimes in a single JVM. E.g. a typical config file name
+     * has the form of "cayenne-<name>.xml".
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -64,14 +83,14 @@ public class CayenneRuntime {
     }
 
     /**
-     * Returns the main runtime {@link DataChannel}.
+     * Returns the runtime {@link DataChannel}.
      */
     public DataChannel getDataChannel() {
         return injector.getInstance(DataChannel.class);
     }
 
     /**
-     * Creates and returns an ObjectContext based ion the main DataChannel.
+     * Creates and returns an ObjectContext based on the runtime DataChannel.
      */
     public ObjectContext newObjectContext() {
         return injector.getInstance(ObjectContext.class);

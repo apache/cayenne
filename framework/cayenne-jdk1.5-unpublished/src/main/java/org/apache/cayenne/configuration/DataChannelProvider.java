@@ -16,39 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime.resource;
+package org.apache.cayenne.configuration;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
 /**
  * @since 3.1
  */
-class URLResource implements Resource {
+public class DataChannelProvider implements Provider<DataChannel> {
 
-    private URL url;
+    @Inject
+    private DataChannelLoader loader;
 
-    URLResource(URL url) {
-        this.url = url;
-    }
+    @Inject
+    private RuntimeProperties configurationProperties;
 
-    public Resource getRelativeResource(String relativePath) {
-        try {
-            return new URLResource(new URL(url, relativePath));
+    private volatile DataChannel dataChannel;
+
+    public DataChannel get() throws DIException {
+
+        if (dataChannel == null) {
+            synchronized (this) {
+                if (dataChannel == null) {
+                    String runtimeName = configurationProperties
+                            .get(RuntimeProperties.CAYENNE_RUNTIME_NAME);
+                    dataChannel = loader.get(runtimeName);
+                }
+            }
         }
-        catch (MalformedURLException e) {
-            throw new CayenneRuntimeException(
-                    "Error creating relative resource '%s' : '%s'",
-                    e,
-                    url,
-                    relativePath);
-        }
-    }
 
-    public URL getURL() {
-        return url;
+        return dataChannel;
     }
-
 }

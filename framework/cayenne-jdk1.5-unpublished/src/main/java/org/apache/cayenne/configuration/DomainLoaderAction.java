@@ -16,25 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime.resource;
+package org.apache.cayenne.configuration;
 
-import java.net.URL;
+import java.io.InputStream;
+
+import org.apache.cayenne.access.DataDomain;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * An abstraction of a resource whose data can be accessed via a URL.
- * 
  * @since 3.1
  */
-public interface Resource {
+class DomainLoaderAction extends DefaultHandler {
 
-    /**
-     * Returns a resource URL to read (and possibly write) the resource data.
-     */
-    URL getURL();
+    DataDomain loadDomain(InputStream in) {
 
-    /**
-     * Returns a resource resolved relatively to the current resource. E.g. DataMap files
-     * can be resolved relatively to cayenne.xml.
-     */
-    Resource getRelativeResource(String relativePath);
+        // try {
+        // XMLReader parser = Util.createXmlReader();
+        //
+        // parser.setContentHandler(this);
+        // parser.setErrorHandler(this);
+        // parser.parse(new InputSource(in));
+        // }
+        // catch (Exception ex) {
+        //
+        // }
+        throw new UnsupportedOperationException("TODO");
+    }
 }

@@ -16,31 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime.resource;
+package org.apache.cayenne.configuration;
 
-import java.util.Collection;
+/**
+ * Represents a properties map for a given {@link CayenneRuntime}.
+ * 
+ * @since 3.1
+ */
+public interface RuntimeProperties {
 
-import junit.framework.TestCase;
+    public static final String CAYENNE_RUNTIME_NAME = "cayenne.runtime.name";
 
-public class ClassLoaderResourceLocatorTest extends TestCase {
-
-    public void testFindResources() {
-        ClassLoaderResourceLocator locator = new ClassLoaderResourceLocator();
-
-        Collection<Resource> resources = locator
-                .findResources("org/apache/cayenne/runtime/resource/ClassLoaderResourceLocatorTest.class");
-
-        assertNotNull(resources);
-        assertEquals(1, resources.size());
-
-        Resource resource = resources.iterator().next();
-        assertNotNull(resource);
-
-        assertNotNull(resource.getURL());
-        assertTrue(resource
-                .getURL()
-                .toExternalForm()
-                .endsWith(
-                        "org/apache/cayenne/runtime/resource/ClassLoaderResourceLocatorTest.class"));
-    }
+    /**
+     * Returns property value for a given key.
+     */
+    String get(String key);
 }

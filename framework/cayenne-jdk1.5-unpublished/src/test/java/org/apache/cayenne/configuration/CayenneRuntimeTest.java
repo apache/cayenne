@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration;
 
 import junit.framework.TestCase;
 
@@ -24,6 +24,8 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.CayenneModule;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
@@ -34,7 +36,9 @@ import org.apache.cayenne.query.Query;
 public class CayenneRuntimeTest extends TestCase {
 
     public void testDefaultConstructor() {
-        CayenneRuntime runtime = new CayenneRuntime();
+        CayenneRuntime runtime = new CayenneRuntime("xxxx");
+
+        assertEquals("xxxx", runtime.getName());
 
         assertEquals(1, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof CayenneModule);
@@ -58,8 +62,9 @@ public class CayenneRuntimeTest extends TestCase {
             }
         };
 
-        CayenneRuntime runtime = new CayenneRuntime(m1, m2);
+        CayenneRuntime runtime = new CayenneRuntime("yyyy", m1, m2);
 
+        assertEquals("yyyy", runtime.getName());
         assertEquals(2, runtime.getModules().length);
 
         for (int i = 0; i < configured.length; i++) {
@@ -97,7 +102,7 @@ public class CayenneRuntimeTest extends TestCase {
             }
         };
 
-        CayenneRuntime runtime = new CayenneRuntime(module);
+        CayenneRuntime runtime = new CayenneRuntime("name", module);
         assertSame(channel, runtime.getDataChannel());
     }
 
@@ -111,7 +116,7 @@ public class CayenneRuntimeTest extends TestCase {
             }
         };
 
-        CayenneRuntime runtime = new CayenneRuntime(module);
+        CayenneRuntime runtime = new CayenneRuntime("name", module);
         assertSame(context, runtime.newObjectContext());
         assertSame(context, runtime.newObjectContext());
     }

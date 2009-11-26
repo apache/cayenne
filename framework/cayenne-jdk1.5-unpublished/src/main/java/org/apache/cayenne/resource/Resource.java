@@ -16,19 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime.resource;
+package org.apache.cayenne.resource;
 
-import java.util.Collection;
+import java.net.URL;
 
 /**
+ * An abstraction of a resource whose data can be accessed via a URL.
+ * 
  * @since 3.1
  */
-public interface ResourceLocator {
+public interface Resource {
 
     /**
-     * Finds a collection of matching resources for a given name. The name components must
-     * be separated by forward slashes.
+     * Returns a resource URL to read (and possibly write) the resource data.
      */
-    Collection<Resource> findResources(String name);
+    URL getURL();
 
+    /**
+     * Returns a resource resolved relatively to the current resource. E.g. DataMap files
+     * can be resolved relatively to cayenne.xml.
+     */
+    Resource getRelativeResource(String relativePath);
 }
