@@ -16,26 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne;
+package org.apache.cayenne.remote;
 
-import org.apache.art.Continent;
-import org.apache.art.Country;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.testdo.persistent.Continent;
+import org.apache.cayenne.testdo.persistent.Country;
 
-public class LightSuperClassTest extends CayenneCase {
-    public void testServer() {
-        doTest(createDataContext());
-    }
+public class LightSuperClassTest extends PersistentCase {
     
-    private void doTest(ObjectContext context) {
+    public void testServer() throws Exception {
+        deleteTestData();
+        
+        ObjectContext context = createContext();
         Continent continent = context.newObject(Continent.class);
         continent.setName("Europe");
         
         Country country = new Country();
-        country.setName("Russia");
         context.registerNewObject(country);
+        
+        //TODO: setting property before object creation does not work on ROP (CAY-1320)
+        country.setName("Russia");
         
         country.setContinent(continent);
         assertEquals(continent.getCountries().size(), 1);

@@ -6,6 +6,15 @@
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.mt"/>
 	<property name="clientSupported" value="true"/>
 	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.mt"/>
+	<db-entity name="CONTINENT">
+		<db-attribute name="CONTINENTD" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="COUNTRY">
+		<db-attribute name="CONTINENTID" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="COUNTRYID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
 	<db-entity name="MT_DELETE_CASCADE">
 		<db-attribute name="DELETE_CASCADE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
@@ -83,6 +92,12 @@
 	<db-entity name="MT_TOONE_MASTER">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<obj-entity name="Continent" className="org.apache.cayenne.testdo.persistent.Continent" clientClassName="org.apache.cayenne.testdo.persistent.Continent" dbEntityName="CONTINENT" superClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Country" className="org.apache.cayenne.testdo.persistent.Country" clientClassName="org.apache.cayenne.testdo.persistent.Country" dbEntityName="COUNTRY" superClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<obj-entity name="MtDeleteCascade" className="org.apache.cayenne.testdo.mt.MtDeleteCascade" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteCascade" dbEntityName="MT_DELETE_CASCADE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
@@ -136,6 +151,12 @@
 	</obj-entity>
 	<obj-entity name="MtTooneMaster" className="org.apache.cayenne.testdo.mt.MtTooneMaster" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTooneMaster" dbEntityName="MT_TOONE_MASTER">
 	</obj-entity>
+	<db-relationship name="countries" source="CONTINENT" target="COUNTRY" toMany="true">
+		<db-attribute-pair source="CONTINENTD" target="CONTINENTID"/>
+	</db-relationship>
+	<db-relationship name="continent" source="COUNTRY" target="CONTINENT" toMany="false">
+		<db-attribute-pair source="CONTINENTID" target="CONTINENTD"/>
+	</db-relationship>
 	<db-relationship name="cascade" source="MT_DELETE_CASCADE" target="MT_DELETE_RULE" toMany="false">
 		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
 	</db-relationship>
@@ -196,6 +217,8 @@
 	<db-relationship name="toDependent" source="MT_TOONE_MASTER" target="MT_TOONE_DEP" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
+	<obj-relationship name="countries" source="Continent" target="Country" deleteRule="Cascade" db-relationship-path="countries"/>
+	<obj-relationship name="continent" source="Country" target="Continent" deleteRule="Nullify" db-relationship-path="continent"/>
 	<obj-relationship name="cascade" source="MtDeleteCascade" target="MtDeleteRule" deleteRule="Cascade" db-relationship-path="cascade"/>
 	<obj-relationship name="deny" source="MtDeleteDeny" target="MtDeleteRule" deleteRule="Deny" db-relationship-path="deny"/>
 	<obj-relationship name="nullify" source="MtDeleteNullify" target="MtDeleteRule" deleteRule="Nullify" db-relationship-path="nullify"/>

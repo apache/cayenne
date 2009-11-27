@@ -1,9 +1,9 @@
-package org.apache.art.auto;
+package org.apache.cayenne.testdo.persistent.auto;
 
 import java.util.List;
 
-import org.apache.art.Country;
 import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.testdo.persistent.Country;
 
 /**
  * A generated persistent class mapped as "Continent" Cayenne entity. It is a good idea to

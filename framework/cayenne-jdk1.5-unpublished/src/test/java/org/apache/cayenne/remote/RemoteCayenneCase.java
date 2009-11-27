@@ -43,10 +43,14 @@ public abstract class RemoteCayenneCase extends CayenneCase {
     @Override
     public void runBare() throws Throwable {
         serializationPolicy = LocalConnection.HESSIAN_SERIALIZATION;
-        super.runBare();
+        runBareSimple();
         serializationPolicy = LocalConnection.JAVA_SERIALIZATION;
-        super.runBare();
+        runBareSimple();
         serializationPolicy = LocalConnection.NO_SERIALIZATION;
+        runBareSimple();
+    }
+    
+    protected void runBareSimple() throws Throwable {
         super.runBare();
     }
     
