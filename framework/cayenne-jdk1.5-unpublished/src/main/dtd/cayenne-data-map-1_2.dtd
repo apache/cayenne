@@ -162,7 +162,7 @@ hierarchy.
 Defines a Cayenne Query that can be either at the DataMap
 level, or linked to an entity or procedure.
 -->
-<!ELEMENT query (property*, (sql* | (qualifier?, ordering*, prefetch*)?) >
+<!ELEMENT query (property*, (sql* | (qualifier?, ordering*, prefetch*)?)) >
 <!ATTLIST query
         name CDATA #REQUIRED
         factory CDATA #REQUIRED

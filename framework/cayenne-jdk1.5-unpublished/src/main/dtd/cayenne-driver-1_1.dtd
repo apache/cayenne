@@ -38,13 +38,13 @@
 	value CDATA #REQUIRED
 >
 
-<!ELEMENT connectionPool>
+<!ELEMENT connectionPool EMPTY>
 <!ATTLIST connectionPool
 	min CDATA #REQUIRED
 	max CDATA #REQUIRED
 >
 
-<!ELEMENT login>
+<!ELEMENT login EMPTY>
 <!ATTLIST login
 	userName CDATA #REQUIRED
 	password CDATA #REQUIRED

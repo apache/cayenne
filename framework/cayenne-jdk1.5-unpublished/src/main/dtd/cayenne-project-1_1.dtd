@@ -30,7 +30,7 @@
 
 <!ELEMENT domains (domain*)>
 <!ATTLIST domains
-	project-version CDATA
+	project-version CDATA #IMPLIED 
 >
 
 <!ELEMENT domain (property*, map*, node*, view*)>
@@ -38,13 +38,13 @@
 	name CDATA #REQUIRED
 >
 
-<!ELEMENT property>
+<!ELEMENT property EMPTY>
 <!ATTLIST property
 	name CDATA #REQUIRED
 	value CDATA #REQUIRED
 >
 
-<!ELEMENT map>
+<!ELEMENT map EMPTY>
 <!ATTLIST map
 	name CDATA #REQUIRED
 	location CDATA #REQUIRED
@@ -58,13 +58,13 @@
 	adapter CDATA #IMPLIED 
 >
 
-<!ELEMENT view>
+<!ELEMENT view EMPTY>
 <!ATTLIST view
 	name CDATA #REQUIRED
 	location CDATA #REQUIRED
 >
 
-<!ELEMENT map-ref>
+<!ELEMENT map-ref EMPTY>
 <!ATTLIST map-ref
 	name CDATA #REQUIRED
 >
