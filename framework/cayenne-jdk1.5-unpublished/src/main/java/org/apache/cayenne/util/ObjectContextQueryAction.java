@@ -306,7 +306,9 @@ public abstract class ObjectContextQueryAction {
     /**
      * @since 3.0
      */
-    protected abstract QueryCache getQueryCache();
+    protected QueryCache getQueryCache() {
+        return ((BaseContext) actingContext).getQueryCache();
+    }
 
     /**
      * @since 3.0

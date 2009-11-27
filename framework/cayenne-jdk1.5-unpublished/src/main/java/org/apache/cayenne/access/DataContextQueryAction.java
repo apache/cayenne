@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
@@ -101,11 +100,6 @@ class DataContextQueryAction extends ObjectContextQueryAction {
         }
 
         return !DONE;
-    }
-
-    @Override
-    protected QueryCache getQueryCache() {
-        return ((DataContext) actingContext).getQueryCache();
     }
 
     @Override

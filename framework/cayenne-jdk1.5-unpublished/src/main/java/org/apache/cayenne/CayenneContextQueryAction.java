@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -56,11 +55,6 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
         }
 
         return !DONE;
-    }
-
-    @Override
-    protected QueryCache getQueryCache() {
-        return ((CayenneContext) actingContext).getQueryCache();
     }
 
     @Override
