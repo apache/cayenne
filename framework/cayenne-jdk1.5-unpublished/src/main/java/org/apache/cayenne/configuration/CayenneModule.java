@@ -46,6 +46,7 @@ public class CayenneModule implements Module {
                 RuntimeProperties.CAYENNE_RUNTIME_NAME,
                 runtimeName);
 
+        // configure various services
         binder.bind(DataChannelLoader.class).to(XMLDataChannelLoader.class).in(
                 Scopes.SINGLETON);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class).in(

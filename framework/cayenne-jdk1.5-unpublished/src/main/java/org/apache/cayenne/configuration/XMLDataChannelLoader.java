@@ -43,10 +43,6 @@ public class XMLDataChannelLoader implements DataChannelLoader {
     @Inject
     private ResourceLocator resourceLocator;
 
-    public XMLDataChannelLoader() {
-
-    }
-
     protected String getResourceName(String runtimeName) {
         if (runtimeName == null) {
             throw new NullPointerException("Null rumtimeName");
@@ -100,9 +96,9 @@ public class XMLDataChannelLoader implements DataChannelLoader {
                 }
             }
             catch (IOException ioex) {
-                logger.info(String.format(
-                        "failure closing input stream for %s, ignoring",
-                        configurationURL), ioex);
+                logger.info("failure closing input stream for "
+                        + configurationURL
+                        + ", ignoring", ioex);
             }
         }
 
