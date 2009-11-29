@@ -33,5 +33,8 @@ public interface BindingBuilder<T> {
     BindingBuilder<T> toProvider(Class<? extends Provider<? extends T>> providerType)
             throws DIException;
 
+    BindingBuilder<T> toProviderInstance(Provider<? extends T> provider)
+            throws DIException;
+
     void in(Scope scope);
 }

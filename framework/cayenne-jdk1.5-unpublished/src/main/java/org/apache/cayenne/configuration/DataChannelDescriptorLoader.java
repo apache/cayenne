@@ -18,28 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.io.InputStream;
-
-import org.apache.cayenne.access.DataDomain;
-import org.xml.sax.helpers.DefaultHandler;
+import org.apache.cayenne.CayenneRuntimeException;
 
 /**
+ * An object that can load a named {@link DataChannelDescriptor} from some configuration
+ * source.
+ * 
  * @since 3.1
  */
-class DomainLoaderAction extends DefaultHandler {
+public interface DataChannelDescriptorLoader {
 
-    DataDomain loadDomain(InputStream in) {
-
-        // try {
-        // XMLReader parser = Util.createXmlReader();
-        //
-        // parser.setContentHandler(this);
-        // parser.setErrorHandler(this);
-        // parser.parse(new InputSource(in));
-        // }
-        // catch (Exception ex) {
-        //
-        // }
-        throw new UnsupportedOperationException("TODO");
-    }
+    /**
+     * Loads a DataChannelDescriptor from some configuration source, usually an XML file
+     * found on classpath.
+     * 
+     * @param runtimeName the name of {@link CayenneRuntime} that invoked this method.
+     *            Configuration resource names are normally derived from the runtime name.
+     */
+    DataChannelDescriptor load(String runtimeName) throws CayenneRuntimeException;
 }

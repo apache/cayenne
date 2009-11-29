@@ -40,4 +40,12 @@ public interface Injector {
     <T> Map<String, ?> getMapConfiguration(Class<T> type);
 
     <T> List<?> getListConfiguration(Class<T> type);
+
+    /**
+     * Performs field injection on a given object, ignoring constructor injection. Since
+     * Cayenne DI injector returns fully injected objects, this method is rarely used
+     * directly. One possible use is in unit tests to test a specific object that requires
+     * field injection.
+     */
+    void injectMembers(Object object);
 }

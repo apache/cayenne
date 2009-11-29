@@ -70,4 +70,15 @@ class InjectionStack {
             throw new IndexOutOfBoundsException("0");
         }
     }
+    
+    @Override
+    public String toString() {
+        List<String> localStack = stack.get();
+        if (localStack != null) {
+            return String.valueOf(localStack);
+        }
+        else {
+            return "[]";
+        }
+    }
 }

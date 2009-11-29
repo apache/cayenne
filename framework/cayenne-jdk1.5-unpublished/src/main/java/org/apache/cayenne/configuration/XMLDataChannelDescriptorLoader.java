@@ -18,15 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Collection;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -36,12 +30,15 @@ import org.apache.commons.logging.LogFactory;
 /**
  * @since 3.1
  */
-public class XMLDataChannelLoader implements DataChannelLoader {
+public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoader {
 
-    private static Log logger = LogFactory.getLog(XMLDataChannelLoader.class);
+    private static Log logger = LogFactory.getLog(XMLDataChannelDescriptorLoader.class);
 
     @Inject
-    private ResourceLocator resourceLocator;
+    protected ResourceLocator resourceLocator;
+
+    @Inject
+    protected DataMapLoader dataMapLoader;
 
     protected String getResourceName(String runtimeName) {
         if (runtimeName == null) {
@@ -51,7 +48,7 @@ public class XMLDataChannelLoader implements DataChannelLoader {
         return "cayenne-" + runtimeName + ".xml";
     }
 
-    public DataChannel get(String runtimeName) throws CayenneRuntimeException {
+    public DataChannelDescriptor load(String runtimeName) throws CayenneRuntimeException {
 
         logger.debug("starting configuration loading: " + runtimeName);
 
@@ -66,45 +63,21 @@ public class XMLDataChannelLoader implements DataChannelLoader {
         }
 
         Resource configurationResource = configurations.iterator().next();
-        URL configurationURL = configurationResource.getURL();
 
         // no support for multiple configs yet, but this is not a hard error
         if (configurations.size() > 1) {
             logger.info("found "
                     + configurations.size()
                     + " Cayenne configurations, will use the first one: "
-                    + configurationURL);
+                    + configurationResource.getURL());
         }
 
-        DataDomain channel;
+        DataChannelDescriptor descriptor = new XMLDataChannelDescriptorLoaderAction(
+                dataMapLoader).load(configurationResource);
 
-        InputStream in = null;
-        try {
-            in = configurationURL.openStream();
-            channel = new DomainLoaderAction().loadDomain(in);
-        }
-        catch (Exception e) {
-            throw new DIException(
-                    "Error loading configuration from %s",
-                    e,
-                    configurationURL);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            }
-            catch (IOException ioex) {
-                logger.info("failure closing input stream for "
-                        + configurationURL
-                        + ", ignoring", ioex);
-            }
-        }
+        descriptor.setName(runtimeName);
 
-        channel.setName(runtimeName);
-
-        logger.debug("finsihed configuration loading: " + runtimeName);
-        return channel;
+        logger.debug("finished configuration loading: " + runtimeName);
+        return descriptor;
     }
 }

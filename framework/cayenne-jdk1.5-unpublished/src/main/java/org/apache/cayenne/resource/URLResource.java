@@ -24,13 +24,15 @@ import java.net.URL;
 import org.apache.cayenne.CayenneRuntimeException;
 
 /**
+ * A {@link Resource} implementation wrapping a resource URL.
+ * 
  * @since 3.1
  */
-class URLResource implements Resource {
+public class URLResource implements Resource {
 
     private URL url;
 
-    URLResource(URL url) {
+    public URLResource(URL url) {
         this.url = url;
     }
 

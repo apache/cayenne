@@ -31,7 +31,7 @@ import org.apache.cayenne.di.Inject;
  */
 public class DefaultRuntimeProperties implements RuntimeProperties {
 
-    private Map<String, String> properties;
+    protected Map<String, String> properties;
 
     public DefaultRuntimeProperties(@Inject Map<String, String> properties) {
         this.properties = properties;

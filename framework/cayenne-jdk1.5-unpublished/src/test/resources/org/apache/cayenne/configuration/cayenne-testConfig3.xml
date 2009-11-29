@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain project-version="6">
+	<map name="testConfigMap3_1" location="testConfigMap3_1.map.xml" />
+	<map name="testConfigMap3_2" location="testConfigMap3_2.map.xml" />
+
+	<node name="testConfigNode3" datasource="testConfigNode3.driver.xml"
+		adapter="org.example.test.Adapter" factory="org.example.test.DataSourceFactory"
+		schema-update-strategy="org.example.test.SchemaUpdateStartegy">
+		<map-ref name="testConfigMap3_2" />
+	</node>
+</domain>

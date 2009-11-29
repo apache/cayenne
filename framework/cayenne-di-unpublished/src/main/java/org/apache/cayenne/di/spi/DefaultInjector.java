@@ -82,8 +82,10 @@ public class DefaultInjector implements Injector {
 
         if (provider == null) {
             throw new DIException(
-                    "Type '%s' has no bound list configuration in the DI container.",
-                    type.getName());
+                    "Type '%s' has no bound list configuration in the DI container."
+                            + " Injection stack: %s",
+                    type.getName(),
+                    injectionStack);
         }
 
         return provider.get();
@@ -99,8 +101,10 @@ public class DefaultInjector implements Injector {
 
         if (provider == null) {
             throw new DIException(
-                    "Type '%s' has no bound map configuration in the DI container.",
-                    type.getName());
+                    "Type '%s' has no bound map configuration in the DI container."
+                            + " Injection stack: %s",
+                    type.getName(),
+                    injectionStack);
         }
 
         return provider.get();
@@ -120,6 +124,15 @@ public class DefaultInjector implements Injector {
         }
 
         return provider;
+    }
+
+    public void injectMembers(Object object) {
+        Provider<Object> provider0 = new InstanceProvider<Object>(object);
+        Provider<Object> provider1 = new FieldInjectingProvider<Object>(
+                provider0,
+                this,
+                DIUtil.toKey(object.getClass()));
+        provider1.get();
     }
 
 }

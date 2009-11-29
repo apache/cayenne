@@ -25,6 +25,9 @@ package org.apache.cayenne.configuration;
  */
 public interface RuntimeProperties {
 
+    /**
+     * A property defining the name of the current runtime.
+     */
     public static final String CAYENNE_RUNTIME_NAME = "cayenne.runtime.name";
 
     /**

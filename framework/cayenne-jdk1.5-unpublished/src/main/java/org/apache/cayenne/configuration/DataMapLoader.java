@@ -18,36 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.di.DIException;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.DataMap;
 
 /**
+ * A loader of DataMaps, resolved relatively to a given {@link DataChannelDescriptor}.
+ * 
  * @since 3.1
  */
-public class DataChannelProvider implements Provider<DataChannel> {
+public interface DataMapLoader {
 
-    @Inject
-    private DataChannelLoader loader;
-
-    @Inject
-    private RuntimeProperties configurationProperties;
-
-    private volatile DataChannel dataChannel;
-
-    public DataChannel get() throws DIException {
-
-        if (dataChannel == null) {
-            synchronized (this) {
-                if (dataChannel == null) {
-                    String runtimeName = configurationProperties
-                            .get(RuntimeProperties.CAYENNE_RUNTIME_NAME);
-                    dataChannel = loader.get(runtimeName);
-                }
-            }
-        }
-
-        return dataChannel;
-    }
+    DataMap load(
+            DataChannelDescriptor parentDataChannelDescriptor,
+            String location,
+            String name) throws CayenneRuntimeException;
 }

@@ -51,7 +51,9 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
     }
 
     public BindingBuilder<T> toInstance(T instance) throws DIException {
-        return bindInScope(new InstanceProvider<T>(instance));
+        Provider<T> provider0 = new InstanceProvider<T>(instance);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector, key);
+        return bindInScope(provider1);
     };
 
     public BindingBuilder<T> toProvider(
@@ -59,6 +61,21 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
 
         Provider<Provider<? extends T>> provider0 = new ConstructorInjectingProvidersProvider<T>(
                 providerType);
+        Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(
+                provider0,
+                injector,
+                key);
+
+        Provider<T> provider2 = new CustomProvidersProvider<T>(provider1);
+        Provider<T> provider3 = new FieldInjectingProvider<T>(provider2, injector, key);
+
+        return bindInScope(provider3);
+    }
+
+    public BindingBuilder<T> toProviderInstance(Provider<? extends T> provider) {
+
+        Provider<Provider<? extends T>> provider0 = new InstanceProvider<Provider<? extends T>>(
+                provider);
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(
                 provider0,
                 injector,

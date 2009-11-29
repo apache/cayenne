@@ -41,7 +41,6 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
         Enumeration<URL> urls;
         try {
             urls = getClassLoader().getResources(name);
-
         }
         catch (IOException e) {
             throw new ConfigurationException("Error getting resources for ");
