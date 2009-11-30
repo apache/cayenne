@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import java.io.File;
+import java.util.prefs.Preferences;
 
 /**
  * Main class to start CayenneModeler on MacOSX.
