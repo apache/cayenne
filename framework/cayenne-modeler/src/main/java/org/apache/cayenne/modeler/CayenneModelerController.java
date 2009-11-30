@@ -245,7 +245,7 @@ public class CayenneModelerController extends CayenneController {
             arr.remove(path);
         }
 
-        arr.set(0, path);
+        arr.add(0, path);
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }
