@@ -24,7 +24,7 @@ import java.util.prefs.Preferences;
 public interface Preference {
 
     /** Key for preferences. */
-    public static final String CAYENNE_PREFERENCES = "cayennePreferences";
+    public static final String CAYENNE_PREFERENCES = "org/apache/cayenne";
     
     /**  node name for editor */ 
     public static final String EDITOR = "editor";
