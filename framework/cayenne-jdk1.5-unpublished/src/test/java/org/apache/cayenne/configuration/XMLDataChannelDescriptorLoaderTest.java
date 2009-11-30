@@ -236,11 +236,11 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
                 .getConfigurationResource()
                 .getURL());
 
-        assertEquals("org.example.test.Adapter", node1.getAdapterClass());
+        assertEquals("org.example.test.Adapter", node1.getAdapterType());
         assertEquals("org.example.test.DataSourceFactory", node1
-                .getDataSourceFactoryClass());
+                .getDataSourceFactoryType());
         assertEquals("org.example.test.SchemaUpdateStartegy", node1
-                .getSchemaUpdateStrategyClass());
+                .getSchemaUpdateStrategyType());
         assertNotNull(node1.getDataMapNames());
 
         assertEquals(1, node1.getDataMapNames().size());

@@ -166,16 +166,16 @@ class XMLDataChannelDescriptorLoaderAction {
                 descriptor.getDataNodeDescriptors().add(nodeDescriptor);
 
                 nodeDescriptor.setName(nodeName);
-                nodeDescriptor.setAdapterClass(attributes.getValue("", "adapter"));
+                nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));
 
                 // TODO: andrus, 11.29.2009 : should we rename that to "location"??
                 String location = attributes.getValue("", "datasource");
                 nodeDescriptor.setLocation(location);
 
-                nodeDescriptor.setDataSourceFactoryClass(attributes.getValue(
+                nodeDescriptor.setDataSourceFactoryType(attributes.getValue(
                         "",
                         "factory"));
-                nodeDescriptor.setSchemaUpdateStrategyClass(attributes.getValue(
+                nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue(
                         "",
                         "schema-update-strategy"));
 

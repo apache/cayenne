@@ -39,7 +39,8 @@ public class CayenneRuntime {
     protected Module[] modules;
 
     /**
-     * Initializes a configuration with a default CayenneModule.
+     * Initializes Cayenne runtime instance with a default configuration provided by
+     * {@link CayenneModule}.
      * 
      * @param name Runtime name. By default a configuration file name contains a runtime
      *            name in it, to allow multiple runtimes in a single JVM. E.g. a typical
@@ -50,7 +51,7 @@ public class CayenneRuntime {
     }
 
     /**
-     * Initializes a configuration with an array of DI modules.
+     * Initializes Cayenne runtime with an array of DI modules.
      */
     public CayenneRuntime(String name, Module... modules) {
 

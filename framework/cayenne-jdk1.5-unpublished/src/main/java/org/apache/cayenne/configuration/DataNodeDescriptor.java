@@ -35,9 +35,9 @@ public class DataNodeDescriptor {
     protected Collection<String> dataMapNames;
 
     protected String location;
-    protected String adapterClass;
-    protected String dataSourceFactoryClass;
-    protected String schemaUpdateStrategyClass;
+    protected String adapterType;
+    protected String dataSourceFactoryType;
+    protected String schemaUpdateStrategyType;
 
     protected Resource configurationResource;
 
@@ -65,20 +65,20 @@ public class DataNodeDescriptor {
         this.location = location;
     }
 
-    public String getAdapterClass() {
-        return adapterClass;
+    public String getAdapterType() {
+        return adapterType;
     }
 
-    public void setAdapterClass(String adapter) {
-        this.adapterClass = adapter;
+    public void setAdapterType(String adapter) {
+        this.adapterType = adapter;
     }
 
-    public String getDataSourceFactoryClass() {
-        return dataSourceFactoryClass;
+    public String getDataSourceFactoryType() {
+        return dataSourceFactoryType;
     }
 
-    public void setDataSourceFactoryClass(String dataSourceFactory) {
-        this.dataSourceFactoryClass = dataSourceFactory;
+    public void setDataSourceFactoryType(String dataSourceFactory) {
+        this.dataSourceFactoryType = dataSourceFactory;
     }
 
     public Resource getConfigurationResource() {
@@ -89,11 +89,11 @@ public class DataNodeDescriptor {
         this.configurationResource = descriptorResource;
     }
 
-    public String getSchemaUpdateStrategyClass() {
-        return schemaUpdateStrategyClass;
+    public String getSchemaUpdateStrategyType() {
+        return schemaUpdateStrategyType;
     }
 
-    public void setSchemaUpdateStrategyClass(String schemaUpdateStrategyClass) {
-        this.schemaUpdateStrategyClass = schemaUpdateStrategyClass;
+    public void setSchemaUpdateStrategyType(String schemaUpdateStrategyClass) {
+        this.schemaUpdateStrategyType = schemaUpdateStrategyClass;
     }
 }

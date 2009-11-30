@@ -48,6 +48,7 @@ import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -125,7 +126,8 @@ public class AutoAdapter implements DbAdapter {
      * Creates an AutoAdapter with specified adapter factory and DataSource. If
      * adapterFactory is null, default factory is used.
      */
-    public AutoAdapter(DbAdapterFactory adapterFactory, DataSource dataSource) {
+    public AutoAdapter(@Inject DbAdapterFactory adapterFactory,
+            @Inject DataSource dataSource) {
         // sanity check
         if (dataSource == null) {
             throw new CayenneRuntimeException("Null dataSource");

@@ -18,19 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.conf.DriverDataSourceFactory;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.util.Util;
 
 /**
  * A {@link DataChannel} provider that provides a single instance of DataDomain configured
@@ -45,6 +48,18 @@ public class DataDomainProvider implements Provider<DataChannel> {
 
     @Inject
     protected RuntimeProperties configurationProperties;
+
+    @Inject
+    protected SchemaUpdateStrategy defaultSchemaUpdateStrategy;
+
+    @Inject
+    protected DbAdapter defaultAdapter;
+
+    @Inject
+    protected DataSourceFactory defaultDataSourceFactory;
+
+    @Inject
+    protected Injector injector;
 
     protected volatile DataChannel dataChannel;
 
@@ -74,24 +89,55 @@ public class DataDomainProvider implements Provider<DataChannel> {
             dataChannel.addMap(dataMap);
         }
 
-        for (DataNodeDescriptor dataNodeDescriptor : descriptor.getDataNodeDescriptors()) {
-            DataNode dataNode = new DataNode(dataNodeDescriptor.getName());
+        for (DataNodeDescriptor nodeDescriptor : descriptor.getDataNodeDescriptors()) {
+            DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
-            String dataSourceFactoryClass = dataNodeDescriptor
-                    .getDataSourceFactoryClass() != null ? dataNodeDescriptor
-                    .getDataSourceFactoryClass() : DriverDataSourceFactory.class
-                    .getName();
-            dataNode.setDataSourceFactory(dataSourceFactoryClass);
+            dataNode.setDataSourceLocation(nodeDescriptor.getLocation());
 
-            dataNode.setDataSourceLocation(dataNodeDescriptor.getLocation());
+            String dataSourceFactoryType = nodeDescriptor.getDataSourceFactoryType();
+            if (dataSourceFactoryType == null) {
+                dataNode.setDataSourceFactory(defaultDataSourceFactory
+                        .getClass()
+                        .getName());
+                dataNode.setDataSource(defaultDataSourceFactory
+                        .getDataSource(nodeDescriptor));
+            }
+            else {
+                dataNode.setDataSourceFactory(dataSourceFactoryType);
+                DataSourceFactory factory = newInstance(
+                        DataSourceFactory.class,
+                        dataSourceFactoryType);
+                dataNode.setDataSource(factory.getDataSource(nodeDescriptor));
+            }
 
-            String schemaUpdateStrategyName = dataNodeDescriptor
-                    .getSchemaUpdateStrategyClass() != null ? dataNodeDescriptor
-                    .getSchemaUpdateStrategyClass() : SkipSchemaUpdateStrategy.class
-                    .getName();
-            dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyName);
+            // schema update strategy
+            String schemaUpdateStrategyType = nodeDescriptor
+                    .getSchemaUpdateStrategyType();
 
-            for (String dataMapName : dataNodeDescriptor.getDataMapNames()) {
+            if (schemaUpdateStrategyType == null) {
+                dataNode.setSchemaUpdateStrategy(defaultSchemaUpdateStrategy);
+                dataNode.setSchemaUpdateStrategyName(defaultSchemaUpdateStrategy
+                        .getClass()
+                        .getName());
+            }
+            else {
+                dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
+                dataNode.setSchemaUpdateStrategy(newInstance(
+                        SchemaUpdateStrategy.class,
+                        schemaUpdateStrategyType));
+            }
+
+            // DbAdapter
+            String adapterType = nodeDescriptor.getAdapterType();
+            if (adapterType == null) {
+                dataNode.setAdapter(defaultAdapter);
+            }
+            else {
+                dataNode.setAdapter(newInstance(DbAdapter.class, adapterType));
+            }
+
+            // DataMaps
+            for (String dataMapName : nodeDescriptor.getDataMapNames()) {
                 dataNode.addDataMap(dataChannel.getMap(dataMapName));
             }
 
@@ -99,5 +145,34 @@ public class DataDomainProvider implements Provider<DataChannel> {
         }
 
         this.dataChannel = dataChannel;
+    }
+
+    private <T> T newInstance(Class<? extends T> interfaceType, String className) {
+
+        Class<? extends T> type;
+        try {
+            type = (Class<? extends T>) Util.getJavaClass(className);
+        }
+        catch (ClassNotFoundException e) {
+            throw new CayenneRuntimeException(
+                    "Invalid class %s of type %s",
+                    e,
+                    className,
+                    interfaceType.getName());
+        }
+        T instance;
+        try {
+            instance = type.newInstance();
+        }
+        catch (Exception e) {
+            throw new CayenneRuntimeException(
+                    "Error creating instance of class %s of type %s",
+                    e,
+                    className,
+                    interfaceType.getName());
+        }
+
+        injector.injectMembers(instance);
+        return instance;
     }
 }

@@ -19,6 +19,10 @@
 package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.dba.AutoAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Scopes;
@@ -26,6 +30,8 @@ import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.runtime.DataDomainProvider;
+import org.apache.cayenne.runtime.DataSourceFactory;
+import org.apache.cayenne.runtime.DriverDataSourceFactory;
 
 /**
  * A DI module containing all Cayenne runtime configurations. To customize Cayenne runtime
@@ -66,5 +72,17 @@ public class CayenneModule implements Module {
         // a global properties object
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class).in(
                 Scopes.SINGLETON);
+
+        // a default SchemaUpdateStrategy (used when no explicit strategy is specified in
+        // XML)
+        binder.bind(SchemaUpdateStrategy.class).to(SkipSchemaUpdateStrategy.class);
+
+        // a default DBAdapter (used when no explicit adapter is set in XML)
+
+        // TODO: andrus 11.30.2009: missing dependencies: DataSource, DbAdapterFactory
+        binder.bind(DbAdapter.class).to(AutoAdapter.class);
+
+        // a service to find or create DataSources
+        binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);
     }
 }

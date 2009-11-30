@@ -18,7 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Collections;
+
+import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
@@ -26,21 +30,25 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
-import org.apache.cayenne.conf.DriverDataSourceFactory;
-import org.apache.cayenne.conf.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.AutoAdapter;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.DbAdapterFactory;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
+
+import com.mockrunner.mock.jdbc.MockDataSource;
 
 public class DataDomainProviderTest extends TestCase {
 
@@ -59,11 +67,11 @@ public class DataDomainProviderTest extends TestCase {
         DataNodeDescriptor nodeDescriptor1 = new DataNodeDescriptor();
         nodeDescriptor1.setName("node1");
         nodeDescriptor1.getDataMapNames().add("map1");
-        nodeDescriptor1.setAdapterClass(OracleAdapter.class.getName());
-        nodeDescriptor1.setDataSourceFactoryClass(JNDIDataSourceFactory.class.getName());
+        nodeDescriptor1.setAdapterType(OracleAdapter.class.getName());
+        nodeDescriptor1.setDataSourceFactoryType(MockDataSourceFactory1.class.getName());
         nodeDescriptor1.setLocation("jdbc/testDataNode1");
         nodeDescriptor1
-                .setSchemaUpdateStrategyClass(ThrowOnPartialOrCreateSchemaStrategy.class
+                .setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class
                         .getName());
         testDescriptor.getDataNodeDescriptors().add(nodeDescriptor1);
 
@@ -92,6 +100,20 @@ public class DataDomainProviderTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(RuntimeProperties.class).toInstance(testProperties);
                 binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
+                binder.bind(SchemaUpdateStrategy.class).toInstance(
+                        new SkipSchemaUpdateStrategy());
+                binder.bind(DbAdapterFactory.class).toInstance(new DbAdapterFactory() {
+
+                    public DbAdapter createAdapter(DatabaseMetaData md)
+                            throws SQLException {
+                        throw new UnsupportedOperationException("TODO");
+                    }
+                });
+
+                binder.bind(DataSource.class).toInstance(new MockDataSource());
+                binder.bind(DbAdapter.class).to(AutoAdapter.class);
+                binder.bind(DataSourceFactory.class).toInstance(
+                        new MockDataSourceFactory2());
             }
         };
 
@@ -122,27 +144,40 @@ public class DataDomainProviderTest extends TestCase {
         assertEquals(1, node1.getDataMaps().size());
         assertSame(map1, node1.getDataMaps().iterator().next());
         assertSame(node1, domain.lookupDataNode(map1));
-        assertEquals(nodeDescriptor1.getDataSourceFactoryClass(), node1
+        assertEquals(nodeDescriptor1.getDataSourceFactoryType(), node1
                 .getDataSourceFactory());
+        assertNotNull(node1.getDataSource());
         assertEquals(nodeDescriptor1.getLocation(), node1.getDataSourceLocation());
-        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyClass(), node1
-                .getSchemaUpdateStrategyName());
 
-        // assertNotNull(node1.getAdapter());
-        // assertEquals(OracleAdapter.class, node1.getAdapter().getClass());
+        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1
+                .getSchemaUpdateStrategyName());
+        assertNotNull(node1.getSchemaUpdateStrategy());
+        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1
+                .getSchemaUpdateStrategy()
+                .getClass()
+                .getName());
+
+        assertNotNull(node1.getAdapter());
+        assertEquals(OracleAdapter.class, node1.getAdapter().getClass());
 
         DataNode node2 = domain.getNode("node2");
         assertNotNull(node2);
         assertEquals(1, node2.getDataMaps().size());
         assertSame(map2, node2.getDataMaps().iterator().next());
         assertSame(node2, domain.lookupDataNode(map2));
-        assertEquals(DriverDataSourceFactory.class.getName(), node2
+        assertEquals(MockDataSourceFactory2.class.getName(), node2
                 .getDataSourceFactory());
+        assertNotNull(node2.getDataSource());
         assertEquals(nodeDescriptor2.getLocation(), node2.getDataSourceLocation());
         assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2
                 .getSchemaUpdateStrategyName());
-        // assertNotNull(node2.getAdapter());
-        // assertEquals(AutoAdapter.class, node2.getAdapter().getClass());
+        assertNotNull(node2.getSchemaUpdateStrategy());
+        assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2
+                .getSchemaUpdateStrategy()
+                .getClass()
+                .getName());
 
+        assertNotNull(node2.getAdapter());
+        assertEquals(AutoAdapter.class, node2.getAdapter().getClass());
     }
 }
