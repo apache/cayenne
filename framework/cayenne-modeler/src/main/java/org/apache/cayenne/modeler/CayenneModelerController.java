@@ -29,9 +29,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.swing.WindowConstants;
 
@@ -236,8 +237,9 @@ public class CayenneModelerController extends CayenneController {
 
     /** Adds path to the list of last opened projects in preferences. */
     public void addToLastProjListAction(String path) {
-        ModelerPreferences pref = ModelerPreferences.getPreferences();
-        Vector arr = pref.getVector(ModelerPreferences.LAST_PROJ_FILES);
+
+        Preferences frefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
+        Vector arr = ModelerPreferences.getLastProjFiles();
         // Add proj path to the preferences
         // Prevent duplicate entries.
         if (arr.contains(path)) {
@@ -249,10 +251,16 @@ public class CayenneModelerController extends CayenneController {
             arr.remove(arr.size() - 1);
         }
 
-        pref.remove(ModelerPreferences.LAST_PROJ_FILES);
-        Iterator iter = arr.iterator();
-        while (iter.hasNext()) {
-            pref.addProperty(ModelerPreferences.LAST_PROJ_FILES, iter.next());
+        try {
+            frefLastProjFiles.clear();
+        }
+        catch (BackingStoreException e) {
+            // ignore exception
+        }
+        int size = arr.size();
+        
+        for (int i=0; i< size; i++) {
+            frefLastProjFiles.put(String.valueOf(i), arr.get(i).toString());
         }
     }
 

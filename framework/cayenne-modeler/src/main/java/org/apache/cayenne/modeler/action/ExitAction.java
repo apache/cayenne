@@ -49,9 +49,9 @@ public class ExitAction extends ProjectAction {
         if (!checkSaveOnClose()) {
             return;
         }
-
+        
 		// write prefs to persistent store
-		ModelerPreferences.getPreferences().storePreferences();
+//		ModelerPreferences.storePreferences();
 		
 		//stop logging before JVM shutdown to prevent hanging
 		LogConsole.getInstance().stopLogging();

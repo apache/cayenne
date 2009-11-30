@@ -19,13 +19,15 @@
 
 package org.apache.cayenne.modeler;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Vector;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
-import org.apache.cayenne.project.CayenneUserDir;
-import org.apache.commons.collections.ExtendedProperties;
+import org.apache.cayenne.pref.CayennePreference;
+import org.apache.cayenne.pref.Preference;
+import org.apache.cayenne.pref.UpgradeCayennePreferenceDecorator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,97 +38,71 @@ import org.apache.commons.logging.LogFactory;
  * <i>This class is obsolete; its users will be migrated to use preference service. </i>
  * </p>
  */
-public class ModelerPreferences extends ExtendedProperties {
+public class ModelerPreferences implements PreferenceChangeListener {
 
+    private static Preferences cayennePrefs;
+    
     private static final Log logObj = LogFactory.getLog(ModelerPreferences.class);
-
-    /** Name of the preferences file. */
-    public static final String PREFERENCES_NAME = "modeler.preferences";
 
     /** Name of the log file. */
     public static final String LOGFILE_NAME = "modeler.log";
-
-    // Keys for the preference file.
-
+    
     /** List of the last 12 opened project files. */
-    public static final String LAST_PROJ_FILES = "Editor.lastSeveralProjectFiles";
     public static final int LAST_PROJ_FILES_SIZE = 12;
 
     /** GUI layout */
-    public static final String EDITOR_LAFNAME = "Editor.lookAndFeel";
-    public static final String EDITOR_THEMENAME = "Editor.theme";
+    public static final String EDITOR_LAFNAME = "lookAndFeel";
+    public static final String EDITOR_THEMENAME = "theme";
 
     /** Log file */
-    public static final String EDITOR_LOGFILE_ENABLED = "Editor.logfileEnabled";
-    public static final String EDITOR_LOGFILE = "Editor.logfile";
+    public static final String EDITOR_LOGFILE_ENABLED = "logfileEnabled";
+    public static final String EDITOR_LOGFILE = "logfile";
     
     /*
      * Number of items in combobox visible without scrolling 
      */
     public static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;
-    
-    protected static ModelerPreferences sharedInstance;
-
-    protected ModelerPreferences() {
-    }
 
     /**
      * Returns Cayenne preferences singleton.
      */
-    public static ModelerPreferences getPreferences() {
-        if (sharedInstance == null) {
-            sharedInstance = new ModelerPreferences();
-            sharedInstance.loadPreferences();
+    public static Preferences getPreferences() {
+        if(cayennePrefs==null){
+            Preference decoratedPref = new UpgradeCayennePreferenceDecorator(new CayennePreference());
+            cayennePrefs = decoratedPref.getRootPreference();
+            cayennePrefs.addPreferenceChangeListener(new ModelerPreferences());
         }
-
-        return sharedInstance;
+        return cayennePrefs;
+    }
+    
+    public static Preferences getEditorPreferences() {
+        return getPreferences().node(CayennePreference.EDITOR);
+    }
+    
+    public static Preferences getLastProjFilesPref() {
+        return getEditorPreferences().node(CayennePreference.LAST_PROJ_FILES);
     }
 
-    /**
-     * Returns preferences directory <code>$HOME/.cayenne</code>. If such directory
-     * does not exist, it is created as a side effect of this method.
-     */
-    public File preferencesDirectory() {
-        return CayenneUserDir.getInstance().getDirectory();
-    }
-
-    /**
-     * Saves preferences. Preferences stored in
-     * <code>$HOME/.cayenne/modeler.preferences</code> file.
-     */
-    public void storePreferences() {
-        File prefFile = new File(preferencesDirectory(), PREFERENCES_NAME);
+    public static Vector getLastProjFiles() {
+        Preferences filesPrefs = getLastProjFilesPref();
+        Vector arrayLastProjFiles = new Vector<String>();
+        String[] keys = null;
         try {
-            if (!prefFile.exists()) {
-                logObj.debug("Cannot save preferences - file "
-                        + prefFile
-                        + " does not exist");
-                return;
+            keys = filesPrefs.keys();
+        }
+        catch (BackingStoreException e) {
+            logObj.warn("Error reading preferences file.", e);
+        }
+        if(keys!=null){
+            int len = keys.length;
+            for(int i = 0; i< len; i++){
+               arrayLastProjFiles.add(filesPrefs.get(keys[i], "")); 
             }
-            save(new FileOutputStream(prefFile), "");
         }
-        catch (IOException e) {
-            logObj.debug("Error saving preferences: ", e);
-        }
+        return arrayLastProjFiles;
     }
 
-    /**
-     * Loads preferences from <code>$HOME/.cayenne/modeler.preferences</code> file.
-     */
-    public void loadPreferences() {
-        try {
-            File prefsFile = new File(preferencesDirectory(), PREFERENCES_NAME);
-            if (!prefsFile.exists()) {
-                if (!prefsFile.createNewFile()) {
-                    logObj.warn("Can't create preferences file " + prefsFile);
-                }
-            }
-
-            load(new FileInputStream(prefsFile));
-        }
-        catch (IOException e) {
-            logObj.warn("Error creating preferences file.", e);
-        }
+    public void preferenceChange(PreferenceChangeEvent evt) {
+        evt.getNode().put(evt.getKey(), evt.getNewValue());
     }
-
 }

@@ -57,8 +57,8 @@ public class RecentFileMenu extends JMenu implements RecentFileListListener {
      * preferences.
      */
     public void rebuildFromPreferences() {
-        ModelerPreferences pref = ModelerPreferences.getPreferences();
-        Vector<?> arr = pref.getVector(ModelerPreferences.LAST_PROJ_FILES);
+  
+        Vector<?> arr = ModelerPreferences.getLastProjFiles();
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }

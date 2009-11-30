@@ -186,8 +186,10 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
     }
     
     public void recentFileListChanged() {
-        ModelerPreferences pref = ModelerPreferences.getPreferences();
-        final Vector<?> arr = (Vector<?>) pref.getVector(ModelerPreferences.LAST_PROJ_FILES).clone();
+       // Preferences pref = ModelerPreferences.getPreferences();
+        
+        
+        final Vector<?> arr = (Vector<?>) ModelerPreferences.getLastProjFiles().clone();
         
         recentsList.setModel(
             new AbstractListModel() {
@@ -304,9 +306,6 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
                 rolloverRow = newRow;
                 list.repaint();
             }
-            
-            
         }
-        
     }
 }

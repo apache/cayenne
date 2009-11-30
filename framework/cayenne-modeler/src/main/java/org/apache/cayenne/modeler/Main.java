@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -89,12 +90,12 @@ public class Main {
         PreferenceDetail autoLoadPref = Application.getInstance().getPreferenceDomain().getDetail(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, true);
         
         if ((autoLoadPref != null) && (true == autoLoadPref.getBooleanProperty(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE))) {
-            ModelerPreferences modelerPreferences = ModelerPreferences.getPreferences();
-            Vector arr = modelerPreferences.getVector(ModelerPreferences.LAST_PROJ_FILES);
-
+            Preferences modelerPreferences = ModelerPreferences.getEditorPreferences();
+            
+            Preferences lastProjFilesPref = ModelerPreferences.getLastProjFilesPref();
+            Vector<String> arr = ModelerPreferences.getLastProjFiles();
             return new File((String) arr.get(0));
         }
-
         return null;
     }
 
@@ -117,7 +118,6 @@ public class Main {
 
                     if (null != projectFileFromPrefs) {
                         OpenProjectAction action = new OpenProjectAction(Application.instance);
-
                         action.openProject(projectFileFromPrefs);
                     }
                 }
@@ -156,18 +156,18 @@ public class Main {
     protected void configureLogging() {
  
         // get preferences
-        ModelerPreferences prefs = ModelerPreferences.getPreferences();
-
+        Preferences prefs = ModelerPreferences.getEditorPreferences();
+        
         // check whether to set up logging to a file
         boolean logfileEnabled = prefs.getBoolean(
                 ModelerPreferences.EDITOR_LOGFILE_ENABLED,
                 true);
-        prefs.setProperty(ModelerPreferences.EDITOR_LOGFILE_ENABLED, String
+        prefs.put(ModelerPreferences.EDITOR_LOGFILE_ENABLED, String
                 .valueOf(logfileEnabled));
 
         if (logfileEnabled) {
             String defaultPath = getLogFile().getPath();
-            String logfilePath = prefs.getString(
+            String logfilePath = prefs.get(
                     ModelerPreferences.EDITOR_LOGFILE,
                     defaultPath);
             try {
@@ -189,7 +189,7 @@ public class Main {
                     }
 
                     // remember working path
-                    prefs.setProperty(ModelerPreferences.EDITOR_LOGFILE, logfilePath);
+                    prefs.put(ModelerPreferences.EDITOR_LOGFILE, logfilePath);
 
                     // TODO: andrus, 8/16/2006 - redirect STDOUT and STDERR to file??
                     // TODO: andrus, 8/16/2006 - use Java logging API with comons-logging
@@ -202,15 +202,15 @@ public class Main {
     }
 
     protected String getLookAndFeelName() {
-        ModelerPreferences prefs = ModelerPreferences.getPreferences();
-        return prefs.getString(
+        Preferences prefs = ModelerPreferences.getEditorPreferences();
+        return prefs.get(
                 ModelerPreferences.EDITOR_LAFNAME,
                 ModelerConstants.DEFAULT_LAF_NAME);
     }
 
     protected String getThemeName() {
-        ModelerPreferences prefs = ModelerPreferences.getPreferences();
-        return prefs.getString(
+        Preferences prefs = ModelerPreferences.getEditorPreferences();
+        return prefs.get(
                 ModelerPreferences.EDITOR_THEMENAME,
                 ModelerConstants.DEFAULT_THEME_NAME);
     }
@@ -220,9 +220,7 @@ public class Main {
      */
     protected void configureLookAndFeel() {
         // get preferences
-        ModelerPreferences prefs = ModelerPreferences.getPreferences();
-
-  
+        Preferences prefs = ModelerPreferences.getEditorPreferences();
         String lfName = getLookAndFeelName();
         String themeName = getThemeName();
 
@@ -272,12 +270,12 @@ public class Main {
         }
         finally {
             // remember L&F settings
-            prefs.setProperty(ModelerPreferences.EDITOR_LAFNAME, UIManager
+            prefs.put(ModelerPreferences.EDITOR_LAFNAME, UIManager
                     .getLookAndFeel()
                     .getClass()
                     .getName());
 
-            prefs.setProperty(ModelerPreferences.EDITOR_THEMENAME, themeName);
+            prefs.put(ModelerPreferences.EDITOR_THEMENAME, themeName);
         }
     }
 
