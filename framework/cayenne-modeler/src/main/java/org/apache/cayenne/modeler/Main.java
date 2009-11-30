@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
@@ -93,7 +92,7 @@ public class Main {
             Preferences modelerPreferences = ModelerPreferences.getEditorPreferences();
             
             Preferences lastProjFilesPref = ModelerPreferences.getLastProjFilesPref();
-            Vector<String> arr = ModelerPreferences.getLastProjFiles();
+            List<String> arr = ModelerPreferences.getLastProjFiles();
             if(arr.size()>0){
                 return new File((String) arr.get(0));
             }

@@ -30,7 +30,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
@@ -186,15 +186,13 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
     }
     
     public void recentFileListChanged() {
-       // Preferences pref = ModelerPreferences.getPreferences();
-        
-        
-        final Vector<?> arr = (Vector<?>) ModelerPreferences.getLastProjFiles().clone();
+
+        final List<String> arr = ModelerPreferences.getLastProjFiles();
         
         recentsList.setModel(
             new AbstractListModel() {
                 public int getSize() { return arr.size(); }
-                public Object getElementAt(int i) { return arr.elementAt(i); }
+                public Object getElementAt(int i) { return arr.get(i); }
             });
     }
     

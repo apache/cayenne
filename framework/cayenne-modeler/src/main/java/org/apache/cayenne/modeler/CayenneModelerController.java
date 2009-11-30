@@ -30,7 +30,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
-import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -239,14 +238,14 @@ public class CayenneModelerController extends CayenneController {
     public void addToLastProjListAction(String path) {
 
         Preferences frefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
-        Vector arr = ModelerPreferences.getLastProjFiles();
+        List<String> arr = ModelerPreferences.getLastProjFiles();
         // Add proj path to the preferences
         // Prevent duplicate entries.
         if (arr.contains(path)) {
             arr.remove(path);
         }
 
-        arr.insertElementAt(path, 0);
+        arr.set(0, path);
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }

@@ -19,7 +19,8 @@
 
 package org.apache.cayenne.modeler;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -83,9 +84,9 @@ public class ModelerPreferences implements PreferenceChangeListener {
         return getEditorPreferences().node(CayennePreference.LAST_PROJ_FILES);
     }
 
-    public static Vector getLastProjFiles() {
+    public static List<String> getLastProjFiles() {
         Preferences filesPrefs = getLastProjFilesPref();
-        Vector arrayLastProjFiles = new Vector<String>();
+        ArrayList<String> arrayLastProjFiles = new ArrayList<String>();
         String[] keys = null;
         try {
             keys = filesPrefs.keys();
