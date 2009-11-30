@@ -94,7 +94,9 @@ public class Main {
             
             Preferences lastProjFilesPref = ModelerPreferences.getLastProjFilesPref();
             Vector<String> arr = ModelerPreferences.getLastProjFiles();
-            return new File((String) arr.get(0));
+            if(arr.size()>0){
+                return new File((String) arr.get(0));
+            }
         }
         return null;
     }

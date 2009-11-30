@@ -68,10 +68,9 @@ public class MacOSXMain extends Main {
     }
 
     protected String getLookAndFeelName() {
-
         if (isMacOSX()) {
-            ModelerPreferences prefs = ModelerPreferences.getPreferences();
-            return prefs.getString(
+            Preferences prefs = ModelerPreferences.getEditorPreferences();
+            return prefs.get(
                     ModelerPreferences.EDITOR_LAFNAME,
                     MacOSXMain.DEFAULT_LAF_OSX_NAME);
         }
@@ -81,8 +80,8 @@ public class MacOSXMain extends Main {
 
     protected String getThemeName() {
         if (isMacOSX()) {
-            ModelerPreferences prefs = ModelerPreferences.getPreferences();
-            return prefs.getString(
+            Preferences prefs = ModelerPreferences.getEditorPreferences();
+            return prefs.get(
                     ModelerPreferences.EDITOR_THEMENAME,
                     MacOSXMain.DEFAULT_THEME_OSX_NAME);
         }
@@ -90,4 +89,5 @@ public class MacOSXMain extends Main {
             return super.getThemeName();
         }
     }
+
 }
