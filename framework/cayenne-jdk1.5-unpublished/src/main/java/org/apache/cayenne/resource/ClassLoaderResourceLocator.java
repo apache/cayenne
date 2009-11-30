@@ -47,6 +47,10 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
         }
 
         while (urls.hasMoreElements()) {
+
+            // TODO: andrus 11/30/2009 - replace URLResource that resolves relative URL's
+            // as truly relative with some kind of ClasspathResource that creates a
+            // relative *path* and then resolves it against the entire classpath space.
             resources.add(new URLResource(urls.nextElement()));
         }
 
