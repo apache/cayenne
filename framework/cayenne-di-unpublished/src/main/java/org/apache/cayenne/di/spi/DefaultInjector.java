@@ -44,8 +44,14 @@ public class DefaultInjector implements Injector {
         this.listConfigurations = new HashMap<String, ListProvider>();
         this.injectionStack = new InjectionStack();
 
+        DefaultBinder binder = new DefaultBinder(this);
+
+        // bind self for injector injection...
+        binder.bind(Injector.class).toInstance(this);
+
+        // bind modules
         if (modules != null && modules.length > 0) {
-            DefaultBinder binder = new DefaultBinder(this);
+
             for (Module module : modules) {
                 module.configure(binder);
             }

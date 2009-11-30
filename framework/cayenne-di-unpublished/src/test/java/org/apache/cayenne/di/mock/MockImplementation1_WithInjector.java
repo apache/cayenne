@@ -16,25 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.di.mock;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 
-/**
- * An object that can load a named {@link DataChannelDescriptor} from some configuration
- * source.
- * 
- * @since 3.1
- */
-public interface DataChannelDescriptorLoader {
 
-    /**
-     * Loads a DataChannelDescriptor from some configuration source, usually an XML file
-     * found on classpath.
-     * 
-     * @param runtimeName the name of {@link CayenneRuntime} that invoked this method.
-     *            Configuration resource names are normally derived from the runtime name.
-     */
-    DataChannelDescriptor load(String runtimeName) throws CayenneRuntimeException;
+public class MockImplementation1_WithInjector implements MockInterface1 {
+
+    @Inject
+    private Injector injector;
+    
+    public String getName() {
+        return injector != null ? "injector_not_null" : "injector_null";
+    }
+
 }

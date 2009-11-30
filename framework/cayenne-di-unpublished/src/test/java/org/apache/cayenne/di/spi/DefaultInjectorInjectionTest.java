@@ -25,6 +25,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockImplementation1_ListConfiguration;
 import org.apache.cayenne.di.mock.MockImplementation1_MapConfiguration;
+import org.apache.cayenne.di.mock.MockImplementation1_WithInjector;
 import org.apache.cayenne.di.mock.MockImplementation2;
 import org.apache.cayenne.di.mock.MockImplementation2Sub1;
 import org.apache.cayenne.di.mock.MockImplementation2_ConstructorProvider;
@@ -167,6 +168,22 @@ public class DefaultInjectorInjectionTest extends TestCase {
         MockInterface1 service = injector.getInstance(MockInterface1.class);
         assertNotNull(service);
         assertEquals(";xyz;yvalue", service.getName());
+    }
+
+    public void testInjectorInjection() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_WithInjector.class);
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals("injector_not_null", service.getName());
     }
 
 }

@@ -20,6 +20,9 @@ package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -72,7 +75,27 @@ public class DataDomainProvider implements Provider<DataChannel> {
         }
 
         for (DataNodeDescriptor dataNodeDescriptor : descriptor.getDataNodeDescriptors()) {
-            // TODO: load data nodes
+            DataNode dataNode = new DataNode(dataNodeDescriptor.getName());
+
+            String dataSourceFactoryClass = dataNodeDescriptor
+                    .getDataSourceFactoryClass() != null ? dataNodeDescriptor
+                    .getDataSourceFactoryClass() : DriverDataSourceFactory.class
+                    .getName();
+            dataNode.setDataSourceFactory(dataSourceFactoryClass);
+
+            dataNode.setDataSourceLocation(dataNodeDescriptor.getLocation());
+
+            String schemaUpdateStrategyName = dataNodeDescriptor
+                    .getSchemaUpdateStrategyClass() != null ? dataNodeDescriptor
+                    .getSchemaUpdateStrategyClass() : SkipSchemaUpdateStrategy.class
+                    .getName();
+            dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyName);
+
+            for (String dataMapName : dataNodeDescriptor.getDataMapNames()) {
+                dataNode.addDataMap(dataChannel.getMap(dataMapName));
+            }
+
+            dataChannel.addNode(dataNode);
         }
 
         this.dataChannel = dataChannel;

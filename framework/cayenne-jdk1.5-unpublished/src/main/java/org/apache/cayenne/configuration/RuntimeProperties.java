@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.runtime.CayenneRuntime;
+
 /**
  * Represents a properties map for a given {@link CayenneRuntime}.
  * 

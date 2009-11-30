@@ -24,6 +24,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Scopes;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.runtime.DataDomainProvider;
 
 /**
