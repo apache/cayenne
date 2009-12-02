@@ -44,6 +44,7 @@ import javax.swing.table.TableColumn;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.DbRelationshipListener;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -293,7 +294,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         AutoCompletion.enable(targetCombo);
         
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
-        targetCombo.setModel(createComboModel());
+        targetCombo.setModel(createComboModel(entity));
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
         table.getSelectionModel().addListSelectionListener(this);
     }
@@ -346,7 +347,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         // If this is just loading new currentDbEntity, do nothing
         if (mediator.getCurrentDbEntity() == null)
             return;
-        targetCombo.setModel(createComboModel());
+        targetCombo.setModel(createComboModel(e.getEntity()));
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         model.fireTableDataChanged();
@@ -356,8 +357,8 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
     /**
      * Creates a list of DbEntities.
      */
-    private ComboBoxModel createComboModel() {
-        DataMap map = mediator.getCurrentDataMap();
+    private ComboBoxModel createComboModel(Entity entity) {
+        DataMap map = entity.getDataMap();
         Object[] objects = map.getNamespace().getDbEntities().toArray();
         return new DefaultComboBoxModel(objects);
     }

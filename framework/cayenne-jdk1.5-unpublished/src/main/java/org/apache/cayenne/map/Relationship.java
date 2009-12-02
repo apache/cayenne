@@ -177,4 +177,17 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
     public void setRuntime(boolean synthetic) {
         this.runtime = synthetic;
     }
+    
+    /**
+     * Returns a "complimentary" relationship going in the opposite direction. Returns
+     * null if no such relationship is found.
+     * @since 3.1
+     */
+    public abstract Relationship getReverseRelationship();
+    
+    /**
+     * Returns if relationship is mandatory
+     * @since 3.1
+     */
+    public abstract boolean isMandatory();
 }

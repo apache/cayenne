@@ -91,6 +91,13 @@ public class FileFilters {
     public static FileFilter getEOModelSelectFilter() {
         return eomodelSelectFilter;
     }
+    
+    /**
+     * Returns filter that checks if file has specified extension
+     */
+    public static FileFilter getExtensionFileFilter(String ext, String description) {
+        return new ExtensionFileFilter(ext, description);
+    }
 
     static final class JavaClassArchiveFilter extends FileFilter {
         public boolean accept(File f) {
@@ -222,5 +229,29 @@ public class FileFilters {
         public String getDescription() {
             return "*" + EOModelFileFilter.EOM_SUFFIX;
         }
+    }
+
+    /**
+     * filter that checks if file has specified extension
+     */
+    static final class ExtensionFileFilter extends FileFilter {
+        String ext;
+        String description;
+        
+        ExtensionFileFilter(String ext, String description) {
+            this.ext = ext;
+            this.description = description;
+        }
+
+        @Override
+        public boolean accept(File f) {
+            return f.isDirectory() || f.getName().endsWith("." + ext);
+        }
+
+        @Override
+        public String getDescription() {
+            return description + "(." + ext + ")";
+        }
+        
     }
 }

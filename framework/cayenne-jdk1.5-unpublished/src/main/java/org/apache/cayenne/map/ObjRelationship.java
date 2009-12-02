@@ -773,4 +773,14 @@ public class ObjRelationship extends Relationship {
     public void setMapKey(String mapKey) {
         this.mapKey = mapKey;
     }
+    
+    @Override
+    public boolean isMandatory() {
+        refreshFromDeferredPath();
+        if (dbRelationships.size() == 0) {
+            return false;
+        }
+        
+        return dbRelationships.get(0).isMandatory();
+    }
 }

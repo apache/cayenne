@@ -30,9 +30,9 @@ import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.NamedObjectFactory;
-import org.apache.cayenne.project.Project;
 
 /**
  */
@@ -65,7 +65,7 @@ public class NewProjectAction extends ProjectAction {
         }
 
         Configuration config = buildProjectConfiguration(null);
-        Project project = new ApplicationProject(null, config);
+        ApplicationProject project = ModelerUtil.createModelerProject(null, config, getProjectController());
 
         // stick a DataDomain
         DataDomain domain = (DataDomain) NamedObjectFactory.createObject(

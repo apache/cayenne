@@ -1,0 +1,152 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.modeler.graph;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ModelerProjectConfiguration;
+import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.DomainDisplayListener;
+import org.apache.cayenne.modeler.graph.action.RefreshGraphAction;
+import org.apache.cayenne.modeler.graph.action.SaveAsImageAction;
+import org.apache.cayenne.modeler.graph.action.ZoomInAction;
+import org.apache.cayenne.modeler.graph.action.ZoomOutAction;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.jgraph.JGraph;
+
+/**
+ * Tab for editing graphical representation of a dataDomain
+ */
+public class DataDomainGraphTab extends JPanel implements DomainDisplayListener, ItemListener {    
+    /**
+     * mediator instance
+     */
+    ProjectController mediator;
+    
+    /**
+     * Diagram selection combo
+     */
+    JComboBox diagramCombo;
+    
+    /**
+     * Scrollpane that the graph will be added to
+     */
+    JScrollPane scrollPane;
+    
+    /**
+     * Current graph
+     */
+    JGraph graph;
+    
+    /**
+     * Current domain
+     */
+    DataDomain domain;
+    
+    /**
+     * True to invoke rebuild next time component becomes visible
+     */
+    boolean needRebuild;
+    
+    public DataDomainGraphTab(ProjectController mediator) {
+        this.mediator = mediator;
+        initView();
+    }
+    
+    private void initView() {
+        needRebuild = true;
+        mediator.addDomainDisplayListener(this);
+        
+        setLayout(new BorderLayout());
+        JToolBar toolbar = new JToolBar();
+        toolbar.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
+        
+        GraphType[] types = GraphType.values();
+        String[] names = new String[types.length];
+        for (int i = 0; i < types.length; i++) {
+            names[i] = types[i].getName();
+        }
+        
+        diagramCombo = CayenneWidgetFactory.createComboBox(
+                names,
+                false);
+        diagramCombo.addItemListener(this);
+        
+        toolbar.add(new RefreshGraphAction(this, Application.getInstance()).buildButton());
+        toolbar.add(new SaveAsImageAction(this, Application.getInstance()).buildButton());
+        toolbar.addSeparator();
+        toolbar.add(new ZoomInAction(this, Application.getInstance()).buildButton());
+        toolbar.add(new ZoomOutAction(this, Application.getInstance()).buildButton());
+        
+        toolbar.addSeparator();
+        toolbar.add(new JLabel("Diagram: "));
+        toolbar.add(diagramCombo);
+        add(toolbar, BorderLayout.NORTH);
+        
+        scrollPane = new JScrollPane();
+        add(scrollPane);
+    }
+
+    public void currentDomainChanged(DomainDisplayEvent e) {
+        if (domain != e.getDomain()) {
+            domain = e.getDomain();
+            needRebuild = true;
+            
+            if (isVisible()) {
+                rebuild();
+            }
+        }
+    }
+    
+    /**
+     * Rebuilds graph from a domain
+     */
+    public synchronized void rebuild() {
+        if (needRebuild && domain != null) {
+            ModelerProjectConfiguration conf = (ModelerProjectConfiguration)
+                mediator.getProject().getConfiguration();
+            graph = conf.getGraphRegistry().loadGraph(mediator, domain, 
+                    GraphType.values()[diagramCombo.getSelectedIndex()]);
+            scrollPane.setViewportView(graph);
+            
+            needRebuild = false;
+        }
+    }
+
+    public void itemStateChanged(ItemEvent e) {
+        needRebuild = true;
+        rebuild();
+    }
+    
+    public JGraph getGraph() {
+        return graph;
+    }
+}

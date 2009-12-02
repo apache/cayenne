@@ -72,6 +72,7 @@ import org.apache.cayenne.map.event.ProcedureParameterListener;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.map.event.QueryListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.action.ModelerProjectConfiguration;
 import org.apache.cayenne.modeler.action.NavigateBackwardAction;
 import org.apache.cayenne.modeler.action.NavigateForwardAction;
 import org.apache.cayenne.modeler.action.RevertAction;
@@ -120,6 +121,8 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A controller that works with the project tree, tracking selection and dispatching
@@ -131,7 +134,8 @@ import org.apache.cayenne.util.IDUtil;
  * </p>
  */
 public class ProjectController extends CayenneController {
-
+    private static final Log logObj = LogFactory.getLog(ProjectController.class);
+    
     /*
      * A snapshot of the current state of the project controller. This was added so that
      * we could support history of recent objects.
@@ -257,7 +261,7 @@ public class ProjectController extends CayenneController {
     protected EventListenerList listenerList;
     protected boolean dirty;
 
-    protected Project project;
+    protected ApplicationProject project;
     protected Domain projectPreferences;
 
     protected ControllerState currentState;
@@ -268,7 +272,7 @@ public class ProjectController extends CayenneController {
      * Project files watcher. When project file is changed, user will be asked to confirm
      * loading the changes
      */
-    protected ProjectWatchdog watchdog;
+    ProjectWatchdog watchdog;
 
     public ProjectController(CayenneModelerController parent) {
         super(parent);
@@ -282,15 +286,20 @@ public class ProjectController extends CayenneController {
         return parent.getView();
     }
 
-    public Project getProject() {
+    public ApplicationProject getProject() {
         return project;
     }
 
-    public void setProject(Project currentProject) {
+    public void setProject(ApplicationProject currentProject) {
         if (this.project != currentProject) // strange enough, this method is called twice
         // during project opening. Not to disturb
         // watchdog extra time, adding this check
         {
+            if (this.project != null) {
+                ((ModelerProjectConfiguration) 
+                        project.getConfiguration()).getGraphRegistry().unregister(this);
+            }
+            
             this.project = currentProject;
             this.projectPreferences = null;
 
@@ -308,6 +317,9 @@ public class ProjectController extends CayenneController {
                 }
 
                 watchdog.reconfigure();
+                
+                addDomainListener(((ModelerProjectConfiguration) 
+                        project.getConfiguration()).getGraphRegistry());
             }
         }
     }
@@ -456,7 +468,7 @@ public class ProjectController extends CayenneController {
      * Finds a domain containing specified DataNode.
      */
     public DataDomain findDomain(DataNode node) {
-        Collection<DataDomain> domains = ((ApplicationProject) getProject())
+        Collection<DataDomain> domains = (getProject())
                 .getConfiguration()
                 .getDomains();
 
@@ -473,7 +485,7 @@ public class ProjectController extends CayenneController {
      * Finds a domain containing specified DataMap.
      */
     public DataDomain findDomain(DataMap map) {
-        Collection<DataDomain> domains = ((ApplicationProject) getProject())
+        Collection<DataDomain> domains = (getProject())
                 .getConfiguration()
                 .getDomains();
 
@@ -643,6 +655,10 @@ public class ProjectController extends CayenneController {
     public void addDomainListener(DomainListener listener) {
         listenerList.add(DomainListener.class, listener);
     }
+    
+    public void removeDomainListener(DomainListener listener) {
+        listenerList.remove(DomainListener.class, listener);
+    }
 
     public void addDataNodeDisplayListener(DataNodeDisplayListener listener) {
         listenerList.add(DataNodeDisplayListener.class, listener);
@@ -659,13 +675,25 @@ public class ProjectController extends CayenneController {
     public void addDataMapListener(DataMapListener listener) {
         listenerList.add(DataMapListener.class, listener);
     }
+    
+    public void removeDataMapListener(DataMapListener listener) {
+        listenerList.remove(DataMapListener.class, listener);
+    }
 
     public void addDbEntityListener(DbEntityListener listener) {
         listenerList.add(DbEntityListener.class, listener);
     }
+    
+    public void removeDbEntityListener(DbEntityListener listener) {
+        listenerList.remove(DbEntityListener.class, listener);
+    }
 
     public void addObjEntityListener(ObjEntityListener listener) {
         listenerList.add(ObjEntityListener.class, listener);
+    }
+    
+    public void removeObjEntityListener(ObjEntityListener listener) {
+        listenerList.remove(ObjEntityListener.class, listener);
     }
 
     public void addDbEntityDisplayListener(DbEntityDisplayListener listener) {
@@ -688,6 +716,10 @@ public class ProjectController extends CayenneController {
     public void addDbAttributeListener(DbAttributeListener listener) {
         listenerList.add(DbAttributeListener.class, listener);
     }
+    
+    public void removeDbAttributeListener(DbAttributeListener listener) {
+        listenerList.remove(DbAttributeListener.class, listener);
+    }
 
     public void addDbAttributeDisplayListener(DbAttributeDisplayListener listener) {
         listenerList.add(DbAttributeDisplayListener.class, listener);
@@ -695,6 +727,10 @@ public class ProjectController extends CayenneController {
 
     public void addObjAttributeListener(ObjAttributeListener listener) {
         listenerList.add(ObjAttributeListener.class, listener);
+    }
+    
+    public void removeObjAttributeListener(ObjAttributeListener listener) {
+        listenerList.remove(ObjAttributeListener.class, listener);
     }
 
     public void addObjAttributeDisplayListener(ObjAttributeDisplayListener listener) {
@@ -704,6 +740,10 @@ public class ProjectController extends CayenneController {
     public void addDbRelationshipListener(DbRelationshipListener listener) {
         listenerList.add(DbRelationshipListener.class, listener);
     }
+    
+    public void removeDbRelationshipListener(DbRelationshipListener listener) {
+        listenerList.add(DbRelationshipListener.class, listener);
+    }
 
     public void addDbRelationshipDisplayListener(DbRelationshipDisplayListener listener) {
         listenerList.add(DbRelationshipDisplayListener.class, listener);
@@ -711,6 +751,10 @@ public class ProjectController extends CayenneController {
 
     public void addObjRelationshipListener(ObjRelationshipListener listener) {
         listenerList.add(ObjRelationshipListener.class, listener);
+    }
+    
+    public void removeObjRelationshipListener(ObjRelationshipListener listener) {
+        listenerList.remove(ObjRelationshipListener.class, listener);
     }
 
     public void addObjRelationshipDisplayListener(ObjRelationshipDisplayListener listener) {
@@ -1273,7 +1317,7 @@ public class ProjectController extends CayenneController {
                 currentState.domain = e.getDomain();
                 currentState.node = e.getDataNode();
                 currentState.map = e.getDataMap();
-                currentState.embeddable = (Embeddable) e.getEmbeddable();
+                currentState.embeddable = e.getEmbeddable();
             }
         }
 
@@ -1497,7 +1541,7 @@ public class ProjectController extends CayenneController {
                 clearState();
                 currentState.domain = ev.getDomain();
                 currentState.map = ev.getDataMap();
-                currentState.embeddable = (Embeddable) ev.getEmbeddable();
+                currentState.embeddable = ev.getEmbeddable();
             }
             currentState.embAttrs = new EmbeddableAttribute[ev.getEmbeddableAttributes().length];
             System.arraycopy(

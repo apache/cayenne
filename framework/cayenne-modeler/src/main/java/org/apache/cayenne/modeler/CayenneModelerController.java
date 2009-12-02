@@ -44,7 +44,7 @@ import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.validator.Validator;
 
 /**
@@ -194,7 +194,7 @@ public class CayenneModelerController extends CayenneController {
      * Handles project opening control. Updates main frame, then delegates control to
      * child controllers.
      */
-    public void projectOpenedAction(Project project) {
+    public void projectOpenedAction(ApplicationProject project) {
 
         projectController.setProject(project);
 

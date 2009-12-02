@@ -461,6 +461,17 @@ public class DbRelationship extends Relationship {
     public void setToMany(boolean toMany) {
         this.toMany = toMany;
     }
+    
+    @Override
+    public boolean isMandatory() {
+        for (DbJoin join : getJoins()) {
+            if (join.getSource().isMandatory()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
     final static class JoinTransformers {
 

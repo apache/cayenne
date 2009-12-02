@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.action;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,12 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.RuntimeLoadDelegate;
+import org.apache.cayenne.modeler.graph.GraphFile;
+import org.apache.cayenne.modeler.graph.GraphLoader;
 import org.apache.cayenne.modeler.util.ModelerDbAdapter;
+import org.apache.cayenne.util.Util;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
  * Project loader delegate customized for use in CayenneModeler.
@@ -95,6 +101,26 @@ class ModelerProjectLoadDelegate extends RuntimeLoadDelegate {
         // load missing relationships and update configuration object
         for (DataDomain domain : getDomains().values()) {
             config.addDomain(domain);
+        }
+        
+        //AFTER everything was loaded, load graphs as well
+        for (DataDomain domain : getDomains().values()) {
+            String location = domain.getName() + GraphFile.LOCATION_SUFFIX;
+            InputStream in = ((ModelerProjectConfiguration) config).getMapConfiguration(location);
+            
+            if (in != null) {
+                try {                    
+                    XMLReader parser = Util.createXmlReader();
+                    GraphLoader handler = new GraphLoader(((ModelerProjectConfiguration) config).
+                            getGraphRegistry().getGraphMap(domain));
+                    parser.setContentHandler(handler);
+                    parser.setErrorHandler(handler);
+                    parser.parse(new InputSource(in));
+                }
+                catch (Exception ex) {
+                    loadError(ex);
+                }
+            }
         }
     }
 

@@ -30,6 +30,7 @@ import javax.swing.KeyStroke;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectException;
@@ -120,7 +121,7 @@ public class OpenProjectAction extends ProjectAction {
                     file.getAbsolutePath());
 
             Configuration config = buildProjectConfiguration(file);
-            Project project = new ApplicationProject(file, config);
+            ApplicationProject project = ModelerUtil.createModelerProject(file, config, getProjectController());
             getProjectController().setProject(project);
 
             // if upgrade was canceled

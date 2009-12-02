@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
+import java.io.File;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
@@ -35,12 +36,15 @@ import javax.swing.ImageIcon;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerConstants;
+import org.apache.cayenne.modeler.ModelerProject;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.MultipleObjectsAction;
+import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -174,5 +178,13 @@ public final class ModelerUtil {
                 action.setName(((MultipleObjectsAction) action).getActionName(numSelected > 1));
             }
         }
+    }
+    
+    /**
+     * Factory method to create modeler-specific project
+     */
+    public static ApplicationProject createModelerProject(File projectFile, Configuration configuration,
+            ProjectController mediator) {
+        return new ModelerProject(projectFile, configuration);
     }
 }
