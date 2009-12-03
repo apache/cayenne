@@ -57,6 +57,11 @@
 		</profile>
 		<profile>
 			<id>mac</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
 			<modules>
 				<module>cayenne-modeler-mac-ext</module>
 				<module>cayenne-modeler-mac</module>
@@ -64,6 +69,11 @@
 		</profile>
 		<profile>
 			<id>windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
 			<modules>
 				<module>cayenne-modeler-win</module>
 			</modules>
