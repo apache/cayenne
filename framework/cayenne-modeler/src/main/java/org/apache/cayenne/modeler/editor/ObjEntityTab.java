@@ -25,8 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.EventObject;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -42,8 +42,8 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -54,6 +54,7 @@ import org.apache.cayenne.modeler.dialog.objentity.ClassNameUpdater;
 import org.apache.cayenne.modeler.dialog.validator.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -134,6 +135,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 .add(app
                         .getAction(CreateRelationshipAction.getActionName())
                         .buildButton());
+        toolBar.addSeparator();
+        toolBar.add(app.getAction(ShowGraphEntityAction.getActionName()).buildButton());
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets

@@ -91,6 +91,7 @@ import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
 import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
 
@@ -143,7 +144,8 @@ public class ActionManager {
         OBJ_ENTITY_ACTIONS.addAll(Arrays.asList(
                 ObjEntitySyncAction.getActionName(),
                 CreateAttributeAction.getActionName(),
-                CreateRelationshipAction.getActionName()));
+                CreateRelationshipAction.getActionName(),
+                ShowGraphEntityAction.getActionName()));
     }
 
     static final Collection<String> DB_ENTITY_ACTIONS = new HashSet<String>(
@@ -152,7 +154,8 @@ public class ActionManager {
         DB_ENTITY_ACTIONS.addAll(Arrays.asList(
                 CreateAttributeAction.getActionName(),
                 CreateRelationshipAction.getActionName(),
-                DbEntitySyncAction.getActionName()));
+                DbEntitySyncAction.getActionName(),
+                ShowGraphEntityAction.getActionName()));
     }
 
     static final Collection<String> EMBEDDABLE_ACTIONS = new HashSet<String>(
@@ -257,6 +260,7 @@ public class ActionManager {
         registerAction(redoAction);
         
         registerAction(new CreateEmbeddableAction(application));
+        registerAction(new ShowGraphEntityAction(application));
     }
 
     private CayenneAction registerAction(CayenneAction action) {

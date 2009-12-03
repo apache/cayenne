@@ -24,12 +24,17 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.DomainDisplayListener;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
 
 /**
  * DataDomain editing tabs container 
  */
-public class DataDomainTabbedView extends JTabbedPane implements ChangeListener {
+public class DataDomainTabbedView extends JTabbedPane 
+    implements ChangeListener, DomainDisplayListener {
+    
     ProjectController mediator;
     
     DataDomainGraphTab graphTab;
@@ -61,11 +66,19 @@ public class DataDomainTabbedView extends JTabbedPane implements ChangeListener 
         addTab("Graph", graphTab);
         
         addChangeListener(this);
+        mediator.addDomainDisplayListener(this);
     }
 
     public void stateChanged(ChangeEvent e) {
         if (getSelectedComponent() == graphTab) {
             graphTab.refresh();
+        }
+    }
+
+    public void currentDomainChanged(DomainDisplayEvent e) {
+        if (e instanceof EntityDisplayEvent) {
+            //need select an entity
+            setSelectedComponent(graphTab);
         }
     }
 }

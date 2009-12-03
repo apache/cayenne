@@ -45,6 +45,7 @@ import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
@@ -100,6 +101,8 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
                 .add(app
                         .getAction(CreateRelationshipAction.getActionName())
                         .buildButton());
+        toolBar.addSeparator();
+        toolBar.add(app.getAction(ShowGraphEntityAction.getActionName()).buildButton());
 
         // create widgets
         name = new TextAdapter(new JTextField()) {

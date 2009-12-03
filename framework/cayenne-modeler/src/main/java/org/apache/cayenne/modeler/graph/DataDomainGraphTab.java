@@ -32,11 +32,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ModelerProjectConfiguration;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.action.RebuildGraphAction;
 import org.apache.cayenne.modeler.graph.action.SaveAsImageAction;
 import org.apache.cayenne.modeler.graph.action.ZoomInAction;
@@ -118,9 +121,26 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
 
     public void currentDomainChanged(DomainDisplayEvent e) {
-        if (domain != e.getDomain()) {
-            domain = e.getDomain();
+        if (e instanceof EntityDisplayEvent) {
+            //selecting an event
+            
+            //choose type of diagram
+            Entity entity = ((EntityDisplayEvent) e).getEntity();
+            diagramCombo.setSelectedIndex(entity instanceof ObjEntity ? 1 : 0);
+            refresh();
+            
+            GraphBuilder builder = getGraphRegistry().getGraphMap(domain).get(getSelectedType());
+            
+            Object cell = builder.getEntityCell(entity.getName());
+            
+            if (cell != null) {
+                graph.setSelectionCell(cell);
+                graph.scrollCellToVisible(cell);
+            }
+        }
+        else if (domain != e.getDomain()) {
             needRebuild = true;
+            domain = e.getDomain();
             
             if (isVisible()) {
                 refresh();
@@ -134,9 +154,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
      */
     public synchronized void refresh() {
         if (needRebuild && domain != null) {
-            ModelerProjectConfiguration conf = (ModelerProjectConfiguration)
-                mediator.getProject().getConfiguration();
-            graph = conf.getGraphRegistry().loadGraph(mediator, domain, 
+            graph = getGraphRegistry().loadGraph(mediator, domain, 
                     getSelectedType());
             scrollPane.setViewportView(graph);
             
@@ -176,5 +194,10 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     
     public JGraph getGraph() {
         return graph;
+    }
+    
+    GraphRegistry getGraphRegistry() {
+        return ((ModelerProjectConfiguration) mediator.getProject().getConfiguration())
+            .getGraphRegistry();
     }
 }
