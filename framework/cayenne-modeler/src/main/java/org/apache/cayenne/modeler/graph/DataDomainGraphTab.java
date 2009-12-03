@@ -24,7 +24,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
@@ -35,7 +37,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ModelerProjectConfiguration;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
-import org.apache.cayenne.modeler.graph.action.RefreshGraphAction;
+import org.apache.cayenne.modeler.graph.action.RebuildGraphAction;
 import org.apache.cayenne.modeler.graph.action.SaveAsImageAction;
 import org.apache.cayenne.modeler.graph.action.ZoomInAction;
 import org.apache.cayenne.modeler.graph.action.ZoomOutAction;
@@ -100,7 +102,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
                 false);
         diagramCombo.addItemListener(this);
         
-        toolbar.add(new RefreshGraphAction(this, Application.getInstance()).buildButton());
+        toolbar.add(new RebuildGraphAction(this, Application.getInstance()).buildButton());
         toolbar.add(new SaveAsImageAction(this, Application.getInstance()).buildButton());
         toolbar.addSeparator();
         toolbar.add(new ZoomInAction(this, Application.getInstance()).buildButton());
@@ -121,29 +123,55 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             needRebuild = true;
             
             if (isVisible()) {
-                rebuild();
+                refresh();
             }
         }
     }
     
     /**
-     * Rebuilds graph from a domain
+     * Rebuilds graph from a domain, if it is not yet built
+     * Otherwise, takes it from cache 
      */
-    public synchronized void rebuild() {
+    public synchronized void refresh() {
         if (needRebuild && domain != null) {
             ModelerProjectConfiguration conf = (ModelerProjectConfiguration)
                 mediator.getProject().getConfiguration();
             graph = conf.getGraphRegistry().loadGraph(mediator, domain, 
-                    GraphType.values()[diagramCombo.getSelectedIndex()]);
+                    getSelectedType());
             scrollPane.setViewportView(graph);
             
             needRebuild = false;
         }
     }
+    
+    private GraphType getSelectedType() {
+        return GraphType.values()[diagramCombo.getSelectedIndex()];
+    }
+    
+    /**
+     * Rebuilds graph, deleting existing if needed
+     */
+    public synchronized void rebuild() {
+        if (domain != null) {
+            JOptionPane pane = new JOptionPane("Rebuilding graph from domain will cause all user" +
+            		" changes to be lost. Continue?",
+                    JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+            JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Rebuild");
+            dialog.setVisible(true);
+            
+            if (pane.getValue().equals(JOptionPane.YES_OPTION)) {
+                ModelerProjectConfiguration conf = (ModelerProjectConfiguration)
+                    mediator.getProject().getConfiguration();
+                conf.getGraphRegistry().getGraphMap(domain).remove(getSelectedType());
+                itemStateChanged(null);
+            }
+        }
+    }
 
     public void itemStateChanged(ItemEvent e) {
         needRebuild = true;
-        rebuild();
+        refresh();
     }
     
     public JGraph getGraph() {

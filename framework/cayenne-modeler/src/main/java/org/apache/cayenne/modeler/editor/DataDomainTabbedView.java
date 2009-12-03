@@ -65,7 +65,7 @@ public class DataDomainTabbedView extends JTabbedPane implements ChangeListener 
 
     public void stateChanged(ChangeEvent e) {
         if (getSelectedComponent() == graphTab) {
-            graphTab.rebuild();
+            graphTab.refresh();
         }
     }
 }

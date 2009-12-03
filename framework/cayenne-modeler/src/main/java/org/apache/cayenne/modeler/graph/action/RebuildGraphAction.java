@@ -9,11 +9,11 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 /**
  * Action for refreshing the graph 
  */
-public class RefreshGraphAction extends CayenneAction {
+public class RebuildGraphAction extends CayenneAction {
     private final DataDomainGraphTab dataDomainGraphTab;
 
-    public RefreshGraphAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-        super("Refresh", application);
+    public RebuildGraphAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
+        super("Rebuild", application);
         this.dataDomainGraphTab = dataDomainGraphTab;
         setEnabled(true);
     }
@@ -25,6 +25,6 @@ public class RefreshGraphAction extends CayenneAction {
     
     @Override
     public void performAction(ActionEvent e) {
-        this.dataDomainGraphTab.itemStateChanged(null);
+        this.dataDomainGraphTab.rebuild();
     }
 }
