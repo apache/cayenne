@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.Collections;
 
 import javax.sql.DataSource;
@@ -38,22 +36,20 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceFactoryLoader;
+import org.apache.cayenne.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactoryLoader;
-import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
+import org.apache.cayenne.dba.MockDbAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
-
-import com.mockrunner.mock.jdbc.MockDataSource;
 
 public class DataDomainProviderTest extends TestCase {
 
@@ -109,14 +105,19 @@ public class DataDomainProviderTest extends TestCase {
                         new SkipSchemaUpdateStrategy());
                 binder.bind(DbAdapterFactory.class).toInstance(new DbAdapterFactory() {
 
-                    public DbAdapter createAdapter(DatabaseMetaData md)
-                            throws SQLException {
-                        throw new UnsupportedOperationException("TODO");
+                    public DbAdapter createAdapter(
+                            DataNodeDescriptor nodeDescriptor,
+                            DataSource dataSource) throws Exception {
+
+                        if (nodeDescriptor.getAdapterType() != null) {
+                            return (DbAdapter) Class.forName(
+                                    nodeDescriptor.getAdapterType()).newInstance();
+                        }
+
+                        return new MockDbAdapter();
                     }
                 });
 
-                binder.bind(DataSource.class).toInstance(new MockDataSource());
-                binder.bind(DbAdapter.class).to(AutoAdapter.class);
                 binder.bind(DataSourceFactoryLoader.class).toInstance(
                         new MockDataSourceFactoryLoader());
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -183,6 +184,6 @@ public class DataDomainProviderTest extends TestCase {
                 .getName());
 
         assertNotNull(node2.getAdapter());
-        assertEquals(AutoAdapter.class, node2.getAdapter().getClass());
+        assertEquals(MockDbAdapter.class, node2.getAdapter().getClass());
     }
 }

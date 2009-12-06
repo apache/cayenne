@@ -42,7 +42,7 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
     final static Log logger = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
 
     @Override
-    public void processSchemaUpdate(DataNode dataNode) throws SQLException {
+    protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
 
         Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
         Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();

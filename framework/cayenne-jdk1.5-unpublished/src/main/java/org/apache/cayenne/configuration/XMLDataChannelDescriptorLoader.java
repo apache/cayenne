@@ -50,7 +50,10 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
     public DataChannelDescriptor load(String runtimeName) throws CayenneRuntimeException {
 
-        logger.debug("starting configuration loading: " + runtimeName);
+        long t0 = System.currentTimeMillis();
+        if (logger.isDebugEnabled()) {
+            logger.debug("starting configuration loading: " + runtimeName);
+        }
 
         String resourceName = getResourceName(runtimeName);
         Collection<Resource> configurations = resourceLocator.findResources(resourceName);
@@ -73,11 +76,20 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
         }
 
         DataChannelDescriptor descriptor = new XMLDataChannelDescriptorLoaderAction(
-                dataMapLoader).load(configurationResource);
+                dataMapLoader,
+                logger).load(configurationResource);
 
         descriptor.setName(runtimeName);
 
-        logger.debug("finished configuration loading: " + runtimeName);
+        long t1 = System.currentTimeMillis();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("finished configuration loading: "
+                    + runtimeName
+                    + " in "
+                    + (t1 - t0)
+                    + " ms.");
+        }
         return descriptor;
     }
 }

@@ -20,35 +20,22 @@ package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.CayenneModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 
 /**
- * Represents the main access point to a given Cayenne stack. Provides a default Cayenne
- * configuration as well as a way to customize this configuration via a built in
- * dependency injection container.
+ * A superclass of possible Cayenne runtime objects. A CayenneRuntime is the main access
+ * point to a given Cayenne stack. It provides a default Cayenne configuration as well as
+ * a way to customize this configuration via a built in dependency injection container.
  * 
  * @since 3.1
  */
-public class CayenneRuntime {
+public abstract class CayenneRuntime {
 
     protected String name;
     protected Injector injector;
     protected Module[] modules;
-
-    /**
-     * Initializes Cayenne runtime instance with a default configuration provided by
-     * {@link CayenneModule}.
-     * 
-     * @param name Runtime name. By default a configuration file name contains a runtime
-     *            name in it, to allow multiple runtimes in a single JVM. E.g. a typical
-     *            config file name has the form of "cayenne-<name>.xml".
-     */
-    public CayenneRuntime(String name) {
-        this(name, new CayenneModule(name));
-    }
 
     /**
      * Initializes Cayenne runtime with an array of DI modules.
@@ -94,7 +81,7 @@ public class CayenneRuntime {
     /**
      * Creates and returns an ObjectContext based on the runtime DataChannel.
      */
-    public ObjectContext newObjectContext() {
+    public ObjectContext newContext() {
         return injector.getInstance(ObjectContext.class);
     }
 }

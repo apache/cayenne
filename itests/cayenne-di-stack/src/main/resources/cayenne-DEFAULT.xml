@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain name="DefaultDomain" project-version="3.0.0.1">
+	<map name="DefaultMap" location="DefaultMap.map.xml"/>
+
+	<node name="PoolingDSNode"
+		 datasource="PoolingDSNode.driver.xml"
+		 factory="org.apache.cayenne.configuration.XMLPoolingDataSourceFactory">
+			<map-ref name="DefaultMap"/>
+	 </node>
+</domain>

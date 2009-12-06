@@ -43,7 +43,7 @@ import org.apache.cayenne.map.DataMap;
  * 
  * @since 3.1
  */
-public class DataDomainProvider implements Provider<DataChannel> {
+public class DataDomainProvider implements Provider<DataDomain> {
 
     @Inject
     protected DataChannelDescriptorLoader loader;
@@ -63,13 +63,13 @@ public class DataDomainProvider implements Provider<DataChannel> {
     @Inject
     protected AdhocObjectFactory objectFactory;
 
-    protected volatile DataChannel dataChannel;
+    protected volatile DataDomain dataDomain;
 
-    public DataChannel get() throws DIException {
+    public DataDomain get() throws DIException {
 
-        if (dataChannel == null) {
+        if (dataDomain == null) {
             synchronized (this) {
-                if (dataChannel == null) {
+                if (dataDomain == null) {
 
                     try {
                         createDataChannel();
@@ -85,7 +85,7 @@ public class DataDomainProvider implements Provider<DataChannel> {
             }
         }
 
-        return dataChannel;
+        return dataDomain;
     }
 
     protected void createDataChannel() throws Exception {
@@ -93,12 +93,12 @@ public class DataDomainProvider implements Provider<DataChannel> {
                 .get(RuntimeProperties.CAYENNE_RUNTIME_NAME);
         DataChannelDescriptor descriptor = loader.load(runtimeName);
 
-        DataDomain dataChannel = new DataDomain(descriptor.getName());
+        DataDomain dataDomain = new DataDomain(descriptor.getName());
 
-        dataChannel.initWithProperties(descriptor.getProperties());
+        dataDomain.initWithProperties(descriptor.getProperties());
 
         for (DataMap dataMap : descriptor.getDataMaps()) {
-            dataChannel.addMap(dataMap);
+            dataDomain.addMap(dataMap);
         }
 
         for (DataNodeDescriptor nodeDescriptor : descriptor.getDataNodeDescriptors()) {
@@ -138,13 +138,13 @@ public class DataDomainProvider implements Provider<DataChannel> {
 
             // DataMaps
             for (String dataMapName : nodeDescriptor.getDataMapNames()) {
-                dataNode.addDataMap(dataChannel.getMap(dataMapName));
+                dataNode.addDataMap(dataDomain.getMap(dataMapName));
             }
 
-            dataChannel.addNode(dataNode);
+            dataDomain.addNode(dataNode);
         }
 
-        this.dataChannel = dataChannel;
+        this.dataDomain = dataDomain;
     }
 
 }

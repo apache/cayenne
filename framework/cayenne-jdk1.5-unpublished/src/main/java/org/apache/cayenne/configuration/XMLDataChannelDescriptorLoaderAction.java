@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -41,9 +40,6 @@ import org.xml.sax.XMLReader;
  */
 class XMLDataChannelDescriptorLoaderAction {
 
-    private static Log logger = LogFactory
-            .getLog(XMLDataChannelDescriptorLoaderAction.class);
-
     static final String DOMAIN_TAG = "domain";
     static final String MAP_TAG = "map";
     static final String NODE_TAG = "node";
@@ -51,9 +47,11 @@ class XMLDataChannelDescriptorLoaderAction {
     static final String MAP_REF_TAG = "map-ref";
 
     private DataMapLoader mapLoader;
+    private Log logger;
 
-    XMLDataChannelDescriptorLoaderAction(DataMapLoader mapLoader) {
+    XMLDataChannelDescriptorLoaderAction(DataMapLoader mapLoader, Log logger) {
         this.mapLoader = mapLoader;
+        this.logger = logger;
     }
 
     DataChannelDescriptor load(Resource resource) {
@@ -118,6 +116,7 @@ class XMLDataChannelDescriptorLoaderAction {
                 return new DataChannelChildrenHandler(parser, this);
             }
 
+            logger.info(unexpectedTagMessage(localName, DOMAIN_TAG));
             return super.createChildTagHandler(namespaceURI, localName, name, atts);
         }
     }
@@ -172,9 +171,8 @@ class XMLDataChannelDescriptorLoaderAction {
                 String location = attributes.getValue("", "datasource");
                 nodeDescriptor.setLocation(location);
 
-                nodeDescriptor.setDataSourceFactoryType(attributes.getValue(
-                        "",
-                        "factory"));
+                nodeDescriptor.setDataSourceFactoryType(attributes
+                        .getValue("", "factory"));
                 nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue(
                         "",
                         "schema-update-strategy"));

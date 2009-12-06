@@ -38,6 +38,7 @@
     
     <modules>
       <module>itest-common</module>
+      <module>cayenne-di-stack</module>
       <module>jpa-chapter2</module>
       <module>jpa-chapter3</module>
       <module>jpa-chapter5</module>

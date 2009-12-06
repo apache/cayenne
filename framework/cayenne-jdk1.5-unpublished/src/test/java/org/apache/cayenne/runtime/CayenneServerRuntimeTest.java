@@ -24,24 +24,23 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.CayenneModule;
+import org.apache.cayenne.configuration.CayenneServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.runtime.CayenneRuntime;
 
-public class CayenneRuntimeTest extends TestCase {
+public class CayenneServerRuntimeTest extends TestCase {
 
     public void testDefaultConstructor() {
-        CayenneRuntime runtime = new CayenneRuntime("xxxx");
+        CayenneServerRuntime runtime = new CayenneServerRuntime("xxxx");
 
         assertEquals("xxxx", runtime.getName());
 
         assertEquals(1, runtime.getModules().length);
-        assertTrue(runtime.getModules()[0] instanceof CayenneModule);
+        assertTrue(runtime.getModules()[0] instanceof CayenneServerModule);
     }
 
     public void testConstructor_Modules() {
@@ -62,7 +61,7 @@ public class CayenneRuntimeTest extends TestCase {
             }
         };
 
-        CayenneRuntime runtime = new CayenneRuntime("yyyy", m1, m2);
+        CayenneServerRuntime runtime = new CayenneServerRuntime("yyyy", m1, m2);
 
         assertEquals("yyyy", runtime.getName());
         assertEquals(2, runtime.getModules().length);
@@ -102,7 +101,7 @@ public class CayenneRuntimeTest extends TestCase {
             }
         };
 
-        CayenneRuntime runtime = new CayenneRuntime("name", module);
+        CayenneServerRuntime runtime = new CayenneServerRuntime("name", module);
         assertSame(channel, runtime.getDataChannel());
     }
 
@@ -116,8 +115,8 @@ public class CayenneRuntimeTest extends TestCase {
             }
         };
 
-        CayenneRuntime runtime = new CayenneRuntime("name", module);
-        assertSame(context, runtime.newObjectContext());
-        assertSame(context, runtime.newObjectContext());
+        CayenneServerRuntime runtime = new CayenneServerRuntime("name", module);
+        assertSame(context, runtime.newContext());
+        assertSame(context, runtime.newContext());
     }
 }

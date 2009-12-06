@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -66,6 +70,21 @@ class SAXNestedTagHandler extends DefaultHandler {
         if (locator == null) {
             locator = NOOP_LOCATOR;
         }
+    }
+
+    protected String unexpectedTagMessage(String tagFound, String... tagsExpected) {
+
+        List<String> expected = tagsExpected != null
+                ? Arrays.asList(tagsExpected)
+                : Collections.<String> emptyList();
+
+        return String
+                .format(
+                        "tag <%s> is unexpected at [%d,%d]. The following tags are allowed here: %s",
+                        tagFound,
+                        locator.getColumnNumber(),
+                        locator.getLineNumber(),
+                        expected);
     }
 
     protected ContentHandler createChildTagHandler(
