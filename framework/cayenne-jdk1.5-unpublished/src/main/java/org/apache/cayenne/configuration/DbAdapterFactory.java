@@ -16,28 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.configuration;
 
-package org.apache.cayenne.dba.openbase;
+import javax.sql.DataSource;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
-import org.apache.cayenne.configuration.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
 
 /**
- * Detects OpenBase DB from JDBC metadata.
- * 
- * @since 1.2
+ * @since 3.1
  */
-public class OpenBaseSniffer implements DbAdapterFactory, DbAdapterDetector {
+public interface DbAdapterFactory {
 
-    public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().contains("OPENBASE")
-                ? new OpenBaseAdapter()
-                : null;
-    }
-
+    /**
+     * Returns an instance of DbAdapter if the factory detects that it knows how to handle
+     * the database.
+     */
+    DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource)
+            throws Exception;
 }

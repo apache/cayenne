@@ -22,13 +22,14 @@ package org.apache.cayenne.dba.frontbase;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import org.apache.cayenne.configuration.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
 
 /**
  * @since 1.2
  */
-public class FrontBaseSniffer implements DbAdapterFactory {
+public class FrontBaseSniffer implements DbAdapterFactory, DbAdapterDetector {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();

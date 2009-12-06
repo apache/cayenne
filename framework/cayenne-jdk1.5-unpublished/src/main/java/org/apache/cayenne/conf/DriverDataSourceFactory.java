@@ -33,6 +33,7 @@ import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,17 +48,19 @@ import org.xml.sax.helpers.DefaultHandler;
  * Creates DataSource objects from XML configuration files that describe a JDBC driver.
  * Wraps JDBC driver in a generic DataSource implementation.
  * 
+ * @deprecated since 3.1 {@link org.apache.cayenne.configuration.XMLPoolingDataSourceFactory}
+ *             replaces this class.
  */
-// TODO: factory shouldn't contain any state specific to location ("driverInfo" ivar
-// should go, and probably "parser" too)... Otherwise the API doesn't make sense -
-// sequential invocations of getDataSource() will have side effects....
 public class DriverDataSourceFactory implements DataSourceFactory {
 
     private static final Log logger = LogFactory.getLog(DriverDataSourceFactory.class);
 
+    protected Configuration parentConfiguration;
+
+    // TODO: andrus 12.5.2009: non-thread-safe local ivars... SInce this class is
+    // deprecated, I guess we don't have to fix it here...
     protected XMLReader parser;
     protected DataSourceInfo driverInfo;
-    protected Configuration parentConfiguration;
 
     /**
      * Creates new DriverDataSourceFactory.
@@ -74,7 +77,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
     }
 
     public DataSource getDataSource(String location) throws Exception {
-        this.load(location);
+        load(location);
 
         ConnectionLogger logger = new ConnectionLogger();
 
@@ -114,12 +117,11 @@ public class DriverDataSourceFactory implements DataSourceFactory {
     }
 
     /**
-     * Loads driver information from the file at <code>location</code>. Called
-     * internally from "getDataSource"
+     * Loads driver information from the file at <code>location</code>. Called internally
+     * from "getDataSource"
+     * 
+     * @deprecated since 3.1
      */
-    // TODO: andrus 2008/04/22, while this never caused any troubles, storing loaded
-    // DataSourceInfo in an ivar clearly violates the scope logic, as "location" is a
-    // local variable.
     protected void load(String location) throws Exception {
         logger.info("loading driver information from '" + location + "'.");
 
@@ -236,6 +238,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
     }
 
     private class LoginHandler extends AbstractHandler {
+
         /**
          * Constructor which just delegates to the superconstructor.
          * 
@@ -312,10 +315,10 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             String password = atts.getValue("password");
             String passwordLocation = atts.getValue("passwordLocation");
             String passwordSource = atts.getValue("passwordSource");
-            if(passwordSource == null) {
+            if (passwordSource == null) {
                 passwordSource = DataSourceInfo.PASSWORD_LOCATION_MODEL;
             }
-            
+
             String username = atts.getValue("userName");
 
             driverInfo.setPasswordEncoderClass(encoderClass);

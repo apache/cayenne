@@ -21,13 +21,15 @@ package org.apache.cayenne.dba.h2;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+
+import org.apache.cayenne.configuration.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
 
 /**
  * @since 3.0
  */
-public class H2Sniffer implements DbAdapterFactory {
+public class H2Sniffer implements DbAdapterFactory, DbAdapterDetector {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();

@@ -18,22 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import javax.sql.DataSource;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceFactory;
+import org.apache.cayenne.configuration.DataSourceFactoryLoader;
+import org.apache.cayenne.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.util.Util;
 
 /**
  * A {@link DataChannel} provider that provides a single instance of DataDomain configured
@@ -53,13 +55,13 @@ public class DataDomainProvider implements Provider<DataChannel> {
     protected SchemaUpdateStrategy defaultSchemaUpdateStrategy;
 
     @Inject
-    protected DbAdapter defaultAdapter;
+    protected DbAdapterFactory adapterFactory;
 
     @Inject
-    protected DataSourceFactory defaultDataSourceFactory;
+    protected DataSourceFactoryLoader dataSourceFactoryLoader;
 
     @Inject
-    protected Injector injector;
+    protected AdhocObjectFactory objectFactory;
 
     protected volatile DataChannel dataChannel;
 
@@ -68,7 +70,17 @@ public class DataDomainProvider implements Provider<DataChannel> {
         if (dataChannel == null) {
             synchronized (this) {
                 if (dataChannel == null) {
-                    createDataChannel();
+
+                    try {
+                        createDataChannel();
+                    }
+                    catch (DIException e) {
+                        throw e;
+                    }
+                    catch (Exception e) {
+                        throw new DIException("Error loading DataChannel: '%s'", e, e
+                                .getMessage());
+                    }
                 }
             }
         }
@@ -76,7 +88,7 @@ public class DataDomainProvider implements Provider<DataChannel> {
         return dataChannel;
     }
 
-    protected void createDataChannel() {
+    protected void createDataChannel() throws Exception {
         String runtimeName = configurationProperties
                 .get(RuntimeProperties.CAYENNE_RUNTIME_NAME);
         DataChannelDescriptor descriptor = loader.load(runtimeName);
@@ -94,21 +106,13 @@ public class DataDomainProvider implements Provider<DataChannel> {
 
             dataNode.setDataSourceLocation(nodeDescriptor.getLocation());
 
-            String dataSourceFactoryType = nodeDescriptor.getDataSourceFactoryType();
-            if (dataSourceFactoryType == null) {
-                dataNode.setDataSourceFactory(defaultDataSourceFactory
-                        .getClass()
-                        .getName());
-                dataNode.setDataSource(defaultDataSourceFactory
-                        .getDataSource(nodeDescriptor));
-            }
-            else {
-                dataNode.setDataSourceFactory(dataSourceFactoryType);
-                DataSourceFactory factory = newInstance(
-                        DataSourceFactory.class,
-                        dataSourceFactoryType);
-                dataNode.setDataSource(factory.getDataSource(nodeDescriptor));
-            }
+            DataSourceFactory dataSourceFactory = dataSourceFactoryLoader
+                    .getDataSourceFactory(nodeDescriptor);
+
+            DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
+
+            dataNode.setDataSourceFactory(nodeDescriptor.getDataSourceFactoryType());
+            dataNode.setDataSource(dataSource);
 
             // schema update strategy
             String schemaUpdateStrategyType = nodeDescriptor
@@ -121,20 +125,16 @@ public class DataDomainProvider implements Provider<DataChannel> {
                         .getName());
             }
             else {
-                dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
-                dataNode.setSchemaUpdateStrategy(newInstance(
+
+                SchemaUpdateStrategy strategy = objectFactory.newInstance(
                         SchemaUpdateStrategy.class,
-                        schemaUpdateStrategyType));
+                        schemaUpdateStrategyType);
+                dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
+                dataNode.setSchemaUpdateStrategy(strategy);
             }
 
             // DbAdapter
-            String adapterType = nodeDescriptor.getAdapterType();
-            if (adapterType == null) {
-                dataNode.setAdapter(defaultAdapter);
-            }
-            else {
-                dataNode.setAdapter(newInstance(DbAdapter.class, adapterType));
-            }
+            dataNode.setAdapter(adapterFactory.createAdapter(nodeDescriptor, dataSource));
 
             // DataMaps
             for (String dataMapName : nodeDescriptor.getDataMapNames()) {
@@ -147,32 +147,4 @@ public class DataDomainProvider implements Provider<DataChannel> {
         this.dataChannel = dataChannel;
     }
 
-    private <T> T newInstance(Class<? extends T> interfaceType, String className) {
-
-        Class<? extends T> type;
-        try {
-            type = (Class<? extends T>) Util.getJavaClass(className);
-        }
-        catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException(
-                    "Invalid class %s of type %s",
-                    e,
-                    className,
-                    interfaceType.getName());
-        }
-        T instance;
-        try {
-            instance = type.newInstance();
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException(
-                    "Error creating instance of class %s of type %s",
-                    e,
-                    className,
-                    interfaceType.getName());
-        }
-
-        injector.injectMembers(instance);
-        return instance;
-    }
 }

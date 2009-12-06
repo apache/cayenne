@@ -22,13 +22,14 @@ package org.apache.cayenne.dba.postgres;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import org.apache.cayenne.configuration.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
 
 /**
  * @since 1.2
  */
-public class PostgresSniffer implements DbAdapterFactory {
+public class PostgresSniffer implements DbAdapterFactory, DbAdapterDetector {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();

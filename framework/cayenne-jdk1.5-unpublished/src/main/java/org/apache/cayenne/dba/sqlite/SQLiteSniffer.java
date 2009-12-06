@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.sqlite;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import org.apache.cayenne.configuration.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
 
@@ -29,7 +30,7 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * 
  * @since 3.0
  */
-public class SQLiteSniffer implements DbAdapterFactory {
+public class SQLiteSniffer implements DbAdapterFactory, DbAdapterDetector {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();

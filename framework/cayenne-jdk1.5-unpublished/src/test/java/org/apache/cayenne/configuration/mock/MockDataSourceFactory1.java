@@ -16,19 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration.mock;
 
 import javax.sql.DataSource;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceFactory;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 
-/**
- * @since 3.1
- */
-public class DriverDataSourceFactory implements DataSourceFactory {
+public class MockDataSourceFactory1 implements DataSourceFactory {
 
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
-        throw new UnsupportedOperationException("TODO");
+    @Inject
+    protected Injector injector;
+
+    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+        return null;
     }
 
+    public Injector getInjector() {
+        return injector;
+    }
 }

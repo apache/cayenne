@@ -48,7 +48,8 @@ import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -68,8 +69,15 @@ public class AutoAdapter implements DbAdapter {
     final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START = "\"";
     final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END = "\"";
 
+    /**
+     * @deprecated since 3.1 in favor of
+     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             via dependency injection.
+     */
     static final List<DbAdapterFactory> defaultFactories;
+
     static {
+
         defaultFactories = new ArrayList<DbAdapterFactory>();
 
         // hardcoded factories for adapters that we know how to auto-detect
@@ -93,6 +101,9 @@ public class AutoAdapter implements DbAdapter {
      * Allows application code to add a sniffer to detect a custom adapter.
      * 
      * @since 3.0
+     * @deprecated since 3.1 in favor of
+     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             via dependency injection.
      */
     public static void addFactory(DbAdapterFactory factory) {
         defaultFactories.add(factory);
@@ -101,47 +112,114 @@ public class AutoAdapter implements DbAdapter {
     /**
      * Returns a DbAdapterFactory configured to detect all databases officially supported
      * by Cayenne.
+     * 
+     * @deprecated since 3.1 in favor of
+     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             via dependency injection.
      */
     public static DbAdapterFactory getDefaultFactory() {
         return new DbAdapterFactoryChain(defaultFactories);
     }
 
-    protected DbAdapterFactory adapterFactory;
-    protected DataSource dataSource;
+    protected Provider<DbAdapter> adapterProvider;
     protected PkGenerator pkGenerator;
 
     /**
-     * The actual adapter that is delegated method execution.
+     * The actual adapter that is delegated methods execution.
      */
-    DbAdapter adapter;
+    volatile DbAdapter adapter;
 
     /**
      * Creates an AutoAdapter that can detect adapters known to Cayenne.
+     * 
+     * @deprecated since 3.1 as {@link org.apache.cayenne.configuration.DbAdapterFactory}
+     *             parameter is required.
      */
     public AutoAdapter(DataSource dataSource) {
-        this(null, dataSource);
+        this((DbAdapterFactory) null, dataSource);
     }
 
     /**
      * Creates an AutoAdapter with specified adapter factory and DataSource. If
      * adapterFactory is null, default factory is used.
+     * 
+     * @deprecated since 3.1 in favor of
+     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             via dependency injection.
      */
-    public AutoAdapter(@Inject DbAdapterFactory adapterFactory,
-            @Inject DataSource dataSource) {
+    public AutoAdapter(DbAdapterFactory adapterFactory, final DataSource dataSource) {
         // sanity check
         if (dataSource == null) {
             throw new CayenneRuntimeException("Null dataSource");
         }
 
-        this.adapterFactory = adapterFactory != null
+        final DbAdapterFactory deprecatedFactory = adapterFactory != null
                 ? adapterFactory
                 : createDefaultFactory();
-        this.dataSource = dataSource;
+
+        this.adapterProvider = new Provider<DbAdapter>() {
+
+            public DbAdapter get() throws DIException {
+                DbAdapter adapter;
+
+                try {
+                    Connection c = dataSource.getConnection();
+
+                    try {
+                        adapter = deprecatedFactory.createAdapter(c.getMetaData());
+                    }
+                    finally {
+                        try {
+                            c.close();
+                        }
+                        catch (SQLException e) {
+                            // ignore...
+                        }
+                    }
+                }
+                catch (SQLException e) {
+                    throw new CayenneRuntimeException("Error detecting database type: "
+                            + e.getLocalizedMessage(), e);
+                }
+
+                if (adapter == null) {
+                    QueryLogger
+                            .log("Failed to detect database type, using default adapter");
+                    adapter = new JdbcAdapter();
+                }
+                else {
+                    QueryLogger.log("Detected and installed adapter: "
+                            + adapter.getClass().getName());
+                }
+
+                return adapter;
+            }
+        };
+
+    }
+
+    /**
+     * Creates an {@link AutoAdapter} based on a delegate adapter obtained via
+     * "adapterProvider".
+     * 
+     * @since 3.1
+     */
+    public AutoAdapter(Provider<DbAdapter> adapterProvider) {
+
+        if (adapterProvider == null) {
+            throw new CayenneRuntimeException("Null adapterProvider");
+        }
+
+        this.adapterProvider = adapterProvider;
     }
 
     /**
      * Called from constructor to initialize factory in case no factory was specified by
      * the object creator.
+     * 
+     * @deprecated since 3.1 in favor of
+     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             via dependency injection.
      */
     protected DbAdapterFactory createDefaultFactory() {
         return getDefaultFactory();
@@ -163,41 +241,10 @@ public class AutoAdapter implements DbAdapter {
     }
 
     /**
-     * Opens a connection, retrieves JDBC metadata and attempts to guess adapter form it.
+     * Loads underlying DbAdapter delegate.
      */
     protected DbAdapter loadAdapter() {
-        DbAdapter adapter = null;
-
-        try {
-            Connection c = dataSource.getConnection();
-
-            try {
-                adapter = adapterFactory.createAdapter(c.getMetaData());
-            }
-            finally {
-                try {
-                    c.close();
-                }
-                catch (SQLException e) {
-                    // ignore...
-                }
-            }
-        }
-        catch (SQLException e) {
-            throw new CayenneRuntimeException("Error detecting database type: "
-                    + e.getLocalizedMessage(), e);
-        }
-
-        if (adapter == null) {
-            QueryLogger.log("Failed to detect database type, using default adapter");
-            adapter = new JdbcAdapter();
-        }
-        else {
-            QueryLogger.log("Detected and installed adapter: "
-                    + adapter.getClass().getName());
-        }
-
-        return adapter;
+        return adapterProvider.get();
     }
 
     // ---- DbAdapter methods ----
@@ -307,9 +354,6 @@ public class AutoAdapter implements DbAdapter {
         getAdapter().createTableAppendColumn(sqlBuffer, column);
     }
 
-    public void setDefaultQuoteSqlIdentifiersChars(boolean isQuoteSqlIdentifiers) {
-    }
-
     public String getIdentifiersStartQuote() {
         return DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START;
     }
@@ -321,5 +365,4 @@ public class AutoAdapter implements DbAdapter {
     public QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) {
         return getAdapter().getQuotingStrategy(isQuoteStrategy);
     }
-
 }

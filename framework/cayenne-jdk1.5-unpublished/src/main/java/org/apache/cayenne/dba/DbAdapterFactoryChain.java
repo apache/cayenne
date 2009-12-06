@@ -30,10 +30,10 @@ import java.util.List;
  * adapters known to Cayenne or can work with custom factories.
  * 
  * @since 1.2
+ * @deprecated since 3.1 in favor of
+ *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured via
+ *             dependency injection.
  */
-// TODO, Andrus 11/01/2005, how can custom adapters be auto-detected? I.e. is there a way
-// to plug a custom factory into configuration loading process? Of course users can simply
-// specify the adapter class in the modeler, so this may be a non-issue.
 class DbAdapterFactoryChain implements DbAdapterFactory {
 
     List<DbAdapterFactory> factories;

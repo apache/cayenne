@@ -22,19 +22,22 @@ package org.apache.cayenne.conf;
 import javax.sql.DataSource;
 
 /**
- * A pluggable factory for javax.sql.DataSource instances used by Cayenne runtime.
+ * A pluggable factory for {@link DataSource} instances used by Cayenne runtime.
+ * 
+ * @deprecated since 3.1, replaced by
+ *             {@link org.apache.cayenne.configuration.DataSourceFactory}
  */
 public interface DataSourceFactory {
 
     /**
      * Initializes factory with the parent configuration object.
      */
-    public void initializeWithParentConfiguration(Configuration conf);
+    void initializeWithParentConfiguration(Configuration conf);
 
     /**
      * Returns DataSource object corresponding to <code>location</code>. Concrete
      * implementations may treat location differently - as a file path, JNDI location,
      * etc.
      */
-    public DataSource getDataSource(String location) throws Exception;
+    DataSource getDataSource(String location) throws Exception;
 }

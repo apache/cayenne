@@ -22,6 +22,7 @@ package org.apache.cayenne.dba.hsqldb;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import org.apache.cayenne.configuration.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
 
@@ -30,7 +31,7 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * 
  * @since 1.2
  */
-public class HSQLDBSniffer implements DbAdapterFactory {
+public class HSQLDBSniffer implements DbAdapterFactory, DbAdapterDetector {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();

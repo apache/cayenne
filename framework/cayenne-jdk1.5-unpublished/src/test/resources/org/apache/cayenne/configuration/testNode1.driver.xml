@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<driver project-version="6" class="jdbcDriver">
+	<url value="jdbcUrl"/>
+	<connectionPool min="2" max="3"/>
+	<login userName="jdbcUserName" password="jdbcPassword"/>
+</driver>

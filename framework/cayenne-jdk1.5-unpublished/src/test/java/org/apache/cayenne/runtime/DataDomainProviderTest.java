@@ -33,11 +33,16 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
+import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceFactoryLoader;
+import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
+import org.apache.cayenne.configuration.mock.MockDataSourceFactoryLoader;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
@@ -68,7 +73,7 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor1.setName("node1");
         nodeDescriptor1.getDataMapNames().add("map1");
         nodeDescriptor1.setAdapterType(OracleAdapter.class.getName());
-        nodeDescriptor1.setDataSourceFactoryType(MockDataSourceFactory1.class.getName());
+        nodeDescriptor1.setDataSourceFactoryType(MockDataSourceFactory.class.getName());
         nodeDescriptor1.setLocation("jdbc/testDataNode1");
         nodeDescriptor1
                 .setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class
@@ -112,8 +117,9 @@ public class DataDomainProviderTest extends TestCase {
 
                 binder.bind(DataSource.class).toInstance(new MockDataSource());
                 binder.bind(DbAdapter.class).to(AutoAdapter.class);
-                binder.bind(DataSourceFactory.class).toInstance(
-                        new MockDataSourceFactory2());
+                binder.bind(DataSourceFactoryLoader.class).toInstance(
+                        new MockDataSourceFactoryLoader());
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             }
         };
 
@@ -165,8 +171,7 @@ public class DataDomainProviderTest extends TestCase {
         assertEquals(1, node2.getDataMaps().size());
         assertSame(map2, node2.getDataMaps().iterator().next());
         assertSame(node2, domain.lookupDataNode(map2));
-        assertEquals(MockDataSourceFactory2.class.getName(), node2
-                .getDataSourceFactory());
+        assertNull(node2.getDataSourceFactory());
         assertNotNull(node2.getDataSource());
         assertEquals(nodeDescriptor2.getLocation(), node2.getDataSourceLocation());
         assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2

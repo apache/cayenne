@@ -16,17 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
-
-import javax.sql.DataSource;
+package org.apache.cayenne.configuration.mock;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceFactory;
+import org.apache.cayenne.configuration.DataSourceFactoryLoader;
 
-import com.mockrunner.mock.jdbc.MockDataSource;
+public class MockDataSourceFactoryLoader implements DataSourceFactoryLoader {
 
-public class MockDataSourceFactory1 implements DataSourceFactory {
-
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
-        return new MockDataSource();
+    public DataSourceFactory getDataSourceFactory(DataNodeDescriptor nodeDescriptor) {
+        return new MockDataSourceFactory();
     }
+
 }

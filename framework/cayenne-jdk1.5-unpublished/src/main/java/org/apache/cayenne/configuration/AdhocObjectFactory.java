@@ -16,18 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration;
 
-import javax.sql.DataSource;
+/**
+ * Creates objects for user-provided String class names, injecting dependencies into them.
+ * 
+ * @since 3.1
+ */
+public interface AdhocObjectFactory {
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-
-import com.mockrunner.mock.jdbc.MockDataSource;
-
-public class MockDataSourceFactory2 implements DataSourceFactory {
-
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
-        return new MockDataSource();
-    }
-
+    /**
+     * Returns an instance of "className" that implements "superType", injecting
+     * dependencies from the registry into it.
+     */
+    <T> T newInstance(Class<? super T> superType, String className);
 }

@@ -28,6 +28,9 @@ import java.sql.SQLException;
  * database based on version information and other metadata.
  * 
  * @since 1.2
+ * @deprecated since 3.1 in favor of
+ *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured via
+ *             dependency injection.
  */
 public interface DbAdapterFactory {
 

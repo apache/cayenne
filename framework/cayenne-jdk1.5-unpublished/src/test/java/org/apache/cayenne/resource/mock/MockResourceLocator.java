@@ -16,28 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.resource.mock;
 
-package org.apache.cayenne.dba.openbase;
+import java.util.Collection;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.ResourceLocator;
 
-import org.apache.cayenne.configuration.DbAdapterDetector;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
+public class MockResourceLocator implements ResourceLocator {
 
-/**
- * Detects OpenBase DB from JDBC metadata.
- * 
- * @since 1.2
- */
-public class OpenBaseSniffer implements DbAdapterFactory, DbAdapterDetector {
-
-    public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().contains("OPENBASE")
-                ? new OpenBaseAdapter()
-                : null;
+    public Collection<Resource> findResources(String name) {
+        return null;
     }
 
 }
