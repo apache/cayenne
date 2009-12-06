@@ -18,6 +18,7 @@ CAY-1310 Remove everything deprecated in 3.0
 CAY-1314 Migrate Modeler Preferences to Java Preferences API: migrate org.apache.cayenne.modeler.ModelerPreferences
 CAY-1315 Formattable exceptions
 CAY-1316 Deprecate DataObjectUtils and move its methods to new utility class org.apache.cayenne.Cayenne
+CAY-1319 Minimal DI container-based configuration to run Cayenne
 
 Bug Fixes Since 3.0:
 
