@@ -47,7 +47,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
         }
 
         try {
-            return loadViaJNDI(location);
+            return lookupViaJNDI(location);
         }
         catch (Exception ex) {
             logger.info("failed JNDI lookup of DataSource location '" + location + "'");
@@ -56,7 +56,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
         }
     }
 
-    DataSource loadViaJNDI(String location) throws NamingException {
+    DataSource lookupViaJNDI(String location) throws NamingException {
         QueryLogger.logConnect(location);
 
         Context context = new InitialContext();

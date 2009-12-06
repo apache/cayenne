@@ -177,7 +177,7 @@ class XMLDataChannelDescriptorLoaderAction {
                         "",
                         "schema-update-strategy"));
 
-                // this may be bogus for nodes other than driver nodes, but here we can't
+                // this may be bogus for some nodes, such as JNDI, but here we can't
                 // tell for sure
                 if (location != null) {
                     nodeDescriptor.setConfigurationResource(descriptor
