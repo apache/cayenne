@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Looks up DataSource objects via JNDI.
  * 
+ * @deprecated since 3.1, replaced by
+ *             {@link org.apache.cayenne.configuration.JNDIDataSourceFactory}.
  */
 public class JNDIDataSourceFactory implements DataSourceFactory {
 
@@ -97,9 +99,10 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
         // reflection ...
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        DataSourceFactory prefsFactory = (DataSourceFactory) Class
-                .forName("org.apache.cayenne.modeler.pref.PreferencesDataSourceFactory", true, loader)
-                .newInstance();
+        DataSourceFactory prefsFactory = (DataSourceFactory) Class.forName(
+                "org.apache.cayenne.modeler.pref.PreferencesDataSourceFactory",
+                true,
+                loader).newInstance();
 
         prefsFactory.initializeWithParentConfiguration(parentConfig);
         return prefsFactory.getDataSource(location);
