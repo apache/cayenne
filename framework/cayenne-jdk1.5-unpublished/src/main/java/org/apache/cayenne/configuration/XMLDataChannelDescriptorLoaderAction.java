@@ -21,6 +21,8 @@ package org.apache.cayenne.configuration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
@@ -45,6 +47,21 @@ class XMLDataChannelDescriptorLoaderAction {
     static final String NODE_TAG = "node";
     static final String PROPERTY_TAG = "property";
     static final String MAP_REF_TAG = "map-ref";
+
+    private static final Map<String, String> dataSourceFactoryNameMapping;
+
+    static {
+        dataSourceFactoryNameMapping = new HashMap<String, String>();
+        dataSourceFactoryNameMapping.put(
+                "org.apache.cayenne.conf.DriverDataSourceFactory",
+                XMLPoolingDataSourceFactory.class.getName());
+        dataSourceFactoryNameMapping.put(
+                "org.apache.cayenne.conf.JNDIDataSourceFactory",
+                JNDIDataSourceFactory.class.getName());
+        dataSourceFactoryNameMapping.put(
+                "org.apache.cayenne.conf.DBCPDataSourceFactory",
+                DBCPDataSourceFactory.class.getName());
+    }
 
     private DataMapLoader mapLoader;
     private Log logger;
@@ -94,6 +111,20 @@ class XMLDataChannelDescriptorLoaderAction {
         }
 
         return descriptor;
+    }
+
+    /**
+     * Converts the names of standard Cayenne-supplied DataSourceFactories from the legacy
+     * names to the current names.
+     */
+    private String convertDataSourceFactory(String dataSourceFactory) {
+
+        if (dataSourceFactory == null) {
+            return null;
+        }
+
+        String converted = dataSourceFactoryNameMapping.get(dataSourceFactory);
+        return converted != null ? converted : dataSourceFactory;
     }
 
     final class DataChannelHandler extends SAXNestedTagHandler {
@@ -167,12 +198,12 @@ class XMLDataChannelDescriptorLoaderAction {
                 nodeDescriptor.setName(nodeName);
                 nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));
 
-                // TODO: andrus, 11.29.2009 : should we rename that to "location"??
                 String location = attributes.getValue("", "datasource");
                 nodeDescriptor.setLocation(location);
 
-                nodeDescriptor.setDataSourceFactoryType(attributes
-                        .getValue("", "factory"));
+                String dataSourceFactory = attributes.getValue("", "factory");
+                nodeDescriptor
+                        .setDataSourceFactoryType(convertDataSourceFactory(dataSourceFactory));
                 nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue(
                         "",
                         "schema-update-strategy"));

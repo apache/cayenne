@@ -8,6 +8,23 @@ UPGRADING FROM 3.0-final
   using removed EntityUtil methods (those were replaced by variables placed directly into
   Velocity context)
 
+* Custom DataSourceFactory: The interface used by Cayenne to load custom DataSource factories has changed
+  from org.apache.cayenne.conf.DataSourceFactory to org.apache.cayenne.configuration.DataSourceFactory. 
+  This new interface must be implemented by the custom factories. Note that now custom
+  implementations can rely on Cayenne to inject dependencies into them using @Inject annotation.
+
+* Custom DbAdapter / DbAdapterFactory: The interface used by Cayenne to allow custom DbAdapters to be auto-detected 
+  with AutoAdapter has changed from org.apache.cayenne.dba.DbAdapterFactory to org.apache.cayenne.configuration.DbAdapterDetector. 
+  Note that now custom implementations can rely on Cayenne to inject dependencies into them using @Inject annotation.
+  To register a custom implementation with Cayenne DI container, one might do this in the custom DI module:
+
+  ... 
+  public void configure(Binder binder) {
+  ...
+     binder.bindList(DbAdapterFactory.class).add(new MyDbAdapterDetector());
+  }
+
+
 UPGRADING FROM 3.0M6
 
 * Per CAY-1281 pre-persist callback was renamed to post-add (while pre-persist now has a different meaning).
