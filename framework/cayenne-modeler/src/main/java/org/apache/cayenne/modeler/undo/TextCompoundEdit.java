@@ -44,19 +44,29 @@ import org.apache.cayenne.query.SQLTemplate;
 public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private TextAdapter adapter;
+    private JTextComponent editor;
 
     private TreePath treePath;
     private int selectedTabIndex;
     private JTabbedPane tabbedPane;
-    
+
     private Object targetObject;
+
+    private JTextFieldUndoListener listener;
 
     public Object getTargetObject() {
         return targetObject;
     }
 
-    public TextCompoundEdit(TextAdapter adapter) {
+    public TextCompoundEdit(TextAdapter adapter, JTextFieldUndoListener listener) {
+        this(adapter.getComponent(), listener);
         this.adapter = adapter;
+    }
+
+    public TextCompoundEdit(JTextComponent editor, JTextFieldUndoListener listener) {
+
+        this.editor = editor;
+        this.listener = listener;
 
         EditorView editorView = ((CayenneModelerFrame) Application
                 .getInstance()
@@ -122,17 +132,14 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
             public void run() {
                 int offset = e.getOffset() + e.getLength();
-                offset = Math.min(offset, adapter
-                        .getComponent()
-                        .getDocument()
-                        .getLength());
-                adapter.getComponent().setCaretPosition(offset);
+                offset = Math.min(offset, editor.getDocument().getLength());
+                editor.setCaretPosition(offset);
             }
         });
     }
 
     public void removeUpdate(DocumentEvent e) {
-        adapter.getComponent().setCaretPosition(e.getOffset());
+        editor.setCaretPosition(e.getOffset());
     }
 
     public void changedUpdate(DocumentEvent e) {
@@ -146,22 +153,34 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
     public void redo() throws CannotRedoException {
         restoreSelections();
 
-        super.redo();
+        if (canRedo()) {
+            super.redo();
+        }
+        else {
+            die();
+        }
 
-        adapter.getComponent().requestFocusInWindow();
+        editor.requestFocusInWindow();
     }
 
     public void undo() throws CannotUndoException {
         restoreSelections();
 
-        end();
+        listener.finishCurrentEdit();
 
-        super.undo();
+        if (canUndo()) {
+            super.undo();
+        }
+        else {
+            die();
+        }
 
-        adapter.updateModel();
+        if (adapter != null) {
+            adapter.updateModel();
+        }
 
-        adapter.getComponent().requestFocusInWindow();
-        adapter.getComponent().selectAll();
+        editor.requestFocusInWindow();
+        editor.selectAll();
     }
 
     @Override
@@ -175,14 +194,14 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
     }
 
     public JTextComponent getEditor() {
-        return adapter.getComponent();
+        return editor;
     }
 
     public void watchCaretPosition() {
-        adapter.getComponent().getDocument().addDocumentListener(this);
+        editor.getDocument().addDocumentListener(this);
     }
 
     public void stopWatchingCaretPosition() {
-        adapter.getComponent().getDocument().removeDocumentListener(this);
+        editor.getDocument().removeDocumentListener(this);
     }
 }

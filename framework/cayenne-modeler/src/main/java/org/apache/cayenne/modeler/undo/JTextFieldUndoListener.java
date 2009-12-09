@@ -35,31 +35,32 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 public class JTextFieldUndoListener implements UndoableEditListener {
 
     public CompoundEdit compoundEdit;
-    
+
     private TextAdapter adapter;
+    private JTextComponent editor;
 
     private int lastOffset;
     private int lastLength;
 
     public JTextFieldUndoListener(TextAdapter adapter) {
+        this(adapter.getComponent());
         this.adapter = adapter;
+    }
 
-        this.adapter.getComponent().addFocusListener(new FocusAdapter() {
+    public JTextFieldUndoListener(JTextComponent editor) {
+        this.editor = editor;
+
+        this.editor.addFocusListener(new FocusAdapter() {
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (compoundEdit != null) {
-                    compoundEdit.end();
-                    compoundEdit = null;
-                }
+                finishCurrentEdit();
             }
         });
     }
 
     public void undoableEditHappened(UndoableEditEvent e) {
-        
-        JTextComponent editor = adapter.getComponent();
-        
+
         if (compoundEdit == null || !compoundEdit.canUndo()) {
             compoundEdit = startCompoundEdit(e.getEdit());
             lastLength = editor.getDocument().getLength();
@@ -89,17 +90,25 @@ public class JTextFieldUndoListener implements UndoableEditListener {
     }
 
     private CompoundEdit startCompoundEdit(UndoableEdit anEdit) {
-        
-        JTextComponent editor = adapter.getComponent();
-        
+
         lastOffset = editor.getCaretPosition();
         lastLength = editor.getDocument().getLength();
 
-        compoundEdit = new TextCompoundEdit(adapter);
+        compoundEdit = (this.adapter != null)
+                ? new TextCompoundEdit(adapter, this)
+                : new TextCompoundEdit(editor, this);
+
         compoundEdit.addEdit(anEdit);
 
         Application.getInstance().getUndoManager().addEdit(compoundEdit);
 
         return compoundEdit;
+    }
+
+    public void finishCurrentEdit() {
+        if (compoundEdit != null) {
+            compoundEdit.end();
+            compoundEdit = null;
+        }
     }
 }

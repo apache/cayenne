@@ -32,15 +32,14 @@ import javax.swing.text.Document;
 
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.validator.EJBQLQueryValidator;
 import org.apache.cayenne.project.validator.EJBQLQueryValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
 import org.apache.cayenne.util.Util;
-import org.apache.cayenne.validation.ValidationException;
 
 public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
@@ -64,12 +63,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
         scriptArea = CayenneWidgetFactory.createJEJBQLTextPane();
         
-        new TextAdapter(scriptArea.getPane()) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-            }
-        };
-        
+        scriptArea.getPane().getDocument().addUndoableEditListener(new JTextFieldUndoListener(scriptArea.getPane()));
+         
         scriptArea.getDocument().addDocumentListener(this);
 
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
