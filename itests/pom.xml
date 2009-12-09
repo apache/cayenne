@@ -39,11 +39,6 @@
     <modules>
       <module>itest-common</module>
       <module>cayenne-di-stack</module>
-      <module>jpa-chapter2</module>
-      <module>jpa-chapter3</module>
-      <module>jpa-chapter5</module>
-      <module>jpa-chapter6</module>
-      <module>jpa-chapter9</module>
     </modules>
 	<build>
 		<plugins>
