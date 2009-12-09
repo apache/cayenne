@@ -22,7 +22,6 @@ import java.sql.SQLException;
 
 /**
  * JDBC utilities for integration testing that bypass Cayenne for DB access.
- * 
  */
 public class ItestTableUtils {
 

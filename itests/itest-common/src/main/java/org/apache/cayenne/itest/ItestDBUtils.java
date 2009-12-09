@@ -111,136 +111,106 @@ public class ItestDBUtils {
 
     public int getRowCount(String table) throws SQLException {
         String sql = "select count(*) from " + table;
-        
-        final int[] result = new int[1];
-        RowTemplate template = new RowTemplate(this) {
+
+        return new RowTemplate<Integer>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getInt(1);
+            Integer readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getInt(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public Object getObject(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final Object[] result = new Object[1];
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Object>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getObject(1);
+            Object readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getObject(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public byte getByte(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final byte[] result = new byte[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Byte>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getByte(1);
+            Byte readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getByte(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public byte[] getBytes(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final byte[][] result = new byte[1][];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<byte[]>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getBytes(1);
+            byte[] readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getBytes(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public int getInt(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final int[] result = new int[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Integer>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getInt(1);
+            Integer readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getInt(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public long getLong(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final long[] result = new long[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Long>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getLong(1);
+            Long readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getLong(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public double getDouble(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final double[] result = new double[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Double>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getDouble(1);
+            Double readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getDouble(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public boolean getBoolean(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final boolean[] result = new boolean[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Boolean>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getBoolean(1);
+            Boolean readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getBoolean(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public java.util.Date getUtilDate(String table, String column) throws SQLException {
@@ -251,52 +221,40 @@ public class ItestDBUtils {
     public java.sql.Date getSqlDate(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final java.sql.Date[] result = new java.sql.Date[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<java.sql.Date>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getDate(1);
+            java.sql.Date readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getDate(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public Time getTime(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final Time[] result = new Time[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Time>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getTime(1);
+            Time readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getTime(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public Timestamp getTimestamp(String table, String column) throws SQLException {
         final String sql = "select " + column + " from " + table;
 
-        final Timestamp[] result = new Timestamp[1];
-
-        RowTemplate template = new RowTemplate(this) {
+        return new RowTemplate<Timestamp>(this) {
 
             @Override
-            void readRow(ResultSet rs, String sql) throws SQLException {
-                result[0] = rs.getTimestamp(1);
+            Timestamp readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getTimestamp(1);
             }
-        };
 
-        template.execute(sql);
-        return result[0];
+        }.execute(sql);
     }
 
     public Connection getConnection() throws SQLException {

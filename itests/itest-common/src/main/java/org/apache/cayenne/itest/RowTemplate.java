@@ -25,23 +25,25 @@ import java.sql.SQLException;
  * A JDBC template for reading a single row from the database.
  * 
  */
-abstract class RowTemplate extends ResultSetTemplate {
+abstract class RowTemplate<T> extends ResultSetTemplate<T> {
 
     public RowTemplate(ItestDBUtils parent) {
         super(parent);
     }
 
-    abstract void readRow(ResultSet rs, String sql) throws SQLException;
+    abstract T readRow(ResultSet rs, String sql) throws SQLException;
 
     @Override
-    void readResultSet(ResultSet rs, String sql) throws SQLException {
+    T readResultSet(ResultSet rs, String sql) throws SQLException {
         if (rs.next()) {
 
-            readRow(rs, sql);
+            T row = readRow(rs, sql);
 
             if (rs.next()) {
                 throw new SQLException("More than one result for sql: " + sql);
             }
+
+            return row;
         }
         else {
             throw new SQLException("No results for sql: " + sql);

@@ -23,7 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-abstract class ResultSetTemplate {
+abstract class ResultSetTemplate<T> {
 
     ItestDBUtils parent;
 
@@ -31,9 +31,9 @@ abstract class ResultSetTemplate {
         this.parent = parent;
     }
 
-    abstract void readResultSet(ResultSet rs, String sql) throws SQLException;
+    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
 
-    void execute(String sql) throws SQLException {
+    T execute(String sql) throws SQLException {
         Connection c = parent.getConnection();
         try {
 
@@ -43,7 +43,7 @@ abstract class ResultSetTemplate {
                 ResultSet rs = st.executeQuery();
                 try {
 
-                    readResultSet(rs, sql);
+                    return readResultSet(rs, sql);
                 }
                 finally {
                     rs.close();
