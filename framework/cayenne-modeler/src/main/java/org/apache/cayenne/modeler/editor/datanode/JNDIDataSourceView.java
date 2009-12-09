@@ -24,8 +24,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.validation.ValidationException;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -34,15 +33,11 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class JNDIDataSourceView extends JPanel {
 
-    protected TextAdapter jndiPath;
+    protected JTextField jndiPath;
 
     public JNDIDataSourceView() {
 
-        jndiPath = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-            }
-        };
+        jndiPath = CayenneWidgetFactory.createUndoableTextField();
 
         // assemble
         FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");
@@ -51,13 +46,13 @@ public class JNDIDataSourceView extends JPanel {
 
         builder.appendSeparator("JNDI Configuration");
 
-        builder.append("JNDI Location:", getJndiPath());
+        builder.append("JNDI Location:", jndiPath);
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
     public JTextField getJndiPath() {
-        return (JTextField) jndiPath.getComponent();
+        return jndiPath;
     }
 }

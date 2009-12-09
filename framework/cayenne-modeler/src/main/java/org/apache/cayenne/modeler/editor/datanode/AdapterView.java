@@ -24,22 +24,17 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.validation.ValidationException;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class AdapterView extends JPanel {
 
-    protected TextAdapter customAdapter;
+    protected JTextField customAdapter;
 
     public AdapterView() {
-        this.customAdapter = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-            }
-        };
+        this.customAdapter = CayenneWidgetFactory.createUndoableTextField();
 
         // assemble
 
@@ -49,13 +44,13 @@ public class AdapterView extends JPanel {
         topPanelBuilder.setDefaultDialogBorder();
 
         topPanelBuilder.appendSeparator("DbAdapter Configuration");
-        topPanelBuilder.append("Custom Adapter (optional):", customAdapter.getComponent());
+        topPanelBuilder.append("Custom Adapter (optional):", customAdapter);
 
         setLayout(new BorderLayout());
         add(topPanelBuilder.getPanel(), BorderLayout.CENTER);
     }
 
     public JTextField getCustomAdapter() {
-        return (JTextField) customAdapter.getComponent();
+        return customAdapter;
     }
 }

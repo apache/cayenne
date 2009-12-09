@@ -89,7 +89,7 @@ public class MainDataNodeEditor extends CayenneController {
         super(parent);
 
         this.tabbedPaneController = tabController;
-        this.view = new MainDataNodeView();
+        this.view = new MainDataNodeView((ProjectController) getParent());
         this.datasourceEditors = new HashMap();
         this.localDataSources = new HashMap();
 

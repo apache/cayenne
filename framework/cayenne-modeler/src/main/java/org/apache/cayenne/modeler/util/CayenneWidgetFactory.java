@@ -35,10 +35,11 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
-import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
+import org.apache.cayenne.modeler.undo.JEditTextAreaUndoableAdapter;
+import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
@@ -106,6 +107,22 @@ public class CayenneWidgetFactory {
         comboBox.setBackground(Color.WHITE);
         comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
         return comboBox;
+    }
+
+    /**
+     * Creates undoable JTextField.
+     * 
+     */
+    public static JTextField createUndoableTextField() {
+        return new JTextFieldUndoable();
+    }
+
+    /**
+     * Creates undoable JTextField.
+     * 
+     */
+    public static JTextField createUndoableTextField(int size) {
+        return new JTextFieldUndoable(size);
     }
 
     /**
@@ -202,6 +219,9 @@ public class CayenneWidgetFactory {
         if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
             area.setInputHandler(new MacInputHandler());
         }
+
+        area.getDocument().addUndoableEditListener(
+                new JTextFieldUndoListener(new JEditTextAreaUndoableAdapter(area)));
 
         return area;
     }
