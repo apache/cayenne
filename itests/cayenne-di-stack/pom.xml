@@ -42,6 +42,18 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-di-unpublished</artifactId>
+			<version>${version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
+			<version>${version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.cayenne.itests</groupId>
 			<artifactId>itest-common</artifactId>
 			<version>${version}</version>
