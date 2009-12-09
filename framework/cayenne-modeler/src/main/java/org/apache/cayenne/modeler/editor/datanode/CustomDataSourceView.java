@@ -24,7 +24,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.validation.ValidationException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -33,11 +34,16 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class CustomDataSourceView extends JPanel {
 
-    protected JTextField locationHint;
+    protected TextAdapter locationHint;
 
     public CustomDataSourceView() {
 
-        locationHint = CayenneWidgetFactory.createUndoableTextField();
+        locationHint = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+            }
+            
+        };
 
         // assemble
         FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");
@@ -46,13 +52,13 @@ public class CustomDataSourceView extends JPanel {
 
         builder.appendSeparator("Custom Configuration");
 
-        builder.append("Location Hint:", locationHint);
+        builder.append("Location Hint:", getLocationHint());
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
     public JTextField getLocationHint() {
-        return locationHint;
+        return (JTextField) locationHint.getComponent();
     }
 }

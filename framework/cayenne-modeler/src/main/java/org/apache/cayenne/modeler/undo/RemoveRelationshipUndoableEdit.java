@@ -30,8 +30,6 @@ import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 
 public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
 
-	
-
 	private ObjEntity objEntity;
 	private ObjRelationship[] rels;
 
@@ -63,8 +61,6 @@ public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
 
 	@Override
 	public void redo() throws CannotRedoException {
-		restoreSelections();
-		
 		RemoveRelationshipAction action = (RemoveRelationshipAction) actionManager
 				.getAction(RemoveRelationshipAction.getActionName());
 		if (objEntity != null) {
@@ -76,8 +72,6 @@ public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
 
 	@Override
 	public void undo() throws CannotUndoException {
-		restoreSelections();
-		
 		CreateRelationshipAction action = (CreateRelationshipAction) actionManager
 				.getAction(CreateRelationshipAction.getActionName());
 		if (objEntity != null) {

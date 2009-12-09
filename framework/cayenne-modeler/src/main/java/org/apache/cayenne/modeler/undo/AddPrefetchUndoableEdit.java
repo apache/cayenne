@@ -26,8 +26,6 @@ import org.apache.cayenne.modeler.editor.SelectQueryPrefetchTab;
 
 public class AddPrefetchUndoableEdit extends AbstractUndoableEdit {
 
-	
-
 	private String prefetch;
 	private SelectQueryPrefetchTab tab;
 

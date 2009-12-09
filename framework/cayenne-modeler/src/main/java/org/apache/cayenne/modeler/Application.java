@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
 
 import org.apache.cayenne.modeler.dialog.LogConsole;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
@@ -86,7 +87,7 @@ public class Application {
     protected BindingFactory bindingFactory;
     protected AdapterMapping adapterMapping;
     
-    protected UndoManager undoManager;
+    protected CayenneUndoManager undoManager;
 
     // This is for OS X support
     private boolean isQuittingApplication = false;
@@ -153,7 +154,7 @@ public class Application {
     /**
      * Returns undo-edits controller.
      */
-    public UndoManager getUndoManager() {
+    public CayenneUndoManager getUndoManager() {
         return undoManager;
     }
 

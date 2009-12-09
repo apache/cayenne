@@ -18,39 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.tree.TreePath;
 import javax.swing.undo.AbstractUndoableEdit;
 
 import org.apache.cayenne.modeler.ActionManager;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.ProjectTreeView;
 
 public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
-	
-
-	protected ProjectTreeView treeView;
+    
 	protected ActionManager actionManager;
 	protected ProjectController controller;
 	
-	private TreePath[] paths;
-	
-
 	public CayenneUndoableEdit() {
-		this.treeView = ((CayenneModelerFrame) Application.getInstance()
-				.getFrameController().getView()).getView().getProjectTreeView();
 		this.actionManager = Application.getInstance().getActionManager();
-		this.paths = this.treeView.getSelectionPaths();
 		this.controller = Application.getInstance().getFrameController().getProjectController();
-	}
-
-	protected void restoreSelections() {
-		this.treeView.setSelectionPaths(paths);
 	}
 
 	@Override
 	public boolean canRedo() {
 		return true;
 	}
+
+    @Override
+    public boolean canUndo() {
+        return true;
+    }
 }

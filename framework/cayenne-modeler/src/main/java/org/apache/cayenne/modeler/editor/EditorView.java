@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
@@ -90,8 +91,33 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private DbEntityTabbedView dbDetailView;
     private ObjEntityTabbedView objDetailView;
     private EmbeddableTabbedView embeddableView;
+    private DataDomainTabbedView dataDomainView;
+    private DataMapTabbedView dataMapView;
+    private ProcedureTabbedView procedureView;
+    private SelectQueryTabbedView selectQueryView;
+    private SQLTemplateTabbedView sqlTemplateView;
+    private EjbqlTabbedView ejbqlQueryView;
+    private JTabbedPane dataNodeView;
 
     
+    public SelectQueryTabbedView getSelectQueryView() {
+        return selectQueryView;
+    }
+
+    
+    public SQLTemplateTabbedView getSqlTemplateView() {
+        return sqlTemplateView;
+    }
+
+    
+    public EjbqlTabbedView getEjbqlQueryView() {
+        return ejbqlQueryView;
+    }
+
+    public ProcedureTabbedView getProcedureView() {
+        return procedureView;
+    }
+
     public ProjectTreeView getProjectTreeView() {
         return treePanel;
     }
@@ -106,6 +132,18 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
     public ObjEntityTabbedView getObjDetailView() {
         return objDetailView;
+    }
+    
+    public DataDomainTabbedView getDataDomainView() {
+        return dataDomainView;
+    }
+    
+    public DataMapTabbedView getDataMapView() {
+        return dataMapView;
+    }
+    
+    public JTabbedPane getDataNodeView() {
+        return dataNodeView;
     }
 
     public EditorView(ProjectController eventController) {
@@ -134,28 +172,30 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         detailPanel.add(new JPanel(), EMPTY_VIEW);
 
-        Component domainView = new DataDomainTabbedView(eventController);
-        detailPanel.add(domainView, DOMAIN_VIEW);
+        dataDomainView = new DataDomainTabbedView(eventController);
+        detailPanel.add(dataDomainView, DOMAIN_VIEW);
 
         DataNodeEditor nodeController = new DataNodeEditor(eventController);
         detailPanel.add(nodeController.getView(), NODE_VIEW);
+        
+        dataNodeView = nodeController.getTabComponent();
 
-        Component dataMapView = new DataMapTabbedView(eventController);
+        dataMapView = new DataMapTabbedView(eventController);
         detailPanel.add(dataMapView, DATA_MAP_VIEW);
 
-        Component procedureView = new ProcedureTabbedView(eventController);
+        procedureView = new ProcedureTabbedView(eventController);
         detailPanel.add(procedureView, PROCEDURE_VIEW);
 
-        Component selectQueryView = new SelectQueryTabbedView(eventController);
+        selectQueryView = new SelectQueryTabbedView(eventController);
         detailPanel.add(selectQueryView, SELECT_QUERY_VIEW);
 
-        Component sqlTemplateView = new SQLTemplateTabbedView(eventController);
+        sqlTemplateView = new SQLTemplateTabbedView(eventController);
         detailPanel.add(sqlTemplateView, SQL_TEMPLATE_VIEW);
 
         Component procedureQueryView = new ProcedureQueryView(eventController);
         detailPanel.add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
 
-        Component ejbqlQueryView = new EjbqlTabbedView(eventController);
+        ejbqlQueryView = new EjbqlTabbedView(eventController);
         detailPanel.add(ejbqlQueryView, EJBQL_QUERY_VIEW);
 
         embeddableView = new EmbeddableTabbedView(eventController);

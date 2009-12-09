@@ -1,7 +1,6 @@
 package org.apache.cayenne.swing.components.textpane;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -20,6 +19,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.Main;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -63,7 +63,7 @@ public class JCayenneTextPane extends JPanel {
         return pane.getText();
     }
 
-    public Component getPane() {
+    public JTextComponent getPane() {
         return pane;
     }
 

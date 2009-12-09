@@ -39,7 +39,6 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 	}
 
 	
-
 	@Override
 	public String getPresentationName() {
 		return "Create Attribute";
@@ -55,9 +54,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 	private DbAttribute dbAttr;
 
 	@Override
-	public void redo() throws CannotRedoException {
-		restoreSelections();
-		
+	public void redo() throws CannotRedoException {		
 		CreateAttributeAction action = (CreateAttributeAction) actionManager
 				.getAction(CreateAttributeAction.getActionName());
 
@@ -71,9 +68,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 	}
 
 	@Override
-	public void undo() throws CannotUndoException {
-		restoreSelections();
-		
+	public void undo() throws CannotUndoException {		
 		RemoveAttributeAction action = (RemoveAttributeAction) actionManager
 				.getAction(RemoveAttributeAction.getActionName());
 
@@ -115,5 +110,4 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 		this.dbEntity = dbEntity;
 		this.dbAttr = attr;
 	}
-
 }

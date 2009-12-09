@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
+import javax.swing.undo.CompoundEdit;
 
-public class InferRelationshipsUndoableEdit extends CayenneCompoundEdit {
-    
+
+public class InferRelationshipsUndoableEdit extends CompoundEdit {
  
     @Override
     public String getPresentationName() {

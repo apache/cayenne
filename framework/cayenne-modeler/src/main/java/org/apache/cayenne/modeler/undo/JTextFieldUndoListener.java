@@ -18,253 +18,88 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.JTextComponent;
-import javax.swing.tree.TreePath;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.util.TextAdapter;
 
 public class JTextFieldUndoListener implements UndoableEditListener {
 
-	private UndoManager undoManager;
-	private CompoundEdit compoundEdit;
-	private JTextComponent textComponent;
-	private UndoDocumentListener undoDocumentListener;
+    public CompoundEdit compoundEdit;
+    
+    private TextAdapter adapter;
 
-	private Object currentObj;
-	private TreePath[] paths;
+    private int lastOffset;
+    private int lastLength;
 
-	private int lastOffset;
-	private int lastLength;
+    public JTextFieldUndoListener(TextAdapter adapter) {
+        this.adapter = adapter;
 
-	private JTextFieldUndoListener self = this;
+        this.adapter.getComponent().addFocusListener(new FocusAdapter() {
 
-	private boolean inProgress = false;
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (compoundEdit != null) {
+                    compoundEdit.end();
+                    compoundEdit = null;
+                }
+            }
+        });
+    }
 
-	private class UndoDocumentListener implements DocumentListener {
+    public void undoableEditHappened(UndoableEditEvent e) {
+        
+        JTextComponent editor = adapter.getComponent();
+        
+        if (compoundEdit == null || !compoundEdit.canUndo()) {
+            compoundEdit = startCompoundEdit(e.getEdit());
+            lastLength = editor.getDocument().getLength();
+            return;
+        }
 
-		public void changedUpdate(DocumentEvent e) {
-		}
+        AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent) e
+                .getEdit();
 
-		public void insertUpdate(final DocumentEvent e) {
-			SwingUtilities.invokeLater(new Runnable() {
+        if (event.getType().equals(DocumentEvent.EventType.CHANGE)) {
+            compoundEdit.addEdit(e.getEdit());
+            return;
+        }
 
-				public void run() {
-					int offset = e.getOffset() + e.getLength();
-					offset = Math.min(offset, textComponent.getDocument()
-							.getLength());
-					textComponent.setCaretPosition(offset);
-				}
-			});
-		}
+        int offsetChange = editor.getCaretPosition() - lastOffset;
+        int lengthChange = editor.getDocument().getLength() - lastLength;
 
-		public void removeUpdate(DocumentEvent e) {
-			textComponent.setCaretPosition(e.getOffset());
-		}
+        if (Math.abs(offsetChange) == 1 && Math.abs(lengthChange) == 1) {
+            compoundEdit.addEdit(e.getEdit());
+            lastOffset = editor.getCaretPosition();
+            lastLength = editor.getDocument().getLength();
+            return;
+        }
 
-	}
+        compoundEdit.end();
+        compoundEdit = startCompoundEdit(e.getEdit());
+    }
 
-	public JTextFieldUndoListener(JTextComponent textComponent) {
-		this.textComponent = textComponent;
-		this.undoManager = Application.getInstance().getUndoManager();
-		this.undoDocumentListener = new UndoDocumentListener();
+    private CompoundEdit startCompoundEdit(UndoableEdit anEdit) {
+        
+        JTextComponent editor = adapter.getComponent();
+        
+        lastOffset = editor.getCaretPosition();
+        lastLength = editor.getDocument().getLength();
 
-		this.textComponent.addFocusListener(new FocusListener() {
+        compoundEdit = new TextCompoundEdit(adapter);
+        compoundEdit.addEdit(anEdit);
 
-			public void focusGained(FocusEvent e) {
-				if (self.currentObj == null) {
-					self.currentObj = getProjectController().getCurrentObject();
-					self.paths = ((CayenneModelerFrame) Application
-							.getInstance().getFrameController().getView())
-							.getView().getProjectTreeView().getSelectionPaths();
-				}
-			}
+        Application.getInstance().getUndoManager().addEdit(compoundEdit);
 
-			public void focusLost(FocusEvent e) {
-				self.currentObj = null;
-
-				if (compoundEdit != null) {
-					compoundEdit.end();
-					compoundEdit = null;
-				}
-			}
-
-		});
-
-		this.textComponent.addKeyListener(new KeyListener() {
-
-			public void keyPressed(KeyEvent e) {
-				inProgress = true;
-			}
-
-			public void keyReleased(KeyEvent e) {
-			}
-
-			public void keyTyped(KeyEvent e) {
-			}
-
-		});
-
-	}
-
-	public void undoableEditHappened(UndoableEditEvent e) {
-		if (inProgress) {
-			if (compoundEdit == null) {
-				compoundEdit = startCompoundEdit(e.getEdit());
-			} else {
-				AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent) e
-						.getEdit();
-
-				if (event.getType().equals(DocumentEvent.EventType.CHANGE)) {
-					compoundEdit.addEdit(e.getEdit());
-					return;
-				}
-
-				int offsetChange = textComponent.getCaretPosition()
-						- lastOffset;
-				int lengthChange = textComponent.getDocument().getLength()
-						- lastLength;
-
-				if (offsetChange == lengthChange && Math.abs(offsetChange) == 1) {
-					compoundEdit.addEdit(e.getEdit());
-					lastOffset = textComponent.getCaretPosition();
-					lastLength = textComponent.getDocument().getLength();
-					return;
-				} else {
-					compoundEdit.end();
-					compoundEdit = startCompoundEdit(e.getEdit());
-				}
-			}
-
-			inProgress = !inProgress;
-		}
-	}
-
-	private CompoundEdit startCompoundEdit(UndoableEdit e) {
-		lastOffset = textComponent.getCaretPosition();
-		lastLength = textComponent.getDocument().getLength();
-
-		CompoundEdit compoundEdit = new TextCompoundEdit();
-		compoundEdit.addEdit(e);
-
-		undoManager.addEdit(compoundEdit);
-
-		return compoundEdit;
-	}
-
-	private class TextCompoundEdit extends CompoundEdit {
-		
-
-		public boolean isInProgress() {
-			return false;
-		}
-
-		@Override
-		public String getRedoPresentationName() {
-			return "Redo Text Change";
-		}
-
-		@Override
-		public String getUndoPresentationName() {
-			return "Undo Text Change";
-		}
-
-		@Override
-		public boolean canRedo() {
-			return true;
-		}
-
-		public void undo() throws CannotUndoException {
-			textComponent.getDocument().addDocumentListener(
-					undoDocumentListener);
-
-			if (compoundEdit != null) {
-				compoundEdit.end();
-			}
-
-			restoreSelections();
-
-			super.undo();
-
-			compoundEdit = null;
-
-			textComponent.getDocument().removeDocumentListener(
-					undoDocumentListener);
-
-			textComponent.requestFocusInWindow();
-			textComponent.selectAll();
-		}
-
-		public void redo() throws CannotRedoException {
-			textComponent.getDocument().addDocumentListener(
-					undoDocumentListener);
-
-			super.redo();
-
-			textComponent.getDocument().removeDocumentListener(
-					undoDocumentListener);
-			textComponent.requestFocusInWindow();
-		}
-
-		private void restoreSelections() {
-			((CayenneModelerFrame) Application.getInstance()
-					.getFrameController().getView()).getView()
-					.getProjectTreeView().setSelectionPaths(self.paths);
-
-			if (self.currentObj instanceof DataMap) {
-
-				getProjectController().fireDataMapDisplayEvent(
-						new DataMapDisplayEvent(this,
-								(DataMap) self.currentObj,
-								getProjectController().getCurrentDataDomain(),
-								getProjectController().getCurrentDataNode()));
-
-			} else if (self.currentObj instanceof ObjEntity) {
-
-				getProjectController().fireObjEntityDisplayEvent(
-						new EntityDisplayEvent(this,
-								(ObjEntity) self.currentObj,
-								getProjectController().getCurrentDataMap(),
-								getProjectController().getCurrentDataNode(),
-								getProjectController().getCurrentDataDomain()));
-
-			} else if (self.currentObj instanceof DbEntity) {
-
-				getProjectController().fireDbEntityDisplayEvent(
-						new EntityDisplayEvent(this, (DbEntity) self.currentObj,
-								getProjectController().getCurrentDataMap(),
-								getProjectController().getCurrentDataNode(),
-								getProjectController().getCurrentDataDomain()));
-				
-
-			}
-		}
-	}
-
-	private ProjectController getProjectController() {
-		return Application.getInstance().getFrameController()
-				.getProjectController();
-	}
+        return compoundEdit;
+    }
 }

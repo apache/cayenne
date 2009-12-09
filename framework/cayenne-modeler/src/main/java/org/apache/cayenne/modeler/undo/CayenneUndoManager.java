@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
@@ -26,10 +28,26 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.RedoAction;
 import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.SQLTemplate;
 
-public class CayenneUndoManager extends javax.swing.undo.UndoManager {
+public class CayenneUndoManager extends javax.swing.undo.UndoManager implements
+        TreeSelectionListener {
 
-    
+    public void valueChanged(TreeSelectionEvent event) {
+
+        UndoableEdit e = editToBeUndone();
+
+        if (e instanceof TextCompoundEdit) {
+            TextCompoundEdit edit = (TextCompoundEdit) e;
+
+            if (edit.getTargetObject() instanceof SQLTemplate
+                    || edit.getTargetObject() instanceof EJBQLQuery) {
+                trimEdits(edits.size() - 1, edits.size() - 1);
+                updateUI();
+            }
+        }
+    }
 
     private Application application;
 
@@ -37,14 +55,13 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
         this.application = application;
         setLimit(100);
     }
-    
-    
+
     @Override
     public synchronized void discardAllEdits() {
         super.discardAllEdits();
         updateUI();
     }
-    
+
     @Override
     public synchronized boolean addEdit(UndoableEdit anEdit) {
         boolean result = super.addEdit(anEdit);
@@ -54,21 +71,48 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
 
     @Override
     public synchronized void redo() throws CannotRedoException {
-        super.redo();
+        UndoableEdit e = editToBeRedone();
+
+        if (e instanceof TextCompoundEdit) {
+            TextCompoundEdit edit = (TextCompoundEdit) e;
+
+            edit.watchCaretPosition();
+
+            super.redo();
+
+            edit.stopWatchingCaretPosition();
+        }
+        else {
+            super.redo();
+        }
+
         updateUI();
     }
 
-
     @Override
     public synchronized void undo() throws CannotUndoException {
-        super.undo();
+        UndoableEdit e = editToBeUndone();
+
+        if (e instanceof TextCompoundEdit) {
+            TextCompoundEdit edit = (TextCompoundEdit) e;
+
+            edit.watchCaretPosition();
+
+            super.undo();
+
+            edit.stopWatchingCaretPosition();
+        }
+        else {
+            super.undo();
+        }
+
         updateUI();
     }
 
     private void updateUI() {
         CayenneAction undoAction = application.getActionManager().getAction(
                 UndoAction.getActionName());
-        
+
         CayenneAction redoAction = application.getActionManager().getAction(
                 RedoAction.getActionName());
 

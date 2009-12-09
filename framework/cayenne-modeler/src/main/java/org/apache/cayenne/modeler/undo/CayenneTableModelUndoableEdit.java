@@ -26,8 +26,6 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 
 public class CayenneTableModelUndoableEdit extends AbstractUndoableEdit {
 
-    
-    
     private CayenneTableModel model;
     private Object oldValue;
     private Object newValue;
@@ -36,7 +34,7 @@ public class CayenneTableModelUndoableEdit extends AbstractUndoableEdit {
 
     @Override
     public String getPresentationName() {
-        return (newValue != null) ? newValue.toString() : "";
+        return "Cell Change";
     }
     
     public CayenneTableModelUndoableEdit(CayenneTableModel model, Object oldValue, Object newValue,

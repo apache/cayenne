@@ -31,13 +31,6 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
 public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
-    @Override
-    public String getPresentationName() {
-        return "Create Relationship";
-    }
-
-    
-
     private ObjEntity objEnt;
     private ObjRelationship[] objectRel;
 
@@ -52,6 +45,11 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
     public CreateRelationshipUndoableEdit(DbEntity dbEnt, DbRelationship[] dbRel) {
         this.dbEnt = dbEnt;
         this.dbRel = dbRel;
+    }
+    
+    @Override
+    public String getPresentationName() {
+        return "Create Relationship";
     }
 
     @Override

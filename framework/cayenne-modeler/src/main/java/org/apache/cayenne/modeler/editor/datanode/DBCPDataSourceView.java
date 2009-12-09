@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.BorderLayout;
@@ -25,7 +24,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.validation.ValidationException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -34,11 +34,16 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class DBCPDataSourceView extends JPanel {
 
-    protected JTextField propertiesFile;
+    protected TextAdapter propertiesFile;
 
     public DBCPDataSourceView() {
 
-        propertiesFile = CayenneWidgetFactory.createUndoableTextField();
+        propertiesFile = new TextAdapter(new JTextField()) {
+
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+            }
+        };
 
         // assemble
         FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");
@@ -47,13 +52,13 @@ public class DBCPDataSourceView extends JPanel {
 
         builder.appendSeparator("Apache DBCP Configuration");
 
-        builder.append("DBCP Properties File:", propertiesFile);
+        builder.append("DBCP Properties File:", getPropertiesFile());
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
     }
 
     public JTextField getPropertiesFile() {
-        return propertiesFile;
+        return (JTextField) propertiesFile.getComponent();
     }
 }
