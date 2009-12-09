@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -33,8 +32,10 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.undo.JEditTextAreaUndoableAdapter;
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.validation.ValidationException;
+import org.syntax.jedit.JEditTextArea;
 
 /**
  * A validating adapter for JTextComponent. Implement {@link #updateModel(String)}to
@@ -45,10 +46,16 @@ public abstract class TextAdapter {
 
     protected Color defaultBGColor;
     protected Color errorColor;
-    protected JTextComponent textComponent;
+
     protected String defaultToolTip;
     protected boolean modelUpdateDisabled;
     protected UndoableEditListener undoableListener;
+
+    protected JTextComponent textComponent;
+
+    public TextAdapter(JEditTextArea textArea) {
+        this(new JEditTextAreaUndoableAdapter(textArea), true, false, true);
+    }
 
     public TextAdapter(JTextField textField) {
         this(textField, true, false, true);
@@ -70,7 +77,7 @@ public abstract class TextAdapter {
         }
     }
 
-    public TextAdapter(JTextArea textField) {
+    public TextAdapter(JTextComponent textField) {
         this(textField, false, true);
     }
 
@@ -81,8 +88,8 @@ public abstract class TextAdapter {
         this.defaultBGColor = textComponent.getBackground();
         this.defaultToolTip = textComponent.getToolTipText();
         this.textComponent = textComponent;
-        
-        this.undoableListener = new JTextFieldUndoListener(this.textComponent);
+
+        this.undoableListener = new JTextFieldUndoListener(this);
         this.textComponent.getDocument().addUndoableEditListener(this.undoableListener);
 
         if (checkOnFocusLost) {
@@ -154,7 +161,7 @@ public abstract class TextAdapter {
 
     }
 
-    protected void updateModel() {
+    public void updateModel() {
         try {
             updateModel(textComponent.getText());
             clear();

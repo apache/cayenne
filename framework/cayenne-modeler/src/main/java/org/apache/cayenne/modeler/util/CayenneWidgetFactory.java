@@ -35,6 +35,7 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
+import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
@@ -105,22 +106,6 @@ public class CayenneWidgetFactory {
         comboBox.setBackground(Color.WHITE);
         comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
         return comboBox;
-    }
-    
-    /**
-     * Creates undoable JTextField.
-     * 
-     */
-    public static JTextField createUndoableTextField() {
-        return new JTextFieldUndoable();
-    }
-    
-    /**
-     * Creates undoable JTextField.
-     * 
-     */
-    public static JTextField createUndoableTextField(int size) {
-        return new JTextFieldUndoable(size);
     }
 
     /**

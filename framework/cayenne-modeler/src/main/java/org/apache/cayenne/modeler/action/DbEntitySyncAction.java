@@ -29,6 +29,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.objentity.EntitySyncController;
+import org.apache.cayenne.modeler.undo.DbEntitySyncUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.EntityMergeSupport;
@@ -79,15 +80,34 @@ public class DbEntitySyncAction extends CayenneAction {
                 return;
             }
 
+            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(mediator
+                    .getCurrentDataDomain(), mediator.getCurrentDataMap());
+
             while (it.hasNext()) {
                 ObjEntity entity = (ObjEntity) it.next();
+
+                DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
+                        entity);
+
+                merger.addEntityMergeListener(listener);
+
+                if (merger.isRemoveMeaningfulFKs()) {
+                    undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(
+                            entity,
+                            merger.getMeaningfulFKs(entity)));
+                }
+
                 if (merger.synchronizeWithDbEntity(entity)) {
                     mediator.fireObjEntityEvent(new EntityEvent(
                             this,
                             entity,
                             MapEvent.CHANGE));
                 }
+
+                merger.removeEntityMergeListener(listener);
             }
+
+            application.getUndoManager().addEdit(undoableEdit);
         }
     }
 

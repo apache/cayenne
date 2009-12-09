@@ -21,15 +21,18 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.CompoundEdit;
 
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
-public class RelationshipUndoableEdit extends CayenneCompoundEdit {
+public class RelationshipUndoableEdit extends CompoundEdit {
 
-	@Override
+    private DbRelationship relationship;
+	
+    @Override
 	public void redo() throws CannotRedoException {
 		super.redo();
 		
@@ -57,15 +60,6 @@ public class RelationshipUndoableEdit extends CayenneCompoundEdit {
 	@Override
 	public String getUndoPresentationName() {
 		return "Undo Edit relationship";
-	}
-
-	
-
-	private DbRelationship relationship;
-
-	@Override
-	public boolean canUndo() {
-		return hasEdits();
 	}
 
 	public RelationshipUndoableEdit(DbRelationship relationship) {

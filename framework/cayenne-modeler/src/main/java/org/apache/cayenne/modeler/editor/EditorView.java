@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
@@ -90,8 +91,32 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private DbEntityTabbedView dbDetailView;
     private ObjEntityTabbedView objDetailView;
     private EmbeddableTabbedView embeddableView;
+    private DataMapTabbedView dataMapView;
+    private ProcedureTabbedView procedureView;
+    private SelectQueryTabbedView selectQueryView;
+    private SQLTemplateTabbedView sqlTemplateView;
+    private EjbqlTabbedView ejbqlQueryView;
+    private JTabbedPane dataNodeView;
 
     
+    public SelectQueryTabbedView getSelectQueryView() {
+        return selectQueryView;
+    }
+
+    
+    public SQLTemplateTabbedView getSqlTemplateView() {
+        return sqlTemplateView;
+    }
+
+    
+    public EjbqlTabbedView getEjbqlQueryView() {
+        return ejbqlQueryView;
+    }
+
+    public ProcedureTabbedView getProcedureView() {
+        return procedureView;
+    }
+
     public ProjectTreeView getProjectTreeView() {
         return treePanel;
     }
@@ -106,6 +131,14 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
     public ObjEntityTabbedView getObjDetailView() {
         return objDetailView;
+    }
+    
+    public DataMapTabbedView getDataMapView() {
+        return dataMapView;
+    }
+    
+    public JTabbedPane getDataNodeView() {
+        return dataNodeView;
     }
 
     public EditorView(ProjectController eventController) {

@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
+import javax.swing.undo.CompoundEdit;
 
-public class RemoveCompoundUndoableEdit extends CayenneCompoundEdit {
 
-    
+public class RemoveCompoundUndoableEdit extends CompoundEdit {
 
     @Override
     public String getPresentationName() {

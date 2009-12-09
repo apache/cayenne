@@ -30,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.validation.ValidationException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -40,7 +42,8 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class MainDataNodeView extends JPanel {
 
-    protected JTextField dataNodeName;
+    protected TextAdapter dataNodeName;
+    
     protected JComboBox factories;
     protected JPanel dataSourceDetail;
     protected CardLayout dataSourceDetailLayout;
@@ -51,7 +54,12 @@ public class MainDataNodeView extends JPanel {
     public MainDataNodeView() {
 
         // create widgets
-        this.dataNodeName = CayenneWidgetFactory.createUndoableTextField();
+        this.dataNodeName = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+            }
+        };
+        
         this.factories = CayenneWidgetFactory.createUndoableComboBox();
         
         this.localDataSources = CayenneWidgetFactory.createUndoableComboBox();
@@ -71,7 +79,7 @@ public class MainDataNodeView extends JPanel {
         topPanelBuilder.setDefaultDialogBorder();
 
         topPanelBuilder.appendSeparator("DataNode Configuration");
-        topPanelBuilder.append("DataNode Name:", dataNodeName, 3);
+        topPanelBuilder.append("DataNode Name:", getDataNodeName(), 3);
         topPanelBuilder.append("Schema Update Strategy:", schemaUpdateStrategy, 3);
 
         DefaultFormBuilder builderForLabel = new DefaultFormBuilder(new FormLayout(
@@ -99,7 +107,7 @@ public class MainDataNodeView extends JPanel {
     }
 
     public JTextField getDataNodeName() {
-        return dataNodeName;
+        return (JTextField) dataNodeName.getComponent();
     }
 
     public JPanel getDataSourceDetail() {

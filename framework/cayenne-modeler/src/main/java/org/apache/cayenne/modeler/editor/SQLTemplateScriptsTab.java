@@ -45,9 +45,11 @@ import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
+import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationException;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.KeywordMap;
 import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
@@ -140,6 +142,13 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
         scripts.setModel(new DefaultComboBoxModel(keys.toArray()));
         
         scriptArea = CayenneWidgetFactory.createJEditTextArea();
+        
+        new TextAdapter(scriptArea) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+            }
+        };
+        
         scriptArea.setTokenMarker(SQL_TEMPLATE_MARKER);
         scriptArea.getDocument().addDocumentListener(this);
         

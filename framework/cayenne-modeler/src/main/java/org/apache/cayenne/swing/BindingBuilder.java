@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 
 /**
  * A builder for component bindings that delegates the creation of the binding to the

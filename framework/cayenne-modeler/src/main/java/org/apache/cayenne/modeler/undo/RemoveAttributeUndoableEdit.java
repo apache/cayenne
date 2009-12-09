@@ -36,8 +36,6 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
 public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
-    
-
     private DataDomain domain;
     private DataMap dataMap;
 
@@ -75,8 +73,6 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        restoreSelections();
-
         RemoveAttributeAction action = (RemoveAttributeAction) actionManager
                 .getAction(RemoveAttributeAction.getActionName());
 
@@ -110,7 +106,6 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        restoreSelections();
 
         CreateAttributeAction action = (CreateAttributeAction) actionManager
                 .getAction(CreateAttributeAction.getActionName());
