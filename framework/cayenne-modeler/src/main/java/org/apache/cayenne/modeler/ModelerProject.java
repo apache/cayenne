@@ -24,6 +24,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.action.ModelerProjectConfiguration;
 import org.apache.cayenne.modeler.graph.GraphFile;
+import org.apache.cayenne.modeler.graph.GraphMap;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.ProjectFile;
 
@@ -45,9 +46,12 @@ public class ModelerProject extends ApplicationProject {
     @Override
     public ProjectFile projectFileForObject(Object obj) {
         if (requiresDomainFile(obj)) {
-            return new GraphFile(this, 
-                ((ModelerProjectConfiguration) getConfiguration()).
-                    getGraphRegistry().getGraphMap((DataDomain) obj));
+            GraphMap map = ((ModelerProjectConfiguration) getConfiguration()).
+                getGraphRegistry().getGraphMap((DataDomain) obj);
+            
+            if (map.size() > 0) {
+                return new GraphFile(this, map);
+            }
         }
         return super.projectFileForObject(obj);
     }
