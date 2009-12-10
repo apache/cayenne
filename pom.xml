@@ -166,12 +166,21 @@
 			</roles>
 			<timezone>+3</timezone>
 		</developer>
-                <developer>
-                        <name>Olga Tkachova</name>
-                        <roles>
-                                <role>Committer</role>
-                        </roles>
-                </developer>
+		<developer>
+        	<name>Olga Tkachova</name>
+            <roles>
+            	<role>Committer</role>
+            </roles>
+        </developer>
+        <developer>
+			<id>evgeny</id>
+			<name>Evgeny Ryabitskiy</name>
+			<organization>Diasoft</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+		<timezone>+3</timezone>
+		</developer>
 	</developers>
 
 	<licenses>
