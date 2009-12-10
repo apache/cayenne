@@ -48,7 +48,6 @@ import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -159,7 +158,7 @@ public class AutoAdapter implements DbAdapter {
 
         this.adapterProvider = new Provider<DbAdapter>() {
 
-            public DbAdapter get() throws DIException {
+            public DbAdapter get() {
                 DbAdapter adapter;
 
                 try {

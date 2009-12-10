@@ -21,8 +21,6 @@ package org.apache.cayenne;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class CayenneExceptionTest extends TestCase {
 
     public void testConstructor1() throws Exception {
@@ -41,9 +39,8 @@ public class CayenneExceptionTest extends TestCase {
         Throwable cause = new Throwable();
         CayenneException ex = new CayenneException(cause);
         assertSame(cause, ex.getCause());
-        assertEquals(
-            CayenneException.getExceptionLabel() + cause.toString(),
-            ex.getMessage());
+        assertEquals(CayenneException.getExceptionLabel() + cause.toString(), ex
+                .getMessage());
     }
 
     public void testConstructor4() throws Exception {
@@ -52,12 +49,12 @@ public class CayenneExceptionTest extends TestCase {
         assertSame(cause, ex.getCause());
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
-    
+
     public void testMessageFormatting1() throws Exception {
         CayenneException ex = new CayenneException("x%sx%sx", "a", "b");
         assertEquals("xaxbx", ex.getUnlabeledMessage());
     }
-    
+
     public void testMessageFormatting2() throws Exception {
         Throwable cause = new Throwable();
         CayenneException ex = new CayenneException("x%sx%sx", cause, "a", "b");

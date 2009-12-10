@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
@@ -32,7 +32,7 @@ public class DataContextProvider implements Provider<DataContext> {
     @Inject
     protected DataDomain dataDomain;
 
-    public DataContext get() throws DIException {
+    public DataContext get() throws ConfigurationException {
         // TODO: andrus 12.5.2009 - deprecate 'createDataContext' in DataDomain and move
         // it to this provider instead
         return dataDomain.createDataContext();

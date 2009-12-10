@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import org.apache.cayenne.ConfigurationException;
+
 /**
  * A binding builder that helps with fluent binding creation.
  * 
@@ -26,15 +28,15 @@ package org.apache.cayenne.di;
  */
 public interface BindingBuilder<T> {
 
-    BindingBuilder<T> to(Class<? extends T> implementation) throws DIException;
+    BindingBuilder<T> to(Class<? extends T> implementation) throws ConfigurationException;
 
-    BindingBuilder<T> toInstance(T instance) throws DIException;
+    BindingBuilder<T> toInstance(T instance) throws ConfigurationException;
 
     BindingBuilder<T> toProvider(Class<? extends Provider<? extends T>> providerType)
-            throws DIException;
+            throws ConfigurationException;
 
     BindingBuilder<T> toProviderInstance(Provider<? extends T> provider)
-            throws DIException;
+            throws ConfigurationException;
 
     void in(Scope scope);
 }

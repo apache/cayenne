@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -34,7 +34,7 @@ class CustomProvidersProvider<T> implements Provider<T> {
         this.providerOfProviders = providerOfProviders;
     }
 
-    public T get() throws DIException {
+    public T get() throws ConfigurationException {
         return providerOfProviders.get().get();
     }
 }

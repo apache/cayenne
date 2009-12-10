@@ -18,12 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.di.mock;
 
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Provider;
 
 public class MockInterface1Provider implements Provider<MockInterface1> {
 
-    public MockInterface1 get() throws DIException {
+    public MockInterface1 get() {
         return new MockImplementation1();
     }
 }

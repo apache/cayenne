@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.MapBuilder;
 
 /**
@@ -35,7 +35,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     }
 
     public <E> MapBuilder<T> put(String key, Class<? extends E> interfaceType)
-            throws DIException {
+            throws ConfigurationException {
 
         MapProvider mapProvider = injector.getMapConfigurations().get(
                 implementationTypeKey);
@@ -49,7 +49,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         return this;
     }
 
-    public <E> MapBuilder<T> put(String key, E value) throws DIException {
+    public <E> MapBuilder<T> put(String key, E value) throws ConfigurationException {
 
         InstanceProvider<E> provider = new InstanceProvider<E>(value);
 

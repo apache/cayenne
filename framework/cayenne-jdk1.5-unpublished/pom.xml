@@ -131,22 +131,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<resources>
-			<!-- don't filter dotemplates -->
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<excludes>
-					<exclude>dotemplates/**</exclude>
-				</excludes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>dotemplates/**</include>
-				</includes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

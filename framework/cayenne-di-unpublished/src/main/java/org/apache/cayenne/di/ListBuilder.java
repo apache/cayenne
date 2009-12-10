@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import org.apache.cayenne.ConfigurationException;
+
 /**
  * A binding builder for list configurations.
  * 
@@ -26,7 +28,7 @@ package org.apache.cayenne.di;
  */
 public interface ListBuilder<T> {
 
-    <E> ListBuilder<T> add(Class<? extends E> interfaceType) throws DIException;
+    <E> ListBuilder<T> add(Class<? extends E> interfaceType) throws ConfigurationException;
 
-    <E> ListBuilder<T> add(E value) throws DIException;
+    <E> ListBuilder<T> add(E value) throws ConfigurationException;
 }

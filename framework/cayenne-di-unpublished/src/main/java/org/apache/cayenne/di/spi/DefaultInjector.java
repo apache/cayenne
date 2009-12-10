@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
@@ -37,7 +37,7 @@ public class DefaultInjector implements Injector {
     private Map<String, ListProvider> listConfigurations;
     private InjectionStack injectionStack;
 
-    public DefaultInjector(Module... modules) throws DIException {
+    public DefaultInjector(Module... modules) throws ConfigurationException {
 
         this.bindings = new HashMap<String, Provider<?>>();
         this.mapConfigurations = new HashMap<String, MapProvider>();
@@ -74,7 +74,7 @@ public class DefaultInjector implements Injector {
         return listConfigurations;
     }
 
-    public <T> T getInstance(Class<T> type) throws DIException {
+    public <T> T getInstance(Class<T> type) throws ConfigurationException {
         return getProvider(type).get();
     }
 
@@ -87,7 +87,7 @@ public class DefaultInjector implements Injector {
         ListProvider provider = listConfigurations.get(key);
 
         if (provider == null) {
-            throw new DIException(
+            throw new ConfigurationException(
                     "Type '%s' has no bound list configuration in the DI container."
                             + " Injection stack: %s",
                     type.getName(),
@@ -106,7 +106,7 @@ public class DefaultInjector implements Injector {
         MapProvider provider = mapConfigurations.get(key);
 
         if (provider == null) {
-            throw new DIException(
+            throw new ConfigurationException(
                     "Type '%s' has no bound map configuration in the DI container."
                             + " Injection stack: %s",
                     type.getName(),
@@ -116,7 +116,7 @@ public class DefaultInjector implements Injector {
         return provider.get();
     }
 
-    public <T> Provider<T> getProvider(Class<T> type) throws DIException {
+    public <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException {
         if (type == null) {
             throw new NullPointerException("Null type");
         }
@@ -125,8 +125,9 @@ public class DefaultInjector implements Injector {
         Provider<T> provider = (Provider<T>) bindings.get(key);
 
         if (provider == null) {
-            throw new DIException("Type '%s' is not bound in the DI container.", type
-                    .getName());
+            throw new ConfigurationException(
+                    "Type '%s' is not bound in the DI container.",
+                    type.getName());
         }
 
         return provider;

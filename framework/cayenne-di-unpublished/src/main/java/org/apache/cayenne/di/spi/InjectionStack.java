@@ -21,7 +21,7 @@ package org.apache.cayenne.di.spi;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 
 /**
  * A helper object that tracks the injection stack to prevent circular dependencies.
@@ -43,7 +43,7 @@ class InjectionStack {
         }
     }
 
-    void push(String bindingKey) throws DIException {
+    void push(String bindingKey) throws ConfigurationException {
         LinkedList<String> localStack = stack.get();
         if (localStack == null) {
             localStack = new LinkedList<String>();
@@ -51,7 +51,7 @@ class InjectionStack {
         }
 
         if (localStack.contains(bindingKey)) {
-            throw new DIException(
+            throw new ConfigurationException(
                     "Circular dependency detected when binding a key \"%s\". Nested keys: %s"
                             + ". To resolve it, you should inject a Provider instead of an object.",
                     bindingKey,

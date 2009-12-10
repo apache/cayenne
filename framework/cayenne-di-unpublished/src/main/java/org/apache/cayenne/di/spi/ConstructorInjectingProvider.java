@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
@@ -43,7 +43,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         initConstructor(implementation);
 
         if (constructor == null) {
-            throw new DIException(
+            throw new ConfigurationException(
                     "Can't find approprate constructor for implementation class '%s'",
                     implementation.getName());
         }
@@ -131,9 +131,10 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
                 Class<?> objectClass = DIUtil.parameterClass(genericTypes[i]);
 
                 if (objectClass == null) {
-                    throw new DIException("Constructor provider parameter %s must be "
-                            + "parameterized to be usable for injection", parameter
-                            .getName());
+                    throw new ConfigurationException(
+                            "Constructor provider parameter %s must be "
+                                    + "parameterized to be usable for injection",
+                            parameter.getName());
                 }
 
                 args[i] = injector.getProvider(objectClass);
@@ -154,9 +155,10 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
             return constructor.newInstance(args);
         }
         catch (Exception e) {
-            throw new DIException("Error instantiating class '%s'", e, constructor
-                    .getDeclaringClass()
-                    .getName());
+            throw new ConfigurationException(
+                    "Error instantiating class '%s'",
+                    e,
+                    constructor.getDeclaringClass().getName());
         }
     }
 }

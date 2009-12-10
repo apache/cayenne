@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -35,14 +35,16 @@ class ConstructorInjectingProvidersProvider<T> implements Provider<Provider<? ex
         this.providerType = providerType;
     }
 
-    public Provider<? extends T> get() throws DIException {
+    public Provider<? extends T> get() throws ConfigurationException {
         try {
             // TODO: constructor injection in provider?
             return providerType.newInstance();
         }
         catch (Exception e) {
-            throw new DIException("Error instantiating provider '%s'", e, providerType
-                    .getName());
+            throw new ConfigurationException(
+                    "Error instantiating provider '%s'",
+                    e,
+                    providerType.getName());
         }
     }
 }

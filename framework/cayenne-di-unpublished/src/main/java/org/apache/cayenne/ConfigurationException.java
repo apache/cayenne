@@ -16,27 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+
+package org.apache.cayenne;
 
 /**
- * @since 3.1
+ * A runtime exception thrown on failures in Cayenne configuration.
  */
-public class DIException extends RuntimeException {
+public class ConfigurationException extends CayenneRuntimeException {
 
-    public DIException() {
-        super();
+    /**
+     * Creates new <code>ConfigurationException</code> without detail message.
+     */
+    public ConfigurationException() {
     }
 
-    public DIException(String messageFormat, Object... messageArgs) {
-        super(String.format(messageFormat, messageArgs));
+    /**
+     * Constructs an exception with the specified message with an optional list of message
+     * formatting arguments. Message formatting rules follow "String.format(..)"
+     * conventions.
+     */
+    public ConfigurationException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
     }
 
-    public DIException(String messageFormat, Throwable cause, Object... messageArgs) {
-        super(String.format(messageFormat, cause, messageArgs));
-    }
-
-    public DIException(Throwable cause) {
+    /**
+     * Constructs an exception wrapping another exception thrown elsewhere.
+     */
+    public ConfigurationException(Throwable cause) {
         super(cause);
     }
 
+    public ConfigurationException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
+    }
 }

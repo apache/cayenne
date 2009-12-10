@@ -30,7 +30,6 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
@@ -65,7 +64,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
         else {
             return new AutoAdapter(new Provider<DbAdapter>() {
 
-                public DbAdapter get() throws DIException {
+                public DbAdapter get() {
                     return detectAdapter(nodeDescriptor, dataSource);
                 }
             });

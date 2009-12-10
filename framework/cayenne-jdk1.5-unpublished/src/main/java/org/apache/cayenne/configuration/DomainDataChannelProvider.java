@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
@@ -34,8 +33,8 @@ public class DomainDataChannelProvider implements Provider<DataChannel> {
 
     @Inject
     protected DataDomain dataDomain;
-    
-    public DataChannel get() throws DIException {
+
+    public DataChannel get() {
         return dataDomain;
     }
 }

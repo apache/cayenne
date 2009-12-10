@@ -17,21 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.util;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.cayenne.CayenneRuntimeException;
-
-// TODO: Merge with ModelerStrings (avoid code duplication). Allow
-// customizable bundle location.
-
 /**
  * Provides access to various modeler resources (mainly strings) obtained via a
  * ResourceBundle.
- * 
  */
 public class LocalizedStringsHandler {
 
@@ -61,7 +54,9 @@ public class LocalizedStringsHandler {
                 bundle = ResourceBundle.getBundle(DEFAULT_MESSAGE_BUNDLE);
             }
             catch (MissingResourceException e) {
-                throw new CayenneRuntimeException("Can't load properties: "
+                // do not throw Cayenne exceptions, as they rely on
+                // LocalizedStringsHandler, and we can get into infinite loop
+                throw new RuntimeException("Can't load properties: "
                         + DEFAULT_MESSAGE_BUNDLE, e);
             }
         }

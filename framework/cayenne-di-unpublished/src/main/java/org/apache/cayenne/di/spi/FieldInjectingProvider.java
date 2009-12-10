@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
@@ -62,7 +62,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
         return initInjectionPoints(type.getSuperclass(), injectableFields);
     }
 
-    public T get() throws DIException {
+    public T get() throws ConfigurationException {
         T object = delegate.get();
         injectMembers(object);
         return object;
@@ -85,10 +85,12 @@ class FieldInjectingProvider<T> implements Provider<T> {
                 Class<?> objectClass = DIUtil.parameterClass(field.getGenericType());
 
                 if (objectClass == null) {
-                    throw new DIException("Provider field %s.%s of type %s must be "
-                            + "parameterized to be usable for injection", field
-                            .getDeclaringClass()
-                            .getName(), field.getName(), fieldType.getName());
+                    throw new ConfigurationException(
+                            "Provider field %s.%s of type %s must be "
+                                    + "parameterized to be usable for injection",
+                            field.getDeclaringClass().getName(),
+                            field.getName(),
+                            fieldType.getName());
                 }
 
                 value = injector.getProvider(objectClass);
@@ -112,7 +114,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
                         field.getDeclaringClass().getName(),
                         field.getName(),
                         fieldType.getName());
-                throw new DIException(message, e);
+                throw new ConfigurationException(message, e);
             }
         }
 

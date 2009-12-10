@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -36,7 +36,7 @@ class MapProvider implements Provider<Map<String, ?>> {
         this.providers = new HashMap<String, Provider<?>>();
     }
 
-    public Map<String, ?> get() throws DIException {
+    public Map<String, ?> get() throws ConfigurationException {
         Map<String, Object> map = new HashMap<String, Object>();
 
         for (Entry<String, Provider<?>> entry : providers.entrySet()) {

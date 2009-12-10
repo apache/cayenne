@@ -21,6 +21,8 @@ package org.apache.cayenne.di;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.ConfigurationException;
+
 /**
  * A facade to the Cayenne DI container. To create an injector use {@link DIBootstrap}
  * static methods.
@@ -33,13 +35,13 @@ public interface Injector {
      * Returns a service instance bound in the container for a specific type. Throws
      * {@link DIException} if the type is not bound, or an instance can not be created.
      */
-    <T> T getInstance(Class<T> type) throws DIException;
+    <T> T getInstance(Class<T> type) throws ConfigurationException;
 
-    <T> Provider<T> getProvider(Class<T> type) throws DIException;
+    <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException;
 
-    <T> Map<String, ?> getMapConfiguration(Class<T> type);
+    <T> Map<String, ?> getMapConfiguration(Class<T> type) throws ConfigurationException;
 
-    <T> List<?> getListConfiguration(Class<T> type);
+    <T> List<?> getListConfiguration(Class<T> type) throws ConfigurationException;
 
     /**
      * Performs field injection on a given object, ignoring constructor injection. Since

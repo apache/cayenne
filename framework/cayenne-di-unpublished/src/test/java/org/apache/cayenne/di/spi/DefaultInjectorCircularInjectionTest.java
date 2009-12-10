@@ -20,8 +20,8 @@ package org.apache.cayenne.di.spi;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1_DepOn2;
 import org.apache.cayenne.di.mock.MockImplementation1_DepOn2Constructor;
@@ -49,7 +49,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
             injector.getInstance(MockInterface1.class);
             fail("Circular dependency is not detected.");
         }
-        catch (DIException e) {
+        catch (ConfigurationException e) {
             // expected
         }
         catch (StackOverflowError e) {
@@ -92,7 +92,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
             injector.getInstance(MockInterface1.class);
             fail("Circular dependency is not detected.");
         }
-        catch (DIException e) {
+        catch (ConfigurationException e) {
             // expected
         }
         catch (StackOverflowError e) {

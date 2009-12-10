@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import org.apache.cayenne.ConfigurationException;
+
 /**
  * A binding builder for map configurations.
  * 
@@ -26,7 +28,8 @@ package org.apache.cayenne.di;
  */
 public interface MapBuilder<T> {
 
-    <E> MapBuilder<T> put(String key, Class<? extends E> interfaceType) throws DIException;
+    <E> MapBuilder<T> put(String key, Class<? extends E> interfaceType)
+            throws ConfigurationException;
 
-    <E> MapBuilder<T> put(String key, E value) throws DIException;
+    <E> MapBuilder<T> put(String key, E value) throws ConfigurationException;
 }

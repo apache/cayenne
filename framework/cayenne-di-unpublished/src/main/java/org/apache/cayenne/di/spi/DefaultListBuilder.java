@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.DIException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.ListBuilder;
 
 /**
@@ -34,7 +34,8 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         implementationTypeKey = DIUtil.toKey(implementationType);
     }
 
-    public <E> ListBuilder<T> add(Class<? extends E> interfaceType) throws DIException {
+    public <E> ListBuilder<T> add(Class<? extends E> interfaceType)
+            throws ConfigurationException {
 
         ListProvider listProvider = injector.getListConfigurations().get(
                 implementationTypeKey);
@@ -47,7 +48,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         return this;
     }
 
-    public <E> ListBuilder<T> add(E value) throws DIException {
+    public <E> ListBuilder<T> add(E value) throws ConfigurationException {
 
         InstanceProvider<E> provider = new InstanceProvider<E>(value);
 

@@ -20,6 +20,7 @@ package org.apache.cayenne.runtime;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -32,7 +33,6 @@ import org.apache.cayenne.configuration.DataSourceFactory;
 import org.apache.cayenne.configuration.DataSourceFactoryLoader;
 import org.apache.cayenne.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
@@ -65,7 +65,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     protected volatile DataDomain dataDomain;
 
-    public DataDomain get() throws DIException {
+    public DataDomain get() throws ConfigurationException {
 
         if (dataDomain == null) {
             synchronized (this) {
@@ -74,12 +74,14 @@ public class DataDomainProvider implements Provider<DataDomain> {
                     try {
                         createDataChannel();
                     }
-                    catch (DIException e) {
+                    catch (ConfigurationException e) {
                         throw e;
                     }
                     catch (Exception e) {
-                        throw new DIException("Error loading DataChannel: '%s'", e, e
-                                .getMessage());
+                        throw new ConfigurationException(
+                                "Error loading DataChannel: '%s'",
+                                e,
+                                e.getMessage());
                     }
                 }
             }

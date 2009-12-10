@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.BindingBuilder;
-import org.apache.cayenne.di.DIException;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 import org.apache.cayenne.di.Scopes;
@@ -40,7 +40,8 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         this.key = DIUtil.toKey(interfaceType);
     }
 
-    public BindingBuilder<T> to(Class<? extends T> implementation) throws DIException {
+    public BindingBuilder<T> to(Class<? extends T> implementation)
+            throws ConfigurationException {
 
         Provider<T> provider0 = new ConstructorInjectingProvider<T>(
                 interfaceType,
@@ -50,7 +51,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         return bindInScope(provider1);
     }
 
-    public BindingBuilder<T> toInstance(T instance) throws DIException {
+    public BindingBuilder<T> toInstance(T instance) throws ConfigurationException {
         Provider<T> provider0 = new InstanceProvider<T>(instance);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector, key);
         return bindInScope(provider1);
