@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -1948,5 +1949,16 @@ public class ProjectController extends CayenneController {
                             + e.getId());
             }
         }
+    }
+    
+    public ArrayList<Embeddable> getEmbeddableNamesInCurRentDataDomain() {
+        DataDomain dd = getCurrentDataDomain();
+        Collection<DataMap> maps = dd.getDataMaps();
+        Iterator<DataMap> it = maps.iterator();
+        ArrayList<Embeddable> embs = new ArrayList<Embeddable>();
+        while(it.hasNext()){
+            embs.addAll(it.next().getEmbeddables());
+        }
+        return embs;
     }
 }

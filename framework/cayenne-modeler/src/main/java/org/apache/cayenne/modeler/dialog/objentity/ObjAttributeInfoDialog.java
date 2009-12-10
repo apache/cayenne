@@ -44,7 +44,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.tree.TreePath;
 
 import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -67,7 +66,6 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -101,18 +99,14 @@ public class ObjAttributeInfoDialog extends CayenneController implements
         this.row = row;
         this.stringToEmbeddables = new HashMap<String, Embeddable>();
         this.embeddableNames = new ArrayList<String>();
-        
-        Iterator it = mediator.getCurrentDataDomain().getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap dataMap = (DataMap) it.next();
-            Iterator<Embeddable> embs = dataMap.getEmbeddables().iterator();
-            while (embs.hasNext()) {
-                Embeddable emb = (Embeddable) embs.next();
-                stringToEmbeddables.put(emb.getClassName(), emb);
-                embeddableNames.add(emb.getClassName());
-            }
+
+        Iterator<Embeddable> embs = mediator.getEmbeddableNamesInCurRentDataDomain().iterator();
+        while (embs.hasNext()) {
+            Embeddable emb = (Embeddable) embs.next();
+            stringToEmbeddables.put(emb.getClassName(), emb);
+            embeddableNames.add(emb.getClassName());
         }
-        
+
         initController(model.getAttribute(row));
     }
 

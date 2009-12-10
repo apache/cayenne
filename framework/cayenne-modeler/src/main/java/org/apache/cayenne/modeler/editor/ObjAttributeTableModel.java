@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Iterator;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -33,6 +33,7 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -262,7 +263,15 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             Collection<String> registeredTypesList =  Arrays.asList(registeredTypes); ;
             if(oldType!=null && newType!=null && ! (registeredTypesList.contains(oldType) == registeredTypesList.contains(newType))){
                 ObjAttribute attributeNew;
-                if(registeredTypesList.contains(newType)){
+                
+                ArrayList<Embeddable> embs = mediator.getEmbeddableNamesInCurRentDataDomain();
+                ArrayList<String> embNames = new ArrayList<String>();
+                Iterator<Embeddable> it = embs.iterator();
+                while (it.hasNext()) {
+                    embNames.add(it.next().getClassName());
+                }
+                
+                if(registeredTypesList.contains(newType) || !embNames.contains(newType)){
                     attributeNew = new ObjAttribute();
                 } else {
                     attributeNew = new EmbeddedAttribute();
