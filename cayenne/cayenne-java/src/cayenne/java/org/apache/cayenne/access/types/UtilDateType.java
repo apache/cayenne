@@ -25,8 +25,6 @@ import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Date;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -87,28 +85,17 @@ public class UtilDateType extends AbstractType {
                 val = rs.getTime(index);
                 break;
             default:
-                // here the driver can "surpirse" us
-                // check the type of returned value...
-                Object object = rs.getObject(index);
-
-                if (object != null && !(object instanceof Date)) {
-                    throw new CayenneRuntimeException(
-                            "Expected an instance of java.util.Date, instead got "
-                                    + object.getClass().getName()
-                                    + ", column index: "
-                                    + index);
-                }
-
-                val = (Date) object;
+                val = rs.getTimestamp(index);
                 break;
         }
 
-        return (rs.wasNull()) ? null : new Date(val.getTime());
+        // return java.util.Date instead of subclass
+        return val == null ? null : new Date(val.getTime());
     }
 
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
-        Object val = null;
+        Date val = null;
 
         switch (type) {
             case Types.TIMESTAMP:
@@ -121,25 +108,12 @@ public class UtilDateType extends AbstractType {
                 val = cs.getTime(index);
                 break;
             default:
-                val = cs.getObject(index);
-                // check if value was properly converted by the driver
-                if (val != null && !(val instanceof java.util.Date)) {
-                    String typeName = TypesMapping.getSqlNameByType(type);
-                    throw new ClassCastException(
-                            "Expected a java.util.Date or subclass, instead fetched '"
-                                    + val.getClass().getName()
-                                    + "' for JDBC type "
-                                    + typeName);
-                }
+                val = cs.getTimestamp(index);
                 break;
         }
 
-        // all sql time/date classes are subclasses of java.util.Date,
-        // so lets cast it to Date,
-        // if it is not date, ClassCastException will be thrown,
-        // which is what we want
-        return (cs.wasNull()) ? null : new java.util.Date(((java.util.Date) val)
-                .getTime());
+        // return java.util.Date instead of subclass
+        return val == null ? null : new Date(val.getTime());
     }
 
     public void setJdbcObject(
