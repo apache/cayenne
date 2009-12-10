@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -35,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -76,7 +79,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
     static final String EMBEDDABLE_PANEL = "EMBEDDABLE_PANEL"; 
     static final String FLATTENED_PANEL = "FLATTENED_PANEL"; 
 
-    public ObjAttributeInfoDialogView(ProjectController mediator) {
+    public ObjAttributeInfoDialogView(final ProjectController mediator) {
 
         this.mediator = mediator;
 
@@ -209,7 +212,13 @@ public class ObjAttributeInfoDialogView extends JDialog {
                     }
                 }
 
-                if (isType) {
+                Iterator<Embeddable> embs = mediator.getEmbeddableNamesInCurRentDataDomain().iterator();
+                ArrayList<String> embNames = new ArrayList<String>();
+                while (embs.hasNext()) {
+                    embNames.add(embs.next().getClassName());
+                }
+                
+                if (isType || !embNames.contains(type.getSelectedItem()) ) {
                     ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, FLATTENED_PANEL);
                 }
                 else {
