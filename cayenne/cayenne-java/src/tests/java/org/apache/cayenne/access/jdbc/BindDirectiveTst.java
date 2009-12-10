@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,27 @@ public class BindDirectiveTst extends CayenneTestCase {
         deleteTestData();
     }
 
+    public void testBindingForCollection() throws Exception {
+        // insert 3 artists
+        Map parameters;
+        for (int i = 1; i < 4; i++) {
+            parameters = new HashMap();
+            parameters.put("id", new Long(i));
+            parameters.put("name", "Artist" + i);
+            performInsertForParameters(parameters, true, i);
+        }
+
+        // now select only with names: Artist1 and Artist3
+        List artistNames = new ArrayList();
+        artistNames.add("Artist1");
+        artistNames.add("Artist3");
+        String sql = "SELECT * FROM ARTIST WHERE ARTIST_NAME in (#bind($ARTISTNAMES))";
+        SQLTemplate query = new SQLTemplate(Artist.class, sql);
+        query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
+        List result = getDomain().createDataContext().performQuery(query);
+        assertEquals(2, result.size());
+    }
+
     public void testBindForPassedNullParam() throws Exception {
         Map parameters = new HashMap();
         parameters.put("id", new Integer(1));
@@ -51,7 +73,7 @@ public class BindDirectiveTst extends CayenneTestCase {
         parameters.put("dob", null);
         
         //without JDBC usage
-        Map row = performInsertForParameters(parameters, false);
+        Map row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
@@ -66,7 +88,7 @@ public class BindDirectiveTst extends CayenneTestCase {
         parameters.put("dob", null);
         
         //use JDBC
-        Map row = performInsertForParameters(parameters, true);
+        Map row = performInsertForParameters(parameters, true, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
@@ -80,7 +102,7 @@ public class BindDirectiveTst extends CayenneTestCase {
         // not passing parameter parameters.put("dob", not passed!);
        
         //without JDBC usage
-        Map row = performInsertForParameters(parameters, false);
+        Map row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         //parameter should be passed as null
@@ -94,7 +116,7 @@ public class BindDirectiveTst extends CayenneTestCase {
         // not passing parameter parameters.put("dob", not passed!);
        
         //use JDBC
-        Map row = performInsertForParameters(parameters, true);
+        Map row = performInsertForParameters(parameters, true, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         //parameter should be passed as null
@@ -106,7 +128,7 @@ public class BindDirectiveTst extends CayenneTestCase {
      * Inserts row for given parameters
      * @return inserted row
      */
-    private Map performInsertForParameters(Map parameters, boolean useJDBCType) throws Exception {
+    private Map performInsertForParameters(Map parameters, boolean useJDBCType, int expectedRowCount) throws Exception {
         String templateString;
         if(useJDBCType){
             templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
@@ -143,7 +165,7 @@ public class BindDirectiveTst extends CayenneTestCase {
         getDomain().performQueries(Collections.singletonList(query), observer);
 
         List data = observer.rowsForQuery(query);
-        assertEquals(1, data.size());
+        assertEquals(expectedRowCount, data.size());
         Map row = (Map) data.get(0);
         return row;
     }

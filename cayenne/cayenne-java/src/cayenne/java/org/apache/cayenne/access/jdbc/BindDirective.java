@@ -89,9 +89,14 @@ public class BindDirective extends Directive {
         int jdbcType = TypesMapping.NOT_DEFINED;
         if (type != null) {
             jdbcType = TypesMapping.getSqlTypeByName(type.toString());
-        }
-        else if (value != null) {
-            jdbcType = TypesMapping.getSqlTypeByJava(value.getClass());
+        } else if (value != null) {
+            if (value instanceof Collection) {
+                // fixing CAY-1306. In 3.0 rendering is overridden
+                // binding collection, set type to any value that is not TypesMapping.NOT_DEFINED
+                jdbcType = Integer.MIN_VALUE; //for example min value.
+            } else {
+                jdbcType = TypesMapping.getSqlTypeByJava(value.getClass());
+            }
         } else {
             // value is null, set JDBC type to NULL
         	jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
