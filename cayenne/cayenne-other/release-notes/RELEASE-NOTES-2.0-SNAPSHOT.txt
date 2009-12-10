@@ -22,6 +22,7 @@ CAY-941 NPE in SimpleNode.connectChildren()
 CAY-1052 Invalid cast on NUMERICs with scale of 0 using Postgres JDBC 8.2+
 CAY-1259 Wrong Mapping for NUMERIC Type
 CAY-1279 Passing null values in query parameters
+CAY-1306 Binding Collection in Parameters for SQLTemplate is not working
 
 ----------------------------------
 Release: 2.0.4
