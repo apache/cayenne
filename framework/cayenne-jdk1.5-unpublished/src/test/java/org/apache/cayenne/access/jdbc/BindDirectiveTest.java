@@ -21,10 +21,13 @@ package org.apache.cayenne.access.jdbc;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -41,6 +44,27 @@ public class BindDirectiveTest extends CayenneCase {
         deleteTestData();
     }
 
+    public void testBindingForCollection() throws Exception {
+        // insert 3 artists
+        Map parameters;
+        for (int i = 1; i < 4; i++) {
+            parameters = new HashMap();
+            parameters.put("id", new Long(i));
+            parameters.put("name", "Artist" + i);
+            performInsertForParameters(parameters, true, i);
+        }
+
+        // now select only with names: Artist1 and Artist3
+        Set<String> artistNames = new HashSet<String>();
+        artistNames.add("Artist1");
+        artistNames.add("Artist3");
+        String sql = "SELECT * FROM ARTIST WHERE ARTIST_NAME in (#bind($ARTISTNAMES))";
+        SQLTemplate query = new SQLTemplate(Artist.class, sql);
+        query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
+        List<DataRow> result = getDomain().createDataContext().performQuery(query);
+        assertEquals(2, result.size());
+    }
+
     public void testBindForPassedNullParam() throws Exception {
         Map parameters = new HashMap();
         parameters.put("id", new Long(1));
@@ -49,7 +73,7 @@ public class BindDirectiveTest extends CayenneCase {
         parameters.put("dob", null);
 
         // without JDBC usage
-        Map row = performInsertForParameters(parameters, false);
+        Map row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
@@ -64,7 +88,7 @@ public class BindDirectiveTest extends CayenneCase {
         parameters.put("dob", null);
 
         // use JDBC
-        Map row = performInsertForParameters(parameters, true);
+        Map row = performInsertForParameters(parameters, true, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
@@ -78,7 +102,7 @@ public class BindDirectiveTest extends CayenneCase {
         // not passing parameter parameters.put("dob", not passed!);
 
         // without JDBC usage
-        Map row = performInsertForParameters(parameters, false);
+        Map row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         // parameter should be passed as null
@@ -92,7 +116,7 @@ public class BindDirectiveTest extends CayenneCase {
         // not passing parameter parameters.put("dob", not passed!);
 
         // use JDBC
-        Map row = performInsertForParameters(parameters, true);
+        Map row = performInsertForParameters(parameters, true, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         // parameter should be passed as null
@@ -104,8 +128,10 @@ public class BindDirectiveTest extends CayenneCase {
      * 
      * @return inserted row
      */
-    private Map performInsertForParameters(Map parameters, boolean useJDBCType)
-            throws Exception {
+    private Map performInsertForParameters(
+            Map parameters,
+            boolean useJDBCType,
+            int expectedRowCount) throws Exception {
         String templateString;
         if (useJDBCType) {
             templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
@@ -121,7 +147,8 @@ public class BindDirectiveTest extends CayenneCase {
 
         SQLTemplateAction action = new SQLTemplateAction(
                 template,
-                getAccessStackAdapter().getAdapter(), getDomain().getEntityResolver());
+                getAccessStackAdapter().getAdapter(),
+                getDomain().getEntityResolver());
         assertSame(getAccessStackAdapter().getAdapter(), action.getAdapter());
 
         Connection c = getConnection();
@@ -143,7 +170,7 @@ public class BindDirectiveTest extends CayenneCase {
         getDomain().performQueries(Collections.singletonList(query), observer);
 
         List data = observer.rowsForQuery(query);
-        assertEquals(1, data.size());
+        assertEquals(expectedRowCount, data.size());
         Map row = (Map) data.get(0);
         return row;
     }
