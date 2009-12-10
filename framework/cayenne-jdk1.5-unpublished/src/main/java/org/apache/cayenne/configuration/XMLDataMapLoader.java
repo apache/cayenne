@@ -37,27 +37,17 @@ public class XMLDataMapLoader implements DataMapLoader {
 
     private static Log logger = LogFactory.getLog(XMLDataMapLoader.class);
 
-    public DataMap load(
-            DataChannelDescriptor parentDataChannelDescriptor,
-            String location,
-            String name) throws CayenneRuntimeException {
-
-        Resource baseResource = parentDataChannelDescriptor.getConfigurationResource();
-        if (baseResource == null) {
-            throw new NullPointerException("Null parentDataChannelDescriptor's resource");
-        }
-
-        Resource dataMapResource = baseResource.getRelativeResource(location);
+    public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
 
         // TODO: andrus 11.27.2009 - deprecate MapLoader and implement a loader
         // here. MapLoader is in the wrong place, exposes ContentHandler methods and
         // implements if/else contextless matching of tags... should use something like
         // SAXNestedTagHandler instead.
         MapLoader mapLoader = new MapLoader();
-        URL url = dataMapResource.getURL();
+        URL url = configurationResource.getURL();
 
         InputStream in = null;
-        
+
         DataMap map;
 
         try {
@@ -66,7 +56,10 @@ public class XMLDataMapLoader implements DataMapLoader {
             map = mapLoader.loadDataMap(new InputSource(in));
         }
         catch (Exception e) {
-            throw new CayenneRuntimeException("Error loading configuration from %s", e, url);
+            throw new CayenneRuntimeException(
+                    "Error loading configuration from %s",
+                    e,
+                    url);
         }
         finally {
             try {
@@ -80,9 +73,7 @@ public class XMLDataMapLoader implements DataMapLoader {
                         ioex);
             }
         }
-        
-        map.setName(name);
-        map.setLocation(location);
+
         return map;
     }
 }

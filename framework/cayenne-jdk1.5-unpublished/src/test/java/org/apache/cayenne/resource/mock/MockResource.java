@@ -16,23 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.resource.mock;
 
-import org.apache.cayenne.ConfigurationException;
+import java.net.URL;
+
 import org.apache.cayenne.resource.Resource;
 
-/**
- * An object that can load a named {@link DataChannelDescriptor} from some configuration
- * source.
- * 
- * @since 3.1
- */
-public interface DataChannelDescriptorLoader {
+public class MockResource implements Resource {
 
-    /**
-     * Loads a DataChannelDescriptor from some configuration resource, usually an XML file
-     * found on classpath.
-     */
-    DataChannelDescriptor load(Resource configurationResource)
-            throws ConfigurationException;
+    public Resource getRelativeResource(String relativePath) {
+        return null;
+    }
+
+    public URL getURL() {
+        return null;
+    }
+
 }

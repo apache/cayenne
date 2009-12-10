@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -50,6 +51,9 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.resource.mock.MockResource;
 
 public class DataDomainProviderTest extends TestCase {
 
@@ -82,11 +86,18 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor2.setLocation("testDataNode2.driver.xml");
         testDescriptor.getDataNodeDescriptors().add(nodeDescriptor2);
 
+        final ResourceLocator locator = new ResourceLocator() {
+
+            public Collection<Resource> findResources(String name) {
+                assertEquals("cayenne-" + testConfigName + ".xml", name);
+                return Collections.<Resource> singleton(new MockResource());
+            }
+        };
+
         final DataChannelDescriptorLoader testLoader = new DataChannelDescriptorLoader() {
 
-            public DataChannelDescriptor load(String runtimeName)
-                    throws CayenneRuntimeException {
-                assertEquals(testConfigName, runtimeName);
+            public DataChannelDescriptor load(Resource configurationResource)
+                    throws ConfigurationException {
                 return testDescriptor;
             }
         };
@@ -99,6 +110,7 @@ public class DataDomainProviderTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(RuntimeProperties.class).toInstance(testProperties);
                 binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
                 binder.bind(SchemaUpdateStrategy.class).toInstance(

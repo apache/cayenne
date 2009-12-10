@@ -18,23 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.URLResource;
 
 public class XMLDataChannelDescriptorLoaderTest extends TestCase {
@@ -42,32 +37,10 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
     public void testLoadEmpty() {
 
         // create dependencies
-        final String testConfigName = "testConfig1";
-
-        final ResourceLocator locator = new ResourceLocator() {
-
-            public Collection<Resource> findResources(String name) {
-
-                String baseUrl = getClass().getPackage().getName().replace('.', '/');
-
-                Enumeration<URL> en;
-                try {
-                    en = getClass().getClassLoader().getResources(
-                            baseUrl + "/cayenne-" + testConfigName + ".xml");
-                }
-                catch (IOException e) {
-                    throw new RuntimeException("error finding test resource: ", e);
-                }
-
-                URL url = en.nextElement();
-                return Collections.<Resource> singleton(new URLResource(url));
-            }
-        };
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             }
         };
@@ -78,27 +51,23 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
-        DataChannelDescriptor descriptor = loader.load(testConfigName);
+        String testConfigName = "testConfig1";
+        String baseUrl = getClass().getPackage().getName().replace('.', '/');
+        URL url = getClass().getClassLoader().getResource(
+                baseUrl + "/cayenne-" + testConfigName + ".xml");
+        DataChannelDescriptor descriptor = loader.load(new URLResource(url));
 
         assertNotNull(descriptor);
-        assertEquals(testConfigName, descriptor.getName());
+        assertNull(descriptor.getName());
     }
 
-    public void testLoad_MissingConfig() {
+    public void testLoad_MissingConfig() throws Exception {
 
         // create dependencies
-        final ResourceLocator locator = new ResourceLocator() {
-
-            public Collection<Resource> findResources(String name) {
-
-                return Collections.emptyList();
-            }
-        };
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             }
         };
@@ -110,10 +79,10 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         injector.injectMembers(loader);
 
         try {
-            loader.load("testConfig1_missing");
+            loader.load(new URLResource(new URL("file:///no_such_resource")));
             fail("No exception was thrown on bad absent config name");
         }
-        catch (CayenneRuntimeException e) {
+        catch (ConfigurationException e) {
             // expected
         }
     }
@@ -121,32 +90,10 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
     public void testLoadDataMap() {
 
         // create dependencies
-        final String testConfigName = "testConfig2";
-
-        final ResourceLocator locator = new ResourceLocator() {
-
-            public Collection<Resource> findResources(String name) {
-
-                String baseUrl = getClass().getPackage().getName().replace('.', '/');
-
-                Enumeration<URL> en;
-                try {
-                    en = getClass().getClassLoader().getResources(
-                            baseUrl + "/cayenne-" + testConfigName + ".xml");
-                }
-                catch (IOException e) {
-                    throw new RuntimeException("error finding test resource: ", e);
-                }
-
-                URL url = en.nextElement();
-                return Collections.<Resource> singleton(new URLResource(url));
-            }
-        };
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             }
         };
@@ -157,11 +104,16 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
-        DataChannelDescriptor descriptor = loader.load(testConfigName);
+        String testConfigName = "testConfig2";
+        String baseUrl = getClass().getPackage().getName().replace('.', '/');
+        URL url = getClass().getClassLoader().getResource(
+                baseUrl + "/cayenne-" + testConfigName + ".xml");
+
+        DataChannelDescriptor descriptor = loader.load(new URLResource(url));
 
         assertNotNull(descriptor);
 
-        assertEquals(testConfigName, descriptor.getName());
+        assertNull(descriptor.getName());
 
         Collection<DataMap> maps = descriptor.getDataMaps();
         assertEquals(1, maps.size());
@@ -171,32 +123,10 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
     public void testLoadDataEverything() {
 
         // create dependencies
-        final String testConfigName = "testConfig3";
-
-        final ResourceLocator locator = new ResourceLocator() {
-
-            public Collection<Resource> findResources(String name) {
-
-                String baseUrl = getClass().getPackage().getName().replace('.', '/');
-
-                Enumeration<URL> en;
-                try {
-                    en = getClass().getClassLoader().getResources(
-                            baseUrl + "/cayenne-" + testConfigName + ".xml");
-                }
-                catch (IOException e) {
-                    throw new RuntimeException("error finding test resource: ", e);
-                }
-
-                URL url = en.nextElement();
-                return Collections.<Resource> singleton(new URLResource(url));
-            }
-        };
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             }
         };
@@ -207,11 +137,16 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
-        DataChannelDescriptor descriptor = loader.load(testConfigName);
+        String testConfigName = "testConfig3";
+        String baseUrl = getClass().getPackage().getName().replace('.', '/');
+        URL url = getClass().getClassLoader().getResource(
+                baseUrl + "/cayenne-" + testConfigName + ".xml");
+
+        DataChannelDescriptor descriptor = loader.load(new URLResource(url));
 
         assertNotNull(descriptor);
 
-        assertEquals(testConfigName, descriptor.getName());
+        assertNull(descriptor.getName());
 
         Collection<DataMap> maps = descriptor.getDataMaps();
         assertEquals(2, maps.size());

@@ -20,16 +20,14 @@ package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
 
 /**
- * A loader of DataMaps, resolved relatively to a given {@link DataChannelDescriptor}.
+ * A loader of DataMaps.
  * 
  * @since 3.1
  */
 public interface DataMapLoader {
 
-    DataMap load(
-            DataChannelDescriptor parentDataChannelDescriptor,
-            String location,
-            String name) throws CayenneRuntimeException;
+    DataMap load(Resource configurationResource) throws CayenneRuntimeException;
 }

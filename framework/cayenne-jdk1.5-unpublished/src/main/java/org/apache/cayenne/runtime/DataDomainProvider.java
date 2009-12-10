@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
+import java.util.Collection;
+
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
@@ -36,6 +38,10 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A {@link DataChannel} provider that provides a single instance of DataDomain configured
@@ -44,6 +50,11 @@ import org.apache.cayenne.map.DataMap;
  * @since 3.1
  */
 public class DataDomainProvider implements Provider<DataDomain> {
+
+    private static Log logger = LogFactory.getLog(DataDomainProvider.class);
+
+    @Inject
+    protected ResourceLocator resourceLocator;
 
     @Inject
     protected DataChannelDescriptorLoader loader;
@@ -93,10 +104,45 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected void createDataChannel() throws Exception {
         String runtimeName = configurationProperties
                 .get(RuntimeProperties.CAYENNE_RUNTIME_NAME);
-        DataChannelDescriptor descriptor = loader.load(runtimeName);
+
+        long t0 = System.currentTimeMillis();
+        if (logger.isDebugEnabled()) {
+            logger.debug("starting configuration loading: " + runtimeName);
+        }
+
+        String resourceName = getResourceName(runtimeName);
+        Collection<Resource> configurations = resourceLocator.findResources(resourceName);
+
+        if (configurations.isEmpty()) {
+            throw new ConfigurationException(
+                    "Configuration file \"%s\" is not found.",
+                    resourceName);
+        }
+
+        Resource configurationResource = configurations.iterator().next();
+
+        // no support for multiple configs yet, but this is not a hard error
+        if (configurations.size() > 1) {
+            logger.info("found "
+                    + configurations.size()
+                    + " configurations, will use the first one: "
+                    + configurationResource.getURL());
+        }
+
+        DataChannelDescriptor descriptor = loader.load(configurationResource);
+        descriptor.setName(runtimeName);
+
+        long t1 = System.currentTimeMillis();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("finished configuration loading: "
+                    + runtimeName
+                    + " in "
+                    + (t1 - t0)
+                    + " ms.");
+        }
 
         DataDomain dataDomain = new DataDomain(descriptor.getName());
-
         dataDomain.initWithProperties(descriptor.getProperties());
 
         for (DataMap dataMap : descriptor.getDataMaps()) {
@@ -127,7 +173,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
                         .getName());
             }
             else {
-
                 SchemaUpdateStrategy strategy = objectFactory.newInstance(
                         SchemaUpdateStrategy.class,
                         schemaUpdateStrategyType);
@@ -147,6 +192,19 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         this.dataDomain = dataDomain;
+    }
+
+    /**
+     * Returns the name of DataDomain configuration resource derived from runtime name.
+     * Resource name is determined based on the naming convention.
+     * "cayenne-<runtimename>.xml".
+     */
+    protected String getResourceName(String runtimeName) {
+        if (runtimeName == null) {
+            throw new NullPointerException("Null rumtimeName");
+        }
+
+        return "cayenne-" + runtimeName + ".xml";
     }
 
 }
