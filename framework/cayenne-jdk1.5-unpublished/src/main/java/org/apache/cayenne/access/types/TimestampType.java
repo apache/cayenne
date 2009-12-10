@@ -32,13 +32,13 @@ public class TimestampType implements ExtendedType {
         return Timestamp.class.getName();
     }
 
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Timestamp materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getTimestamp(index);
     }
 
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Timestamp materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
-        return rs.getTimestamp(index);
+        return cs.getTimestamp(index);
     }
 
     public void setJdbcObject(

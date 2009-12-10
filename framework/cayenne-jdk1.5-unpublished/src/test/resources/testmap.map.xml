@@ -643,6 +643,10 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
+	<query name="SelectDateTest" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
+	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
 		<post-add method-name="prePersistDataMap1"/>
 		<post-add method-name="prePersistDataMap2"/>

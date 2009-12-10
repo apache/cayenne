@@ -50,7 +50,7 @@ class SQLiteDateType extends UtilDateType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         String string = rs.getString(index);
 
@@ -76,7 +76,7 @@ class SQLiteDateType extends UtilDateType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Date materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
 
         String string = rs.getString(index);

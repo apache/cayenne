@@ -19,17 +19,20 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.art.CalendarEntity;
 import org.apache.art.DateTestEntity;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
  * Tests Date handling in Cayenne.
- * 
  */
 public class DateTimeTypesTest extends CayenneCase {
 
@@ -77,6 +80,7 @@ public class DateTimeTypesTest extends CayenneCase {
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getDateColumn());
         assertEquals(nowDate, testRead.getDateColumn());
+        assertEquals(Date.class, testRead.getDateColumn().getClass());
     }
 
     public void testTime() throws Exception {
@@ -92,6 +96,7 @@ public class DateTimeTypesTest extends CayenneCase {
         SelectQuery q = new SelectQuery(DateTestEntity.class);
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getTimeColumn());
+        assertEquals(Date.class, testRead.getTimeColumn().getClass());
 
         // OpenBase fails to store seconds for the time
         // FrontBase returns time with 1 hour offset (I guess "TIME WITH TIMEZONE" may
@@ -120,5 +125,71 @@ public class DateTimeTypesTest extends CayenneCase {
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getTimestampColumn());
         assertEquals(now, testRead.getTimestampColumn());
+    }
+
+    public void testSQLTemplateTimestamp() throws Exception {
+        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2003, 1, 1, 1, 20, 30);
+
+        // most databases fail millisecond accuracy
+        // cal.set(Calendar.MILLISECOND, 55);
+
+        Date now = cal.getTime();
+        test.setTimestampColumn(now);
+        context.commitChanges();
+
+        NamedQuery q = new NamedQuery("SelectDateTest");
+        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+        Object columnValue = testRead.get("TIMESTAMP_COLUMN");
+        assertNotNull(columnValue);
+        assertEquals(now, columnValue);
+        assertEquals(Timestamp.class, columnValue.getClass());
+    }
+
+    public void testSQLTemplateDate() throws Exception {
+        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2003, 1, 1, 1, 20, 30);
+
+        // most databases fail millisecond accuracy
+        // cal.set(Calendar.MILLISECOND, 55);
+
+        java.sql.Date now = new java.sql.Date(cal.getTime().getTime());
+        test.setDateColumn(now);
+        context.commitChanges();
+
+        NamedQuery q = new NamedQuery("SelectDateTest");
+        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+        Object columnValue = testRead.get("DATE_COLUMN");
+        assertNotNull(columnValue);
+        assertEquals(java.sql.Date.class, columnValue.getClass());
+        assertEquals(now.toString(), columnValue.toString());
+    }
+
+    public void testSQLTemplateTime() throws Exception {
+        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2003, 1, 1, 1, 20, 30);
+
+        // most databases fail millisecond accuracy
+        // cal.set(Calendar.MILLISECOND, 55);
+
+        Time now = new Time(cal.getTime().getTime());
+        test.setTimeColumn(now);
+        context.commitChanges();
+
+        NamedQuery q = new NamedQuery("SelectDateTest");
+        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+        Object columnValue = testRead.get("TIME_COLUMN");
+        assertNotNull(columnValue);
+        assertEquals(Time.class, columnValue.getClass());
+        assertEquals(now.toString(), columnValue.toString());
     }
 }

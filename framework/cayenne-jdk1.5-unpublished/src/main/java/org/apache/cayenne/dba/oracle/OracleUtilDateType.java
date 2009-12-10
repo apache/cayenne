@@ -32,26 +32,26 @@ import org.apache.cayenne.access.types.UtilDateType;
 public class OracleUtilDateType extends UtilDateType {
 
 	@Override
-    public Object materializeObject(CallableStatement cs, int index, int type)
+    public Date materializeObject(CallableStatement cs, int index, int type)
 		throws Exception {
 			
-		Object date = super.materializeObject(cs, index, type);
+	    Date date = super.materializeObject(cs, index, type);
 		if (date == null || type != Types.TIME) {
 			return date;
 		} else {
-			return normalizeDate((Date) date);
+			return normalizeDate(date);
 		}
 	}
 
 	@Override
-    public Object materializeObject(ResultSet rs, int index, int type)
+    public Date materializeObject(ResultSet rs, int index, int type)
 		throws Exception {
 
-		Object date = super.materializeObject(rs, index, type);
+	    Date date = super.materializeObject(rs, index, type);
 		if (date == null || type != Types.TIME) {
 			return date;
 		} else {
-			return normalizeDate((Date) date);
+			return normalizeDate(date);
 		}
 	}
 
