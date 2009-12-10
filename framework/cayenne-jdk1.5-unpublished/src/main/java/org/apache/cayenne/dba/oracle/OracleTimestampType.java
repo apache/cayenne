@@ -20,13 +20,11 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.types.TimestampType;
 
-
 /**
- * This is handler for Oracle specific type "oracle.sql.TIMESTAMP"
- * Oracle official JDBC Driver is mapping SQL TIMESTAMP to this type
- * Created to solve CAY-1323.
+ * This is handler for Oracle specific type "oracle.sql.TIMESTAMP" Oracle official JDBC
+ * Driver is mapping SQL TIMESTAMP to this type.
  */
-public class OracleTimestampType extends TimestampType {
+class OracleTimestampType extends TimestampType {
 
     @Override
     public String getClassName() {

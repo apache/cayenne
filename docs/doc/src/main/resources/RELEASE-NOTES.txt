@@ -19,6 +19,7 @@ CAY-1314 Migrate Modeler Preferences to Java Preferences API: migrate org.apache
 CAY-1315 Formattable exceptions
 CAY-1316 Deprecate DataObjectUtils and move its methods to new utility class org.apache.cayenne.Cayenne
 CAY-1319 Minimal DI container-based configuration to run Cayenne
+CAY-1323 oracle.sql.TIMESTAMP in Result of query
 
 Bug Fixes Since 3.0:
 
@@ -34,7 +35,6 @@ CAY-1247 Query SQL syntax with join and OR on Oracle8 (and maybe OpenBase)
 CAY-1305 EJBQL doesn't support null parameters
 CAY-1307 Error committing CLOB on Oracle8
 CAY-1309 many validation errors when we remove dbEntity 
-CAY-1323 oracle.sql.TIMESTAMP in Result of query
 CAY-1325 Stop bundling cayenne-agent.jar with the distro
 
 ----------------------------------
