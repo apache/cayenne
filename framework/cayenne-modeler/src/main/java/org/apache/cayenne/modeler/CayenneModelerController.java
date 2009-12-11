@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.validator.Validator;
 
@@ -107,9 +106,7 @@ public class CayenneModelerController extends CayenneController {
             }
         });
 
-        Domain prefDomain = application.getPreferenceDomain().getSubdomain(
-                frame.getClass());
-        ComponentGeometry geometry = ComponentGeometry.getPreference(prefDomain);
+        ComponentGeometry geometry = new ComponentGeometry(frame.getClass(), null);
         geometry.bind(frame, 650, 550, 0);
     }
 

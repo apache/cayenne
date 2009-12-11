@@ -52,7 +52,6 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
@@ -229,13 +228,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
          * Moving this to try-catch block per CAY-940. Exception will be stack-traced
          */
         try {
-            Domain domain = eventController
-                    .getApplicationPreferenceDomain()
-                    .getSubdomain(this.getClass());
-            ComponentGeometry geometry = (ComponentGeometry) domain.getDetail(
-                    "splitPane.divider",
-                    ComponentGeometry.class,
-                    true);
+            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), "splitPane/divider");
 
             geometry
                     .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);

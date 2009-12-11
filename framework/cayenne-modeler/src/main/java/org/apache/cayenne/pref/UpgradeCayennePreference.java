@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.commons.collections.ExtendedProperties;
 
-public class UpgradeCayennePreferenceDecorator extends CayennePreferenceDecorator {
+public class UpgradeCayennePreference extends CayennePreferenceDecorator {
 
     /** Name of the preferences file. */
     public static final String PREFERENCES_NAME_OLD = "modeler.preferences";
@@ -45,14 +45,14 @@ public class UpgradeCayennePreferenceDecorator extends CayennePreferenceDecorato
     public static final String EDITOR_LOGFILE_ENABLED_OLD = "Editor.logfileEnabled";
     public static final String EDITOR_LOGFILE_OLD = "Editor.logfile";
 
-    public UpgradeCayennePreferenceDecorator(Preference decoratedPreference) {
+    public UpgradeCayennePreference(Preference decoratedPreference) {
         super(decoratedPreference);
     }
 
     public void upgrade() {
         try {
 
-            if (!Preferences.userRoot().nodeExists(CAYENNE_PREFERENCES)) {
+            if (!Preferences.userRoot().nodeExists(CAYENNE_PREFERENCE)) {
 
                 File prefsFile = new File(preferencesDirectory(), PREFERENCES_NAME_OLD);
                 if (prefsFile.exists()) {
@@ -61,7 +61,7 @@ public class UpgradeCayennePreferenceDecorator extends CayennePreferenceDecorato
                         ep.load(new FileInputStream(prefsFile));
 
                         Preferences prefEditor = Preferences.userRoot().node(
-                                CAYENNE_PREFERENCES).node(EDITOR);
+                                CAYENNE_PREFERENCE).node(EDITOR);
 
                         prefEditor.putBoolean(ModelerPreferences.EDITOR_LOGFILE_ENABLED, ep.getBoolean(EDITOR_LOGFILE_ENABLED_OLD));
                         prefEditor.put(ModelerPreferences.EDITOR_LOGFILE, ep.getString(EDITOR_LOGFILE_OLD));
@@ -108,6 +108,11 @@ public class UpgradeCayennePreferenceDecorator extends CayennePreferenceDecorato
     public Preferences getRootPreference() {
         upgrade();
         return decoratedPreference.getRootPreference();
+    }
+
+    public Preferences getCayennePreference() {
+        upgrade();
+        return decoratedPreference.getCayennePreference();
     }
 
 }

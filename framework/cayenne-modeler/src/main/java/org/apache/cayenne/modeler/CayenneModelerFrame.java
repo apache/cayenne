@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler;
 
 import java.awt.AWTEvent;
@@ -114,44 +113,44 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListener,
         DataMapDisplayListener, ObjEntityDisplayListener, DbEntityDisplayListener,
-        QueryDisplayListener, ProcedureDisplayListener, MultipleObjectsDisplayListener, 
-        EmbeddableDisplayListener{
+        QueryDisplayListener, ProcedureDisplayListener, MultipleObjectsDisplayListener,
+        EmbeddableDisplayListener {
 
     protected EditorView view;
     protected RecentFileMenu recentFileMenu;
     protected ActionManager actionManager;
     protected JLabel status;
-    
+
     /**
      * Menu which shows/hides log console
      */
     protected JCheckBoxMenuItem logMenu;
-    
+
     /**
-     * Split panel, where main project editor and external component, like log console, 
-     * are located 
+     * Split panel, where main project editor and external component, like log console,
+     * are located
      */
     protected JSplitPane splitPane;
-    
+
     /**
      * Component, plugged into this frame
      */
     protected Component dockComponent;
-    
+
     /**
      * Listeners for changes in recent file menu
      */
     protected List<RecentFileListListener> recentFileListeners;
-    
+
     /**
      * Welcome screen, shown when no project is open
      */
     protected WelcomeScreen welcomeScreen;
-    
+
     public CayenneModelerFrame(ActionManager actionManager) {
         super(ModelerConstants.TITLE);
         this.actionManager = actionManager;
-        
+
         recentFileListeners = new Vector<RecentFileListListener>();
 
         setIconImage(ModelerUtil.buildIcon("CayenneModeler.jpg").getImage());
@@ -159,9 +158,9 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         initToolbar();
         initStatusBar();
         initWelcome();
-        
-        fireRecentFileListChanged(); //start filling list in welcome screen and in menu
-        
+
+        fireRecentFileListChanged(); // start filling list in welcome screen and in menu
+
         setView(null);
     }
 
@@ -198,7 +197,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         fileMenu.add(getAction(SaveAsAction.getActionName()).buildMenu());
         fileMenu.add(getAction(RevertAction.getActionName()).buildMenu());
         fileMenu.addSeparator();
-        
+
         editMenu.add(getAction(UndoAction.getActionName()).buildMenu());
         editMenu.add(getAction(RedoAction.getActionName()).buildMenu());
         editMenu.add(getAction(CutAction.getActionName()).buildMenu());
@@ -224,10 +223,10 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         projectMenu.add(getAction(CreateObjEntityAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateEmbeddableAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateDbEntityAction.getActionName()).buildMenu());
-        
+
         projectMenu.add(getAction(CreateProcedureAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateQueryAction.getActionName()).buildMenu());
-        
+
         projectMenu.addSeparator();
         projectMenu.add(getAction(ObjEntitySyncAction.getActionName()).buildMenu());
         projectMenu.addSeparator();
@@ -240,27 +239,38 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(GenerateCodeAction.getActionName()).buildMenu());
         toolMenu.add(getAction(GenerateDBAction.getActionName()).buildMenu());
         toolMenu.add(getAction(MigrateAction.getActionName()).buildMenu());
-        
+
         /**
          * Menu for opening Log console
          */
         toolMenu.addSeparator();
-        
+
         logMenu = getAction(ShowLogConsoleAction.getActionName()).buildCheckBoxMenu();
+
+        if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)
+                && LogConsole.getInstance().getConsoleProperty(
+                        LogConsole.SHOW_CONSOLE_PROPERTY)) {
+            LogConsole.getInstance().setConsoleProperty(
+                    LogConsole.SHOW_CONSOLE_PROPERTY,
+                    false);
+        }
+
         updateLogConsoleMenu();
         toolMenu.add(logMenu);
-        
+
         // Mac OS X has it's own Preferences menu item under the application menu
         if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
             toolMenu.addSeparator();
-            toolMenu.add(getAction(ConfigurePreferencesAction.getActionName()).buildMenu());
+            toolMenu.add(getAction(ConfigurePreferencesAction.getActionName())
+                    .buildMenu());
         }
 
-        // Mac OS X "About CayenneModeler" appears under the application menu, per Apple GUI standards
+        // Mac OS X "About CayenneModeler" appears under the application menu, per Apple
+        // GUI standards
         if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X)
             helpMenu.add(getAction(AboutAction.getActionName()).buildMenu());
         helpMenu.add(getAction(DocumentationAction.getActionName()).buildMenu());
-        
+
         JMenuBar menuBar = new JMenuBar();
 
         menuBar.add(fileMenu);
@@ -271,9 +281,9 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         setJMenuBar(menuBar);
     }
-    
+
     /**
-     * Selects/deselects menu item, depending on status of log console 
+     * Selects/deselects menu item, depending on status of log console
      */
     public void updateLogConsoleMenu() {
         logMenu.setSelected(LogConsole.getInstance().getConsoleProperty(
@@ -283,25 +293,22 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     protected void initStatusBar() {
         status = new JLabel();
         status.setFont(status.getFont().deriveFont(Font.PLAIN, 10));
-        
+
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.getInsets().left = 5;
         splitPane.getInsets().right = 5;
-        
+
         splitPane.setResizeWeight(0.7);
-        
+
         /**
-         * Moving this to try-catch block per CAY-940.
-         * Exception will be stack-traced  
+         * Moving this to try-catch block per CAY-940. Exception will be stack-traced
          */
         try {
-            Domain domain = Application.getInstance().getPreferenceDomain().getSubdomain(
-                this.getClass());
-            ComponentGeometry geometry = (ComponentGeometry) domain.getDetail(
-                "splitPane.divider",
-                ComponentGeometry.class,
-                true);
-            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
+            ComponentGeometry geometry = new ComponentGeometry(
+                    this.getClass(),
+                    "splitPane/divider");
+            geometry
+                    .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
         }
         catch (Exception ex) {
             LogFactory.getLog(getClass()).error("Cannot bind divider property", ex);
@@ -315,7 +322,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
     }
-    
+
     /**
      * Initializes welcome screen
      */
@@ -323,7 +330,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         welcomeScreen = new WelcomeScreen();
         addRecentFileListListener(welcomeScreen);
     }
-    
+
     /**
      * Plugs a component in the frame, between main area and status bar
      */
@@ -331,20 +338,20 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         if (dockComponent == c) {
             return;
         }
-        
+
         if (dockComponent != null) {
             splitPane.setBottomComponent(null);
         }
-        
+
         dockComponent = c;
-        
+
         if (dockComponent != null) {
             splitPane.setBottomComponent(dockComponent);
         }
-        
+
         splitPane.validate();
     }
-    
+
     /**
      * @return Dock component
      */
@@ -359,21 +366,21 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolBar.add(getAction(NewProjectAction.getActionName()).buildButton());
         toolBar.add(getAction(OpenProjectAction.getActionName()).buildButton());
         toolBar.add(getAction(SaveAction.getActionName()).buildButton());
-        
+
         toolBar.addSeparator();
         toolBar.add(getAction(RemoveAction.getActionName()).buildButton());
-        
+
         toolBar.addSeparator();
-        
+
         toolBar.add(getAction(CutAction.getActionName()).buildButton());
         toolBar.add(getAction(CopyAction.getActionName()).buildButton());
         toolBar.add(getAction(PasteAction.getActionName()).buildButton());
 
         toolBar.addSeparator();
-        
+
         toolBar.add(getAction(UndoAction.getActionName()).buildButton());
         toolBar.add(getAction(RedoAction.getActionName()).buildButton());
-        
+
         toolBar.addSeparator();
 
         toolBar.add(getAction(CreateDomainAction.getActionName()).buildButton());
@@ -387,23 +394,24 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         toolBar.addSeparator();
 
-        
         toolBar.add(getAction(CreateObjEntityAction.getActionName()).buildButton());
         toolBar.add(getAction(CreateEmbeddableAction.getActionName()).buildButton());
         toolBar.add(getAction(CreateQueryAction.getActionName()).buildButton());
- 
+
         toolBar.addSeparator();
 
         toolBar.add(getAction(NavigateBackwardAction.getActionName()).buildButton());
         toolBar.add(getAction(NavigateForwardAction.getActionName()).buildButton());
 
-        JPanel east = new JPanel(new BorderLayout());   // is used to place search feature components the most right on a toolbar  
+        JPanel east = new JPanel(new BorderLayout()); // is used to place search feature
+        // components the most right on a
+        // toolbar
         final JTextField findField = new JTextField(10);
-        findField.addKeyListener(new KeyListener(){
+        findField.addKeyListener(new KeyListener() {
 
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() != KeyEvent.VK_ENTER){
-                     findField.setBackground(Color.white);
+                if (e.getKeyCode() != KeyEvent.VK_ENTER) {
+                    findField.setBackground(Color.white);
                 }
             }
 
@@ -412,28 +420,30 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
             public void keyTyped(KeyEvent e) {
             }
-            
+
         });
         findField.setAction(getAction(FindAction.getActionName()));
         JLabel findLabel = new JLabel("Search:");
         findLabel.setLabelFor(findField);
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+
             public void eventDispatched(AWTEvent event) {
-               
-                
+
                 if (event instanceof KeyEvent) {
-                   
-                   if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
-                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F){                               
-                               findField.requestFocus();                               
-                   }                    
-                }                      
-            }    
-            
-        }, AWTEvent.KEY_EVENT_MASK);
-        
-        
-        JPanel box = new JPanel();  // is used to place label and text field one after another
+
+                    if (((KeyEvent) event).getModifiers() == Toolkit
+                            .getDefaultToolkit()
+                            .getMenuShortcutKeyMask()
+                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F) {
+                        findField.requestFocus();
+                    }
+                }
+            }
+
+        },
+                AWTEvent.KEY_EVENT_MASK);
+
+        JPanel box = new JPanel(); // is used to place label and text field one after another
         box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
         box.add(findLabel);
         box.add(findField);
@@ -466,11 +476,11 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
         actionManager.procedureSelected();
     }
-    
+
     public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
         actionManager.multipleObjectsSelected(e.getPaths());
     }
-    
+
     public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
         actionManager.embeddableSelected();
     }
@@ -502,7 +512,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
      */
     public void setView(EditorView view) {
         int oldLocation = splitPane.getDividerLocation();
-        
+
         this.view = view;
 
         if (view != null) {
@@ -515,14 +525,14 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         validate();
         splitPane.setDividerLocation(oldLocation);
     }
-    
+
     /**
      * Adds listener for recent menu changes
      */
     public void addRecentFileListListener(RecentFileListListener listener) {
         recentFileListeners.add(listener);
     }
-    
+
     /**
      * Notifies all listeners that recent file list has changed
      */

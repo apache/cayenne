@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.dialog;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.text.*;
@@ -181,8 +180,7 @@ public class LogConsole extends CayenneController {
             if (logWindow == null) {
                 logWindow = new LogConsoleWindow(this);
             
-                Domain prefDomain = getDomain();
-                ComponentGeometry geometry = ComponentGeometry.getPreference(prefDomain);
+                ComponentGeometry geometry = new ComponentGeometry(getClass(), null);
                 geometry.bind(logWindow, 600, 300, 0);
             }
             
@@ -264,15 +262,14 @@ public class LogConsole extends CayenneController {
      * Sets the property, depending on last user's choice
      */
     public void setConsoleProperty(String prop, boolean b) {
-        getDomain().getDetail(prop, true).
-            setBooleanProperty(prop, b);
+        Application.getInstance().getPreferencesNode(getClass(), null).putBoolean(prop, b);
     }
     
     /**
      * @return a boolean property
      */
     public boolean getConsoleProperty(String prop) {
-        return getDomain().getDetail(prop, true).getBooleanProperty(prop);
+        return Application.getInstance().getPreferencesNode(getClass(), null).getBoolean(prop, false);
     }
     
     /**
@@ -346,14 +343,13 @@ public class LogConsole extends CayenneController {
         return view;
     }
     
-    protected Domain getDomain() {
-        return Application.getInstance().getPreferenceDomain().getSubdomain(getClass());
-    }
-    
     /**
      * Stop logging and don't print any more messages to text area
      */
     public void stopLogging() {
+        if(!getConsoleProperty(DOCKED_PROPERTY)){
+            setConsoleProperty(SHOW_CONSOLE_PROPERTY, false);
+        }
         loggingStopped = true;
     }
     

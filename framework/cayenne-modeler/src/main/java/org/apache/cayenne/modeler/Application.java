@@ -24,18 +24,19 @@ import java.awt.Frame;
 import java.awt.Window;
 import java.io.File;
 import java.util.Collection;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
-import javax.swing.undo.UndoManager;
 
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.pref.DomainPreference;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
@@ -86,11 +87,13 @@ public class Application {
     protected String preferencesDB;
     protected BindingFactory bindingFactory;
     protected AdapterMapping adapterMapping;
-    
+
     protected CayenneUndoManager undoManager;
 
     // This is for OS X support
     private boolean isQuittingApplication = false;
+
+    protected CayennePreference cayennePreference;
 
     public static Application getInstance() {
         return instance;
@@ -122,7 +125,13 @@ public class Application {
         File dbDir = new File(CayenneUserDir.getInstance().resolveFile(
                 PREFERENCES_DB_SUBDIRECTORY), subdir);
         dbDir.mkdirs();
+        this.cayennePreference = new CayennePreference();
+
         this.preferencesDB = new File(dbDir, "db").getAbsolutePath();
+    }
+
+    public Preferences getPreferencesNode(Class className, String path) {
+        return cayennePreference.getNode(className, path);
     }
 
     public String getName() {
@@ -150,7 +159,7 @@ public class Application {
     public ActionManager getActionManager() {
         return actionManager;
     }
-    
+
     /**
      * Returns undo-edits controller.
      */
@@ -196,7 +205,7 @@ public class Application {
 
         // open up
         frameController.startupAction();
-        
+
         /**
          * After prefs have been loaded, we can now show the console if needed
          */
@@ -221,7 +230,7 @@ public class Application {
     public Domain getPreferenceDomain() {
         return getPreferenceService().getDomain(getName(), true);
     }
-    
+
     /**
      * Returns a new instance of CodeTemplateManager.
      */
@@ -382,12 +391,10 @@ public class Application {
         }
     }
 
-    
     public boolean isQuittingApplication() {
         return isQuittingApplication;
     }
 
-    
     public void setQuittingApplication(boolean isQuittingApplication) {
         this.isQuittingApplication = isQuittingApplication;
     }

@@ -20,10 +20,35 @@ package org.apache.cayenne.pref;
 
 import java.util.prefs.Preferences;
 
-
 public class CayennePreference implements Preference {
 
+    private Preferences rootPreference;
+    private Preferences cayennePreference;
+
+    protected Preferences currentPreference;
+
     public Preferences getRootPreference() {
-        return  Preferences.userRoot().node(CAYENNE_PREFERENCES);
+        if (rootPreference == null) {
+            rootPreference = Preferences.userRoot();
+        }
+        return rootPreference;
+    }
+
+    public Preferences getCayennePreference() {
+        if (cayennePreference == null) {
+            cayennePreference = getRootPreference().node(CAYENNE_PREFERENCE);
+        }
+        return cayennePreference;
+    }
+
+    public Preferences getNode(Class className, String path) {
+        if (path == null || path.length() == 0) {
+            return Preferences.userNodeForPackage(className);
+        }
+        return Preferences.userNodeForPackage(className).node(path);
+    }
+
+    public void setCurrentNodeForPreference(Class className, String path) {
+        currentPreference = getNode(className, path);
     }
 }

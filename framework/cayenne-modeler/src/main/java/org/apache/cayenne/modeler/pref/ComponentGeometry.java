@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.PreferenceException;
 import org.apache.cayenne.reflect.PropertyUtils;
 
@@ -28,16 +28,26 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.prefs.Preferences;
 
-public class ComponentGeometry extends _ComponentGeometry {
+public class ComponentGeometry extends CayennePreference {
 
     public static final String GEOMETRY_PREF_KEY = "geometry";
-
-    public static ComponentGeometry getPreference(Domain domain) {
-        return (ComponentGeometry) domain.getDetail(
-                ComponentGeometry.GEOMETRY_PREF_KEY,
-                ComponentGeometry.class,
-                true);
+    
+    public static final String HEIGHT_PROPERTY = "height";
+    public static final String WIDTH_PROPERTY = "width";
+    public static final String X_PROPERTY = "x";
+    public static final String Y_PROPERTY = "y";
+    
+    public ComponentGeometry(Class className, String path) {
+        setCurrentNodeForPreference(className, path);
+    };
+    
+    public Preferences getPreference() {
+        if (currentPreference == null) {
+            setCurrentNodeForPreference(this.getClass(), GEOMETRY_PREF_KEY);
+        }
+        return currentPreference;
     }
 
     /**
@@ -101,13 +111,13 @@ public class ComponentGeometry extends _ComponentGeometry {
 
             public void propertyChange(PropertyChangeEvent e) {
                 Object value = e.getNewValue();
-                setProperty(property, value != null ? value.toString() : null);
+                getPreference().put(property, value != null ? value.toString() : null);
             }
         });
     }
 
     void updateIntProperty(Component c, String property, int defaultValue) {
-        int i = getIntProperty(property, defaultValue);
+        int i = getPreference().getInt(property, defaultValue);
         try {
             PropertyUtils.setProperty(c, property, new Integer(i));
         }
@@ -117,9 +127,9 @@ public class ComponentGeometry extends _ComponentGeometry {
     }
 
     void updateSize(Component c, int initialWidth, int initialHeight) {
-        int w = getIntWidth(initialWidth);
-        int h = getIntHeight(initialHeight);
-
+        int w = getWidth(initialWidth);
+        int h = getHeight(initialHeight);
+        
         if (w > 0 && h > 0) {
             c.setSize(w, h);
         }
@@ -133,8 +143,8 @@ public class ComponentGeometry extends _ComponentGeometry {
             changeY(yOffset);
         }
 
-        int x = getIntX(-1);
-        int y = getIntY(-1);
+        int x = getX(-1);
+        int y = getY(-1);
 
         if (x > 0 && y > 0) {
             c.setLocation(x, y);
@@ -143,30 +153,47 @@ public class ComponentGeometry extends _ComponentGeometry {
 
     public void changeX(int xOffset) {
         if (xOffset != 0) {
-            setX(new Integer(getIntX(0) + xOffset));
+            setX(new Integer(getX(0) + xOffset));
         }
     }
 
     public void changeY(int yOffset) {
         if (yOffset != 0) {
-            setY(new Integer(getIntY(0) + yOffset));
+            setY(new Integer(getY(0) + yOffset));
         }
     }
 
-    public int getIntWidth(int defaultValue) {
-        return (getWidth() != null) ? getWidth().intValue() : defaultValue;
+    private void setY(Integer y) {
+            getPreference().putInt(Y_PROPERTY, y);
+    }
+    
+    private void setX(Integer x) {
+        getPreference().putInt(X_PROPERTY, x);
+    }
+    
+    private void setHeight(Integer height) {
+        getPreference().putInt(HEIGHT_PROPERTY, height);
+    }
+         
+  
+    private void setWidth(Integer width) {
+        getPreference().putInt(WIDTH_PROPERTY, width);
+    }
+    
+    public int getWidth(int defaultValue) {
+        return getPreference().getInt(WIDTH_PROPERTY, defaultValue);
+    }
+         
+    public int getHeight(int defaultValue) {
+        return getPreference().getInt(HEIGHT_PROPERTY, defaultValue);
     }
 
-    public int getIntHeight(int defaultValue) {
-        return (getHeight() != null) ? getHeight().intValue() : defaultValue;
+    public int getX(int defaultValue) {
+        return getPreference().getInt(X_PROPERTY, defaultValue);
     }
-
-    public int getIntX(int defaultValue) {
-        return (getX() != null) ? getX().intValue() : defaultValue;
-    }
-
-    public int getIntY(int defaultValue) {
-        return (getY() != null) ? getY().intValue() : defaultValue;
+ 
+    public int getY(int defaultValue) {
+        return getPreference().getInt(Y_PROPERTY, defaultValue);
     }
 }
 

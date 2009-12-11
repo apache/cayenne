@@ -28,7 +28,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.Preference;
-import org.apache.cayenne.pref.UpgradeCayennePreferenceDecorator;
+import org.apache.cayenne.pref.UpgradeCayennePreference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -69,8 +69,8 @@ public class ModelerPreferences implements PreferenceChangeListener {
      */
     public static Preferences getPreferences() {
         if(cayennePrefs==null){
-            Preference decoratedPref = new UpgradeCayennePreferenceDecorator(new CayennePreference());
-            cayennePrefs = decoratedPref.getRootPreference();
+            Preference decoratedPref = new UpgradeCayennePreference(new CayennePreference());
+            cayennePrefs = decoratedPref.getCayennePreference();
             cayennePrefs.addPreferenceChangeListener(new ModelerPreferences());
         }
         return cayennePrefs;
