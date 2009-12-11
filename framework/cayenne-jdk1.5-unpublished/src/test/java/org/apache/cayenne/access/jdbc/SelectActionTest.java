@@ -40,15 +40,18 @@ public class SelectActionTest extends CayenneCase {
     }
 
     public void testFetchLimit_DistinctResultIterator() throws Exception {
-        insertClobDb();
+        if (accessStack.getAdapter(getNode()).supportsLobs()) {
 
-        Expression qual = Expression.fromString("clobValue.value = 100");
-        SelectQuery select = new SelectQuery(ClobTestEntity.class, qual);
-        select.setFetchLimit(25);
-        List<DataRow> resultRows = context.performQuery(select);
+            insertClobDb();
 
-        assertNotNull(resultRows);
-        assertEquals(25, resultRows.size());
+            Expression qual = Expression.fromString("clobValue.value = 100");
+            SelectQuery select = new SelectQuery(ClobTestEntity.class, qual);
+            select.setFetchLimit(25);
+            List<DataRow> resultRows = context.performQuery(select);
+
+            assertNotNull(resultRows);
+            assertEquals(25, resultRows.size());
+        }
     }
 
     protected void insertClobDb() {

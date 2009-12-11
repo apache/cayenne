@@ -69,7 +69,7 @@ class SQLiteDateType extends UtilDateType {
             case Types.DATE:
                 return getDate(string);
             case Types.TIME:
-                return getTime(string);
+                return rs.getTime(index);
             default:
                 return getTimestamp(string);
         }

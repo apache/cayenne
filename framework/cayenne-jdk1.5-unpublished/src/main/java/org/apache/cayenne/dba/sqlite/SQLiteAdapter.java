@@ -108,5 +108,4 @@ public class SQLiteAdapter extends JdbcAdapter {
 
         super.createTableAppendPKClause(sqlBuffer, entity);
     }
-
 }

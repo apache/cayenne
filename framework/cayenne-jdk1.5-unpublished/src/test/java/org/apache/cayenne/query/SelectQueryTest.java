@@ -67,7 +67,7 @@ public class SelectQueryTest extends SelectQueryBase {
         assertEquals(totalRows - 5, results.size());
         assertEquals("artist6", results.get(0).getArtistName());
     }
-    
+
     public void testDbEntityRoot() {
         ObjectContext context = createDataContext();
 
@@ -235,7 +235,7 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(_artistCount, objects.size());
     }
-    
+
     /** Test how "like ignore case" works when using lowercase parameter. */
     public void testSelectLikeIgnoreCaseObjects2() throws Exception {
         query.setRoot(Artist.class);
@@ -248,22 +248,21 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(_artistCount, objects.size());
     }
-    
+
     /** Test how "like ignore case" works when using uppercase parameter. */
     public void testSelectLikeIgnoreCaseClob() throws Exception {
-        
-        
-        query.setRoot(ClobTestEntity.class);
-        Expression qual = ExpressionFactory.likeIgnoreCaseExp("clobCol", "clob%");
-        query.setQualifier(qual);
-        performQuery();
+        if (accessStack.getAdapter(getNode()).supportsLobs()) {
+            query.setRoot(ClobTestEntity.class);
+            Expression qual = ExpressionFactory.likeIgnoreCaseExp("clobCol", "clob%");
+            query.setQualifier(qual);
+            performQuery();
 
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
-        assertEquals(_clobCount, objects.size());
+            // check query results
+            List objects = opObserver.rowsForQuery(query);
+            assertNotNull(objects);
+            assertEquals(_clobCount, objects.size());
+        }
     }
-
 
     public void testSelectIn() throws Exception {
         query.setRoot(Artist.class);
@@ -515,28 +514,28 @@ public class SelectQueryTest extends SelectQueryBase {
         finally {
             conn.close();
         }
-        
-        String insertClob = "INSERT INTO CLOB_TEST (CLOB_TEST_ID, CLOB_COL) VALUES (?,?)";
-        Connection connection = getConnection();
 
-        try {
-            connection.setAutoCommit(false);
+        if (accessStack.getAdapter(getNode()).supportsLobs()) {
+            String insertClob = "INSERT INTO CLOB_TEST (CLOB_TEST_ID, CLOB_COL) VALUES (?,?)";
+            Connection connection = getConnection();
 
-          
-            PreparedStatement stmt = connection.prepareStatement(insertClob);
-            long dateBase = System.currentTimeMillis();
+            try {
+                connection.setAutoCommit(false);
 
-            for (int i = 1; i <= _clobCount; i++) {
-                stmt.setInt(1, i);
-                stmt.setString(2, "clob" + i);
-                stmt.executeUpdate();
+                PreparedStatement stmt = connection.prepareStatement(insertClob);
+
+                for (int i = 1; i <= _clobCount; i++) {
+                    stmt.setInt(1, i);
+                    stmt.setString(2, "clob" + i);
+                    stmt.executeUpdate();
+                }
+
+                stmt.close();
+                connection.commit();
             }
-
-            stmt.close();
-            connection.commit();
-        }
-        finally {
-            connection.close();
+            finally {
+                connection.close();
+            }
         }
     }
 }
