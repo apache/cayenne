@@ -34,6 +34,8 @@ import org.apache.cayenne.query.SQLAction;
 /**
  * A SQLite database adapter that works with Zentus JDBC driver. See
  * http://www.zentus.com/sqlitejdbc/ for the driver information.
+ *
+ * Also look at http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC for another adaptor option.
  * 
  * <pre>
  *      sqlite.cayenne.adapter = org.apache.cayenne.dba.sqlite.SQLiteAdapter
