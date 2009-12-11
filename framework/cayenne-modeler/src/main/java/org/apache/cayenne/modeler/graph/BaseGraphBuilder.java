@@ -174,7 +174,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
                 List<DefaultGraphCell> array = !isIsolated(domain, entity) ?
                         createdObjects : isolatedObjects;
                 array.add(cell);
-                array.add((DefaultGraphCell) cell.addPort());
+                array.add((DefaultGraphCell) cell.getChildAt(0)); //port
             }
         }
         
@@ -256,6 +256,8 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         
         GraphConstants.setEditable(cell.getAttributes(), false);
         entityCells.put(entity.getName(), cell);
+
+        cell.addPort();
         return cell;
     }
     
