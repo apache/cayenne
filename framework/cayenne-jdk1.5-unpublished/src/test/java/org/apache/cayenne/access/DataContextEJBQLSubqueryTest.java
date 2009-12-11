@@ -67,7 +67,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
 
         String ejbql = "SELECT a FROM Artist a"
                 + " WHERE EXISTS ("
-                + " SELECT DISTINCT p1 FROM Painting p1"
+                + " SELECT DISTINCT p1.paintingTitle FROM Painting p1"
                 + " WHERE p1.toArtist = a"
                 + ")";
 
@@ -92,7 +92,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
 
         String ejbql = "SELECT p FROM Painting p"
                 + " WHERE EXISTS ("
-                + " SELECT DISTINCT p1 FROM Painting p1"
+                + " SELECT DISTINCT p1.paintingTitle FROM Painting p1"
                 + " WHERE p1.paintingTitle = p.paintingTitle"
                 + " AND p.estimatedPrice <> p1.estimatedPrice"
                 + ")";
