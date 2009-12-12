@@ -46,7 +46,7 @@ public class HessianConnection extends BaseConnection {
     private static Log logger = LogFactory.getLog(HessianConnection.class);
     
     public static final String[] CLIENT_SERIALIZER_FACTORIES = new String[] {
-            ClientSerializerFactory.class.getName(), EnumSerializerProxy.class.getName()
+            ClientSerializerFactory.class.getName()
     };
 
     protected String url;

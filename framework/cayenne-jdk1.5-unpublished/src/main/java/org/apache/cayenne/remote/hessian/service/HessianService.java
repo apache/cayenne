@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.cayenne.remote.hessian.EnumSerializerProxy;
 import org.apache.cayenne.remote.hessian.HessianConfig;
 import org.apache.cayenne.remote.service.HttpRemoteService;
 
@@ -47,7 +46,7 @@ import com.caucho.services.server.ServiceContext;
 public class HessianService extends HttpRemoteService implements Service {
 
     public static final String[] SERVER_SERIALIZER_FACTORIES = new String[] {
-            EnumSerializerProxy.class.getName(), ServerSerializerFactory.class.getName()
+            ServerSerializerFactory.class.getName()
     };
 
     /**
