@@ -147,6 +147,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         assertNotNull(descriptor);
 
         assertNull(descriptor.getName());
+        assertEquals("6", descriptor.getVersion());
 
         Collection<DataMap> maps = descriptor.getDataMaps();
         assertEquals(2, maps.size());

@@ -142,14 +142,17 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 String namespaceURI,
                 String localName,
                 String name,
-                Attributes atts) {
+                Attributes attributes) {
 
             if (localName.equals(DOMAIN_TAG)) {
+                String version = attributes.getValue("", "project-version");
+                descriptor.setVersion(version);
+
                 return new DataChannelChildrenHandler(parser, this);
             }
 
             logger.info(unexpectedTagMessage(localName, DOMAIN_TAG));
-            return super.createChildTagHandler(namespaceURI, localName, name, atts);
+            return super.createChildTagHandler(namespaceURI, localName, name, attributes);
         }
     }
 
