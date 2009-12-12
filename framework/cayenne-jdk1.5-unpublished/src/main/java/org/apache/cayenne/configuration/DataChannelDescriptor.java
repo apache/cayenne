@@ -31,19 +31,23 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-public class DataChannelDescriptor {
+public class DataChannelDescriptor implements Configurable {
 
     protected String name;
     protected String version;
     protected Map<String, String> properties;
     protected Collection<DataMap> dataMaps;
     protected Collection<DataNodeDescriptor> dataNodeDescriptors;
-    protected Resource configurationResource;
+    protected Resource configurationSource;
 
     public DataChannelDescriptor() {
         properties = new HashMap<String, String>();
         dataMaps = new ArrayList<DataMap>(5);
         dataNodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
+    }
+    
+    public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+        return visitor.visitDataChannelDescriptor(this);
     }
 
     public String getName() {
@@ -74,11 +78,11 @@ public class DataChannelDescriptor {
         return dataNodeDescriptors;
     }
 
-    public Resource getConfigurationResource() {
-        return configurationResource;
+    public Resource getConfigurationSource() {
+        return configurationSource;
     }
 
-    public void setConfigurationResource(Resource descriptorResource) {
-        this.configurationResource = descriptorResource;
+    public void setConfigurationSource(Resource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 }

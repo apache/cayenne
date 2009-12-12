@@ -66,7 +66,7 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
                 + nodeDescriptor.getLocation()
                 + "'.");
 
-        Resource resource = nodeDescriptor.getConfigurationResource();
+        Resource resource = nodeDescriptor.getConfigurationSource();
 
         if (resource == null) {
             String message = "Null configuration resource for node descriptor with location '"

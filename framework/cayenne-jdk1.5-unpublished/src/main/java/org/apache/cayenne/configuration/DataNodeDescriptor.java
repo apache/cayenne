@@ -29,7 +29,7 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-public class DataNodeDescriptor {
+public class DataNodeDescriptor implements Configurable {
 
     protected String name;
     protected Collection<String> dataMapNames;
@@ -39,10 +39,14 @@ public class DataNodeDescriptor {
     protected String dataSourceFactoryType;
     protected String schemaUpdateStrategyType;
 
-    protected Resource configurationResource;
+    protected Resource configurationSource;
 
     public DataNodeDescriptor() {
         dataMapNames = new ArrayList<String>();
+    }
+
+    public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+        return visitor.visitDataNodeDescriptor(this);
     }
 
     public String getName() {
@@ -81,12 +85,12 @@ public class DataNodeDescriptor {
         this.dataSourceFactoryType = dataSourceFactory;
     }
 
-    public Resource getConfigurationResource() {
-        return configurationResource;
+    public Resource getConfigurationSource() {
+        return configurationSource;
     }
 
-    public void setConfigurationResource(Resource descriptorResource) {
-        this.configurationResource = descriptorResource;
+    public void setConfigurationSource(Resource descriptorResource) {
+        this.configurationSource = descriptorResource;
     }
 
     public String getSchemaUpdateStrategyType() {

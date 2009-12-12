@@ -41,7 +41,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setName("node1");
-        nodeDescriptor.setConfigurationResource(new URLResource(url));
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
 
         Module testModule = new Module() {
 
@@ -69,7 +69,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setName("node1");
-        nodeDescriptor.setConfigurationResource(new URLResource(url));
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
         nodeDescriptor.setDataSourceFactoryType(MockDataSourceFactory1.class.getName());
 
         Module testModule = new Module() {

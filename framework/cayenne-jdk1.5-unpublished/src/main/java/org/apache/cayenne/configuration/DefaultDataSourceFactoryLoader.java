@@ -38,7 +38,7 @@ public class DefaultDataSourceFactoryLoader implements DataSourceFactoryLoader {
         String typeName = nodeDescriptor.getDataSourceFactoryType();
 
         if (typeName == null) {
-            if (nodeDescriptor.getConfigurationResource() != null) {
+            if (nodeDescriptor.getConfigurationSource() != null) {
                 return objectFactory.newInstance(
                         DataSourceFactory.class,
                         XMLPoolingDataSourceFactory.class.getName());

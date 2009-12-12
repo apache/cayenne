@@ -30,12 +30,15 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.cayenne.configuration.Configurable;
+import org.apache.cayenne.configuration.ConfigurationVisitor;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -46,8 +49,8 @@ import org.apache.cayenne.util.XMLSerializable;
  * of an application. DataMap contains DbEntities mapping database tables, ObjEntities -
  * mapping persistent Java classes, Procedures - mapping database stored procedures.
  */
-public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
-        DbEntityListener, ObjEntityListener {
+public class DataMap implements Serializable, Configurable, XMLSerializable,
+        MappingNamespace, DbEntityListener, ObjEntityListener {
 
     /**
      * Defines whether a DataMap supports client entities.
@@ -130,20 +133,12 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     private SortedMap<String, SQLResult> results;
 
     private List<EntityListener> defaultEntityListeners;
-
+    
     /**
-     * @since 3.0
+     * @since 3.1
      */
-    public boolean isQuotingSQLIdentifiers() {
-        return quotingSQLIdentifiers;
-    }
+    protected Resource configurationSource;
 
-    /**
-     * @since 3.0
-     */
-    public void setQuotingSQLIdentifiers(boolean quotingSqlIdentifiers) {
-        this.quotingSQLIdentifiers = quotingSqlIdentifiers;
-    }
 
     /**
      * Creates a new unnamed DataMap.
@@ -169,6 +164,27 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         results = new TreeMap<String, SQLResult>();
         setName(mapName);
         initWithProperties(properties);
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+        return visitor.visitDataMap(this);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public boolean isQuotingSQLIdentifiers() {
+        return quotingSQLIdentifiers;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setQuotingSQLIdentifiers(boolean quotingSqlIdentifiers) {
+        this.quotingSQLIdentifiers = quotingSqlIdentifiers;
     }
 
     /**
@@ -1223,5 +1239,19 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /** Entity has been removed. */
     public void objEntityRemoved(EntityEvent e) {
         // does nothing currently
+    }
+
+    /**
+     * @since 3.1
+     */
+    public Resource getConfigurationSource() {
+        return configurationSource;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setConfigurationSource(Resource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 }

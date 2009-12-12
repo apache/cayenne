@@ -166,10 +166,10 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         DataNodeDescriptor node1 = nodes.iterator().next();
         assertEquals("testConfigNode3", node1.getName());
         assertEquals("testConfigNode3.driver.xml", node1.getLocation());
-        assertNotNull(node1.getConfigurationResource());
-        assertEquals(descriptor.getConfigurationResource().getRelativeResource(
+        assertNotNull(node1.getConfigurationSource());
+        assertEquals(descriptor.getConfigurationSource().getRelativeResource(
                 "testConfigNode3.driver.xml").getURL(), node1
-                .getConfigurationResource()
+                .getConfigurationSource()
                 .getURL());
 
         assertEquals("org.example.test.Adapter", node1.getAdapterType());

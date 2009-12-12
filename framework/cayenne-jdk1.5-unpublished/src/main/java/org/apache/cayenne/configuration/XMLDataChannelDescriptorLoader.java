@@ -77,7 +77,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
         URL configurationURL = configurationResource.getURL();
 
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
-        descriptor.setConfigurationResource(configurationResource);
+        descriptor.setConfigurationSource(configurationResource);
 
         DataChannelHandler rootHandler;
 
@@ -185,7 +185,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 String dataMapName = attributes.getValue("", "name");
                 String dataMapLocation = attributes.getValue("", "location");
 
-                Resource baseResource = descriptor.getConfigurationResource();
+                Resource baseResource = descriptor.getConfigurationSource();
 
                 Resource dataMapResource = baseResource
                         .getRelativeResource(dataMapLocation);
@@ -193,6 +193,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 DataMap dataMap = dataMapLoader.load(dataMapResource);
                 dataMap.setName(dataMapName);
                 dataMap.setLocation(dataMapLocation);
+                dataMap.setConfigurationSource(dataMapResource);
 
                 descriptor.getDataMaps().add(dataMap);
             }
@@ -222,8 +223,8 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 // this may be bogus for some nodes, such as JNDI, but here we can't
                 // tell for sure
                 if (location != null) {
-                    nodeDescriptor.setConfigurationResource(descriptor
-                            .getConfigurationResource()
+                    nodeDescriptor.setConfigurationSource(descriptor
+                            .getConfigurationSource()
                             .getRelativeResource(location));
                 }
 

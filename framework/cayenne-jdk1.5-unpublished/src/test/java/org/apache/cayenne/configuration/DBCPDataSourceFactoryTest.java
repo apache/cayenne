@@ -38,7 +38,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         assertNotNull(url);
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationResource(new URLResource(url));
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
         DataSource dataSource = factory.getDataSource(nodeDescriptor);
@@ -65,7 +65,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         assertNotNull(url);
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationResource(new URLResource(url));
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
         DataSource dataSource = factory.getDataSource(nodeDescriptor);
@@ -93,7 +93,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         url = new URL(url, ".nosuchfile");
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationResource(new URLResource(url));
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
 

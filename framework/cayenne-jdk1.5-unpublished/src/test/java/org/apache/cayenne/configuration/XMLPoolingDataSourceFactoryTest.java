@@ -39,7 +39,7 @@ public class XMLPoolingDataSourceFactoryTest extends TestCase {
         assertNotNull(url);
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationResource(new URLResource(url));
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
 
         final DataSource dataSource = new MockDataSource();
 

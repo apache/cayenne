@@ -47,7 +47,7 @@ public class DBCPDataSourceFactory implements DataSourceFactory {
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-        Resource dbcpConfiguration = nodeDescriptor.getConfigurationResource();
+        Resource dbcpConfiguration = nodeDescriptor.getConfigurationSource();
         if (dbcpConfiguration == null) {
             throw new CayenneRuntimeException(
                     "Null 'configurationResource' for nodeDescriptor '%s'",

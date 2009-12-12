@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain name="DefaultDomain" project-version="6">
+	<map name="testProjectMap1_1" location="testProjectMap1_1.map.xml" />
+	<map name="testProjectMap1_2" location="testProjectMap1_2.map.xml" />
+
+	<node name="testProjectNode1" datasource="testProjectNode1.driver.xml"
+		adapter="org.example.test.Adapter" factory="org.example.test.DataSourceFactory">
+		<map-ref name="testProjectMap1_1" />
+	</node>
+</domain>
