@@ -26,7 +26,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +37,7 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.util.Util;
 
 /**
  * A ProjectSaver saving project configuration to the filesystem.
@@ -133,12 +133,12 @@ public class FileProjectSaver implements ProjectSaver {
         URL targetUrl = targetResource.getURL();
 
         try {
-            unit.targetFile = new File(targetUrl.toURI());
+            unit.targetFile = Util.toFile(targetUrl);
         }
-        catch (URISyntaxException e) {
+        catch (IllegalArgumentException e) {
             throw new CayenneRuntimeException(
                     "Can't save configuration to the following location: '%s'. "
-                            + "Only file locations are supported. (%s)",
+                            + "Is this a valid file location?. (%s)",
                     e,
                     targetUrl,
                     e.getMessage());
@@ -307,9 +307,9 @@ public class FileProjectSaver implements ProjectSaver {
             URL sourceUrl = unit.sourceConfiguration.getURL();
             File sourceFile;
             try {
-                sourceFile = new File(sourceUrl.toURI());
+                sourceFile = Util.toFile(sourceUrl);
             }
-            catch (URISyntaxException e) {
+            catch (IllegalArgumentException e) {
                 // ignore non-file configurations...
                 continue;
             }

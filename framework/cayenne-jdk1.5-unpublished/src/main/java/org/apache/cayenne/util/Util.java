@@ -36,6 +36,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -65,9 +67,28 @@ import org.xml.sax.XMLReader;
 
 /**
  * Contains various unorganized static utility methods used across Cayenne.
- * 
  */
 public class Util {
+
+    /**
+     * Converts URL to file. Throws {@link IllegalArgumentException} if the URL is not a
+     * "file://" URL.
+     */
+    public static File toFile(URL url) throws IllegalArgumentException {
+        // must convert spaces to %20, or URL->URI conversion may fail
+        String urlString = url.toExternalForm();
+
+        URI uri;
+        try {
+            uri = new URI(urlString.replace(" ", "%20"));
+        }
+        catch (URISyntaxException e) {
+            throw new IllegalArgumentException("URL "
+                    + urlString
+                    + " can't be converted to URI", e);
+        }
+        return new File(uri);
+    }
 
     /**
      * Reads file contents, returning it as a String, using System default line separator.
@@ -672,14 +693,15 @@ public class Util {
             return Class.forName("[L" + className + ";", true, classLoader);
         }
     }
-    
+
     static void setReverse(
             final Persistent sourceObject,
             String propertyName,
             final Persistent targetObject) {
-        
-        ArcProperty property = (ArcProperty) Cayenne.getClassDescriptor(sourceObject).
-            getProperty(propertyName);
+
+        ArcProperty property = (ArcProperty) Cayenne
+                .getClassDescriptor(sourceObject)
+                .getProperty(propertyName);
         ArcProperty reverseArc = property.getComplimentaryReverseArc();
         if (reverseArc != null) {
             reverseArc.visit(new PropertyVisitor() {
@@ -699,12 +721,12 @@ public class Util {
                 }
 
             });
-            
+
             sourceObject.getObjectContext().getGraphManager().arcCreated(
                     targetObject.getObjectId(),
                     sourceObject.getObjectId(),
                     reverseArc.getName());
-    
+
             markAsDirty(targetObject);
         }
     }
@@ -713,9 +735,10 @@ public class Util {
             final Persistent sourceObject,
             String propertyName,
             final Persistent targetObject) {
-        
-        ArcProperty property = (ArcProperty) Cayenne.getClassDescriptor(sourceObject).
-            getProperty(propertyName);
+
+        ArcProperty property = (ArcProperty) Cayenne
+                .getClassDescriptor(sourceObject)
+                .getProperty(propertyName);
         ArcProperty reverseArc = property.getComplimentaryReverseArc();
         if (reverseArc != null) {
             reverseArc.visit(new PropertyVisitor() {
@@ -735,7 +758,7 @@ public class Util {
                 }
 
             });
-            
+
             sourceObject.getObjectContext().getGraphManager().arcDeleted(
                     targetObject.getObjectId(),
                     sourceObject.getObjectId(),
@@ -744,7 +767,7 @@ public class Util {
             markAsDirty(targetObject);
         }
     }
-    
+
     /**
      * Changes object state to MODIFIED if needed, returning true if the change has
      * occurred, false if not.
