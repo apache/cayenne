@@ -18,22 +18,30 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.map.DataMap;
 
 /**
- * A dependency injection (DI) module contributing configuration related to Cayenne
- * mapping project manipulation to a DI container.
+ * A {@link ConfigurationNodeVisitor} that checks whether a given node should have its own
+ * configuration file.
  * 
  * @since 3.1
  */
-public class CayenneProjectModule implements Module {
+class ConfigurationSaveableGetter implements ConfigurationNodeVisitor<Boolean> {
 
-    public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(
-                Scopes.SINGLETON);
+    public Boolean visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
+        return Boolean.TRUE;
+    }
+
+    public Boolean visitDataMap(DataMap dataMap) {
+        return Boolean.TRUE;
+    }
+
+    public Boolean visitDataNodeDescriptor(DataNodeDescriptor descriptor) {
+        return XMLPoolingDataSourceFactory.class.getName().equals(
+                descriptor.getDataSourceFactoryType());
     }
 }

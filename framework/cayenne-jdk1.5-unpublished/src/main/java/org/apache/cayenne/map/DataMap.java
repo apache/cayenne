@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.cayenne.configuration.Configurable;
-import org.apache.cayenne.configuration.ConfigurationVisitor;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
@@ -49,7 +49,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * of an application. DataMap contains DbEntities mapping database tables, ObjEntities -
  * mapping persistent Java classes, Procedures - mapping database stored procedures.
  */
-public class DataMap implements Serializable, Configurable, XMLSerializable,
+public class DataMap implements Serializable, ConfigurationNode, XMLSerializable,
         MappingNamespace, DbEntityListener, ObjEntityListener {
 
     /**
@@ -169,7 +169,7 @@ public class DataMap implements Serializable, Configurable, XMLSerializable,
     /**
      * @since 3.1
      */
-    public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitDataMap(this);
     }
 

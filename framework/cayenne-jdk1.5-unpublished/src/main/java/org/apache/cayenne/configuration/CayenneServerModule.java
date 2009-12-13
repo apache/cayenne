@@ -87,13 +87,17 @@ public class CayenneServerModule implements Module {
 
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class).in(
                 Scopes.SINGLETON);
+        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class).in(
+                Scopes.SINGLETON);
 
         // a service to provide the main stack DataDomain
-        binder.bind(DataDomain.class).toProvider(DataDomainProvider.class).in(Scopes.SINGLETON);
+        binder.bind(DataDomain.class).toProvider(DataDomainProvider.class).in(
+                Scopes.SINGLETON);
 
         // will return DataDomain for request for a DataChannel
-        binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class).in(Scopes.SINGLETON);
-        
+        binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class).in(
+                Scopes.SINGLETON);
+
         binder.bind(ObjectContext.class).toProvider(DataContextProvider.class);
 
         // a service to load project XML descriptors

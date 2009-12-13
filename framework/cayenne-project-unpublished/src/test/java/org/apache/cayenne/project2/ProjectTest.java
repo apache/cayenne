@@ -20,34 +20,34 @@ package org.apache.cayenne.project2;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.configuration.Configurable;
-import org.apache.cayenne.configuration.ConfigurationVisitor;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 
 public class ProjectTest extends TestCase {
 
     public void testRootNode() {
 
-        Configurable object = new Configurable() {
+        ConfigurationNode object = new ConfigurationNode() {
 
-            public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+            public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
                 return null;
             }
         };
 
-        Project<Configurable> project = new Project<Configurable>(object);
+        Project project = new Project(object);
         assertSame(object, project.getRootNode());
     }
 
     public void testVersion() {
 
-        Configurable object = new Configurable() {
+        ConfigurationNode object = new ConfigurationNode() {
 
-            public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+            public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
                 return null;
             }
         };
 
-        Project<Configurable> project = new Project<Configurable>(object);
+        Project project = new Project(object);
 
         assertNull(project.getVersion());
         project.setVersion("1.1");

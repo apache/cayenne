@@ -18,22 +18,36 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.map.DataMap;
 
 /**
- * A dependency injection (DI) module contributing configuration related to Cayenne
- * mapping project manipulation to a DI container.
- * 
  * @since 3.1
+ * @deprecated location is a redundant piece of information that we still keep in XML, but
+ *             really need to remove.
  */
-public class CayenneProjectModule implements Module {
+class ConfigurationLocationSetter implements ConfigurationNodeVisitor<Void> {
 
-    public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(
-                Scopes.SINGLETON);
+    private String location;
+
+    ConfigurationLocationSetter(String location) {
+        this.location = location;
+    }
+
+    public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
+        // noop
+        return null;
+    }
+
+    public Void visitDataMap(DataMap node) {
+        node.setLocation(location);
+        return null;
+    }
+
+    public Void visitDataNodeDescriptor(DataNodeDescriptor node) {
+        node.setLocation(location);
+        return null;
     }
 }

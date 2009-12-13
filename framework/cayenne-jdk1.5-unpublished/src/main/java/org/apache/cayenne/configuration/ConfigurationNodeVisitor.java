@@ -16,24 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2;
+package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
+import org.apache.cayenne.map.DataMap;
 
 /**
- * A dependency injection (DI) module contributing configuration related to Cayenne
- * mapping project manipulation to a DI container.
+ * A visitor interface for implementing operations on different types of
+ * {@link ConfigurationNode} objects.
  * 
  * @since 3.1
  */
-public class CayenneProjectModule implements Module {
+public interface ConfigurationNodeVisitor<T> {
 
-    public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(
-                Scopes.SINGLETON);
-    }
+    T visitDataChannelDescriptor(DataChannelDescriptor node);
+
+    T visitDataNodeDescriptor(DataNodeDescriptor node);
+
+    T visitDataMap(DataMap node);
 }

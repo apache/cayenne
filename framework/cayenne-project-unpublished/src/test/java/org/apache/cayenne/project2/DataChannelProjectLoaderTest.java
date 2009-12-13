@@ -22,9 +22,11 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.di.Binder;
@@ -46,6 +48,8 @@ public class DataChannelProjectLoaderTest extends TestCase {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
                 binder.bind(DataChannelDescriptorLoader.class).to(
                         XMLDataChannelDescriptorLoader.class);
+                binder.bind(ConfigurationNameMapper.class).to(
+                        DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -59,12 +63,12 @@ public class DataChannelProjectLoaderTest extends TestCase {
 
         Resource rootSource = new URLResource(url);
 
-        Project<DataChannelDescriptor> project = loader.loadProject(rootSource);
+        Project project = loader.loadProject(rootSource);
         assertNotNull(project);
 
         assertEquals("6", project.getVersion());
 
-        DataChannelDescriptor rootNode = project.getRootNode();
+        DataChannelDescriptor rootNode = (DataChannelDescriptor) project.getRootNode();
         assertNotNull(rootNode);
         assertSame(rootSource, rootNode.getConfigurationSource());
     }

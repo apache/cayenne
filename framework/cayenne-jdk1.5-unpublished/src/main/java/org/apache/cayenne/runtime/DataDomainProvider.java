@@ -34,6 +34,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceFactory;
 import org.apache.cayenne.configuration.DataSourceFactoryLoader;
 import org.apache.cayenne.configuration.DbAdapterFactory;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -74,6 +75,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected AdhocObjectFactory objectFactory;
 
+    @Inject
+    protected ConfigurationNameMapper nameMapper;
+
     protected volatile DataDomain dataDomain;
 
     public DataDomain get() throws ConfigurationException {
@@ -110,7 +114,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
             logger.debug("starting configuration loading: " + runtimeName);
         }
 
-        String resourceName = getResourceName(runtimeName);
+        String resourceName = nameMapper.configurationLocation(
+                DataChannelDescriptor.class,
+                runtimeName);
         Collection<Resource> configurations = resourceLocator.findResources(resourceName);
 
         if (configurations.isEmpty()) {
@@ -130,8 +136,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         DataChannelDescriptor descriptor = loader.load(configurationResource);
-        descriptor.setName(runtimeName);
-
         long t1 = System.currentTimeMillis();
 
         if (logger.isDebugEnabled()) {
@@ -193,18 +197,4 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         this.dataDomain = dataDomain;
     }
-
-    /**
-     * Returns the name of DataDomain configuration resource derived from runtime name.
-     * Resource name is determined based on the naming convention.
-     * "cayenne-<runtimename>.xml".
-     */
-    protected String getResourceName(String runtimeName) {
-        if (runtimeName == null) {
-            throw new NullPointerException("Null rumtimeName");
-        }
-
-        return "cayenne-" + runtimeName + ".xml";
-    }
-
 }

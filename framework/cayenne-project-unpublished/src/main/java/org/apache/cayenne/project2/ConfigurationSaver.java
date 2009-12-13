@@ -16,20 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.project2;
 
+import java.io.PrintWriter;
+
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 
 /**
- * A visitor interface for implementing operations on configurable objects.
- * 
  * @since 3.1
  */
-public interface ConfigurationVisitor<T> {
+class ConfigurationSaver implements ConfigurationNodeVisitor<Void> {
 
-    T visitDataChannelDescriptor(DataChannelDescriptor descriptor);
+    private PrintWriter printWriter;
 
-    T visitDataNodeDescriptor(DataNodeDescriptor descriptor);
+    ConfigurationSaver(PrintWriter printWriter) {
+        this.printWriter = printWriter;
+    }
 
-    T visitDataMap(DataMap dataMap);
+    public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
+        return null;
+    }
+
+    public Void visitDataMap(DataMap node) {
+        return null;
+    }
+
+    public Void visitDataNodeDescriptor(DataNodeDescriptor node) {
+        return null;
+    }
 }

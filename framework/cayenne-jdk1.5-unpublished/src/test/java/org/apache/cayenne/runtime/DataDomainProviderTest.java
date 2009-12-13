@@ -39,7 +39,9 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceFactoryLoader;
 import org.apache.cayenne.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactoryLoader;
@@ -112,6 +114,7 @@ public class DataDomainProviderTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(RuntimeProperties.class).toInstance(testProperties);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
                 binder.bind(SchemaUpdateStrategy.class).toInstance(
                         new SkipSchemaUpdateStrategy());

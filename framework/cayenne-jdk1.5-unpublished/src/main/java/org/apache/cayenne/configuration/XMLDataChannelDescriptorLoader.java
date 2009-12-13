@@ -49,23 +49,26 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
     static final String PROPERTY_TAG = "property";
     static final String MAP_REF_TAG = "map-ref";
 
-    private static final Map<String, String> dataSourceFactoryNameMapping;
+    private static final Map<String, String> dataSourceFactoryLegacyNameMapping;
 
     static {
-        dataSourceFactoryNameMapping = new HashMap<String, String>();
-        dataSourceFactoryNameMapping.put(
+        dataSourceFactoryLegacyNameMapping = new HashMap<String, String>();
+        dataSourceFactoryLegacyNameMapping.put(
                 "org.apache.cayenne.conf.DriverDataSourceFactory",
                 XMLPoolingDataSourceFactory.class.getName());
-        dataSourceFactoryNameMapping.put(
+        dataSourceFactoryLegacyNameMapping.put(
                 "org.apache.cayenne.conf.JNDIDataSourceFactory",
                 JNDIDataSourceFactory.class.getName());
-        dataSourceFactoryNameMapping.put(
+        dataSourceFactoryLegacyNameMapping.put(
                 "org.apache.cayenne.conf.DBCPDataSourceFactory",
                 DBCPDataSourceFactory.class.getName());
     }
 
     @Inject
     protected DataMapLoader dataMapLoader;
+
+    @Inject
+    protected ConfigurationNameMapper nameMapper;
 
     public DataChannelDescriptor load(Resource configurationResource)
             throws ConfigurationException {
@@ -78,6 +81,9 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
         descriptor.setConfigurationSource(configurationResource);
+        descriptor.setName(nameMapper.configurationNodeName(
+                DataChannelDescriptor.class,
+                configurationResource));
 
         DataChannelHandler rootHandler;
 
@@ -124,7 +130,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
             return null;
         }
 
-        String converted = dataSourceFactoryNameMapping.get(dataSourceFactory);
+        String converted = dataSourceFactoryLegacyNameMapping.get(dataSourceFactory);
         return converted != null ? converted : dataSourceFactory;
     }
 

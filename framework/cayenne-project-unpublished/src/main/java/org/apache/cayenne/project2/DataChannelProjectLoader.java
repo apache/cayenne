@@ -28,16 +28,15 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-public class DataChannelProjectLoader implements ProjectLoader<DataChannelDescriptor> {
+public class DataChannelProjectLoader implements ProjectLoader {
 
     @Inject
     protected DataChannelDescriptorLoader loader;
 
-    public Project<DataChannelDescriptor> loadProject(Resource source) {
+    public Project loadProject(Resource source) {
         DataChannelDescriptor descriptor = loader.load(source);
 
-        Project<DataChannelDescriptor> project = new Project<DataChannelDescriptor>(
-                descriptor);
+        Project project = new Project(descriptor);
         project.setVersion(descriptor.getVersion());
         return project;
     }

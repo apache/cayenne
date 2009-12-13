@@ -29,7 +29,7 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-public class DataNodeDescriptor implements Configurable {
+public class DataNodeDescriptor implements ConfigurationNode {
 
     protected String name;
     protected Collection<String> dataMapNames;
@@ -45,7 +45,7 @@ public class DataNodeDescriptor implements Configurable {
         dataMapNames = new ArrayList<String>();
     }
 
-    public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitDataNodeDescriptor(this);
     }
 

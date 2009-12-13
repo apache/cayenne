@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.configuration.Configurable;
 import org.apache.cayenne.resource.Resource;
 
 /**
@@ -26,8 +25,10 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-public interface ProjectLoader<T extends Configurable> {
+public interface ProjectLoader {
 
-    Project<T> loadProject(Resource source);
-
+    /**
+     * Loads the project from the given configuration source.
+     */
+    Project loadProject(Resource source);
 }

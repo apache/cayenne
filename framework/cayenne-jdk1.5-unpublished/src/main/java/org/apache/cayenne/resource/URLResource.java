@@ -52,5 +52,11 @@ public class URLResource implements Resource {
     public URL getURL() {
         return url;
     }
+    
+    @Override
+    public String toString() {
+        String urlString = String.valueOf(url);
+        return "<URLResource: " + urlString + ">";
+    }
 
 }

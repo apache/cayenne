@@ -18,22 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
+import org.apache.cayenne.resource.Resource;
 
 /**
- * A dependency injection (DI) module contributing configuration related to Cayenne
- * mapping project manipulation to a DI container.
+ * Defines API of a project saver.
  * 
  * @since 3.1
  */
-public class CayenneProjectModule implements Module {
+public interface ProjectSaver {
 
-    public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(
-                Scopes.SINGLETON);
-    }
+    /**
+     * Saves project in the location of its current configuration sources. Since resource
+     * names are determined using a naming convention based on the project node names, if
+     * any of the nodes were renamed, the old locations will be deleted. After saving,
+     * resets configuration sources of all project objects to the new Resources.
+     */
+    void save(Project project);
+
+    /**
+     * Saves project in a location defined by the 'baseDirectory' Resource. Does not
+     * delete the old resource locations. After saving, resets configuration sources of
+     * all project objects to the new Resources.
+     */
+    void saveAs(Project project, Resource baseDirectory);
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain name="DefaultDomain" project-version="6">
+	<map name="testProjectMap2_1" location="testProjectMap2_1.map.xml" />
+	<map name="testProjectMap2_2" location="testProjectMap2_2.map.xml" />
+
+	<node name="testProjectNode2" datasource="testProjectNode2.driver.xml"
+		adapter="org.example.test.Adapter" factory="org.apache.cayenne.configuration.XMLPoolingDataSourceFactory">
+		<map-ref name="testProjectMap2_1" />
+	</node>
+</domain>

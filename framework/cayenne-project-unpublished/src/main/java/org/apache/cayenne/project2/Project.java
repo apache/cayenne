@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.configuration.Configurable;
+import org.apache.cayenne.configuration.ConfigurationNode;
 
 /**
  * A model of a Cayenne mapping project. A project consists of descriptors for
@@ -27,12 +27,12 @@ import org.apache.cayenne.configuration.Configurable;
  * 
  * @since 3.1
  */
-public class Project<T extends Configurable> {
+public class Project {
 
     protected String version;
-    protected T rootNode;
-    
-    public Project(T rootNode) {
+    protected ConfigurationNode rootNode;
+
+    public Project(ConfigurationNode rootNode) {
         this.rootNode = rootNode;
     }
 
@@ -44,7 +44,7 @@ public class Project<T extends Configurable> {
         this.version = version;
     }
 
-    public T getRootNode() {
+    public ConfigurationNode getRootNode() {
         return rootNode;
     }
 }

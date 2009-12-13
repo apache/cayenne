@@ -42,6 +42,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -58,7 +59,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         DataChannelDescriptor descriptor = loader.load(new URLResource(url));
 
         assertNotNull(descriptor);
-        assertNull(descriptor.getName());
+        assertEquals(testConfigName, descriptor.getName());
     }
 
     public void testLoad_MissingConfig() throws Exception {
@@ -69,6 +70,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -95,6 +97,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -113,7 +116,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
         assertNotNull(descriptor);
 
-        assertNull(descriptor.getName());
+        assertEquals(testConfigName, descriptor.getName());
 
         Collection<DataMap> maps = descriptor.getDataMaps();
         assertEquals(1, maps.size());
@@ -128,6 +131,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -146,7 +150,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
         assertNotNull(descriptor);
 
-        assertNull(descriptor.getName());
+        assertEquals(testConfigName, descriptor.getName());
         assertEquals("6", descriptor.getVersion());
 
         Collection<DataMap> maps = descriptor.getDataMaps();

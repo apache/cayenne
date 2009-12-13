@@ -31,7 +31,7 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-public class DataChannelDescriptor implements Configurable {
+public class DataChannelDescriptor implements ConfigurationNode {
 
     protected String name;
     protected String version;
@@ -46,7 +46,7 @@ public class DataChannelDescriptor implements Configurable {
         dataNodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
     }
     
-    public <T> T acceptVisitor(ConfigurationVisitor<T> visitor) {
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitDataChannelDescriptor(this);
     }
 

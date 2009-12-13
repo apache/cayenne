@@ -18,22 +18,35 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
 
 /**
- * A dependency injection (DI) module contributing configuration related to Cayenne
- * mapping project manipulation to a DI container.
- * 
  * @since 3.1
  */
-public class CayenneProjectModule implements Module {
+class ConfigurationSourceSetter implements ConfigurationNodeVisitor<Void> {
 
-    public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(
-                Scopes.SINGLETON);
+    private Resource configurationSource;
+
+    ConfigurationSourceSetter(Resource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
+
+    public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
+        node.setConfigurationSource(configurationSource);
+        return null;
+    }
+
+    public Void visitDataMap(DataMap node) {
+        node.setConfigurationSource(configurationSource);
+        return null;
+    }
+
+    public Void visitDataNodeDescriptor(DataNodeDescriptor node) {
+        node.setConfigurationSource(configurationSource);
+        return null;
     }
 }
