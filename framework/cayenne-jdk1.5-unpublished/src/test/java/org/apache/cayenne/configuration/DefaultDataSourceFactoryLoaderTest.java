@@ -18,30 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.net.URL;
-
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory1;
+import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.resource.mock.MockResourceLocator;
 
 public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
     public void testGetDataSourceFactory_Implicit() throws Exception {
-        String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/testNode1.driver.xml");
-        assertNotNull(url);
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setName("node1");
-        nodeDescriptor.setConfigurationSource(new URLResource(url));
+        nodeDescriptor.setDataSourceDescriptor(new DataSourceInfo());
 
         Module testModule = new Module() {
 
@@ -62,14 +56,9 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
     }
 
     public void testGetDataSourceFactory_Explicit() throws Exception {
-        String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/testNode1.driver.xml");
-        assertNotNull(url);
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setName("node1");
-        nodeDescriptor.setConfigurationSource(new URLResource(url));
         nodeDescriptor.setDataSourceFactoryType(MockDataSourceFactory1.class.getName());
 
         Module testModule = new Module() {

@@ -74,15 +74,15 @@ public class DataChannelProjectSaverTest extends TestCase {
 
         File rootFile = new File(outFile, "cayenne-PROJECT2.xml");
         assertTrue(rootFile.exists());
+        assertTrue(rootFile.length() > 0);
 
         File map1File = new File(outFile, "testProjectMap2_1.map.xml");
         assertTrue(map1File.exists());
+        assertTrue(map1File.length() > 0);
 
         File map2File = new File(outFile, "testProjectMap2_2.map.xml");
         assertTrue(map2File.exists());
-
-        File node1File = new File(outFile, "testProjectNode2.driver.xml");
-        assertTrue(node1File.exists());
+        assertTrue(map2File.length() > 0);
     }
 
     public void testSaveAs_RecoverFromSaveError() throws Exception {

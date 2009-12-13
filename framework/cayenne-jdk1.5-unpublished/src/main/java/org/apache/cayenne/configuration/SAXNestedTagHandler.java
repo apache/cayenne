@@ -34,7 +34,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @since 3.1
  */
-class SAXNestedTagHandler extends DefaultHandler {
+public class SAXNestedTagHandler extends DefaultHandler {
 
     private final static Locator NOOP_LOCATOR = new Locator() {
 
@@ -59,7 +59,7 @@ class SAXNestedTagHandler extends DefaultHandler {
     protected ContentHandler parentHandler;
     protected Locator locator;
 
-    SAXNestedTagHandler(XMLReader parser, SAXNestedTagHandler parentHandler) {
+    public SAXNestedTagHandler(XMLReader parser, SAXNestedTagHandler parentHandler) {
         this.parentHandler = parentHandler;
         this.parser = parser;
 

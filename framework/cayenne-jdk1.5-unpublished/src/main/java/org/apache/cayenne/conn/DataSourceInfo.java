@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Helper JavaBean class that holds DataSource login information.
- * 
  */
 public class DataSourceInfo implements Cloneable, Serializable {
 
@@ -110,39 +109,6 @@ public class DataSourceInfo implements Cloneable, Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("[").append(this.getClass().getName()).append(":").append(
-                "\n   user name: ").append(userName).append("\n   password: ");
-
-        buf.append("**********");
-        buf
-                .append("\n   driver: ")
-                .append(jdbcDriver)
-                .append("\n   db adapter class: ")
-                .append(adapterClassName)
-                .append("\n   url: ")
-                .append(dataSourceUrl)
-                .append("\n   min. connections: ")
-                .append(minConnections)
-                .append("\n   max. connections: ")
-                .append(maxConnections);
-
-        if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
-            buf.append("\n   encoder class: ").append(passwordEncoderClass).append(
-                    "\n   encoder key: ").append(passwordEncoderKey);
-        }
-
-        if (!PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
-            buf.append("\n   password location: ").append(passwordLocation).append(
-                    "\n   password source: ").append(getPasswordSource());
-        }
-
-        buf.append("\n]");
-        return buf.toString();
-    }
-
     public String getAdapterClassName() {
         return adapterClassName;
     }
@@ -201,8 +167,9 @@ public class DataSourceInfo implements Cloneable, Serializable {
 
     public PasswordEncoding getPasswordEncoder() {
         try {
-            return (PasswordEncoding)
-                Util.getJavaClass(getPasswordEncoderClass()).newInstance();
+            return (PasswordEncoding) Util
+                    .getJavaClass(getPasswordEncoderClass())
+                    .newInstance();
         }
         catch (InstantiationException e) {
             ; // Swallow it -- no need to throw/etc.
@@ -214,8 +181,9 @@ public class DataSourceInfo implements Cloneable, Serializable {
             ; // Swallow it -- no need to throw/etc.
         }
 
-        logger.error("Failed to obtain specified Password Encoder '" +
-                     getPasswordEncoderClass() + "' -- please check CLASSPATH");
+        logger.error("Failed to obtain specified Password Encoder '"
+                + getPasswordEncoderClass()
+                + "' -- please check CLASSPATH");
 
         return null;
     }
@@ -338,5 +306,38 @@ public class DataSourceInfo implements Cloneable, Serializable {
             this.passwordLocation = DataSourceInfo.PASSWORD_LOCATION_MODEL;
         else
             this.passwordLocation = passwordLocation;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append("[").append(this.getClass().getName()).append(":").append(
+                "\n   user name: ").append(userName).append("\n   password: ");
+
+        buf.append("**********");
+        buf
+                .append("\n   driver: ")
+                .append(jdbcDriver)
+                .append("\n   db adapter class: ")
+                .append(adapterClassName)
+                .append("\n   url: ")
+                .append(dataSourceUrl)
+                .append("\n   min. connections: ")
+                .append(minConnections)
+                .append("\n   max. connections: ")
+                .append(maxConnections);
+
+        if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
+            buf.append("\n   encoder class: ").append(passwordEncoderClass).append(
+                    "\n   encoder key: ").append(passwordEncoderKey);
+        }
+
+        if (!PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
+            buf.append("\n   password location: ").append(passwordLocation).append(
+                    "\n   password source: ").append(getPasswordSource());
+        }
+
+        buf.append("\n]");
+        return buf.toString();
     }
 }

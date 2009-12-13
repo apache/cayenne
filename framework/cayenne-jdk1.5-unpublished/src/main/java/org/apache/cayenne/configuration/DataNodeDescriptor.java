@@ -22,31 +22,38 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
- * A descriptor of a {@link DataNode}, normally loaded from XML.
+ * A descriptor of a {@link DataNode}.
  * 
  * @since 3.1
  */
-public class DataNodeDescriptor implements ConfigurationNode {
+public class DataNodeDescriptor implements XMLSerializable {
 
+    protected DataChannelDescriptor parent;
     protected String name;
     protected Collection<String> dataMapNames;
 
-    protected String location;
+    protected String parameters;
     protected String adapterType;
     protected String dataSourceFactoryType;
     protected String schemaUpdateStrategyType;
-
-    protected Resource configurationSource;
+    protected DataSourceInfo dataSourceDescriptor;
 
     public DataNodeDescriptor() {
-        dataMapNames = new ArrayList<String>();
+        this(null);
     }
 
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitDataNodeDescriptor(this);
+    public DataNodeDescriptor(DataChannelDescriptor parent) {
+        this.parent = parent;
+        this.dataMapNames = new ArrayList<String>();
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        throw new UnsupportedOperationException("TODO");
     }
 
     public String getName() {
@@ -61,12 +68,22 @@ public class DataNodeDescriptor implements ConfigurationNode {
         return dataMapNames;
     }
 
-    public String getLocation() {
-        return location;
+    /**
+     * Returns extra DataNodeDescriptor parameters. This property is often used by custom
+     * {@link DataSourceFactory} to configure a DataSource. E.g. JNDIDataSoirceFactory may
+     * treat parameters String as a JNDI location of the DataSource, etc.
+     */
+    public String getParameters() {
+        return parameters;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    /**
+     * Sets extra DataNodeDescriptor parameters. This property is often used by custom
+     * {@link DataSourceFactory} to configure a DataSource. E.g. JNDIDataSoirceFactory may
+     * treat parameters String as a JNDI location of the DataSource, etc.
+     */
+    public void setParameters(String location) {
+        this.parameters = location;
     }
 
     public String getAdapterType() {
@@ -85,19 +102,27 @@ public class DataNodeDescriptor implements ConfigurationNode {
         this.dataSourceFactoryType = dataSourceFactory;
     }
 
-    public Resource getConfigurationSource() {
-        return configurationSource;
-    }
-
-    public void setConfigurationSource(Resource descriptorResource) {
-        this.configurationSource = descriptorResource;
-    }
-
     public String getSchemaUpdateStrategyType() {
         return schemaUpdateStrategyType;
     }
 
     public void setSchemaUpdateStrategyType(String schemaUpdateStrategyClass) {
         this.schemaUpdateStrategyType = schemaUpdateStrategyClass;
+    }
+
+    public DataSourceInfo getDataSourceDescriptor() {
+        return dataSourceDescriptor;
+    }
+
+    public void setDataSourceDescriptor(DataSourceInfo dataSourceDescriptor) {
+        this.dataSourceDescriptor = dataSourceDescriptor;
+    }
+
+    public DataChannelDescriptor getParent() {
+        return parent;
+    }
+
+    public void setParent(DataChannelDescriptor parent) {
+        this.parent = parent;
     }
 }

@@ -30,7 +30,5 @@ public interface ConfigurationNodeVisitor<T> {
 
     T visitDataChannelDescriptor(DataChannelDescriptor node);
 
-    T visitDataNodeDescriptor(DataNodeDescriptor node);
-
     T visitDataMap(DataMap node);
 }

@@ -22,8 +22,8 @@ import java.io.PrintWriter;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.util.XMLEncoder;
 
 /**
  * @since 3.1
@@ -37,14 +37,16 @@ class ConfigurationSaver implements ConfigurationNodeVisitor<Void> {
     }
 
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
+        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        node.encodeAsXML(encoder);
         return null;
     }
 
     public Void visitDataMap(DataMap node) {
-        return null;
-    }
-
-    public Void visitDataNodeDescriptor(DataNodeDescriptor node) {
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
+        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        node.encodeAsXML(encoder);
         return null;
     }
 }

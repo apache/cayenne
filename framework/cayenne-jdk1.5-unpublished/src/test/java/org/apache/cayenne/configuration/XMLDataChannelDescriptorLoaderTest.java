@@ -42,7 +42,8 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(
+                        DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -70,7 +71,8 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(
+                        DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -97,7 +99,8 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(
+                        DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -131,7 +134,8 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(
+                        DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -169,12 +173,10 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
         DataNodeDescriptor node1 = nodes.iterator().next();
         assertEquals("testConfigNode3", node1.getName());
-        assertEquals("testConfigNode3.driver.xml", node1.getLocation());
-        assertNotNull(node1.getConfigurationSource());
-        assertEquals(descriptor.getConfigurationSource().getRelativeResource(
-                "testConfigNode3.driver.xml").getURL(), node1
-                .getConfigurationSource()
-                .getURL());
+        assertNull(node1.getParameters());
+        assertNotNull(node1.getDataSourceDescriptor());
+        assertEquals(1, node1.getDataSourceDescriptor().getMinConnections());
+        assertEquals(1, node1.getDataSourceDescriptor().getMaxConnections());
 
         assertEquals("org.example.test.Adapter", node1.getAdapterType());
         assertEquals("org.example.test.DataSourceFactory", node1

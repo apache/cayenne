@@ -51,13 +51,11 @@ public class FileProjectSaver implements ProjectSaver {
 
     protected ConfigurationNodeVisitor<Resource> resourceGetter;
     protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> nodesGetter;
-    protected ConfigurationNodeVisitor<Boolean> saveableGetter;
     protected String fileEncoding;
 
     public FileProjectSaver() {
         resourceGetter = new ConfigurationSourceGetter();
         nodesGetter = new ConfigurationNodesGetter();
-        saveableGetter = new ConfigurationSaveableGetter();
         fileEncoding = "UTF-8";
     }
 
@@ -114,12 +112,6 @@ public class FileProjectSaver implements ProjectSaver {
         unit.node = node;
         unit.sourceConfiguration = node.acceptVisitor(resourceGetter);
 
-        // some configuration nodes don't require their own files to be saved, so check
-        // for that first; still return such units as we may need to delete the old files.
-        if (!node.acceptVisitor(saveableGetter)) {
-            return unit;
-        }
-
         if (baseResource == null) {
             baseResource = unit.sourceConfiguration;
         }
@@ -161,9 +153,6 @@ public class FileProjectSaver implements ProjectSaver {
         for (SaveUnit unit : units) {
 
             File targetFile = unit.targetFile;
-            if (targetFile == null) {
-                continue;
-            }
 
             File parent = targetFile.getParentFile();
             if (!parent.exists()) {
@@ -192,17 +181,12 @@ public class FileProjectSaver implements ProjectSaver {
 
         for (SaveUnit unit : units) {
 
-            File targetFile = unit.targetFile;
-            if (targetFile == null) {
-                continue;
-            }
-
-            String name = targetFile.getName();
+            String name = unit.targetFile.getName();
             if (name == null || name.length() < 3) {
                 name = "cayenne-project";
             }
 
-            File parent = targetFile.getParentFile();
+            File parent = unit.targetFile.getParentFile();
 
             try {
                 unit.targetTempFile = File.createTempFile(name, null, parent);
@@ -255,9 +239,6 @@ public class FileProjectSaver implements ProjectSaver {
         for (SaveUnit unit : units) {
 
             File targetFile = unit.targetFile;
-            if (targetFile == null) {
-                continue;
-            }
 
             if (targetFile.exists()) {
                 if (!targetFile.delete()) {

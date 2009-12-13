@@ -32,13 +32,13 @@ public class JNDIDataSourceFactoryTest extends TestCase {
     public void testGetDataSource_NameBound() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
-        descriptor.setLocation("jdbc/TestDS");
+        descriptor.setParameters("jdbc/TestDS");
 
         JNDISetup.doSetup();
 
         MockDataSource dataSource = new MockDataSource();
         InitialContext context = new InitialContext();
-        context.bind(descriptor.getLocation(), dataSource);
+        context.bind(descriptor.getParameters(), dataSource);
 
         try {
 
@@ -47,20 +47,20 @@ public class JNDIDataSourceFactoryTest extends TestCase {
         }
         finally {
             // since the context is shared, must clear it after the test
-            context.unbind(descriptor.getLocation());
+            context.unbind(descriptor.getParameters());
         }
     }
 
     public void testGetDataSource_NameBoundWithPrefix() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
-        descriptor.setLocation("jdbc/TestDS");
+        descriptor.setParameters("jdbc/TestDS");
 
         JNDISetup.doSetup();
 
         MockDataSource dataSource = new MockDataSource();
         InitialContext context = new InitialContext();
-        context.bind("java:comp/env/" + descriptor.getLocation(), dataSource);
+        context.bind("java:comp/env/" + descriptor.getParameters(), dataSource);
 
         try {
 
@@ -69,14 +69,14 @@ public class JNDIDataSourceFactoryTest extends TestCase {
         }
         finally {
             // since the context is shared, must clear it after the test
-            context.unbind("java:comp/env/" + descriptor.getLocation());
+            context.unbind("java:comp/env/" + descriptor.getParameters());
         }
     }
 
     public void testGetDataSource_NameNotBound() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
-        descriptor.setLocation("jdbc/TestDS");
+        descriptor.setParameters("jdbc/TestDS");
 
         JNDISetup.doSetup();
 

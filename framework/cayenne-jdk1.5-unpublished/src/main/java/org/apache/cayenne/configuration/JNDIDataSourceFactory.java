@@ -39,7 +39,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-        String location = nodeDescriptor.getLocation();
+        String location = nodeDescriptor.getParameters();
         if (location == null) {
             throw new CayenneRuntimeException(
                     "Null 'location' for nodeDescriptor '%s'",

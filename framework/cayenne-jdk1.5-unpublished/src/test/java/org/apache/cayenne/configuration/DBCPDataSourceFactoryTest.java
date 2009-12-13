@@ -33,12 +33,14 @@ public class DBCPDataSourceFactoryTest extends TestCase {
     public void testGetDataSource() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/testDBCP.properties");
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/");
         assertNotNull(url);
 
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationSource(new URLResource(url));
+        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
+        channelDescriptor.setConfigurationSource(new URLResource(url));
+
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(channelDescriptor);
+        nodeDescriptor.setParameters("testDBCP.properties");
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
         DataSource dataSource = factory.getDataSource(nodeDescriptor);
@@ -56,16 +58,18 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         assertEquals(10000, basicDataSource.getMaxWait());
         assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
     }
-    
+
     public void testGetDataSource_LegacyConfig() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/testDBCP_legacy.properties");
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/");
         assertNotNull(url);
 
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationSource(new URLResource(url));
+        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
+        channelDescriptor.setConfigurationSource(new URLResource(url));
+
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(channelDescriptor);
+        nodeDescriptor.setParameters("testDBCP_legacy.properties");
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
         DataSource dataSource = factory.getDataSource(nodeDescriptor);
@@ -87,13 +91,14 @@ public class DBCPDataSourceFactoryTest extends TestCase {
     public void testGetDataSource_InvalidLocation() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/testDBCP.properties");
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/");
         assertNotNull(url);
-        url = new URL(url, ".nosuchfile");
 
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationSource(new URLResource(url));
+        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
+        channelDescriptor.setConfigurationSource(new URLResource(url));
+
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(channelDescriptor);
+        nodeDescriptor.setParameters("testDBCP.properties.nosuchfile");
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
 
@@ -104,7 +109,6 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         catch (IOException ex) {
             // expected
         }
-
     }
 
 }

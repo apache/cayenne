@@ -156,7 +156,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         for (DataNodeDescriptor nodeDescriptor : descriptor.getDataNodeDescriptors()) {
             DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
-            dataNode.setDataSourceLocation(nodeDescriptor.getLocation());
+            dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
 
             DataSourceFactory dataSourceFactory = dataSourceFactoryLoader
                     .getDataSourceFactory(nodeDescriptor);

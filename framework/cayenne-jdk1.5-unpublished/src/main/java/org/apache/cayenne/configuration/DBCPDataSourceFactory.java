@@ -40,6 +40,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBCPDataSourceFactory implements DataSourceFactory {
 
+    private static final String DBCP_PROPERTIES = "dbcp.properties";
+
     private static final Log logger = LogFactory.getLog(DBCPDataSourceFactory.class);
 
     @Inject
@@ -47,7 +49,16 @@ public class DBCPDataSourceFactory implements DataSourceFactory {
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-        Resource dbcpConfiguration = nodeDescriptor.getConfigurationSource();
+        String location = nodeDescriptor.getParameters();
+        if (location == null) {
+            logger.debug("No explicit DBCP config location, will use default location: "
+                    + DBCP_PROPERTIES);
+            location = DBCP_PROPERTIES;
+        }
+
+        DataChannelDescriptor parent = nodeDescriptor.getParent();
+        Resource dbcpConfiguration = parent.getConfigurationSource().getRelativeResource(
+                location);
         if (dbcpConfiguration == null) {
             throw new CayenneRuntimeException(
                     "Null 'configurationResource' for nodeDescriptor '%s'",

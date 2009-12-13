@@ -76,7 +76,7 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor1.getDataMapNames().add("map1");
         nodeDescriptor1.setAdapterType(OracleAdapter.class.getName());
         nodeDescriptor1.setDataSourceFactoryType(MockDataSourceFactory.class.getName());
-        nodeDescriptor1.setLocation("jdbc/testDataNode1");
+        nodeDescriptor1.setParameters("jdbc/testDataNode1");
         nodeDescriptor1
                 .setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class
                         .getName());
@@ -85,7 +85,7 @@ public class DataDomainProviderTest extends TestCase {
         DataNodeDescriptor nodeDescriptor2 = new DataNodeDescriptor();
         nodeDescriptor2.setName("node2");
         nodeDescriptor2.getDataMapNames().add("map2");
-        nodeDescriptor2.setLocation("testDataNode2.driver.xml");
+        nodeDescriptor2.setParameters("testDataNode2.driver.xml");
         testDescriptor.getDataNodeDescriptors().add(nodeDescriptor2);
 
         final ResourceLocator locator = new ResourceLocator() {
@@ -169,7 +169,7 @@ public class DataDomainProviderTest extends TestCase {
         assertEquals(nodeDescriptor1.getDataSourceFactoryType(), node1
                 .getDataSourceFactory());
         assertNotNull(node1.getDataSource());
-        assertEquals(nodeDescriptor1.getLocation(), node1.getDataSourceLocation());
+        assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation());
 
         assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1
                 .getSchemaUpdateStrategyName());
@@ -189,7 +189,7 @@ public class DataDomainProviderTest extends TestCase {
         assertSame(node2, domain.lookupDataNode(map2));
         assertNull(node2.getDataSourceFactory());
         assertNotNull(node2.getDataSource());
-        assertEquals(nodeDescriptor2.getLocation(), node2.getDataSourceLocation());
+        assertEquals(nodeDescriptor2.getParameters(), node2.getDataSourceLocation());
         assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2
                 .getSchemaUpdateStrategyName());
         assertNotNull(node2.getSchemaUpdateStrategy());

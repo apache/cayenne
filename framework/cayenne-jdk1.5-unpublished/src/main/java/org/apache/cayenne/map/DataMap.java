@@ -133,12 +133,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     private SortedMap<String, SQLResult> results;
 
     private List<EntityListener> defaultEntityListeners;
-    
+
     /**
      * @since 3.1
      */
     protected Resource configurationSource;
-
 
     /**
      * Creates a new unnamed DataMap.
@@ -165,7 +164,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         setName(mapName);
         initWithProperties(properties);
     }
-    
+
     /**
      * @since 3.1
      */
@@ -267,6 +266,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      * document.
      * 
      * @since 1.1
+     * @deprecated since 3.1, as {@link XMLSerializable} objects should only save XML
+     *             segments. Saving full XML files is responsibilty of the callers.
      */
     public void encodeAsXML(PrintWriter pw) {
         XMLEncoder encoder = new XMLEncoder(pw, "\t");

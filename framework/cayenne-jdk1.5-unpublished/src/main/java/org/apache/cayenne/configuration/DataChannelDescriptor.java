@@ -25,13 +25,15 @@ import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A descriptor of a DataChannel normally loaded from XML configuration.
  * 
  * @since 3.1
  */
-public class DataChannelDescriptor implements ConfigurationNode {
+public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable {
 
     protected String name;
     protected String version;
@@ -45,7 +47,10 @@ public class DataChannelDescriptor implements ConfigurationNode {
         dataMaps = new ArrayList<DataMap>(5);
         dataNodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
     }
-    
+
+    public void encodeAsXML(XMLEncoder encoder) {
+    }
+
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitDataChannelDescriptor(this);
     }

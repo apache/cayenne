@@ -18,13 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.conf.PasswordEncoding;
+import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
@@ -48,6 +53,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
     static final String NODE_TAG = "node";
     static final String PROPERTY_TAG = "property";
     static final String MAP_REF_TAG = "map-ref";
+    static final String DATA_SOURCE_TAG = "data-source";
 
     private static final Map<String, String> dataSourceFactoryLegacyNameMapping;
 
@@ -62,6 +68,63 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
         dataSourceFactoryLegacyNameMapping.put(
                 "org.apache.cayenne.conf.DBCPDataSourceFactory",
                 DBCPDataSourceFactory.class.getName());
+    }
+
+    /**
+     * @deprecated the caller should use password resolving strategy instead of resolving
+     *             the password on the spot. For one thing this can be used in the Modeler
+     *             and no password may be available.
+     */
+    private static String passwordFromURL(URL url) {
+        InputStream inputStream = null;
+        String password = null;
+
+        try {
+            inputStream = url.openStream();
+            password = passwordFromInputStream(inputStream);
+        }
+        catch (IOException exception) {
+            // Log the error while trying to open the stream. A null
+            // password will be returned as a result.
+            logger.warn(exception);
+        }
+
+        return password;
+    }
+
+    /**
+     * @deprecated the caller should use password resolving strategy instead of resolving
+     *             the password on the spot. For one thing this can be used in the Modeler
+     *             and no password may be available.
+     */
+    private static String passwordFromInputStream(InputStream inputStream) {
+        BufferedReader bufferedReader = null;
+        String password = null;
+
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            password = bufferedReader.readLine();
+        }
+        catch (IOException exception) {
+            logger.warn(exception);
+        }
+        finally {
+            try {
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            }
+            catch (Exception exception) {
+            }
+
+            try {
+                inputStream.close();
+            }
+            catch (IOException exception) {
+            }
+        }
+
+        return password;
     }
 
     @Inject
@@ -189,10 +252,11 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
             else if (localName.equals(MAP_TAG)) {
 
                 String dataMapName = attributes.getValue("", "name");
-                String dataMapLocation = attributes.getValue("", "location");
-
                 Resource baseResource = descriptor.getConfigurationSource();
 
+                String dataMapLocation = nameMapper.configurationLocation(
+                        DataMap.class,
+                        dataMapName);
                 Resource dataMapResource = baseResource
                         .getRelativeResource(dataMapLocation);
 
@@ -210,14 +274,14 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                     throw new ConfigurationException("Error: <node> without 'name'.");
                 }
 
-                DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+                DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(descriptor);
                 descriptor.getDataNodeDescriptors().add(nodeDescriptor);
 
                 nodeDescriptor.setName(nodeName);
                 nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));
 
-                String location = attributes.getValue("", "datasource");
-                nodeDescriptor.setLocation(location);
+                String parameters = attributes.getValue("", "parameters");
+                nodeDescriptor.setParameters(parameters);
 
                 String dataSourceFactory = attributes.getValue("", "factory");
                 nodeDescriptor
@@ -225,14 +289,6 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue(
                         "",
                         "schema-update-strategy"));
-
-                // this may be bogus for some nodes, such as JNDI, but here we can't
-                // tell for sure
-                if (location != null) {
-                    nodeDescriptor.setConfigurationSource(descriptor
-                            .getConfigurationSource()
-                            .getRelativeResource(location));
-                }
 
                 return new DataNodeChildrenHandler(parser, this, nodeDescriptor);
             }
@@ -263,6 +319,157 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 String mapName = attributes.getValue("", "name");
                 nodeDescriptor.getDataMapNames().add(mapName);
             }
+            else if (localName.equals(DATA_SOURCE_TAG)) {
+
+                DataSourceInfo dataSourceDescriptor = new DataSourceInfo();
+                nodeDescriptor.setDataSourceDescriptor(dataSourceDescriptor);
+                return new DataSourceChildrenHandler(parser, this, dataSourceDescriptor);
+            }
+
+            return super.createChildTagHandler(namespaceURI, localName, name, attributes);
+        }
+    }
+
+    class DataSourceChildrenHandler extends SAXNestedTagHandler {
+
+        private DataSourceInfo dataSourceDescriptor;
+
+        DataSourceChildrenHandler(XMLReader parser,
+                DataNodeChildrenHandler parentHandler, DataSourceInfo dataSourceDescriptor) {
+            super(parser, parentHandler);
+            this.dataSourceDescriptor = dataSourceDescriptor;
+        }
+
+        @Override
+        protected ContentHandler createChildTagHandler(
+                String namespaceURI,
+                String localName,
+                String name,
+                Attributes attributes) {
+
+            if (localName.equals("driver")) {
+                String className = attributes.getValue("", "value");
+                dataSourceDescriptor.setJdbcDriver(className);
+            }
+            else if (localName.equals("login")) {
+
+                logger.info("loading user name and password.");
+
+                String encoderClass = attributes.getValue("encoderClass");
+
+                String encoderKey = attributes.getValue("encoderKey");
+                if (encoderKey == null) {
+                    encoderKey = attributes.getValue("encoderSalt");
+                }
+
+                String password = attributes.getValue("password");
+                String passwordLocation = attributes.getValue("passwordLocation");
+                String passwordSource = attributes.getValue("passwordSource");
+                if (passwordSource == null) {
+                    passwordSource = DataSourceInfo.PASSWORD_LOCATION_MODEL;
+                }
+
+                String username = attributes.getValue("userName");
+
+                dataSourceDescriptor.setPasswordEncoderClass(encoderClass);
+                dataSourceDescriptor.setPasswordEncoderKey(encoderKey);
+                dataSourceDescriptor.setPasswordLocation(passwordLocation);
+                dataSourceDescriptor.setPasswordSource(passwordSource);
+                dataSourceDescriptor.setUserName(username);
+
+                // Replace {} in passwordSource with encoderSalt -- useful for EXECUTABLE
+                // & URL options
+                if (encoderKey != null) {
+                    passwordSource = passwordSource.replaceAll("\\{\\}", encoderKey);
+                }
+
+                PasswordEncoding passwordEncoder = dataSourceDescriptor
+                        .getPasswordEncoder();
+
+                if (passwordLocation != null) {
+                    if (passwordLocation
+                            .equals(DataSourceInfo.PASSWORD_LOCATION_CLASSPATH)) {
+
+                        ClassLoader classLoader = Thread
+                                .currentThread()
+                                .getContextClassLoader();
+                        URL url = classLoader.getResource(username);
+                        if (url != null) {
+                            password = passwordFromURL(url);
+                        }
+                        else {
+                            logger.error("Could not find resource in CLASSPATH: "
+                                    + passwordSource);
+                        }
+                    }
+                    else if (passwordLocation
+                            .equals(DataSourceInfo.PASSWORD_LOCATION_URL)) {
+                        try {
+                            password = passwordFromURL(new URL(passwordSource));
+                        }
+                        catch (MalformedURLException exception) {
+                            logger.warn(exception);
+                        }
+                    }
+                    else if (passwordLocation
+                            .equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE)) {
+                        if (passwordSource != null) {
+                            try {
+                                Process process = Runtime.getRuntime().exec(
+                                        passwordSource);
+                                password = passwordFromInputStream(process
+                                        .getInputStream());
+                                process.waitFor();
+                            }
+                            catch (IOException exception) {
+                                logger.warn(exception);
+                            }
+                            catch (InterruptedException exception) {
+                                logger.warn(exception);
+                            }
+                        }
+                    }
+                }
+
+                if (password != null && passwordEncoder != null) {
+                    dataSourceDescriptor.setPassword(passwordEncoder.decodePassword(
+                            password,
+                            encoderKey));
+                }
+            }
+            else if (localName.equals("url")) {
+                dataSourceDescriptor.setDataSourceUrl(attributes.getValue("value"));
+            }
+            else if (localName.equals("connectionPool")) {
+                String min = attributes.getValue("min");
+                if (min != null) {
+                    try {
+                        dataSourceDescriptor.setMinConnections(Integer.parseInt(min));
+                    }
+                    catch (NumberFormatException nfex) {
+                        logger.info("Non-numeric 'min' attribute", nfex);
+                        throw new ConfigurationException(
+                                "Non-numeric 'min' attribute '%s'",
+                                nfex,
+                                min);
+                    }
+                }
+
+                String max = attributes.getValue("max");
+                if (max != null) {
+                    try {
+                        dataSourceDescriptor.setMaxConnections(Integer.parseInt(max));
+                    }
+                    catch (NumberFormatException nfex) {
+                        logger.info("Non-numeric 'max' attribute", nfex);
+                        throw new ConfigurationException(
+                                "Non-numeric 'max' attribute '%s'",
+                                nfex,
+                                max);
+                    }
+                }
+            }
+
             return super.createChildTagHandler(namespaceURI, localName, name, attributes);
         }
     }

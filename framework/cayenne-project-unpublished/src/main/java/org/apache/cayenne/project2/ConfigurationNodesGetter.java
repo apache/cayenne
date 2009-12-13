@@ -25,7 +25,6 @@ import java.util.Collections;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 
 /**
@@ -44,18 +43,10 @@ class ConfigurationNodesGetter implements
             nodes.add(map);
         }
 
-        for (DataNodeDescriptor node : descriptor.getDataNodeDescriptors()) {
-            nodes.add(node);
-        }
         return nodes;
     }
 
     public Collection<ConfigurationNode> visitDataMap(DataMap dataMap) {
         return Collections.<ConfigurationNode> singletonList(dataMap);
-    }
-
-    public Collection<ConfigurationNode> visitDataNodeDescriptor(
-            DataNodeDescriptor descriptor) {
-        return Collections.<ConfigurationNode> singletonList(descriptor);
     }
 }
