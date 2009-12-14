@@ -19,6 +19,8 @@ CAY-1305 EJBQL doesn't support null parameters
 CAY-1307 Error committing CLOB on Oracle8
 CAY-1309 many validation errors when we remove dbEntity 
 CAY-1325 Stop bundling cayenne-agent.jar with the distro
+CAY-1332 Embeddable validation error in CM on custom Java types
+CAY-1333 Entering a custom Java Type in CM for an ObjEntity blanks out DB fields
 
 ----------------------------------
 Release: 3.0 beta 1
