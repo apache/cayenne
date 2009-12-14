@@ -264,7 +264,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 // Change super-entity
                 CayenneMapEntry superEntity = (CayenneMapEntry) superEntityCombo
                         .getSelectedItem();
-                String name = (superEntity == noInheritance) ? null : superEntity
+                String name = (superEntity==null || superEntity == noInheritance) ? null : superEntity
                         .getName();
 
                 ObjEntity entity = mediator.getCurrentObjEntity();
