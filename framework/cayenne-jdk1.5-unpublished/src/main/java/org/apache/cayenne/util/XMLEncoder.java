@@ -21,7 +21,6 @@ package org.apache.cayenne.util;
 
 import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -30,6 +29,7 @@ import java.util.Map;
  * @since 1.1
  */
 public class XMLEncoder {
+
     protected String indent;
     protected PrintWriter out;
 
@@ -57,25 +57,63 @@ public class XMLEncoder {
     }
 
     /**
-     * Utility method that prints all map values,
-     * assuming they are XMLSerializable objects.
+     * Utility method that prints all map values, assuming they are XMLSerializable
+     * objects.
      */
-    public void print(Map map) {
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            ((XMLSerializable) entry.getValue()).encodeAsXML(this);
+    public void print(Map<?, ? extends XMLSerializable> map) {
+        for (XMLSerializable value : map.values()) {
+            value.encodeAsXML(this);
         }
     }
 
     /**
-     * Utility method that prints all map values,
-     * assuming they are XMLSerializable objects.
+     * Utility method that prints all map values, assuming they are XMLSerializable
+     * objects.
      */
-    public void print(Collection c) {
-        Iterator it = c.iterator();
-        while (it.hasNext()) {
-            ((XMLSerializable) it.next()).encodeAsXML(this);
+    public void print(Collection<? extends XMLSerializable> c) {
+        for (XMLSerializable value : c) {
+            value.encodeAsXML(this);
+        }
+    }
+
+    /**
+     * Prints an XML attribute. The value is trimmed (so leading and following spaces are
+     * lost) and then encoded to be a proper XML attribute value. E.g. "&" becomes
+     * "&amp;", etc.
+     * 
+     * @since 3.1
+     */
+    public void printAttribute(String name, String value) {
+        printAttribute(name, value, false);
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void printlnAttribute(String name, String value) {
+        printAttribute(name, value, true);
+    }
+
+    private void printAttribute(String name, String value, boolean lineBreak) {
+        if (value == null) {
+            return;
+        }
+
+        value = value.trim();
+        if (value.length() == 0) {
+            return;
+        }
+
+        value = Util.encodeXmlAttribute(value);
+
+        printIndent();
+        out.print(' ');
+        out.print(name);
+        out.print("=\"");
+        out.print(value);
+        out.print("\"");
+        if (lineBreak) {
+            println();
         }
     }
 
@@ -84,11 +122,10 @@ public class XMLEncoder {
      */
     public void printProperty(String name, String value) {
         printIndent();
-        out.print("<property name=\"");
-        out.print(name);
-        out.print("\" value=\"");
-        out.print(value);
-        out.println("\"/>");
+        out.print("<property");
+        printAttribute("name", name);
+        printAttribute("value", value);
+        out.println("/>");
         indentLine = true;
     }
 
@@ -129,6 +166,14 @@ public class XMLEncoder {
     public void println(String text) {
         printIndent();
         out.println(text);
+        indentLine = true;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void println() {
+        out.println();
         indentLine = true;
     }
 

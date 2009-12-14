@@ -17,32 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.conf;
 
 /**
  * The plain text password encoder passes the text of the database password
- * straight-through without any alteration.  This is identical to the
- * behavior of pre-3.0 versions of Cayenne, where the password was stored
- * in the XML model in clear text.
+ * straight-through without any alteration. This is identical to the behavior of pre-3.0
+ * versions of Cayenne, where the password was stored in the XML model in clear text.
  * 
  * @since 3.0
  */
-public class PlainTextPasswordEncoder implements PasswordEncoding
-{
-  /* (non-Javadoc)
-   * @see org.apache.cayenne.conf.PasswordEncoding#decodePassword(java.lang.String, java.lang.String)
-   */
-  public String decodePassword(String encodedPassword, String key)
-  {
-    return encodedPassword;
-  }
+public class PlainTextPasswordEncoder implements PasswordEncoding {
 
-  /* (non-Javadoc)
-   * @see org.apache.cayenne.conf.PasswordEncoding#encodePassword(java.lang.String, java.lang.String)
-   */
-  public String encodePassword(String normalPassword, String key)
-  {
-    return normalPassword;
-  }
+    public String decodePassword(String encodedPassword, String key) {
+        return encodedPassword;
+    }
+
+    public String encodePassword(String normalPassword, String key) {
+        return normalPassword;
+    }
 }

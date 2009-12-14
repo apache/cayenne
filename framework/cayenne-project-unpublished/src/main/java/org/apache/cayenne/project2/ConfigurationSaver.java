@@ -38,15 +38,19 @@ class ConfigurationSaver implements ConfigurationNodeVisitor<Void> {
 
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
-        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        printXMLHeader(encoder);
         node.encodeAsXML(encoder);
         return null;
     }
 
     public Void visitDataMap(DataMap node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
-        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        printXMLHeader(encoder);
         node.encodeAsXML(encoder);
         return null;
+    }
+
+    private void printXMLHeader(XMLEncoder encoder) {
+        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
     }
 }

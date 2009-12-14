@@ -56,12 +56,18 @@ public class DBCPDataSourceFactory implements DataSourceFactory {
             location = DBCP_PROPERTIES;
         }
 
-        DataChannelDescriptor parent = nodeDescriptor.getParent();
-        Resource dbcpConfiguration = parent.getConfigurationSource().getRelativeResource(
-                location);
+        Resource baseConfiguration = nodeDescriptor.getConfigurationSource();
+        if (baseConfiguration == null) {
+            throw new CayenneRuntimeException(
+                    "Null 'configurationSource' for nodeDescriptor '%s'",
+                    nodeDescriptor.getName());
+        }
+
+        Resource dbcpConfiguration = baseConfiguration.getRelativeResource(location);
         if (dbcpConfiguration == null) {
             throw new CayenneRuntimeException(
-                    "Null 'configurationResource' for nodeDescriptor '%s'",
+                    "Missing DBCP configuration '%s' for nodeDescriptor '%s'",
+                    location,
                     nodeDescriptor.getName());
         }
 

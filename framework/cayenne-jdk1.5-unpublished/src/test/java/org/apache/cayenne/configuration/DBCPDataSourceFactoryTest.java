@@ -36,10 +36,8 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         URL url = getClass().getClassLoader().getResource(baseUrl + "/");
         assertNotNull(url);
 
-        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
-        channelDescriptor.setConfigurationSource(new URLResource(url));
-
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(channelDescriptor);
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
         nodeDescriptor.setParameters("testDBCP.properties");
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
@@ -65,10 +63,8 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         URL url = getClass().getClassLoader().getResource(baseUrl + "/");
         assertNotNull(url);
 
-        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
-        channelDescriptor.setConfigurationSource(new URLResource(url));
-
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(channelDescriptor);
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
         nodeDescriptor.setParameters("testDBCP_legacy.properties");
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
@@ -94,10 +90,8 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         URL url = getClass().getClassLoader().getResource(baseUrl + "/");
         assertNotNull(url);
 
-        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
-        channelDescriptor.setConfigurationSource(new URLResource(url));
-
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(channelDescriptor);
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setConfigurationSource(new URLResource(url));
         nodeDescriptor.setParameters("testDBCP.properties.nosuchfile");
 
         DBCPDataSourceFactory factory = new DBCPDataSourceFactory();

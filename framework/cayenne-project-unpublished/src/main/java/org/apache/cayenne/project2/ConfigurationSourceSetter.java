@@ -20,10 +20,13 @@ package org.apache.cayenne.project2;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 
 /**
+ * Updates ConfigurationNode's configuration sources.
+ * 
  * @since 3.1
  */
 class ConfigurationSourceSetter implements ConfigurationNodeVisitor<Void> {
@@ -36,6 +39,11 @@ class ConfigurationSourceSetter implements ConfigurationNodeVisitor<Void> {
 
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
         node.setConfigurationSource(configurationSource);
+
+        // update child configurations
+        for (DataNodeDescriptor childDescriptor : node.getNodeDescriptors()) {
+            childDescriptor.setConfigurationSource(configurationSource);
+        }
         return null;
     }
 

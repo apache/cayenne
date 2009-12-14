@@ -274,8 +274,10 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                     throw new ConfigurationException("Error: <node> without 'name'.");
                 }
 
-                DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(descriptor);
-                descriptor.getDataNodeDescriptors().add(nodeDescriptor);
+                DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+                nodeDescriptor
+                        .setConfigurationSource(descriptor.getConfigurationSource());
+                descriptor.getNodeDescriptors().add(nodeDescriptor);
 
                 nodeDescriptor.setName(nodeName);
                 nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));

@@ -24,13 +24,15 @@ import java.io.Serializable;
 import org.apache.cayenne.conf.PasswordEncoding;
 import org.apache.cayenne.conf.PlainTextPasswordEncoder;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * Helper JavaBean class that holds DataSource login information.
  */
-public class DataSourceInfo implements Cloneable, Serializable {
+public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable {
 
     private static Log logger = LogFactory.getLog(DataSourceInfo.class);
 
@@ -49,7 +51,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
     public static final String PASSWORD_LOCATION_URL = "url";
 
     // Extended parameters
-    protected String passwordEncoderClass = PasswordEncoding.standardEncoders[0];
+    protected String passwordEncoderClass = PlainTextPasswordEncoder.class.getName();
     protected String passwordEncoderKey = "";
     protected String passwordLocation = PASSWORD_LOCATION_MODEL;
     protected String passwordSourceExecutable = "";
@@ -98,6 +100,64 @@ public class DataSourceInfo implements Cloneable, Serializable {
             return false;
 
         return true;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.println("<data-source>");
+        encoder.indent(1);
+
+        encoder.print("<driver");
+        encoder.printAttribute("value", jdbcDriver);
+        encoder.println("/>");
+
+        encoder.print("<url");
+        encoder.printAttribute("value", dataSourceUrl);
+        encoder.println("/>");
+
+        encoder.print("<connectionPool");
+        encoder.printAttribute("min", String.valueOf(minConnections));
+        encoder.printAttribute("max", String.valueOf(maxConnections));
+        encoder.println("/>");
+
+        encoder.print("<login");
+        encoder.printAttribute("userName", userName);
+
+        if (DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
+
+            PasswordEncoding passwordEncoder = getPasswordEncoder();
+
+            if (passwordEncoder != null) {
+                String passwordEncoded = passwordEncoder.encodePassword(
+                        password,
+                        passwordEncoderKey);
+                encoder.printAttribute("password", passwordEncoded);
+            }
+        }
+
+        if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
+            encoder.printAttribute("encoderClass", passwordEncoderClass);
+        }
+
+        encoder.printAttribute("encoderKey", passwordEncoderKey);
+
+        if (!DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
+            encoder.printAttribute("passwordLocation", passwordLocation);
+        }
+
+        // TODO: this is very not nice... we need to clean up the whole DataSourceInfo
+        // to avoid returning arbitrary labels...
+        String passwordSource = getPasswordSource();
+        if (!"Not Applicable".equals(passwordSource)) {
+            encoder.printAttribute("passwordSource", passwordSource);
+        }
+
+        encoder.println("/>");
+
+        encoder.indent(-1);
+        encoder.println("</data-source>");
     }
 
     public DataSourceInfo cloneInfo() {
@@ -310,12 +370,12 @@ public class DataSourceInfo implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("[").append(this.getClass().getName()).append(":").append(
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("[").append(getClass().getName()).append(":").append(
                 "\n   user name: ").append(userName).append("\n   password: ");
 
-        buf.append("**********");
-        buf
+        buffer.append("**********");
+        buffer
                 .append("\n   driver: ")
                 .append(jdbcDriver)
                 .append("\n   db adapter class: ")
@@ -328,16 +388,16 @@ public class DataSourceInfo implements Cloneable, Serializable {
                 .append(maxConnections);
 
         if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
-            buf.append("\n   encoder class: ").append(passwordEncoderClass).append(
+            buffer.append("\n   encoder class: ").append(passwordEncoderClass).append(
                     "\n   encoder key: ").append(passwordEncoderKey);
         }
 
         if (!PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
-            buf.append("\n   password location: ").append(passwordLocation).append(
+            buffer.append("\n   password location: ").append(passwordLocation).append(
                     "\n   password source: ").append(getPasswordSource());
         }
 
-        buf.append("\n]");
-        return buf.toString();
+        buffer.append("\n]");
+        return buffer.toString();
     }
 }

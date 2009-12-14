@@ -80,13 +80,13 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor1
                 .setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class
                         .getName());
-        testDescriptor.getDataNodeDescriptors().add(nodeDescriptor1);
+        testDescriptor.getNodeDescriptors().add(nodeDescriptor1);
 
         DataNodeDescriptor nodeDescriptor2 = new DataNodeDescriptor();
         nodeDescriptor2.setName("node2");
         nodeDescriptor2.getDataMapNames().add("map2");
         nodeDescriptor2.setParameters("testDataNode2.driver.xml");
-        testDescriptor.getDataNodeDescriptors().add(nodeDescriptor2);
+        testDescriptor.getNodeDescriptors().add(nodeDescriptor2);
 
         final ResourceLocator locator = new ResourceLocator() {
 

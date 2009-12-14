@@ -36,20 +36,19 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
 
+public class PasswordEncoderEditor extends CayenneController {
 
-public class PasswordEncoderEditor extends CayenneController  {
-    
     protected DataNode node;
     protected ObjectBinding[] bindings;
     protected PasswordEncoderView view;
     protected BindingDelegate nodeChangeProcessor;
-    
-    public PasswordEncoderEditor(CayenneController parent){
+
+    public PasswordEncoderEditor(CayenneController parent) {
 
         super(parent);
-        
+
         this.view = new PasswordEncoderView();
-        
+
         this.nodeChangeProcessor = new BindingDelegate() {
 
             public void modelUpdated(
@@ -61,51 +60,58 @@ public class PasswordEncoderEditor extends CayenneController  {
                 ((ProjectController) getParent()).fireDataNodeEvent(e);
             }
         };
-                
+
         initController();
     }
-    
+
     protected void initController() {
         BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
                 this);
-        
-        builder.setDelegate(nodeChangeProcessor);
-        
-        bindings = new ObjectBinding[4];
-        
-        bindings[0] =
-              builder.bindToComboSelection(view.getPasswordEncoder(), "node.dataSource.dataSourceInfo.passwordEncoderClass");
-        bindings[1] =
-              builder.bindToTextField(view.getPasswordKey(), "node.dataSource.dataSourceInfo.passwordEncoderKey");
-        bindings[2] =
-              builder.bindToComboSelection(view.getPasswordLocation(), "node.dataSource.dataSourceInfo.passwordLocation");
-        bindings[3] =
-              builder.bindToTextField(view.getPasswordSource(), "node.dataSource.dataSourceInfo.passwordSource");
 
-          ((ProjectController) getParent())
-          .addDataNodeDisplayListener(new DataNodeDisplayListener() {
-        
-              public void currentDataNodeChanged(DataNodeDisplayEvent e) {
-                  refreshView(e.getDataNode());
-              }
-          });
-        
-          getView().addComponentListener(new ComponentAdapter() {
-        
-              public void componentShown(ComponentEvent e) {
-                  refreshView(node != null ? node : ((ProjectController) getParent())
-                          .getCurrentDataNode());
-              }
-          });
-          
-          
-      
-        builder.bindToAction(view.getPasswordEncoder(),  "validatePasswordEncoderAction()");
-        builder.bindToAction(view.getPasswordLocation(), "passwordLocationChangedAction()");
-      
+        builder.setDelegate(nodeChangeProcessor);
+
+        bindings = new ObjectBinding[4];
+
+        bindings[0] = builder.bindToComboSelection(
+                view.getPasswordEncoder(),
+                "node.dataSource.dataSourceInfo.passwordEncoderClass");
+        bindings[1] = builder.bindToTextField(
+                view.getPasswordKey(),
+                "node.dataSource.dataSourceInfo.passwordEncoderKey");
+        bindings[2] = builder.bindToComboSelection(
+                view.getPasswordLocation(),
+                "node.dataSource.dataSourceInfo.passwordLocation");
+        bindings[3] = builder.bindToTextField(
+                view.getPasswordSource(),
+                "node.dataSource.dataSourceInfo.passwordSource");
+
+        ((ProjectController) getParent())
+                .addDataNodeDisplayListener(new DataNodeDisplayListener() {
+
+                    public void currentDataNodeChanged(DataNodeDisplayEvent e) {
+                        refreshView(e.getDataNode());
+                    }
+                });
+
+        getView().addComponentListener(new ComponentAdapter() {
+
+            public void componentShown(ComponentEvent e) {
+                refreshView(node != null ? node : ((ProjectController) getParent())
+                        .getCurrentDataNode());
+            }
+        });
+
+        builder
+                .bindToAction(
+                        view.getPasswordEncoder(),
+                        "validatePasswordEncoderAction()");
+        builder.bindToAction(
+                view.getPasswordLocation(),
+                "passwordLocationChangedAction()");
+
     }
-    
+
     protected void refreshView(DataNode node) {
         this.node = node;
 
@@ -118,73 +124,81 @@ public class PasswordEncoderEditor extends CayenneController  {
             binding.updateView();
         }
     }
-    
-    public void validatePasswordEncoderAction()
-    {
-      if (node == null || node.getDataSource() == null)
-        return;
 
-      DataSourceInfo dsi = ((ProjectDataSource) node.getDataSource()).getDataSourceInfo();
+    public void validatePasswordEncoderAction() {
+        if (node == null || node.getDataSource() == null)
+            return;
 
-      if (view.getPasswordEncoder().getSelectedItem().equals(dsi.getPasswordEncoderClass()) == false)
-        return;
+        DataSourceInfo dsi = ((ProjectDataSource) node.getDataSource())
+                .getDataSourceInfo();
 
-      if (dsi.getPasswordEncoder() == null)
-      {
-        JOptionPane.showMessageDialog(getView(),
-                                      "A valid Password Encoder should be specified (check your CLASSPATH).",
-                                      "Invalid Password Encoder",
-                                      JOptionPane.ERROR_MESSAGE);
-      }
+        if (view.getPasswordEncoder().getSelectedItem().equals(
+                dsi.getPasswordEncoderClass()) == false)
+            return;
+
+        if (dsi.getPasswordEncoder() == null) {
+            JOptionPane
+                    .showMessageDialog(
+                            getView(),
+                            "A valid Password Encoder should be specified (check your CLASSPATH).",
+                            "Invalid Password Encoder",
+                            JOptionPane.ERROR_MESSAGE);
+        }
     }
-    
-    private void updatePasswordElements(boolean isPasswordFieldEnabled,
+
+    private void updatePasswordElements(
+            boolean isPasswordFieldEnabled,
             boolean isPasswordLocationEnabled,
-            String  passwordText,
-            String  passwordLocationLabel,
-            String  passwordLocationText)
-    {
+            String passwordText,
+            String passwordLocationLabel,
+            String passwordLocationText) {
         view.getPasswordSource().setEnabled(isPasswordLocationEnabled);
         view.getPasswordSourceLabel().setText(passwordLocationLabel);
         view.getPasswordSource().setText(passwordLocationText);
-        
 
     }
-    
-    public void passwordLocationChangedAction()
-    {
-      if (node == null || node.getDataSource() == null)
-        return;
 
-      DataSourceInfo dsi = ((ProjectDataSource) node.getDataSource()).getDataSourceInfo();
+    public void passwordLocationChangedAction() {
+        if (node == null || node.getDataSource() == null)
+            return;
 
-      String selectedItem = (String) view.getPasswordLocation().getSelectedItem();
+        DataSourceInfo dsi = ((ProjectDataSource) node.getDataSource())
+                .getDataSourceInfo();
 
-      if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_CLASSPATH))
-        updatePasswordElements(true, true, dsi.getPassword(), "Password Filename:", dsi.getPasswordSourceFilename());
-      else if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE))
-        updatePasswordElements(false, true, null, "Password Executable:", dsi.getPasswordSourceExecutable());
-      else if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_MODEL))
-        updatePasswordElements(true, false, dsi.getPassword(), "Password Source:", dsi.getPasswordSourceModel());
-      else if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_URL))
-        updatePasswordElements(false, true, null, "Password URL:", dsi.getPasswordSourceUrl());
+        String selectedItem = (String) view.getPasswordLocation().getSelectedItem();
+
+        if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_CLASSPATH))
+            updatePasswordElements(
+                    true,
+                    true,
+                    dsi.getPassword(),
+                    "Password Filename:",
+                    dsi.getPasswordSourceFilename());
+        else if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE))
+            updatePasswordElements(false, true, null, "Password Executable:", dsi
+                    .getPasswordSourceExecutable());
+        else if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_MODEL))
+            updatePasswordElements(
+                    true,
+                    false,
+                    dsi.getPassword(),
+                    "Password Source:",
+                    dsi.getPasswordSourceModel());
+        else if (selectedItem.equals(DataSourceInfo.PASSWORD_LOCATION_URL))
+            updatePasswordElements(false, true, null, "Password URL:", dsi
+                    .getPasswordSourceUrl());
     }
 
     public Component getView() {
         return view;
     }
 
-    
     public DataNode getNode() {
         return node;
     }
 
-    
     public void setNode(DataNode node) {
         this.node = node;
     }
-
-
-
 
 }

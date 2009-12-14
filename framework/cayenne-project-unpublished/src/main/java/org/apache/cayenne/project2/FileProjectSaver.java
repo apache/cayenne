@@ -40,7 +40,7 @@ import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
 
 /**
- * A ProjectSaver saving project configuration to the filesystem.
+ * A ProjectSaver saving project configuration to the file system.
  * 
  * @since 3.1
  */
@@ -56,6 +56,8 @@ public class FileProjectSaver implements ProjectSaver {
     public FileProjectSaver() {
         resourceGetter = new ConfigurationSourceGetter();
         nodesGetter = new ConfigurationNodesGetter();
+
+        // this is not configurable yet... probably doesn't have to be
         fileEncoding = "UTF-8";
     }
 

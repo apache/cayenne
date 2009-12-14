@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
@@ -39,16 +40,63 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
     protected String version;
     protected Map<String, String> properties;
     protected Collection<DataMap> dataMaps;
-    protected Collection<DataNodeDescriptor> dataNodeDescriptors;
+    protected Collection<DataNodeDescriptor> nodeDescriptors;
     protected Resource configurationSource;
 
     public DataChannelDescriptor() {
         properties = new HashMap<String, String>();
         dataMaps = new ArrayList<DataMap>(5);
-        dataNodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
+        nodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
+
+        encoder.print("<domain");
+        encoder.printAttribute("name", name);
+        encoder.printAttribute("project-version", version);
+        encoder.println(">");
+
+        encoder.indent(1);
+        boolean breakNeeded = false;
+
+        if (!properties.isEmpty()) {
+            breakNeeded = true;
+
+            for (Entry<String, String> property : properties.entrySet()) {
+                encoder.printProperty(property.getKey(), property.getValue());
+            }
+
+        }
+
+        if (!dataMaps.isEmpty()) {
+            if (breakNeeded) {
+                encoder.println();
+            }
+            else {
+                breakNeeded = true;
+            }
+
+            for (DataMap dataMap : dataMaps) {
+
+                encoder.print("<map");
+                encoder.printAttribute("name", dataMap.getName().trim());
+                encoder.println("/>");
+            }
+        }
+
+        if (!nodeDescriptors.isEmpty()) {
+            if (breakNeeded) {
+                encoder.println();
+            }
+            else {
+                breakNeeded = true;
+            }
+
+            encoder.print(nodeDescriptors);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</domain>");
     }
 
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
@@ -79,8 +127,8 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
         return dataMaps;
     }
 
-    public Collection<DataNodeDescriptor> getDataNodeDescriptors() {
-        return dataNodeDescriptors;
+    public Collection<DataNodeDescriptor> getNodeDescriptors() {
+        return nodeDescriptors;
     }
 
     public Resource getConfigurationSource() {

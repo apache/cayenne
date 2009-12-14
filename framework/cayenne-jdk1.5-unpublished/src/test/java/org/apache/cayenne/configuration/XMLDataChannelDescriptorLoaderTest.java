@@ -168,7 +168,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         assertEquals("testConfigMap3_1", map1.getName());
         assertEquals("testConfigMap3_2", map2.getName());
 
-        Collection<DataNodeDescriptor> nodes = descriptor.getDataNodeDescriptors();
+        Collection<DataNodeDescriptor> nodes = descriptor.getNodeDescriptors();
         assertEquals(1, nodes.size());
 
         DataNodeDescriptor node1 = nodes.iterator().next();

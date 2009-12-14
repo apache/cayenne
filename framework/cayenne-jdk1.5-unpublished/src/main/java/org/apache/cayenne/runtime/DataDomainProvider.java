@@ -153,7 +153,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
             dataDomain.addMap(dataMap);
         }
 
-        for (DataNodeDescriptor nodeDescriptor : descriptor.getDataNodeDescriptors()) {
+        for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
             DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
             dataNode.setDataSourceLocation(nodeDescriptor.getParameters());

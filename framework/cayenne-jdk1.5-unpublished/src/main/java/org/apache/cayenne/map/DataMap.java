@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.event.DbEntityListener;
@@ -345,7 +346,18 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         encoder.print(getObjEntityMap());
         encodeDBRelationshipsAsXML(getDbEntityMap(), encoder);
         encodeOBJRelationshipsAsXML(getObjEntityMap(), encoder);
-        encoder.print(getQueryMap());
+
+        // since Queries are not XMLSerializable by default, check for non-serilaizable
+        // queries and throws if they are not..
+        for (Query query : getQueries()) {
+            if (query instanceof XMLSerializable) {
+                ((XMLSerializable) query).encodeAsXML(encoder);
+            }
+            else {
+                throw new CayenneRuntimeException("Query is not XMLSerilaizable: "
+                        + query);
+            }
+        }
 
         // write entity listeners
         for (EntityListener entityListener : getDefaultEntityListeners()) {

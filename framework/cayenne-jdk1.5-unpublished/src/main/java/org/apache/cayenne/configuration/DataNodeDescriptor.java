@@ -23,17 +23,17 @@ import java.util.Collection;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
- * A descriptor of a {@link DataNode}.
+ * A descriptor of {@link DataNode} configuration.
  * 
  * @since 3.1
  */
 public class DataNodeDescriptor implements XMLSerializable {
 
-    protected DataChannelDescriptor parent;
     protected String name;
     protected Collection<String> dataMapNames;
 
@@ -41,19 +41,40 @@ public class DataNodeDescriptor implements XMLSerializable {
     protected String adapterType;
     protected String dataSourceFactoryType;
     protected String schemaUpdateStrategyType;
+
+    // TODO: andrus, 12.13.2009: replace funky DataSourceInfo with a cleaner new class
+    // (DataSourceDescriptor?)
     protected DataSourceInfo dataSourceDescriptor;
 
-    public DataNodeDescriptor() {
-        this(null);
-    }
+    protected Resource configurationSource;
 
-    public DataNodeDescriptor(DataChannelDescriptor parent) {
-        this.parent = parent;
+    public DataNodeDescriptor() {
         this.dataMapNames = new ArrayList<String>();
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
-        throw new UnsupportedOperationException("TODO");
+        encoder.print("<node");
+        encoder.printlnAttribute("name", name);
+        encoder.indent(1);
+
+        encoder.printlnAttribute("adapter", adapterType);
+        encoder.printlnAttribute("factory", dataSourceFactoryType);
+        encoder.printlnAttribute("parameters", parameters);
+        encoder.printlnAttribute("schema-update-strategy", schemaUpdateStrategyType);
+        encoder.println(">");
+
+        for (String mapName : dataMapNames) {
+            encoder.print("<map-ref");
+            encoder.printAttribute("name", mapName);
+            encoder.println("/>");
+        }
+
+        if (dataSourceDescriptor != null) {
+            dataSourceDescriptor.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</node>");
     }
 
     public String getName() {
@@ -82,8 +103,8 @@ public class DataNodeDescriptor implements XMLSerializable {
      * {@link DataSourceFactory} to configure a DataSource. E.g. JNDIDataSoirceFactory may
      * treat parameters String as a JNDI location of the DataSource, etc.
      */
-    public void setParameters(String location) {
-        this.parameters = location;
+    public void setParameters(String parameters) {
+        this.parameters = parameters;
     }
 
     public String getAdapterType() {
@@ -118,11 +139,21 @@ public class DataNodeDescriptor implements XMLSerializable {
         this.dataSourceDescriptor = dataSourceDescriptor;
     }
 
-    public DataChannelDescriptor getParent() {
-        return parent;
+    /**
+     * Returns configuration resource for this descriptor. Configuration is usually shared
+     * with the parent {@link DataChannelDescriptor}.
+     */
+    public Resource getConfigurationSource() {
+        return configurationSource;
     }
 
-    public void setParent(DataChannelDescriptor parent) {
-        this.parent = parent;
+    /**
+     * Sets configuration resource for this descriptor. Configuration is usually shared
+     * with the parent {@link DataChannelDescriptor} and has to be synchronized when it
+     * changes in the parent.
+     */
+    public void setConfigurationSource(Resource configurationResource) {
+        this.configurationSource = configurationResource;
     }
+
 }
