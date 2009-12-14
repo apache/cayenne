@@ -471,13 +471,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                             .getSelectedItem()
                             .toString())) {
                 if (!attribute.getDbAttributePath().equals(attributePath.toString())) {
-
-                    if (isRegistredType(attributeSaved.getType())) {
-                        attributeSaved.setDbAttributePath(attributePath.toString());
-                    }
-                    else {
-                        attributeSaved.setDbAttributePath("");
-                    }
+                    attributeSaved.setDbAttributePath(attributePath.toString());
 
                     if (!attribute.getDbAttributePath().equals(attributePath.toString())
                             && isChange) {
