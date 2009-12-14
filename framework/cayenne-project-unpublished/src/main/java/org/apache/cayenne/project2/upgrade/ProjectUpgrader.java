@@ -16,26 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2;
+package org.apache.cayenne.project2.upgrade;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
-import org.apache.cayenne.project2.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project2.upgrade.v6.ProjectUpgrader_V6;
+import org.apache.cayenne.resource.Resource;
 
 /**
- * A dependency injection (DI) module contributing configuration related to Cayenne
- * mapping project manipulation to a DI container.
+ * Defines API of an upgrade handler for Cayenne projects.
  * 
  * @since 3.1
  */
-public class CayenneProjectModule implements Module {
+public interface ProjectUpgrader {
 
-    public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(Scopes.SINGLETON);
-        binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V6.class);
-    }
+    /**
+     * Returns an upgrade handler to process upgrades of a given project.
+     */
+    UpgradeHandler getUpgradeHandler(Resource projectSource);
 }
