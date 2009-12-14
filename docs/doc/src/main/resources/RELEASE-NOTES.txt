@@ -34,6 +34,9 @@ Release: 3.0 RC 1
 Date: 
 ----------------------------------
 
+Changes/New Features Since beta1
+CAY-1191 Undo/Redo support in modeler
+
 Bug Fixes Since beta1:
 
 CAY-1247 Query SQL syntax with join and OR on Oracle8 (and maybe OpenBase)
