@@ -172,7 +172,6 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         };
 
         addTreeSelectionListener(treeSelectionListener);
-        addTreeSelectionListener(mediator.getApplication().getUndoManager());
 
         addMouseListener(new PopupHandler());
 

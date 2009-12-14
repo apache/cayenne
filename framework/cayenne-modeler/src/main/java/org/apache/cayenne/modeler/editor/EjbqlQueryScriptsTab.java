@@ -62,8 +62,6 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     private void initView() {
 
         scriptArea = CayenneWidgetFactory.createJEJBQLTextPane();
-        
-        scriptArea.getPane().getDocument().addUndoableEditListener(new JTextFieldUndoListener(scriptArea.getPane()));
          
         scriptArea.getDocument().addDocumentListener(this);
 

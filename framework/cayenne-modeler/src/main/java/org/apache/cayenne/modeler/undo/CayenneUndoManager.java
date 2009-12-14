@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
@@ -28,26 +26,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.RedoAction;
 import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.SQLTemplate;
 
-public class CayenneUndoManager extends javax.swing.undo.UndoManager implements
-        TreeSelectionListener {
-
-    public void valueChanged(TreeSelectionEvent event) {
-
-        UndoableEdit e = editToBeUndone();
-
-        if (e instanceof TextCompoundEdit) {
-            TextCompoundEdit edit = (TextCompoundEdit) e;
-
-            if (edit.getTargetObject() instanceof SQLTemplate
-                    || edit.getTargetObject() instanceof EJBQLQuery) {
-                trimEdits(edits.size() - 1, edits.size() - 1);
-                updateUI();
-            }
-        }
-    }
+public class CayenneUndoManager extends javax.swing.undo.UndoManager {
 
     private Application application;
 

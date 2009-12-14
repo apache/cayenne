@@ -38,8 +38,6 @@ import javax.swing.table.TableCellEditor;
 
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
-import org.apache.cayenne.modeler.undo.JEditTextAreaUndoableAdapter;
-import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
@@ -215,13 +213,10 @@ public class CayenneWidgetFactory {
      * Creates and returns a JEdit text component with syntax highlighing
      */
     public static JEditTextArea createJEditTextArea() {
-        JEditTextArea area = new JEditTextArea();
+        JEditTextArea area = new JEditTextAreaUndoable();
         if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
             area.setInputHandler(new MacInputHandler());
         }
-
-        area.getDocument().addUndoableEditListener(
-                new JTextFieldUndoListener(new JEditTextAreaUndoableAdapter(area)));
 
         return area;
     }
@@ -232,7 +227,7 @@ public class CayenneWidgetFactory {
     // }
 
     public static JCayenneTextPane createJEJBQLTextPane() {
-        JCayenneTextPane area = new JCayenneTextPane(new EJBQLSyntaxConstant());
+        JCayenneTextPane area = new JCayenneTextPaneUndoable(new EJBQLSyntaxConstant());
         return area;
     }
 

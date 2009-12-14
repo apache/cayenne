@@ -32,10 +32,8 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
-import org.apache.cayenne.modeler.undo.JEditTextAreaUndoableAdapter;
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.validation.ValidationException;
-import org.syntax.jedit.JEditTextArea;
 
 /**
  * A validating adapter for JTextComponent. Implement {@link #updateModel(String)}to
@@ -52,10 +50,6 @@ public abstract class TextAdapter {
     protected UndoableEditListener undoableListener;
 
     protected JTextComponent textComponent;
-
-    public TextAdapter(JEditTextArea textArea) {
-        this(new JEditTextAreaUndoableAdapter(textArea), true, false, true);
-    }
 
     public TextAdapter(JTextField textField) {
         this(textField, true, false, true);
