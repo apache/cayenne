@@ -24,6 +24,7 @@ CAY-1323 oracle.sql.TIMESTAMP in Result of query
 Bug Fixes Since 3.0:
 
 CAY-1304 Fix some failures in tests on SQLite
+CAY-1335 Modeler cannot unset inheritance
 
 
 ----------------------------------
