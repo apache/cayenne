@@ -27,6 +27,7 @@ import javax.swing.JCheckBox;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SelectQuery;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -96,9 +97,6 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
     public void initFromModel(Query query) {
         super.initFromModel(query);
 
-        dataRows
-                .setSelected(query
-                        .getMetaData(mediator.getCurrentDataDomain().getEntityResolver())
-                        .isFetchingDataRows());
+        dataRows.setSelected(((SelectQuery) query).isFetchingDataRows());
     }
 }

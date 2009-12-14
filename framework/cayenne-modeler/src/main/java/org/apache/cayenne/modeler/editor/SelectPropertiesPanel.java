@@ -35,7 +35,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -141,26 +140,28 @@ public abstract class SelectPropertiesPanel extends JPanel {
      * query is changed.
      */
     public void initFromModel(Query query) {
-        EntityResolver resolver = mediator.getCurrentDataDomain().getEntityResolver();
         DefaultComboBoxModel cacheModel = new DefaultComboBoxModel(CACHE_POLICIES);
-
-        QueryCacheStrategy selectedStrategy = query
-                .getMetaData(resolver)
-                .getCacheStrategy();
+        
+        // TODO (andrey, 15/12/09)
+        //do not use metadata, as it triggers CDO class loading (CAY-1334)
+        //to avoid this evil hack, we need some common interface for SelectQuery, EJBQL
+        // & SQLTemplate, but 3.0 API is frozen now
+        QueryCacheStrategy selectedStrategy = (QueryCacheStrategy)
+            PropertyUtils.getProperty(query, "cacheStrategy");
 
         cacheModel.setSelectedItem(selectedStrategy != null
                 ? selectedStrategy
                 : QueryCacheStrategy.getDefaultStrategy());
         cacheStrategy.setModel(cacheModel);
 
-        String[] cacheGroupsArray = query.getMetaData(resolver).getCacheGroups();
+        String[] cacheGroupsArray = (String[]) PropertyUtils.getProperty(query, "cacheGroups");
         cacheGroups.setText(toCacheGroupsString(cacheGroupsArray));
         setCacheGroupsEnabled(selectedStrategy != null
                 && selectedStrategy != QueryCacheStrategy.NO_CACHE);
 
-        fetchOffset.setText(String.valueOf(query.getMetaData(resolver).getFetchOffset()));
-        fetchLimit.setText(String.valueOf(query.getMetaData(resolver).getFetchLimit()));
-        pageSize.setText(String.valueOf(query.getMetaData(resolver).getPageSize()));
+        fetchOffset.setText(String.valueOf(PropertyUtils.getProperty(query, "fetchOffset")));
+        fetchLimit.setText(String.valueOf(PropertyUtils.getProperty(query, "fetchLimit")));
+        pageSize.setText(String.valueOf(PropertyUtils.getProperty(query, "pageSize")));
     }
 
     protected String toCacheGroupsString(String[] groups) {
