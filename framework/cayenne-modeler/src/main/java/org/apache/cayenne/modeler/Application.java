@@ -29,7 +29,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
-import javax.swing.undo.UndoManager;
 
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
