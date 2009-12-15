@@ -22,24 +22,22 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.net.URL;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.project2.unit.Project2Case;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.Util;
 
-public class DataChannelProjectSaverTest extends TestCase {
+public class DataChannelProjectSaverTest extends Project2Case {
 
     public void testSaveAs() throws Exception {
 
@@ -133,26 +131,4 @@ public class DataChannelProjectSaverTest extends TestCase {
 
     }
 
-    protected File setupTestDirectory(String subfolder) {
-        String packagePath = getClass().getPackage().getName().replace('.', '/');
-        String location = "target/testrun/" + packagePath + "/" + subfolder;
-        File testDirectory = new File(location);
-
-        // delete old tests
-        if (testDirectory.exists()) {
-            if (!Util.delete(location, true)) {
-                throw new CayenneRuntimeException(
-                        "Error deleting test directory '%s'",
-                        location);
-            }
-        }
-
-        if (!testDirectory.mkdirs()) {
-            throw new CayenneRuntimeException(
-                    "Error creating test directory '%s'",
-                    location);
-        }
-
-        return testDirectory;
-    }
 }

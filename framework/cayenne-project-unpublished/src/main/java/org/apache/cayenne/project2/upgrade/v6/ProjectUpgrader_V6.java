@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.project2.upgrade.v6;
 
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.project2.upgrade.UpgradeHandler;
 import org.apache.cayenne.project2.upgrade.ProjectUpgrader;
 import org.apache.cayenne.resource.Resource;
@@ -29,8 +31,13 @@ import org.apache.cayenne.resource.Resource;
  */
 public class ProjectUpgrader_V6 implements ProjectUpgrader {
 
+    @Inject
+    protected Injector injector;
+
     public UpgradeHandler getUpgradeHandler(Resource projectSource) {
-        return new UpgradeHandler_V6(projectSource);
+        UpgradeHandler_V6 handler = new UpgradeHandler_V6(projectSource);
+        injector.injectMembers(handler);
+        return handler;
     }
 
 }

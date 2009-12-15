@@ -61,6 +61,10 @@ public class FileProjectSaver implements ProjectSaver {
         fileEncoding = "UTF-8";
     }
 
+    public String getSupportedVersion() {
+        return "6";
+    }
+
     public void save(Project project) {
 
         Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
@@ -233,7 +237,8 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
-        unit.node.acceptVisitor(new ConfigurationSaver(printWriter));
+        unit.node
+                .acceptVisitor(new ConfigurationSaver(printWriter, getSupportedVersion()));
     }
 
     void saveCommit(Collection<SaveUnit> units) {

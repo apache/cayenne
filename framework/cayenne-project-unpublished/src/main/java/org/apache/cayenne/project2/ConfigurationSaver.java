@@ -31,20 +31,22 @@ import org.apache.cayenne.util.XMLEncoder;
 class ConfigurationSaver implements ConfigurationNodeVisitor<Void> {
 
     private PrintWriter printWriter;
+    private String version;
 
-    ConfigurationSaver(PrintWriter printWriter) {
+    ConfigurationSaver(PrintWriter printWriter, String version) {
         this.printWriter = printWriter;
+        this.version = version;
     }
 
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
-        XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         printXMLHeader(encoder);
         node.encodeAsXML(encoder);
         return null;
     }
 
     public Void visitDataMap(DataMap node) {
-        XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         printXMLHeader(encoder);
         node.encodeAsXML(encoder);
         return null;

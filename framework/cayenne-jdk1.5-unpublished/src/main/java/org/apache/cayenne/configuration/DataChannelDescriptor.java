@@ -37,7 +37,6 @@ import org.apache.cayenne.util.XMLSerializable;
 public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable {
 
     protected String name;
-    protected String version;
     protected Map<String, String> properties;
     protected Collection<DataMap> dataMaps;
     protected Collection<DataNodeDescriptor> nodeDescriptors;
@@ -53,7 +52,7 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
 
         encoder.print("<domain");
         encoder.printAttribute("name", name);
-        encoder.printAttribute("project-version", version);
+        encoder.printProjectVersion();
         encoder.println(">");
 
         encoder.indent(1);
@@ -109,14 +108,6 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public Map<String, String> getProperties() {

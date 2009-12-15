@@ -214,9 +214,6 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 Attributes attributes) {
 
             if (localName.equals(DOMAIN_TAG)) {
-                String version = attributes.getValue("", "project-version");
-                descriptor.setVersion(version);
-
                 return new DataChannelChildrenHandler(parser, this);
             }
 

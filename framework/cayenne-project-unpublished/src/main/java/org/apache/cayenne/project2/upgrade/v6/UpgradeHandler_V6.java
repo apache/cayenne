@@ -18,7 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.project2.upgrade.v6;
 
+import java.util.List;
+
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.ProjectSaver;
 import org.apache.cayenne.project2.upgrade.BaseUpgradeHandler;
 import org.apache.cayenne.project2.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project2.upgrade.UpgradeType;
@@ -32,8 +38,22 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
     static final String TO_VERSION = "6";
     static final String MIN_SUPPORTED_VERSION = "3.0.0.1";
 
+    /**
+     * Notice that the loader is statically typed, intentionally not using DI to ensure
+     * predictable behavior on legacy upgrades.
+     */
+    private XMLDataChananelDescriptorLoader_V3_0_0_1 projectLoader;
+
+    /**
+     * Unlike loader, saver is injected, so that we can save dynamically with the latest
+     * version. This may change once this upgrade handler becomes an intermediate handler.
+     */
+    @Inject
+    private ProjectSaver projectSaver;
+
     UpgradeHandler_V6(Resource source) {
         super(source);
+        this.projectLoader = new XMLDataChananelDescriptorLoader_V3_0_0_1();
     }
 
     @Override
@@ -66,7 +86,23 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
 
     @Override
     protected Resource performNeededUpgrade() throws ConfigurationException {
-        throw new UnsupportedOperationException("TODO");
-    }
 
+        List<DataChannelDescriptor> domains = projectLoader.load(projectSource);
+        if (domains.isEmpty()) {
+            // create a single domain dummy project if a noop config is being upgraded
+            DataChannelDescriptor descriptor = new DataChannelDescriptor();
+            descriptor.setName("DEFAULT");
+            domains.add(descriptor);
+        }
+
+        for (DataChannelDescriptor descriptor : domains) {
+
+            Project project = new Project(descriptor);
+            projectSaver.save(project);
+        }
+
+        // returns the first domain configuration out of possibly multiple new
+        // configurations...
+        return domains.get(0).getConfigurationSource();
+    }
 }

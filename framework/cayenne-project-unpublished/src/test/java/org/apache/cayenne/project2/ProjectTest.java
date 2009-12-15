@@ -38,19 +38,4 @@ public class ProjectTest extends TestCase {
         assertSame(object, project.getRootNode());
     }
 
-    public void testVersion() {
-
-        ConfigurationNode object = new ConfigurationNode() {
-
-            public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-                return null;
-            }
-        };
-
-        Project project = new Project(object);
-
-        assertNull(project.getVersion());
-        project.setVersion("1.1");
-        assertEquals("1.1", project.getVersion());
-    }
 }

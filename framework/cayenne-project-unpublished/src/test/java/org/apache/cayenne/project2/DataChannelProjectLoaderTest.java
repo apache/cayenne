@@ -66,8 +66,6 @@ public class DataChannelProjectLoaderTest extends TestCase {
         Project project = loader.loadProject(rootSource);
         assertNotNull(project);
 
-        assertEquals("6", project.getVersion());
-
         DataChannelDescriptor rootNode = (DataChannelDescriptor) project.getRootNode();
         assertNotNull(rootNode);
         assertSame(rootSource, rootNode.getConfigurationSource());

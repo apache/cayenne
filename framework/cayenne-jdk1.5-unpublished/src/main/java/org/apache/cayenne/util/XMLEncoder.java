@@ -30,6 +30,7 @@ import java.util.Map;
  */
 public class XMLEncoder {
 
+    protected String projectVersion;
     protected String indent;
     protected PrintWriter out;
 
@@ -37,12 +38,20 @@ public class XMLEncoder {
     protected int indentTimes;
 
     public XMLEncoder(PrintWriter out) {
-        this.out = out;
+        this(out, null, null);
     }
 
     public XMLEncoder(PrintWriter out, String indent) {
+        this(out, indent, null);
+    }
+
+    /**
+     * @since 3.1
+     */
+    public XMLEncoder(PrintWriter out, String indent, String projectVersion) {
         this.indent = indent;
         this.out = out;
+        this.projectVersion = projectVersion;
     }
 
     public PrintWriter getPrintWriter() {
@@ -74,6 +83,16 @@ public class XMLEncoder {
         for (XMLSerializable value : c) {
             value.encodeAsXML(this);
         }
+    }
+
+    /**
+     * Inserts an optional project version attribute in the output. If the project version
+     * is not initialized for encoder, will do nothing.
+     * 
+     * @since 3.1
+     */
+    public void printProjectVersion() {
+        printAttribute("project-version", projectVersion);
     }
 
     /**

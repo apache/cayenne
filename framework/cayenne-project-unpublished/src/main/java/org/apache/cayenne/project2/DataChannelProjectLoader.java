@@ -35,9 +35,6 @@ public class DataChannelProjectLoader implements ProjectLoader {
 
     public Project loadProject(Resource source) {
         DataChannelDescriptor descriptor = loader.load(source);
-
-        Project project = new Project(descriptor);
-        project.setVersion(descriptor.getVersion());
-        return project;
+        return new Project(descriptor);
     }
 }

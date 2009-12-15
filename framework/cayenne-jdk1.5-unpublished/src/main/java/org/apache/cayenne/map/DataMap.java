@@ -36,7 +36,6 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.resource.Resource;
@@ -284,15 +283,17 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     public void encodeAsXML(XMLEncoder encoder) {
         encoder
                 .println("<data-map xmlns=\"http://cayenne.apache.org/schema/3.0/modelMap\"");
-        encoder.println("  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-        encoder.println("  xsi:schemaLocation=\""
+
+        encoder.indent(1);
+        encoder.println(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+        encoder.println(" xsi:schemaLocation=\""
                 + SCHEMA_XSD
                 + " "
                 + SCHEMA_XSD
                 + ".xsd\"");
-        encoder.println("  project-version=\"" + Project.CURRENT_PROJECT_VERSION + "\">");
 
-        encoder.indent(1);
+        encoder.printProjectVersion();
+        encoder.println(">");
 
         // properties
         if (defaultLockType == ObjEntity.LOCK_TYPE_OPTIMISTIC) {

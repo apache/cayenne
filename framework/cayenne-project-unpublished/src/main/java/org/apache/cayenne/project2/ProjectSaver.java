@@ -28,6 +28,11 @@ import org.apache.cayenne.resource.Resource;
 public interface ProjectSaver {
 
     /**
+     * Returns a version of the project configuration supported by the current runtime.
+     */
+    String getSupportedVersion();
+
+    /**
      * Saves project in the location of its current configuration sources. Since resource
      * names are determined using a naming convention based on the project node names, if
      * any of the nodes were renamed, the old locations will be deleted. After saving,

@@ -27,21 +27,15 @@ import org.apache.cayenne.configuration.ConfigurationNode;
  * 
  * @since 3.1
  */
+// do we even need a project wrapper around ConfigurationNode, as currently it does
+// nothing?? Maybe in the future make it store configuration Resources for the project
+// nodes to avoid attaching them to descriptors?
 public class Project {
 
-    protected String version;
     protected ConfigurationNode rootNode;
 
     public Project(ConfigurationNode rootNode) {
         this.rootNode = rootNode;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public ConfigurationNode getRootNode() {
