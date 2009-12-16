@@ -34,6 +34,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.SAXNestedTagHandler;
 import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
@@ -47,10 +48,10 @@ import org.xml.sax.XMLReader;
 /**
  * A loader of Cayenne projects descriptor for version "3.0.0.1".
  */
-class XMLDataChananelDescriptorLoader_V3_0_0_1 {
+class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 
     private static Log logger = LogFactory
-            .getLog(XMLDataChananelDescriptorLoader_V3_0_0_1.class);
+            .getLog(XMLDataChannelDescriptorLoader_V3_0_0_1.class);
 
     static final String DOMAINS_TAG = "domains";
     static final String DOMAIN_TAG = "domain";
@@ -76,9 +77,11 @@ class XMLDataChananelDescriptorLoader_V3_0_0_1 {
 
     // implementation is statically typed and is intentionally not DI-provided
     protected XMLDataMapLoader_V3_0_0_1 mapLoader;
+    protected XMLDataSourceInfoLoader_V3_0_0_1 dataSourceInfoLoader;
 
-    XMLDataChananelDescriptorLoader_V3_0_0_1() {
-        this.mapLoader = new XMLDataMapLoader_V3_0_0_1();
+    XMLDataChannelDescriptorLoader_V3_0_0_1() {
+        mapLoader = new XMLDataMapLoader_V3_0_0_1();
+        dataSourceInfoLoader = new XMLDataSourceInfoLoader_V3_0_0_1();
     }
 
     List<DataChannelDescriptor> load(Resource configurationSource)
@@ -90,7 +93,6 @@ class XMLDataChananelDescriptorLoader_V3_0_0_1 {
 
         URL configurationURL = configurationSource.getURL();
 
-        // using linked map to perform upgrade in the order of domains in the old config
         List<DataChannelDescriptor> domains = new ArrayList<DataChannelDescriptor>();
         InputStream in = null;
 
@@ -249,23 +251,38 @@ class XMLDataChananelDescriptorLoader_V3_0_0_1 {
 
                 String nodeName = attributes.getValue("", "name");
                 if (nodeName == null) {
+                    // TODO: assign dummy name?
                     throw new ConfigurationException("Error: <node> without 'name'.");
                 }
 
                 DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-                nodeDescriptor
-                        .setConfigurationSource(descriptor.getConfigurationSource());
-                descriptor.getNodeDescriptors().add(nodeDescriptor);
-
                 nodeDescriptor.setName(nodeName);
-                nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));
-
-                String parameters = attributes.getValue("", "parameters");
-                nodeDescriptor.setParameters(parameters);
 
                 String dataSourceFactory = attributes.getValue("", "factory");
-                nodeDescriptor
-                        .setDataSourceFactoryType(convertDataSourceFactory(dataSourceFactory));
+                String dataSourceFactory6 = convertDataSourceFactory(dataSourceFactory);
+                nodeDescriptor.setDataSourceFactoryType(dataSourceFactory6);
+
+                // depending on the factory, "datasource" attribute is interpreted
+                // differently
+                String datasource = attributes.getValue("", "datasource");
+                if (XMLPoolingDataSourceFactory.class
+                        .getName()
+                        .equals(dataSourceFactory6)) {
+                    Resource baseResource = descriptor.getConfigurationSource();
+                    Resource dataNodeResource = baseResource
+                            .getRelativeResource(datasource);
+                    nodeDescriptor.setConfigurationSource(dataNodeResource);
+
+                    DataSourceInfo dataSourceInfo = dataSourceInfoLoader
+                            .load(dataNodeResource);
+                    nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
+                }
+                else {
+                    nodeDescriptor.setParameters(datasource);
+                }
+
+                descriptor.getNodeDescriptors().add(nodeDescriptor);
+                nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));
                 nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue(
                         "",
                         "schema-update-strategy"));

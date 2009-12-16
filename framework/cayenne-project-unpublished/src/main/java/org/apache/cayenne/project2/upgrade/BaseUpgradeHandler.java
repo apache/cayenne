@@ -76,14 +76,21 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
                 throw new ConfigurationException(
                         "Upgrade can not be performed - intermediate version upgrade needed");
             case UPGRADE_NEEDED:
-                return performNeededUpgrade();
+                return doPerformUpgrade();
             default:
                 return getProjectSource();
         }
     }
 
-    protected abstract Resource performNeededUpgrade() throws ConfigurationException;
+    /**
+     * Does the actual project upgrade, assuming the caller already verified that the
+     * upgrade is possible.
+     */
+    protected abstract Resource doPerformUpgrade() throws ConfigurationException;
 
+    /**
+     * Creates a metadata object describing the type of upgrade needed.
+     */
     protected abstract UpgradeMetaData loadMetaData();
 
     /**
@@ -106,7 +113,6 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
         }
         catch (SAXException e) {
             // expected ... handler will terminate as soon as it finds a root tag.
-
         }
         catch (Exception e) {
             throw new ConfigurationException(

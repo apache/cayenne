@@ -19,13 +19,46 @@
 package org.apache.cayenne.project2.unit;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.TestCase;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.util.Util;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class Project2Case extends TestCase {
+
+    /**
+     * A helper method returning the contents of an XML source as a DOM Document.
+     * 
+     * @throws IOException
+     * @throws SAXException
+     */
+    protected Document toDOMTree(File file) {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder domParser;
+        try {
+            domParser = dbf.newDocumentBuilder();
+        }
+        catch (ParserConfigurationException e) {
+            fail("ParserConfigurationException: " + e.getMessage());
+            throw new RuntimeException();
+        }
+
+        try {
+            return domParser.parse(file);
+        }
+        catch (Exception e) {
+            fail("DOM parsing exception: " + e.getMessage());
+            throw new RuntimeException();
+        }
+    }
 
     protected File setupTestDirectory(String subfolder) {
         String packagePath = getClass().getPackage().getName().replace('.', '/');

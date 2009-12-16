@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.project2.upgrade.v6;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
@@ -29,6 +33,7 @@ import org.apache.cayenne.project2.upgrade.BaseUpgradeHandler;
 import org.apache.cayenne.project2.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project2.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.util.Util;
 
 /**
  * @since 3.1
@@ -42,7 +47,7 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
      * Notice that the loader is statically typed, intentionally not using DI to ensure
      * predictable behavior on legacy upgrades.
      */
-    private XMLDataChananelDescriptorLoader_V3_0_0_1 projectLoader;
+    private XMLDataChannelDescriptorLoader_V3_0_0_1 projectLoader;
 
     /**
      * Unlike loader, saver is injected, so that we can save dynamically with the latest
@@ -53,7 +58,7 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
 
     UpgradeHandler_V6(Resource source) {
         super(source);
-        this.projectLoader = new XMLDataChananelDescriptorLoader_V3_0_0_1();
+        this.projectLoader = new XMLDataChannelDescriptorLoader_V3_0_0_1();
     }
 
     @Override
@@ -85,7 +90,7 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
     }
 
     @Override
-    protected Resource performNeededUpgrade() throws ConfigurationException {
+    protected Resource doPerformUpgrade() throws ConfigurationException {
 
         List<DataChannelDescriptor> domains = projectLoader.load(projectSource);
         if (domains.isEmpty()) {
@@ -95,10 +100,36 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
             domains.add(descriptor);
         }
 
+        // collect resources to delete before the upgrade...
+        Collection<Resource> resourcesToDelete = new ArrayList<Resource>();
         for (DataChannelDescriptor descriptor : domains) {
+            for (DataNodeDescriptor node : descriptor.getNodeDescriptors()) {
+                Resource nodeResource = node.getConfigurationSource();
+                if (nodeResource != null) {
+                    resourcesToDelete.add(nodeResource);
+                }
+            }
+        }
 
+        // save in the new format
+        for (DataChannelDescriptor descriptor : domains) {
             Project project = new Project(descriptor);
+
+            // side effect of that is deletion of the common "cayenne.xml"
             projectSaver.save(project);
+        }
+
+        // delete all .driver.xml files
+        for (Resource resource : resourcesToDelete) {
+            try {
+                File file = Util.toFile(resource.getURL());
+                if (file.exists() && file.getName().endsWith(".driver.xml")) {
+                    file.delete();
+                }
+            }
+            catch (Exception e) {
+                // ignore...
+            }
         }
 
         // returns the first domain configuration out of possibly multiple new

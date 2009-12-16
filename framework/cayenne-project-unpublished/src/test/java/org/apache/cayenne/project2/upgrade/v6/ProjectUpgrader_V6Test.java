@@ -23,8 +23,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -38,6 +43,9 @@ import org.apache.cayenne.project2.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class ProjectUpgrader_V6Test extends Project2Case {
 
@@ -186,29 +194,88 @@ public class ProjectUpgrader_V6Test extends Project2Case {
         assertNotSame(source, upgrader);
 
         // check that all the new files are created...
-        List<String> targets = new ArrayList<String>();
+        String[] targetsAfterNames = new String[] {
+                "cayenne-d1.xml", "cayenne-d2.xml", "d1Map1.map.xml", "d1Map2.map.xml"
+        };
 
-        targets.add("cayenne-d1.xml");
-        targets.add("cayenne-d2.xml");
-        targets.add("d1Map1.map.xml");
-        targets.add("d1Map2.map.xml");
-        for (String targetName : targets) {
-            File target = new File(testFolder, targetName);
-            assertTrue("File was not created: " + target.getAbsolutePath(), target
-                    .exists());
+        File[] targetsAfter = new File[targetsAfterNames.length];
+        for (int i = 0; i < targetsAfter.length; i++) {
+            targetsAfter[i] = new File(testFolder, targetsAfterNames[i]);
+            assertTrue(
+                    "File was not created: " + targetsAfter[i].getAbsolutePath(),
+                    targetsAfter[i].exists());
         }
 
         // DataMap files should remain the same; all others need to be deleted
-//        for (File file : targetsBefore) {
-//            if (file.getName().endsWith(".map.xml")) {
-//                assertTrue("DataMap file disappeared: " + file.getAbsolutePath(), file
-//                        .exists());
-//            }
-//            else {
-//                assertFalse(
-//                        "File expected to be deleted: " + file.getAbsolutePath(),
-//                        file.exists());
-//            }
-//        }
+        for (File file : targetsBefore) {
+            if (file.getName().endsWith(".map.xml")) {
+                assertTrue("DataMap file disappeared: " + file.getAbsolutePath(), file
+                        .exists());
+            }
+            else {
+                assertFalse(
+                        "File expected to be deleted: " + file.getAbsolutePath(),
+                        file.exists());
+            }
+        }
+
+        // assert XML structure of the generated files
+        assertPerformUpgrade_3_0_0_1_cayenne_d1(targetsAfter[0]);
+    }
+
+    private void assertPerformUpgrade_3_0_0_1_cayenne_d1(File file) throws Exception {
+        Document document = toDOMTree(file);
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        assertEquals("d1", xpath.evaluate("/domain/@name", document));
+        assertEquals("6", xpath.evaluate("/domain/@project-version", document));
+
+        NodeList maps = (NodeList) xpath.evaluate(
+                "/domain/map",
+                document,
+                XPathConstants.NODESET);
+        assertNotNull(maps);
+        assertEquals(2, maps.getLength());
+
+        Node map1 = maps.item(0);
+        Node map2 = maps.item(1);
+
+        assertEquals("d1Map1", xpath.evaluate("@name", map1));
+        assertEquals("d1Map2", xpath.evaluate("@name", map2));
+
+        NodeList nodes = (NodeList) xpath.evaluate(
+                "/domain/node",
+                document,
+                XPathConstants.NODESET);
+        assertNotNull(nodes);
+        assertEquals(1, nodes.getLength());
+
+        Node node1 = nodes.item(0);
+
+        assertEquals("d1NodeDriver", xpath.evaluate("@name", node1));
+        assertEquals(XMLPoolingDataSourceFactory.class.getName(), xpath.evaluate(
+                "@factory",
+                node1));
+
+        NodeList mapRefs = (NodeList) xpath.evaluate(
+                "map-ref",
+                node1,
+                XPathConstants.NODESET);
+        assertNotNull(mapRefs);
+        assertEquals(2, mapRefs.getLength());
+
+        assertEquals("d1Map1", xpath.evaluate("@name", mapRefs.item(0)));
+        assertEquals("d1Map2", xpath.evaluate("@name", mapRefs.item(1)));
+
+        NodeList dataSources = (NodeList) xpath.evaluate(
+                "data-source",
+                node1,
+                XPathConstants.NODESET);
+        assertNotNull(dataSources);
+        assertEquals(1, dataSources.getLength());
+        
+        Node ds = dataSources.item(0);
+        assertEquals("org.hsqldb.jdbcDriver", xpath.evaluate("driver/@value", ds));
+        assertEquals("jdbc:hsqldb:mem:xdb", xpath.evaluate("url/@value", ds));
     }
 }
