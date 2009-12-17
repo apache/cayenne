@@ -37,14 +37,6 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm-commons</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.objectstyle</groupId>
 			<artifactId>jdbc4-compat</artifactId>
 		</dependency>

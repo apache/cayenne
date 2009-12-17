@@ -72,9 +72,6 @@
 					<os>windows</os>
 					<jvm>1.5+</jvm>
 					<jvmOptions>-Xmx500m</jvmOptions>
-					<excludes>
-						<exclude>asm</exclude>
-					</excludes>
 				</configuration>
 				<executions>
 					<execution>

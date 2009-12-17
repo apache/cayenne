@@ -69,9 +69,6 @@
 					<name>CayenneModeler</name>
 					<mainClass>org.apache.cayenne.modeler.Main</mainClass>
 					<os>java</os>
-					<excludes>
-						<exclude>asm</exclude>
-					</excludes>
 				</configuration>
 				<executions>
 					<execution>

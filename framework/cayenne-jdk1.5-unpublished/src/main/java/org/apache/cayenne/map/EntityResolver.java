@@ -38,7 +38,6 @@ import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
-import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.collection.CompositeCollection;
@@ -852,9 +851,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
             // add factories in reverse of the desired chain order
             classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(
                     classDescriptorMap));
-            classDescriptorMap.addFactory(new EnhancedPojoDescriptorFactory(
-                    classDescriptorMap,
-                    faultFactory));
             classDescriptorMap.addFactory(new DataObjectDescriptorFactory(
                     classDescriptorMap,
                     faultFactory));
