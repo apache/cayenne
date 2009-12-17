@@ -131,6 +131,32 @@ class XMLDataChannelDescriptorLoader_V3_0_0_1 {
     }
 
     /**
+     * Make sure the domain name is only made up of Java-identifier-safe characters.
+     */
+    protected String scrubDomainName(String name) {
+        if (name == null || name.length() == 0) {
+            return name;
+        }
+
+        StringBuilder buffer = new StringBuilder(name.length());
+
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (i == 0 && !Character.isJavaIdentifierStart(c)) {
+                buffer.append('_');
+            }
+            else if (i > 0 && !Character.isJavaIdentifierPart(c)) {
+                buffer.append('_');
+            }
+            else {
+                buffer.append(c);
+            }
+        }
+
+        return buffer.toString();
+    }
+
+    /**
      * Converts the names of standard Cayenne-supplied DataSourceFactories from the legacy
      * names to the current names.
      */
@@ -194,7 +220,7 @@ class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 
                 String domainName = attributes.getValue("", "name");
                 DataChannelDescriptor descriptor = new DataChannelDescriptor();
-                descriptor.setName(domainName);
+                descriptor.setName(scrubDomainName(domainName));
                 descriptor.setConfigurationSource(configurationSource);
 
                 domains.add(descriptor);

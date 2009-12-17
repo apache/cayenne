@@ -20,6 +20,8 @@ package org.apache.cayenne.configuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -32,7 +34,8 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.1
  */
-public class DataNodeDescriptor implements XMLSerializable {
+public class DataNodeDescriptor implements XMLSerializable,
+        Comparable<DataNodeDescriptor> {
 
     protected String name;
     protected Collection<String> dataMapNames;
@@ -49,7 +52,27 @@ public class DataNodeDescriptor implements XMLSerializable {
     protected Resource configurationSource;
 
     public DataNodeDescriptor() {
+        this(null);
+    }
+
+    public DataNodeDescriptor(String name) {
         this.dataMapNames = new ArrayList<String>();
+        this.name = name;
+    }
+
+    public int compareTo(DataNodeDescriptor o) {
+        String o1 = getName();
+        String o2 = o.getName();
+
+        if (o1 == null) {
+            return (o2 != null) ? -1 : 0;
+        }
+        else if (o2 == null) {
+            return 1;
+        }
+        else {
+            return o1.compareTo(o2);
+        }
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
@@ -63,10 +86,16 @@ public class DataNodeDescriptor implements XMLSerializable {
         encoder.printlnAttribute("schema-update-strategy", schemaUpdateStrategyType);
         encoder.println(">");
 
-        for (String mapName : dataMapNames) {
-            encoder.print("<map-ref");
-            encoder.printAttribute("name", mapName);
-            encoder.println("/>");
+        if (!dataMapNames.isEmpty()) {
+            
+            List<String> names = new ArrayList<String>(dataMapNames);
+            Collections.sort(names);
+
+            for (String mapName : names) {
+                encoder.print("<map-ref");
+                encoder.printAttribute("name", mapName);
+                encoder.println("/>");
+            }
         }
 
         if (dataSourceDescriptor != null) {

@@ -50,7 +50,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * mapping persistent Java classes, Procedures - mapping database stored procedures.
  */
 public class DataMap implements Serializable, ConfigurationNode, XMLSerializable,
-        MappingNamespace, DbEntityListener, ObjEntityListener {
+        MappingNamespace, DbEntityListener, ObjEntityListener, Comparable<DataMap> {
 
     /**
      * Defines whether a DataMap supports client entities.
@@ -170,6 +170,24 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      */
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitDataMap(this);
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public int compareTo(DataMap o) {
+        String o1 = getName();
+        String o2 = o.getName();
+        
+        if (o1 == null) {
+            return (o2 != null) ? -1 : 0;
+        }
+        else if (o2 == null) {
+            return 1;
+        }
+        else {
+            return o1.compareTo(o2);
+        }
     }
 
     /**

@@ -28,7 +28,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.DBCPDataSourceFactory;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -221,13 +223,16 @@ public class ProjectUpgrader_V6Test extends Project2Case {
 
         // assert XML structure of the generated files
         assertPerformUpgrade_3_0_0_1_cayenne_d1(targetsAfter[0]);
+        assertPerformUpgrade_3_0_0_1_cayenne_d2(targetsAfter[1]);
+        assertPerformUpgrade_3_0_0_1_d1Map1(targetsAfter[2]);
+        assertPerformUpgrade_3_0_0_1_d1Map2(targetsAfter[3]);
     }
 
     private void assertPerformUpgrade_3_0_0_1_cayenne_d1(File file) throws Exception {
         Document document = toDOMTree(file);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
-        assertEquals("d1", xpath.evaluate("/domain/@name", document));
+        assertEquals("", xpath.evaluate("/domain/@name", document));
         assertEquals("6", xpath.evaluate("/domain/@project-version", document));
 
         NodeList maps = (NodeList) xpath.evaluate(
@@ -273,9 +278,75 @@ public class ProjectUpgrader_V6Test extends Project2Case {
                 XPathConstants.NODESET);
         assertNotNull(dataSources);
         assertEquals(1, dataSources.getLength());
-        
+
         Node ds = dataSources.item(0);
         assertEquals("org.hsqldb.jdbcDriver", xpath.evaluate("driver/@value", ds));
         assertEquals("jdbc:hsqldb:mem:xdb", xpath.evaluate("url/@value", ds));
     }
+
+    private void assertPerformUpgrade_3_0_0_1_cayenne_d2(File file) throws Exception {
+        Document document = toDOMTree(file);
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        assertEquals("", xpath.evaluate("/domain/@name", document));
+        assertEquals("6", xpath.evaluate("/domain/@project-version", document));
+
+        NodeList maps = (NodeList) xpath.evaluate(
+                "/domain/map",
+                document,
+                XPathConstants.NODESET);
+        assertNotNull(maps);
+        assertEquals(0, maps.getLength());
+
+        NodeList nodes = (NodeList) xpath.evaluate(
+                "/domain/node",
+                document,
+                XPathConstants.NODESET);
+        assertNotNull(nodes);
+        assertEquals(2, nodes.getLength());
+
+        Node node1 = nodes.item(0);
+        Node node2 = nodes.item(1);
+
+        assertEquals("d2NodeDBCP", xpath.evaluate("@name", node1));
+        assertEquals("dbcpx", xpath.evaluate("@parameters", node1));
+        assertEquals(DBCPDataSourceFactory.class.getName(), xpath.evaluate(
+                "@factory",
+                node1));
+
+        NodeList dataSources1 = (NodeList) xpath.evaluate(
+                "data-source",
+                node1,
+                XPathConstants.NODESET);
+        assertNotNull(dataSources1);
+        assertEquals(0, dataSources1.getLength());
+
+        assertEquals("d2NodeJNDI", xpath.evaluate("@name", node2));
+        assertEquals("jndi/x", xpath.evaluate("@parameters", node2));
+        assertEquals(JNDIDataSourceFactory.class.getName(), xpath.evaluate(
+                "@factory",
+                node2));
+
+        NodeList dataSources2 = (NodeList) xpath.evaluate(
+                "data-source",
+                node2,
+                XPathConstants.NODESET);
+        assertNotNull(dataSources2);
+        assertEquals(0, dataSources2.getLength());
+    }
+
+    private void assertPerformUpgrade_3_0_0_1_d1Map1(File file) throws Exception {
+        Document document = toDOMTree(file);
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        assertEquals("6", xpath.evaluate("/data-map/@project-version", document));
+    }
+    
+    private void assertPerformUpgrade_3_0_0_1_d1Map2(File file) throws Exception {
+        Document document = toDOMTree(file);
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        assertEquals("6", xpath.evaluate("/data-map/@project-version", document));
+    }
+
 }

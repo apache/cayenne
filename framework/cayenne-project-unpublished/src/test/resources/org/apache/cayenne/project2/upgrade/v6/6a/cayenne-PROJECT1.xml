@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain name="DefaultDomain" project-version="6">
+<domain project-version="6">
 
 	<map name="testProjectMap1_1" />
 	<map name="testProjectMap1_2" />

@@ -153,7 +153,7 @@ class XMLDataSourceInfoLoader_V3_0_0_1 {
             if (localName.equals("driver")) {
                 String className = attributes.getValue("", "class");
                 dataSourceDescriptor.setJdbcDriver(className);
-                
+
                 return new DataSourceChildrenHandler(parser, this);
             }
 
@@ -178,8 +178,6 @@ class XMLDataSourceInfoLoader_V3_0_0_1 {
                 Attributes attributes) {
 
             if (localName.equals("login")) {
-
-                logger.info("loading user name and password.");
 
                 String encoderClass = attributes.getValue("encoderClass");
 

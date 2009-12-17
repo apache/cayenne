@@ -20,9 +20,10 @@ package org.apache.cayenne.configuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
@@ -51,7 +52,6 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
     public void encodeAsXML(XMLEncoder encoder) {
 
         encoder.print("<domain");
-        encoder.printAttribute("name", name);
         encoder.printProjectVersion();
         encoder.println(">");
 
@@ -61,10 +61,12 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
         if (!properties.isEmpty()) {
             breakNeeded = true;
 
-            for (Entry<String, String> property : properties.entrySet()) {
-                encoder.printProperty(property.getKey(), property.getValue());
-            }
+            List<String> keys = new ArrayList<String>(properties.keySet());
+            Collections.sort(keys);
 
+            for (String key : keys) {
+                encoder.printProperty(key, properties.get(key));
+            }
         }
 
         if (!dataMaps.isEmpty()) {
@@ -75,7 +77,10 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
                 breakNeeded = true;
             }
 
-            for (DataMap dataMap : dataMaps) {
+            List<DataMap> maps = new ArrayList<DataMap>(this.dataMaps);
+            Collections.sort(maps);
+
+            for (DataMap dataMap : maps) {
 
                 encoder.print("<map");
                 encoder.printAttribute("name", dataMap.getName().trim());
@@ -91,7 +96,10 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
                 breakNeeded = true;
             }
 
-            encoder.print(nodeDescriptors);
+            List<DataNodeDescriptor> nodes = new ArrayList<DataNodeDescriptor>(
+                    nodeDescriptors);
+            Collections.sort(nodes);
+            encoder.print(nodes);
         }
 
         encoder.indent(-1);
