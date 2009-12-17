@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.map.EntityResolver;
@@ -267,5 +268,13 @@ public class EJBQLQueryTest extends CayenneCase {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x");
         query.setParameter("x", null);
         createDataContext().performQuery(query);
+    }
+    
+    public void testJoinToJoined() {
+        ObjectContext context = createDataContext();
+        
+        EJBQLQuery query = new EJBQLQuery(
+            "select g from Gallery g inner join g.paintingArray p where p.toArtist.artistName like '%a%'");
+        context.performQuery(query);
     }
 }

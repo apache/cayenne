@@ -76,6 +76,9 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
                 null,
                 new EJBQLTableId(join.getLeftHandSideId()),
                 new EJBQLTableId(join.getRightHandSideId()));
+        
+        //fix 1341-mark current join position for probable future joins to this join
+        context.markCurrentPosition(EJBQLJoinAppender.makeJoinTailMarker(join.getRightHandSideId()));
         return false;
     }
 
@@ -91,6 +94,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
                 null,
                 new EJBQLTableId(join.getLeftHandSideId()),
                 new EJBQLTableId(join.getRightHandSideId()));
+        context.markCurrentPosition(EJBQLJoinAppender.makeJoinTailMarker(join.getRightHandSideId()));
         return false;
     }
 }

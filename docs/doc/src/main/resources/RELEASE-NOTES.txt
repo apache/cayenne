@@ -46,6 +46,7 @@ CAY-1332 Embeddable validation error in CM on custom Java types
 CAY-1333 Entering a custom Java Type in CM for an ObjEntity blanks out DB fields
 CAY-1334 Modeler is trying to load data object classes when selecting a query
 CAY-1335 Modeler cannot unset inheritance
+CAY-1341 EJBQL: joins on joined table not added to generated SQL
 
 ----------------------------------
 Release: 3.0 beta 1
