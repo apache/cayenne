@@ -19,6 +19,17 @@
 package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.query.Query;
 
 /**
  * A visitor interface for implementing operations on different types of
@@ -28,7 +39,31 @@ import org.apache.cayenne.map.DataMap;
  */
 public interface ConfigurationNodeVisitor<T> {
 
-    T visitDataChannelDescriptor(DataChannelDescriptor node);
+    T visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor);
 
-    T visitDataMap(DataMap node);
+    T visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor);
+
+    T visitDataMap(DataMap dataMap);
+
+    T visitObjEntity(ObjEntity entity);
+
+    T visitDbEntity(DbEntity entity);
+
+    T visitEmbeddable(Embeddable embeddable);
+
+    T visitEmbeddableAttribute(EmbeddableAttribute attribute);
+
+    T visitObjAttribute(ObjAttribute attribute);
+
+    T visitDbAttribute(DbAttribute attribute);
+
+    T visitObjRelationship(ObjRelationship relationship);
+
+    T visitDbRelationship(DbRelationship relationship);
+
+    T visitProcedure(Procedure procedure);
+
+    T visitProcedureParameter(ProcedureParameter parameter);
+
+    T visitQuery(Query query);
 }

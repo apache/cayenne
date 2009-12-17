@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.CollectionUtils;
@@ -36,7 +38,7 @@ import org.apache.commons.collections.Transformer;
  * A DbRelationship is a descriptor of a database inter-table relationship based on one or
  * more primary key/foreign key pairs.
  */
-public class DbRelationship extends Relationship {
+public class DbRelationship extends Relationship implements ConfigurationNode {
 
     // The columns through which the join is implemented.
     protected List<DbJoin> joins = new ArrayList<DbJoin>(2);
@@ -52,6 +54,13 @@ public class DbRelationship extends Relationship {
 
     public DbRelationship(String name) {
         super(name);
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitDbRelationship(this);
     }
 
     /**

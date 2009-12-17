@@ -30,6 +30,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -46,7 +48,7 @@ import org.apache.commons.collections.Transformer;
  * ObjEntity is a mapping descriptor for a DataObject Java class. It contains the
  * information about the Java class itself, as well as its mapping to the DbEntity layer.
  */
-public class ObjEntity extends Entity implements ObjEntityListener {
+public class ObjEntity extends Entity implements ObjEntityListener, ConfigurationNode {
 
     final public static int LOCK_TYPE_NONE = 0;
     final public static int LOCK_TYPE_OPTIMISTIC = 1;
@@ -91,6 +93,13 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         this.callbacks = new CallbackMap();
         this.entityListeners = new ArrayList<EntityListener>(2);
         this.attributeOverrides = new TreeMap<String, String>();
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitObjEntity(this);
     }
 
     /**

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -60,6 +61,13 @@ public class QueryChain implements Query {
         if (queries != null && !queries.isEmpty()) {
             this.chain = new ArrayList<Query>(queries);
         }
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitQuery(this);
     }
 
     /**

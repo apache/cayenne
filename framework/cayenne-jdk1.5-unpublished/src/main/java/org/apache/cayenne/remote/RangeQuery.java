@@ -22,6 +22,7 @@ package org.apache.cayenne.remote;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -65,6 +66,13 @@ class RangeQuery implements Query {
         this.fetchOffset = fetchStartIndex;
         this.fetchLimit = fetchLimit;
         this.originatingQuery = originatingQuery;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitQuery(this);
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {

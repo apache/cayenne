@@ -22,13 +22,14 @@ package org.apache.cayenne.query;
 import java.io.Serializable;
 
 import org.apache.cayenne.access.QueryEngine;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
  * Defines minimal API of a query descriptor that is executable via Cayenne.
  * 
  */
-public interface Query extends Serializable {
+public interface Query extends Serializable, ConfigurationNode {
 
     /**
      * Returns query runtime parameters. The method is called at various stages of the

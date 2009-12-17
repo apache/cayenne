@@ -50,12 +50,12 @@ public class FileProjectSaver implements ProjectSaver {
     protected ConfigurationNameMapper nameMapper;
 
     protected ConfigurationNodeVisitor<Resource> resourceGetter;
-    protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> nodesGetter;
+    protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> saveableNodesGetter;
     protected String fileEncoding;
 
     public FileProjectSaver() {
         resourceGetter = new ConfigurationSourceGetter();
-        nodesGetter = new ConfigurationNodesGetter();
+        saveableNodesGetter = new SaveableNodesGetter();
 
         // this is not configurable yet... probably doesn't have to be
         fileEncoding = "UTF-8";
@@ -68,7 +68,7 @@ public class FileProjectSaver implements ProjectSaver {
     public void save(Project project) {
 
         Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
-                nodesGetter);
+                saveableNodesGetter);
         Collection<SaveUnit> saveUnits = new ArrayList<SaveUnit>(nodes.size());
 
         for (ConfigurationNode node : nodes) {
@@ -85,7 +85,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
 
         Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
-                nodesGetter);
+                saveableNodesGetter);
         Collection<SaveUnit> saveUnits = new ArrayList<SaveUnit>(nodes.size());
 
         for (ConfigurationNode node : nodes) {
@@ -96,7 +96,6 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     void save(Collection<SaveUnit> units, boolean deleteOldResources) {
-        initLocations(units);
         checkAccess(units);
 
         try {
@@ -142,17 +141,7 @@ public class FileProjectSaver implements ProjectSaver {
                     e.getMessage());
         }
 
-        unit.targetLocation = targetLocation;
         return unit;
-    }
-
-    /**
-     * @deprecated since 3.1 location is deprecated.
-     */
-    void initLocations(Collection<SaveUnit> units) {
-        for (SaveUnit unit : units) {
-            unit.node.acceptVisitor(new ConfigurationLocationSetter(unit.targetLocation));
-        }
     }
 
     void checkAccess(Collection<SaveUnit> units) {
@@ -330,11 +319,6 @@ public class FileProjectSaver implements ProjectSaver {
         private Resource sourceConfiguration;
         private File targetFile;
         private File targetTempFile;
-
-        /**
-         * @deprecated since 3.1 explicit location tracking is unneeded
-         */
-        private String targetLocation;
 
     }
 }

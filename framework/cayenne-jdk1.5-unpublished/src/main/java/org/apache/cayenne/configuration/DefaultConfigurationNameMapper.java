@@ -34,7 +34,7 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
     protected ConfigurationNodeVisitor<String> nameMapper;
 
     public DefaultConfigurationNameMapper() {
-        this.nameMapper = new NameMapper();
+        nameMapper = new NameMapper();
     }
 
     public String configurationLocation(ConfigurationNode node) {
@@ -110,12 +110,14 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
         return name + DATA_MAP_SUFFIX;
     }
 
-    final class NameMapper implements ConfigurationNodeVisitor<String> {
+    final class NameMapper extends BaseConfigurationNodeVisitor<String> {
 
+        @Override
         public String visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
             return getDataChannelName(descriptor.getName());
         }
 
+        @Override
         public String visitDataMap(DataMap dataMap) {
             return getDataMapName(dataMap.getName());
         }

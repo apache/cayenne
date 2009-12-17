@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
@@ -28,12 +28,14 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-class ConfigurationSourceGetter implements ConfigurationNodeVisitor<Resource> {
+class ConfigurationSourceGetter extends BaseConfigurationNodeVisitor<Resource> {
 
+    @Override
     public Resource visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
         return descriptor.getConfigurationSource();
     }
 
+    @Override
     public Resource visitDataMap(DataMap dataMap) {
         return dataMap.getConfigurationSource();
     }

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project2;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -29,7 +29,7 @@ import org.apache.cayenne.resource.Resource;
  * 
  * @since 3.1
  */
-class ConfigurationSourceSetter implements ConfigurationNodeVisitor<Void> {
+class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
 
     private Resource configurationSource;
 
@@ -37,6 +37,7 @@ class ConfigurationSourceSetter implements ConfigurationNodeVisitor<Void> {
         this.configurationSource = configurationSource;
     }
 
+    @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
         node.setConfigurationSource(configurationSource);
 
@@ -47,6 +48,7 @@ class ConfigurationSourceSetter implements ConfigurationNodeVisitor<Void> {
         return null;
     }
 
+    @Override
     public Void visitDataMap(DataMap node) {
         node.setConfigurationSource(configurationSource);
         return null;

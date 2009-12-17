@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -52,6 +53,10 @@ public abstract class BatchQuery implements Query {
     public BatchQuery(DbEntity dbEntity) {
         this.dbEntity = dbEntity;
         this.batchIndex = -1;
+    }
+    
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitQuery(this);
     }
 
     public String getName() {

@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -37,7 +39,7 @@ import org.apache.cayenne.util.XMLEncoder;
  * Describes an association between two Java classes mapped as source and target
  * ObjEntity. Maps to a path of DbRelationships.
  */
-public class ObjRelationship extends Relationship {
+public class ObjRelationship extends Relationship implements ConfigurationNode {
 
     /**
      * Denotes a default type of to-many relationship collection which is a Java List.
@@ -81,6 +83,13 @@ public class ObjRelationship extends Relationship {
 
     public ObjRelationship(String name) {
         super(name);
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitObjRelationship(this);
     }
 
     /**

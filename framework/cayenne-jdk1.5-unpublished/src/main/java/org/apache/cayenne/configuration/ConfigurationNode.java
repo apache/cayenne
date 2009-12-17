@@ -20,7 +20,7 @@ package org.apache.cayenne.configuration;
 
 /**
  * Implemented by the "nodes" on the Cayenne configuration tree. Allows to extract
- * information from the nodes or manipulate them in a consistent fashion.
+ * information from the nodes or manipulate them in a consistent manner.
  * 
  * @since 3.1
  */

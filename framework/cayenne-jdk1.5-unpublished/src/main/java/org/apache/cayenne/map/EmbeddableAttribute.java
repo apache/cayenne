@@ -20,6 +20,8 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -29,7 +31,8 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.0
  */
-public class EmbeddableAttribute implements XMLSerializable, Serializable {
+public class EmbeddableAttribute implements ConfigurationNode, XMLSerializable,
+        Serializable {
 
     protected String name;
     protected String type;
@@ -43,6 +46,13 @@ public class EmbeddableAttribute implements XMLSerializable, Serializable {
 
     public EmbeddableAttribute(String name) {
         this.name = name;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitEmbeddableAttribute(this);
     }
 
     public void encodeAsXML(XMLEncoder encoder) {

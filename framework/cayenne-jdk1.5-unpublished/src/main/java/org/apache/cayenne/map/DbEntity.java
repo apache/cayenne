@@ -30,6 +30,8 @@ import java.util.SortedMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -48,7 +50,7 @@ import org.apache.commons.collections.Transformer;
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database table.
  */
-public class DbEntity extends Entity implements DbEntityListener, DbAttributeListener,
+public class DbEntity extends Entity implements ConfigurationNode, DbEntityListener, DbAttributeListener,
         DbRelationshipListener {
 
     protected String catalog;
@@ -82,6 +84,13 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     public DbEntity(String name) {
         this();
         this.setName(name);
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitDbEntity(this);
     }
 
     /**

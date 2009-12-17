@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
@@ -51,6 +52,10 @@ public class EJBQLQuery implements Query, XMLSerializable {
     }
 
     public EJBQLQuery() {
+    }
+    
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitQuery(this);
     }
 
     public void initWithProperties(Map<String, ?> properties) {

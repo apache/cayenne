@@ -22,17 +22,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 
 /**
  * @since 3.1
  */
-class ConfigurationNodesGetter implements
-        ConfigurationNodeVisitor<Collection<ConfigurationNode>> {
+class SaveableNodesGetter extends
+        BaseConfigurationNodeVisitor<Collection<ConfigurationNode>> {
 
+    @Override
     public Collection<ConfigurationNode> visitDataChannelDescriptor(
             DataChannelDescriptor descriptor) {
 
@@ -46,6 +47,7 @@ class ConfigurationNodesGetter implements
         return nodes;
     }
 
+    @Override
     public Collection<ConfigurationNode> visitDataMap(DataMap dataMap) {
         return Collections.<ConfigurationNode> singletonList(dataMap);
     }

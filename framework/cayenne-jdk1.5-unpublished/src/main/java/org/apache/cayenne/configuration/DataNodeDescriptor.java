@@ -34,7 +34,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.1
  */
-public class DataNodeDescriptor implements XMLSerializable,
+public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
         Comparable<DataNodeDescriptor> {
 
     protected String name;
@@ -73,6 +73,10 @@ public class DataNodeDescriptor implements XMLSerializable,
         else {
             return o1.compareTo(o2);
         }
+    }
+
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitDataNodeDescriptor(this);
     }
 
     public void encodeAsXML(XMLEncoder encoder) {

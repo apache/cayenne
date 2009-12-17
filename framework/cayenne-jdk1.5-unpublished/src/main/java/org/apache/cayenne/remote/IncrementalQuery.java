@@ -22,6 +22,7 @@ package org.apache.cayenne.remote;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -51,6 +52,13 @@ class IncrementalQuery implements Query {
     IncrementalQuery(Query query, String cacheKey) {
         this.query = query;
         this.cacheKey = cacheKey;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitQuery(this);
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {

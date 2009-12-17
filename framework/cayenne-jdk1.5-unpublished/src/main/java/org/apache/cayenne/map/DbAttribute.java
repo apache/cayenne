@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
@@ -27,9 +29,8 @@ import org.apache.cayenne.util.XMLEncoder;
 
 /**
  * A DbAttribute defines a descriptor for a single database table column.
- * 
  */
-public class DbAttribute extends Attribute {
+public class DbAttribute extends Attribute implements ConfigurationNode {
 
     /**
      * Defines JDBC type of the column.
@@ -80,6 +81,10 @@ public class DbAttribute extends Attribute {
         this.setName(name);
         this.setType(type);
         this.setEntity(entity);
+    }
+
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitDbAttribute(this);
     }
 
     /**
@@ -173,7 +178,7 @@ public class DbAttribute extends Attribute {
         }
 
         for (Relationship relationship : getEntity().getRelationships()) {
-            for (DbJoin join : ((DbRelationship)relationship).getJoins()) {
+            for (DbJoin join : ((DbRelationship) relationship).getJoins()) {
                 if (name.equals(join.getSourceName())) {
                     DbAttribute target = join.getTarget();
                     if (target != null && target.isPrimaryKey()) {

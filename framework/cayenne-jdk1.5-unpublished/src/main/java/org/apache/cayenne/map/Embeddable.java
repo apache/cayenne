@@ -25,6 +25,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -37,7 +39,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.0
  */
-public class Embeddable implements XMLSerializable, Serializable {
+public class Embeddable implements ConfigurationNode, XMLSerializable, Serializable {
 
     protected String className;
     protected SortedMap<String, EmbeddableAttribute> attributes;
@@ -52,12 +54,17 @@ public class Embeddable implements XMLSerializable, Serializable {
         this.className = className;
     }
 
-    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitEmbeddable(this);
+    }
+
     public DataMap getDataMap() {
         return dataMap;
     }
 
-    
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }

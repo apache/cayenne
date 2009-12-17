@@ -20,7 +20,7 @@ package org.apache.cayenne.project2;
 
 import java.io.PrintWriter;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.XMLEncoder;
@@ -28,7 +28,7 @@ import org.apache.cayenne.util.XMLEncoder;
 /**
  * @since 3.1
  */
-class ConfigurationSaver implements ConfigurationNodeVisitor<Void> {
+class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
 
     private PrintWriter printWriter;
     private String version;
@@ -38,6 +38,7 @@ class ConfigurationSaver implements ConfigurationNodeVisitor<Void> {
         this.version = version;
     }
 
+    @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         printXMLHeader(encoder);
@@ -45,6 +46,7 @@ class ConfigurationSaver implements ConfigurationNodeVisitor<Void> {
         return null;
     }
 
+    @Override
     public Void visitDataMap(DataMap node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         printXMLHeader(encoder);

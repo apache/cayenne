@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -31,9 +33,9 @@ import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A mapping descriptor for a database stored procedure.
- * 
  */
-public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable {
+public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSerializable,
+        Serializable {
 
     protected String name;
     protected DataMap dataMap;
@@ -54,6 +56,13 @@ public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable
      */
     public Procedure(String name) {
         setName(name);
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitProcedure(this);
     }
 
     public String getName() {

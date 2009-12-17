@@ -22,6 +22,8 @@ package org.apache.cayenne.map;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -30,7 +32,7 @@ import org.apache.commons.collections.IteratorUtils;
 /**
  * An ObjAttribute is a mapping descriptor of a Java class property.
  */
-public class ObjAttribute extends Attribute {
+public class ObjAttribute extends Attribute implements ConfigurationNode {
 
     protected String type;
     protected boolean usedForLocking;
@@ -62,6 +64,13 @@ public class ObjAttribute extends Attribute {
         setUsedForLocking(attribute.isUsedForLocking());
     }
 
+    /**
+     * @since 3.1
+     */
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitObjAttribute(this);
+    }
+    
     /**
      * Returns Java class of an object property described by this attribute. Wraps any
      * thrown exceptions into CayenneRuntimeException.

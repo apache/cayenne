@@ -21,6 +21,8 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
@@ -29,9 +31,9 @@ import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A descriptor for the Procedure parameter.
- * 
  */
-public class ProcedureParameter implements CayenneMapEntry, XMLSerializable, Serializable {
+public class ProcedureParameter implements ConfigurationNode, CayenneMapEntry,
+        XMLSerializable, Serializable {
 
     public static final int IN_OUT_PARAMETER = 3;
     public static final int IN_PARAMETER = 1;
@@ -63,6 +65,10 @@ public class ProcedureParameter implements CayenneMapEntry, XMLSerializable, Ser
         this(name);
         setType(type);
         setDirection(direction);
+    }
+    
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitProcedureParameter(this);
     }
 
     public String getName() {

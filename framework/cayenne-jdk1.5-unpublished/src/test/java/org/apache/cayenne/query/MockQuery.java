@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.EntityResolver;
 
 public class MockQuery implements Query {
@@ -36,6 +37,10 @@ public class MockQuery implements Query {
 
     public MockQuery(String name) {
         this.name = name;
+    }
+    
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitQuery(this);
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
