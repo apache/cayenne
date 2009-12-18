@@ -23,6 +23,7 @@ CAY-1323 oracle.sql.TIMESTAMP in Result of query
 CAY-1329 DI-based cayenne-project module
 CAY-1338 Move CayenneUserDir to the Modeler
 CAY-1340 Implement ConfigurationNode / ConfigurationNodeVisitor for the Cayenne project tree, including DataMap objects.
+CAY-1342 Remove wocompat package from Cayenne core
 
 Bug Fixes Since 3.0:
 

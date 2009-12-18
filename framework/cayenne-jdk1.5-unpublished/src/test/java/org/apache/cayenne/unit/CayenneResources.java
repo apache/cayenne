@@ -44,9 +44,7 @@ import org.springframework.core.io.InputStreamResource;
 
 /**
  * Initializes connections for Cayenne unit tests.
- * 
  */
-// TODO: switch to Spring
 public class CayenneResources implements BeanFactoryAware {
 
     private static Log logObj = LogFactory.getLog(CayenneResources.class);
