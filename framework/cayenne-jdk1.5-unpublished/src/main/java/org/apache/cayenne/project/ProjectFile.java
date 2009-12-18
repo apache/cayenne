@@ -28,9 +28,11 @@ import java.io.PrintWriter;
 import org.apache.cayenne.util.Util;
 
 /**
- * ProjectFile is an adapter from an object in Cayenne project
- * to its representation in the file system.
+ * ProjectFile is an adapter from an object in Cayenne project to its representation in
+ * the file system.
  * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public abstract class ProjectFile {
 
@@ -38,7 +40,8 @@ public abstract class ProjectFile {
     protected File tempFile;
     protected Project projectObj;
 
-    public ProjectFile() {}
+    public ProjectFile() {
+    }
 
     /**
      * Constructor for ProjectFile.
@@ -61,16 +64,15 @@ public abstract class ProjectFile {
     }
 
     /**
-    * Returns saved location of a file.
-    */
+     * Returns saved location of a file.
+     */
     public String getOldLocation() {
         return location;
     }
 
     /**
-     * Returns suffix to append to object name when 
-     * creating a file name. Default implementation 
-     * returns empty string.
+     * Returns suffix to append to object name when creating a file name. Default
+     * implementation returns empty string.
      */
     public String getLocationSuffix() {
         return "";
@@ -82,30 +84,26 @@ public abstract class ProjectFile {
     public abstract Object getObject();
 
     /**
-     * Returns a name of associated object, that is also 
-     * used as a file name.
+     * Returns a name of associated object, that is also used as a file name.
      */
     public abstract String getObjectName();
 
     /**
-     * Saves an underlying object to the file. 
-     * The procedure is dependent on the type of
+     * Saves an underlying object to the file. The procedure is dependent on the type of
      * object and is implemented by concrete subclasses.
      */
     public abstract void save(PrintWriter out) throws Exception;
 
     /**
-     * Returns true if this file wrapper can handle a
-     * specified object.
+     * Returns true if this file wrapper can handle a specified object.
      */
     public abstract boolean canHandle(Object obj);
-    
-   /**
-     * Returns true if this file wrapper can handle an
-     * internally stored object.
+
+    /**
+     * Returns true if this file wrapper can handle an internally stored object.
      */
     public boolean canHandleObject() {
-    	return canHandle(getObject());
+        return canHandle(getObject());
     }
 
     /**
@@ -116,15 +114,15 @@ public abstract class ProjectFile {
     }
 
     /**
-     * This method is called by project to let file know that
-     * it will be saved. Default implementation is a noop.
+     * This method is called by project to let file know that it will be saved. Default
+     * implementation is a noop.
      */
-    public void willSave() {}
+    public void willSave() {
+    }
 
     /**
-     * Saves ProjectFile's underlying object to a temporary 
-     * file, returning this file to the caller. If any problems are 
-     * encountered during saving, an Exception is thrown.
+     * Saves ProjectFile's underlying object to a temporary file, returning this file to
+     * the caller. If any problems are encountered during saving, an Exception is thrown.
      */
     public void saveTemp() throws Exception {
         // cleanup any previous temp files
@@ -139,7 +137,7 @@ public abstract class ProjectFile {
 
         // ...but save to temp file first
         tempFile = tempFileForFile(finalFile);
-        
+
         // must encode as UTF-8 - a default used by all Cayenne XML files
         FileOutputStream fout = new FileOutputStream(tempFile);
         OutputStreamWriter fw = new OutputStreamWriter(fout, "UTF-8");
@@ -148,31 +146,31 @@ public abstract class ProjectFile {
             PrintWriter pw = new PrintWriter(fw);
             try {
                 save(pw);
-            } finally {
+            }
+            finally {
                 pw.close();
             }
-        } finally {
+        }
+        finally {
             fw.close();
         }
     }
 
     /**
-     * Returns a file which is a canonical representation of the 
-     * file to store a wrapped object. If an object was renamed, 
-     * the <b>new</b> name is returned.
+     * Returns a file which is a canonical representation of the file to store a wrapped
+     * object. If an object was renamed, the <b>new</b> name is returned.
      */
     public File resolveFile() {
         return getProject().resolveFile(getLocation());
     }
 
     /**
-     * Returns a file which is a canonical representation of the 
-     * file to store a wrapped object. If an object was renamed, 
-     * the <b>old</b> name is returned. Returns null if this file 
-     * has never been saved before. 
+     * Returns a file which is a canonical representation of the file to store a wrapped
+     * object. If an object was renamed, the <b>old</b> name is returned. Returns null if
+     * this file has never been saved before.
      */
     public File resolveOldFile() {
-    	String oldLocation = getOldLocation();
+        String oldLocation = getOldLocation();
         return (oldLocation != null) ? getProject().resolveFile(oldLocation) : null;
     }
 
@@ -181,23 +179,25 @@ public abstract class ProjectFile {
      */
     public File saveCommit() throws ProjectException {
         File finalFile = resolveFile();
-        
+
         if (tempFile != null) {
             if (finalFile.exists()) {
                 if (!finalFile.delete()) {
-                    throw new ProjectException(
-                        "Unable to remove old master file : " + finalFile);
+                    throw new ProjectException("Unable to remove old master file : "
+                            + finalFile);
                 }
             }
 
             if (!tempFile.renameTo(finalFile)) {
-                throw new ProjectException(
-                    "Unable to move " + tempFile + " to " + finalFile);
+                throw new ProjectException("Unable to move "
+                        + tempFile
+                        + " to "
+                        + finalFile);
             }
 
             tempFile = null;
         }
-        
+
         return finalFile;
     }
 
@@ -212,9 +212,10 @@ public abstract class ProjectFile {
     }
 
     /**
-      * Returns the project.
-      * @return Project
-      */
+     * Returns the project.
+     * 
+     * @return Project
+     */
     public Project getProject() {
         return projectObj;
     }
@@ -223,7 +224,7 @@ public abstract class ProjectFile {
         return !Util.nullSafeEquals(location, getLocation());
     }
 
-    /** 
+    /**
      * Creates a temporary file for the master file.
      */
     protected File tempFileForFile(File f) throws IOException {
@@ -233,13 +234,13 @@ public abstract class ProjectFile {
         if (name == null || name.length() < 3) {
             name = "cayenne-project";
         }
- 
-        if(!parent.exists()) {
-        	if(!parent.mkdirs()) {
-        		throw new IOException("Error creating directory tree: " + parent);
-        	}
+
+        if (!parent.exists()) {
+            if (!parent.mkdirs()) {
+                throw new IOException("Error creating directory tree: " + parent);
+            }
         }
-         
+
         return File.createTempFile(name, null, parent);
     }
 
@@ -259,7 +260,8 @@ public abstract class ProjectFile {
         buf.append("ProjectFile [").append(getClass().getName()).append("]: name = ");
         if (getObject() != null) {
             buf.append("*null*");
-        } else {
+        }
+        else {
             buf.append(getObjectName());
         }
 

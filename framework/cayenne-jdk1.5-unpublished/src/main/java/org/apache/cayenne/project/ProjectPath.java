@@ -22,18 +22,16 @@ package org.apache.cayenne.project;
 import java.util.Arrays;
 
 /**
- * Immutable holder of a selection path within a Cayenne project. Mostly used
- * by various tools (CayenneModeler comes to mind) to navigate Cayenne
- * projects. Contains a number of convenience methods to access path elements.
- * 
+ * Immutable holder of a selection path within a Cayenne project. Mostly used by various
+ * tools (CayenneModeler comes to mind) to navigate Cayenne projects. Contains a number of
+ * convenience methods to access path elements.
  * <p>
- * For instance, given a path <code>Project -> DataMap -> ObjEntity -> ObjAttribute</code>,
- * <code>getObject</code> will return ObjAttribute, <code>getObjectParent</code>-
+ * For instance, given a path <code>Project -> DataMap -> ObjEntity -> ObjAttribute</code>, <code>getObject</code> will return ObjAttribute, <code>getObjectParent</code>-
  * ObjEntity, <code>getRoot</code>- Project.
  * </p>
- * 
  */
 public class ProjectPath {
+
     public static final Object[] EMPTY_PATH = new Object[0];
 
     protected Object[] path;
@@ -46,7 +44,9 @@ public class ProjectPath {
      * Constructor for ProjectPath.
      */
     public ProjectPath(Object object) {
-        path = new Object[] { object };
+        path = new Object[] {
+            object
+        };
     }
 
     /**
@@ -65,7 +65,8 @@ public class ProjectPath {
     }
 
     /**
-     * Scans path, looking for the first element that is an instanceof <code>aClass</code>.
+     * Scans path, looking for the first element that is an instanceof <code>aClass</code>
+     * .
      */
     public <T> T firstInstanceOf(Class<T> aClass) {
         for (Object aPath : path) {
@@ -78,8 +79,8 @@ public class ProjectPath {
     }
 
     /**
-     * Returns an instance of the path, expanding this one by appending an
-     * object at the end.
+     * Returns an instance of the path, expanding this one by appending an object at the
+     * end.
      */
     public ProjectPath appendToPath(Object object) {
         if (object != null) {
@@ -94,47 +95,6 @@ public class ProjectPath {
         else {
             return this;
         }
-    }
-
-    /**
-     * 
-     * @since 1.1
-     */
-    public ProjectPath subpathWithSize(int subpathSize) {
-        if (subpathSize <= 0) {
-            return new ProjectPath();
-        }
-        else if(subpathSize == path.length) {
-            return this;
-        }
-
-        if (subpathSize > path.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                "Subpath is longer than this path "
-                    + subpathSize
-                    + " components. Path size: "
-                    + path.length);
-        }
-
-        Object[] newPath = new Object[subpathSize];
-        System.arraycopy(path, 0, newPath, 0, subpathSize);
-        return new ProjectPath(newPath);
-    }
-
-    /**
-     * Returns a subpath to the first occurance of an object.
-     * 
-     * @since 1.1
-     */
-    public ProjectPath subpathOfObject(Object object) {
-        for (int i = 0; i < path.length; i++) {
-            if (path[i] == object) {
-                // strip remaining objects
-                return subpathWithSize(i + 1);
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -161,9 +121,8 @@ public class ProjectPath {
     }
 
     /**
-     * Returns an object corresponding to the parent node of the node
-     * represented by the path. This is the object next to last object in the
-     * path.
+     * Returns an object corresponding to the parent node of the node represented by the
+     * path. This is the object next to last object in the path.
      */
     public Object getObjectParent() {
         if (path.length == 0) {

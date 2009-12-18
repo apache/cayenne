@@ -126,6 +126,15 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
         return dataMaps;
     }
 
+    public DataMap getDataMap(String name) {
+        for (DataMap map : dataMaps) {
+            if (name.equals(map.getName())) {
+                return map;
+            }
+        }
+        return null;
+    }
+
     public Collection<DataNodeDescriptor> getNodeDescriptors() {
         return nodeDescriptors;
     }

@@ -23,6 +23,9 @@ import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * Runtime exception thrown on various errors within project model.
+ * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public class ProjectException extends CayenneRuntimeException {
 

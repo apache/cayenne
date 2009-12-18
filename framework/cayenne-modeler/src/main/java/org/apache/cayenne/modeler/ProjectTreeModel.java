@@ -27,7 +27,6 @@ import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -39,21 +38,14 @@ import org.apache.cayenne.project.ProjectTraversalHandler;
 
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
- * 
  */
 public class ProjectTreeModel extends DefaultTreeModel {
 
     /**
-     * Creates a tree of Swing TreeNodes wrapping Cayenne project. Returns the root node
-     * of the tree.
-     */
-    public static DefaultMutableTreeNode wrapProject(Project project) {
-        return wrapProjectNode(project);
-    }
-
-    /**
      * Creates a tree of Swing TreeNodes wrapping Cayenne project object. Returns the root
      * node of the tree.
+     * 
+     * @deprecated since 3.1 use {@link ProjectTreeFactory}.
      */
     public static DefaultMutableTreeNode wrapProjectNode(Object node) {
         TraversalHelper helper = new TraversalHelper();
@@ -62,32 +54,10 @@ public class ProjectTreeModel extends DefaultTreeModel {
     }
 
     /**
-     * Creates a tree of Swing TreeNodes wrapping Cayenne project object. Returns the root
-     * node of the tree.
-     */
-    public static DefaultMutableTreeNode wrapProjectNode(
-            Object node,
-            DefaultMutableTreeNode parentPath) {
-
-        TraversalHelper helper = new TraversalHelper();
-
-        // build a project path from tree node
-        ProjectPath path = new ProjectPath();
-        if (parentPath != null) {
-            path = helper.registerNodes(parentPath.getPath());
-        }
-
-        new ProjectTraversal(helper).traverse(node, path);
-        return helper.getStartNode();
-    }
-
-    /**
      * Constructor for ProjectTreeModel.
-     * 
-     * @param root
      */
     public ProjectTreeModel(Project project) {
-        super(wrapProject(project));
+        super(wrapProjectNode(project));
     }
 
     /**
@@ -202,32 +172,14 @@ public class ProjectTreeModel extends DefaultTreeModel {
     static class TraversalHelper implements ProjectTraversalHandler {
 
         protected DefaultMutableTreeNode startNode;
-        protected Map nodesMap;
+        protected Map<Object, DefaultMutableTreeNode> nodesMap;
 
         public TraversalHelper() {
-            this.nodesMap = new HashMap();
+            this.nodesMap = new HashMap<Object, DefaultMutableTreeNode>();
         }
 
         public DefaultMutableTreeNode getStartNode() {
             return startNode;
-        }
-
-        /**
-         * Creates a starting point for tree traversal.
-         */
-        public ProjectPath registerNodes(TreeNode[] nodes) {
-            ProjectPath path = new ProjectPath();
-
-            for (TreeNode node : nodes) {
-                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-
-                path = path.appendToPath(treeNode.getUserObject());
-
-                // register node with helper
-                registerNode(treeNode);
-            }
-
-            return path;
         }
 
         public void registerNode(DefaultMutableTreeNode node) {
@@ -237,15 +189,14 @@ public class ProjectTreeModel extends DefaultTreeModel {
         public void projectNode(ProjectPath nodePath) {
 
             Object parent = nodePath.getObjectParent();
-            Object nodeObj = nodePath.getObject();
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(nodeObj);
+            Object object = nodePath.getObject();
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(object);
 
             if (startNode == null) {
                 startNode = node;
             }
             else {
-                DefaultMutableTreeNode nodeParent = (DefaultMutableTreeNode) nodesMap
-                        .get(parent);
+                DefaultMutableTreeNode nodeParent = nodesMap.get(parent);
                 nodeParent.add(node);
             }
 
@@ -267,29 +218,4 @@ public class ProjectTreeModel extends DefaultTreeModel {
         }
     }
 
-    /**
-     * Traversal hanlder that rebuilds the tree from another tree. Used to reorder tree
-     * nodes.
-     */
-    class CopyTraversalHelper extends TraversalHelper {
-
-        public void projectNode(ProjectPath nodePath) {
-            DefaultMutableTreeNode node;
-
-            if (startNode == null) {
-                startNode = new DefaultMutableTreeNode(nodePath.getObject());
-                node = startNode;
-            }
-            else {
-                DefaultMutableTreeNode original = ProjectTreeModel.this
-                        .getNodeForObjectPath(nodePath.getPath());
-                DefaultMutableTreeNode nodeParent = (DefaultMutableTreeNode) nodesMap
-                        .get(nodePath.getObjectParent());
-                node = new DefaultMutableTreeNode(original.getUserObject());
-                nodeParent.add(node);
-            }
-
-            registerNode(node);
-        }
-    }
 }

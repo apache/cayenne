@@ -29,6 +29,9 @@ import org.apache.cayenne.conn.DataSourceInfo;
 
 /**
  * ProjectDataSource is a DataSource implementation used by the project model.
+ * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public class ProjectDataSource implements DataSource {
 
@@ -63,7 +66,7 @@ public class ProjectDataSource implements DataSource {
     public int getLoginTimeout() throws SQLException {
         throw new SQLException("Method not implemented");
     }
-    
+
     /**
      * @since 3.0
      */

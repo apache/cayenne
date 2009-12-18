@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.commons.collections.ExtendedProperties;
 
 /**
@@ -77,6 +76,15 @@ public class ConnectionProperties {
         return sharedInstance;
     }
 
+    // CayenneUserDir is defined in the Modeler, not accessible here, so hardcoding it for
+    // the tests
+    private static File cayenneUserDir() {
+        File homeDir = new File(System.getProperty("user.home"));
+        File cayenneDir = new File(homeDir, ".cayenne");
+        cayenneDir.mkdirs();
+        return cayenneDir;
+    }
+
     /**
      * Loads connection properties from $HOME/.cayenne/connection.properties.
      */
@@ -90,7 +98,7 @@ public class ConnectionProperties {
         String url = System.getProperty(URL_KEY_MAVEN);
         String driver = System.getProperty(DRIVER_KEY_MAVEN);
 
-        File f = CayenneUserDir.getInstance().resolveFile(PROPERTIES_FILE);
+        File f = new File(cayenneUserDir(), PROPERTIES_FILE);
 
         try {
             if (f.exists()) {
@@ -161,7 +169,7 @@ public class ConnectionProperties {
                                 .getProperty("cayenneTestConnection")
                                 .equals("null"))) {
 
-                    if (adapter != null && !adapter.startsWith("$") ) {
+                    if (adapter != null && !adapter.startsWith("$")) {
                         dsi.setAdapterClassName(adapter);
                     }
                     if (usr != null && !usr.startsWith("$")) {

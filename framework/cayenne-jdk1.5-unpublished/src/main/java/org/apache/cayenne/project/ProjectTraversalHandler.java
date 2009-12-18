@@ -20,22 +20,23 @@
 package org.apache.cayenne.project;
 
 /**
- * ProjectTraversalHandler defines callback methods that are
- * invoked during project tree traversal.
+ * ProjectTraversalHandler defines callback methods that are invoked during project tree
+ * traversal.
  * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public interface ProjectTraversalHandler {
-    /** 
+
+    /**
      * Invoked when a node is read during project tree traversal.
      */
     public void projectNode(ProjectPath nodePath);
 
     /**
-     * Invoked when the children of a project node are
-     * about to be scanned. If handler returns false, children
-     * of the node (and trheir children) will be skipped. This
-     * allows handler to control traversal behavior by eliminating 
-     * subtrees.
+     * Invoked when the children of a project node are about to be scanned. If handler
+     * returns false, children of the node (and trheir children) will be skipped. This
+     * allows handler to control traversal behavior by eliminating subtrees.
      */
     public boolean shouldReadChildren(Object node, ProjectPath parentPath);
 }

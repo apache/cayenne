@@ -37,6 +37,9 @@ import org.apache.cayenne.map.DataMap;
 
 /**
  * Represents Cayenne application project.
+ * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public class ApplicationProject extends Project {
 
@@ -90,7 +93,7 @@ public class ApplicationProject extends Project {
      */
     @Override
     public void upgrade() throws ProjectException {
-        ApplicationUpgradeHandler.sharedHandler().performUpgrade(this);
+        // noop - pending switch to project2 package and removal of this code
     }
 
     /**
@@ -116,9 +119,7 @@ public class ApplicationProject extends Project {
 
         // set default version
         if (configuration.getProjectVersion() == null) {
-            configuration.setProjectVersion(ApplicationUpgradeHandler
-                    .sharedHandler()
-                    .supportedVersion());
+            configuration.setProjectVersion(Project.CURRENT_PROJECT_VERSION);
         }
     }
 
@@ -138,9 +139,8 @@ public class ApplicationProject extends Project {
 
     @Override
     public void checkForUpgrades() {
-        this.upgradeStatus = ApplicationUpgradeHandler.sharedHandler().checkForUpgrades(
-                configuration,
-                upgradeMessages);
+        // noop - waiting for upgrade to project2 package that has its own upgrade
+        // framework
     }
 
     /**

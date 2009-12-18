@@ -17,26 +17,24 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.project;
+package org.apache.cayenne.modeler.util;
 
 import java.io.File;
 
 /**
- * CayenneUserDir represents a directory where all Cayenne-related information 
- * is stored on the user machine. This is normally a <code>$HOME/.cayenne</code>
- * directory.
- * 
+ * CayenneUserDir represents a directory where all Cayenne-related information is stored
+ * on the user machine. This is normally a <code>$HOME/.cayenne</code> directory.
  */
 public class CayenneUserDir {
 
     protected static CayenneUserDir sharedInstance;
 
     public static final String CAYENNE_DIR = ".cayenne";
-    
+
     /**
-     * A property name for the property that allows to define an alternative
-     * location of Cayenne User Directory (instead of default "$HOME/.cayenne").
-     *  
+     * A property name for the property that allows to define an alternative location of
+     * Cayenne User Directory (instead of default "$HOME/.cayenne").
+     * 
      * @since 1.1
      */
     public static final String ALT_USER_DIR_PROPERTY = "cayenne.userdir";
@@ -44,13 +42,12 @@ public class CayenneUserDir {
     protected File cayenneUserDir;
 
     public static CayenneUserDir getInstance() {
-    	if(sharedInstance == null) {
-    		sharedInstance = new CayenneUserDir();
-    	}
-    	return sharedInstance;
+        if (sharedInstance == null) {
+            sharedInstance = new CayenneUserDir();
+        }
+        return sharedInstance;
     }
-    
-    
+
     /**
      * Constructor for CayenneUserDir.
      */
@@ -91,24 +88,24 @@ public class CayenneUserDir {
     public File getDirectory() {
         return cayenneUserDir;
     }
-    
+
     /**
-     * Return false if the directory is not accessible for
-     * any reason at least for reading.
-     */    
+     * Return false if the directory is not accessible for any reason at least for
+     * reading.
+     */
     public boolean canRead() {
-    	return cayenneUserDir != null;
+        return cayenneUserDir != null;
     }
-    
+
     /**
-     * Return false if the directory is not accessible for
-     * any reason at least for reading.
-     */    
+     * Return false if the directory is not accessible for any reason at least for
+     * reading.
+     */
     public boolean canWrite() {
-    	return cayenneUserDir != null && cayenneUserDir.canWrite();
+        return cayenneUserDir != null && cayenneUserDir.canWrite();
     }
-    
+
     public File resolveFile(String name) {
-    	return new File(cayenneUserDir, name);
+        return new File(cayenneUserDir, name);
     }
 }

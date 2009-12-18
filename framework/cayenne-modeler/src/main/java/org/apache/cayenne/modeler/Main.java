@@ -31,9 +31,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

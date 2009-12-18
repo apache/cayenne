@@ -24,16 +24,19 @@ import java.io.PrintWriter;
 import org.apache.cayenne.map.DataMap;
 
 /**
- * DataMapFile is a ProjectFile abstraction of the 
- * DataMap file in a Cayenne project. 
+ * DataMapFile is a ProjectFile abstraction of the DataMap file in a Cayenne project.
  * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public class DataMapFile extends ProjectFile {
+
     public static final String LOCATION_SUFFIX = ".map.xml";
-    
+
     protected DataMap map;
-    
-    public DataMapFile() {}
+
+    public DataMapFile() {
+    }
 
     /**
      * Constructor for DataMapFile.

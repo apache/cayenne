@@ -38,17 +38,15 @@ import org.apache.cayenne.project.validator.Validator;
  * relative to the project directory.
  * </p>
  * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public abstract class Project {
 
     public static final String CURRENT_PROJECT_VERSION = "3.0.0.1";
-    static final int UPGRADE_STATUS_OLD = -1;
-    static final int UPGRADE_STATUS_CURRENT = 0;
-    static final int UPGRADE_STATUS_NEW = 1;
 
     protected File projectDir;
     protected List<ProjectFile> files = new ArrayList<ProjectFile>();
-    protected int upgradeStatus;
     protected List<String> upgradeMessages;
     protected boolean modified;
 
@@ -60,9 +58,6 @@ public abstract class Project {
 
         if (fileName.endsWith(Configuration.DEFAULT_DOMAIN_FILE)) {
             return new ApplicationProject(projectFile);
-        }
-        else if (fileName.endsWith(DataMapFile.LOCATION_SUFFIX)) {
-            return new DataMapProject(projectFile);
         }
         else {
             throw new ProjectException("Unsupported project file: " + projectFile);
@@ -138,7 +133,8 @@ public abstract class Project {
      * @since 2.0
      */
     public int getUpgradeStatus() {
-        return upgradeStatus;
+        // hardcoded pending switch to project2 framework
+        return 0;
     }
 
     /**

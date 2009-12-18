@@ -27,7 +27,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.cayenne.modeler.ModelerPreferences;
-import org.apache.cayenne.project.CayenneUserDir;
+import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.commons.collections.ExtendedProperties;
 
 public class UpgradeCayennePreference extends CayennePreferenceDecorator {

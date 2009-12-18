@@ -25,8 +25,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
 public class ProjectTraversalTest extends CayenneCase {
 
     public void testTraverse1() throws Exception {
@@ -50,15 +48,5 @@ public class ProjectTraversalTest extends CayenneCase {
         assertEquals(2, view.size());
         assertSame(map, view.get(0));
         assertSame(ent, view.get(1));
-    }
-    
-    public void testTraverse3() throws Exception {
-        TstProjectTraversalHelper helper = new TstProjectTraversalHelper();
-        Project p = new DataMapProject(null);
-        new ProjectTraversal(helper).traverse(p);
-        List nodes = helper.getNodes();
-        assertNotNull(nodes);
-        assertEquals("Unexpected number of nodes.." + nodes, 2, nodes.size());
-        assertSame(p, nodes.get(0));
     }
 }

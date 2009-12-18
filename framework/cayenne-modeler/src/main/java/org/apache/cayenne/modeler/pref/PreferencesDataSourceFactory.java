@@ -39,9 +39,9 @@ import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.cayenne.pref.DomainPreference;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
-import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.query.SelectQuery;
 
 /**

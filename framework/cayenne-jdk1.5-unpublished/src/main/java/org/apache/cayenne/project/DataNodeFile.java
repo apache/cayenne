@@ -26,16 +26,19 @@ import org.apache.cayenne.conf.ConfigSaver;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 
 /**
- * DataNodeFile is a ProjectFile abstraction of the 
- * DataNode file in a Cayenne project. 
+ * DataNodeFile is a ProjectFile abstraction of the DataNode file in a Cayenne project.
  * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public class DataNodeFile extends ProjectFile {
+
     public static final String LOCATION_SUFFIX = ".driver.xml";
 
     protected DataNode nodeObj;
 
-    public DataNodeFile() {}
+    public DataNodeFile() {
+    }
 
     /**
      * Constructor for DataNodeFile.
@@ -76,10 +79,8 @@ public class DataNodeFile extends ProjectFile {
             DataNode node = (DataNode) obj;
 
             // only driver datasource factory requires a file
-            if (DriverDataSourceFactory
-                .class
-                .getName()
-                .equals(node.getDataSourceFactory())) {
+            if (DriverDataSourceFactory.class.getName().equals(
+                    node.getDataSourceFactory())) {
                 return true;
             }
         }
@@ -100,8 +101,8 @@ public class DataNodeFile extends ProjectFile {
     }
 
     /**
-     * Returns ".driver.xml" that should be used as a file suffix 
-     * for DataNode driver files.
+     * Returns ".driver.xml" that should be used as a file suffix for DataNode driver
+     * files.
      */
     @Override
     public String getLocationSuffix() {

@@ -28,6 +28,9 @@ import org.apache.cayenne.conf.FileConfiguration;
 
 /**
  * Subclass of FileConfiguration used in the project model.
+ * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public class ProjectConfiguration extends FileConfiguration {
 
@@ -51,7 +54,7 @@ public class ProjectConfiguration extends FileConfiguration {
 
     @Override
     public void initialize() throws Exception {
-        if(projectFile != null && projectFile.isFile()) {
+        if (projectFile != null && projectFile.isFile()) {
             super.initialize();
         }
     }

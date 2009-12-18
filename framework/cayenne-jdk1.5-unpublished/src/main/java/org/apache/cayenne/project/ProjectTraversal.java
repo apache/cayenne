@@ -31,8 +31,8 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
@@ -44,6 +44,9 @@ import org.apache.cayenne.util.Util;
  * <i>Current implementation is not very efficient and would actually first read the whole
  * tree, before returning the first element from the iterator.</i>
  * </p>
+ * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
 public class ProjectTraversal {
 
@@ -96,7 +99,9 @@ public class ProjectTraversal {
             this.traverseEmbeddable(Collections.singletonList(rootNode).iterator(), path);
         }
         else if (rootNode instanceof EmbeddableAttribute) {
-            this.traverseEmbeddableAttributes(Collections.singletonList(rootNode).iterator(), path);
+            this.traverseEmbeddableAttributes(Collections
+                    .singletonList(rootNode)
+                    .iterator(), path);
         }
         else if (rootNode instanceof Attribute) {
             this.traverseAttributes(Collections.singletonList(rootNode).iterator(), path);
@@ -120,7 +125,7 @@ public class ProjectTraversal {
     /**
      * Performs traversal starting from the Project and down to its children.
      */
-    public void traverseProject(Project project, ProjectPath path) {
+    private void traverseProject(Project project, ProjectPath path) {
         ProjectPath projectPath = path.appendToPath(project);
         handler.projectNode(projectPath);
 
@@ -135,7 +140,7 @@ public class ProjectTraversal {
     /**
      * Performs traversal starting from a list of domains.
      */
-    public void traverseDomains(Iterator domains, ProjectPath path) {
+    private void traverseDomains(Iterator domains, ProjectPath path) {
 
         if (sort) {
             domains = Util.sortedIterator(domains, ProjectTraversal.dataDomainComparator);
@@ -153,7 +158,7 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseNodes(Iterator nodes, ProjectPath path) {
+    private void traverseNodes(Iterator nodes, ProjectPath path) {
         if (sort) {
             nodes = Util.sortedIterator(nodes, ProjectTraversal.dataNodeComparator);
         }
@@ -169,7 +174,7 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseMaps(Iterator maps, ProjectPath path) {
+    private void traverseMaps(Iterator maps, ProjectPath path) {
         if (sort) {
             maps = Util.sortedIterator(maps, ProjectTraversal.dataMapComparator);
         }
@@ -182,14 +187,14 @@ public class ProjectTraversal {
             if (handler.shouldReadChildren(map, path)) {
                 this.traverseEntities(map.getObjEntities().iterator(), mapPath);
                 this.traverseEmbeddable(map.getEmbeddables().iterator(), mapPath);
-                this.traverseEntities(map.getDbEntities().iterator(), mapPath);                
+                this.traverseEntities(map.getDbEntities().iterator(), mapPath);
                 this.traverseProcedures(map.getProcedures().iterator(), mapPath);
                 this.traverseQueries(map.getQueries().iterator(), mapPath);
             }
         }
     }
 
-    public void traverseEmbeddable(Iterator embeddadles, ProjectPath path) {
+    private void traverseEmbeddable(Iterator embeddadles, ProjectPath path) {
         if (sort) {
             embeddadles = Util.sortedIterator(
                     embeddadles,
@@ -202,7 +207,10 @@ public class ProjectTraversal {
             handler.projectNode(entPath);
 
             if (handler.shouldReadChildren(emd, path)) {
-                this.traverseEmbeddableAttributes(emd.getAttributes().iterator(), entPath);
+                this
+                        .traverseEmbeddableAttributes(
+                                emd.getAttributes().iterator(),
+                                entPath);
             }
         }
     }
@@ -210,7 +218,7 @@ public class ProjectTraversal {
     /**
      * Performs recursive traversal of an Iterator of Cayenne Query objects.
      */
-    public void traverseQueries(Iterator queries, ProjectPath path) {
+    private void traverseQueries(Iterator queries, ProjectPath path) {
         if (sort) {
             queries = Util.sortedIterator(queries, ProjectTraversal.queryComparator);
         }
@@ -225,7 +233,7 @@ public class ProjectTraversal {
     /**
      * Performs recusrive traversal of an Iterator of Cayenne Procedure objects.
      */
-    public void traverseProcedures(Iterator procedures, ProjectPath path) {
+    private void traverseProcedures(Iterator procedures, ProjectPath path) {
         if (sort) {
             procedures = Util.sortedIterator(
                     procedures,
@@ -245,7 +253,7 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseEntities(Iterator entities, ProjectPath path) {
+    private void traverseEntities(Iterator entities, ProjectPath path) {
         if (sort) {
             entities = Util
                     .sortedIterator(entities, ProjectTraversal.mapObjectComparator);
@@ -263,7 +271,7 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseAttributes(Iterator attributes, ProjectPath path) {
+    private void traverseAttributes(Iterator attributes, ProjectPath path) {
         if (sort) {
             attributes = Util.sortedIterator(
                     attributes,
@@ -274,8 +282,8 @@ public class ProjectTraversal {
             handler.projectNode(path.appendToPath(attributes.next()));
         }
     }
-    
-    public void traverseEmbeddableAttributes(Iterator emAttributes, ProjectPath path) {
+
+    private void traverseEmbeddableAttributes(Iterator emAttributes, ProjectPath path) {
         if (sort) {
             emAttributes = Util.sortedIterator(
                     emAttributes,
@@ -287,7 +295,7 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseRelationships(Iterator relationships, ProjectPath path) {
+    private void traverseRelationships(Iterator relationships, ProjectPath path) {
         if (sort) {
             relationships = Util.sortedIterator(
                     relationships,
@@ -299,7 +307,7 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseProcedureParameters(
+    private void traverseProcedureParameters(
             Iterator<? extends ProcedureParameter> parameters,
             ProjectPath path) {
         // Note: !! do not try to sort parameters - they are positional by definition

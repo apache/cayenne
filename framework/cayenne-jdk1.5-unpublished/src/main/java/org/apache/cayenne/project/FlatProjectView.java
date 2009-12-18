@@ -25,25 +25,27 @@ import java.util.List;
 import org.apache.cayenne.access.DataNode;
 
 /**
- * FlatProjectView converts a project tree into a list of nodes,
- * thus flattening the tree. Normally used as a singleton.
+ * FlatProjectView converts a project tree into a list of nodes, thus flattening the tree.
+ * Normally used as a singleton.
  * 
+ * @deprecated since 3.1 - use org.apache.cayenne.project2 module for projects
+ *             manipulation.
  */
-public class FlatProjectView {
+class FlatProjectView {
 
     protected static FlatProjectView instance = new FlatProjectView();
 
-    /** 
+    /**
      * Returns a FlatProjectView singleton.
      */
-    public static FlatProjectView getInstance() {
+    static FlatProjectView getInstance() {
         return instance;
     }
 
     /**
      * Returns flat tree view.
      */
-    public List<ProjectPath> flattenProjectTree(Object rootNode) {
+    List<ProjectPath> flattenProjectTree(Object rootNode) {
         List<ProjectPath> nodes = new ArrayList<ProjectPath>();
         TraversalHelper helper = new TraversalHelper(nodes);
         new ProjectTraversal(helper).traverse(rootNode);
@@ -53,7 +55,8 @@ public class FlatProjectView {
     /**
      * Helper class that serves as project traversal helper.
      */
-    class TraversalHelper implements ProjectTraversalHandler {
+    private class TraversalHelper implements ProjectTraversalHandler {
+
         protected List<ProjectPath> nodes;
 
         public TraversalHelper(List<ProjectPath> nodes) {
@@ -67,9 +70,7 @@ public class FlatProjectView {
         /**
          * Returns true unless an object is a DataNode.
          */
-        public boolean shouldReadChildren(
-            Object node,
-            ProjectPath parentPath) {
+        public boolean shouldReadChildren(Object node, ProjectPath parentPath) {
             // don't read linked maps
             return !(node instanceof DataNode);
         }

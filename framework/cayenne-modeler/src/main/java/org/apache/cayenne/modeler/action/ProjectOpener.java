@@ -31,9 +31,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.OverwriteDialog;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.ApplicationProject;
-import org.apache.cayenne.project.DataMapProject;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,12 +51,6 @@ class ProjectOpener extends JFileChooser {
             // configure for application project
             return newProjectDir(f, Configuration.DEFAULT_DOMAIN_FILE, FileFilters
                     .getApplicationFilter());
-        }
-        else if (p instanceof DataMapProject) {
-            // configure for DataMap project
-            ProjectFile projFileWrapper = p.projectFileForObject(p);
-            return newProjectDir(f, projFileWrapper.getLocation(), FileFilters
-                    .getDataMapFilter());
         }
         else {
             String message = (p == null)
@@ -138,7 +130,6 @@ class ProjectOpener extends JFileChooser {
         // configure filters
         resetChoosableFileFilters();
         addChoosableFileFilter(FileFilters.getApplicationFilter());
-        addChoosableFileFilter(FileFilters.getDataMapFilter());
 
         // default to App projects
         setFileFilter(FileFilters.getApplicationFilter());
