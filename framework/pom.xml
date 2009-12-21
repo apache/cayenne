@@ -72,6 +72,7 @@
 				<module>cayenne-jdk1.5-unpublished</module>
 				<module>cayenne-jdk1.6-unpublished</module>
 				<module>cayenne-project-unpublished</module>
+				<module>cayenne-wocompat-unpublished</module>
 				<module>cayenne-server</module>
 				<module>cayenne-client</module>
 				<module>cayenne-tools</module>
