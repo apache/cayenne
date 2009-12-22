@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE web-app
+   PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+   "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+	<display-name>Cayenne Tutorial</display-name>
+
+	<!--
+		This filter provides each request thread with a session-bound
+		DataContext
+	-->
+	<filter>
+		<filter-name>CayenneFilter</filter-name>
+		<filter-class>org.apache.cayenne.conf.WebApplicationContextFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CayenneFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>
