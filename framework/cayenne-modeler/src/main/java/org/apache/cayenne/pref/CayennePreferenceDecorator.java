@@ -26,4 +26,5 @@ public abstract class CayennePreferenceDecorator implements Preference {
         this.decoratedPreference = decoratedPreference;
     }
 
+    
 }

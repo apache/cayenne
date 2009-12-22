@@ -129,10 +129,10 @@ public class DataSourceDuplicator extends CayenneController {
         }
 
         DBConnectionInfo prototype = (DBConnectionInfo) dataSources.get(prototypeKey);
-        DBConnectionInfo dataSource = (DBConnectionInfo) editor.createDetail(
-                domain,
-                getName(),
-                DBConnectionInfo.class);
+        DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
+                .getCayenneProjectPreferences()
+                .getDetailObject(DBConnectionInfo.class)
+                .create(getName());
 
         prototype.copyTo(dataSource);
         return dataSource;

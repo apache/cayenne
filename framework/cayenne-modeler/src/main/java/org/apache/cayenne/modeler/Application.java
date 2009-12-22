@@ -38,6 +38,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.cayenne.pref.CayennePreference;
+import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.pref.DomainPreference;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
@@ -85,11 +86,14 @@ public class Application {
     protected File initialProject;
     protected String name;
     protected String preferencesDB;
+    
     protected BindingFactory bindingFactory;
     protected AdapterMapping adapterMapping;
 
     protected CayenneUndoManager undoManager;
 
+    protected CayenneProjectPreferences cayenneProjectPreferences;
+    
     // This is for OS X support
     private boolean isQuittingApplication = false;
 
@@ -224,6 +228,10 @@ public class Application {
         return preferenceService;
     }
 
+    public CayenneProjectPreferences getCayenneProjectPreferences() {
+        return cayenneProjectPreferences;
+    }
+    
     /**
      * Returns top preferences Domain for the application.
      */
@@ -286,6 +294,7 @@ public class Application {
                 preferencesDB,
                 PREFERENCES_MAP_PACKAGE,
                 getName());
+        this.cayenneProjectPreferences = new CayenneProjectPreferences();
         service.stopOnShutdown();
         this.preferenceService = service;
         this.preferenceService.startService();

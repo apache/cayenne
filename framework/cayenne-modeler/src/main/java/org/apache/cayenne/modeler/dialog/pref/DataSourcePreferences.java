@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.pref.ChildrenMapPreference;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -48,6 +49,7 @@ public class DataSourcePreferences extends CayenneController {
     protected PreferenceEditor editor;
     protected String dataSourceKey;
     protected Map dataSources;
+    protected ChildrenMapPreference dataSourcePreferences;
 
     public DataSourcePreferences(PreferenceDialog parentController) {
         super(parentController);
@@ -56,7 +58,10 @@ public class DataSourcePreferences extends CayenneController {
         this.editor = parentController.getEditor();
 
         // init view data
-        this.dataSources = getDataSourceDomain().getDetailsMap(DBConnectionInfo.class);
+        this.dataSourcePreferences = getApplication()
+                .getCayenneProjectPreferences()
+                .getDetailObject(DBConnectionInfo.class);
+        this.dataSources = dataSourcePreferences.getChildrenPreferences();
 
         Object[] keys = dataSources.keySet().toArray();
         Arrays.sort(keys);
@@ -113,7 +118,7 @@ public class DataSourcePreferences extends CayenneController {
     }
 
     public DBConnectionInfo getConnectionInfo() {
-        return (DBConnectionInfo) dataSources.get(dataSourceKey);
+        return (DBConnectionInfo) dataSourcePreferences.getObject(dataSourceKey);
     }
 
     /**
@@ -125,7 +130,8 @@ public class DataSourcePreferences extends CayenneController {
         DBConnectionInfo dataSource = creatorWizard.startupAction();
 
         if (dataSource != null) {
-            dataSources.put(creatorWizard.getName(), dataSource);
+            dataSourcePreferences.create(creatorWizard.getName(), dataSource);
+            dataSources = dataSourcePreferences.getChildrenPreferences();
 
             Object[] keys = dataSources.keySet().toArray();
             Arrays.sort(keys);
@@ -146,7 +152,8 @@ public class DataSourcePreferences extends CayenneController {
             DBConnectionInfo dataSource = wizard.startupAction();
 
             if (dataSource != null) {
-                dataSources.put(wizard.getName(), dataSource);
+                dataSourcePreferences.create(wizard.getName(), dataSource);
+                dataSources = dataSourcePreferences.getChildrenPreferences();
 
                 Object[] keys = dataSources.keySet().toArray();
                 Arrays.sort(keys);
@@ -164,8 +171,9 @@ public class DataSourcePreferences extends CayenneController {
         String key = getDataSourceKey();
         if (key != null) {
             editor.deleteDetail(getDataSourceDomain(), key);
-            dataSources.remove(key);
+            dataSourcePreferences.remove(key);
 
+            dataSources = dataSourcePreferences.getChildrenPreferences();
             Object[] keys = dataSources.keySet().toArray();
             Arrays.sort(keys);
             view.getDataSources().setModel(new DefaultComboBoxModel(keys));
@@ -246,13 +254,14 @@ public class DataSourcePreferences extends CayenneController {
             StringTokenizer st = new StringTokenizer(message);
             StringBuilder sbMessage = new StringBuilder();
             int len = 0;
-            
+
             String tempString;
             while (st.hasMoreTokens()) {
                 tempString = st.nextElement().toString();
-                if(len < 110){
+                if (len < 110) {
                     len = len + tempString.length() + 1;
-                } else {
+                }
+                else {
                     sbMessage.append("\n");
                     len = 0;
                 }

@@ -89,9 +89,10 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
             return;
         }
 
-        DBConnectionInfo dataSource = (DBConnectionInfo) parent
-                .getApplicationPreferenceDomain()
-                .getDetail(key, DBConnectionInfo.class, false);
+        DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
+            .getCayenneProjectPreferences()
+            .getDetailObject(DBConnectionInfo.class)
+            .getObject(key);
 
         if (dataSource != null) {
             if (dataSource.copyTo(projectDS.getDataSourceInfo())) {

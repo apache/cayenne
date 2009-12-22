@@ -44,10 +44,10 @@ public class ComponentGeometry extends CayennePreference {
     };
     
     public Preferences getPreference() {
-        if (currentPreference == null) {
+        if (getCurrentPreference() == null) {
             setCurrentNodeForPreference(this.getClass(), GEOMETRY_PREF_KEY);
         }
-        return currentPreference;
+        return getCurrentPreference();
     }
 
     /**

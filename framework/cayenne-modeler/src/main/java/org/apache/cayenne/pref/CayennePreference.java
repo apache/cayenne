@@ -20,12 +20,24 @@ package org.apache.cayenne.pref;
 
 import java.util.prefs.Preferences;
 
-public class CayennePreference implements Preference {
+import org.apache.cayenne.CayenneDataObject;
+
+public class CayennePreference extends CayenneDataObject implements Preference {
 
     private Preferences rootPreference;
     private Preferences cayennePreference;
 
-    protected Preferences currentPreference;
+    private Preferences currentPreference;
+
+    
+    public Preferences getCurrentPreference() {
+        return currentPreference;
+    }
+
+    
+    public void setCurrentPreference(Preferences currentPreference) {
+        this.currentPreference = currentPreference;
+    }
 
     public Preferences getRootPreference() {
         if (rootPreference == null) {
@@ -50,5 +62,11 @@ public class CayennePreference implements Preference {
 
     public void setCurrentNodeForPreference(Class className, String path) {
         currentPreference = getNode(className, path);
+    }
+    
+    public void setObject(CayennePreference object){
+    }
+    
+    public void saveObjectPreference() {
     }
 }

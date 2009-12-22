@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.access.DataNode;
@@ -57,15 +56,15 @@ public abstract class DBWizardAction extends CayenneAction {
     }
 
     protected String preferredDataSourceLabel(DBConnectionInfo nodeInfo) {
-        if (nodeInfo == null || nodeInfo.getDomainPreference() == null) {
+        if (nodeInfo == null) {
 
             // only driver nodes have meaningful connection info set
             DataNode node = getPreferredNode();
             return (node != null && DriverDataSourceFactory.class.getName().equals(
                     node.getDataSourceFactory())) ? "DataNode Connection Info" : null;
         }
-
-        return nodeInfo.getKey();
+        
+        return nodeInfo.getNodeName();
     }
 
     /**
@@ -87,8 +86,10 @@ public abstract class DBWizardAction extends CayenneAction {
         String key = (nodeDefaults != null) ? nodeDefaults.getLocalDataSource() : null;
         if (key != null) {
             DBConnectionInfo info = (DBConnectionInfo) getApplication()
-                    .getPreferenceDomain()
-                    .getDetail(key, DBConnectionInfo.class, false);
+                    .getCayenneProjectPreferences()
+                    .getDetailObject(DBConnectionInfo.class)
+                    .getObject(key);
+
             if (info != null) {
                 return info;
             }

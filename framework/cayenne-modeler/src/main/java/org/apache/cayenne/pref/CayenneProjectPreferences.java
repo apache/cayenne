@@ -18,23 +18,33 @@
  ****************************************************************/
 package org.apache.cayenne.pref;
 
-import java.util.prefs.Preferences;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
 
-public interface Preference {
+public class CayenneProjectPreferences {
+    
+    private Map<Class, Object> cayenneProjectPreferences;
+    
+    
+    public CayenneProjectPreferences() {
+        cayenneProjectPreferences = new HashMap<Class, Object>();
+        cayenneProjectPreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(new DBConnectionInfo()));
+        initPreference();
+    }
 
-    /** Key for preferences. */
-    public static final String CAYENNE_PREFERENCE = "org/apache/cayenne";
+    private void initPreference() {
+        Iterator it = cayenneProjectPreferences.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            ((ChildrenMapPreference)cayenneProjectPreferences.get(pairs.getKey())).initChildrenPreferences();
+        }
+    }
     
-    /**  node name for editor */ 
-    public static final String EDITOR = "editor";
-    
-    /** node name for list of the last 12 opened project files. */
-    public static final String LAST_PROJ_FILES = "lastSeveralProjectFiles";
-    
-    public Preferences getRootPreference();
-    
-    public Preferences getCayennePreference();
-    
-    public Preferences getCurrentPreference();
+    public ChildrenMapPreference getDetailObject(Class className) {
+        return (ChildrenMapPreference) cayenneProjectPreferences.get(className);
+    }
 }

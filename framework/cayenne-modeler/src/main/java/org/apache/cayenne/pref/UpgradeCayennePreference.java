@@ -115,4 +115,9 @@ public class UpgradeCayennePreference extends CayennePreferenceDecorator {
         return decoratedPreference.getCayennePreference();
     }
 
+    public Preferences getCurrentPreference() {
+        upgrade();
+        return decoratedPreference.getCayennePreference();
+    }
+
 }

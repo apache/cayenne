@@ -36,7 +36,7 @@ public class CayenneModelerPreferenceEditor extends HSQLEmbeddedPreferenceEditor
     protected Application application;
 
     public CayenneModelerPreferenceEditor(Application application) {
-        super((HSQLEmbeddedPreferenceService) application.getPreferenceService());
+        super((HSQLEmbeddedPreferenceService) application.getPreferenceService(), application.getCayenneProjectPreferences());
         this.application = application;
     }
 
@@ -50,7 +50,7 @@ public class CayenneModelerPreferenceEditor extends HSQLEmbeddedPreferenceEditor
 
     public void save() {
         super.save();
-
+        
         if (isRefreshingClassLoader()) {
             application.initClassLoader();
             refreshingClassLoader = false;

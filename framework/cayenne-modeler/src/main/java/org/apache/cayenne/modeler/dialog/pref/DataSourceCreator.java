@@ -138,10 +138,10 @@ public class DataSourceCreator extends CayenneController {
             return null;
         }
 
-        DBConnectionInfo dataSource = (DBConnectionInfo) editor.createDetail(
-                domain,
-                getName(),
-                DBConnectionInfo.class);
+        DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
+                .getCayenneProjectPreferences()
+                .getDetailObject(DBConnectionInfo.class)
+                .create(getName());
 
         Object adapter = view.getAdapters().getSelectedItem();
         if (NO_ADAPTER.equals(adapter)) {

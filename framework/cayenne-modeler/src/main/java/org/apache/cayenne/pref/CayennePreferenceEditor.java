@@ -20,6 +20,7 @@
 package org.apache.cayenne.pref;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
 /**
  * An editor for modifying CayennePreferenceService.
@@ -31,14 +32,16 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     protected DataContext editingContext;
     protected boolean restartRequired;
     protected int saveInterval;
+    protected CayenneProjectPreferences cayenneProjectPreferences;
 
-    public CayennePreferenceEditor(CayennePreferenceService service) {
+    public CayennePreferenceEditor(CayennePreferenceService service, CayenneProjectPreferences cayenneProjectPreferences) {
         this.service = service;
         this.editingContext = service
                 .getDataContext()
                 .getParentDataDomain()
                 .createDataContext();
         this.saveInterval = service.getSaveInterval();
+        this.cayenneProjectPreferences = cayenneProjectPreferences;
     }
 
     protected boolean isRestartRequired() {
@@ -113,6 +116,7 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     }
 
     public void save() {
+        cayenneProjectPreferences.getDetailObject(DBConnectionInfo.class).save();
         service.setSaveInterval(saveInterval);
         editingContext.commitChanges();
 
@@ -122,6 +126,7 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     }
 
     public void revert() {
+        cayenneProjectPreferences.getDetailObject(DBConnectionInfo.class).cancel();
         editingContext.rollbackChanges();
         restartRequired = false;
     }

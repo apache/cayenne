@@ -27,8 +27,8 @@ public class HSQLEmbeddedPreferenceEditor extends CayennePreferenceEditor {
 
     protected Delegate delegate;
 
-    public HSQLEmbeddedPreferenceEditor(HSQLEmbeddedPreferenceService service) {
-        super(service);
+    public HSQLEmbeddedPreferenceEditor(HSQLEmbeddedPreferenceService service, CayenneProjectPreferences cayenneProjectPreferences) {
+        super(service, cayenneProjectPreferences);
     }
 
     public Delegate getDelegate() {

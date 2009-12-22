@@ -29,6 +29,7 @@ import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import javax.swing.event.EventListenerList;
 
@@ -263,6 +264,8 @@ public class ProjectController extends CayenneController {
 
     protected ApplicationProject project;
     protected Domain projectPreferences;
+    
+    protected Preferences projectControllerPreferences;
 
     protected ControllerState currentState;
     protected CircularArray controllerStateHistory;
@@ -302,6 +305,7 @@ public class ProjectController extends CayenneController {
             
             this.project = currentProject;
             this.projectPreferences = null;
+            this.projectControllerPreferences = null;
 
             if (project == null) // null project -> no files to watch
             {
@@ -352,6 +356,26 @@ public class ProjectController extends CayenneController {
 
         return projectPreferences;
     }
+    
+    public Preferences getPreferenceForProject() {
+        if (getProject() == null) {
+            throw new CayenneRuntimeException("No Project selected");
+        }
+        if (projectControllerPreferences == null) {
+            String key = getProject().isLocationUndefined() ? new String(IDUtil
+                    .pseudoUniqueByteSequence16()) : project
+                    .getMainFile()
+                    .getAbsolutePath();
+
+            projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
+            
+            if(key.length()>0){
+                projectControllerPreferences = projectControllerPreferences.node(projectControllerPreferences.absolutePath()+key.replace(".xml", ""));
+            } 
+        }
+       
+        return projectControllerPreferences;
+     }
 
     /**
      * Returns top preferences Domain for the current project, throwing an exception if no

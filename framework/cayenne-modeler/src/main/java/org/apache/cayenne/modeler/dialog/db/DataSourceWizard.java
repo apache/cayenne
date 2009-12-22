@@ -67,15 +67,15 @@ public class DataSourceWizard extends CayenneController {
         this.altDataSource = altDataSource;
         this.altDataSourceKey = altDataSourceKey;
         this.connectionInfo = new DBConnectionInfo();
-
+        
         initBindings();
     }
-    
+
     /**
-     * Creates swing dialog for this wizard 
+     * Creates swing dialog for this wizard
      */
     protected DataSourceWizardView createView() {
-        return new DataSourceWizardView(this); 
+        return new DataSourceWizardView(this);
     }
 
     protected void initBindings() {
@@ -191,8 +191,10 @@ public class DataSourceWizard extends CayenneController {
     }
 
     protected void refreshDataSources() {
-        this.dataSources = getApplication().getPreferenceDomain().getDetailsMap(
-                DBConnectionInfo.class);
+        this.dataSources = getApplication()
+                .getCayenneProjectPreferences()
+                .getDetailObject(DBConnectionInfo.class)
+                .getChildrenPreferences();
 
         // 1.2 migration fix - update data source adapter names
         Iterator it = dataSources.values().iterator();
@@ -203,6 +205,7 @@ public class DataSourceWizard extends CayenneController {
             if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
                 info.setDbAdapter("org.apache.cayenne."
                         + info.getDbAdapter().substring(_12package.length()));
+
                 info.getObjectContext().commitChanges();
             }
         }

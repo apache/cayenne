@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.editor.datanode;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -253,20 +252,20 @@ public class MainDataNodeEditor extends CayenneController {
 
     protected void refreshLocalDataSources() {
         localDataSources.clear();
-
-        Collection sources = getApplication().getPreferenceDomain().getDetails(
-                DBConnectionInfo.class);
+        
+        Map sources = getApplication().getCayenneProjectPreferences().getDetailObject(
+                DBConnectionInfo.class).getChildrenPreferences();
 
         int len = sources.size();
         Object[] keys = new Object[len + 1];
 
         // a slight chance that a real datasource is called NO_LOCAL_DATA_SOURCE...
         keys[0] = NO_LOCAL_DATA_SOURCE;
-        Iterator it = sources.iterator();
-        for (int i = 1; i <= len; i++) {
-            DBConnectionInfo info = (DBConnectionInfo) it.next();
-            keys[i] = info.getKey();
-            localDataSources.put(keys[i], info);
+        
+        Iterator it = sources.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            localDataSources.put(pairs.getKey(), pairs.getValue());
         }
 
         view.getLocalDataSources().setModel(new DefaultComboBoxModel(keys));
