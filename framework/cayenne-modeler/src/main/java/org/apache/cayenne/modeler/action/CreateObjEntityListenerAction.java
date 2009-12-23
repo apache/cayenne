@@ -37,8 +37,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
  */
 public class CreateObjEntityListenerAction extends CayenneAction {
 
-    
-
     /**
      * unique action name
      */
