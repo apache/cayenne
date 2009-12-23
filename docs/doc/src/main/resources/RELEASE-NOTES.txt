@@ -28,6 +28,7 @@ CAY-1334 Modeler is trying to load data object classes when selecting a query
 CAY-1335 Modeler cannot unset inheritance
 CAY-1341 EJBQL: joins on joined table not added to generated SQL
 CAY-1344 CreateIfNoSchemaStrategy runs too late - pk generation happens before
+CAY-1346 Fail to create new listener for the DataMap
 
 ----------------------------------
 Release: 3.0 beta 1
