@@ -245,11 +245,6 @@ public class DataNode implements QueryEngine {
         Connection connection = null;
 
         try {
-            
-            if (schemaUpdateStrategy != null) {
-                schemaUpdateStrategy.updateSchema(this);
-            }
-            
             connection = this.getDataSource().getConnection();
         }
         catch (Exception globalEx) {
@@ -356,7 +351,11 @@ public class DataNode implements QueryEngine {
         final String CONNECTION_RESOURCE_PREFIX = "DataNode.Connection.";
 
         public Connection getConnection() throws SQLException {
+            if (schemaUpdateStrategy != null) {
+                schemaUpdateStrategy.updateSchema(DataNode.this);
+            }
             Transaction t = Transaction.getThreadTransaction();
+            
             if (t != null) {
                 String key = CONNECTION_RESOURCE_PREFIX + name;
                 Connection c = t.getConnection(key);
@@ -372,12 +371,15 @@ public class DataNode implements QueryEngine {
                 return new TransactionConnectionDecorator(c);
             }
 
+           
             return dataSource.getConnection();
         }
 
         public Connection getConnection(String username, String password)
                 throws SQLException {
-
+            if (schemaUpdateStrategy != null) {
+                schemaUpdateStrategy.updateSchema(DataNode.this);
+            }
             Transaction t = Transaction.getThreadTransaction();
             if (t != null) {
                 String key = CONNECTION_RESOURCE_PREFIX + name;

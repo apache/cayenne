@@ -44,6 +44,7 @@ import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.CayenneResources;
 import org.xml.sax.InputSource;
 
 public class SchemaUpdateStrategyTest extends CayenneCase {
@@ -140,7 +141,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
         try {
             dataNode.performQueries(Collections.singletonList((Query) query), observer);
             Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
-            assertTrue(nameTables.get("sus1")!=null || nameTables.get("SUS1")!=null );
+            assertTrue(nameTables.get("sus1") != null || nameTables.get("SUS1") != null);
             int sizeDB2 = getNameTablesInDB(dataNode).size();
             assertEquals(2, sizeDB2 - sizeDB);
             dataNode.performQueries(Collections.singletonList((Query) query), observer);
@@ -274,7 +275,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
         DataNode dataNode = new DataNode();
         dataNode.setDataMaps(colection);
         dataNode.setAdapter(adapter);
-        dataNode.setDataSource(getNode().getDataSource());
+        dataNode.setDataSource(CayenneResources.getResources().getDataSource());
         dataNode.setDataSourceFactory(getNode().getDataSourceFactory());
         dataNode.setSchemaUpdateStrategyName(getNode().getSchemaUpdateStrategyName());
         dataNode.setEntityResolver(new EntityResolver(colection));
@@ -300,14 +301,8 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
             dataNode.setSchemaUpdateStrategy((SchemaUpdateStrategy) Class.forName(
                     dataNode.getSchemaUpdateStrategyName()).newInstance());
         }
-        catch (InstantiationException e) {
-            e.printStackTrace();
-        }
-        catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        catch (Exception e) {
+            throw new CayenneRuntimeException(e);
         }
     }
 
@@ -343,14 +338,14 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
             rs.close();
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new CayenneRuntimeException(e);
         }
         finally {
             try {
                 con.close();
             }
             catch (SQLException e) {
-                e.printStackTrace();
+                throw new CayenneRuntimeException(e);
             }
         }
         return nameTables;
