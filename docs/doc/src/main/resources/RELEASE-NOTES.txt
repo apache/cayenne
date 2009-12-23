@@ -28,6 +28,7 @@ CAY-1342 Remove wocompat package from Cayenne core
 Bug Fixes Since 3.0:
 
 CAY-1304 Fix some failures in tests on SQLite
+CAY-1344 CreateIfNoSchemaStrategy runs too late - pk generation happens before
 
 ----------------------------------
 Release: 3.0 RC 1
