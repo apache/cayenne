@@ -17,37 +17,20 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.reflect;
+package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.ExtendedEnumeration;
 
-/**
- * @since 1.2
- */
-class EnumConverter extends Converter {
+public enum MockEnum3 implements ExtendedEnumeration {
+    A(1), B(2), C(3);
 
-    @Override
-    @SuppressWarnings("unchecked")
-    Object convert(Object object, Class type) {
+    private int databaseValue;
 
-        if (object == null) {
-            return null;
-        }
+    private MockEnum3(int databaseValue) {
+        this.databaseValue = databaseValue;
+    }
 
-        try {
-            if (ExtendedEnumeration.class.isAssignableFrom(type)) {
-                for (ExtendedEnumeration en : (ExtendedEnumeration[]) type.getMethod(
-                        "values").invoke(null)) {
-                    if (en.getDatabaseValue().equals(object))
-                        return en;
-                }
-                return null;
-            }
-        }
-        catch (Exception e1) {
-            return null;
-        }
-
-        return Enum.valueOf(type, object.toString());
+    public Object getDatabaseValue() {
+        return this.databaseValue;
     }
 }
