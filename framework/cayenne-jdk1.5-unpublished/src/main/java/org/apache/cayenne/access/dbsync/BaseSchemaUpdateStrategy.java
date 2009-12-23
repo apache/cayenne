@@ -28,16 +28,29 @@ import org.apache.cayenne.access.DataNode;
 public abstract class BaseSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
     protected volatile boolean run;
+    protected volatile ThreadLocal<Boolean> threadRunInProgress;
+
+    public BaseSchemaUpdateStrategy() {
+        super();
+        threadRunInProgress = new ThreadLocal<Boolean>();
+    }
 
     /**
      * @since 3.0
      */
     public void updateSchema(DataNode dataNode) throws SQLException {
-        if (!run) {
+
+        if (!run && (threadRunInProgress.get() == null || !threadRunInProgress.get())) {
             synchronized (this) {
                 if (!run) {
-                    processSchemaUpdate(dataNode);
-                    run = true;
+                    try {
+                        threadRunInProgress.set(true);
+                        processSchemaUpdate(dataNode);
+                        run = true;
+                    }
+                    finally {
+                        threadRunInProgress.set(false);
+                    }
                 }
             }
         }
