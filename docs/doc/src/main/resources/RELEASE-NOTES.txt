@@ -41,6 +41,7 @@ CAY-1191 Undo/Redo support in modeler
 
 Bug Fixes Since beta1:
 
+CAY-1345 Enum construction requires string name of enum
 CAY-1247 Query SQL syntax with join and OR on Oracle8 (and maybe OpenBase)
 CAY-1305 EJBQL doesn't support null parameters
 CAY-1307 Error committing CLOB on Oracle8
