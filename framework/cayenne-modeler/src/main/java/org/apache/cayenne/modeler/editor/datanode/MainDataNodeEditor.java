@@ -22,8 +22,9 @@ package org.apache.cayenne.modeler.editor.datanode;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
@@ -76,7 +77,7 @@ public class MainDataNodeEditor extends CayenneController {
     protected DataNodeEditor tabbedPaneController;
     protected DataNode node;
     protected Map datasourceEditors;
-    protected Map localDataSources;
+    protected List localDataSources;
 
     protected DataSourceEditor defaultSubeditor;
     protected BindingDelegate nodeChangeProcessor;
@@ -90,7 +91,7 @@ public class MainDataNodeEditor extends CayenneController {
         this.tabbedPaneController = tabController;
         this.view = new MainDataNodeView((ProjectController) getParent());
         this.datasourceEditors = new HashMap();
-        this.localDataSources = new HashMap();
+        this.localDataSources = new ArrayList<String>();
 
         this.nodeChangeProcessor = new BindingDelegate() {
 
@@ -262,12 +263,12 @@ public class MainDataNodeEditor extends CayenneController {
         // a slight chance that a real datasource is called NO_LOCAL_DATA_SOURCE...
         keys[0] = NO_LOCAL_DATA_SOURCE;
         
-        Iterator it = sources.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            localDataSources.put(pairs.getKey(), pairs.getValue());
+        Object[] dataSources = sources.keySet().toArray();
+        localDataSources.add(dataSources);
+        for(int i=0; i<dataSources.length;i++){
+            keys[i+1] = dataSources[i];
         }
-
+        
         view.getLocalDataSources().setModel(new DefaultComboBoxModel(keys));
         localDataSourceBinding.updateView();
     }
