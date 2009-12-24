@@ -52,7 +52,7 @@ public class HessianConfig {
             String[] factoryNames,
             EntityResolver resolver) {
 
-        SerializerFactory factory = new SerializerFactory();
+        SerializerFactory factory = new CayenneSerializerFactory();
 
         if (factoryNames != null && factoryNames.length > 0) {
 
