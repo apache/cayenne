@@ -104,26 +104,13 @@
 
 <h3><a name="TutorialObjectContext-RunningApplication"></a>Running Application</h3>
 
-<p>Let's check what happens when you run the application. But before we do that we need to add another dependency to the <tt>pom.xml</tt> - Apache Derby, our embedded database engine. To get the right version of Derby let's first add a non-default Maven repository that has needed artifacts. Insert this code in <tt>pom.xml</tt> under the <tt>&lt;dependencies&gt;...&lt;/dependencies&gt;</tt> section:</p>
-
-<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
-<pre class="code-java">&lt;repositories&gt;
-	&lt;repository&gt;
-		&lt;id&gt;objectstyle&lt;/id&gt;
-		&lt;name&gt;ObjectStyle Maven2 Repository&lt;/name&gt;
-		&lt;url&gt;http:<span class="code-comment">//objectstyle.org/maven2&lt;/url&gt;
-</span>		&lt;layout&gt;<span class="code-keyword">default</span>&lt;/layout&gt;
-	&lt;/repository&gt;
-&lt;/repositories&gt;</pre>
-</div></div>
-
-<p>After that add Derby to the <tt>&lt;dependencies&gt;...&lt;/dependencies&gt;</tt> section, where we already have Cayenne jars:</p>
+<p>Let's check what happens when you run the application. But before we do that we need to add another dependency to the <tt>pom.xml</tt> - Apache Derby, our embedded database engine. The following piece of XML needs to be added to the <tt>&lt;dependencies&gt;...&lt;/dependencies&gt;</tt> section, where we already have Cayenne jars:</p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">&lt;dependency&gt;
    &lt;groupId&gt;org.apache.derby&lt;/groupId&gt;
    &lt;artifactId&gt;derby&lt;/artifactId&gt;
-   &lt;version&gt;10.5.3.0&lt;/version&gt;
+   &lt;version&gt;10.5.3.0_1&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 </div></div>
 
