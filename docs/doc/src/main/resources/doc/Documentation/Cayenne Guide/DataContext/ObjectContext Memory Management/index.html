@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
@@ -59,15 +59,9 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><h2><a name="ObjectContextMemoryManagement-OldMemoryManagementStrategy"></a>Old Memory Management Strategy</h2>
+<div id="ConfluenceContent"><h2><a name="ObjectContextMemoryManagement-MemoryManagementStrategy"></a>Memory Management Strategy</h2>
 
-<p>Prior to 3.0 release, all implementations of ObjectContext (specifically DataContext) retained hard references to all registered objects on a premise that the context itself would eventually go out of scope and release all those objects. In certain situations such as a context used for processing large data sets and/or a context staying around for a long time (e.g application-scoped context), memory would grow indefinitely, resulting in a leak. </p>
-
-<p>Also there was a little-advertised workaround based on users explicitly calling <tt>ObjectStore.startTrackingNewObjects()</tt> and <tt>ObjectStore.unregisterNewObjects()</tt>.</p>
-
-<h2><a name="ObjectContextMemoryManagement-NewMemoryManagementStrategy"></a>New Memory Management Strategy</h2>
-
-<p>In release 3.0, by default DataContext uses weak references to store registered objects. So objects are allowed to be garbage collected by the VM if they are not referenced elsewhere in the application. "Elsewhere" usually means one of the following:</p>
+<p>Since Cayenne 3.0, by default DataContext uses weak references to store registered objects. So objects are allowed to be garbage collected by the VM if they are not referenced elsewhere in the application. "Elsewhere" usually means one of the following:</p>
 
 <ul>
 	<li>An object is directly or indirectly referenced by the application.</li>
@@ -75,8 +69,6 @@
 	<li>An object is "dirty" (i.e. new, modified or deleted). In this case Cayenne ensures that such object is retained at least until commit or rollback.</li>
 </ul>
 
-
-<p>In addition to saving memory, another positive side effect of this feature is that DataContext retains fewer objects at any given time and hence internal object lookups work somewhat faster on select and commit.</p>
 
 <h2><a name="ObjectContextMemoryManagement-WhentoAvoidWeakReferences"></a>When to Avoid Weak References</h2>
 
@@ -96,7 +88,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>
