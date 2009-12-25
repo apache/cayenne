@@ -1,6 +1,6 @@
-package org.example.cayenne.persistent;
+package org.apache.cayenne.tutorial.persistent;
 
-import org.example.cayenne.persistent.auto._UntitledDomainMap;
+import org.apache.cayenne.tutorial.persistent.auto._UntitledDomainMap;
 
 public class UntitledDomainMap extends _UntitledDomainMap {
 

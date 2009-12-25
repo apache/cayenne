@@ -1,4 +1,4 @@
-package org.example.cayenne.persistent.auto;
+package org.apache.cayenne.tutorial.persistent.auto;
 
 
 
