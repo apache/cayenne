@@ -50,15 +50,9 @@
 			<version>${version}</version>
 		</dependency>
 
-    <dependency>
+    	<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-tools</artifactId>
-			<version>${version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-agent</artifactId>
 			<version>${version}</version>
 		</dependency>
 

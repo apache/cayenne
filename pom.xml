@@ -36,6 +36,7 @@
 		<module>framework</module>
 		<module>itests</module>
 		<module>modeler</module>
+		<module>tutorials</module>
 		<module>docs</module>
 	</modules>
 	<issueManagement>

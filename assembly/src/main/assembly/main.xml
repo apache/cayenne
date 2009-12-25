@@ -75,5 +75,16 @@
 				<exclude>META-INF/MANIFEST.MF</exclude>
 			</excludes>
 		</fileSet>
+		<fileSet>
+			<directory>../tutorials/</directory>
+			<outputDirectory>tutorials</outputDirectory>
+			<includes>
+				<include>tutorial/**</include>
+			</includes>
+			<excludes>
+				<exclude>**/target/**</exclude>
+				<exclude>**/derby.log</exclude>
+			</excludes>
+		</fileSet>
 	</fileSets>
 </assembly>

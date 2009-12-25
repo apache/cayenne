@@ -1,10 +1,10 @@
-package org.example.cayenne.persistent;
+package org.apache.cayenne.tutorial.persistent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.example.cayenne.persistent.auto._Artist;
+import org.apache.cayenne.tutorial.persistent.auto._Artist;
 
 public class Artist extends _Artist {
 
