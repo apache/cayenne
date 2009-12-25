@@ -257,7 +257,7 @@
 									<outputDirectory>src/main/resources/doc</outputDirectory>
 									<baseUrl>http://cwiki.apache.org/confluence/</baseUrl>
 									<startPage>Documentation</startPage>
-									<spaceName>CAYDOC</spaceName>
+									<spaceName>CAYDOC30</spaceName>
 								</configuration>
 							</execution>
 						</executions>
