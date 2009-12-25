@@ -71,8 +71,7 @@
 			<directory>target/sources</directory>
 			<outputDirectory>src</outputDirectory>
 			<excludes>
-				<exclude>META-INF/maven/**</exclude>
-				<exclude>META-INF/MANIFEST.MF</exclude>
+				<exclude>META-INF/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
