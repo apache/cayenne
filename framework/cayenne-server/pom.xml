@@ -28,7 +28,7 @@
 	<artifactId>cayenne-server</artifactId>
 	<packaging>jar</packaging>
 	<name>Cayenne Aggregated Server Jar</name>
-	<description>An aggregation of 1.5 and JPA modules.</description>
+	<description>An aggregation of all Cayenne "server" modules.</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>

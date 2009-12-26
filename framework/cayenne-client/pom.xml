@@ -28,7 +28,7 @@
 	<artifactId>cayenne-client</artifactId>
 	<packaging>jar</packaging>
 	<name>Cayenne Aggregated Client Jar</name>
-	<description>An aggregation of 1.5 module into an ROP client jar.</description>
+	<description>An aggregation of all Cayenne "client" modules.</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
