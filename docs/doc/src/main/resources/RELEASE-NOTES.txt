@@ -29,8 +29,6 @@ CAY-1342 Remove wocompat package from Cayenne core
 Bug Fixes Since 3.0:
 
 CAY-1304 Fix some failures in tests on SQLite
-CAY-1344 CreateIfNoSchemaStrategy runs too late - pk generation happens before
-CAY-1346 Fail to create new listener for the DataMap
 
 ----------------------------------
 Release: 3.0 RC 1
@@ -53,6 +51,9 @@ CAY-1333 Entering a custom Java Type in CM for an ObjEntity blanks out DB fields
 CAY-1334 Modeler is trying to load data object classes when selecting a query
 CAY-1335 Modeler cannot unset inheritance
 CAY-1341 EJBQL: joins on joined table not added to generated SQL
+CAY-1343 Exclude asm jars from compile maven dependencies
+CAY-1344 CreateIfNoSchemaStrategy runs too late - pk generation happens before
+CAY-1346 Fail to create new listener for the DataMap
 
 ----------------------------------
 Release: 3.0 beta 1
