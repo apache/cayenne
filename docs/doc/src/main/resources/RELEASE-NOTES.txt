@@ -11,7 +11,6 @@ http://issues.apache.org/cayenne/
 Release: 3.1 M1
 Date: 
 ----------------------------------
-
 Changes/New Features Since 3.0:
 
 CAY-1310 Remove everything deprecated in 3.0
@@ -29,6 +28,15 @@ CAY-1342 Remove wocompat package from Cayenne core
 Bug Fixes Since 3.0:
 
 CAY-1304 Fix some failures in tests on SQLite
+
+----------------------------------
+Release: 3.0 RC 2
+Date: 
+----------------------------------
+
+Changes/New Features Since 3.0RC1:
+
+CAY-1326 Document Cayenne Embeddables Feature
 
 ----------------------------------
 Release: 3.0 RC 1
