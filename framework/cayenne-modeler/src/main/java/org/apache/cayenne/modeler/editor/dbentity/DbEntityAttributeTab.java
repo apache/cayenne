@@ -21,7 +21,9 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.BorderLayout;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -51,6 +53,7 @@ import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -67,7 +70,8 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
     protected ProjectController mediator;
     protected CayenneTable table;
-
+    private TableColumnPreferences tablePreferences;
+    
     public DbEntityAttributeTab(ProjectController temp_mediator) {
         super();
         mediator = temp_mediator;
@@ -101,6 +105,8 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         
         // Create table with two columns and no rows.
         table = new CayenneTable();
+        
+        tablePreferences = new TableColumnPreferences(DbAttributeTableModel.class, "attributeTable");
         
         /**
          * Create and install a popup
@@ -167,7 +173,6 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
                UIUtil.scrollToSelectedRow(table);
            }
         }
-    
         mediator.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(
                this,
                attrs,
@@ -193,11 +198,13 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
     }
 
     public void currentDbEntityChanged(EntityDisplayEvent e) {
+        
         DbEntity entity = (DbEntity) e.getEntity();
         if (entity != null && e.isEntityChanged()) {
             rebuildTable(entity);
         }
-
+        
+        
         // if an entity was selected on a tree,
         // unselect currently selected row
         if (e.isUnselectAttributes()) {
@@ -211,12 +218,18 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
-        TableColumn col = table.getColumnModel().getColumn(model.nameColumnInd());
-        col.setMinWidth(150);
-
-        col = table.getColumnModel().getColumn(model.typeColumnInd());
-        col.setMinWidth(90);
-
+        
+        int nameColumnIndex = model.nameColumnInd();
+        int minNameColumnWidth = 150;
+        int typeColumnIndex = model.typeColumnInd();
+        int minTypeColumnWidth = 90;
+        
+        Map<Integer, Integer> minSizes=new HashMap<Integer, Integer>();
+        minSizes.put(nameColumnIndex, minNameColumnWidth);
+        minSizes.put(typeColumnIndex, minTypeColumnWidth);
+        
+        TableColumn col = table.getColumnModel().getColumn(typeColumnIndex);
+                
         String[] types = TypesMapping.getDatabaseTypes();
         JComboBox comboBox = CayenneWidgetFactory.createComboBox(types, true);
         
@@ -225,5 +238,7 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
 
         table.getSelectionModel().addListSelectionListener(this);
+        
+        tablePreferences.bind(table, minSizes, null);
     }
 }

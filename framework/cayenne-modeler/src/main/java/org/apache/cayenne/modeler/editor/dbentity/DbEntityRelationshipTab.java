@@ -23,7 +23,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -64,6 +66,7 @@ import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -83,6 +86,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
     protected ProjectController mediator;
     protected CayenneTable table;
     protected JButton resolve;
+    private TableColumnPreferences tablePreferences;
     
     /**
      * By now popup menu item is made similiar to toolbar button. 
@@ -151,6 +155,8 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
 
         table = new CayenneTable();
         table.setDefaultRenderer(DbEntity.class, CellRenderers.entityTableRendererWithIcons(mediator));
+        
+        tablePreferences = new TableColumnPreferences(DbRelationshipTableModel.class, "relationshipTable");
         
         /**
          * Create and install a popup
@@ -285,11 +291,16 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
-        TableColumn col = table.getColumnModel().getColumn(DbRelationshipTableModel.NAME);
-        col.setMinWidth(150);
-        col = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
-        col.setMinWidth(150);
-
+        
+        int minNameColumnWidth = 150;
+        int minTargetColumnWidth = 150;
+        
+        Map<Integer, Integer> minSizes=new HashMap<Integer, Integer>();
+        minSizes.put(DbRelationshipTableModel.NAME, minNameColumnWidth);
+        minSizes.put(DbRelationshipTableModel.TARGET, minTargetColumnWidth);
+        
+        TableColumn col = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
+        
         targetCombo = CayenneWidgetFactory.createComboBox();
         AutoCompletion.enable(targetCombo);
         
@@ -297,6 +308,8 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         targetCombo.setModel(createComboModel(entity));
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
         table.getSelectionModel().addListSelectionListener(this);
+        
+        tablePreferences.bind(table, minSizes, null);
     }
 
     public void dbEntityChanged(EntityEvent e) {

@@ -26,7 +26,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -68,6 +70,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -97,6 +100,8 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
     ProjectController mediator;
 
     CayenneTable table;
+    private TableColumnPreferences tablePreferences;
+    
     JButton resolve;
     
     /**
@@ -147,6 +152,8 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
+        
+        tablePreferences = new TableColumnPreferences(ObjRelationshipTableModel.class, "objEntity/relationshipTable");
         
         /**
          * Create and install a popup
@@ -389,16 +396,20 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn lockColumn = table.getColumnModel().getColumn(
-                ObjRelationshipTableModel.REL_LOCKING);
-        lockColumn.setMinWidth(100);
+        int minRelLockWidth = 100;
+        int minRelNameWidth = 150;
+        int minRelTargetWidth = 150;
+        int minRelSemanticsWidth = 150;
+        int minRelDelRuleWidth = 60;
+        
+        Map<Integer, Integer> minSizes=new HashMap<Integer, Integer>();
+        
+        minSizes.put(ObjRelationshipTableModel.REL_LOCKING, minRelLockWidth);
 
-        TableColumn col = table.getColumnModel().getColumn(
-                ObjRelationshipTableModel.REL_NAME);
-        col.setMinWidth(150);
+        minSizes.put(ObjRelationshipTableModel.REL_NAME, minRelNameWidth);
 
-        col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET);
-        col.setMinWidth(150);
+        TableColumn col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET);
+        minSizes.put(ObjRelationshipTableModel.REL_TARGET, minRelTargetWidth);
         JComboBox targetCombo = CayenneWidgetFactory.createComboBox(
                 createObjEntityComboModel(),
                 false);
@@ -408,18 +419,19 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 .getDataMap()));
         targetCombo.setSelectedIndex(-1);
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
-
-        col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_SEMANTICS);
-        col.setMinWidth(150);
+        
+        minSizes.put(ObjRelationshipTableModel.REL_SEMANTICS, minRelSemanticsWidth);
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETERULE);
-        col.setMinWidth(60);
+        minSizes.put(ObjRelationshipTableModel.REL_DELETERULE, minRelDelRuleWidth);
         JComboBox deleteRulesCombo = CayenneWidgetFactory.createComboBox(
                 deleteRules,
                 false);
         deleteRulesCombo.setEditable(false);
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(deleteRulesCombo));
+        
+        tablePreferences.bind(table, minSizes, null);
     }
 
     class EntityRenderer extends StringRenderer {

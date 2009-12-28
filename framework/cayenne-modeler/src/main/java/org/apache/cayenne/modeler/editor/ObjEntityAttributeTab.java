@@ -28,8 +28,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -66,6 +68,7 @@ import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -82,7 +85,8 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
     protected ProjectController mediator;
     protected CayenneTable table;
-
+    private TableColumnPreferences tablePreferences;
+    
     JButton resolve;
 
     public ObjEntityAttributeTab(ProjectController mediator) {
@@ -119,6 +123,8 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new CellRenderer());
+        
+        tablePreferences = new TableColumnPreferences(ObjAttributeTableModel.class, "objEntity/attributeTable");
 
         /**
          * Create and install a popup
@@ -208,10 +214,6 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(typeNames.toArray(), false);
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
-
-        TableColumn dbNameColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.DB_ATTRIBUTE);
-        dbNameColumn.setMinWidth(150);
 
         if (model.getEntity().getDbEntity() != null) {
             Collection<String> nameAttr = ModelerUtil.getDbAttributeNames(mediator, model
@@ -327,29 +329,33 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     protected void setUpTableStructure(ObjAttributeTableModel model) {
-        TableColumn inheritanceColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.INHERITED);
-        inheritanceColumn.setMinWidth(20);
-        inheritanceColumn.setMaxWidth(20);
+       
+        int inheritanceColumnWidth = 20;
+        int minNameWidth = 150;
+        int minTypeWidth = 150;
+        int minLockWidth = 100;
+        int minDbAttrWidth = 150;
+        int minDbTypeWidth = 120;
+        
+        Map<Integer, Integer> minSizes = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> maxSizes = new HashMap<Integer, Integer>();
+        
+        minSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
+        maxSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
+        
+        minSizes.put(ObjAttributeTableModel.OBJ_ATTRIBUTE, minNameWidth);
+        
+        minSizes.put(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE, minTypeWidth);
+        
+        minSizes.put(ObjAttributeTableModel.LOCKING, minLockWidth);
 
-        TableColumn nameColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.OBJ_ATTRIBUTE);
-        nameColumn.setMinWidth(150);
-
-        TableColumn typeColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        typeColumn.setMinWidth(150);
-
-        TableColumn lockColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.LOCKING);
-        lockColumn.setMinWidth(100);
-
-        TableColumn dbTypeColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.DB_ATTRIBUTE_TYPE);
-        dbTypeColumn.setMinWidth(120);
+        minSizes.put(ObjAttributeTableModel.DB_ATTRIBUTE, minDbAttrWidth);
+        
+        minSizes.put(ObjAttributeTableModel.DB_ATTRIBUTE_TYPE, minDbTypeWidth);
 
         initComboBoxes(model);
 
+        tablePreferences.bind(table, minSizes, maxSizes);
     }
 
     /**
@@ -399,6 +405,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                     column);
 
             ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
+            column = table.getColumnModel().getColumn(column).getModelIndex();
             ObjAttribute attribute = model.getAttribute(row);
             if (column != ObjAttributeTableModel.INHERITED) {
 
