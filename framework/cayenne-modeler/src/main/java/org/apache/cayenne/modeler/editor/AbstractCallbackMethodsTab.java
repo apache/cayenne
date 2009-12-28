@@ -50,6 +50,7 @@ import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -79,7 +80,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      * table for displaying callback method names
      */
     protected CayenneTable table;
-
+    
+    /**
+     * preferences for the callback methods table
+     */
+    protected TableColumnPreferences tablePreferences;
+    
     /**
      * Dropdown for callback type selection. Contains fixed list of 7 callback types.
      */
@@ -201,6 +207,8 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             }
         });
 
+        initTablePreferences();
+        
         /**
          * Create and install a popup
          */
@@ -213,6 +221,11 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
         add(auxPanel, BorderLayout.CENTER);
     }
+
+    /**
+     * Inits the {@link TableColumnPreferences} object according to callback table name.
+     */
+    protected abstract void initTablePreferences();
 
     /**
      * listeners initialization
@@ -326,10 +339,9 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn methodNameColumn = table.getColumnModel().getColumn(CallbackDescriptorTableModel.METHOD_NAME);
-        methodNameColumn.setMinWidth(424);
-
         mediator.setCurrentCallbackMethods(new String[0]);
+        
+        tablePreferences.bind(table, null, null);
     }
 
     /**

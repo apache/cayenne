@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.action.RemoveCallbackMethodForDataMapListenerA
 import org.apache.cayenne.modeler.action.RemoveEntityListenerForDataMapAction;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.DataMapDisplayListener;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 
@@ -123,6 +124,11 @@ public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
 
     protected EntityListener getEntityListener(String listenerClass) {
         return mediator.getCurrentDataMap().getDefaultEntityListener(listenerClass);
+    }
+
+    @Override
+    protected void initTablePreferences() {
+        tablePreferences = new TableColumnPreferences(this.getClass(),"datamap/callbackTable");
     }
 }
 

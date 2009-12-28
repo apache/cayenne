@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.action.RemoveCallbackMethodForListenerAction;
 import org.apache.cayenne.modeler.action.RemoveEntityListenerAction;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
@@ -121,6 +122,11 @@ public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab 
 
     protected EntityListener getEntityListener(String listenerClass) {
         return mediator.getCurrentObjEntity().getEntityListener(listenerClass);
+    }
+
+    @Override
+    protected void initTablePreferences() {
+        tablePreferences = new TableColumnPreferences(this.getClass(),"objEntity/callbackTable");
     }
 }
 

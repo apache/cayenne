@@ -331,28 +331,13 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     protected void setUpTableStructure(ObjAttributeTableModel model) {
        
         int inheritanceColumnWidth = 20;
-        int minNameWidth = 150;
-        int minTypeWidth = 150;
-        int minLockWidth = 100;
-        int minDbAttrWidth = 150;
-        int minDbTypeWidth = 120;
-        
+               
         Map<Integer, Integer> minSizes = new HashMap<Integer, Integer>();
         Map<Integer, Integer> maxSizes = new HashMap<Integer, Integer>();
         
         minSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
         maxSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
         
-        minSizes.put(ObjAttributeTableModel.OBJ_ATTRIBUTE, minNameWidth);
-        
-        minSizes.put(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE, minTypeWidth);
-        
-        minSizes.put(ObjAttributeTableModel.LOCKING, minLockWidth);
-
-        minSizes.put(ObjAttributeTableModel.DB_ATTRIBUTE, minDbAttrWidth);
-        
-        minSizes.put(ObjAttributeTableModel.DB_ATTRIBUTE_TYPE, minDbTypeWidth);
-
         initComboBoxes(model);
 
         tablePreferences.bind(table, minSizes, maxSizes);

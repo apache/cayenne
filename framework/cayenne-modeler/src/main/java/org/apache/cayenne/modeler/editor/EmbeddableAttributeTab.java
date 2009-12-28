@@ -50,6 +50,7 @@ import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -63,6 +64,7 @@ public class EmbeddableAttributeTab extends JPanel implements
 
     protected ProjectController mediator;
     protected CayenneTable table;
+    protected TableColumnPreferences tablePreferences;
 
     JButton resolve;
 
@@ -92,6 +94,8 @@ public class EmbeddableAttributeTab extends JPanel implements
 
         table = new CayenneTable();
 
+        tablePreferences = new TableColumnPreferences(this.getClass(),"embeddable/attributeTable");
+        
         /**
          * Create and install a popup
          */
@@ -172,22 +176,14 @@ public class EmbeddableAttributeTab extends JPanel implements
 
     private void setUpTableStructure(EmbeddableAttributeTableModel model) {
 
-        TableColumn nameColumn = table.getColumnModel().getColumn(
-                EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
-        nameColumn.setMinWidth(150);
-
         TableColumn typeColumn = table.getColumnModel().getColumn(
                 EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        typeColumn.setMinWidth(150);
-
         JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(ModelerUtil
                 .getRegisteredTypeNames(), false);
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
 
-        TableColumn dbAttrColumn = table.getColumnModel().getColumn(
-                EmbeddableAttributeTableModel.DB_ATTRIBUTE);
-        dbAttrColumn.setMinWidth(150);
+        tablePreferences.bind(table, null, null);
 
     }
 

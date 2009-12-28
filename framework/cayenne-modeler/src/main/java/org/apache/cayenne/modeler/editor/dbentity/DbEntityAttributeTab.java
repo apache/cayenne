@@ -219,16 +219,7 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         table.setRowHeight(25);
         table.setRowMargin(3);
         
-        int nameColumnIndex = model.nameColumnInd();
-        int minNameColumnWidth = 150;
-        int typeColumnIndex = model.typeColumnInd();
-        int minTypeColumnWidth = 90;
-        
-        Map<Integer, Integer> minSizes=new HashMap<Integer, Integer>();
-        minSizes.put(nameColumnIndex, minNameColumnWidth);
-        minSizes.put(typeColumnIndex, minTypeColumnWidth);
-        
-        TableColumn col = table.getColumnModel().getColumn(typeColumnIndex);
+        TableColumn col = table.getColumnModel().getColumn(model.typeColumnInd());
                 
         String[] types = TypesMapping.getDatabaseTypes();
         JComboBox comboBox = CayenneWidgetFactory.createComboBox(types, true);
@@ -239,6 +230,6 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         table.getSelectionModel().addListSelectionListener(this);
         
-        tablePreferences.bind(table, minSizes, null);
+        tablePreferences.bind(table, null, null);
     }
 }

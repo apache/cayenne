@@ -292,13 +292,6 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         table.setRowHeight(25);
         table.setRowMargin(3);
         
-        int minNameColumnWidth = 150;
-        int minTargetColumnWidth = 150;
-        
-        Map<Integer, Integer> minSizes=new HashMap<Integer, Integer>();
-        minSizes.put(DbRelationshipTableModel.NAME, minNameColumnWidth);
-        minSizes.put(DbRelationshipTableModel.TARGET, minTargetColumnWidth);
-        
         TableColumn col = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
         
         targetCombo = CayenneWidgetFactory.createComboBox();
@@ -309,7 +302,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
         table.getSelectionModel().addListSelectionListener(this);
         
-        tablePreferences.bind(table, minSizes, null);
+        tablePreferences.bind(table, null, null);
     }
 
     public void dbEntityChanged(EntityEvent e) {
