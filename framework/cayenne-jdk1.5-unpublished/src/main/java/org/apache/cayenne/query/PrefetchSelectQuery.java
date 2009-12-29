@@ -59,6 +59,7 @@ public class PrefetchSelectQuery extends SelectQuery {
             ObjRelationship lastPrefetchHint) {
 
         setRoot(lastPrefetchHint.getTargetEntity());
+        setStatementFetchSize(parentQuery.getStatementFetchSize());
         this.parentQuery = parentQuery;
         this.prefetchPath = prefetchPath;
         this.lastPrefetchHint = lastPrefetchHint;
