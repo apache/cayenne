@@ -45,8 +45,6 @@ import org.apache.cayenne.modeler.util.CodeValidationUtil;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.BindingDelegate;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.SimpleValidationFailure;
@@ -193,7 +191,7 @@ public abstract class GeneratorController extends CayenneController {
             if (attribute instanceof EmbeddedAttribute) {
                 EmbeddedAttribute embeddedAttribute = (EmbeddedAttribute) attribute;
                 for (ObjAttribute subAttribute : embeddedAttribute.getAttributes()) {
-                    ValidationFailure failure = validateAttribute(subAttribute);
+                    ValidationFailure failure = validateEmbeddedAttribute(subAttribute);
                     if (failure != null) {
                         validationBuffer.addFailure(failure);
                         return;
@@ -273,6 +271,68 @@ public abstract class GeneratorController extends CayenneController {
                 name,
                 "attribute.name",
                 attribute.getName());
+        if (badName != null) {
+            return badName;
+        }
+
+        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(
+                name,
+                "attribute.type",
+                attribute.getType());
+        if (emptyType != null) {
+            return emptyType;
+        }
+
+        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(
+                name,
+                "attribute.type",
+                attribute.getType());
+        if (badType != null) {
+            return badType;
+        }
+
+        return null;
+    }
+    
+    protected ValidationFailure validateEmbeddedAttribute(ObjAttribute attribute) {
+
+        String name = attribute.getEntity().getName();
+        
+        // validate embeddedAttribute and attribute names
+        // embeddedAttribute returned attibute as [name_embeddedAttribute].[name_attribute]
+        String[] attributes = attribute.getName().split("\\.");
+        String nameEmbeddedAttribute = attributes[0];
+        int beginIndex = attributes[0].length();
+        String attr = attribute.getName().substring(beginIndex+1);
+
+        ValidationFailure emptyEmbeddedName = BeanValidationFailure.validateNotEmpty(
+                name,
+                "attribute.name",
+                nameEmbeddedAttribute);
+        if (emptyEmbeddedName != null) {
+            return emptyEmbeddedName;
+        }
+        
+        ValidationFailure badEmbeddedName = CodeValidationUtil.validateJavaIdentifier(
+                name,
+                "attribute.name",
+                nameEmbeddedAttribute);
+        if (badEmbeddedName != null) {
+            return badEmbeddedName;
+        }
+        
+        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(
+                name,
+                "attribute.name",
+                attr);
+        if (emptyName != null) {
+            return emptyName;
+        }
+        
+        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(
+                name,
+                "attribute.name",
+                attr);
         if (badName != null) {
             return badName;
         }
