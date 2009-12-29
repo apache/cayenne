@@ -565,6 +565,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
             for (Procedure proc : map.getProcedures()) {
                 procedureCache.put(proc.getName(), proc);
             }
+            
+            // index embeddables
+            embeddableCache.putAll(map.getEmbeddableMap());
 
             // index queries
             for (Query query : map.getQueries()) {
