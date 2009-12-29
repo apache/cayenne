@@ -34,11 +34,18 @@ public class ChildrenMapPreference extends CayennePreferenceDecorator {
 
     private Map<String, Object> childrens;
     private List<String> removeObject;
+    
 
     public ChildrenMapPreference(CayennePreference decoratedPreference) {
         super(decoratedPreference);
         this.childrens = new HashMap<String, Object>();
         this.removeObject = new ArrayList<String>();
+    }
+    
+    public ChildrenMapPreference(CayennePreference decoratedPreference, Preferences preferences) {
+        super(decoratedPreference);
+        decoratedPreference.setCurrentPreference(preferences);
+        this.childrens = new HashMap<String, Object>();
     }
 
     public Preferences getCayennePreference() {
@@ -134,11 +141,6 @@ public class ChildrenMapPreference extends CayennePreferenceDecorator {
                 }
             }
         }
-        
-        // наверное стоит как-то помечать чтобы не все пересохранять
-        // как?
-        // !!!!!!!!!!!!!!!!!
-        
         
         Iterator it = childrens.entrySet().iterator();
         while (it.hasNext()) {

@@ -63,7 +63,7 @@ public abstract class DBWizardAction extends CayenneAction {
             return (node != null && DriverDataSourceFactory.class.getName().equals(
                     node.getDataSourceFactory())) ? "DataNode Connection Info" : null;
         }
-        
+
         return nodeInfo.getNodeName();
     }
 
@@ -79,9 +79,11 @@ public abstract class DBWizardAction extends CayenneAction {
         }
 
         // if node has local DS set, use it
-        DataNodeDefaults nodeDefaults = (DataNodeDefaults) getProjectController()
-                .getPreferenceDomainForDataDomain()
-                .getDetail(node.getName(), DataNodeDefaults.class, false);
+        DataNodeDefaults nodeDefaults = (DataNodeDefaults) getApplication()
+                .getCayenneProjectPreferences()
+                .getProjectDetailObject(DataNodeDefaults.class,
+                        getProjectController().getPreferenceForDataDomain().node(
+                                "DataNode").node(node.getName()));
 
         String key = (nodeDefaults != null) ? nodeDefaults.getLocalDataSource() : null;
         if (key != null) {

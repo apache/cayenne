@@ -20,9 +20,7 @@ package org.apache.cayenne.pref;
 
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.CayenneDataObject;
-
-public class CayennePreference extends CayenneDataObject implements Preference {
+public class CayennePreference implements Preference {
 
     private Preferences rootPreference;
     private Preferences cayennePreference;

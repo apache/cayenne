@@ -206,7 +206,7 @@ public class DataSourceWizard extends CayenneController {
                 info.setDbAdapter("org.apache.cayenne."
                         + info.getDbAdapter().substring(_12package.length()));
 
-                info.getObjectContext().commitChanges();
+               // info.getObjectContext().commitChanges();
             }
         }
 

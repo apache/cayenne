@@ -16,27 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.pref;
+package org.apache.cayenne.pref;
 
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.pref.CayennePreferenceForProject;
 
-public class DataNodeDefaults extends CayennePreferenceForProject {
-
-    public DataNodeDefaults(Preferences pref) {
-        super(pref);
-    }
-
-    public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
-
-    public void setLocalDataSource(String localDataSource) {
-        if (getCurrentPreference() != null) {
-            getCurrentPreference().put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
-        }
-    }
-
-    public String getLocalDataSource() {
-        return getCurrentPreference().get(LOCAL_DATA_SOURCE_PROPERTY, null);
+public abstract class CayennePreferenceForProject extends CayennePreference {
+    public CayennePreferenceForProject(Preferences pref) {
+        setCurrentPreference(pref);
     }
 }

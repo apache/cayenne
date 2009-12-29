@@ -135,8 +135,9 @@ import org.apache.commons.logging.LogFactory;
  * </p>
  */
 public class ProjectController extends CayenneController {
+
     private static final Log logObj = LogFactory.getLog(ProjectController.class);
-    
+
     /*
      * A snapshot of the current state of the project controller. This was added so that
      * we could support history of recent objects.
@@ -264,7 +265,7 @@ public class ProjectController extends CayenneController {
 
     protected ApplicationProject project;
     protected Domain projectPreferences;
-    
+
     protected Preferences projectControllerPreferences;
 
     protected ControllerState currentState;
@@ -299,10 +300,11 @@ public class ProjectController extends CayenneController {
         // watchdog extra time, adding this check
         {
             if (this.project != null) {
-                ((ModelerProjectConfiguration) 
-                        project.getConfiguration()).getGraphRegistry().unregister(this);
+                ((ModelerProjectConfiguration) project.getConfiguration())
+                        .getGraphRegistry()
+                        .unregister(this);
             }
-            
+
             this.project = currentProject;
             this.projectPreferences = null;
             this.projectControllerPreferences = null;
@@ -321,9 +323,9 @@ public class ProjectController extends CayenneController {
                 }
 
                 watchdog.reconfigure();
-                
-                addDomainListener(((ModelerProjectConfiguration) 
-                        project.getConfiguration()).getGraphRegistry());
+
+                addDomainListener(((ModelerProjectConfiguration) project
+                        .getConfiguration()).getGraphRegistry());
             }
         }
     }
@@ -356,7 +358,7 @@ public class ProjectController extends CayenneController {
 
         return projectPreferences;
     }
-    
+
     public Preferences getPreferenceForProject() {
         if (getProject() == null) {
             throw new CayenneRuntimeException("No Project selected");
@@ -368,14 +370,16 @@ public class ProjectController extends CayenneController {
                     .getAbsolutePath();
 
             projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
-            
-            if(key.length()>0){
-                projectControllerPreferences = projectControllerPreferences.node(projectControllerPreferences.absolutePath()+key.replace(".xml", ""));
-            } 
+
+            if (key.length() > 0) {
+                projectControllerPreferences = projectControllerPreferences
+                        .node(projectControllerPreferences.absolutePath()
+                                + key.replace(".xml", ""));
+            }
         }
-       
+
         return projectControllerPreferences;
-     }
+    }
 
     /**
      * Returns top preferences Domain for the current project, throwing an exception if no
@@ -390,6 +394,15 @@ public class ProjectController extends CayenneController {
         return getPreferenceDomainForProject()
                 .getSubdomain(DataDomain.class)
                 .getSubdomain(dataDomain.getName());
+    }
+
+    public Preferences getPreferenceForDataDomain() {
+        DataDomain dataDomain = getCurrentDataDomain();
+        if (dataDomain == null) {
+            throw new CayenneRuntimeException("No DataDomain selected");
+        }
+
+        return getPreferenceForProject().node("DataDomains").node(dataDomain.getName());
     }
 
     /**
@@ -424,10 +437,14 @@ public class ProjectController extends CayenneController {
             throw new CayenneRuntimeException("No DataNode selected");
         }
 
-        return (DataNodeDefaults) getPreferenceDomainForDataDomain().getDetail(
-                node.getName(),
-                DataNodeDefaults.class,
-                true);
+        return (DataNodeDefaults) application
+                .getCayenneProjectPreferences()
+                .getProjectDetailObject(
+                        DataNodeDefaults.class,
+                        getPreferenceForDataDomain()
+                                .node("DataNode")
+                                .node(node.getName()));
+
     }
 
     public void projectOpened() {
@@ -492,9 +509,7 @@ public class ProjectController extends CayenneController {
      * Finds a domain containing specified DataNode.
      */
     public DataDomain findDomain(DataNode node) {
-        Collection<DataDomain> domains = (getProject())
-                .getConfiguration()
-                .getDomains();
+        Collection<DataDomain> domains = (getProject()).getConfiguration().getDomains();
 
         for (DataDomain domain : domains) {
             if (domain.getNode(node.getName()) == node) {
@@ -509,9 +524,7 @@ public class ProjectController extends CayenneController {
      * Finds a domain containing specified DataMap.
      */
     public DataDomain findDomain(DataMap map) {
-        Collection<DataDomain> domains = (getProject())
-                .getConfiguration()
-                .getDomains();
+        Collection<DataDomain> domains = (getProject()).getConfiguration().getDomains();
 
         if (map == null) {
             map = getCurrentDataMap();
@@ -679,7 +692,7 @@ public class ProjectController extends CayenneController {
     public void addDomainListener(DomainListener listener) {
         listenerList.add(DomainListener.class, listener);
     }
-    
+
     public void removeDomainListener(DomainListener listener) {
         listenerList.remove(DomainListener.class, listener);
     }
@@ -699,7 +712,7 @@ public class ProjectController extends CayenneController {
     public void addDataMapListener(DataMapListener listener) {
         listenerList.add(DataMapListener.class, listener);
     }
-    
+
     public void removeDataMapListener(DataMapListener listener) {
         listenerList.remove(DataMapListener.class, listener);
     }
@@ -707,7 +720,7 @@ public class ProjectController extends CayenneController {
     public void addDbEntityListener(DbEntityListener listener) {
         listenerList.add(DbEntityListener.class, listener);
     }
-    
+
     public void removeDbEntityListener(DbEntityListener listener) {
         listenerList.remove(DbEntityListener.class, listener);
     }
@@ -715,7 +728,7 @@ public class ProjectController extends CayenneController {
     public void addObjEntityListener(ObjEntityListener listener) {
         listenerList.add(ObjEntityListener.class, listener);
     }
-    
+
     public void removeObjEntityListener(ObjEntityListener listener) {
         listenerList.remove(ObjEntityListener.class, listener);
     }
@@ -740,7 +753,7 @@ public class ProjectController extends CayenneController {
     public void addDbAttributeListener(DbAttributeListener listener) {
         listenerList.add(DbAttributeListener.class, listener);
     }
-    
+
     public void removeDbAttributeListener(DbAttributeListener listener) {
         listenerList.remove(DbAttributeListener.class, listener);
     }
@@ -752,7 +765,7 @@ public class ProjectController extends CayenneController {
     public void addObjAttributeListener(ObjAttributeListener listener) {
         listenerList.add(ObjAttributeListener.class, listener);
     }
-    
+
     public void removeObjAttributeListener(ObjAttributeListener listener) {
         listenerList.remove(ObjAttributeListener.class, listener);
     }
@@ -764,7 +777,7 @@ public class ProjectController extends CayenneController {
     public void addDbRelationshipListener(DbRelationshipListener listener) {
         listenerList.add(DbRelationshipListener.class, listener);
     }
-    
+
     public void removeDbRelationshipListener(DbRelationshipListener listener) {
         listenerList.add(DbRelationshipListener.class, listener);
     }
@@ -776,7 +789,7 @@ public class ProjectController extends CayenneController {
     public void addObjRelationshipListener(ObjRelationshipListener listener) {
         listenerList.add(ObjRelationshipListener.class, listener);
     }
-    
+
     public void removeObjRelationshipListener(ObjRelationshipListener listener) {
         listenerList.remove(ObjRelationshipListener.class, listener);
     }
@@ -1329,7 +1342,6 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    
     public void fireEmbeddableDisplayEvent(EmbeddableDisplayEvent e) {
         boolean changed = e.getEmbeddable() != currentState.embeddable;
 
@@ -1355,7 +1367,7 @@ public class ProjectController extends CayenneController {
             temp.currentEmbeddableChanged(e);
         }
     }
-    
+
     public void fireQueryDisplayEvent(QueryDisplayEvent e) {
         boolean changed = e.getQuery() != currentState.query;
 
@@ -1530,7 +1542,7 @@ public class ProjectController extends CayenneController {
 
     public void fireObjAttributeDisplayEvent(AttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), currentState.objAttrs);
-        
+
         if (changed) {
             if (e.getEntity() != currentState.objEntity) {
                 clearState();
@@ -1919,8 +1931,6 @@ public class ProjectController extends CayenneController {
         return null;
     }
 
-    
-
     public void addEmbeddableAttributeListener(EmbeddableAttributeListener listener) {
         listenerList.add(EmbeddableAttributeListener.class, listener);
     }
@@ -1973,13 +1983,13 @@ public class ProjectController extends CayenneController {
             }
         }
     }
-    
+
     public ArrayList<Embeddable> getEmbeddableNamesInCurRentDataDomain() {
         DataDomain dd = getCurrentDataDomain();
         Collection<DataMap> maps = dd.getDataMaps();
         Iterator<DataMap> it = maps.iterator();
         ArrayList<Embeddable> embs = new ArrayList<Embeddable>();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             embs.addAll(it.next().getEmbeddables());
         }
         return embs;
