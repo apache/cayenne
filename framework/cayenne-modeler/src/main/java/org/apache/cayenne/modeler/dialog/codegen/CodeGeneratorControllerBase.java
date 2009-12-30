@@ -23,7 +23,6 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -48,17 +47,25 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     protected ValidationResult validation;
 
-    protected List<ObjEntity> entities;
-    protected Set selectedEntities;
+    protected List<Object> classes;
 
-    protected transient ObjEntity currentEntity;
+    protected Set selectedEntities;
+    protected Set selectedEmbeddables;
+
+    protected transient Object currentClass;
 
     public CodeGeneratorControllerBase(CayenneController parent, DataMap dataMap) {
         super(parent);
 
         this.dataMap = dataMap;
-        this.entities = new ArrayList(dataMap.getObjEntities());
+        this.classes = new ArrayList(dataMap.getObjEntities());
+        classes.addAll(new ArrayList(dataMap.getEmbeddables()));
         this.selectedEntities = new HashSet();
+        this.selectedEmbeddables = new HashSet();
+    }
+
+    public List<Object> getClasses() {
+        return classes;
     }
 
     public abstract Component getView();
@@ -68,9 +75,18 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         ValidationResult validationBuffer = new ValidationResult();
 
         if (validator != null) {
-            for (ObjEntity entity : entities) {
-                validator.validateEntity(validationBuffer, entity, false);
+            for (Object classObj : classes) {
+                if (classObj instanceof ObjEntity) {
+                    validator.validateEntity(
+                            validationBuffer,
+                            (ObjEntity) classObj,
+                            false);
+                }
+                else if (classObj instanceof Embeddable) {
+                    validator.validateEmbeddable(validationBuffer, (Embeddable) classObj);
+                }
             }
+
         }
 
         this.validation = validationBuffer;
@@ -80,18 +96,35 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
         boolean modified = false;
 
-        for (ObjEntity entity : entities) {
-            boolean select = predicate.evaluate(entity);
+        for (Object classObj : classes) {
+            boolean select = predicate.evaluate(classObj);
+            if (classObj instanceof ObjEntity) {
 
-            if (select) {
-                if (selectedEntities.add(entity.getName())) {
-                    modified = true;
+                if (select) {
+                    if (selectedEntities.add(((ObjEntity) classObj).getName())) {
+                        modified = true;
+                    }
                 }
-            } else {
-                if (selectedEntities.remove(entity.getName())) {
-                    modified = true;
+                else {
+                    if (selectedEntities.remove(((ObjEntity) classObj).getName())) {
+                        modified = true;
+                    }
                 }
             }
+            else if (classObj instanceof Embeddable) {
+                if (select) {
+                    if (selectedEmbeddables.add(((Embeddable) classObj).getClassName())) {
+                        modified = true;
+                    }
+                }
+                else {
+                    if (selectedEmbeddables
+                            .remove(((Embeddable) classObj).getClassName())) {
+                        modified = true;
+                    }
+                }
+            }
+
         }
 
         if (modified) {
@@ -102,17 +135,26 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     }
 
     public Collection<Embeddable> getSelectedEmbeddables() {
-        // TODO: andrus, 12/9/2007 - until Modeler filtering of embeddables is
-        // implemented, show all embeddables we have
-        return dataMap.getEmbeddables();
+
+        List<Embeddable> selected = new ArrayList<Embeddable>(selectedEmbeddables.size());
+
+        for (Object classObj : classes) {
+            if (classObj instanceof Embeddable
+                    && selectedEmbeddables.contains(((Embeddable) classObj)
+                            .getClassName())) {
+                selected.add((Embeddable) classObj);
+            }
+        }
+
+        return selected;
     }
 
     public List<ObjEntity> getSelectedEntities() {
         List<ObjEntity> selected = new ArrayList<ObjEntity>(selectedEntities.size());
-
-        for (ObjEntity entity : entities) {
-            if (selectedEntities.contains(entity.getName())) {
-                selected.add(entity);
+        for (Object classObj : classes) {
+            if (classObj instanceof ObjEntity
+                    && selectedEntities.contains(((ObjEntity) classObj).getName())) {
+                selected.add(((ObjEntity) classObj));
             }
         }
 
@@ -123,21 +165,30 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return selectedEntities.size();
     }
 
-    public List getEntities() {
-        return entities;
+    public int getSelectedEmbeddablesSize() {
+        return selectedEmbeddables.size();
     }
 
     /**
      * Returns the first encountered validation problem for an antity matching the name or
      * null if the entity is valid or the entity is not present.
      */
-    public String getProblem(String entityName) {
+    public String getProblem(Object obj) {
 
+        String name = null;
+        
+        if (obj instanceof ObjEntity) {
+            name = ((ObjEntity) obj).getName();
+        }
+        else if (obj instanceof Embeddable) {
+            name = ((Embeddable) obj).getClassName();
+        }
+        
         if (validation == null) {
             return null;
         }
 
-        List failures = validation.getFailures(entityName);
+        List failures = validation.getFailures(name);
         if (failures.isEmpty()) {
             return null;
         }
@@ -146,37 +197,65 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     }
 
     public boolean isSelected() {
-        return currentEntity != null
-                ? selectedEntities.contains(currentEntity.getName())
-                : false;
+        if (currentClass instanceof ObjEntity) {
+            return currentClass != null ? selectedEntities
+                    .contains(((ObjEntity) currentClass).getName()) : false;
+        }
+        if (currentClass instanceof Embeddable) {
+            return currentClass != null ? selectedEmbeddables
+                    .contains(((Embeddable) currentClass).getClassName()) : false;
+        }
+        return false;
+
     }
 
     public void setSelected(boolean selectedFlag) {
-        if (currentEntity == null) {
+        if (currentClass == null) {
             return;
         }
-
-        if (selectedFlag) {
-            if (selectedEntities.add(currentEntity.getName())) {
-                firePropertyChange(SELECTED_PROPERTY, null, null);
+        if (currentClass instanceof ObjEntity) {
+            if (selectedFlag) {
+                if (selectedEntities.add(((ObjEntity) currentClass).getName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
+            }
+            else {
+                if (selectedEntities.remove(((ObjEntity) currentClass).getName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
             }
         }
-        else {
-            if (selectedEntities.remove(currentEntity.getName())) {
-                firePropertyChange(SELECTED_PROPERTY, null, null);
+        if (currentClass instanceof Embeddable) {
+            if (selectedFlag) {
+                if (selectedEmbeddables.add(((Embeddable) currentClass).getClassName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
+            }
+            else {
+                if (selectedEmbeddables
+                        .remove(((Embeddable) currentClass).getClassName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
             }
         }
     }
 
-    public ObjEntity getCurrentEntity() {
-        return currentEntity;
+    public Object getCurrentClass() {
+        return currentClass;
     }
 
-    public void setCurrentEntity(ObjEntity currentEntity) {
-        this.currentEntity = currentEntity;
+    public void setCurrentClass(Object currentClass) {
+        this.currentClass = currentClass;
     }
 
     public DataMap getDataMap() {
         return dataMap;
+    }
+
+    public String getItemName(Object obj) {
+        if (obj instanceof Embeddable) {
+            return ((Embeddable) obj).getClassName();
+        }
+        return ((ObjEntity) obj).getName();
     }
 }

@@ -32,6 +32,8 @@ import javax.swing.JTextField;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -88,7 +90,7 @@ public abstract class GeneratorController extends CayenneController {
 
         outputFolder.setText(getOutputPath());
         bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
-        bindingBuilder.bindToTextField(outputFolder,"outputPath");
+        bindingBuilder.bindToTextField(outputFolder, "outputPath");
     }
 
     protected CodeGeneratorControllerBase getParentController() {
@@ -115,19 +117,24 @@ public abstract class GeneratorController extends CayenneController {
 
         // no destination folder
         if (outputDir == null) {
-            JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
+            JOptionPane.showMessageDialog(
+                    this.getView(),
+                    "Select directory for source files.");
             return null;
         }
 
         // no such folder
         if (!outputDir.exists() && !outputDir.mkdirs()) {
-            JOptionPane.showMessageDialog(this.getView(), "Can't create directory " + outputDir + ". Select a different one.");
+            JOptionPane.showMessageDialog(this.getView(), "Can't create directory "
+                    + outputDir
+                    + ". Select a different one.");
             return null;
         }
 
         // not a directory
         if (!outputDir.isDirectory()) {
-            JOptionPane.showMessageDialog(this.getView(), outputDir + " is not a valid directory.");
+            JOptionPane.showMessageDialog(this.getView(), outputDir
+                    + " is not a valid directory.");
             return null;
         }
 
@@ -175,6 +182,85 @@ public abstract class GeneratorController extends CayenneController {
         return generator;
     }
 
+    public void validateEmbeddable(
+            ValidationResult validationBuffer,
+            Embeddable embeddable) {
+        ValidationFailure embeddableFailure = validateEmbeddable(embeddable);
+        if (embeddableFailure != null) {
+            validationBuffer.addFailure(embeddableFailure);
+            return;
+        }
+
+        for (EmbeddableAttribute attribute : embeddable.getAttributes()) {
+            ValidationFailure failure = validateEmbeddableAttribute(attribute);
+            if (failure != null) {
+                validationBuffer.addFailure(failure);
+                return;
+            }
+        }
+    }
+
+    private ValidationFailure validateEmbeddableAttribute(EmbeddableAttribute attribute) {
+        String name = attribute.getEmbeddable().getClassName();
+
+        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(
+                name,
+                "attribute.name",
+                attribute.getName());
+        if (emptyName != null) {
+            return emptyName;
+        }
+
+        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(
+                name,
+                "attribute.name",
+                attribute.getName());
+        if (badName != null) {
+            return badName;
+        }
+
+        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(
+                name,
+                "attribute.type",
+                attribute.getType());
+        if (emptyType != null) {
+            return emptyType;
+        }
+
+        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(
+                name,
+                "attribute.type",
+                attribute.getType());
+        if (badType != null) {
+            return badType;
+        }
+
+        return null;
+    }
+
+    protected ValidationFailure validateEmbeddable(Embeddable embeddable) {
+
+        String name = embeddable.getClassName();
+
+        ValidationFailure emptyClass = BeanValidationFailure.validateNotEmpty(
+                name,
+                "className",
+                embeddable.getClassName());
+        if (emptyClass != null) {
+            return emptyClass;
+        }
+
+        ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(
+                name,
+                "className",
+                embeddable.getClassName());
+        if (badClass != null) {
+            return badClass;
+        }
+
+        return null;
+    }
+
     public void validateEntity(
             ValidationResult validationBuffer,
             ObjEntity entity,
@@ -208,13 +294,11 @@ public abstract class GeneratorController extends CayenneController {
             }
         }
 
-        {
-            for (ObjRelationship rel : entity.getRelationships()) {
-                ValidationFailure failure = validateRelationship(rel, clientValidation);
-                if (failure != null) {
-                    validationBuffer.addFailure(failure);
-                    return;
-                }
+        for (ObjRelationship rel : entity.getRelationships()) {
+            ValidationFailure failure = validateRelationship(rel, clientValidation);
+            if (failure != null) {
+                validationBuffer.addFailure(failure);
+                return;
             }
         }
     }
@@ -293,17 +377,18 @@ public abstract class GeneratorController extends CayenneController {
 
         return null;
     }
-    
+
     protected ValidationFailure validateEmbeddedAttribute(ObjAttribute attribute) {
 
         String name = attribute.getEntity().getName();
-        
+
         // validate embeddedAttribute and attribute names
-        // embeddedAttribute returned attibute as [name_embeddedAttribute].[name_attribute]
+        // embeddedAttribute returned attibute as
+        // [name_embeddedAttribute].[name_attribute]
         String[] attributes = attribute.getName().split("\\.");
         String nameEmbeddedAttribute = attributes[0];
         int beginIndex = attributes[0].length();
-        String attr = attribute.getName().substring(beginIndex+1);
+        String attr = attribute.getName().substring(beginIndex + 1);
 
         ValidationFailure emptyEmbeddedName = BeanValidationFailure.validateNotEmpty(
                 name,
@@ -312,7 +397,7 @@ public abstract class GeneratorController extends CayenneController {
         if (emptyEmbeddedName != null) {
             return emptyEmbeddedName;
         }
-        
+
         ValidationFailure badEmbeddedName = CodeValidationUtil.validateJavaIdentifier(
                 name,
                 "attribute.name",
@@ -320,7 +405,7 @@ public abstract class GeneratorController extends CayenneController {
         if (badEmbeddedName != null) {
             return badEmbeddedName;
         }
-        
+
         ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(
                 name,
                 "attribute.name",
@@ -328,7 +413,7 @@ public abstract class GeneratorController extends CayenneController {
         if (emptyName != null) {
             return emptyName;
         }
-        
+
         ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(
                 name,
                 "attribute.name",
@@ -501,43 +586,45 @@ public abstract class GeneratorController extends CayenneController {
         }
     }
 
-    private void initOutputFolder(){
+    private void initOutputFolder() {
 
         String path = null;
         if (preferences.getOutputPath() == null) {
             if (System.getProperty("cayenne.cgen.destdir") != null) {
                 setOutputPath(System.getProperty("cayenne.cgen.destdir"));
-            } else {
+            }
+            else {
                 // init default directory..
                 FSPath lastPath = Application
                         .getInstance()
                         .getFrameController()
                         .getLastDirectory();
 
-                path = checkDefaultMavenResourceDir(lastPath,"test");
+                path = checkDefaultMavenResourceDir(lastPath, "test");
 
-                if (path != null || (path=checkDefaultMavenResourceDir(lastPath,"main")) != null) {
+                if (path != null
+                        || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
                     setOutputPath(path);
-                } else {
-                    File lastDir = (lastPath != null)
-                            ? lastPath.getExistingDirectory(false)
-                            : null;
+                }
+                else {
+                    File lastDir = (lastPath != null) ? lastPath
+                            .getExistingDirectory(false) : null;
                     setOutputPath(lastDir != null ? lastDir.getAbsolutePath() : null);
                 }
             }
         }
     }
-    
+
     private String checkDefaultMavenResourceDir(FSPath lastPath, String dirType) {
         String path = lastPath.getPath();
-        String resourcePath = buildFilePath("src",dirType,"resources");
+        String resourcePath = buildFilePath("src", dirType, "resources");
         int idx = path.indexOf(resourcePath);
         if (idx < 0) {
             return null;
         }
-        return path.substring(0,idx)
-                + buildFilePath("src",dirType,"java") +
-                path.substring(idx+resourcePath.length());
+        return path.substring(0, idx)
+                + buildFilePath("src", dirType, "java")
+                + path.substring(idx + resourcePath.length());
     }
 
     private static final String buildFilePath(String... pathElements) {
@@ -545,10 +632,9 @@ public abstract class GeneratorController extends CayenneController {
             return "";
         }
         StringBuilder path = new StringBuilder(pathElements[0]);
-        for(int i=1;i<pathElements.length;i++) {
-            path.append(File.separator).append( pathElements[i]);
+        for (int i = 1; i < pathElements.length; i++) {
+            path.append(File.separator).append(pathElements[i]);
         }
         return path.toString();
     }
-
 }
