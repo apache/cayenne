@@ -26,6 +26,7 @@ CAY-1336 Oracle specific type support (oracle.sql.*), add handlers.
 CAY-1338 Move CayenneUserDir to the Modeler
 CAY-1340 Implement ConfigurationNode / ConfigurationNodeVisitor for the Cayenne project tree, including DataMap objects.
 CAY-1342 Remove wocompat package from Cayenne core
+CAY-1352 in "code generation" dialog add generation embeddables
 
 Bug Fixes Since 3.0:
 
