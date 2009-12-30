@@ -42,7 +42,7 @@ public class CodeGeneratorDialog extends JDialog {
 
     protected JButton generateButton;
     protected JButton cancelButton;
-    protected JLabel entityCount;
+    protected JLabel classesCount;
 
     public CodeGeneratorDialog(Component generatorPanel, Component entitySelectorPanel) {
         super(Application.getFrame());
@@ -50,19 +50,19 @@ public class CodeGeneratorDialog extends JDialog {
         this.tabs = new JTabbedPane(SwingConstants.TOP);
         this.generateButton = new JButton("Generate");
         this.cancelButton = new JButton("Cancel");
-        this.entityCount = new JLabel("No entities selected");
-        entityCount.setFont(entityCount.getFont().deriveFont(10f));
+        this.classesCount = new JLabel("No classes selected");
+        classesCount.setFont(classesCount.getFont().deriveFont(10f));
 
         // assemble
 
         tabs.addTab("Code Generator", generatorPanel);
-        tabs.addTab("Entities", entitySelectorPanel);
+        tabs.addTab("Classes", entitySelectorPanel);
 
         JPanel messages = new JPanel(new BorderLayout());
-        messages.add(entityCount, BorderLayout.WEST);
+        messages.add(classesCount, BorderLayout.WEST);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(entityCount);
+        buttons.add(classesCount);
         buttons.add(Box.createHorizontalStrut(50));
         buttons.add(cancelButton);
         buttons.add(generateButton);
@@ -83,7 +83,7 @@ public class CodeGeneratorDialog extends JDialog {
         return generateButton;
     }
 
-    public JLabel getEntityCount() {
-        return entityCount;
+    public JLabel getClassesCount() {
+        return classesCount;
     }
 }

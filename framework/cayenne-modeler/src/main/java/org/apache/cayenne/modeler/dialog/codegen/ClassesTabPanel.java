@@ -34,29 +34,29 @@ import javax.swing.ScrollPaneConstants;
 
 /**
  */
-public class EntitiesTabPanel extends JPanel {
+public class ClassesTabPanel extends JPanel {
 
     protected JTable table;
     protected JCheckBox checkAll;
     protected JLabel checkAllLabel;
 
-    public EntitiesTabPanel() {
+    public ClassesTabPanel() {
 
         this.table = new JTable();
 
         // TODO: andrus 04/07/2006 - is there an easy way to stick that checkbox in the
         // table header????
         this.checkAll = new JCheckBox();
-        this.checkAllLabel = new JLabel("Check All Entities");
+        this.checkAllLabel = new JLabel("Check All Classes");
 
         checkAll.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent event) {
                 if (checkAll.isSelected()) {
-                    checkAllLabel.setText("Uncheck All Entities");
+                    checkAllLabel.setText("Uncheck All Classess");
                 }
                 else {
-                    checkAllLabel.setText("Check All Entities");
+                    checkAllLabel.setText("Check All Classes");
                 }
             }
         });

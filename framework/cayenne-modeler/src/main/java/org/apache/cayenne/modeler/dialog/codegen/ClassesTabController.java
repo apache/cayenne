@@ -28,17 +28,17 @@ import org.apache.cayenne.swing.TableBindingBuilder;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-public class EntitiesTabController extends CayenneController {
+public class ClassesTabController extends CayenneController {
 
     public static final String GENERATE_PROPERTY = "generate";
 
-    protected EntitiesTabPanel view;
+    protected ClassesTabPanel view;
     protected ObjectBinding tableBinding;
 
-    public EntitiesTabController(CodeGeneratorControllerBase parent) {
+    public ClassesTabController(CodeGeneratorControllerBase parent) {
         super(parent);
 
-        this.view = new EntitiesTabPanel();
+        this.view = new ClassesTabPanel();
         initBindings();
     }
 
@@ -62,25 +62,25 @@ public class EntitiesTabController extends CayenneController {
 
         tableBuilder.addColumn(
                 "",
-                "parent.setCurrentEntity(#item), selected",
+                "parent.setCurrentClass(#item), selected",
                 Boolean.class,
                 true,
                 Boolean.TRUE);
         tableBuilder.addColumn(
-                "Entity",
-                "#item.name",
+                "Class",
+                "parent.getItemName(#item)",
                 String.class,
                 false,
                 "XXXXXXXXXXXXXX");
 
         tableBuilder.addColumn(
                 "Comments, Warnings",
-                "parent.getProblem(#item.name)",
+                "parent.getProblem(#item)",
                 String.class,
                 false,
                 "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
-        this.tableBinding = tableBuilder.bindToTable(view.getTable(), "parent.entities");
+        this.tableBinding = tableBuilder.bindToTable(view.getTable(), "parent.classes");
     }
 
     public boolean isSelected() {
@@ -89,19 +89,19 @@ public class EntitiesTabController extends CayenneController {
 
     public void setSelected(boolean selected) {
         getParentController().setSelected(selected);
-        entitySelectedAction();
+        classSelectedAction();
     }
 
     /**
      * A callback action that updates the state of Select All checkbox.
      */
-    public void entitySelectedAction() {
-        int selectedCount = getParentController().getSelectedEntitiesSize();
+    public void classSelectedAction() {
+        int selectedCount = getParentController().getSelectedEntitiesSize() + getParentController().getSelectedEmbeddablesSize() ;
 
         if (selectedCount == 0) {
             view.getCheckAll().setSelected(false);
         }
-        else if (selectedCount == getParentController().getEntities().size()) {
+        else if (selectedCount == getParentController().getClasses().size()) {
             view.getCheckAll().setSelected(true);
         }
     }

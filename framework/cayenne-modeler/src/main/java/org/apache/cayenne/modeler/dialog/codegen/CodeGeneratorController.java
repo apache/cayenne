@@ -45,13 +45,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
 
     protected CodeGeneratorDialog view;
 
-    protected EntitiesTabController entitySelector;
+    protected ClassesTabController clessSelector;
     protected GeneratorTabController generatorSelector;
 
     public CodeGeneratorController(CayenneController parent, DataMap dataMap) {
         super(parent, dataMap);
 
-        this.entitySelector = new EntitiesTabController(this);
+        this.clessSelector = new ClassesTabController(this);
         this.generatorSelector = new GeneratorTabController(this);
     }
 
@@ -64,7 +64,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         // show dialog even on empty DataMap, as custom generation may still take
         // advantage of it
 
-        view = new CodeGeneratorDialog(generatorSelector.getView(), entitySelector
+        view = new CodeGeneratorDialog(generatorSelector.getView(), clessSelector
                 .getView());
         initBindings();
 
@@ -82,7 +82,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
 
         builder.bindToAction(view.getCancelButton(), "cancelAction()");
         builder.bindToAction(view.getGenerateButton(), "generateAction()");
-        builder.bindToAction(this, "entitySelectedAction()", SELECTED_PROPERTY);
+        builder.bindToAction(this, "classesSelectedAction()", SELECTED_PROPERTY);
         builder.bindToAction(
                 generatorSelector,
                 "generatorSelectedAction()",
@@ -100,10 +100,10 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
                 : PredicateUtils.falsePredicate();
 
         updateSelection(predicate);
-        entitySelector.entitySelectedAction();
+        clessSelector.classSelectedAction();
     }
 
-    public void entitySelectedAction() {
+    public void classesSelectedAction() {
         int size = getSelectedEntitiesSize();
         String label;
 
@@ -117,7 +117,21 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
             label = size + " entities selected";
         }
 
-        view.getEntityCount().setText(label);
+        label = label.concat("; ");
+        
+        int sizeEmb = getSelectedEmbeddablesSize();
+
+        if (sizeEmb == 0) {
+            label = label + "No embeddables selected";
+        }
+        else if (sizeEmb == 1) {
+            label = label + "One embeddable selected";
+        }
+        else {
+            label =label + sizeEmb + " embeddables selected";
+        }
+        
+        view.getClassesCount().setText(label);
     }
 
     public void cancelAction() {
