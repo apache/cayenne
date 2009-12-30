@@ -63,7 +63,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
         this.dataMap = dataMap;
         this.classes = new ArrayList(dataMap.getObjEntities());
-        classes.addAll(new ArrayList(dataMap.getEmbeddables()));
+        this.classes.addAll(new ArrayList(dataMap.getEmbeddables()));
         this.selectedEntities = new HashSet();
         this.selectedEmbeddables = new HashSet();
     }
@@ -138,7 +138,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return modified;
     }
 
-    public Collection<Embeddable> getSelectedEmbeddables() {
+    public List<Embeddable> getSelectedEmbeddables() {
 
         List<Embeddable> selected = new ArrayList<Embeddable>(selectedEmbeddables.size());
 
