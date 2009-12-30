@@ -21,12 +21,14 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.access.types.ByteArrayType;
 
 /**
- * This is handler for Oracle specific type "oracle.sql.BLOB" Oracle official JDBC
- * Driver is mapping SQL BLOB to this type.
+ * This is handler for Oracle specific type "oracle.sql.BLOB" Oracle official JDBC Driver
+ * is mapping SQL BLOB to this type.
+ * 
+ * @since 3.1
  */
-public class OracleBLOBType extends ByteArrayType {
+class OracleBLOBType extends ByteArrayType {
 
-    public OracleBLOBType(boolean trimmingBytes) {
+    OracleBLOBType(boolean trimmingBytes) {
         super(trimmingBytes, true);
     }
 

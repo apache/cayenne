@@ -21,12 +21,14 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.access.types.CharType;
 
 /**
- * This is handler for Oracle specific type "oracle.sql.CLOB" Oracle official JDBC
- * Driver is mapping SQL CLOB to this type.
+ * This is handler for Oracle specific type "oracle.sql.CLOB" Oracle official JDBC Driver
+ * is mapping SQL CLOB to this type.
+ * 
+ * @since 3.1
  */
-public class OracleCLOBType extends CharType {
+class OracleCLOBType extends CharType {
 
-    public OracleCLOBType(boolean trimingChars) {
+    OracleCLOBType(boolean trimingChars) {
         super(trimingChars, true);
     }
 

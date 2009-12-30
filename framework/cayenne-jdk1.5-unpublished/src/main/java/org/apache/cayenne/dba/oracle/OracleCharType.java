@@ -21,12 +21,14 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.access.types.CharType;
 
 /**
- * This is handler for Oracle specific type "oracle.sql.CHAR" Oracle official JDBC
- * Driver is mapping SQL CHAR to this type.
+ * This is handler for Oracle specific type "oracle.sql.CHAR" Oracle official JDBC Driver
+ * is mapping SQL CHAR to this type.
+ * 
+ * @since 3.1
  */
-public class OracleCharType extends CharType {
+class OracleCharType extends CharType {
 
-    public OracleCharType(boolean trimingChars) {
+    OracleCharType(boolean trimingChars) {
         super(trimingChars, false);
     }
 

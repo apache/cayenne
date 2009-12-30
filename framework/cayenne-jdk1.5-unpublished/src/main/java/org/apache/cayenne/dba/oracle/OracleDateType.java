@@ -19,14 +19,15 @@
 package org.apache.cayenne.dba.oracle;
 
 /**
- * This is handler for Oracle specific type "oracle.sql.DATE" Oracle official JDBC
- * Driver is mapping SQL DATE to this type.
+ * This is handler for Oracle specific type "oracle.sql.DATE" Oracle official JDBC Driver
+ * is mapping SQL DATE to this type.
+ * 
+ * @since 3.1
  */
-public class OracleDateType extends OracleUtilDateType {
+class OracleDateType extends OracleUtilDateType {
 
     @Override
     public String getClassName() {
         return "oracle.sql.DATE";
     }
-
 }
