@@ -68,7 +68,7 @@
 			</otherArchives>
 		</mailingList>
 
-		<mailingList>
+		<mailingList> 
 			<name>Cayenne Developer List</name>
 			<post>dev@cayenne.apache.org</post>
 			<subscribe>dev-subscribe@cayenne.apache.org</subscribe>
