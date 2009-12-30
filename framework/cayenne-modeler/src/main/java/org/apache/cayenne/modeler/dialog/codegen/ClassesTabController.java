@@ -21,8 +21,11 @@ package org.apache.cayenne.modeler.dialog.codegen;
 
 import java.awt.Component;
 
+import javax.swing.JLabel;
+
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 import org.apache.commons.collections.Predicate;
@@ -59,7 +62,7 @@ public class ClassesTabController extends CayenneController {
         builder.bindToAction(view.getCheckAll(), "checkAllAction()");
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
-
+        
         tableBuilder.addColumn(
                 "",
                 "parent.setCurrentClass(#item), selected",
@@ -69,7 +72,7 @@ public class ClassesTabController extends CayenneController {
         tableBuilder.addColumn(
                 "Class",
                 "parent.getItemName(#item)",
-                String.class,
+                JLabel.class,
                 false,
                 "XXXXXXXXXXXXXX");
 
@@ -79,8 +82,9 @@ public class ClassesTabController extends CayenneController {
                 String.class,
                 false,
                 "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
+       
         this.tableBinding = tableBuilder.bindToTable(view.getTable(), "parent.classes");
+        view.getTable().getColumnModel().getColumn(1).setCellRenderer(new ImageRendererColumn());
     }
 
     public boolean isSelected() {

@@ -26,10 +26,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.Icon;
+import javax.swing.JLabel;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.collections.Predicate;
@@ -252,10 +256,20 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return dataMap;
     }
 
-    public String getItemName(Object obj) {
+    public JLabel getItemName(Object obj) {
+        String className;
+        Icon icon = null;
         if (obj instanceof Embeddable) {
-            return ((Embeddable) obj).getClassName();
+            className = ((Embeddable) obj).getClassName();
+            icon = CellRenderers.iconForObject(new Embeddable());
+        } else {
+            className = ((ObjEntity) obj).getName();
+            icon = CellRenderers.iconForObject(new ObjEntity());
         }
-        return ((ObjEntity) obj).getName();
+        JLabel labelIcon = new JLabel();
+        labelIcon.setIcon(icon);
+        labelIcon.setVisible(true);
+        labelIcon.setText(className);
+        return labelIcon;
     }
 }

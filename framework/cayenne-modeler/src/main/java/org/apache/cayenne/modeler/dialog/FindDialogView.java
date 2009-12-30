@@ -55,6 +55,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.swing.ImageRendererColumn;
 
 
 /**
@@ -140,7 +141,7 @@ public class FindDialogView extends JDialog {
 
             table = new JTable(tableModel);
 
-            table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
+            table.getColumnModel().getColumn(0).setCellRenderer(new ImageRendererColumn());
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
             InputMap im = table
@@ -227,35 +228,6 @@ public class FindDialogView extends JDialog {
         return result;
     }
 
-}
-
-class ImageRenderer extends DefaultTableCellRenderer {
-
-    JLabel lbl = new JLabel();
-    ImageIcon icon = null;
-
-    ImageRenderer() {
-        super();
-    }
-
-    public Component getTableCellRendererComponent(
-            JTable table,
-            Object value,
-            boolean isSelected,
-            boolean hasFocus,
-            int row,
-            int column) {
-        lbl.setOpaque(true);
-        lbl.setText(((JLabel) value).getText().toString());
-        lbl.setIcon(((JLabel) value).getIcon());
-        lbl.setBorder(BorderFactory.createLineBorder(Color.WHITE, 0));
-        lbl.setBackground(Color.WHITE);
-
-        lbl.setHorizontalAlignment(JLabel.LEFT);
-        lbl.setFont(isSelected ? FindDialog.getFontSelected() : FindDialog.getFont());
-
-        return lbl;
-    }
 }
 
 class TableModel extends javax.swing.table.DefaultTableModel {
