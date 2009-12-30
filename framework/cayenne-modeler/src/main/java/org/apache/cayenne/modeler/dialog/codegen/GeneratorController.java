@@ -503,12 +503,18 @@ public abstract class GeneratorController extends CayenneController {
     /**
      * Returns a predicate for default entity selection in a given mode.
      */
-    public Predicate getDefaultEntityFilter() {
+    public Predicate getDefaultClassFilter() {
         final ObjEntity selectedEntity = Application
                 .getInstance()
                 .getFrameController()
                 .getProjectController()
                 .getCurrentObjEntity();
+
+        final Embeddable selectedEmbeddable = Application
+                .getInstance()
+                .getFrameController()
+                .getProjectController()
+                .getCurrentEmbeddable();
 
         // select a single entity
         if (selectedEntity != null) {
@@ -522,6 +528,18 @@ public abstract class GeneratorController extends CayenneController {
                 }
             };
         }
+        // select a single embeddable
+        else if (selectedEmbeddable != null) {
+            final boolean hasProblem = getParentController().getProblem(
+                    selectedEmbeddable.getClassName()) != null;
+
+            return new Predicate() {
+
+                public boolean evaluate(Object object) {
+                    return !hasProblem && object == selectedEmbeddable;
+                }
+            };
+        }
         // select all entities
         else {
 
@@ -531,6 +549,11 @@ public abstract class GeneratorController extends CayenneController {
                     if (object instanceof ObjEntity) {
                         return getParentController().getProblem(
                                 ((ObjEntity) object).getName()) == null;
+                    }
+                    
+                    if (object instanceof Embeddable) {
+                        return getParentController().getProblem(
+                                ((Embeddable) object).getClassName()) == null;
                     }
 
                     return false;

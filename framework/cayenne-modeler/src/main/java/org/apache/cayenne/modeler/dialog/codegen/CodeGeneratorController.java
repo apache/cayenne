@@ -96,7 +96,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         validate(controller);
 
         Predicate predicate = controller != null
-                ? controller.getDefaultEntityFilter()
+                ? controller.getDefaultClassFilter()
                 : PredicateUtils.falsePredicate();
 
         updateSelection(predicate);
