@@ -21,6 +21,7 @@ Bug Fixes Since 3.0RC1:
 
 CAY-1349 SelectQuery 'fetchSize' setting is not propagated to disjoint prefetches
 CAY-1351 EntityResolver.getEmbeddable(...) always returns null
+CAY-1353 warning "attribute.name" contains invalid character: . in Code generation dialog
 
 ----------------------------------
 Release: 3.0 RC 1
