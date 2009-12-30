@@ -183,8 +183,12 @@ public class OracleAdapter extends JdbcAdapter {
         // override date handler with Oracle handler
         map.registerType(new OracleUtilDateType());
 
-        // add Oracle specific oracle.sql.TIMESTAMP handler
+        // add Oracle driver specific types handlers
         map.registerType(new OracleTimestampType());
+        map.registerType(new OracleBLOBType(true));
+        map.registerType(new OracleCharType(true));
+        map.registerType(new OracleCLOBType(true));
+        map.registerType(new OracleDateType());
 
         // At least on MacOS X, driver does not handle Short and Byte properly
         map.registerType(new ShortType(true));
