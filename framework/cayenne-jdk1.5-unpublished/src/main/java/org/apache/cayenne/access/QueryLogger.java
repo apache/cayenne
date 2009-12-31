@@ -49,6 +49,16 @@ public class QueryLogger {
 
     public static final int TRIM_VALUES_THRESHOLD = 30;
 
+    private static boolean useQueryFormatting = false;
+
+    static {
+        // here we are enabling QueryFormatter
+        String useFormattingProp = System.getProperty("cayenne.query.formatting");
+        if ("TRUE".equalsIgnoreCase(useFormattingProp)) {
+            useQueryFormatting = true;
+        }
+    }
+
     /**
      * @since 1.2
      */
@@ -346,7 +356,8 @@ public class QueryLogger {
      */
     public static void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time) {
         if (isLoggable()) {
-            StringBuffer buf = new StringBuffer(queryStr);
+            StringBuffer buf = new StringBuffer((useQueryFormatting) ? 
+                    QueryFormatter.formatQuery(queryStr) : queryStr);
             buildLog(buf, " [bind: ", "]", attrs, params, isInserting(queryStr));
 
             // log preparation time only if it is something significant
