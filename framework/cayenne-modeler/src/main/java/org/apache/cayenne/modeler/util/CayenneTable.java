@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.Component;
-import java.awt.event.MouseListener;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;

@@ -285,6 +285,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     public void objAttributeChanged(AttributeEvent e) {
+        rebuildTable((ObjEntity) e.getEntity());
         table.select(e.getAttribute());
     }
 
