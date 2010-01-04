@@ -58,7 +58,7 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
-public class EmbeddableAttributeTab extends JPanel implements
+public class EmbeddableAttributeTab extends JPanel implements 
         EmbeddableAttributeListener, EmbeddableDisplayListener, EmbeddableListener,
         ExistingSelectionProcessor {
 
@@ -94,8 +94,10 @@ public class EmbeddableAttributeTab extends JPanel implements
 
         table = new CayenneTable();
 
-        tablePreferences = new TableColumnPreferences(this.getClass(),"embeddable/attributeTable");
-        
+        tablePreferences = new TableColumnPreferences(
+                this.getClass(),
+                "embeddable/attributeTable");
+
         /**
          * Create and install a popup
          */
@@ -183,7 +185,13 @@ public class EmbeddableAttributeTab extends JPanel implements
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
 
-        tablePreferences.bind(table, null, null, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE, true);
+        tablePreferences.bind(
+                table,
+                null,
+                null,
+                null,
+                EmbeddableAttributeTableModel.OBJ_ATTRIBUTE,
+                true);
 
     }
 
@@ -237,15 +245,21 @@ public class EmbeddableAttributeTab extends JPanel implements
         if (embeddable != null) {
             rebuildTable(embeddable);
         }
-
     }
-
+    
     public void embeddableAdded(EmbeddableEvent e, DataMap map) {
+    }
+    
+    public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
     }
 
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
-    }
-
-    public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
+        if (e.getOldName() != null) {
+            ((Embeddable)map.getEmbeddable(e.getOldName())).setClassName(e.getEmbeddable().getClassName());
+            if(map.getEmbeddableMap().containsKey(e.getOldName())){
+                map.removeEmbeddable(e.getOldName());
+                map.addEmbeddable(e.getEmbeddable());
+            }
+        }
     }
 }

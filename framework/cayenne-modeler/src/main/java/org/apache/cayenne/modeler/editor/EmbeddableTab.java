@@ -59,7 +59,6 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     private void initController() {
         mediator.addEmbeddableDisplayListener(this);
-
     }
 
     private void initView() {
