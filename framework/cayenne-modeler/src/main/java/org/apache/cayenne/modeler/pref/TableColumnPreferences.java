@@ -42,7 +42,9 @@ public class TableColumnPreferences extends CayennePreference {
     private static final String ORDER_KEY = "order_";
     private JTable table;
     private int columnCount;
-    
+    private int defaultSortColumn;
+    private boolean defaultSortOrder;
+
     private TableColumnModelListener listener = new TableColumnModelListener() {
 
         public void columnAdded(TableColumnModelEvent e) {
@@ -62,6 +64,7 @@ public class TableColumnPreferences extends CayennePreference {
                 column = table.getColumnModel().getColumn(i);
                 setOrderIndex(column.getModelIndex(), i);
             }
+            updateSort(defaultSortColumn, defaultSortOrder);
         }
 
         public void columnRemoved(TableColumnModelEvent e) {
@@ -103,6 +106,8 @@ public class TableColumnPreferences extends CayennePreference {
             boolean defaultSortOrder) {
         bind(table, minSizes, maxSizes, defaultSizes);
         ((CayenneTable) table).setSortPreferenceSaver(this);
+        this.defaultSortColumn = defaultSortColumn;
+        this.defaultSortOrder = defaultSortOrder;
         updateSort(defaultSortColumn, defaultSortOrder);
     }
 

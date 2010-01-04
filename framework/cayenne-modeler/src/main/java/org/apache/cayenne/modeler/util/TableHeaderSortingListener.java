@@ -40,8 +40,8 @@ public class TableHeaderSortingListener extends MouseAdapter {
 
     }
 
-    public void mousePressed(MouseEvent e) {
-
+    @Override
+    public void mouseClicked(MouseEvent e) {
         int col = header.columnAtPoint(e.getPoint());
         int sortCol = table.convertColumnIndexToModel(col);
         if (((CayenneTableModel) table.getModel()).isColumnSortable(sortCol)) {
@@ -56,6 +56,7 @@ public class TableHeaderSortingListener extends MouseAdapter {
             tableColumnPreferences.setSortOrder(isAscent);
             tableColumnPreferences.setSortColumn(sortCol);
         }
+
     }
 
     public void mouseReleased(MouseEvent e) {

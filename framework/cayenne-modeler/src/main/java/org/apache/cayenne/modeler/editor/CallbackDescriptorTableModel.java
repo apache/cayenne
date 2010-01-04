@@ -27,13 +27,13 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 
-
 /**
  * Table model for displaying methods list for a particular CallbackDescriptor
- *
+ * 
  * @version 1.0 Oct 23, 2007
  */
 public class CallbackDescriptorTableModel extends CayenneTableModel {
+
     private static final int COLUMN_COUNT = 2;
     public static final int METHOD_NUMBER = 0;
     public static final int METHOD_NAME = 1;
@@ -42,29 +42,27 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
 
     /**
      * constructor
-     *
+     * 
      * @param mediator mediator instance
      * @param eventSource event source
      * @param objectList default objects list
      * @param callbackDescriptor callback descriptor instance
      */
-    public CallbackDescriptorTableModel(
-            ProjectController mediator,
-            Object eventSource,
-            List objectList,
-            CallbackDescriptor callbackDescriptor) {
+    public CallbackDescriptorTableModel(ProjectController mediator, Object eventSource,
+            List objectList, CallbackDescriptor callbackDescriptor) {
         super(mediator, eventSource, objectList);
         this.callbackDescriptor = callbackDescriptor;
     }
 
     /**
      * does nothing
+     * 
      * @param newVal newVal
      * @param row row
      * @param col col
      */
     public void setUpdatedValueAt(Object newVal, int row, int col) {
-        //do nothing
+        // do nothing
     }
 
     /**
@@ -83,10 +81,9 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
     }
 
     /**
-     * Returns the number of columns in the model. A
-     * <code>JTable</code> uses this method to determine how many columns it
-     * should create and display by default.
-     *
+     * Returns the number of columns in the model. A <code>JTable</code> uses this method
+     * to determine how many columns it should create and display by default.
+     * 
      * @return the number of columns in the model
      * @see #getRowCount
      */
@@ -94,19 +91,18 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
         return COLUMN_COUNT;
     }
 
-
     /**
      * Returns the value for the cell at <code>columnIndex</code> and
      * <code>rowIndex</code>.
-     *
-     * @param	rowIndex	the row whose value is to be queried
-     * @param	columnIndex 	the column whose value is to be queried
-     * @return	the value Object at the specified cell
+     * 
+     * @param rowIndex the row whose value is to be queried
+     * @param columnIndex the column whose value is to be queried
+     * @return the value Object at the specified cell
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case METHOD_NUMBER:
-                return rowIndex+1;
+                return rowIndex + 1;
             case METHOD_NAME:
                 return getCallbackMethod(rowIndex);
         }
@@ -138,12 +134,18 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
 
     /**
      * all cells are editable
-     *
+     * 
      * @param rowIndex row index
      * @param columnIndex column index
      * @return true
      */
     public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case METHOD_NAME:
+                return true;
+            case METHOD_NUMBER:
+                return false;
+        }
         return true;
     }
 
@@ -155,33 +157,32 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @param col column
      */
     public void setValueAt(Object newVal, int row, int col) {
-        if (col != METHOD_NUMBER) {
-            String method = (String) newVal;
-            if (method != null) {
-                method = method.trim();
-            }
-            String prevMethod = (String) getObjectList().get(row);
+        String method = (String) newVal;
+        if (method != null) {
+            method = method.trim();
+        }
+        String prevMethod = (String) getObjectList().get(row);
 
-            if (method != null && method.length() > 0) {
-                // check that method changed and name is not duplicate
-                if (!method.equals(prevMethod)
-                        && !getCallbackDescriptor().getCallbackMethods().contains(method)) {
-                    // update model
-                    getObjectList().set(row, method);
+        if (method != null && method.length() > 0) {
+            // check that method changed and name is not duplicate
+            if (!method.equals(prevMethod)
+                    && !getCallbackDescriptor().getCallbackMethods().contains(method)) {
+                // update model
+                getObjectList().set(row, method);
 
-                    // update entity
-                    getCallbackDescriptor().setCallbackMethodAt(row, method);
+                // update entity
+                getCallbackDescriptor().setCallbackMethodAt(row, method);
 
-                    fireTableRowsUpdated(row, row);
+                fireTableRowsUpdated(row, row);
 
-                    mediator.fireCallbackMethodEvent(new CallbackMethodEvent(
-                            eventSource,
-                            prevMethod,
-                            method,
-                            MapEvent.CHANGE));
-                }
+                mediator.fireCallbackMethodEvent(new CallbackMethodEvent(
+                        eventSource,
+                        prevMethod,
+                        method,
+                        MapEvent.CHANGE));
             }
         }
+
     }
 
     /**
@@ -200,4 +201,3 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
     public void sortByColumn(int sortCol, boolean isAscent) {
     }
 }
-
