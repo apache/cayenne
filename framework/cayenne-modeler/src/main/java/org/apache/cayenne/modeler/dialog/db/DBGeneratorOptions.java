@@ -70,9 +70,9 @@ public class DBGeneratorOptions extends CayenneController {
         this.tables = new TableSelectorController(parent);
         this.view = new DBGeneratorOptionsView(tables.getView());
         this.connectionInfo = connectionInfo;
-        this.generatorDefaults = (DBGeneratorDefaults) parent
-                .getPreferenceDomainForProject()
-                .getDetail("DbGenerator", DBGeneratorDefaults.class, true);
+        this.generatorDefaults = new DBGeneratorDefaults(parent
+                .getPreferenceForProject()
+                .node("DbGenerator"));
 
         this.view.setTitle(title);
         initController();

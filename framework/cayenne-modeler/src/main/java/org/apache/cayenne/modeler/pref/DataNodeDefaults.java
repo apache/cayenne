@@ -23,6 +23,8 @@ import java.util.prefs.Preferences;
 import org.apache.cayenne.pref.CayennePreferenceForProject;
 
 public class DataNodeDefaults extends CayennePreferenceForProject {
+    
+    private String localDataSource;
 
     public DataNodeDefaults(Preferences pref) {
         super(pref);
@@ -32,11 +34,15 @@ public class DataNodeDefaults extends CayennePreferenceForProject {
 
     public void setLocalDataSource(String localDataSource) {
         if (getCurrentPreference() != null) {
+            this.localDataSource = localDataSource;
             getCurrentPreference().put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
         }
     }
 
     public String getLocalDataSource() {
-        return getCurrentPreference().get(LOCAL_DATA_SOURCE_PROPERTY, null);
+        if(localDataSource == null){
+            localDataSource = getCurrentPreference().get(LOCAL_DATA_SOURCE_PROPERTY, null);
+        }
+        return localDataSource;
     }
 }

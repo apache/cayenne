@@ -18,37 +18,105 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.access.DbGenerator;
+import java.util.prefs.Preferences;
 
-public class DBGeneratorDefaults extends _DBGeneratorDefaults {
+import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.pref.CayennePreferenceForProject;
+
+public class DBGeneratorDefaults extends CayennePreferenceForProject {
+
+    public static final String CREATE_FK_PROPERTY = "createFK";
+    public static final String CREATE_PK_PROPERTY = "createPK";
+    public static final String CREATE_TABLES_PROPERTY = "createTables";
+    public static final String DROP_PK_PROPERTY = "dropPK";
+    public static final String DROP_TABLES_PROPERTY = "dropTables";
+
+    public boolean createFK;
+    public boolean createPK;
+    public boolean createTables;
+    public boolean dropPK;
+    public boolean dropTables;
+
+    public DBGeneratorDefaults(Preferences pref) {
+        super(pref);
+        this.createFK = getCurrentPreference().getBoolean(CREATE_FK_PROPERTY, true);
+        this.createPK = getCurrentPreference().getBoolean(CREATE_PK_PROPERTY, true);
+        this.createTables = getCurrentPreference().getBoolean(
+                CREATE_TABLES_PROPERTY,
+                true);
+        this.dropPK = getCurrentPreference().getBoolean(DROP_PK_PROPERTY, false);
+        this.dropTables = getCurrentPreference().getBoolean(DROP_TABLES_PROPERTY, false);
+    }
+
+    public void setCreateFK(Boolean createFK) {
+        this.createFK = createFK;
+        getCurrentPreference().putBoolean(CREATE_FK_PROPERTY, createFK);
+    }
+
+    public boolean getCreateFK() {
+        return createFK;
+    }
+
+    public void setCreatePK(Boolean createPK) {
+        this.createPK = createPK;
+        getCurrentPreference().putBoolean(CREATE_PK_PROPERTY, createPK);
+    }
+
+    public boolean getCreatePK() {
+        return createPK;
+    }
+
+    public void setCreateTables(Boolean createTables) {
+        this.createTables = createTables;
+        getCurrentPreference().putBoolean(CREATE_TABLES_PROPERTY, createTables);
+    }
+
+    public boolean getCreateTables() {
+        return createTables;
+    }
+
+    public void setDropPK(Boolean dropPK) {
+        this.dropPK = dropPK;
+        getCurrentPreference().putBoolean(DROP_PK_PROPERTY, dropPK);
+    }
+
+    public boolean getDropPK() {
+        return dropPK;
+    }
+
+    public void setDropTables(Boolean dropTables) {
+        this.dropTables = dropTables;
+        getCurrentPreference().putBoolean(DROP_TABLES_PROPERTY, dropTables);
+    }
+
+    public boolean getDropTables() {
+        return dropTables;
+    }
 
     /**
      * Updates DbGenerator settings, consulting its own state.
      */
     public void configureGenerator(DbGenerator generator) {
-        generator
-                .setShouldCreateFKConstraints(booleanForBooleanProperty(CREATE_FK_PROPERTY));
-        generator.setShouldCreatePKSupport(booleanForBooleanProperty(CREATE_PK_PROPERTY));
-        generator
-                .setShouldCreateTables(booleanForBooleanProperty(CREATE_TABLES_PROPERTY));
-        generator.setShouldDropPKSupport(booleanForBooleanProperty(DROP_PK_PROPERTY));
-        generator.setShouldDropTables(booleanForBooleanProperty(DROP_TABLES_PROPERTY));
+        setCreateFK(createFK);
+        setCreatePK(createPK);
+        setCreateTables(createTables);
+        setDropPK(dropPK);
+        setDropTables(dropTables);
+        generator.setShouldCreateFKConstraints(createFK);
+        generator.setShouldCreatePKSupport(createPK);
+        generator.setShouldCreateTables(createTables);
+        generator.setShouldDropPKSupport(dropPK);
+        generator.setShouldDropTables(dropTables);
     }
-    
+
     /**
      * An initialization callback.
      */
-    @Override
     public void prePersist() {
         setCreateFK(Boolean.TRUE);
         setCreatePK(Boolean.TRUE);
         setCreateTables(Boolean.TRUE);
         setDropPK(Boolean.FALSE);
         setDropTables(Boolean.FALSE);
-    }
-
-    protected boolean booleanForBooleanProperty(String property) {
-        Boolean b = (Boolean) readProperty(property);
-        return (b != null) ? b.booleanValue() : false;
     }
 }
