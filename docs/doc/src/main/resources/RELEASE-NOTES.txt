@@ -32,7 +32,6 @@ CAY-1352 in "code generation" dialog add generation embeddables
 Bug Fixes Since 3.0:
 
 CAY-1304 Fix some failures in tests on SQLite
-CAY-1353 warning "attribute.name" contains invalid character: . in Code generation dialog
 
 ----------------------------------
 Release: 3.0 RC 2
@@ -47,6 +46,8 @@ Bug Fixes Since 3.0RC1:
 
 CAY-1349 SelectQuery 'fetchSize' setting is not propagated to disjoint prefetches
 CAY-1351 EntityResolver.getEmbeddable(...) always returns null
+CAY-1353 warning "attribute.name" contains invalid character: . in Code generation dialog
+CAY-1355 Warning if rename Embeddable.
 
 ----------------------------------
 Release: 3.0 RC 1
