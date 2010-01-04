@@ -26,9 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -415,7 +413,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(deleteRulesCombo));
         
-        tablePreferences.bind(table, null, null);
+        tablePreferences.bind(table, null, null, null, ObjRelationshipTableModel.REL_NAME, true);
     }
 
     class EntityRenderer extends StringRenderer {

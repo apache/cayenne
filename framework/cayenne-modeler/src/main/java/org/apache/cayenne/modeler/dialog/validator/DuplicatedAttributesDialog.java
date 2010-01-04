@@ -262,6 +262,15 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         public Class getColumnClass(int column) {
           return String.class;
         }
+
+        @Override
+        public boolean isColumnSortable(int sortCol) {
+            return false;
+        }
+
+        @Override
+        public void sortByColumn(int sortCol, boolean isAscent) {
+        }
     }
 
     public class DuplicatedAttributeInfo {

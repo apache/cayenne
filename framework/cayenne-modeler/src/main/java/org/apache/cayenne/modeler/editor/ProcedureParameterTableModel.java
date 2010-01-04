@@ -272,4 +272,13 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
     public boolean isCellEditable(int row, int col) {
         return col != PARAMETER_NUMBER;
     }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return false;
+    }
+
+    @Override
+    public void sortByColumn(int sortCol, boolean isAscent) {
+    }
 }

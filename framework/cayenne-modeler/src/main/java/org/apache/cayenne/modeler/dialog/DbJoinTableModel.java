@@ -153,4 +153,21 @@ public class DbJoinTableModel extends CayenneTableModel {
 
         return false;
     }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return true;
+    }
+
+    @Override
+    public void sortByColumn(int sortCol, boolean isAscent) {
+        switch(sortCol){
+            case SOURCE:
+                sortByElementProperty("sourceName", isAscent);
+                break;
+            case TARGET:
+                sortByElementProperty("targetName", isAscent);
+                break;
+        }
+    }
 }

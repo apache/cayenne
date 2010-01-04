@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -185,22 +187,26 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
             }
             else if (column == DB_ATTRIBUTE_TYPE) {
 
-                DbEntity currentEnt = ((ObjEntity) attr.getEntity()).getDbEntity();
-                if (currentEnt != null
-                        && currentEnt.getAttributes() != null
-                        && dbAttributeName != null) {
-                    DbAttribute dbAttr = (DbAttribute) currentEnt
-                            .getAttribute(dbAttributeName);
-                    if (dbAttr != null) {
-                        return TypesMapping.getSqlNameByType(dbAttr.getType());
-                    }
-                }
-                return null;
+                return getDBAttrType(dbAttributeName);
             }
             else {
                 return null;
             }
         }
+    }
+
+    private String getDBAttrType(String dbAttributeName) {
+        DbEntity currentEnt = ((ObjEntity) attr.getEntity()).getDbEntity();
+        if (currentEnt != null
+                && currentEnt.getAttributes() != null
+                && dbAttributeName != null) {
+            DbAttribute dbAttr = (DbAttribute) currentEnt
+                    .getAttribute(dbAttributeName);
+            if (dbAttr != null) {
+                return TypesMapping.getSqlNameByType(dbAttr.getType());
+            }
+        }
+        return null;
     }
 
     public String getColumnName(int column) {
@@ -248,6 +254,67 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
         return attr;
     }
 
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return true;
+    }
+
+    @Override
+    public void sortByColumn(final int sortCol, boolean isAscent) {
+        Collections.sort(embeddableList, new Comparator<EmbeddableAttribute>(){
+
+                    public int compare(EmbeddableAttribute o1, EmbeddableAttribute o2) {
+                        Integer compareObjAttributesVal = compareObjAttributes(o1, o2);
+                        if(compareObjAttributesVal!=null){
+                            return compareObjAttributesVal;
+                        }
+                        String valueToCompare1 = "";
+                        String valueToCompare2 = ""; 
+                        switch(sortCol){
+                            case OBJ_ATTRIBUTE:
+                                valueToCompare1=o1.getName();
+                                valueToCompare2=o2.getName();
+                                break;
+                            case OBJ_ATTRIBUTE_TYPE:
+                                valueToCompare1=o1.getType();
+                                valueToCompare2=o2.getType();
+                                break;
+                            case DB_ATTRIBUTE:
+                                valueToCompare1=o1.getDbAttributeName();
+                                valueToCompare2=o2.getDbAttributeName();
+                                break;
+                            case DB_ATTRIBUTE_TYPE:
+                                valueToCompare1=getDBAttrType(o1.getDbAttributeName());
+                                valueToCompare2=getDBAttrType(o2.getDbAttributeName());
+                                break;
+                        }
+                        
+                        return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)? 1 : valueToCompare1.compareTo(valueToCompare2);
+                    }
+                    
+                });
+        
+        if(!isAscent){
+            Collections.reverse(embeddableList);
+        }
+        
+            
+        
+    }
+    
+    private Integer compareObjAttributes(EmbeddableAttribute o1, EmbeddableAttribute o2) {
+        if ((o1 == null && o2 == null) || o1 == o2) {
+            return 0;
+        }
+        else if (o1 == null && o2 != null) {
+            return -1;
+        }
+        else if (o1 != null && o2 == null) {
+            return 1;
+        }
+        return null;
+    }
+
 }
 
 class BoxCellRenderer implements ListCellRenderer {
@@ -283,4 +350,5 @@ class BoxCellRenderer implements ListCellRenderer {
     public void setNotActiveColumn(int notActiveColumn) {
         this.notActiveColumn = notActiveColumn;
     }
+   
 }

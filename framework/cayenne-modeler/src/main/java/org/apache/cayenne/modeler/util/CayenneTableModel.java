@@ -62,7 +62,7 @@ public abstract class CayenneTableModel extends AbstractTableModel {
         this.mediator = mediator;
         this.objectList = objectList;
 
-        orderList();
+        //orderList();
     }
 
     public void setValueAt(Object newVal, int row, int col) {
@@ -206,7 +206,7 @@ public abstract class CayenneTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    class PropertyComparator implements Comparator {
+    protected class PropertyComparator implements Comparator {
 
         Method getter;
 
@@ -248,12 +248,26 @@ public abstract class CayenneTableModel extends AbstractTableModel {
             try {
                 Comparable p1 = (Comparable) getter.invoke(o1);
                 Comparable p2 = (Comparable) getter.invoke(o2);
-
-                return (p1 == null) ? -1 : p1.compareTo(p2);
+                
+                return (p1 == null) ? -1 : (p2 == null)? 1 : p1.compareTo(p2);
             }
             catch (Exception ex) {
                 throw new CayenneRuntimeException("Error reading property.", ex);
             }
         }
     }
+
+    public abstract void sortByColumn(int sortCol, boolean isAscent);
+    
+    public abstract boolean isColumnSortable(int sortCol);
+    
+    public void sortByElementProperty(String string, boolean isAscent) {
+        Collections.sort(objectList, new PropertyComparator(
+                string,
+                getElementsClass()));
+        if(!isAscent){
+            Collections.reverse(objectList);
+        }
+    }
+    
 }

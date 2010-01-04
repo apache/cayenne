@@ -216,4 +216,27 @@ public class DbRelationshipTableModel extends CayenneTableModel {
         }
         return true;
     }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return true;
+    }
+
+    @Override
+    public void sortByColumn(int sortCol, boolean isAscent) {
+        switch (sortCol) {
+            case NAME:
+                sortByElementProperty("name", isAscent);
+                break;
+            case TARGET:
+                sortByElementProperty("targetEntityName", isAscent);
+                break;
+            case TO_DEPENDENT_KEY:
+                sortByElementProperty("toDependentPK", isAscent);
+                break;
+            case CARDINALITY:
+                sortByElementProperty("toMany", isAscent);
+                break;
+        }
+    }
 }

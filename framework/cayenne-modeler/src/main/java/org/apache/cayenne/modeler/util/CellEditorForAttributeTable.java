@@ -57,7 +57,7 @@ public class CellEditorForAttributeTable implements TableCellEditor {
                 boolean isSelected,
                 int row,
                 int column) {
-
+            column = table.convertColumnIndexToView(column);
             return editor.getTableCellEditorComponent(
                     table,
                     value,

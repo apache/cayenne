@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.editor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 
 import org.apache.cayenne.map.Embeddable;
@@ -52,7 +51,7 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
         this.embeddable = embeddable;
 
         // order using local comparator
-        Collections.sort(objectList, new EmbeddableAttributeComparator());
+       // Collections.sort(objectList, new EmbeddableAttributeComparator());
     }
 
     public EmbeddableAttribute getEmbeddableAttribute(int row) {
@@ -155,6 +154,26 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
 
         private int getWeight(EmbeddableAttribute a) {
             return a.getEmbeddable() == embeddable ? 1 : -1;
+        }
+    }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return true;
+    }
+
+    @Override
+    public void sortByColumn(int sortCol, boolean isAscent) {
+        switch(sortCol){
+            case OBJ_ATTRIBUTE:
+                sortByElementProperty("name", isAscent);
+                break;
+            case OBJ_ATTRIBUTE_TYPE:
+                sortByElementProperty("type", isAscent);
+                break;
+            case DB_ATTRIBUTE:
+                sortByElementProperty("dbAttributeName", isAscent);
+                break;
         }
     }
 }

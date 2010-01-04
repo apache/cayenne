@@ -39,6 +39,8 @@ import javax.swing.JTextField;
 
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.dbentity.DbAttributeTableModel;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -71,7 +73,8 @@ public class ObjAttributeInfoDialogView extends JDialog {
     protected JPanel typeManagerPane;
 
     protected CayenneTable overrideAttributeTable;
-
+    protected TableColumnPreferences tablePreferences;
+    
     ProjectController mediator;
 
     static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
@@ -98,7 +101,8 @@ public class ObjAttributeInfoDialogView extends JDialog {
         type.getRenderer();
 
         overrideAttributeTable = new CayenneTable();
-
+        tablePreferences = new TableColumnPreferences(getClass(), "overrideAttributeTable");
+        
         saveButton.setEnabled(false);
         cancelButton.setEnabled(true);
         selectPathButton.setEnabled(false);
@@ -233,6 +237,10 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
     public CayenneTable getOverrideAttributeTable() {
         return overrideAttributeTable;
+    }
+    
+    public TableColumnPreferences getTablePreferences() {
+        return tablePreferences;
     }
 
     public JComboBox getType() {

@@ -23,9 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -302,7 +300,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
         table.getSelectionModel().addListSelectionListener(this);
         
-        tablePreferences.bind(table, null, null);
+        tablePreferences.bind(table, null, null, null, DbRelationshipTableModel.NAME, true);
     }
 
     public void dbEntityChanged(EntityEvent e) {

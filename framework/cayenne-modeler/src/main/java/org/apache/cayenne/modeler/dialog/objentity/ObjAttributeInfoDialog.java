@@ -326,30 +326,34 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                 .getOverrideAttributeTable()
                 .getColumnModel()
                 .getColumn(OverrideEmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
-        nameColumn.setMinWidth(180);
         nameColumn.setCellRenderer(renderer);
 
         TableColumn typeColumn = view
                 .getOverrideAttributeTable()
                 .getColumnModel()
                 .getColumn(OverrideEmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        typeColumn.setMinWidth(200);
         typeColumn.setCellRenderer(renderer);
 
         TableColumn dbAttrColumn = view
                 .getOverrideAttributeTable()
                 .getColumnModel()
                 .getColumn(OverrideEmbeddableAttributeTableModel.DB_ATTRIBUTE);
-        dbAttrColumn.setMinWidth(180);
         dbAttrColumn.setCellRenderer(renderer);
 
         TableColumn dbAttrTypeColumn = view
                 .getOverrideAttributeTable()
                 .getColumnModel()
                 .getColumn(OverrideEmbeddableAttributeTableModel.DB_ATTRIBUTE_TYPE);
-        dbAttrTypeColumn.setMinWidth(180);
         dbAttrTypeColumn.setCellRenderer(renderer);
-
+        
+        view.getTablePreferences().bind(
+                view.getOverrideAttributeTable(),
+                null,
+                null,
+                null,
+                OverrideEmbeddableAttributeTableModel.OBJ_ATTRIBUTE,
+                true);
+        
         initComboBoxes();
 
     }
@@ -364,7 +368,8 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                 embeddableModel.setCellEditor(nameAttr, view.getOverrideAttributeTable());
                 embeddableModel.setComboBoxes(
                         nameAttr,
-                        OverrideEmbeddableAttributeTableModel.DB_ATTRIBUTE);
+                        view.getOverrideAttributeTable().
+                        convertColumnIndexToView(OverrideEmbeddableAttributeTableModel.DB_ATTRIBUTE));
             }
         }
     }

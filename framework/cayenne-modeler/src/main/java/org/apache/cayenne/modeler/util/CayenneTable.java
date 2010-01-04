@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.Component;
+import java.awt.event.MouseListener;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;
@@ -27,8 +28,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
+
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration
@@ -36,13 +43,33 @@ import javax.swing.text.JTextComponent;
  * 
  */
 public class CayenneTable extends JTable {
-
+    
+    private SortButtonRenderer renderer = new SortButtonRenderer();
+    protected TableHeaderSortingListener tableHeaderListener;
+    
     public CayenneTable() {
         super();
         this.setRowHeight(25);
         this.setRowMargin(3);
-        
+        JTableHeader header = getTableHeader();
+        tableHeaderListener = new TableHeaderSortingListener(header,renderer);
+        header.addMouseListener(tableHeaderListener);
         setSelectionModel(new CayenneListSelectionModel());
+    }
+
+    @Override
+    public void setModel(TableModel dataModel) {
+
+        super.setModel(dataModel);
+        if (!(dataModel instanceof DefaultTableModel)) {
+            TableColumnModel model = getColumnModel();
+
+            for (int i = 0; i < getColumnCount(); i++) {
+                model.getColumn(i).setHeaderRenderer(renderer);
+
+            }
+
+        }
     }
 
     @Override
@@ -191,5 +218,13 @@ public class CayenneTable extends JTable {
                 super.fireValueChanged(firstIndex, lastIndex, isAdjusting);
             }
         }
+    }
+
+    public void sort(int column, boolean isAscend) {
+        tableHeaderListener.sortByDefinedColumn(convertColumnIndexToView(column), column, isAscend);
+    }
+
+    public void setSortPreferenceSaver(TableColumnPreferences tableColumnPreferences) {
+        tableHeaderListener.setPreferences(tableColumnPreferences);
     }
 }

@@ -183,7 +183,7 @@ public class EmbeddableAttributeTab extends JPanel implements
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
 
-        tablePreferences.bind(table, null, null);
+        tablePreferences.bind(table, null, null, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE, true);
 
     }
 

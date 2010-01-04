@@ -87,8 +87,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     protected void orderList() {
         // NOOP
     }
-    
-    
+
     public CayenneTable getTable() {
         return table;
     }
@@ -182,46 +181,10 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         else {
             DbAttribute dbAttribute = attribute.getDbAttribute();
             if (column == DB_ATTRIBUTE) {
-
-                if (dbAttribute == null) {
-                    if (!attribute.isInherited()
-                            && ((ObjEntity) attribute.getEntity()).isAbstract()) {
-                        return attribute.getDbAttributePath();
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else if (attribute.getDbAttributePath() != null
-                        && attribute.getDbAttributePath().contains(".")) {
-                    return attribute.getDbAttributePath();
-                }
-                return dbAttribute.getName();
+                return getDBAttribute(attribute, dbAttribute);
             }
             else if (column == DB_ATTRIBUTE_TYPE) {
-                int type;
-                if (dbAttribute == null) {
-                    if (!(attribute instanceof EmbeddedAttribute)) {
-                        try {
-                            type = TypesMapping.getSqlTypeByJava(getAttribute(row)
-                                    .getJavaClass());
-                            // have to catch the exception here to make sure that
-                            // exceptional situations
-                            // (class doesn't exist, for example) don't prevent the gui
-                            // from properly updating.
-                        }
-                        catch (CayenneRuntimeException cre) {
-                            return null;
-                        }
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else {
-                    type = dbAttribute.getType();
-                }
-                return TypesMapping.getSqlNameByType(type);
+                return getDBAttributeType(attribute, dbAttribute);
             }
             else {
                 return null;
@@ -229,10 +192,53 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         }
     }
 
-    public CellEditorForAttributeTable setCellEditor(Collection<String> nameAttr, CayenneTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table, CayenneWidgetFactory.createComboBox(
-                nameAttr,
-                true));
+    private String getDBAttribute(ObjAttribute attribute, DbAttribute dbAttribute) {
+        if (dbAttribute == null) {
+            if (!attribute.isInherited()
+                    && ((ObjEntity) attribute.getEntity()).isAbstract()) {
+                return attribute.getDbAttributePath();
+            }
+            else {
+                return null;
+            }
+        }
+        else if (attribute.getDbAttributePath() != null
+                && attribute.getDbAttributePath().contains(".")) {
+            return attribute.getDbAttributePath();
+        }
+        return dbAttribute.getName();
+    }
+
+    private String getDBAttributeType(ObjAttribute attribute, DbAttribute dbAttribute) {
+        int type;
+        if (dbAttribute == null) {
+            if (!(attribute instanceof EmbeddedAttribute)) {
+                try {
+                    type = TypesMapping.getSqlTypeByJava(attribute.getJavaClass());
+                    // have to catch the exception here to make sure that
+                    // exceptional situations
+                    // (class doesn't exist, for example) don't prevent the gui
+                    // from properly updating.
+                }
+                catch (CayenneRuntimeException cre) {
+                    return null;
+                }
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            type = dbAttribute.getType();
+        }
+        return TypesMapping.getSqlNameByType(type);
+    }
+
+    public CellEditorForAttributeTable setCellEditor(
+            Collection<String> nameAttr,
+            CayenneTable table) {
+        this.cellEditor = new CellEditorForAttributeTable(table, CayenneWidgetFactory
+                .createComboBox(nameAttr, true));
         this.table = table;
         return cellEditor;
     }
@@ -260,24 +266,30 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             attribute.setType(value != null ? value.toString() : null);
             String newType = attribute.getType();
             String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
-            Collection<String> registeredTypesList =  Arrays.asList(registeredTypes); ;
-            if(oldType!=null && newType!=null && ! (registeredTypesList.contains(oldType) == registeredTypesList.contains(newType))){
+            Collection<String> registeredTypesList = Arrays.asList(registeredTypes);
+            ;
+            if (oldType != null
+                    && newType != null
+                    && !(registeredTypesList.contains(oldType) == registeredTypesList
+                            .contains(newType))) {
                 ObjAttribute attributeNew;
-                
-                ArrayList<Embeddable> embs = mediator.getEmbeddableNamesInCurRentDataDomain();
+
+                ArrayList<Embeddable> embs = mediator
+                        .getEmbeddableNamesInCurRentDataDomain();
                 ArrayList<String> embNames = new ArrayList<String>();
                 Iterator<Embeddable> it = embs.iterator();
                 while (it.hasNext()) {
                     embNames.add(it.next().getClassName());
                 }
-                
-                if(registeredTypesList.contains(newType) || !embNames.contains(newType)){
+
+                if (registeredTypesList.contains(newType) || !embNames.contains(newType)) {
                     attributeNew = new ObjAttribute();
-                } else {
+                }
+                else {
                     attributeNew = new EmbeddedAttribute();
                     attribute.setDbAttributePath(null);
                 }
-                
+
                 attributeNew.setDbAttributePath(attribute.getDbAttributePath());
                 attributeNew.setName(attribute.getName());
                 attributeNew.setEntity(attribute.getEntity());
@@ -287,11 +299,8 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                 Entity ent = attribute.getEntity();
                 ent.removeAttribute(attribute.getName());
                 ent.addAttribute(attributeNew);
-                
-                mediator.fireObjEntityEvent(new EntityEvent(
-                        this,
-                        ent,
-                        MapEvent.CHANGE));
+
+                mediator.fireObjEntityEvent(new EntityEvent(this, ent, MapEvent.CHANGE));
 
                 EntityDisplayEvent ev = new EntityDisplayEvent(this, mediator
                         .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
@@ -299,7 +308,11 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
                 mediator.fireObjEntityDisplayEvent(ev);
 
-                mediator.fireObjAttributeEvent(new AttributeEvent(this, attributeNew, ent, MapEvent.CHANGE));
+                mediator.fireObjAttributeEvent(new AttributeEvent(
+                        this,
+                        attributeNew,
+                        ent,
+                        MapEvent.CHANGE));
 
                 AttributeDisplayEvent eventAttr = new AttributeDisplayEvent(
                         this,
@@ -310,7 +323,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
                 mediator.fireObjAttributeDisplayEvent(eventAttr);
             }
-            
+
             fireTableCellUpdated(row, column);
         }
         else if (column == LOCKING) {
@@ -386,7 +399,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                 }
 
                 // If path is flattened attribute, update the JComboBox
-                if (path != null && path.split("\\.").length > 1 && dbEntity!=null) {
+                if (path != null && path.split("\\.").length > 1 && dbEntity != null) {
                     setComboBoxes(nameAttr, column);
                 }
             }
@@ -394,7 +407,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         }
         mediator.fireObjAttributeEvent(event);
     }
-    
+
     public void setComboBoxes(Collection<String> nameAttr, int column) {
         int count = getRowCount();
         for (int i = 0; i < count; i++) {
@@ -402,18 +415,17 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                     && getAttribute(i).getDbAttributePath().contains(".")) {
                 Collection<String> attributeComboForRow = new ArrayList<String>();
                 attributeComboForRow.addAll(nameAttr);
-                attributeComboForRow
-                        .add(getAttribute(i).getDbAttributePath());
-                JComboBox comboBoxForRow = CayenneWidgetFactory
-                        .createComboBox(attributeComboForRow, true);
+                attributeComboForRow.add(getAttribute(i).getDbAttributePath());
+                JComboBox comboBoxForRow = CayenneWidgetFactory.createComboBox(
+                        attributeComboForRow,
+                        true);
 
                 cellEditor.setEditorAt(new Integer(i), new DefaultCellEditor(
                         comboBoxForRow));
-                
+
             }
         }
-        table.getColumnModel().getColumn(column).setCellEditor(
-                cellEditor);
+        table.getColumnModel().getColumn(column).setCellEditor(cellEditor);
     }
 
     public boolean isCellEditable(int row, int col) {
@@ -444,6 +456,77 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         private int getWeight(Attribute a) {
             return a.getEntity() == entity ? 1 : -1;
         }
+    }
+
+    @Override
+    public void sortByColumn(final int sortCol, boolean isAscent) {
+        switch (sortCol) {
+            case INHERITED:
+                sortByElementProperty("inherited", isAscent);
+                break;
+            case OBJ_ATTRIBUTE:
+                sortByElementProperty("name", isAscent);
+                break;
+            case OBJ_ATTRIBUTE_TYPE:
+                sortByElementProperty("type", isAscent);
+                break;
+            case LOCKING:
+                sortByElementProperty("usedForLocking", isAscent);
+                break;
+            case DB_ATTRIBUTE:
+            case DB_ATTRIBUTE_TYPE:
+                Collections.sort(objectList, new Comparator<ObjAttribute>() {
+
+                    public int compare(ObjAttribute o1, ObjAttribute o2) {
+                        Integer compareObjAttributesVal = compareObjAttributes(o1, o2);
+                        if (compareObjAttributesVal != null) {
+                            return compareObjAttributesVal;
+                        }
+
+                        String valToCompare1 = getDBAttribute(o1, o1.getDbAttribute());
+                        String valToCompare2 = getDBAttribute(o2, o2.getDbAttribute());
+                        switch (sortCol) {
+                            case DB_ATTRIBUTE:
+                                valToCompare1 = getDBAttribute(o1, o1.getDbAttribute());
+                                valToCompare2 = getDBAttribute(o2, o2.getDbAttribute());
+                                break;
+                            case DB_ATTRIBUTE_TYPE:
+                                valToCompare1 = getDBAttributeType(o1, o1
+                                        .getDbAttribute());
+                                valToCompare2 = getDBAttributeType(o2, o2
+                                        .getDbAttribute());
+                                break;
+                        }
+                        return (valToCompare1 == null) ? -1 : (valToCompare2 == null)
+                                ? 1
+                                : valToCompare1.compareTo(valToCompare2);
+                    }
+
+                });
+                if (!isAscent) {
+                    Collections.reverse(objectList);
+                }
+                break;
+
+        }
+    }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return true;
+    }
+
+    private Integer compareObjAttributes(ObjAttribute o1, ObjAttribute o2) {
+        if ((o1 == null && o2 == null) || o1 == o2) {
+            return 0;
+        }
+        else if (o1 == null && o2 != null) {
+            return -1;
+        }
+        else if (o1 != null && o2 == null) {
+            return 1;
+        }
+        return null;
     }
 
 }

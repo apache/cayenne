@@ -32,7 +32,9 @@ import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -230,6 +232,6 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         table.getSelectionModel().addListSelectionListener(this);
         
-        tablePreferences.bind(table, null, null);
+        tablePreferences.bind(table, null, null, null, model.nameColumnInd(), true);
     }
 }

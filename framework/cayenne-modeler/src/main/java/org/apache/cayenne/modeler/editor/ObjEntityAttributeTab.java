@@ -330,7 +330,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
     protected void setUpTableStructure(ObjAttributeTableModel model) {
        
-        int inheritanceColumnWidth = 20;
+        int inheritanceColumnWidth = 30;
                
         Map<Integer, Integer> minSizes = new HashMap<Integer, Integer>();
         Map<Integer, Integer> maxSizes = new HashMap<Integer, Integer>();
@@ -340,7 +340,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         
         initComboBoxes(model);
 
-        tablePreferences.bind(table, minSizes, maxSizes);
+        tablePreferences.bind(table, minSizes, maxSizes, null, ObjAttributeTableModel.OBJ_ATTRIBUTE, true);
     }
 
     /**

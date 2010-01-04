@@ -307,7 +307,7 @@ public class ProcedureParameterTab
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
         
-        tablePreferences.bind(table, null, null);
+        tablePreferences.bind(table, null, null, null);
     }
 
     public void procedureParameterAdded(ProcedureParameterEvent e) {

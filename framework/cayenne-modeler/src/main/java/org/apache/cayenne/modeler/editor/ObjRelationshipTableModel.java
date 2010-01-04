@@ -124,25 +124,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             return relationship.isUsedForLocking() ? Boolean.TRUE : Boolean.FALSE;
         }
         else if (column == REL_SEMANTICS) {
-            String semantics = relationship.isToMany() ? "to many" : "to one";
-            if (relationship.isReadOnly()) {
-                semantics += ", read-only";
-            }
-
-            if (relationship.isToMany()) {
-                String collection = "list";
-                if (relationship.getCollectionType() != null) {
-                    int dot = relationship.getCollectionType().lastIndexOf('.');
-                    collection = relationship
-                            .getCollectionType()
-                            .substring(dot + 1)
-                            .toLowerCase();
-                }
-
-                semantics += ", " + collection;
-            }
-
-            return semantics;
+            return getSemantics(relationship);
         }
         else if (column == REL_DELETERULE) {
             return DeleteRule.deleteRuleName(relationship.getDeleteRule());
@@ -150,6 +132,28 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         else {
             return null;
         }
+    }
+
+    private String getSemantics(ObjRelationship relationship) {
+        String semantics = relationship.isToMany() ? "to many" : "to one";
+        if (relationship.isReadOnly()) {
+            semantics += ", read-only";
+        }
+
+        if (relationship.isToMany()) {
+            String collection = "list";
+            if (relationship.getCollectionType() != null) {
+                int dot = relationship.getCollectionType().lastIndexOf('.');
+                collection = relationship
+                        .getCollectionType()
+                        .substring(dot + 1)
+                        .toLowerCase();
+            }
+
+            semantics += ", " + collection;
+        }
+
+        return semantics;
     }
 
     @Override
@@ -237,5 +241,65 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         private int getWeight(ObjRelationship r) {
             return r.getSourceEntity() == entity ? 1 : -1;
         }
+    }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return true;
+    }
+
+    @Override
+    public void sortByColumn(final int sortCol, boolean isAscent) {
+        switch (sortCol) {
+            case REL_NAME:
+                sortByElementProperty("name", isAscent);
+                break;
+            case REL_TARGET:
+                sortByElementProperty("targetEntityName", isAscent);
+                break;
+            case REL_LOCKING:
+                sortByElementProperty("usedForLocking", isAscent);
+                break;
+            case REL_SEMANTICS:
+            case REL_DELETERULE:
+                Collections.sort(objectList, new Comparator<ObjRelationship>() {
+
+                    public int compare(ObjRelationship o1, ObjRelationship o2) {
+                        if ((o1 == null && o2 == null) || o1 == o2) {
+                            return 0;
+                        }
+                        else if (o1 == null && o2 != null) {
+                            return -1;
+                        }
+                        else if (o1 != null && o2 == null) {
+                            return 1;
+                        }
+                        
+                        String valueToCompare1 = "";
+                        String valueToCompare2 = "";
+                        switch(sortCol){
+                            case REL_SEMANTICS:
+                                valueToCompare1 = getSemantics(o1);
+                                valueToCompare2 = getSemantics(o2);
+                                break;
+                            case REL_DELETERULE:
+                                valueToCompare1 = DeleteRule.deleteRuleName(o1.getDeleteRule());
+                                valueToCompare2 = DeleteRule.deleteRuleName(o2.getDeleteRule());
+                                
+                                break;
+                        }
+                        return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)
+                                ? 1
+                                : valueToCompare1.compareTo(valueToCompare2);
+                    }
+
+                });
+                if (!isAscent) {
+                    Collections.reverse(objectList);
+                }
+                break;
+            
+        }
+
     }
 }

@@ -21,6 +21,8 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -330,5 +332,58 @@ public class DbAttributeTableModel extends CayenneTableModel {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return true;
+    }
+
+    @Override
+    public void sortByColumn(int sortCol, boolean isAscent) {
+        switch(sortCol){
+            case DB_ATTRIBUTE_NAME:
+                sortByElementProperty("name", isAscent);
+                break;
+            case DB_ATTRIBUTE_TYPE:
+                Collections.sort(objectList, new Comparator<DbAttribute>() {
+
+                    public int compare(DbAttribute o1, DbAttribute o2) {
+                        if ((o1 == null && o2 == null) || o1 == o2) {
+                            return 0;
+                        }
+                        else if (o1 == null && o2 != null) {
+                            return -1;
+                        }
+                        else if (o1 != null && o2 == null) {
+                            return 1;
+                        }
+                        
+                        String attrType1 = getAttributeType(o1);
+                        String attrType2 = getAttributeType(o2);
+                        
+                        return (attrType1 == null) ? -1 : (attrType2 == null)
+                                ? 1
+                                : attrType1.compareTo(attrType2);
+                    }
+
+                });
+                if (!isAscent) {
+                    Collections.reverse(objectList);
+                }
+                break;
+            case DB_ATTRIBUTE_PRIMARY_KEY:
+                sortByElementProperty("primaryKey", isAscent);
+                break;
+            case DB_ATTRIBUTE_SCALE:
+                sortByElementProperty("scale", isAscent);
+                break;
+            case DB_ATTRIBUTE_MANDATORY:
+                sortByElementProperty("mandatory", isAscent);
+                break;
+            case DB_ATTRIBUTE_MAX:
+                sortByElementProperty("maxLength", isAscent);
+                break;
+        }
     }
 }

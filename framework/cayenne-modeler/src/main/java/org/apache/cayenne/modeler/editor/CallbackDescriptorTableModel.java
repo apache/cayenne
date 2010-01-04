@@ -34,8 +34,9 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
  * @version 1.0 Oct 23, 2007
  */
 public class CallbackDescriptorTableModel extends CayenneTableModel {
-    private static final int COLUMN_COUNT = 1;
-    public static final int METHOD_NAME = 0;
+    private static final int COLUMN_COUNT = 2;
+    public static final int METHOD_NUMBER = 0;
+    public static final int METHOD_NAME = 1;
     protected ObjEntity entity;
     protected CallbackDescriptor callbackDescriptor;
 
@@ -104,6 +105,8 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
+            case METHOD_NUMBER:
+                return rowIndex+1;
             case METHOD_NAME:
                 return getCallbackMethod(rowIndex);
         }
@@ -124,6 +127,8 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      */
     public String getColumnName(int column) {
         switch (column) {
+            case METHOD_NUMBER:
+                return "No.";
             case METHOD_NAME:
                 return "Method";
         }
@@ -144,36 +149,37 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
 
     /**
      * stores edited value
-     *
+     * 
      * @param newVal new value
      * @param row row
      * @param col column
      */
     public void setValueAt(Object newVal, int row, int col) {
-        String method = (String) newVal;
-        if (method != null) {
-            method = method.trim();
-        }
-        String prevMethod = (String) getObjectList().get(row);
+        if (col != METHOD_NUMBER) {
+            String method = (String) newVal;
+            if (method != null) {
+                method = method.trim();
+            }
+            String prevMethod = (String) getObjectList().get(row);
 
-        if (method != null && method.length() > 0) {
-            //check that method changed and name is not duplicate
-            if (!method.equals(prevMethod) &&
-                !getCallbackDescriptor().getCallbackMethods().contains(method)) {
-                //update model
-                getObjectList().set(row, method);
+            if (method != null && method.length() > 0) {
+                // check that method changed and name is not duplicate
+                if (!method.equals(prevMethod)
+                        && !getCallbackDescriptor().getCallbackMethods().contains(method)) {
+                    // update model
+                    getObjectList().set(row, method);
 
-                //update entity
-                getCallbackDescriptor().setCallbackMethodAt(row, method);
+                    // update entity
+                    getCallbackDescriptor().setCallbackMethodAt(row, method);
 
-                fireTableRowsUpdated(row, row);
+                    fireTableRowsUpdated(row, row);
 
-                mediator.fireCallbackMethodEvent(new CallbackMethodEvent(
-                        eventSource,
-                        prevMethod,
-                        method,
-                        MapEvent.CHANGE
-                ));
+                    mediator.fireCallbackMethodEvent(new CallbackMethodEvent(
+                            eventSource,
+                            prevMethod,
+                            method,
+                            MapEvent.CHANGE));
+                }
             }
         }
     }
@@ -183,6 +189,15 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      */
     public CallbackDescriptor getCallbackDescriptor() {
         return callbackDescriptor;
+    }
+
+    @Override
+    public boolean isColumnSortable(int sortCol) {
+        return false;
+    }
+
+    @Override
+    public void sortByColumn(int sortCol, boolean isAscent) {
     }
 }
 
