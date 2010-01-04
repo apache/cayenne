@@ -248,6 +248,13 @@ public class EmbeddableAttributeTab extends JPanel implements
     }
 
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
+        if (e.getOldName() != null) {
+            ((Embeddable)map.getEmbeddable(e.getOldName())).setClassName(e.getEmbeddable().getClassName());
+            if(map.getEmbeddableMap().containsKey(e.getOldName())){
+                map.removeEmbeddable(e.getOldName());
+                map.addEmbeddable(e.getEmbeddable());
+            }
+        }
     }
 
     public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
