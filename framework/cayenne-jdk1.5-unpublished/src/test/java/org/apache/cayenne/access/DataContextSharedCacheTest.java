@@ -594,7 +594,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         String originalName = artist.getArtistName();
 
         // create alternative context
-        DataContext altContext = mirrorDataContext(context);
+        final DataContext altContext = mirrorDataContext(context);
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
@@ -604,8 +604,6 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
         context.invalidateObjects(Collections.singletonList(artist));
-        // wait long enough for non-blocking events to be processed
-        Thread.sleep(10);
 
         // original context
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
@@ -613,9 +611,17 @@ public class DataContextSharedCacheTest extends MultiContextCase {
                 artist.getObjectId()));
 
         // alternate context
-        assertEquals(PersistenceState.HOLLOW, altArtist.getPersistenceState());
-        assertNull(altContext.getObjectStore().getDataRowCache().getCachedSnapshot(
-                altArtist.getObjectId()));
+        new ThreadedTestHelper() {
+
+            @Override
+            protected void assertResult() throws Exception {
+                assertEquals(PersistenceState.HOLLOW, altArtist.getPersistenceState());
+                assertNull(altContext
+                        .getObjectStore()
+                        .getDataRowCache()
+                        .getCachedSnapshot(altArtist.getObjectId()));
+            }
+        }.assertWithTimeout(5000);
 
         // resolve object
         assertEquals(originalName, altArtist.getArtistName());
