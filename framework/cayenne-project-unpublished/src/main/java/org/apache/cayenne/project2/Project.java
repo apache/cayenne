@@ -19,6 +19,8 @@
 package org.apache.cayenne.project2;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.resource.Resource;
+
 
 /**
  * A model of a Cayenne mapping project. A project consists of descriptors for
@@ -32,7 +34,11 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 // nodes to avoid attaching them to descriptors?
 public class Project {
 
+    protected boolean modified;
+    
     protected ConfigurationNode rootNode;
+    private ConfigurationSourceGetter configurationSourceGetter = new ConfigurationSourceGetter();
+
 
     public Project(ConfigurationNode rootNode) {
         this.rootNode = rootNode;
@@ -40,5 +46,27 @@ public class Project {
 
     public ConfigurationNode getRootNode() {
         return rootNode;
+    }
+    
+    /**
+     * Returns <code>true</code> if the project is modified.
+     */
+    public boolean isModified() {
+        return modified;
+    }
+
+    /**
+     * Updates "modified" state of the project.
+     */
+    public void setModified(boolean modified) {
+        this.modified = modified;
+    }
+    
+    public Resource getConfigurationResource(ConfigurationNode configNode) {
+        return configNode.acceptVisitor(configurationSourceGetter);
+    }
+    
+    public  Resource getConfigurationResource() {
+        return rootNode.acceptVisitor(configurationSourceGetter);
     }
 }

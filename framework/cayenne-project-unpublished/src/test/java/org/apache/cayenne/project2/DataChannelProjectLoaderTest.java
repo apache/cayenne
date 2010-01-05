@@ -69,5 +69,8 @@ public class DataChannelProjectLoaderTest extends TestCase {
         DataChannelDescriptor rootNode = (DataChannelDescriptor) project.getRootNode();
         assertNotNull(rootNode);
         assertSame(rootSource, rootNode.getConfigurationSource());
+        
+        assertNotNull(project.getConfigurationResource());
+        assertEquals(project.getConfigurationResource(), rootSource);
     }
 }

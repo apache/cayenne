@@ -36,6 +36,10 @@ public class ProjectTest extends TestCase {
 
         Project project = new Project(object);
         assertSame(object, project.getRootNode());
+        
+        assertFalse(project.isModified());
+        
+        project.setModified(true);
+        assertTrue(project.isModified());
     }
-
 }
