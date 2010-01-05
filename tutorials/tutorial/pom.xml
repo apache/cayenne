@@ -50,6 +50,13 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.22</version>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
