@@ -25,8 +25,8 @@ import java.awt.event.ComponentEvent;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.map.event.DataNodeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;

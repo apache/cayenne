@@ -17,43 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.event;
+package org.apache.cayenne.configuration.event;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.event.MapEvent;
 
 /**
  */
-public class DataMapEventTest extends TestCase {
+public class DataNodeEventTest extends TestCase {
 
-   public void testConstructor1() throws Exception {
-    	Object src = new Object();
-    	DataMap d = new DataMap("abc");
-    	DataMapEvent e = new DataMapEvent(src, d);
-    	
-    	assertSame(src, e.getSource());
-    	assertSame(d, e.getDataMap());
+    public void testNewName() throws Exception {
+        MapEvent event = new DataNodeEvent(new Object(), new DataNode("someName"));
+        assertEquals("someName", event.getNewName());
     }
-    
-    public void testConstructor2() throws Exception  {
-    	Object src = new Object();
-    	DataMap d = new DataMap("abc");
-    	DataMapEvent e = new DataMapEvent(src, d, "oldname");
-    	
-    	assertSame(src, e.getSource());
-    	assertSame(d, e.getDataMap());
-    	assertEquals("oldname", e.getOldName());
+
+    public void testNoNameChange() throws Exception {
+        MapEvent event = new DataNodeEvent(new Object(), new DataNode("someName"));
+        assertFalse(event.isNameChange());
+        
+        event.setOldName("someOldName");
+        assertTrue(event.isNameChange());
     }
-    
-    public void testDataMap() throws Exception  {
-    	Object src = new Object();
-   	    DataMap d = new DataMap("abc");
-    	DataMapEvent e = new DataMapEvent(src, null);
-    	
-    	e.setDataMap(d);
-    	assertSame(d, e.getDataMap());
+
+    public void testNameChange() throws Exception {
+        MapEvent event = new DataNodeEvent(
+                new Object(),
+                new DataNode("someName"),
+                "someOldName");
+        assertEquals("someName", event.getNewName());
+        assertTrue(event.isNameChange());
     }
+
 }
-

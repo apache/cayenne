@@ -17,19 +17,19 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
 import java.util.EventListener;
 
-/** For managing the changes in the DataNode */
-public interface DataNodeListener extends EventListener
+/** For managing the changes in the Domain */
+public interface DomainListener extends EventListener
 {
-	/** DataNode property (usually - name) changed. */
-	public void dataNodeChanged(DataNodeEvent e);
+	/** Domain property (usually - name) changed. */
+	public void domainChanged(DomainEvent e);
 	/** New data map has been created/added.*/
-	public void dataNodeAdded(DataNodeEvent e);
-	/** DataNode has been removed.*/
-	public void dataNodeRemoved(DataNodeEvent e);
+	public void domainAdded(DomainEvent e);
+	/** Domain has been removed.*/
+	public void domainRemoved(DomainEvent e);
 	
 }
 

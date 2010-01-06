@@ -42,8 +42,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 
+import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.EntityTreeModel;

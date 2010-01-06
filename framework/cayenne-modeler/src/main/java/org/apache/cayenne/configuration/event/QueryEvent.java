@@ -17,9 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.query.Query;
 
 /**

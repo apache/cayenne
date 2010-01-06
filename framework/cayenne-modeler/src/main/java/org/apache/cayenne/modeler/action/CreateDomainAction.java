@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.event.DomainEvent;
+import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;

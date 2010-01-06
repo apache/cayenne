@@ -41,7 +41,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import org.apache.cayenne.map.event.QueryEvent;
+import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;

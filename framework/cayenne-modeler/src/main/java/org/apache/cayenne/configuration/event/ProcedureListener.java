@@ -17,36 +17,27 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
-import junit.framework.TestCase;
+import java.util.EventListener;
 
-import org.apache.cayenne.access.DataNode;
-
-/**
+/** 
+ * Listener for Procedure events.
+ * 
  */
-public class DataNodeEventTest extends TestCase {
+public interface ProcedureListener extends EventListener {
+    /** 
+     * Procedure changed. 
+     */
+    public void procedureChanged(ProcedureEvent e);
 
-    public void testNewName() throws Exception {
-        MapEvent event = new DataNodeEvent(new Object(), new DataNode("someName"));
-        assertEquals("someName", event.getNewName());
-    }
+    /** 
+     * New Procedure has been created. 
+     */
+    public void procedureAdded(ProcedureEvent e);
 
-    public void testNoNameChange() throws Exception {
-        MapEvent event = new DataNodeEvent(new Object(), new DataNode("someName"));
-        assertFalse(event.isNameChange());
-        
-        event.setOldName("someOldName");
-        assertTrue(event.isNameChange());
-    }
-
-    public void testNameChange() throws Exception {
-        MapEvent event = new DataNodeEvent(
-                new Object(),
-                new DataNode("someName"),
-                "someOldName");
-        assertEquals("someName", event.getNewName());
-        assertTrue(event.isNameChange());
-    }
-
+    /** 
+     * Procedure has been removed.
+     */
+    public void procedureRemoved(ProcedureEvent e);
 }

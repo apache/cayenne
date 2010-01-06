@@ -20,9 +20,9 @@
 package org.apache.cayenne.modeler.dialog.query;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateQueryUndoableEdit;

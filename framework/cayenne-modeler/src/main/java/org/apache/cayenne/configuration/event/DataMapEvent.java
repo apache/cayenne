@@ -17,51 +17,53 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.event.MapEvent;
 
 /** 
- * Represents events resulted from DataNode changes 
- * in CayenneModeler.
+ * An events describing a DataMap change.
  */
-public class DataNodeEvent extends MapEvent {
-	protected DataNode dataNode;
+public class DataMapEvent extends MapEvent {
+	protected DataMap dataMap;
 
-	/** Creates a node change event. */
-	public DataNodeEvent(Object src, DataNode node) {
+	/** Creates a DataMap change event. */
+	public DataMapEvent(Object src, DataMap dataMap) {
 		super(src);
-		setDataNode(node);
+		this.dataMap = dataMap;
 	}
 
-	/** Creates a node event of a specified type. */
-	public DataNodeEvent(Object src, DataNode node, int id) {
-		this(src, node);
+	/** Creates a DataMap event of a specified type. */
+	public DataMapEvent(Object src, DataMap dataMap, int id) {
+		this(src, dataMap);
 		setId(id);
 	}
 
-	/** Creates a node name change event.*/
-	public DataNodeEvent(Object src, DataNode node, String oldName) {
-		this(src, node);
+	/** Creates a DataMap name change event.*/
+	public DataMapEvent(Object src, DataMap dataMap, String oldName) {
+		this(src, dataMap);
 		setOldName(oldName);
 	}
 
-	/** Returns node object associated with this event. */
-	public DataNode getDataNode() {
-		return dataNode;
-	}
-
-	/**
-	 * Sets the dataNode.
-	 * 
-	 * @param dataNode The dataNode to set
+	/** 
+	 * Returns DataMap associated with this event. 
 	 */
-	public void setDataNode(DataNode dataNode) {
-		this.dataNode = dataNode;
+	public DataMap getDataMap() {
+		return dataMap;
 	}
 	
-	@Override
-    public String getNewName() {
-		return (dataNode != null) ? dataNode.getName() : null;
+	/**
+	 * Sets DataMap associated with this event.
+	 * 
+	 * @param dataMap The dataMap to set
+	 */
+	public void setDataMap(DataMap dataMap) {
+		this.dataMap = dataMap;
 	}
+
+    @Override
+    public String getNewName() {
+        return (dataMap != null) ? dataMap.getName() : null;
+    }
 }

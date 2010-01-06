@@ -17,52 +17,44 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.event.MapEvent;
 
 /** 
- * An events describing a DataMap change.
+ * An event generated when a Procedure object is added to a DataMap, 
+ * removed from a DataMap, or changed within a DataMap.
+ * 
  */
-public class DataMapEvent extends MapEvent {
-	protected DataMap dataMap;
+public class ProcedureEvent extends MapEvent {
+    protected Procedure procedure;
 
-	/** Creates a DataMap change event. */
-	public DataMapEvent(Object src, DataMap dataMap) {
-		super(src);
-		this.dataMap = dataMap;
-	}
+    public ProcedureEvent(Object source, Procedure procedure) {
+        super(source);
+        setProcedure(procedure);
+    }
 
-	/** Creates a DataMap event of a specified type. */
-	public DataMapEvent(Object src, DataMap dataMap, int id) {
-		this(src, dataMap);
-		setId(id);
-	}
+    public ProcedureEvent(Object source, Procedure procedure, String oldName) {
+        this(source, procedure);
+        setOldName(oldName);
+    }
 
-	/** Creates a DataMap name change event.*/
-	public DataMapEvent(Object src, DataMap dataMap, String oldName) {
-		this(src, dataMap);
-		setOldName(oldName);
-	}
+    public ProcedureEvent(Object source, Procedure procedure, int type) {
+        this(source, procedure);
+        setId(type);
+    }
 
-	/** 
-	 * Returns DataMap associated with this event. 
-	 */
-	public DataMap getDataMap() {
-		return dataMap;
-	}
-	
-	/**
-	 * Sets DataMap associated with this event.
-	 * 
-	 * @param dataMap The dataMap to set
-	 */
-	public void setDataMap(DataMap dataMap) {
-		this.dataMap = dataMap;
-	}
+    public Procedure getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(Procedure procedure) {
+        this.procedure = procedure;
+    }
 
     @Override
     public String getNewName() {
-        return (dataMap != null) ? dataMap.getName() : null;
+        return (procedure != null) ? procedure.getName() : null;
     }
 }

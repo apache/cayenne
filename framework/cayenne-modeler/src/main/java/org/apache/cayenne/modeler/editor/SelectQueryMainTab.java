@@ -33,12 +33,12 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;

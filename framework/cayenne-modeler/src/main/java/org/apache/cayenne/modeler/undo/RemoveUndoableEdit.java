@@ -30,6 +30,7 @@ import javax.swing.undo.CannotUndoException;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -38,7 +39,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.event.DataNodeEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;

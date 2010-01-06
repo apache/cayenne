@@ -40,11 +40,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.event.DataMapEvent;
-import org.apache.cayenne.map.event.DataMapListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ActionManager;

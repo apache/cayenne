@@ -36,7 +36,7 @@ import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.OSQueryCacheFactory;
 import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.map.event.DomainEvent;
+import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.datadomain.CacheSyncConfigController;

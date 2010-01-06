@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.event;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.event.DomainEvent;
+import org.apache.cayenne.configuration.event.DomainEvent;
 
 /**
  */

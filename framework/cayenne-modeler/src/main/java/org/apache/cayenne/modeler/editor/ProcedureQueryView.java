@@ -34,9 +34,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;

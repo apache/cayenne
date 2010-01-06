@@ -17,27 +17,27 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
 import java.util.EventListener;
 
 /** 
- * Listener for Procedure events.
+ * Listener for ProcedureParameterEvents.
  * 
  */
-public interface ProcedureListener extends EventListener {
+public interface ProcedureParameterListener extends EventListener {
     /** 
-     * Procedure changed. 
-     */
-    public void procedureChanged(ProcedureEvent e);
+      *  Called when procedure parameter has changed. 
+      */
+    public void procedureParameterChanged(ProcedureParameterEvent e);
 
     /** 
-     * New Procedure has been created. 
+     *  Called when new procedure parameter has been created. 
      */
-    public void procedureAdded(ProcedureEvent e);
+    public void procedureParameterAdded(ProcedureParameterEvent e);
 
     /** 
-     * Procedure has been removed.
+     * Called when procedure parameter has been removed.
      */
-    public void procedureRemoved(ProcedureEvent e);
+    public void procedureParameterRemoved(ProcedureParameterEvent e);
 }

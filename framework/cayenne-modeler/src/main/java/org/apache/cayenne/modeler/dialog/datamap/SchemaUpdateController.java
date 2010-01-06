@@ -21,11 +21,11 @@ package org.apache.cayenne.modeler.dialog.datamap;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.ProcedureEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
 import org.scopemvc.core.Control;

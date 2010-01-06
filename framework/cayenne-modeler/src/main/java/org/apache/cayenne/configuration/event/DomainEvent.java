@@ -17,27 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
-import java.util.EventListener;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.map.event.MapEvent;
 
 /** 
- * Listener for ProcedureParameterEvents.
+ * Represents events resulted from DataDomain changes 
+ * in CayenneModeler.
  * 
  */
-public interface ProcedureParameterListener extends EventListener {
-    /** 
-      *  Called when procedure parameter has changed. 
-      */
-    public void procedureParameterChanged(ProcedureParameterEvent e);
+public class DomainEvent extends MapEvent {
+	/** Creates a domain change event. */
+	public DomainEvent(Object src, DataDomain domain) {
+		super(src);
+		setDomain(domain);
+	}
 
-    /** 
-     *  Called when new procedure parameter has been created. 
-     */
-    public void procedureParameterAdded(ProcedureParameterEvent e);
+	/** Creates a domain event of a specified type. */
+	public DomainEvent(Object src, DataDomain domain, int id) {
+		this(src, domain);
+		setId(id);
+	}
 
-    /** 
-     * Called when procedure parameter has been removed.
-     */
-    public void procedureParameterRemoved(ProcedureParameterEvent e);
+	/** Creates a domain name change event.*/
+	public DomainEvent(Object src, DataDomain domain, String oldName) {
+		this(src, domain);	
+		setOldName(oldName);
+	}
+
+	@Override
+    public String getNewName() {
+		return (domain != null) ? domain.getName() : null;
+	}
 }

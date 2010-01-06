@@ -22,9 +22,9 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.query.QueryTypeController;

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
-import org.apache.cayenne.map.event.DomainEvent;
+import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -40,13 +40,13 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.configuration.event.ProcedureEvent;
+import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
+import org.apache.cayenne.configuration.event.ProcedureParameterListener;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.event.ProcedureEvent;
-import org.apache.cayenne.map.event.ProcedureParameterEvent;
-import org.apache.cayenne.map.event.ProcedureParameterListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.CopyProcedureParameterAction;

@@ -39,7 +39,7 @@ import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.DBCPDataSourceFactory;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.conf.JNDIDataSourceFactory;
-import org.apache.cayenne.map.event.DataNodeEvent;
+import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;

@@ -17,36 +17,52 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.event.MapEvent;
 
 /** 
- * Represents events resulted from DataDomain changes 
+ * Represents events resulted from DataNode changes 
  * in CayenneModeler.
- * 
  */
-public class DomainEvent extends MapEvent {
-	/** Creates a domain change event. */
-	public DomainEvent(Object src, DataDomain domain) {
+public class DataNodeEvent extends MapEvent {
+	protected DataNode dataNode;
+
+	/** Creates a node change event. */
+	public DataNodeEvent(Object src, DataNode node) {
 		super(src);
-		setDomain(domain);
+		setDataNode(node);
 	}
 
-	/** Creates a domain event of a specified type. */
-	public DomainEvent(Object src, DataDomain domain, int id) {
-		this(src, domain);
+	/** Creates a node event of a specified type. */
+	public DataNodeEvent(Object src, DataNode node, int id) {
+		this(src, node);
 		setId(id);
 	}
 
-	/** Creates a domain name change event.*/
-	public DomainEvent(Object src, DataDomain domain, String oldName) {
-		this(src, domain);	
+	/** Creates a node name change event.*/
+	public DataNodeEvent(Object src, DataNode node, String oldName) {
+		this(src, node);
 		setOldName(oldName);
 	}
 
+	/** Returns node object associated with this event. */
+	public DataNode getDataNode() {
+		return dataNode;
+	}
+
+	/**
+	 * Sets the dataNode.
+	 * 
+	 * @param dataNode The dataNode to set
+	 */
+	public void setDataNode(DataNode dataNode) {
+		this.dataNode = dataNode;
+	}
+	
 	@Override
     public String getNewName() {
-		return (domain != null) ? domain.getName() : null;
+		return (dataNode != null) ? dataNode.getName() : null;
 	}
 }

@@ -17,28 +17,19 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.configuration.event;
 
 import java.util.EventListener;
 
-/**
- * Listener for QueryEvents.
- * 
- * @since 1.1
- */
-public interface QueryListener extends EventListener {
-    /** 
-     * Query changed. 
-     */
-    public void queryChanged(QueryEvent e);
-
-    /** 
-     * New Query has been created. 
-     */
-    public void queryAdded(QueryEvent e);
-
-    /** 
-     * Query has been removed.
-     */
-    public void queryRemoved(QueryEvent e);
+/** For managing the changes in the DataNode */
+public interface DataNodeListener extends EventListener
+{
+	/** DataNode property (usually - name) changed. */
+	public void dataNodeChanged(DataNodeEvent e);
+	/** New data map has been created/added.*/
+	public void dataNodeAdded(DataNodeEvent e);
+	/** DataNode has been removed.*/
+	public void dataNodeRemoved(DataNodeEvent e);
+	
 }
+

@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.event.DomainEvent;
-import org.apache.cayenne.map.event.DomainListener;
+import org.apache.cayenne.configuration.event.DomainEvent;
+import org.apache.cayenne.configuration.event.DomainListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.jgraph.JGraph;
 

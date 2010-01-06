@@ -29,8 +29,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.event.ProcedureEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;

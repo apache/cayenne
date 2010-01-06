@@ -23,10 +23,10 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.event.ProcedureParameterEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;

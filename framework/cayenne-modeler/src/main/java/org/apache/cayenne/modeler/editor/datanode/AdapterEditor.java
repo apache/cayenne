@@ -24,9 +24,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.event.DataNodeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
