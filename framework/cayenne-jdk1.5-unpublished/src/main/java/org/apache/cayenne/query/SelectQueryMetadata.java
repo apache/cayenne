@@ -144,5 +144,9 @@ class SelectQueryMetadata extends BaseQueryMetadata {
         if (pathSplitAliases == null) {
             pathSplitAliases = new HashMap<String, String>();
         }
+
+        for (String alias : aliases) {
+            pathSplitAliases.put(alias, path);
+        }
     }
 }
