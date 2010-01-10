@@ -277,4 +277,24 @@ public class EJBQLQueryTest extends CayenneCase {
             "select g from Gallery g inner join g.paintingArray p where p.toArtist.artistName like '%a%'");
         context.performQuery(query);
     }
+    
+    public void testRelationshipWhereClause() throws Exception {
+        deleteTestData();
+        ObjectContext context = createDataContext();
+        
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("a");
+        Painting p = context.newObject(Painting.class);
+        p.setPaintingTitle("p");
+        p.setToArtist(a);
+        context.commitChanges();
+        
+        EJBQLQuery query = new EJBQLQuery(
+            "select p from Painting p where p.toArtist=:a");
+        query.setParameter("a", a);
+        
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(1, paintings.size());
+        assertSame(p, paintings.get(0));
+    }
 }
