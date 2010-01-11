@@ -278,6 +278,28 @@ public class EJBQLQueryTest extends CayenneCase {
         context.performQuery(query);
     }
     
+    public void testJoinAndCount() {
+        ObjectContext context = createDataContext();
+        
+        EJBQLQuery query = new EJBQLQuery(
+            "select count(p) from Painting p where p.toGallery.galleryName LIKE '%a%' AND (" +
+            "p.paintingTitle like '%a%' or " +
+            "p.toArtist.artistName like '%a%'" +
+            ")");
+        context.performQuery(query);
+    }
+    
+//    SELECT COUNT(p) from Product p where p.vsCatalog.id = 1 and
+//    (
+//    p.displayName like '%rimadyl%'
+//    or p.manufacturer.name like '%rimadyl%'
+//    or p.description like '%rimadyl%'
+//    or p.longdescription like '%rimadyl%'
+//    or p.longdescription2 like '%rimadyl%'
+//    or p.manufacturerPartNumber like '%rimadyl%'
+//    or p.partNumber like '%rimadyl%'
+//    ) 
+    
     public void testRelationshipWhereClause() throws Exception {
         deleteTestData();
         ObjectContext context = createDataContext();
