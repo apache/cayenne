@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
-  project-version="3.0.0.1">
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+	>
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationship"/>
 	<db-entity name="CLOB_DETAIL">
 		<db-attribute name="CLOB_DETAIL_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -71,6 +71,11 @@
 	<db-entity name="FLATTENED_TEST_3">
 		<db-attribute name="FT2_ID" type="INTEGER"/>
 		<db-attribute name="FT3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="FLATTENED_TEST_4">
+		<db-attribute name="FT3_ID" type="INTEGER"/>
+		<db-attribute name="FT4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
 	<db-entity name="ID_MAP_TO_MANY">
@@ -162,6 +167,9 @@
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="FlattenedTest3" className="org.apache.cayenne.testdo.relationship.FlattenedTest3" dbEntityName="FLATTENED_TEST_3">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="FlattenedTest4" className="org.apache.cayenne.testdo.relationship.FlattenedTest4" dbEntityName="FLATTENED_TEST_4">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="IdMapToMany" className="org.apache.cayenne.testdo.relationship.IdMapToMany" dbEntityName="ID_MAP_TO_MANY">
@@ -276,8 +284,14 @@
 	<db-relationship name="complexJoins" source="FLATTENED_TEST_3" target="COMPLEX_JOIN" toMany="true">
 		<db-attribute-pair source="FT3_ID" target="FT3_FK"/>
 	</db-relationship>
+	<db-relationship name="ft4Array" source="FLATTENED_TEST_3" target="FLATTENED_TEST_4" toMany="true">
+		<db-attribute-pair source="FT3_ID" target="FT3_ID"/>
+	</db-relationship>
 	<db-relationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2" toMany="false">
 		<db-attribute-pair source="FT2_ID" target="FT2_ID"/>
+	</db-relationship>
+	<db-relationship name="toFT3" source="FLATTENED_TEST_4" target="FLATTENED_TEST_3" toMany="false">
+		<db-attribute-pair source="FT3_ID" target="FT3_ID"/>
 	</db-relationship>
 	<db-relationship name="targets" source="ID_MAP_TO_MANY" target="ID_MAP_TO_MANY_TARGET" toMany="true">
 		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
@@ -352,10 +366,13 @@
 	<obj-relationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" db-relationship-path="ft2Array"/>
 	<obj-relationship name="ft3Array" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="ft2Array.ft3Array"/>
 	<obj-relationship name="ft3OverComplex" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="complexJoins.toFT3"/>
+	<obj-relationship name="ft4ArrayFor1" source="FlattenedTest1" target="FlattenedTest4" db-relationship-path="ft2Array.ft3Array.ft4Array"/>
 	<obj-relationship name="ft3Array" source="FlattenedTest2" target="FlattenedTest3" db-relationship-path="ft3Array"/>
 	<obj-relationship name="toFT1" source="FlattenedTest2" target="FlattenedTest1" db-relationship-path="toFT1"/>
+	<obj-relationship name="ft4Array" source="FlattenedTest3" target="FlattenedTest4" db-relationship-path="ft4Array"/>
 	<obj-relationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" db-relationship-path="toFT2.toFT1"/>
 	<obj-relationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" db-relationship-path="toFT2"/>
+	<obj-relationship name="toFT3" source="FlattenedTest4" target="FlattenedTest3" db-relationship-path="toFT3"/>
 	<obj-relationship name="targets" source="IdMapToMany" target="IdMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>
 	<obj-relationship name="mapToMany" source="IdMapToManyTarget" target="IdMapToMany" db-relationship-path="mapToMany"/>
 	<obj-relationship name="targets" source="MapToMany" target="MapToManyTarget" collection-type="java.util.Map" map-key="name" db-relationship-path="targets"/>

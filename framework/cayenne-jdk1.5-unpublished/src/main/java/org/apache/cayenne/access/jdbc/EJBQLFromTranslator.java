@@ -53,7 +53,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
 
         String id = expression.getId();
-
+        
         if (lastId != null) {
             context.append(',');
             context.markCurrentPosition(EJBQLJoinAppender.makeJoinTailMarker(lastId));

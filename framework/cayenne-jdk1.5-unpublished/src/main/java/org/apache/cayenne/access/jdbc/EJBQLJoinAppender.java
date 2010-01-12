@@ -99,6 +99,7 @@ public class EJBQLJoinAppender {
         }
 
         // TODO: andrus, 4/8/2007 - support for flattened relationships
+        // 11/01/2010 support for flattened relationships is represented below 
         DbRelationship incomingDB = joinRelationships.get(0);
 
         // TODO: andrus, 1/6/2008 - move reusable join check here...
@@ -107,9 +108,10 @@ public class EJBQLJoinAppender {
         String tableName;
 
         if (sourceEntity instanceof DbEntity) {
-           tableName = ((DbEntity) sourceEntity).getFullyQualifiedName();
-        } else {
-           tableName = sourceEntity.getName();
+            tableName = ((DbEntity) sourceEntity).getFullyQualifiedName();
+        }
+        else {
+            tableName = sourceEntity.getName();
         }
 
         String sourceAlias = context.getTableAlias(lhsId.getEntityId(), tableName);
@@ -121,47 +123,110 @@ public class EJBQLJoinAppender {
         try {
 
             context.append(" ").append(semantics);
-            String targetAlias = appendTable(rhsId);
-            context.append(" ON (");
+            String targetAlias = "";
+            if (joinRelationships.size() > 1) {
+                // if size of relationship list greater than 1,
+                // it's a flattened relationship
+                context.append(" ");
 
-            Iterator<DbJoin> it = incomingDB.getJoins().iterator();
-            if (it.hasNext()) {
-                DbJoin dbJoin = it.next();
-                context
-                        .append(sourceAlias)
-                        .append('.')
-                        .append(dbJoin.getSourceName())
-                        .append(" = ")
-                        .append(targetAlias)
-                        .append('.')
-                        .append(dbJoin.getTargetName());
+                for (int i = 1; i < joinRelationships.size(); i++) {
+                    DbRelationship dbRelationship = joinRelationships.get(i);
+
+                    String subquerySourceTableName = dbRelationship
+                            .getSourceEntity()
+                            .getName();
+                    String subquerySourceAlias = context.getTableAlias(
+                            subquerySourceTableName,
+                            subquerySourceTableName);
+
+                    String subqueryTargetTableName = dbRelationship.getTargetEntityName();
+                    
+                    String subqueryTargetAlias = "";
+                    if(i==joinRelationships.size()-1){
+                        // it's the last table alias
+                        subqueryTargetAlias = context.getTableAlias(rhsId.getEntityId(), subqueryTargetTableName);
+                    } else {
+                        subqueryTargetAlias = context.getTableAlias(
+                                subqueryTargetTableName,
+                                subqueryTargetTableName);
+                    }
+                    if (i == 1) {
+                        // first apply the joins defined in query
+                        context.append(subquerySourceTableName).append(' ').append(
+                                subquerySourceAlias);
+
+                        generateJoiningExpression(
+                                incomingDB,
+                                sourceAlias,
+                                subquerySourceAlias);
+
+                    }
+
+                    context.append(" JOIN ");
+                    context.append(subqueryTargetTableName).append(' ').append(
+                            subqueryTargetAlias);
+                    generateJoiningExpression(
+                            dbRelationship,
+                            subquerySourceAlias,
+                            subqueryTargetAlias);
+                }
+
+            }
+            else {
+                // non-flattened relationship
+                targetAlias = appendTable(rhsId);
+                // apply the joins defined in query
+                generateJoiningExpression(incomingDB, sourceAlias, targetAlias);
             }
 
-            while (it.hasNext()) {
-                context.append(", ");
-                DbJoin dbJoin = it.next();
-                context
-                        .append(sourceAlias)
-                        .append('.')
-                        .append(dbJoin.getSourceName())
-                        .append(" = ")
-                        .append(targetAlias)
-                        .append('.')
-                        .append(dbJoin.getTargetName());
-            }
-
-            context.append(")");
         }
         finally {
             if (marker != null) {
                 context.popMarker();
             }
         }
+
+    }
+
+    private void generateJoiningExpression(
+            DbRelationship incomingDB,
+            String sourceAlias,
+            String targetAlias) {
+        context.append(" ON (");
+
+        Iterator<DbJoin> it = incomingDB.getJoins().iterator();
+        if (it.hasNext()) {
+            DbJoin dbJoin = it.next();
+            context
+                    .append(sourceAlias)
+                    .append('.')
+                    .append(dbJoin.getSourceName())
+                    .append(" = ")
+                    .append(targetAlias)
+                    .append('.')
+                    .append(dbJoin.getTargetName());
+        }
+
+        while (it.hasNext()) {
+            context.append(", ");
+            DbJoin dbJoin = it.next();
+            context
+                    .append(sourceAlias)
+                    .append('.')
+                    .append(dbJoin.getSourceName())
+                    .append(" = ")
+                    .append(targetAlias)
+                    .append('.')
+                    .append(dbJoin.getTargetName());
+        }
+
+        context.append(")");
     }
 
     public String appendTable(EJBQLTableId id) {
 
-        String tableName = id.getDbEntity(context).getFullyQualifiedName();
+        DbEntity dbEntity = id.getDbEntity(context);
+        String tableName = dbEntity.getFullyQualifiedName();
         String alias;
 
         if (context.isUsingAliases()) {

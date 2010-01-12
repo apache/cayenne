@@ -46,6 +46,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
@@ -164,19 +165,39 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         String subqueryId = context.createIdAlias(id);
         ClassDescriptor targetDescriptor = context.getEntityDescriptor(subqueryId);
+       
+        if (expression.isNegated()) {
+            context.append(" NOT");
+        }
+
+        context.append(" EXISTS (SELECT 1 FROM ");
+
         String subqueryTableName = targetDescriptor
                 .getEntity()
                 .getDbEntity()
                 .getFullyQualifiedName();
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
-        context.append(" (SELECT COUNT(1) FROM ");
-        // not using "AS" to separate table name and alias name - OpenBase doesn't
-        // support "AS", and the rest of the databases do not care
-        context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
+        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
+                .getEntity()
+                .getRelationship(path.getRelativePath());
+        
+        if (relationship.getDbRelationshipPath().contains(".")) {
+            // if the DbRelationshipPath contains '.', the relationship is flattened
+            subqueryRootAlias = processFlattenedRelationShip(
+                    subqueryRootAlias,
+                    relationship);
+        }
+        else {
+            // not using "AS" to separate table name and alias name - OpenBase doesn't
+            // support "AS", and the rest of the databases do not care
+            context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
+
+        }
         context.append(" WHERE");
 
         // TODO: andrus, 8/11/2007 flattened?
+        // 11/01/2010 flattened relationship are processing earlier
         DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
                 new EJBQLTableId(id)).get(0);
         Iterator<DbJoin> it = correlatedJoinRelationship.getJoins().iterator();
@@ -238,23 +259,40 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         String subqueryId = context.createIdAlias(id);
         ClassDescriptor targetDescriptor = context.getEntityDescriptor(subqueryId);
-        String subqueryTableName = targetDescriptor
-                .getEntity()
-                .getDbEntity()
-                .getFullyQualifiedName();
-        String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
         if (expression.isNegated()) {
             context.append(" NOT");
         }
 
         context.append(" EXISTS (SELECT 1 FROM ");
-        // not using "AS" to separate table name and alias name - OpenBase doesn't
-        // support "AS", and the rest of the databases do not care
-        context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
+
+        String subqueryTableName = targetDescriptor
+                .getEntity()
+                .getDbEntity()
+                .getFullyQualifiedName();
+        String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
+
+        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
+                .getEntity()
+                .getRelationship(path.getRelativePath());
+        
+        if (relationship.getDbRelationshipPath().contains(".")) {
+            // if the DbRelationshipPath contains '.', the relationship is flattened
+            subqueryRootAlias = processFlattenedRelationShip(
+                    subqueryRootAlias,
+                    relationship);
+        }
+        else {
+            // not using "AS" to separate table name and alias name - OpenBase doesn't
+            // support "AS", and the rest of the databases do not care
+            context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
+
+        }
+
         context.append(" WHERE");
 
         // TODO: andrus, 8/11/2007 flattened?
+        // 11/01/2010 flattened relationship are processing earlier
         DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
                 new EJBQLTableId(id)).get(0);
 
@@ -276,6 +314,60 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(")");
 
         return false;
+    }
+
+    private String processFlattenedRelationShip(
+            String subqueryRootAlias,
+            ObjRelationship relationship) {
+        List<DbRelationship> dbRelationships = relationship
+                .getDbRelationships();
+        // reverse order to get the nearest to the correlated of the direct relation
+        for (int i = dbRelationships.size() - 1; i > 0; i--) {
+            DbRelationship dbRelationship = dbRelationships.get(i);
+            String subqueryTargetTableName = dbRelationship.getTargetEntityName();
+            String subqueryTargetAlias;
+            if (i == dbRelationships.size() - 1) {
+                subqueryTargetAlias = subqueryRootAlias;
+                context.append(subqueryTargetTableName).append(' ').append(
+                        subqueryTargetAlias);
+            }
+            else {
+                subqueryTargetAlias = context.getTableAlias(
+                        subqueryTargetTableName,
+                        subqueryTargetTableName);
+            }
+           
+
+            context.append(" JOIN ");
+
+            String subquerySourceTableName = dbRelationship
+                    .getSourceEntity()
+                    .getName();
+            String subquerySourceAlias = context.getTableAlias(
+                    subquerySourceTableName,
+                    subquerySourceTableName);
+
+            context.append(subquerySourceTableName).append(' ').append(subquerySourceAlias);
+
+            context.append(" ON (");
+
+            List<DbJoin> joins = dbRelationship.getJoins();
+            Iterator<DbJoin> it = joins.iterator();
+            while (it.hasNext()) {
+                DbJoin join = it.next();
+                context.append(' ').append(subqueryTargetAlias).append('.').append(
+                        join.getTargetName()).append(" = ");
+                context.append(subquerySourceAlias).append('.').append(
+                        join.getSourceName());
+                if (it.hasNext()) {
+                    context.append(" AND");
+                }
+            }
+            context.append(" )");
+            subqueryRootAlias = subquerySourceAlias;
+
+        }
+        return subqueryRootAlias;
     }
 
     @Override

@@ -45,6 +45,12 @@
 		insert into FLATTENED_TEST_3 (FT3_ID, FT2_ID, NAME) values (3, 2, 'ft3-b')
 		</value></constructor-arg>
 	</bean>
+	<bean id="FT41" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest4</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_TEST_4 (FT4_ID, FT3_ID, NAME) values (1, 1, 'ft4')
+		</value></constructor-arg>
+	</bean>
 
 	<bean id="testCollectionMemberOfThetaJoin" class="java.util.ArrayList">
 		<constructor-arg>
@@ -56,6 +62,7 @@
 				<ref bean="FT31"/>
 				<ref bean="FT32"/>
 				<ref bean="FT33"/>
+				<ref bean="FT41"/>
 			</list>
 		</constructor-arg>
 	</bean>

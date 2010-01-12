@@ -120,8 +120,21 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
         if (oldPath != null) {
             this.idPath = oldPath;
-            this.lastAlias = context.getTableAlias(oldPath, currentEntity
-                    .getDbEntity().getFullyQualifiedName());
+            Relationship lastRelationship = currentEntity
+                    .getRelationship(lastPathComponent);
+            if (lastRelationship != null) {
+                ObjEntity targetEntity = (ObjEntity) lastRelationship.getTargetEntity();
+
+                this.lastAlias = context.getTableAlias(fullPath, targetEntity
+                        .getDbEntity()
+                        .getFullyQualifiedName());
+            }
+            else {
+                this.lastAlias = context.getTableAlias(oldPath, currentEntity
+                        .getDbEntity()
+                        .getFullyQualifiedName());
+
+            }
         }
         else {
 
@@ -217,13 +230,15 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             resolveJoin(false);
 
             // TODO: andrus, 6/21/2007 - flattened support
-            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
+            // 11/01/2010 flattened support added in chooseDbRelationship
+            DbRelationship dbRelationship = chooseDbRelationship(relationship);
             DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
                     table.getFullyQualifiedName());
-
+           
+            
             Collection<DbAttribute> pks = table.getPrimaryKeys();
 
             if (pks.size() == 1) {
@@ -238,12 +253,14 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 throw new EJBQLException(
                         "Multi-column PK to-many matches are not yet supported.");
             }
+            
         }
         else {
             // match FK against the target object
 
             // TODO: andrus, 6/21/2007 - flattened support
-            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
+            // 11/01/2010 flattened support added in chooseDbRelationship
+            DbRelationship dbRelationship = chooseDbRelationship(relationship);
             DbEntity table = (DbEntity) dbRelationship.getSourceEntity();
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
@@ -277,6 +294,34 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                         multiColumnMatch));
             }
         }
+    }
+    
+    /**
+     * Checks if the object relationship is flattened and then chooses
+     * the corresponding db relationship. The last in idPath if isFlattened and
+     * the first in list otherwise.
+     * 
+     * @param relationship the object relationship
+     * 
+     * @return {@link DbRelationship}
+     */
+    protected DbRelationship chooseDbRelationship(ObjRelationship relationship) {
+
+        List<DbRelationship> dbRelationships = relationship.getDbRelationships();
+        String dbRelationshipPath = relationship.getDbRelationshipPath();
+
+        if (dbRelationshipPath.contains(".")) {
+            String dbRelName = dbRelationshipPath.substring(dbRelationshipPath
+                    .lastIndexOf(".") + 1);
+            for (DbRelationship dbR : dbRelationships) {
+                if (dbR.getName().equals(dbRelName)) {
+                    return dbR;
+                }
+
+            }
+        }
+        return relationship.getDbRelationships().get(0);
+
     }
 
     public boolean isUsingAliases() {

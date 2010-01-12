@@ -200,7 +200,105 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
         }
     }
+    
+    public void testSelectEJQBQLCollectionTheta() throws Exception {
+        populateTables();
+        EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting cp, Artist a "
+                + "WHERE a.artistName=cp.artistName ORDER BY a.artistName");
+               
+        //TODO fails while the support for flattened attributes would not be added
+        /*List<?> objects = context.performQuery(query);
 
+        assertNotNull(objects);
+        assertEquals(4, objects.size());
+        Iterator<?> i = objects.iterator();
+        int index=1;
+        while (i.hasNext()) {
+            Artist artist = (Artist) i.next();
+            assertEquals("artist" + index, artist.getArtistName());
+            index++;
+        }*/
+    }
+    
+    public void testSelectEJQBQLLike() throws Exception {
+        populateTables();
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT a FROM CompoundPainting a WHERE a.artistName LIKE 'artist%'");
+               
+        List<?> objects = context.performQuery(query);
+
+        assertNotNull(objects);
+        assertEquals(8, objects.size());
+        Iterator<?> i = objects.iterator();
+        int index=1;
+        while (i.hasNext()) {
+            CompoundPainting painting = (CompoundPainting) i.next();
+            assertEquals("painting" + index, painting.getPaintingTitle());
+            index++;
+        }
+    }
+    
+    public void testSelectEJQBQLBetween() throws Exception {
+        populateTables();
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT a FROM CompoundPainting a WHERE a.artistName BETWEEN 'artist1' AND 'artist4'");
+               
+        List<?> objects = context.performQuery(query);
+
+        assertNotNull(objects);
+        assertEquals(8, objects.size());
+        Iterator<?> i = objects.iterator();
+        int index=1;
+        while (i.hasNext()) {
+            CompoundPainting painting = (CompoundPainting) i.next();
+            assertEquals("painting" + index, painting.getPaintingTitle());
+            index++;
+        }
+    }
+    
+    public void testSelectEJQBQLSubquery() throws Exception {
+        populateTables();
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT g FROM Gallery g WHERE " +
+                "(SELECT COUNT(cp) FROM CompoundPainting cp WHERE g.galleryName=cp.galleryName) = 4");
+                
+               
+        // TODO fails while the support for flattened attributes would not be added
+        /*List<?> objects = context.performQuery(query);
+
+        assertNotNull(objects);
+        assertEquals(2, objects.size());
+        Iterator<?> i = objects.iterator();
+        int index=1;
+        while (i.hasNext()) {
+            Gallery gallery = (Gallery) i.next();
+            assertEquals("gallery" + index, gallery.getGalleryName());
+            index++;
+        }*/
+    }
+    
+    public void testSelectEJQBQLHaving() throws Exception {
+        populateTables();
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT cp.artistName FROM CompoundPainting cp " +
+                "GROUP BY cp.artistName " +
+                "HAVING cp.artistName IN ('artist1')");
+                
+               
+        // TODO fails while the support for flattened attributes would not be added
+        /* List<?> objects = context.performQuery(query);
+
+        assertNotNull(objects);
+        assertEquals(2, objects.size());
+        Iterator<?> i = objects.iterator();
+        int index=1;
+        while (i.hasNext()) {
+            CompoundPainting painting = (CompoundPainting) i.next();
+            assertEquals("painting" + index, painting.getPaintingTitle());
+            index++;
+        }*/
+    }
+    
     public void testInsert() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");

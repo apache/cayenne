@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
-  project-version="3.0.0.1">
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+	>
 	<property name="defaultPackage" value="org.apache.art"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
 	<property name="clientSupported" value="true"/>
@@ -633,6 +633,10 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 	<query name="QueryWithSharedCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 	</query>
+	<query name="SelectDateTest" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
+	</query>
 	<query name="SelectTestLower" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="LOWER"/>
@@ -642,10 +646,6 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</query>
-	<query name="SelectDateTest" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
-		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
 	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
 		<post-add method-name="prePersistDataMap1"/>
