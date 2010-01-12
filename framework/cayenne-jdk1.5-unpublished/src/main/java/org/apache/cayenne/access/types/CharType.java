@@ -109,12 +109,22 @@ public class CharType implements ExtendedType {
 
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            Object value,
             int pos,
             int type,
-            int precision) throws Exception {
+            int scale) throws Exception {
 
-        st.setString(pos, (String) val);
+        // if this is a CLOB column, set the value as "String"
+        // instead. This should work with most drivers
+        if (type == Types.CLOB) {
+            st.setString(pos, (String) value);
+        }
+        else if (scale != -1) {
+            st.setObject(pos, value, type, scale);
+        }
+        else {
+            st.setObject(pos, value, type);
+        }
     }
 
     protected String readClob(Clob clob) throws IOException, SQLException {
