@@ -22,6 +22,7 @@ package org.apache.cayenne.dba;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -321,8 +322,12 @@ public class JdbcAdapter implements DbAdapter {
         // append size and precision (if applicable)s
         if (TypesMapping.supportsLength(column.getType())) {
             int len = column.getMaxLength();
-            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
-
+            
+            int scale = (TypesMapping.isDecimal(column.getType()) 
+                    && column.getType() != Types.FLOAT
+                    ) 
+                    ? column.getScale() : -1;
+            
             // sanity check
             if (scale > len) {
                 scale = -1;

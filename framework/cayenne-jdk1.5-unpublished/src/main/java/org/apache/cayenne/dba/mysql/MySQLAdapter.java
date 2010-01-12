@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
@@ -36,6 +37,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -301,7 +303,54 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        super.createTableAppendColumn(sqlBuffer, column);
+        boolean status;
+        if ((column.getEntity().getDataMap() != null)
+                && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
+            status = false;
+        }
+        QuotingStrategy context = getQuotingStrategy(status);
+        String[] types = externalTypesForJdbcType(column.getType());
+        if (types == null || types.length == 0) {
+            String entityName = column.getEntity() != null ? ((DbEntity) column
+                    .getEntity()).getFullyQualifiedName() : "<null>";
+            throw new CayenneRuntimeException("Undefined type for attribute '"
+                    + entityName
+                    + "."
+                    + column.getName()
+                    + "': "
+                    + column.getType());
+        }
+
+        String type = types[0];
+        sqlBuffer.append(context.quoteString(column.getName()));
+        sqlBuffer.append(' ').append(type);
+
+        // append size and precision (if applicable)s
+        if (TypesMapping.supportsLength(column.getType())) {
+            int len = column.getMaxLength();
+            
+            int scale = TypesMapping.isDecimal(column.getType())? column.getScale() : -1;
+            
+            // sanity check
+            if (scale > len) {
+                scale = -1;
+            }
+
+            if (len > 0) {
+                sqlBuffer.append('(').append(len);
+
+                if (scale >= 0) {
+                    sqlBuffer.append(", ").append(scale);
+                }
+
+                sqlBuffer.append(')');
+            }
+        }
+
+        sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
 
         if (column.isGenerated()) {
             sqlBuffer.append(" AUTO_INCREMENT");

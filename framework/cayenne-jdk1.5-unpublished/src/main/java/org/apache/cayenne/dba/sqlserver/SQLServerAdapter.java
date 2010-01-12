@@ -121,56 +121,7 @@ public class SQLServerAdapter extends SybaseAdapter {
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
        
-        boolean status;
-        if ((column.getEntity().getDataMap() != null)
-                && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? ((DbEntity) column
-                    .getEntity()).getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + entityName
-                    + "."
-                    + column.getName()
-                    + "': "
-                    + column.getType());
-        }
-
-        String type = types[0];
-        sqlBuffer.append(context.quoteString(column.getName()));
-        sqlBuffer.append(' ').append(type);
-
-        // append size and precision (if applicable)s
-        if (TypesMapping.supportsLength(column.getType())) {
-            int len = column.getMaxLength();
-            
-            int scale = (TypesMapping.isDecimal(column.getType()) 
-                    && column.getType() != Types.FLOAT) // SQL server don't support notations float(a, b) 
-                    ? column.getScale() : -1;
-
-            // sanity check
-            if (scale > len) {
-                scale = -1;
-            }
-
-            if (len > 0) {
-                sqlBuffer.append('(').append(len);
-
-                if (scale >= 0) {
-                    sqlBuffer.append(", ").append(scale);
-                }
-
-                sqlBuffer.append(')');
-            }
-        }
-
-        sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
+        super.createTableAppendColumn(sqlBuffer, column);
         
         if(column.isGenerated()) {
             // current limitation - we don't allow to set identity parameters...
