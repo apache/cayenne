@@ -29,6 +29,8 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.XMLEncoder;
@@ -276,6 +278,16 @@ public class EJBQLQueryTest extends CayenneCase {
         
         EJBQLQuery query = new EJBQLQuery(
             "select g from Gallery g inner join g.paintingArray p where p.toArtist.artistName like '%a%'");
+        context.performQuery(query);
+    }
+    
+    //test for CAY-1313
+    public void testRelationshipWhereClauseAndToEJBQL() throws Exception {
+        ObjectContext context = createDataContext();
+        
+        Expression exp = ExpressionFactory.matchExp(Painting.TO_GALLERY_PROPERTY, null);
+        EJBQLQuery query = new EJBQLQuery("select p.toArtist from Painting p where " + exp.toEJBQL("p"));
+    
         context.performQuery(query);
     }
 }

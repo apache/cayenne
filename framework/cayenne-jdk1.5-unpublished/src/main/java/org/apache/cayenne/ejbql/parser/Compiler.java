@@ -172,9 +172,12 @@ class Compiler {
                     EJBQLIdentifier ident = new EJBQLIdentifier(0);
                     ident.text = pathRelationshipString;
                     
-                    resultComponents.remove(pathsInSelect.get(path).intValue());
-                    resultComponents.add(pathsInSelect.get(path).intValue(), ident);
-                    rootId = pathRelationshipString;
+                    Integer integer = pathsInSelect.get(path);
+                    if (integer!=null) {
+                        resultComponents.remove(integer.intValue());
+                        resultComponents.add(pathsInSelect.get(path).intValue(), ident);
+                        rootId = pathRelationshipString;
+                    }
                 };
                 elenent++;
             }
