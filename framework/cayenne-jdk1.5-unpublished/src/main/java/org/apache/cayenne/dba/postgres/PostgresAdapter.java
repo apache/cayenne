@@ -171,7 +171,9 @@ public class PostgresAdapter extends JdbcAdapter {
             // append size and precision (if applicable)
             if (typeSupportsLength(at.getType())) {
                 int len = at.getMaxLength();
-                int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
+                int scale = (TypesMapping.isDecimal(at.getType()) 
+                        && at.getType() != Types.FLOAT) // Postgress don't support notations float(a, b) 
+                        ? at.getScale() : -1;
 
                 // sanity check
                 if (scale > len) {
