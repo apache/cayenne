@@ -136,6 +136,15 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
     protected String getExpressionOperator(int index) {
         return "=";
     }
+    
+    @Override
+    protected String getEJBQLExpressionOperator(int index) {
+        if (jjtGetChild(1) instanceof ASTScalar && ((ASTScalar) jjtGetChild(1)).getValue() == null) {
+            //for ejbql, we need "is null" instead of "= null"
+            return "is";
+        }
+        return getExpressionOperator(index);
+    }
 
     @Override
     public int getType() {

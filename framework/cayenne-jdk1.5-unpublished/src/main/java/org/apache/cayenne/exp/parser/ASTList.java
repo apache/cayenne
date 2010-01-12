@@ -125,7 +125,7 @@ public class ASTList extends SimpleNode {
         if ((values != null) && (values.length > 0)) {
             for (int i = 0; i < values.length; ++i) {
                 if (i > 0) {
-                    pw.print(getExpressionOperator(i));
+                    pw.print(getEJBQLExpressionOperator(i));
                     pw.print(' ');
                 }
 

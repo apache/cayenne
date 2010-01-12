@@ -45,8 +45,8 @@ Changes/New Features Since 3.0RC1:
 CAY-1326 Document Cayenne Embeddables Feature
 
 Bug Fixes Since 3.0RC1:
-
 CAY-1298 String no longer works in query when column type is Integer
+CAY-1313 EJBQL: Implement support for relationship-ending paths in WHERE clause
 CAY-1349 SelectQuery 'fetchSize' setting is not propagated to disjoint prefetches
 CAY-1351 EntityResolver.getEmbeddable(...) always returns null
 CAY-1353 warning "attribute.name" contains invalid character: . in Code generation dialog

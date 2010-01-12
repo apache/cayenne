@@ -130,6 +130,13 @@ public abstract class SimpleNode extends Expression implements Node {
     }
 
     protected abstract String getExpressionOperator(int index);
+    
+    /**
+     * Returns operator for ebjql statements, which can differ for Cayenne expression operator
+     */
+    protected String getEJBQLExpressionOperator(int index) {
+        return getExpressionOperator(index);
+    }
 
     @Override
     protected boolean pruneNodeForPrunedChild(Object prunedChild) {
@@ -349,7 +356,7 @@ public abstract class SimpleNode extends Expression implements Node {
             for (int i = 0; i < children.length; ++i) {
                 if (i > 0) {
                     pw.print(' ');
-                    pw.print(getExpressionOperator(i));
+                    pw.print(getEJBQLExpressionOperator(i));
                     pw.print(' ');
                 }
 
