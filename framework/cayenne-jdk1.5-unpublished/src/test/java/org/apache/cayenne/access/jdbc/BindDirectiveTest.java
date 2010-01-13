@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -60,6 +61,7 @@ public class BindDirectiveTest extends CayenneCase {
         artistNames.add("Artist3");
         String sql = "SELECT * FROM ARTIST WHERE ARTIST_NAME in (#bind($ARTISTNAMES))";
         SQLTemplate query = new SQLTemplate(Artist.class, sql);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
         List<DataRow> result = getDomain().createDataContext().performQuery(query);
         assertEquals(2, result.size());
