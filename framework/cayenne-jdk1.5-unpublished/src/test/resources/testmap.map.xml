@@ -635,6 +635,7 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 	</query>
 	<query name="SelectDateTest" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
 	</query>
 	<query name="SelectTestLower" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">

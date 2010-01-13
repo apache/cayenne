@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -143,10 +142,9 @@ public class DateTimeTypesTest extends CayenneCase {
 
         NamedQuery q = new NamedQuery("SelectDateTest");
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get("TIMESTAMP_COLUMN");
+        Date columnValue = (Date) testRead.get("TIMESTAMP_COLUMN");
         assertNotNull(columnValue);
         assertEquals(now, columnValue);
-        assertEquals(Timestamp.class, columnValue.getClass());
     }
 
     public void testSQLTemplateDate() throws Exception {
@@ -165,10 +163,9 @@ public class DateTimeTypesTest extends CayenneCase {
 
         NamedQuery q = new NamedQuery("SelectDateTest");
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get("DATE_COLUMN");
+        Date columnValue = (Date) testRead.get("DATE_COLUMN");
         assertNotNull(columnValue);
-        assertEquals(java.sql.Date.class, columnValue.getClass());
-        assertEquals(now.toString(), columnValue.toString());
+        assertEquals(now.toString(), new java.sql.Date(columnValue.getTime()).toString());
     }
 
     public void testSQLTemplateTime() throws Exception {
@@ -187,9 +184,8 @@ public class DateTimeTypesTest extends CayenneCase {
 
         NamedQuery q = new NamedQuery("SelectDateTest");
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get("TIME_COLUMN");
+        Date columnValue = (Date) testRead.get("TIME_COLUMN");
         assertNotNull(columnValue);
-        assertEquals(Time.class, columnValue.getClass());
-        assertEquals(now.toString(), columnValue.toString());
+        assertEquals(now.toString(), new Time(columnValue.getTime()).toString());
     }
 }
