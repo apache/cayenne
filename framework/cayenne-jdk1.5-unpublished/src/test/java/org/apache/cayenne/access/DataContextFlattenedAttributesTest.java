@@ -223,7 +223,8 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     public void testSelectEJQBQLLike() throws Exception {
         populateTables();
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT a FROM CompoundPainting a WHERE a.artistName LIKE 'artist%'");
+                "SELECT a FROM CompoundPainting a WHERE a.artistName LIKE 'artist%' " +
+                "ORDER BY a.paintingTitle");
                
         List<?> objects = context.performQuery(query);
 
@@ -241,7 +242,9 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     public void testSelectEJQBQLBetween() throws Exception {
         populateTables();
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT a FROM CompoundPainting a WHERE a.artistName BETWEEN 'artist1' AND 'artist4'");
+                "SELECT a FROM CompoundPainting a " +
+                "WHERE a.artistName BETWEEN 'artist1' AND 'artist4' " +
+                "ORDER BY a.paintingTitle");
                
         List<?> objects = context.performQuery(query);
 
