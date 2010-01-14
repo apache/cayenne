@@ -300,6 +300,19 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitEquals(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
             case 0:
+                if (expression.getChildrenCount() == 2) {
+                    for (int j = 0; j < expression.getChildrenCount(); j++) {
+                        if (expression.getChild(j) instanceof EJBQLNamedInputParameter) {
+                            EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression
+                                    .getChild(j);
+                            if (context.namedParameters.containsKey(par.getText())
+                                    && context.namedParameters.get(par.getText()) == null) {
+                                context.append(" IS NULL");
+                                return false;
+                            }
+                        }
+                    }
+                }
                 context.append(" =");
                 break;
             case 1:
@@ -693,6 +706,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             EJBQLEquals parent = ((EJBQLNamedInputParameter) expression).getParent();
 
             context.pushMarker("@processParameter", true);
+
             EJBQLPathAnaliserTranslator translator = new EJBQLPathAnaliserTranslator(
                     context);
             parent.visit(translator);
@@ -706,7 +720,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                     throw new EJBQLException("Unmapped id variable: " + id);
                 }
                 String pathChunk = translator.lastPathComponent;
-                
+
                 Property property = descriptor.getProperty(pathChunk);
                 if (property instanceof AttributeProperty) {
                     String atrType = ((AttributeProperty) property).getAttribute().getType();

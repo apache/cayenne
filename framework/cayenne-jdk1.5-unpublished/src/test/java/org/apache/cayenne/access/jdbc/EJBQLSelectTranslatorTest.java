@@ -175,7 +175,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         assertTrue(sql, sql.startsWith("SELECT"));
         assertTrue(sql, sql.endsWith("WHERE t0.ESTIMATED_PRICE > #bind($id0 'DECIMAL')"));
     }
-
+    
     public void testSelectFromWhereGreaterOrEqual() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice >= 2");
         String sql = query.getDefaultTemplate();
@@ -282,5 +282,40 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         }
 
         return i;
+    }
+    
+    // if parameter value is null (in this test x := null) we will generate "IS NULL"
+    public void testEqualsNullParameter() {
+        String ejbql = "select p from Painting p WHERE p.toArtist=:x";
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+        EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
+                .getEntityResolver());
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("x", null);
+
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(getDomain()
+                .getEntityResolver(), query, select, new JdbcEJBQLTranslatorFactory());
+        select.getExpression().visit(new EJBQLSelectTranslator(tr));
+        String sql = tr.getQuery().getDefaultTemplate();
+        assertTrue(sql, sql
+                .endsWith("t0.ARTIST_ID IS NULL"));
+    }
+    
+    // if parameter value is null and more than one parameter in query
+    public void testEqualsNullAndNotNullParameter() {
+        String ejbql = "select p from Painting p WHERE p.toArtist=:x OR p.toArtist.artistName=:b";
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+        EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
+                .getEntityResolver());
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("x", null);
+        query.setParameter("b", "Y");
+
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(getDomain()
+                .getEntityResolver(), query, select, new JdbcEJBQLTranslatorFactory());
+        select.getExpression().visit(new EJBQLSelectTranslator(tr));
+        String sql = tr.getQuery().getDefaultTemplate();
+        assertTrue(sql, sql
+                .endsWith("t0.ARTIST_ID IS NULL OR t1.ARTIST_NAME = #bind($id0)"));
     }
 }
