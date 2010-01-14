@@ -125,8 +125,9 @@ public class ReturnTypesMappingTest extends CayenneCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Boolean.class, columnValue.getClass());
-        assertEquals(bitValue, columnValue);
+        assertTrue(Boolean.class.equals(columnValue.getClass())
+                || Short.class.equals(columnValue.getClass()));
+        assertTrue(bitValue.equals(columnValue) || ((Number) columnValue).intValue() == 1);
     }
 
     public void testBIT2() throws Exception {
@@ -191,8 +192,10 @@ public class ReturnTypesMappingTest extends CayenneCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Boolean.class, columnValue.getClass());
-        assertEquals(booleanValue, columnValue);
+        assertTrue(Boolean.class.equals(columnValue.getClass())
+                || Short.class.equals(columnValue.getClass()));
+        assertTrue(booleanValue.equals(columnValue)
+                || ((Number) columnValue).intValue() == 1);
     }
 
     public void testBOOLEAN2() throws Exception {
@@ -711,8 +714,9 @@ public class ReturnTypesMappingTest extends CayenneCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Byte.class, columnValue.getClass());
-        assertEquals(tinyintValue, columnValue);
+        assertTrue(Byte.class.equals(columnValue.getClass())
+                || Short.class.equals(columnValue.getClass()));
+        assertEquals(tinyintValue.intValue(), ((Number)columnValue).intValue());
     }
 
     public void testTINYINT2() throws Exception {
