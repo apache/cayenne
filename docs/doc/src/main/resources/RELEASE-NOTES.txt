@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features Since 3.0:
 
+CAY-952 Generate OUTER joins for flattened attributes in a SelectQuery
 CAY-1251 Memorize user-selected column widths in preferences
 CAY-1310 Remove everything deprecated in 3.0
 CAY-1314 Migrate Modeler Preferences to Java Preferences API: migrate org.apache.cayenne.modeler.ModelerPreferences

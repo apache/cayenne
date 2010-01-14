@@ -342,7 +342,7 @@ public class SelectTranslator extends QueryAssembler {
                     }
                     else if (pathPart instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship) pathPart;
-                        dbRelationshipAdded(rel, JoinType.INNER, null);
+                        dbRelationshipAdded(rel, JoinType.LEFT_OUTER, null);
                     }
                     else if (pathPart instanceof DbAttribute) {
                         DbAttribute dbAttr = (DbAttribute) pathPart;

@@ -118,7 +118,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         List<?> objects = context.performQuery(query);
 
         assertNotNull(objects);
-        assertEquals(3, objects.size());
+        assertEquals(8, objects.size());
         assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
                 .get(0) instanceof CompoundPainting);
 
@@ -131,23 +131,32 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
             assertEquals("CompoundPainting.getPaintingTitle(): "
                     + painting.getPaintingTitle(), "painting" + id, painting
                     .getPaintingTitle());
-            assertEquals(
-                    "CompoundPainting.getTextReview(): " + painting.getTextReview(),
-                    "painting review" + id,
-                    painting.getTextReview());
+            if (painting.getToPaintingInfo()==null){
+                assertNull(painting.getTextReview());
+            }else{
+                assertEquals("CompoundPainting.getTextReview(): "
+                        + painting.getTextReview(), "painting review" + id, painting
+                        .getTextReview());
+            }
             assertEquals(
                     "CompoundPainting.getArtistName(): " + painting.getArtistName(),
                     painting.getToArtist().getArtistName(),
                     painting.getArtistName());
-            assertEquals(
-                    "CompoundPainting.getArtistName(): " + painting.getGalleryName(),
-                    painting.getToGallery().getGalleryName(),
-                    painting.getGalleryName());
+            if (painting.getToGallery() == null) {
+                assertNull(painting.getGalleryName());
+            }
+            else {
+                assertEquals("CompoundPainting.getGalleryName(): "
+                        + painting.getGalleryName(), painting
+                        .getToGallery()
+                        .getGalleryName(), painting.getGalleryName());
+            }
         }
     }
 
     // TODO: andrus 1/5/2007 -  CAY-952: SelectQuery uses INNER JOIN for flattened attributes, while
     // EJBQLQuery does an OUTER JOIN... which seems like a better idea...
+    // 14/01/2010 now it uses LEFT JOIN
     public void testSelectCompound2() throws Exception {
         populateTables();
         SelectQuery query = new SelectQuery(CompoundPainting.class, ExpressionFactory
@@ -155,25 +164,14 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         List<?> objects = context.performQuery(query);
 
         assertNotNull(objects);
-        assertEquals(1, objects.size());
+        assertEquals(2, objects.size());
         assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
                 .get(0) instanceof CompoundPainting);
 
         for (Iterator<?> i = objects.iterator(); i.hasNext();) {
             CompoundPainting painting = (CompoundPainting) i.next();
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-            Number id = (Number) painting
-                    .getObjectId()
-                    .getIdSnapshot()
-                    .get("PAINTING_ID");
-            assertEquals("CompoundPainting.getObjectId(): " + id, id.intValue(), 2);
-            assertEquals("CompoundPainting.getPaintingTitle(): "
-                    + painting.getPaintingTitle(), "painting" + id, painting
-                    .getPaintingTitle());
-            assertEquals(
-                    "CompoundPainting.getTextReview(): " + painting.getTextReview(),
-                    "painting review" + id,
-                    painting.getTextReview());
+            
             assertEquals(
                     "CompoundPainting.getArtistName(): " + painting.getArtistName(),
                     "artist2",

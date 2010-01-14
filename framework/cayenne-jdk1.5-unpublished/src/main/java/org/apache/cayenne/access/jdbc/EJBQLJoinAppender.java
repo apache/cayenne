@@ -166,7 +166,7 @@ public class EJBQLJoinAppender {
 
                     }
 
-                    context.append(" JOIN ");
+                    context.append(" LEFT OUTER JOIN ");
                     context.append(subqueryTargetTableName).append(' ').append(
                             subqueryTargetAlias);
                     generateJoiningExpression(
@@ -330,7 +330,7 @@ public class EJBQLJoinAppender {
                         CayenneMapEntry next = dbPathIterator.next();
                         if (next instanceof DbRelationship) {
                             DbRelationship rel = (DbRelationship) next;
-                            context.append(" JOIN ");
+                            context.append(" LEFT OUTER JOIN ");
                             String targetEntityName = rel.getTargetEntityName();
                             String subqueryTargetAlias = context.getTableAlias(id
                                     .getEntityId(), targetEntityName);
