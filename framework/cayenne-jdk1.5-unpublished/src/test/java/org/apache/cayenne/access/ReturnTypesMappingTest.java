@@ -391,8 +391,9 @@ public class ReturnTypesMappingTest extends CayenneCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Float.class, columnValue.getClass());
-        assertEquals(floatValue, columnValue);
+        assertTrue(Float.class.equals(columnValue.getClass())
+                || Double.class.equals(columnValue.getClass()));
+        assertEquals(floatValue.floatValue(), ((Number)columnValue).floatValue());
     }
 
     public void testFLOAT2() throws Exception {
@@ -624,7 +625,8 @@ public class ReturnTypesMappingTest extends CayenneCase {
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
-        assertEquals(timeValue.toString(), new Time(((Date)columnValue).getTime()).toString());
+        assertEquals(timeValue.toString(), new Time(((Date) columnValue).getTime())
+                .toString());
     }
 
     public void testTIME2() throws Exception {
@@ -644,7 +646,7 @@ public class ReturnTypesMappingTest extends CayenneCase {
         assertEquals(Date.class, columnValue.getClass());
         assertEquals(timeValue.toString(), new Time(columnValue.getTime()).toString());
     }
-    
+
     public void testSQLTemplateTime() throws Exception {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
