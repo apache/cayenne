@@ -196,8 +196,6 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
         context.append(" WHERE");
 
-        // TODO: andrus, 8/11/2007 flattened?
-        // 11/01/2010 flattened relationship are processing earlier
         DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
                 new EJBQLTableId(id)).get(0);
         Iterator<DbJoin> it = correlatedJoinRelationship.getJoins().iterator();
@@ -291,8 +289,6 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" WHERE");
 
-        // TODO: andrus, 8/11/2007 flattened?
-        // 11/01/2010 flattened relationship are processing earlier
         DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
                 new EJBQLTableId(id)).get(0);
 

@@ -229,8 +229,6 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             // use an outer join for to-many matches
             resolveJoin(false);
 
-            // TODO: andrus, 6/21/2007 - flattened support
-            // 11/01/2010 flattened support added in chooseDbRelationship
             DbRelationship dbRelationship = chooseDbRelationship(relationship);
             DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
 
@@ -258,8 +256,6 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         else {
             // match FK against the target object
 
-            // TODO: andrus, 6/21/2007 - flattened support
-            // 11/01/2010 flattened support added in chooseDbRelationship
             DbRelationship dbRelationship = chooseDbRelationship(relationship);
             DbEntity table = (DbEntity) dbRelationship.getSourceEntity();
 

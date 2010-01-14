@@ -102,8 +102,6 @@ public class EJBQLJoinAppender {
             throw new EJBQLException("No join configured for id " + rhsId);
         }
 
-        // TODO: andrus, 4/8/2007 - support for flattened relationships
-        // 11/01/2010 support for flattened relationships is represented below 
         DbRelationship incomingDB = joinRelationships.get(0);
 
         // TODO: andrus, 1/6/2008 - move reusable join check here...
