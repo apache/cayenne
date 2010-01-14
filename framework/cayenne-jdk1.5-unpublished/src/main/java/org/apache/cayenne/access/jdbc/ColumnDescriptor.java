@@ -62,7 +62,9 @@ public class ColumnDescriptor implements Serializable {
      * Creates a column descriptor with user-specified parameters.
      * 
      * @since 1.2
+     * @deprecated use ColumnDescriptor(String columnName, int jdbcType) instead
      */
+    @Deprecated
     public ColumnDescriptor(String columnName, int jdbcType, String javaClass) {
         this.name = columnName;
         this.dataRowKey = columnName;
@@ -71,17 +73,25 @@ public class ColumnDescriptor implements Serializable {
     }
 
     /**
+     * Creates a column descriptor with user-specified parameters.
+     * 
+     * @since 3.1
+     */
+    public ColumnDescriptor(String columnName, int jdbcType) {
+        this.name = columnName;
+        this.dataRowKey = columnName;
+        this.jdbcType = jdbcType;
+        this.javaClass = TypesMapping.getJavaBySqlType(jdbcType);
+    }
+
+    /**
      * Creates a ColumnDescriptor from Cayenne DbAttribute.
      * 
      * @since 1.2
      */
     public ColumnDescriptor(DbAttribute attribute, String tableAlias) {
-        this.name = attribute.getName();
+        this(attribute.getName(), attribute.getType());
         this.namePrefix = tableAlias;
-        this.dataRowKey = name;
-        this.jdbcType = attribute.getType();
-        this.javaClass = getDefaultJavaClass(attribute.getMaxLength(), attribute
-                .getScale());
 
         if (attribute.getEntity() != null) {
             this.tableName = attribute.getEntity().getName();
@@ -104,11 +114,7 @@ public class ColumnDescriptor implements Serializable {
      * @since 1.2
      */
     public ColumnDescriptor(ProcedureParameter parameter) {
-        this.name = parameter.getName();
-        this.dataRowKey = name;
-        this.jdbcType = parameter.getType();
-        this.javaClass = getDefaultJavaClass(parameter.getMaxLength(), parameter
-                .getPrecision());
+        this(parameter.getName(), parameter.getType());
 
         if (parameter.getProcedure() != null) {
             this.procedureName = parameter.getProcedure().getName();
@@ -118,9 +124,24 @@ public class ColumnDescriptor implements Serializable {
     /**
      * Creates a ColumnDescriptor using ResultSetMetaData.
      * 
+     * @since 3.1
+     */
+    public ColumnDescriptor(String columnName, ResultSetMetaData metaData, int position)
+            throws SQLException {
+        this(columnName, metaData.getColumnType(position));
+    }
+
+    /**
+     * Creates a ColumnDescriptor using ResultSetMetaData.
+     * 
      * @since 1.2
      */
     public ColumnDescriptor(ResultSetMetaData metaData, int position) throws SQLException {
+        this(getColumnNameFromMeta(metaData, position), metaData, position);
+    }
+
+    private static String getColumnNameFromMeta(ResultSetMetaData metaData, int position)
+            throws SQLException {
         String name = metaData.getColumnLabel(position);
         if (name == null || name.length() == 0) {
             name = metaData.getColumnName(position);
@@ -129,11 +150,7 @@ public class ColumnDescriptor implements Serializable {
                 name = "column_" + position;
             }
         }
-
-        this.name = name;
-        this.dataRowKey = name;
-        this.jdbcType = metaData.getColumnType(position);
-        this.javaClass = metaData.getColumnClassName(position);
+        return name;
     }
 
     /**
@@ -185,7 +202,9 @@ public class ColumnDescriptor implements Serializable {
      * Returns a default Java class for an internal JDBC type.
      * 
      * @since 1.2
+     * @deprecated use TypesMapping.getJavaBySqlType(int type) instead
      */
+    @Deprecated
     public String getDefaultJavaClass(int size, int scale) {
         return TypesMapping.getJavaBySqlType(getJdbcType(), size, scale);
     }
@@ -198,7 +217,7 @@ public class ColumnDescriptor implements Serializable {
     public String getQualifiedColumnName() {
         return (namePrefix != null) ? namePrefix + '.' + name : name;
     }
-    
+
     public String getQualifiedColumnNameWithQuoteSqlIdentifiers(QuotingStrategy strategy) {
         String nameWithQuoteSqlIdentifiers = strategy.quoteString( name );
         return (namePrefix != null) ? strategy.quoteString( namePrefix ) + '.' +

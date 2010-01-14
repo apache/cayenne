@@ -449,7 +449,10 @@ public class TypesMapping {
      * etc.
      * 
      * @return Fully qualified Java type name or null if not found.
+     * @deprecated use getJavaBySqlType(int type) instead. No usable since "0" can means
+     *             "undefined", not really zero.
      */
+    @Deprecated
     public static String getJavaBySqlType(int type, int length, int scale) {
 
         // this does not always produce the correct result. See for instance CAY-1052 - PG

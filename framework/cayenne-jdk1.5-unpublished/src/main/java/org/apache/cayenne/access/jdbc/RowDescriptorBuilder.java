@@ -158,10 +158,7 @@ public class RowDescriptorBuilder {
             }
         }
         // columnArray doesn't contain ColumnDescriptor for specified column
-        return new ColumnDescriptor(
-                rowKey,
-                resultSetMetadata.getColumnType(position),
-                resultSetMetadata.getColumnClassName(position));
+        return new ColumnDescriptor(rowKey, resultSetMetadata, position);
     }
 
     /**
