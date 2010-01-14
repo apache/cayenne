@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +33,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Handles appending joins to the content buffer at a marked position.
@@ -226,6 +230,7 @@ public class EJBQLJoinAppender {
     public String appendTable(EJBQLTableId id) {
 
         DbEntity dbEntity = id.getDbEntity(context);
+        
         String tableName = dbEntity.getFullyQualifiedName();
         String alias;
 
@@ -233,11 +238,14 @@ public class EJBQLJoinAppender {
             // TODO: andrus 1/5/2007 - if the same table is joined more than once, this
             // will create an incorrect alias.
             alias = context.getTableAlias(id.getEntityId(), tableName);
-
+            
             // not using "AS" to separate table name and alias name - OpenBase doesn't
             // support
             // "AS", and the rest of the databases do not care
             context.append(' ').append(tableName).append(' ').append(alias);
+            
+            generateJoinsForFlattenedAttributes(id, alias);
+           
         }
         else {
             context.append(' ').append(tableName);
@@ -272,6 +280,71 @@ public class EJBQLJoinAppender {
         }
 
         return alias;
+    }
+
+    /**
+     * Generates Joins statements for those flattened attributes that appear after the
+     * FROM clause, e.g. in WHERE, ORDER BY, etc clauses. Flattened attributes of the
+     * entity from the SELECT clause are processed earlier and therefore are omitted.
+     * 
+     * @param id table to JOIN id
+     * @param alias table alias
+     */
+    private void generateJoinsForFlattenedAttributes(EJBQLTableId id, String alias) {
+        String entityName = context
+                .getEntityDescriptor(id.getEntityId())
+                .getEntity()
+                .getName();
+        boolean isProcessingOmitted = false;
+        // if the dbPath is not null, all attributes of the entity are processed earlier
+        isProcessingOmitted = id.getDbPath() != null;
+        String sourceExpression = context.getCompiledExpression().getSource();
+
+        List<Object> resultSetMapping = context.getMetadata().getResultSetMapping();
+        for (Object mapping : resultSetMapping) {
+            if (mapping instanceof EntityResultSegment) {
+                if (entityName.equals(((EntityResultSegment) mapping)
+                        .getClassDescriptor()
+                        .getEntity()
+                        .getName())) {
+                    // if entity is included into SELECT clause, all its attributes are processed earlier
+                    isProcessingOmitted = true;
+                    break;
+                }
+
+            }
+        }
+
+        if (!isProcessingOmitted) {
+            Collection<ObjAttribute> attributes = context.getEntityDescriptor(
+                    id.getEntityId()).getEntity().getAttributes();
+            for (ObjAttribute objAttribute : attributes) {
+                if (objAttribute.isFlattened()
+                        && sourceExpression.contains(id.getEntityId()
+                                + "."
+                                + objAttribute.getName())) {
+                    // joins for attribute are generated if it is flattened and appears in original statement
+                    Iterator<CayenneMapEntry> dbPathIterator = objAttribute
+                            .getDbPathIterator();
+                    while (dbPathIterator.hasNext()) {
+                        CayenneMapEntry next = dbPathIterator.next();
+                        if (next instanceof DbRelationship) {
+                            DbRelationship rel = (DbRelationship) next;
+                            context.append(" JOIN ");
+                            String targetEntityName = rel.getTargetEntityName();
+                            String subqueryTargetAlias = context.getTableAlias(id
+                                    .getEntityId(), targetEntityName);
+                            context.append(targetEntityName).append(' ').append(
+                                    subqueryTargetAlias);
+                            generateJoiningExpression(rel, context.getTableAlias(id
+                                    .getEntityId(), rel.getSourceEntity().getName()), subqueryTargetAlias);
+                        }
+
+                    }
+                }
+
+            }
+        }
     }
 
     private EJBQLExpression ejbqlQualifierForEntityAndSubclasses(

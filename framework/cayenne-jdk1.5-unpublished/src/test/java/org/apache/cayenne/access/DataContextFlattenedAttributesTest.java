@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.CompoundPainting;
+import org.apache.art.Gallery;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -203,11 +204,10 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     
     public void testSelectEJQBQLCollectionTheta() throws Exception {
         populateTables();
-        EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting cp, Artist a "
+        EJBQLQuery query = new EJBQLQuery("SELECT DISTINCT a FROM CompoundPainting cp, Artist a "
                 + "WHERE a.artistName=cp.artistName ORDER BY a.artistName");
                
-        //TODO fails while the support for flattened attributes would not be added
-        /*List<?> objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
 
         assertNotNull(objects);
         assertEquals(4, objects.size());
@@ -217,7 +217,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
             Artist artist = (Artist) i.next();
             assertEquals("artist" + index, artist.getArtistName());
             index++;
-        }*/
+        }
     }
     
     public void testSelectEJQBQLLike() throws Exception {
@@ -265,41 +265,31 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
                 "SELECT g FROM Gallery g WHERE " +
                 "(SELECT COUNT(cp) FROM CompoundPainting cp WHERE g.galleryName=cp.galleryName) = 4");
                 
-               
-        // TODO fails while the support for flattened attributes would not be added
-        /*List<?> objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
 
         assertNotNull(objects);
-        assertEquals(2, objects.size());
-        Iterator<?> i = objects.iterator();
-        int index=1;
-        while (i.hasNext()) {
-            Gallery gallery = (Gallery) i.next();
-            assertEquals("gallery" + index, gallery.getGalleryName());
-            index++;
-        }*/
+        assertEquals(1, objects.size());
+        Gallery gallery = (Gallery) objects.get(0);
+        assertEquals("gallery2", gallery.getGalleryName());
+        
     }
     
     public void testSelectEJQBQLHaving() throws Exception {
         populateTables();
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT cp.artistName FROM CompoundPainting cp " +
-                "GROUP BY cp.artistName " +
-                "HAVING cp.artistName IN ('artist1')");
+                "SELECT cp.galleryName, COUNT(a) from  Artist a, CompoundPainting cp "+
+                "WHERE cp.artistName = a.artistName "+
+                "GROUP BY cp.galleryName " +
+                "HAVING cp.galleryName LIKE 'gallery1'");
                 
                
-        // TODO fails while the support for flattened attributes would not be added
-        /* List<?> objects = context.performQuery(query);
+        List<Object[]> objects = context.performQuery(query);
 
         assertNotNull(objects);
-        assertEquals(2, objects.size());
-        Iterator<?> i = objects.iterator();
-        int index=1;
-        while (i.hasNext()) {
-            CompoundPainting painting = (CompoundPainting) i.next();
-            assertEquals("painting" + index, painting.getPaintingTitle());
-            index++;
-        }*/
+        assertEquals(1, objects.size());
+        Object[] galleryItem = objects.get(0);
+        assertEquals("gallery1", galleryItem[0]);
+        assertEquals(3L, galleryItem[1]);
     }
     
     public void testInsert() {
