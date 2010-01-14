@@ -272,6 +272,13 @@ public class EJBQLQueryTest extends CayenneCase {
         createDataContext().performQuery(query);
     }
     
+    public void testNullAndNotNullParameter() {
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x OR p.toArtist.artistName=:b");
+        query.setParameter("x", null);
+        query.setParameter("b", "Y");
+        createDataContext().performQuery(query);
+    }
+    
     public void testJoinToJoined() {
         ObjectContext context = createDataContext();
         
