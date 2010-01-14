@@ -482,8 +482,8 @@ public class ReturnTypesMappingTest extends CayenneCase {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < 10000; i++) {
-            buffer.append("LONGVARCHAR very large string for tests!!!!\n");
+        for (int i = 0; i < 500; i++) {
+            buffer.append("LONGVARCHAR large string for tests!!!!\n");
         }
         String longvarcharValue = buffer.toString();
         test.setLongvarcharColumn(longvarcharValue);
@@ -501,8 +501,8 @@ public class ReturnTypesMappingTest extends CayenneCase {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < 10000; i++) {
-            buffer.append("LONGVARCHAR very large string for tests!!!!\n");
+        for (int i = 0; i < 500; i++) {
+            buffer.append("LONGVARCHAR large string for tests!!!!\n");
         }
         String longvarcharValue = buffer.toString();
         test.setLongvarcharColumn(longvarcharValue);

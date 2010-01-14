@@ -239,7 +239,7 @@
 		<db-attribute name="BIGINT_COLUMN" type="BIGINT"/>
 		<db-attribute name="BIT_COLUMN" type="BIT"/>
 		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
-		<db-attribute name="CHAR_COLUMN" type="CHAR" length="255"/>
+		<db-attribute name="CHAR_COLUMN" type="CHAR" length="254"/>
 		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
 		<db-attribute name="DATE_COLUMN" type="DATE"/>
 		<db-attribute name="DECIMAL_COLUMN" type="DECIMAL" length="12" scale="5"/>
