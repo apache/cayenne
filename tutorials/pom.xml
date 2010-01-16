@@ -32,5 +32,7 @@
 
 	<modules>
 		<module>tutorial</module>
+		<module>tutorial-rop-server</module>
+		<module>tutorial-rop-client</module>
 	</modules>
 </project>
