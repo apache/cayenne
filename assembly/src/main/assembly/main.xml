@@ -79,6 +79,8 @@
 			<outputDirectory>tutorials</outputDirectory>
 			<includes>
 				<include>tutorial/**</include>
+				<include>tutorial-rop-server/**</include>
+				<include>tutorial-rop-client/**</include>
 			</includes>
 			<excludes>
 				<exclude>**/target/**</exclude>

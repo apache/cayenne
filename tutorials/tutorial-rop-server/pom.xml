@@ -17,8 +17,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.cayenne</groupId>
-	<artifactId>tutorial</artifactId>
-	<name>Cayenne Tutorial</name>
+	<artifactId>tutorial-rop-server</artifactId>
+	<name>Cayenne ROP Server Tutorial</name>
 	<version>3.1-SNAPSHOT</version>
 
 	<dependencies>
@@ -31,6 +31,11 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.5.3.0_1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.caucho</groupId>
+			<artifactId>resin-hessian</artifactId>
+			<version>3.1.6</version>
 		</dependency>
 	</dependencies>
 
@@ -48,6 +53,14 @@
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.22</version>
+				<configuration>
+					<userRealms>
+						<userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
+							<name>Cayenne Realm</name>
+							<config>realm.properties</config>
+						</userRealm>
+					</userRealms>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -58,5 +71,20 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>caucho</id>
+			<name>Caucho Repository</name>
+			<url>http://caucho.com/m2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
 
 </project>
