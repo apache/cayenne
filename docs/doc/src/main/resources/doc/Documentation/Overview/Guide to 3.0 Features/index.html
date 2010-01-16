@@ -72,7 +72,7 @@
 
 <h3><a name="Guideto3.0Features-Embeddables"></a>Embeddables</h3>
 
-<p>Added a new mapping artifact - Embeddable, that allows to map composite objects to a single table. </p>
+<p>Added a new mapping artifact - <a href="../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Embeddables/index.html" title="Modeling Embeddables">Embeddable</a>, that allows to map composite objects to a single table. </p>
 
 <h3><a name="Guideto3.0Features-FlattenedAttributes"></a>Flattened Attributes</h3>
 
@@ -97,10 +97,9 @@
 
 <h2><a name="Guideto3.0Features-CayennePersistenceAPI"></a>Cayenne Persistence API</h2>
 
-<h3><a name="Guideto3.0Features-Java5Migration"></a>Java 5 Migration</h3>
+<h3><a name="Guideto3.0Features-Java5Required"></a>Java 5 Required</h3>
 
-<p>Cayenne now requires Java 5 or newer to run. This allowed us to start using generics, enums and other Java 5 features.</p>
-
+<p>Cayenne now requires Java 5 or newer to run. This allowed us to start providing generics-based API, enums and other Java 5 features.</p>
 
 <h3><a name="Guideto3.0Features-ObjectContext"></a>ObjectContext</h3>
 
@@ -121,6 +120,13 @@
 <ul>
 	<li><a href="../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Advanced SQLTemplate/index.html" title="Advanced SQLTemplate">Significantly simplified</a> the process for fetching DataObjects (vs. DataRows) via a SQLTemplate query with <tt>'setColumnNamesCapitalization'</tt> method.</li>
 	<li>Added support for <a href="../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/SQLTemplate Result Mapping/index.html" title="SQLTemplate Result Mapping">fetching scalar and mixed scalar/object results</a> using <tt>SQLResultSetMapping</tt>.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-SelectQueryImprovements"></a>SelectQuery Improvements</h3>
+
+<ul>
+	<li>Added support for "path splits". Splits allow to control how the joins are generated for the overlapping path expressions. By default a group of overlapping qualifier paths will produce a single join. To "split" that into separate joins, Cayenne allows to use "aliases" in path expressions, and then bind them to the actual pathes using <tt>"SelectQuery.addPathSplitAliases(String path, String... aliases)</tt>.</li>
 </ul>
 
 
@@ -153,6 +159,7 @@
 <ul>
 	<li>Added missing DB expressions to ExpressionFactory.</li>
 	<li><a href="../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">Added support</a> for OUTER JOINS</li>
+	<li><a href="../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html" title="Expression Factory Utilities">Added support</a> for split expressions (see <tt>"ExpressionFactory.matchAllExp(String path, Object... values)"</tt> and <tt>"ExpressionFactory.matchAllExp(String path, Collection values)"</tt>). This is also related to the qualifier splits for SelectQuery described above.</li>
 	<li>Added support for matching against TRUE and FALSE.</li>
 </ul>
 
@@ -220,13 +227,13 @@
 	<li>Reopen Last Project on Startup</li>
 	<li>Added progress/log view</li>
 	<li>Added SQL syntax highlighting.</li>
-	<li>Added EJBQL Query mapping capabilities, with synatx highlighting.</li>
+	<li>Added EJBQL Query mapping capabilities, with syntax highlighting.</li>
 	<li>Added support for quoting of SQL Identifiers</li>
 	<li>The Modeler can be <a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html" title="maven2-modeler">started from Maven</a></li>
 	<li>Added "Infer Relationships" operation to automatically create DbRelationships based on PK/FK naming conventions.</li>
 	<li>Added support for mapping Embeddable objects.</li>
+	<li>Added undo/redo support</li>
 </ul>
-
 
 
 <h2><a name="Guideto3.0Features-DeploymentandRuntime"></a>Deployment and Runtime</h2>

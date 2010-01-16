@@ -73,7 +73,7 @@
 </ul>
 
 
-<p>Now go back to Eclipse, right click on "tutorial" project and select "Refresh" - you should see pairs of classes generated for each mapped entity. You probably also see that there's a bunch of red squiggles next to the newly generated Java classes in Eclipse. This is because our project does not include Cayenne as a Maven dependency yet. Let's fix it now, but adding "cayenne-server" artifact in the bottom of the <tt>pom.xml</tt> file. The resulting POM should look like this:</p>
+<p>Now go back to Eclipse, right click on "tutorial" project and select "Refresh" - you should see pairs of classes generated for each mapped entity. You probably also see that there's a bunch of red squiggles next to the newly generated Java classes in Eclipse. This is because our project does not include Cayenne as a Maven dependency yet. Let's fix it now by adding "cayenne-server" artifact in the bottom of the <tt>pom.xml</tt> file. The resulting POM should look like this:</p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">&lt;project xmlns=<span class="code-quote">"http:<span class="code-comment">//maven.apache.org/POM/4.0.0"</span> xmlns:xsi=<span class="code-quote">"http://www.w3.org/2001/XMLSchema-instance"</span>
@@ -88,7 +88,7 @@
 			&lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
 			&lt;artifactId&gt;cayenne-server&lt;/artifactId&gt;
    &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
-			&lt;version&gt;3.0RC1&lt;/version&gt;
+			&lt;version&gt;3.0RC2&lt;/version&gt;
 		&lt;/dependency&gt;
 	&lt;/dependencies&gt;
 &lt;/project&gt;</pre>

@@ -93,9 +93,21 @@
 
 <p>Though database path expressions are widely used by Cayenne framework internally, they are rarely used in applications. Although there are a few cases when their explicit use is justified.</p>
 
+<h3><a name="PathExpressions-AliasesinPathExpressions"></a>Aliases in Path Expressions</h3>
+
+<p>Cayenne supports "aliases" in path Expressions. E.g. the same expression can be written using explicit path or an alias:</p>
+
+<ul>
+	<li>Full path: <tt>toArtist.exhibitArray.closingDate</tt></li>
+	<li>Using alias "e": <tt>e.closingDate</tt></li>
+</ul>
+
+
+<p>SelectQuery using the second form of the path expression must be made aware of the alias via <tt>"SelectQuery.aliasPathSplits(..)"</tt>, otherwise an Exception will be thrown. The main use of aliases is to allow users to control how SQL joins are generated if the same path is encountered more than once in any given Expression. Each alias for any given path would result in a separate join. Without aliases, a single join will be used for a group of matching paths.</p>
+
 <h3><a name="PathExpressions-MatchingPathExpressions"></a>Matching Path Expressions</h3>
 
-<p>As described in the following chapters a path expression is usually matched against some value (see for example <a href="../../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html" title="Expression Factory Utilities">ExpressionFactory API</a> - the first argument to each method is a path, and a second - an Object value that is matched against the path). Such value type must be compatible with the type of the property pointed to by the path. E.g. toArtist.artistName can only be matched against a String, and toArtist - against instances of Artist. </p></div>
+<p>As described in the following chapters a path expression is usually matched against some value (see for example <a href="../../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html" title="Expression Factory Utilities">ExpressionFactory API</a> - the first argument to each method is a path, and a second - an object value that is matched against the path). A type of such value must be compatible with the type of the property pointed to by the path. E.g. <tt>toArtist.artistName</tt> can only be matched against a <tt>String</tt>, and <tt>toArtist</tt> - against instances of <tt>Artist</tt>.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
