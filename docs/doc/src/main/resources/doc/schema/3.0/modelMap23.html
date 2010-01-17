@@ -3,45 +3,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component cay:obj-relationship</title>
+      <title>Schema documentation for component cay:sql</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id88', 
-				'properties_id89', 
-				'properties_id90', 
-				'properties_id91', 
-				'properties_id92', 
-				'properties_id93', 
-				'properties_id94', 
-				'properties_id95', 
-				'properties_id96');
+        var propertiesBoxes= new Array('properties_id102', 
+				'properties_id103');
 
         
-        var usedByBoxes= new Array('usedBy_id88', 
-				'usedBy_id89', 
-				'usedBy_id90', 
-				'usedBy_id91', 
-				'usedBy_id92', 
-				'usedBy_id93', 
-				'usedBy_id94', 
-				'usedBy_id95', 
-				'usedBy_id96');
+        var usedByBoxes= new Array('usedBy_id102', 
+				'usedBy_id103');
 
-        var sourceBoxes= new Array('source_id88', 
-				'source_id89', 
-				'source_id90', 
-				'source_id91', 
-				'source_id92', 
-				'source_id93', 
-				'source_id94', 
-				'source_id95', 
-				'source_id96');
+        var sourceBoxes= new Array('source_id102', 
+				'source_id103');
 
         
-        var diagramBoxes= new Array('diagram_id88');
+        var diagramBoxes= new Array('diagram_id102');
 
-        
-        var attributesBoxes= new Array('attributes_id88');
+        var annotationBoxes= new Array('annotations_id102');
+
+        var attributesBoxes= new Array('attributes_id102');
 
         
         var button_prefix = 'button_';
@@ -277,6 +257,11 @@
                   <table>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, annotationBoxes);"
+                                     class="control" /></span><span class="globalControlName">Annotations</span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, attributesBoxes);"
                                      class="control" /></span><span class="globalControlName">Attributes </span></td>
                      </tr>
@@ -313,7 +298,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id88"></a><div class="componentTitle">Element <span class="qname">cay:obj-relationship</span></div>
+      </div><a id="id102"></a><div class="componentTitle">Element <span class="qname">cay:sql</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -331,34 +316,52 @@
                      </tr>
                      <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Diagram</b></div>
-                           <div class="floatRight"><input id="button_diagram_id88" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('diagram_id88');"
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id102" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id102');"
                                      class="control" /></div>
                         </td>
-                        <td class="diagram">
-                           <div id="diagram_id88" style="display:block"><img alt="Diagram" border="0" src="images/modelMap.html24.jpeg"
-                                   usemap="#modelMap_46_html24" /><map name="modelMap_46_html24" id="modelMap_46_html24">
-                                 <area alt="modelMap23.tmp#id89" href="modelMap23.html#id89" coords="160,43,322,85" />
-                                 <area alt="modelMap23.tmp#id90" href="modelMap23.html#id90" coords="160,95,273,137" />
-                                 <area alt="modelMap23.tmp#id91" href="modelMap23.html#id91" coords="160,147,284,189" />
-                                 <area alt="modelMap23.tmp#id92" href="modelMap23.html#id92" coords="160,199,273,241" />
-                                 <area alt="modelMap23.tmp#id93" href="modelMap23.html#id93" coords="160,251,273,293" />
-                                 <area alt="modelMap23.tmp#id94" href="modelMap23.html#id94" coords="160,303,273,345" />
-                                 <area alt="modelMap23.tmp#id95" href="modelMap23.html#id95" coords="160,355,289,397" />
-                                 <area alt="modelMap23.tmp#id96" href="modelMap23.html#id96" coords="160,407,273,449" /></map></div>
+                        <td>
+                           <div id="annotations_id102" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Defines arbitrary SQL statement. Note that SQL statement can be customized for different SQL dialects per DbAdapter class. If no adapter-specific statement is found, the one with no adapter label is used by default.</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
                         </td>
                      </tr>
                      <tr>
                         <td class="firstColumn">
+                           <div class="floatLeft"><b>Diagram</b></div>
+                           <div class="floatRight"><input id="button_diagram_id102" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('diagram_id102');"
+                                     class="control" /></div>
+                        </td>
+                        <td class="diagram">
+                           <div id="diagram_id102" style="display:block"><img alt="Diagram" border="0" src="images/modelMap.html24.png"
+                                   usemap="#modelMap_46_html24" /><map name="modelMap_46_html24" id="modelMap_46_html24">
+                                 <area alt="modelMap23.tmp#id103" href="modelMap23.html#id103" coords="231,76,353,118" /></map></div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td>extension of <b>xs:string</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
                            <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id88" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_properties_id102" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('properties_id88');"
+                                     onclick="switchState('properties_id102');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id88" style="display:block">
+                           <div id="properties_id102" style="display:block">
                               <table class="propertiesTable">
                                  <tr>
                                     <td class="firstColumn">content:
@@ -373,18 +376,18 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id88" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id88');"
+                           <div class="floatRight"><input id="button_usedBy_id102" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id102');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="usedBy_id88" style="display:block">
+                           <div id="usedBy_id102" style="display:block">
                               <table class="usedByTable">
                                  <tr>
                                     <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap27.html#id1" target="mainFrame"
+                                    <td><b><a href="modelMap17.html#id101" target="mainFrame"
                                              title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:data-map')">cay:data-map</a></b></td>
+                                             onclick="updatePageTitle('Schema documentation for component cay:query')">cay:query</a></b></td>
                                  </tr>
                               </table>
                            </div>
@@ -393,13 +396,13 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Attributes</b></div>
-                           <div class="floatRight"><input id="button_attributes_id88" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_attributes_id102" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('attributes_id88');"
+                                     onclick="switchState('attributes_id102');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="attributes_id88" style="display:block">
+                           <div id="attributes_id102" style="display:block">
                               <table class="attributesTable">
                                  <thead>
                                     <tr>
@@ -412,89 +415,12 @@
                                     </tr>
                                  </thead>
                                  <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id95" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component collection-type')">collection-type</a></b></td>
+                                    <td class="firstColumn"><b><a href="modelMap23.html#id103" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component adapter-class')">adapter-class</a></b></td>
                                     <td><b>xs:string</b></td>
                                     <td></td>
                                     <td></td>
                                     <td>optional</td>
-                                    <td>
-                                       <div class="annotation"></div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id89" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component db-relationship-path')">db-relationship-path</a></b></td>
-                                    <td><b>xs:string</b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>required</td>
-                                    <td>
-                                       <div class="annotation"></div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id90" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component deleteRule')">deleteRule</a></b></td>
-                                    <td><b>xs:string</b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>optional</td>
-                                    <td>
-                                       <div class="annotation"></div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id91" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component lock')">lock</a></b></td>
-                                    <td><b>xs:boolean</b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>optional</td>
-                                    <td>
-                                       <div class="annotation"></div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id96" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component map-key')">map-key</a></b></td>
-                                    <td><b>xs:string</b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>optional</td>
-                                    <td>
-                                       <div class="annotation"></div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id92" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component name')">name</a></b></td>
-                                    <td><b>xs:string</b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>required</td>
-                                    <td>
-                                       <div class="annotation"></div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id93" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component source')">source</a></b></td>
-                                    <td><b>xs:string</b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>required</td>
-                                    <td>
-                                       <div class="annotation"></div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn"><b><a href="modelMap23.html#id94" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component target')">target</a></b></td>
-                                    <td><b>xs:string</b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>required</td>
                                     <td>
                                        <div class="annotation"></div>
                                     </td>
@@ -506,25 +432,25 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id88" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id88');"
+                           <div class="floatRight"><input id="button_source_id102" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('source_id102');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="source_id88" style="display:block">
+                           <div id="source_id102" style="display:block">
                               <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                      class="preWrapContainer">
                                  <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:element</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"obj-relationship"</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:element</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"sql"</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+  </span><span class="tokenElement">&lt;xs:annotation</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+    </span><span class="tokenElement">&lt;xs:documentation</span><span class="tokenElement">&gt;</span><span class="tokenText" style="white-space:normal">Defines arbitrary SQL statement. Note that SQL statement can be customized for different SQL dialects per DbAdapter class. If no adapter-specific statement is found, the one with no adapter label is used by default.</span><span class="tokenElement">&lt;/xs:documentation&gt;</span><span class="tokenIndent">
+  </span><span class="tokenElement">&lt;/xs:annotation&gt;</span><span class="tokenIndent">
   </span><span class="tokenElement">&lt;xs:complexType</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"db-relationship-path"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"deleteRule"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"lock"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:boolean"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"name"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"source"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"target"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"collection-type"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"optional"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"map-key"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"optional"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
+    </span><span class="tokenElement">&lt;xs:simpleContent</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+      </span><span class="tokenElement">&lt;xs:extension</span><span class="tokenAttrName"> base=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+        </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"adapter-class"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
+      </span><span class="tokenElement">&lt;/xs:extension&gt;</span><span class="tokenIndent">
+    </span><span class="tokenElement">&lt;/xs:simpleContent&gt;</span><span class="tokenIndent">
   </span><span class="tokenElement">&lt;/xs:complexType&gt;</span><span class="tokenIndent">
 </span><span class="tokenElement">&lt;/xs:element&gt;</span></pre></td>
                                  </tr>
@@ -534,7 +460,7 @@
                      </tr>
                      <tr>
                         <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
+                        <td>file:/Users/ari/svn/cayenne30/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
                      </tr>
                   </tbody>
                </table>
@@ -546,9 +472,9 @@
             <td class="rt_lineBottom"></td>
             <td class="rt_cornerBottomRight"></td>
          </tr>
-      </table><a id="id89"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
+      </table><a id="id103"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id102" target="mainFrame"
                   title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@db-relationship-path</span></div>
+                  onclick="updatePageTitle('Schema documentation for component cay:sql')">cay:sql</a></b> / @adapter-class</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -571,108 +497,13 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id89" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_properties_id103" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('properties_id89');"
+                                     onclick="switchState('properties_id103');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id89" style="display:block">
-                              <table class="propertiesTable">
-                                 <tr>
-                                    <td class="firstColumn">use:
-                                       
-                                    </td>
-                                    <td><b>required</b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id89" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id89');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="usedBy_id89" style="display:block">
-                              <table class="usedByTable">
-                                 <tr>
-                                    <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id89" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id89');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="source_id89" style="display:block">
-                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
-                                     class="preWrapContainer">
-                                 <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"db-relationship-path"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-            <td class="rt_lineRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_cornerBottomLeft"></td>
-            <td class="rt_lineBottom"></td>
-            <td class="rt_cornerBottomRight"></td>
-         </tr>
-      </table><a id="id90"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
-                  title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@deleteRule</span></div>
-      <table class="rt">
-         <tr>
-            <td class="rt_cornerTopLeft"></td>
-            <td class="rt_lineTop"></td>
-            <td class="rt_cornerTopRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_lineLeft"></td>
-            <td class="rt_content">
-               <table class="component">
-                  <tbody>
-                     <tr>
-                        <td class="firstColumn"><b>Namespace</b></td>
-                        <td>No namespace</td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Type</b></td>
-                        <td><b>xs:string</b></td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id90" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('properties_id90');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="properties_id90" style="display:block">
+                           <div id="properties_id103" style="display:block">
                               <table class="propertiesTable">
                                  <tr>
                                     <td class="firstColumn">content:
@@ -687,18 +518,18 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id90" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id90');"
+                           <div class="floatRight"><input id="button_usedBy_id103" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id103');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="usedBy_id90" style="display:block">
+                           <div id="usedBy_id103" style="display:block">
                               <table class="usedByTable">
                                  <tr>
                                     <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
+                                    <td><b><a href="modelMap23.html#id102" target="mainFrame"
                                              title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
+                                             onclick="updatePageTitle('Schema documentation for component cay:sql')">cay:sql</a></b></td>
                                  </tr>
                               </table>
                            </div>
@@ -707,16 +538,16 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id90" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id90');"
+                           <div class="floatRight"><input id="button_source_id103" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('source_id103');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="source_id90" style="display:block">
+                           <div id="source_id103" style="display:block">
                               <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                      class="preWrapContainer">
                                  <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"deleteRule"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
+                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"adapter-class"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
                                  </tr>
                               </table>
                            </div>
@@ -724,577 +555,7 @@
                      </tr>
                      <tr>
                         <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-            <td class="rt_lineRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_cornerBottomLeft"></td>
-            <td class="rt_lineBottom"></td>
-            <td class="rt_cornerBottomRight"></td>
-         </tr>
-      </table><a id="id91"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
-                  title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@lock</span></div>
-      <table class="rt">
-         <tr>
-            <td class="rt_cornerTopLeft"></td>
-            <td class="rt_lineTop"></td>
-            <td class="rt_cornerTopRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_lineLeft"></td>
-            <td class="rt_content">
-               <table class="component">
-                  <tbody>
-                     <tr>
-                        <td class="firstColumn"><b>Namespace</b></td>
-                        <td>No namespace</td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Type</b></td>
-                        <td><b>xs:boolean</b></td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id91" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('properties_id91');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="properties_id91" style="display:block">
-                              <table class="propertiesTable">
-                                 <tr>
-                                    <td class="firstColumn">content:
-                                       
-                                    </td>
-                                    <td><b>simple</b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id91" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id91');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="usedBy_id91" style="display:block">
-                              <table class="usedByTable">
-                                 <tr>
-                                    <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id91" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id91');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="source_id91" style="display:block">
-                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
-                                     class="preWrapContainer">
-                                 <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"lock"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:boolean"</span><span class="tokenElement">/&gt;</span></pre></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-            <td class="rt_lineRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_cornerBottomLeft"></td>
-            <td class="rt_lineBottom"></td>
-            <td class="rt_cornerBottomRight"></td>
-         </tr>
-      </table><a id="id92"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
-                  title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@name</span></div>
-      <table class="rt">
-         <tr>
-            <td class="rt_cornerTopLeft"></td>
-            <td class="rt_lineTop"></td>
-            <td class="rt_cornerTopRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_lineLeft"></td>
-            <td class="rt_content">
-               <table class="component">
-                  <tbody>
-                     <tr>
-                        <td class="firstColumn"><b>Namespace</b></td>
-                        <td>No namespace</td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Type</b></td>
-                        <td><b>xs:string</b></td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id92" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('properties_id92');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="properties_id92" style="display:block">
-                              <table class="propertiesTable">
-                                 <tr>
-                                    <td class="firstColumn">use:
-                                       
-                                    </td>
-                                    <td><b>required</b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id92" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id92');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="usedBy_id92" style="display:block">
-                              <table class="usedByTable">
-                                 <tr>
-                                    <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id92" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id92');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="source_id92" style="display:block">
-                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
-                                     class="preWrapContainer">
-                                 <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"name"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-            <td class="rt_lineRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_cornerBottomLeft"></td>
-            <td class="rt_lineBottom"></td>
-            <td class="rt_cornerBottomRight"></td>
-         </tr>
-      </table><a id="id93"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
-                  title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@source</span></div>
-      <table class="rt">
-         <tr>
-            <td class="rt_cornerTopLeft"></td>
-            <td class="rt_lineTop"></td>
-            <td class="rt_cornerTopRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_lineLeft"></td>
-            <td class="rt_content">
-               <table class="component">
-                  <tbody>
-                     <tr>
-                        <td class="firstColumn"><b>Namespace</b></td>
-                        <td>No namespace</td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Type</b></td>
-                        <td><b>xs:string</b></td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id93" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('properties_id93');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="properties_id93" style="display:block">
-                              <table class="propertiesTable">
-                                 <tr>
-                                    <td class="firstColumn">use:
-                                       
-                                    </td>
-                                    <td><b>required</b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id93" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id93');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="usedBy_id93" style="display:block">
-                              <table class="usedByTable">
-                                 <tr>
-                                    <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id93" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id93');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="source_id93" style="display:block">
-                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
-                                     class="preWrapContainer">
-                                 <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"source"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-            <td class="rt_lineRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_cornerBottomLeft"></td>
-            <td class="rt_lineBottom"></td>
-            <td class="rt_cornerBottomRight"></td>
-         </tr>
-      </table><a id="id94"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
-                  title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@target</span></div>
-      <table class="rt">
-         <tr>
-            <td class="rt_cornerTopLeft"></td>
-            <td class="rt_lineTop"></td>
-            <td class="rt_cornerTopRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_lineLeft"></td>
-            <td class="rt_content">
-               <table class="component">
-                  <tbody>
-                     <tr>
-                        <td class="firstColumn"><b>Namespace</b></td>
-                        <td>No namespace</td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Type</b></td>
-                        <td><b>xs:string</b></td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id94" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('properties_id94');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="properties_id94" style="display:block">
-                              <table class="propertiesTable">
-                                 <tr>
-                                    <td class="firstColumn">use:
-                                       
-                                    </td>
-                                    <td><b>required</b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id94" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id94');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="usedBy_id94" style="display:block">
-                              <table class="usedByTable">
-                                 <tr>
-                                    <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id94" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id94');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="source_id94" style="display:block">
-                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
-                                     class="preWrapContainer">
-                                 <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"target"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-            <td class="rt_lineRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_cornerBottomLeft"></td>
-            <td class="rt_lineBottom"></td>
-            <td class="rt_cornerBottomRight"></td>
-         </tr>
-      </table><a id="id95"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
-                  title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@collection-type</span></div>
-      <table class="rt">
-         <tr>
-            <td class="rt_cornerTopLeft"></td>
-            <td class="rt_lineTop"></td>
-            <td class="rt_cornerTopRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_lineLeft"></td>
-            <td class="rt_content">
-               <table class="component">
-                  <tbody>
-                     <tr>
-                        <td class="firstColumn"><b>Namespace</b></td>
-                        <td>No namespace</td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Type</b></td>
-                        <td><b>xs:string</b></td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id95" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('properties_id95');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="properties_id95" style="display:block">
-                              <table class="propertiesTable">
-                                 <tr>
-                                    <td class="firstColumn">use:
-                                       
-                                    </td>
-                                    <td><b>optional</b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id95" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id95');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="usedBy_id95" style="display:block">
-                              <table class="usedByTable">
-                                 <tr>
-                                    <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id95" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id95');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="source_id95" style="display:block">
-                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
-                                     class="preWrapContainer">
-                                 <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"collection-type"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"optional"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-            <td class="rt_lineRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_cornerBottomLeft"></td>
-            <td class="rt_lineBottom"></td>
-            <td class="rt_cornerBottomRight"></td>
-         </tr>
-      </table><a id="id96"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap23.html#id88" target="mainFrame"
-                  title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b>/@map-key</span></div>
-      <table class="rt">
-         <tr>
-            <td class="rt_cornerTopLeft"></td>
-            <td class="rt_lineTop"></td>
-            <td class="rt_cornerTopRight"></td>
-         </tr>
-         <tr>
-            <td class="rt_lineLeft"></td>
-            <td class="rt_content">
-               <table class="component">
-                  <tbody>
-                     <tr>
-                        <td class="firstColumn"><b>Namespace</b></td>
-                        <td>No namespace</td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Type</b></td>
-                        <td><b>xs:string</b></td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id96" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('properties_id96');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="properties_id96" style="display:block">
-                              <table class="propertiesTable">
-                                 <tr>
-                                    <td class="firstColumn">use:
-                                       
-                                    </td>
-                                    <td><b>optional</b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id96" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id96');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="usedBy_id96" style="display:block">
-                              <table class="usedByTable">
-                                 <tr>
-                                    <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap23.html#id88" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:obj-relationship')">cay:obj-relationship</a></b></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn">
-                           <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id96" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id96');"
-                                     class="control" /></div>
-                        </td>
-                        <td>
-                           <div id="source_id96" style="display:block">
-                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
-                                     class="preWrapContainer">
-                                 <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"map-key"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"optional"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
-                                 </tr>
-                              </table>
-                           </div>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td class="firstColumn"><b>Schema location</b></td>
-                        <td>file:/Users/ari/svn/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
+                        <td>file:/Users/ari/svn/cayenne30/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
                      </tr>
                   </tbody>
                </table>
