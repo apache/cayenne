@@ -29,7 +29,6 @@ CAY-1338 Move CayenneUserDir to the Modeler
 CAY-1340 Implement ConfigurationNode / ConfigurationNodeVisitor for the Cayenne project tree, including DataMap objects.
 CAY-1342 Remove wocompat package from Cayenne core
 CAY-1350 Implement memorized sorting of modeler columns
-CAY-1352 in "code generation" dialog add generation embeddables
 
 Bug Fixes Since 3.0:
 
@@ -44,7 +43,9 @@ Date:
 
 Changes/New Features Since 3.0RC1:
 
+CAY-1216 Improve the Remote-Object-Persistence-Tutorial for 3.0
 CAY-1326 Document Cayenne Embeddables Feature
+CAY-1352 in "code generation" dialog add generation embeddables
 
 Bug Fixes Since 3.0RC1:
 CAY-1298 String no longer works in query when column type is Integer
@@ -58,7 +59,7 @@ CAY-1365 "= NULL" being used instead of "IS NULL" on an EJBQL expression..
 
 ----------------------------------
 Release: 3.0 RC 1
-Date: 
+Date: 5 January 2010
 ----------------------------------
 
 Changes/New Features Since beta1
