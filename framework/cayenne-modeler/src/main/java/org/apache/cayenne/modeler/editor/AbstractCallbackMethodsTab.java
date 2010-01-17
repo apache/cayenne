@@ -21,6 +21,9 @@ package org.apache.cayenne.modeler.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -54,6 +58,8 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -64,6 +70,8 @@ import com.jgoodies.forms.layout.FormLayout;
  * 
  */
 public abstract class AbstractCallbackMethodsTab extends JPanel {
+
+    private static Log logger = LogFactory.getLog(AbstractCallbackMethodsTab.class);
 
     /**
      * mediator instance
@@ -79,12 +87,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      * table for displaying callback method names
      */
     protected CayenneTable table;
-    
+
     /**
      * preferences for the callback methods table
      */
     protected TableColumnPreferences tablePreferences;
-    
+
     /**
      * Dropdown for callback type selection. Contains fixed list of 7 callback types.
      */
@@ -167,51 +175,75 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new StringRenderer());
-        
+
         // drag-and-drop initialization
         table.setDragEnabled(true);
-        
-        table.setTransferHandler(new StringTransferHandler() {
+
+        table.setTransferHandler(new TransferHandler() {
 
             @Override
-            protected String exportString(JComponent c) {
-                JTable table = (JTable) c;
+            protected Transferable createTransferable(JComponent c) {
                 int rowIndex = table.getSelectedRow();
 
                 String result = null;
                 if (rowIndex >= 0 && rowIndex < table.getModel().getRowCount()) {
-                    result = String.valueOf(table.getModel().getValueAt(rowIndex, CallbackDescriptorTableModel.METHOD_NAME));
+                    result = String.valueOf(table.getModel().getValueAt(
+                            rowIndex,
+                            CallbackDescriptorTableModel.METHOD_NAME));
                 }
-                
-                return result;
+
+                return new StringSelection(result);
             }
 
             @Override
-            protected void importString(JComponent c, String callbackMethod) {
-                JTable table = (JTable) c;
-                int rowIndex = table.getSelectedRow();
-
-                // move callback method inside of model
-                CallbackDescriptor callbackDescriptor = getCallbackMap()
-                        .getCallbackDescriptor(
-                                ((CallbackType) callbackTypeCombo.getSelectedItem())
-                                        .getType());
-                mediator
-                        .setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
-                rebuildTable();
+            public int getSourceActions(JComponent c) {
+                return COPY_OR_MOVE;
             }
 
             @Override
-            protected void cleanup(JComponent c, boolean remove) {
+            public boolean importData(JComponent comp, Transferable t) {
+                if (canImport(comp, t.getTransferDataFlavors())) {
+                    String callbackMethod;
+                    try {
+                        callbackMethod = (String) t
+                                .getTransferData(DataFlavor.stringFlavor);
+                    }
+                    catch (Exception e) {
+                        logger.warn("Error transferring", e);
+                        return false;
+                    }
+
+                    int rowIndex = table.getSelectedRow();
+
+                    // move callback method inside of model
+                    CallbackDescriptor callbackDescriptor = getCallbackMap()
+                            .getCallbackDescriptor(
+                                    ((CallbackType) callbackTypeCombo.getSelectedItem())
+                                            .getType());
+                    mediator.setDirty(callbackDescriptor.moveMethod(
+                            callbackMethod,
+                            rowIndex));
+                    rebuildTable();
+                    return true;
+                }
+
+                return false;
+            }
+
+            @Override
+            public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
+                for (DataFlavor flavor : transferFlavors) {
+                    if (DataFlavor.stringFlavor.equals(flavor)) {
+                        return true;
+                    }
+                }
+                return false;
             }
         });
-        
 
         initTablePreferences();
-        
-        /**
-         * Create and install a popup
-         */
+
+        // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
         popup.add(getRemoveCallbackMethodAction().buildMenu());
 
@@ -243,8 +275,10 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 if (isVisible()) {
                     updateCallbackTypeCounters();
                     rebuildTable();
-                    
-                    if (table.editCellAt(table.getRowCount() - 1, CallbackDescriptorTableModel.METHOD_NAME)
+
+                    if (table.editCellAt(
+                            table.getRowCount() - 1,
+                            CallbackDescriptorTableModel.METHOD_NAME)
                             && table.getEditorComponent() != null) {
                         table.getEditorComponent().requestFocus();
                     }
@@ -276,20 +310,25 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     String[] methods = new String[0];
-                    
+
                     if (table.getSelectedRow() != -1) {
                         int[] sel = table.getSelectedRows();
                         methods = new String[sel.length];
-                        
+
                         for (int i = 0; i < sel.length; i++) {
-                            methods[i] = (String) table.getValueAt(sel[i], table.convertColumnIndexToView(CallbackDescriptorTableModel.METHOD_NAME));
+                            methods[i] = (String) table
+                                    .getValueAt(
+                                            sel[i],
+                                            table
+                                                    .convertColumnIndexToView(CallbackDescriptorTableModel.METHOD_NAME));
                         }
                     }
-                        
+
                     mediator.setCurrentCallbackMethods(methods);
                     getRemoveCallbackMethodAction().setEnabled(methods.length > 0);
-                    getRemoveCallbackMethodAction().setName(getRemoveCallbackMethodAction().
-                            getActionName(methods.length > 1));
+                    getRemoveCallbackMethodAction().setName(
+                            getRemoveCallbackMethodAction().getActionName(
+                                    methods.length > 1));
                 }
             }
         });
@@ -338,9 +377,9 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
-        
+
         mediator.setCurrentCallbackMethods(new String[0]);
-        
+
         tablePreferences.bind(table, null, null, null);
     }
 
