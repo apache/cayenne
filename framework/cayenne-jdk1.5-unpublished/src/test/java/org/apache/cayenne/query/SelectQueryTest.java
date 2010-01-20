@@ -539,4 +539,18 @@ public class SelectQueryTest extends SelectQueryBase {
             connection.close();
         }
     }
+    
+    public void testLeftJoinAndPrefetchToMany() {
+        SelectQuery query = new SelectQuery(Artist.class, 
+            ExpressionFactory.matchExp("paintingArray+.toGallery", null));
+        query.addPrefetch("artistExhibitArray");
+        createDataContext().performQuery(query);
+    }
+    
+    public void testLeftJoinAndPrefetchToOne() {
+        SelectQuery query = new SelectQuery(Painting.class, 
+            ExpressionFactory.matchExp("toArtist+.artistName", null));
+        query.addPrefetch("toGallery");
+        createDataContext().performQuery(query);
+    }
 }
