@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -643,6 +644,11 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             transformed.setOperand(0, converted);
             return transformed;
         }
+        
+        private PathComponentIterator createPathIterator(String path) {
+            return new PathComponentIterator(DbEntity.this, path, 
+                    new HashMap<String, String>()); //TODO: do we need aliases here?
+        }
 
         String translatePath(String path) {
 
@@ -661,7 +667,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
             // case (0)
             if (toMany) {
-                Iterator<CayenneMapEntry> pathIt = resolvePathComponents(path);
+                PathComponentIterator pathIt = createPathIterator(path);
                 Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
 
                 // for inserts from the both ends use LinkedList
@@ -675,8 +681,8 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
                 while (pathIt.hasNext()) {
                     // components may be attributes or relationships
-                    CayenneMapEntry next = pathIt.next();
-                    appendPath(finalPath, next);
+                    PathComponent<Attribute, Relationship> component = pathIt.next();
+                    appendPath(finalPath, component);
                 }
 
                 return convertToPath(finalPath);
@@ -685,15 +691,15 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             if (path.equals(relationshipPath)) {
 
                 LinkedList<String> finalPath = new LinkedList<String>();
-                Iterator<CayenneMapEntry> it = resolvePathComponents(path);
+                PathComponentIterator pathIt = createPathIterator(path);
 
                 // just do one step back and one step forward to create correct joins...
                 // find last rel...
                 DbRelationship lastDBR = null;
 
-                while (it.hasNext()) {
+                while (pathIt.hasNext()) {
                     // relationship path components must be DbRelationships
-                    lastDBR = (DbRelationship) it.next();
+                    lastDBR = (DbRelationship) pathIt.next().getRelationship();
                 }
 
                 if (lastDBR != null) {
@@ -711,7 +717,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             }
 
             // case (3)
-            Iterator<CayenneMapEntry> pathIt = resolvePathComponents(path);
+            PathComponentIterator pathIt = createPathIterator(path);
             Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
 
             // for inserts from the both ends use LinkedList
@@ -722,14 +728,14 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
                 DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
 
                 // expression components may be attributes or relationships
-                CayenneMapEntry next = pathIt.next();
+                PathComponent<Attribute, Relationship> component = pathIt.next();
 
-                if (nextDBR != next) {
+                if (nextDBR != component.getRelationship()) {
                     // found split point
                     // consume the last iteration components,
                     // then break out to finish the iterators independently
                     prependReversedPath(finalPath, nextDBR);
-                    appendPath(finalPath, next);
+                    appendPath(finalPath, component);
                     break;
                 }
 
@@ -744,8 +750,8 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
             while (pathIt.hasNext()) {
                 // components may be attributes or relationships
-                CayenneMapEntry next = pathIt.next();
-                appendPath(finalPath, next);
+                PathComponent<Attribute, Relationship> component = pathIt.next();
+                appendPath(finalPath, component);
             }
 
             return convertToPath(finalPath);
@@ -786,6 +792,19 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
                 LinkedList<String> finalPath,
                 CayenneMapEntry pathComponent) {
             finalPath.addLast(pathComponent.getName());
+        }
+        
+        private void appendPath(
+                LinkedList<String> finalPath,
+                PathComponent<Attribute, Relationship> pathComponent) {
+            String name = (pathComponent.getAttribute() != null ? 
+                pathComponent.getAttribute() :
+                pathComponent.getRelationship()).getName();
+            if (pathComponent.getJoinType() == JoinType.LEFT_OUTER) {
+                name += OUTER_JOIN_INDICATOR;
+            }
+            
+            finalPath.addLast(name);
         }
     }
 }

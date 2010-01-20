@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1086,36 +1087,43 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
         DBPathConverter transformer = new DBPathConverter();
 
-        String dbPath = transformer.toDbPath(resolvePathComponents(relationshipPath));
+        String dbPath = transformer.toDbPath(createPathIterator(relationshipPath));
         Expression dbClone = expression.transform(transformer);
 
         return getDbEntity().translateToRelatedEntity(dbClone, dbPath);
+    }
+    
+    private PathComponentIterator createPathIterator(String path) {
+        return new PathComponentIterator(ObjEntity.this, path, 
+                new HashMap<String, String>()); //TODO: do we need aliases here?
     }
 
     final class DBPathConverter implements Transformer {
 
         // TODO: make it a public method - resolveDBPathComponents or something...
         // seems generally useful
-        String toDbPath(Iterator<CayenneMapEntry> objectPathComponents) {
+        
+        String toDbPath(PathComponentIterator objectPathComponents) {
             StringBuilder buf = new StringBuilder();
             while (objectPathComponents.hasNext()) {
-                Object component = objectPathComponents.next();
+                PathComponent<Attribute, Relationship> component = objectPathComponents.next();
 
                 Iterator<?> dbSubpath;
 
-                if (component instanceof ObjRelationship) {
-                    dbSubpath = ((ObjRelationship) component)
-                            .getDbRelationships()
-                            .iterator();
+                if (component.getAttribute() != null) {
+                    dbSubpath = ((ObjAttribute) component.getAttribute()).getDbPathIterator();
                 }
-                else if (component instanceof ObjAttribute) {
-                    dbSubpath = ((ObjAttribute) component).getDbPathIterator();
+                else if (component.getRelationship() != null) {
+                    dbSubpath = ((ObjRelationship) component.getRelationship())
+                        .getDbRelationships()
+                        .iterator();
                 }
                 else {
                     throw new CayenneRuntimeException("Unknown path component: "
                             + component);
                 }
 
+                boolean firstComponent = true;
                 while (dbSubpath.hasNext()) {
                     CayenneMapEntry subComponent = (CayenneMapEntry) dbSubpath.next();
                     if (buf.length() > 0) {
@@ -1123,6 +1131,10 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                     }
 
                     buf.append(subComponent.getName());
+                    if (firstComponent && component.getJoinType() == JoinType.LEFT_OUTER) {
+                        buf.append(OUTER_JOIN_INDICATOR);
+                    }
+                    firstComponent = false;
                 }
             }
 
@@ -1143,7 +1155,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
             // convert obj_path to db_path
 
-            String converted = toDbPath(resolvePathComponents(expression));
+            String converted = toDbPath(createPathIterator((String) expression.getOperand(0)));
             Expression exp = ExpressionFactory.expressionOfType(Expression.DB_PATH);
             exp.setOperand(0, converted);
             return exp;
