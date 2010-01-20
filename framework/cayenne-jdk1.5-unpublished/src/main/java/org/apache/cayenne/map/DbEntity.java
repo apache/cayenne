@@ -797,9 +797,10 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
         private void appendPath(
                 LinkedList<String> finalPath,
                 PathComponent<Attribute, Relationship> pathComponent) {
-            String name = (pathComponent.getAttribute() != null ? 
+            CayenneMapEntry mapEntry = pathComponent.getAttribute() != null ?
                 pathComponent.getAttribute() :
-                pathComponent.getRelationship()).getName();
+                pathComponent.getRelationship();
+            String name = mapEntry.getName();
             if (pathComponent.getJoinType() == JoinType.LEFT_OUTER) {
                 name += OUTER_JOIN_INDICATOR;
             }
