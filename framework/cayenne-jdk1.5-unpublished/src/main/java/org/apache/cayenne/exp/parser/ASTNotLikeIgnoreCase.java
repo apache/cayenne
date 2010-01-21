@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Not like, ignore case" expression.
  * 
  */
-public class ASTNotLikeIgnoreCase extends PatternMatchNode {
+public class ASTNotLikeIgnoreCase extends IgnoreCaseNode {
     ASTNotLikeIgnoreCase(int id) {
         super(id, true);
     }
@@ -69,6 +69,11 @@ public class ASTNotLikeIgnoreCase extends PatternMatchNode {
     @Override
     protected String getExpressionOperator(int index) {
         return "not likeIgnoreCase";
+    }
+    
+    @Override
+    protected String getEJBQLExpressionOperator(int index) {
+        return "not like";
     }
 
     @Override

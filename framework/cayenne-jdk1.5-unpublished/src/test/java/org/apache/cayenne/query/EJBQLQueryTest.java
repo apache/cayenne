@@ -339,21 +339,4 @@ public class EJBQLQueryTest extends CayenneCase {
     
         context.performQuery(query);
     }
-
-    public void testLikeIgnoreCase() throws Exception {
-        deleteTestData();
-        
-        ObjectContext context = createDataContext();
-        
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("testLikeIgnoreCase");
-        context.commitChanges();
-        
-        EJBQLQuery query = new EJBQLQuery("select a from Artist a where upper(a.artistName) " +
-        		"like upper('%likeignore%')");
-    
-        assertEquals(context.performQuery(query).size(), 1);
-        
-        
-    }
 }

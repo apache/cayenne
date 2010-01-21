@@ -18,14 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import junit.framework.TestCase;
+import java.io.PrintWriter;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.ExpressionException;
 
-public class ASTLikeIgnoreCaseTest extends TestCase {
-    public void testToEJBQL() {
-        Expression like = ExpressionFactory.likeIgnoreCaseExp("a", "%b%");
-        assertEquals(like.toEJBQL("p"), "upper(p.a) like '%B%'");
+/**
+ * Common node for likeIgnoreCase and notLikeIgnoreCase
+ */
+abstract class IgnoreCaseNode extends PatternMatchNode {
+    IgnoreCaseNode(int i, boolean ignoringCase) {
+        super(i, ignoringCase);
+    }
+    
+    @Override
+    protected void encodeChildrenAsEJBQL(PrintWriter pw, String rootId) {
+        //with like, first expression is always path, second is a literal, which must be uppercased
+        pw.print("upper(");
+        ((SimpleNode) children[0]).encodeAsEJBQL(pw, rootId);
+        pw.print(") ");
+        pw.print(getEJBQLExpressionOperator(0));
+        pw.print(" ");
+        
+        Object literal = ((ASTScalar) children[1]).getValue();
+        if (!(literal instanceof String)) {
+            throw new ExpressionException("Literal value should be a string");
+        }
+        SimpleNode.encodeScalarAsString(pw, ((String) literal).toUpperCase(), '\'');
     }
 }
