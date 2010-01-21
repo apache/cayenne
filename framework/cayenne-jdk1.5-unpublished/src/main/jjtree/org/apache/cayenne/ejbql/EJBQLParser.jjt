@@ -1208,7 +1208,7 @@ void positional_input_parameter() #PositionalInputParameter :
 
 void pattern_value() #PatternValue : { }
 {
-	input_parameter() | string_literal()
+	string_expression()
 	[(<ESCAPE> escape_character())]
 }
 

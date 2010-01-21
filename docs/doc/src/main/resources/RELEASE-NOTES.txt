@@ -57,6 +57,7 @@ CAY-1355 Warning if rename Embeddable.
 CAY-1361 SelectQuery.aliasPathSplits does nothing
 CAY-1365 "= NULL" being used instead of "IS NULL" on an EJBQL expression..
 CAY-1368 Left Join and Prefetches do not work together
+CAY-1369 EJBQL: Fix likeIgnoreCase issues
 
 ----------------------------------
 Release: 3.0 RC 1

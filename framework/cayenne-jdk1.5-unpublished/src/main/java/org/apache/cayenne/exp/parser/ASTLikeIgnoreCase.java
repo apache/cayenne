@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.PrintWriter;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
@@ -73,5 +75,28 @@ public class ASTLikeIgnoreCase extends PatternMatchNode {
     @Override
     public int getType() {
         return Expression.LIKE_IGNORE_CASE;
+    }
+    
+    @Override
+    protected String getEJBQLExpressionOperator(int index) {
+        return "like";
+    }
+    
+    @Override
+    protected void encodeChildAsEJBQL(PrintWriter pw, String rootId, int index) {
+        if (index > 0) {
+            pw.print(' ');
+            pw.print(getEJBQLExpressionOperator(index));
+            pw.print(' ');
+        }
+
+        if (children[index] == null) {
+            pw.print("null");
+        }
+        else {
+            pw.print("upper(");
+            ((SimpleNode) children[index]).encodeAsEJBQL(pw, rootId);
+            pw.print(")");
+        }
     }
 }

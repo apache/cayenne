@@ -287,6 +287,8 @@ public class EJBQLQueryTest extends CayenneCase {
         context.performQuery(query);
     }
     
+    
+    
     public void testJoinAndCount() {
         ObjectContext context = createDataContext();
         
@@ -336,5 +338,22 @@ public class EJBQLQueryTest extends CayenneCase {
         EJBQLQuery query = new EJBQLQuery("select p.toArtist from Painting p where " + exp.toEJBQL("p"));
     
         context.performQuery(query);
+    }
+
+    public void testLikeIgnoreCase() throws Exception {
+        deleteTestData();
+        
+        ObjectContext context = createDataContext();
+        
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("testLikeIgnoreCase");
+        context.commitChanges();
+        
+        EJBQLQuery query = new EJBQLQuery("select a from Artist a where upper(a.artistName) " +
+        		"like upper('%likeignore%')");
+    
+        assertEquals(context.performQuery(query).size(), 1);
+        
+        
     }
 }
