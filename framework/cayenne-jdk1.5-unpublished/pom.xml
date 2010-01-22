@@ -135,7 +135,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javacc-maven-plugin</artifactId>
-				<version>2.5</version>
+				<version>2.6</version>
 				<executions>
 					<execution>
 						<id>jjtree-ejbql</id>
@@ -145,27 +145,12 @@
 								${basedir}/src/main/jjtree/org/apache/cayenne/ejbql 
 							</sourceDirectory>
 							<outputDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql 
+								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql 
 							</outputDirectory>
 							<buildNodeFiles>false</buildNodeFiles>
 						</configuration>
 						<goals>
-							<goal>jjtree</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>javacc-ejbql</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sourceDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql 
-							</sourceDirectory>
-							<outputDirectory>
-								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql 
-							</outputDirectory>
-						</configuration>
-						<goals>
-							<goal>javacc</goal>
+							<goal>jjtree-javacc</goal>
 						</goals>
 					</execution>
 					<!--
@@ -199,8 +184,9 @@
 						<phase>process-sources</phase>
 						<configuration>
 							<tasks>
+								<!-- This will remove duplicate Node file -->
 								<delete
-									file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/Node.java" />
+									file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/parser/Node.java" />
 							</tasks>
 						</configuration>
 						<goals>
