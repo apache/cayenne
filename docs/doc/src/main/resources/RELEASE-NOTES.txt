@@ -14,7 +14,6 @@ Date:
 Changes/New Features Since 3.0:
 
 CAY-952 Generate OUTER joins for flattened attributes in a SelectQuery
-CAY-1069 EJBQL: support paths across flattened relationships
 CAY-1251 Memorize user-selected column widths in preferences
 CAY-1310 Remove everything deprecated in 3.0
 CAY-1314 Migrate Modeler Preferences to Java Preferences API: migrate org.apache.cayenne.modeler.ModelerPreferences
@@ -43,6 +42,7 @@ Date:
 
 Changes/New Features Since 3.0RC1:
 
+CAY-1069 EJBQL: support paths across flattened relationships
 CAY-1216 Improve the Remote-Object-Persistence-Tutorial for 3.0
 CAY-1326 Document Cayenne Embeddables Feature
 CAY-1352 in "code generation" dialog add generation embeddables
