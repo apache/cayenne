@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -134,9 +135,45 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 DbEntity table = currentEntity.getDbEntity();
                 String alias = this.lastAlias != null ? lastAlias : context
                         .getTableAlias(idPath, table.getFullyQualifiedName());
+                if (attribute.isFlattened()) {
+                    Iterator<?> dbPathIterator = attribute.getDbPathIterator();
+                    EJBQLTableId lhsId = new EJBQLTableId(idPath);
 
-                DbAttribute dbAttribute = attribute.getDbAttribute();
+                    while (dbPathIterator.hasNext()) {
+                        Object pathPart = dbPathIterator.next();
+                        // DbRelationships not processed, because they will be processed
+                        // later when appending table
+                        if (pathPart == null) {
+                            throw new CayenneRuntimeException(
+                                    "ObjAttribute has no component: "
+                                            + attribute.getName());
+                        }
+                        else if (pathPart instanceof DbAttribute) {
+                            DbAttribute dbAttribute = (DbAttribute) pathPart;
+                            appendColumn(
+                                    attribute,
+                                    context.getTableAlias(
+                                            lhsId.getEntityId(),
+                                            dbAttribute.getEntity().getName()),
+                                    dbAttribute);
 
+                        }
+
+                    }
+
+                }
+                else {
+
+                    DbAttribute dbAttribute = attribute.getDbAttribute();
+
+                    appendColumn(attribute, alias, dbAttribute);
+                }
+            }
+
+            private void appendColumn(
+                    ObjAttribute attribute,
+                    String alias,
+                    DbAttribute dbAttribute) {
                 if (context.isAppendingResultColumns()) {
                     context.append(" #result('");
                 }
@@ -163,6 +200,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                             .append(")");
                 }
             }
+
         };
         expression.visit(pathTranslator);
         return false;
