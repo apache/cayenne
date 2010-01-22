@@ -29,7 +29,7 @@
 	<artifactId>cayenne-modeler</artifactId>
 	<name>Cayenne Modeler</name>
 	<packaging>jar</packaging>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -183,17 +183,6 @@
 					</execution>
             	</executions>
             </plugin>
-            <plugin>
-				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-clover2-plugin</artifactId>
-				
-				<!-- This is a hack to skip plugin for modeler. <skip>true</skip> just does not work -->
-				<executions>
-            		<execution id="default-cli">
-                		<phase></phase>
-					</execution>
-            	</executions>
-			</plugin>
 		</plugins>
 
 	</build>

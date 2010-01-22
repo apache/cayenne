@@ -585,6 +585,11 @@
 					<generateXml>true</generateXml>
 					<generateHtml>true</generateHtml>
 					<licenseLocation>build-tools/clover.license</licenseLocation>
+					<excludes>
+						<exclude>org/apache/cayenne/modeler/**/*.java</exclude>
+						<exclude>org/apache/cayenne/tutorial/**/*.java</exclude>
+						<exclude>org/apache/cayenne/swing/**/*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
