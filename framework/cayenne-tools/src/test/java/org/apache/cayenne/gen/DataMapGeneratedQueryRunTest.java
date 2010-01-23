@@ -18,31 +18,30 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Testmap;
-import org.apache.cayenne.query.QueryChain;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.DBHelper;
+import org.apache.cayenne.test.TableHelper;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataMapGeneratedQueryRunTest extends CayenneCase {
 
+    protected TableHelper artistHelper;
+
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+        DBHelper dbHelper = getDbHelper();
+        artistHelper = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        artistHelper.deleteAll();
     }
 
-    public void testPerformGeneratedQuery() {
-        QueryChain chain = new QueryChain();
-        chain.addQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'A2')"));
-        chain.addQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'A1')"));
-        createDataContext().performGenericQuery(chain);
+    public void testPerformGeneratedQuery() throws SQLException {
+        artistHelper.insert(1, "A2");
+        artistHelper.insert(2, "A1");
+
         List<Artist> result = Testmap.getInstance().performQueryWithQualifier(
                 createDataContext(),
                 "A1");

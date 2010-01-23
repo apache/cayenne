@@ -27,8 +27,8 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.itest.ItestDBUtils;
-import org.apache.cayenne.itest.ItestTableUtils;
+import org.apache.cayenne.test.DBHelper;
+import org.apache.cayenne.test.TableHelper;
 
 public abstract class CayenneServerRuntimeCase extends TestCase {
 
@@ -66,13 +66,13 @@ public abstract class CayenneServerRuntimeCase extends TestCase {
 
 	protected abstract RuntimeName getRuntimeName();
 
-	protected ItestDBUtils getDbUtils() {
+	protected DBHelper getDbUtils() {
 
-		return new ItestDBUtils(getDataNode().getDataSource());
+		return new DBHelper(getDataNode().getDataSource());
 	}
 
-	protected ItestTableUtils getTableHelper(String tableName) {
-		return new ItestTableUtils(getDbUtils(), tableName);
+	protected TableHelper getTableHelper(String tableName) {
+		return new TableHelper(getDbUtils(), tableName);
 	}
 
 	private DataNode getDataNode() {

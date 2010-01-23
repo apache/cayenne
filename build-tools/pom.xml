@@ -35,6 +35,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>cayenne-test-utilities</module>
 		<module>maven-cayenne-build-plugin</module>
 		<module>maven-cayenne-doc-plugin</module>
 	</modules>

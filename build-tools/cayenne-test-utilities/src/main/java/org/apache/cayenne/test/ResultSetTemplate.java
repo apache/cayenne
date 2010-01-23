@@ -16,37 +16,45 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.itest;
+package org.apache.cayenne.test;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * A JDBC template for reading a single row from the database.
- * 
- */
-abstract class RowTemplate<T> extends ResultSetTemplate<T> {
+abstract class ResultSetTemplate<T> {
 
-    public RowTemplate(ItestDBUtils parent) {
-        super(parent);
+    DBHelper parent;
+
+    public ResultSetTemplate(DBHelper parent) {
+        this.parent = parent;
     }
 
-    abstract T readRow(ResultSet rs, String sql) throws SQLException;
+    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
 
-    @Override
-    T readResultSet(ResultSet rs, String sql) throws SQLException {
-        if (rs.next()) {
+    T execute(String sql) throws SQLException {
+        Connection c = parent.getConnection();
+        try {
 
-            T row = readRow(rs, sql);
+            PreparedStatement st = c.prepareStatement(sql);
 
-            if (rs.next()) {
-                throw new SQLException("More than one result for sql: " + sql);
+            try {
+                ResultSet rs = st.executeQuery();
+                try {
+
+                    return readResultSet(rs, sql);
+                }
+                finally {
+                    rs.close();
+                }
             }
-
-            return row;
+            finally {
+                st.close();
+            }
         }
-        else {
-            throw new SQLException("No results for sql: " + sql);
+        finally {
+            c.close();
         }
     }
 }

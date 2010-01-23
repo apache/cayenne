@@ -38,6 +38,13 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        
+        <dependency>
+			<groupId>org.apache.cayenne.build-tools</groupId>
+			<artifactId>cayenne-test-utilities</artifactId>
+			<version>${version}</version>
+			<scope>test</scope>
+		</dependency>
 
         <dependency>
             <groupId>ant</groupId>

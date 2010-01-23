@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.itest;
+package org.apache.cayenne.test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,14 +29,14 @@ import java.sql.Timestamp;
 import javax.sql.DataSource;
 
 /**
- * JDBC utilities for integration testing that bypass Cayenne for DB access.
- * 
+ * JDBC utilities class for setting up and analyzing the DB data sets. DBHelper
+ * intentionally bypasses Cayenne stack.
  */
-public class ItestDBUtils {
+public class DBHelper {
 
     protected DataSource dataSource;
 
-    public ItestDBUtils(DataSource dataSource) {
+    public DBHelper(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

@@ -33,6 +33,7 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.test.DBHelper;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
 /**
@@ -91,6 +92,10 @@ public abstract class CayenneCase extends BasicCase {
 
     protected DataSourceInfo getConnectionInfo() throws Exception {
         return CayenneResources.getResources().getConnectionInfo();
+    }
+    
+    protected DBHelper getDbHelper() {
+        return new DBHelper(getNode().getDataSource());
     }
 
     protected Connection getConnection() throws Exception {

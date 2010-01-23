@@ -25,19 +25,27 @@ import java.util.Map;
 import org.apache.art.NoPkTestEntity;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.TableHelper;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextNoPkTest extends CayenneCase {
 
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
-        createTestData("prepare");
+        TableHelper noPkTestTable = new TableHelper(
+                getDbHelper(),
+                "NO_PK_TEST",
+                "ATTRIBUTE1");
+        noPkTestTable.deleteAll();
+
+        noPkTestTable.insert(1);
+        noPkTestTable.insert(2);
     }
 
     public void testNoPkFetchObjects() throws Exception {
         try {
-            List objects = createDataContext().performQuery(new SelectQuery(NoPkTestEntity.class));
+            List objects = createDataContext().performQuery(
+                    new SelectQuery(NoPkTestEntity.class));
             fail("Query for entity with no primary key must have failed, instead we got "
                     + objects.size()
                     + " rows.");

@@ -16,35 +16,41 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.itest;
+package org.apache.cayenne.test;
 
 import java.sql.SQLException;
 
 /**
- * JDBC utilities for integration testing that bypass Cayenne for DB access.
+ * JDBC utilities class for setting up and analyzing the DB data sets for a single table.
+ * TableHelper intentionally bypasses Cayenne stack.
  */
-public class ItestTableUtils {
+public class TableHelper {
 
     protected String tableName;
-    protected ItestDBUtils dbUtils;
+    protected DBHelper dbHelper;
     protected String[] columns;
 
-    public ItestTableUtils(ItestDBUtils dbUtils, String tableName) {
-        this.dbUtils = dbUtils;
+    public TableHelper(DBHelper dbHelper, String tableName) {
+        this.dbHelper = dbHelper;
         this.tableName = tableName;
     }
 
-    public ItestTableUtils deleteAll() throws SQLException {
-        dbUtils.deleteAll(tableName);
+    public TableHelper(DBHelper dbHelper, String tableName, String... columns) {
+        this(dbHelper, tableName);
+        setColumns(columns);
+    }
+
+    public TableHelper deleteAll() throws SQLException {
+        dbHelper.deleteAll(tableName);
         return this;
     }
 
-    public ItestTableUtils setColumns(String... columns) {
+    public TableHelper setColumns(String... columns) {
         this.columns = columns;
         return this;
     }
 
-    public ItestTableUtils insert(Object... values) throws SQLException {
+    public TableHelper insert(Object... values) throws SQLException {
         if (this.columns == null) {
             throw new IllegalStateException("Call 'setColumns' to prepare insert");
         }
@@ -54,7 +60,7 @@ public class ItestTableUtils {
                     "Columns and values arrays are of different size");
         }
 
-        dbUtils.insert(tableName, columns, values);
+        dbHelper.insert(tableName, columns, values);
         return this;
     }
 

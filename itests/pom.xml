@@ -37,7 +37,6 @@
     <packaging>pom</packaging>
     
     <modules>
-      <module>itest-common</module>
       <module>cayenne-di-stack</module>
     </modules>
 	<build>

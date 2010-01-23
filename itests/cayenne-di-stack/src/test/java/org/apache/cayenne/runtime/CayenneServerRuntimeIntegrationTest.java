@@ -21,9 +21,9 @@ package org.apache.cayenne.runtime;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.itest.ItestDBUtils;
 import org.apache.cayenne.itest.di_stack.Table1;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.DBHelper;
 
 public class CayenneServerRuntimeIntegrationTest extends
 		CayenneServerRuntimeCase {
@@ -56,7 +56,7 @@ public class CayenneServerRuntimeIntegrationTest extends
 	}
 
 	public void testNewContext_separateObjects() throws Exception {
-		ItestDBUtils dbUtils = getDbUtils();
+		DBHelper dbUtils = getDbUtils();
 		dbUtils.deleteAll("TABLE1");
 		dbUtils.insert("TABLE1", new String[] { "ID", "NAME" }, new Object[] {
 				1, "Abc" });

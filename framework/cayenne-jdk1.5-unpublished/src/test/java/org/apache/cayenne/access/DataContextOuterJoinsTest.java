@@ -27,18 +27,52 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.DBHelper;
+import org.apache.cayenne.test.TableHelper;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextOuterJoinsTest extends CayenneCase {
 
+    protected TableHelper artistHelper;
+    protected TableHelper paintingHelper;
+    protected TableHelper artgroupHelper;
+    protected TableHelper artistGroupHelper;
+
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+        DBHelper dbHelper = getDbHelper();
+        artistHelper = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        paintingHelper = new TableHelper(
+                dbHelper,
+                "PAINTING",
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE");
+        artgroupHelper = new TableHelper(dbHelper, "ARTGROUP", "GROUP_ID", "NAME");
+        artistGroupHelper = new TableHelper(
+                dbHelper,
+                "ARTIST_GROUP",
+                "GROUP_ID",
+                "ARTIST_ID");
+
+        artistGroupHelper.deleteAll();
+        artgroupHelper.deleteAll();
+        paintingHelper.deleteAll();
+        artistHelper.deleteAll();
     }
-    
+
     public void testSelectWithOuterJoinFlattened() throws Exception {
-        createTestData("testSelectWithOuterJoinFlattened");
+
+        artistHelper.insert(33001, "AA1");
+        artistHelper.insert(33002, "AA2");
+        artistHelper.insert(33003, "BB1");
+        artistHelper.insert(33004, "BB2");
+
+        artgroupHelper.insert(1, "G1");
+
+        artistGroupHelper.insert(1, 33001);
+        artistGroupHelper.insert(1, 33002);
+        artistGroupHelper.insert(1, 33004);
 
         SelectQuery missingToManyQuery = new SelectQuery(Artist.class);
         missingToManyQuery.andQualifier(ExpressionFactory.matchExp(
@@ -53,7 +87,13 @@ public class DataContextOuterJoinsTest extends CayenneCase {
 
     public void testSelectWithOuterJoin() throws Exception {
 
-        createTestData("testSelectWithOuterJoin");
+        artistHelper.insert(33001, "AA1");
+        artistHelper.insert(33002, "AA2");
+        artistHelper.insert(33003, "BB1");
+        artistHelper.insert(33004, "BB2");
+
+        paintingHelper.insert(33001, 33001, "P1");
+        paintingHelper.insert(33002, 33002, "P2");
 
         SelectQuery missingToManyQuery = new SelectQuery(Artist.class);
         missingToManyQuery.andQualifier(ExpressionFactory.matchExp(
@@ -83,7 +123,13 @@ public class DataContextOuterJoinsTest extends CayenneCase {
 
     public void testSelectWithOuterJoinFromString() throws Exception {
 
-        createTestData("testSelectWithOuterJoin");
+        artistHelper.insert(33001, "AA1");
+        artistHelper.insert(33002, "AA2");
+        artistHelper.insert(33003, "BB1");
+        artistHelper.insert(33004, "BB2");
+
+        paintingHelper.insert(33001, 33001, "P1");
+        paintingHelper.insert(33002, 33002, "P2");
 
         SelectQuery missingToManyQuery = new SelectQuery(Artist.class);
         missingToManyQuery.andQualifier(Expression.fromString("paintingArray+ = null"));
@@ -111,7 +157,12 @@ public class DataContextOuterJoinsTest extends CayenneCase {
 
     public void testSelectWithOuterOrdering() throws Exception {
 
-        createTestData("testSelectWithOuterOrdering");
+        artistHelper.insert(33001, "AA1");
+        artistHelper.insert(33002, "AA2");
+
+        paintingHelper.insert(33001, 33001, "P1");
+        paintingHelper.insert(33002, 33002, "P2");
+        paintingHelper.insert(33003, null, "P3");
 
         SelectQuery query = new SelectQuery(Painting.class);
 
