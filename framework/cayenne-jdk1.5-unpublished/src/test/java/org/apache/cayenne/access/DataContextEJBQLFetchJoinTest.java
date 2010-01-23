@@ -299,7 +299,7 @@ public class DataContextEJBQLFetchJoinTest extends CayenneCase {
         populateTables(TestData.SEVERAL_FETCH_JOINS);
         String ejbql = "SELECT DISTINCT a, a.artistName , g "
                 + "FROM Artist a LEFT JOIN FETCH a.paintingArray, Gallery g LEFT JOIN FETCH g.exhibitArray "
-                + "ORDER BY a.artistName";
+                + "ORDER BY a.artistName, g.galleryName";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
@@ -373,13 +373,13 @@ public class DataContextEJBQLFetchJoinTest extends CayenneCase {
 
             String artistName2 = (String) row[1];
             assertEquals("A2", artistName2);
-            assertEquals(g2, row[2]);
+            assertEquals(g1, row[2]);
 
             row = (Object[]) objects.get(3);
 
             assertEquals(a2, (Artist) row[0]);
             assertEquals(artistName2, row[1]);
-            assertEquals(g1, row[2]);
+            assertEquals(g2, row[2]);
 
             row = (Object[]) objects.get(4);
 
