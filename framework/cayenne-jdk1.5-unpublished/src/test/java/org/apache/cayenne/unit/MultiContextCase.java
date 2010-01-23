@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataContext;
@@ -25,9 +24,8 @@ import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.util.Util;
 
 /**
- * Superclass of test cases requiring multiple DataContexts with 
- * the same parent DataDomain.
- * 
+ * Superclass of test cases requiring multiple DataContexts with the same parent
+ * DataDomain.
  */
 public abstract class MultiContextCase extends CayenneCase {
 
@@ -38,7 +36,7 @@ public abstract class MultiContextCase extends CayenneCase {
     }
 
     protected void fixSharedConfiguration() {
-        // for context to deserialize properly, 
+        // for context to deserialize properly,
         // Configuration singleton must have the right default domain
         Configuration config = Configuration.getSharedConfiguration();
         if (getDomain() != config.getDomain()) {
@@ -50,9 +48,13 @@ public abstract class MultiContextCase extends CayenneCase {
     }
 
     /**
-     * Helper method to create a new DataContext with the ObjectStore
-     * state being the mirror of the given context. This is done by
-     * serializing/deserializing the DataContext.
+     * Helper method to create a new DataContext with the ObjectStore state being the
+     * mirror of the given context. This is done by serializing/deserializing the
+     * DataContext.
+     * 
+     * @deprecated Unsafe to assume that all cloned objects will be preserved, due to the
+     *             weak references. Should probably use 'localObject' as an alternative to
+     *             get object clones.
      */
     protected DataContext mirrorDataContext(DataContext context) throws Exception {
         fixSharedConfiguration();
@@ -63,14 +65,14 @@ public abstract class MultiContextCase extends CayenneCase {
         assertNotSame(context.getObjectStore(), mirror.getObjectStore());
 
         if (context.isUsingSharedSnapshotCache()) {
-            assertSame(
-                context.getObjectStore().getDataRowCache(),
-                mirror.getObjectStore().getDataRowCache());
+            assertSame(context.getObjectStore().getDataRowCache(), mirror
+                    .getObjectStore()
+                    .getDataRowCache());
         }
         else {
-            assertNotSame(
-                context.getObjectStore().getDataRowCache(),
-                mirror.getObjectStore().getDataRowCache());
+            assertNotSame(context.getObjectStore().getDataRowCache(), mirror
+                    .getObjectStore()
+                    .getDataRowCache());
         }
 
         return mirror;

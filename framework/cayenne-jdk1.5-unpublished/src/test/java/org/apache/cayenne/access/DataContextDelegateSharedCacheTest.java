@@ -56,7 +56,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
      */
     public void testShouldMergeChanges() throws Exception {
 
-        DataContext altContext = mirrorDataContext(context);
+        DataContext altContext = createDataContext();
 
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -67,16 +67,16 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
                 return true;
             }
         };
-        altContext.setDelegate(delegate);
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
+        Artist altArtist = (Artist) altContext.localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertNotSame(altArtist, artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
+
+        altContext.setDelegate(delegate);
 
         // Update and save artist in peer context
         artist.setArtistName("version2");
