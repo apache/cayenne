@@ -36,7 +36,7 @@ class EJBQLQueryMetadata extends BaseQueryMetadata {
 
     boolean resolve(EntityResolver resolver, EJBQLQuery query) {
         EJBQLCompiledExpression expression = query.getExpression(resolver);
-
+        setPrefetchTree(expression.getPrefetchTree());
         resultSetMapping = expression.getResult() != null ? expression
                 .getResult()
                 .getResolvedComponents(resolver) : null;

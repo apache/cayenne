@@ -20,11 +20,15 @@
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -636,15 +640,31 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 rowsColumn.add((DataRow) rows.get(i)[position]);
             }
             List<Persistent> objects;
-
-            // take a shortcut when no prefetches exist...
+            if (prefetchTree != null) {
+                PrefetchTreeNode prefetchTreeNode = null;
+                for (PrefetchTreeNode prefetch : prefetchTree.getChildren()) {
+                    if (descriptor.getEntity().getName().equals(prefetch.getEntityName())) {
+                        if (prefetchTreeNode == null) {
+                            prefetchTreeNode = new PrefetchTreeNode();
+                        }
+                        PrefetchTreeNode addPath = prefetchTreeNode.addPath(prefetch
+                                .getPath());
+                        addPath.setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+                        addPath.setPhantom(false);
+                    }
+                }
+                prefetchTree = prefetchTreeNode;
+            }
             if (prefetchTree == null) {
                 objects = new ObjectResolver(context, descriptor, metadata
                         .isRefreshingObjects())
                         .synchronizedObjectsFromDataRows(rowsColumn);
             }
             else {
-                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata);
+                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
+                        context,
+                        metadata,
+                        descriptor, true);
                 objects = resolver.synchronizedObjectsFromDataRows(
                         prefetchTree,
                         rowsColumn,
@@ -660,7 +680,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             List<Object> rsMapping = metadata.getResultSetMapping();
             int width = rsMapping.size();
-
             // no conversions needed for scalar positions; reuse Object[]'s to fill them
             // with resolved objects
             List<List<?>> resultLists = new ArrayList<List<?>>(width);
@@ -670,16 +689,27 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     EntityResultSegment entitySegment = (EntityResultSegment) rsMapping
                             .get(i);
                     List<Persistent> nextResult = toObjects(entitySegment
-                            .getClassDescriptor(), null, mainRows, i);
+                            .getClassDescriptor(), metadata.getPrefetchTree() , mainRows, i);
+                    
                     resultLists.add(nextResult);
-
+                    
                     for (int j = 0; j < rowsLen; j++) {
                         Object[] row = mainRows.get(j);
                         row[i] = nextResult.get(j);
                     }
                 }
             }
-
+            Set<List<?>> seen = new HashSet(mainRows.size());
+            Iterator<Object[]> it = mainRows.iterator();
+            while (it.hasNext()) {
+                
+                if (!seen.add(Arrays.asList(it.next()))) {
+                    it.remove();
+                    
+                }
+                
+            }
+            
             // invoke callbacks now that all objects are resolved...
             LifecycleCallbackRegistry callbackRegistry = context
                     .getEntityResolver()

@@ -36,6 +36,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     private PrefetchProcessorNode root;
     private LinkedList<PrefetchProcessorNode> nodeStack;
 
+    private ClassDescriptor descriptor;
     private List mainResultRows;
     private Map extraResultsByPath;
 
@@ -45,6 +46,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         this.queryMetadata = objectTreeResolver.queryMetadata;
         this.mainResultRows = mainResultRows;
         this.extraResultsByPath = extraResultsByPath;
+        this.descriptor=objectTreeResolver.descriptor;
     }
 
     PrefetchProcessorNode buildTree(PrefetchTreeNode tree) {
@@ -147,7 +149,11 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         }
         else {
             arc = null;
-            descriptor = queryMetadata.getClassDescriptor();
+            if(this.descriptor!=null){
+                descriptor=this.descriptor;
+            }else{
+                descriptor = queryMetadata.getClassDescriptor();
+            }
             rows = mainResultRows;
         }
 

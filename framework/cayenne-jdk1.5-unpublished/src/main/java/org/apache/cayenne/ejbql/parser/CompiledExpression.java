@@ -27,6 +27,7 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -42,7 +43,9 @@ class CompiledExpression implements EJBQLCompiledExpression {
     private Map<String, ObjRelationship> incomingById;
     private EJBQLExpression expression;
     private SQLResult result;
-
+    private PrefetchTreeNode prefetchTree;
+    
+    
     public ClassDescriptor getEntityDescriptor(String idVariable) {
         if (idVariable == null) {
             return null;
@@ -98,5 +101,13 @@ class CompiledExpression implements EJBQLCompiledExpression {
 
     void setResult(SQLResult resultSetMapping) {
         this.result = resultSetMapping;
+    }
+    
+    public PrefetchTreeNode getPrefetchTree() {
+        return prefetchTree;
+    }
+
+    public void setPrefetchTree(PrefetchTreeNode prefetchTree) {
+        this.prefetchTree = prefetchTree;
     }
 }
