@@ -33,4 +33,15 @@ public class EJBQLOuterFetchJoin extends EJBQLJoin {
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitOuterFetchJoin(this);
     }
+    
+    @Override
+    public String getRightHandSideId() {
+        int len = getChildrenCount();
+        if (len < 1) {
+            return null;
+        }
+
+        EJBQLPath path = (EJBQLPath) getChild(0);
+        return path.getAbsolutePath();
+    }
 }

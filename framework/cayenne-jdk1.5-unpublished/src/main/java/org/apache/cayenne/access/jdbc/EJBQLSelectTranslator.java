@@ -116,4 +116,5 @@ public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }
+
 }
