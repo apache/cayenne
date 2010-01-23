@@ -19,6 +19,7 @@
 package org.apache.cayenne.test;
 
 import java.sql.Connection;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -74,9 +75,22 @@ public class DBHelper {
         try {
 
             PreparedStatement st = c.prepareStatement(sql.toString());
+            ParameterMetaData parameters = null;
             try {
                 for (int i = 0; i < values.length; i++) {
-                    st.setObject(i + 1, values[i]);
+
+                    if (values[i] == null) {
+
+                        // check for the right NULL type
+                        if (parameters == null) {
+                            parameters = st.getParameterMetaData();
+                        }
+
+                        st.setNull(i + 1, parameters.getParameterType(i + 1));
+                    }
+                    else {
+                        st.setObject(i + 1, values[i]);
+                    }
                 }
 
                 st.executeUpdate();
