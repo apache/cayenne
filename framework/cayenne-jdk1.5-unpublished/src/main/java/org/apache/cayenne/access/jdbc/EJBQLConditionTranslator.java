@@ -31,6 +31,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.parser.AggregateConditionNode;
 import org.apache.cayenne.ejbql.parser.EJBQLDecimalLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLEquals;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
@@ -80,7 +81,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitAnd(EJBQLExpression expression, int finishedChildIndex) {
-        afterChild(expression, " AND", finishedChildIndex);
+        visitConditional((AggregateConditionNode) expression, " AND", finishedChildIndex);
         return true;
     }
 
@@ -380,7 +381,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitOr(EJBQLExpression expression, int finishedChildIndex) {
-        afterChild(expression, " OR", finishedChildIndex);
+        visitConditional((AggregateConditionNode) expression, " OR", finishedChildIndex);
         return true;
     }
 
@@ -571,6 +572,29 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
 
         return true;
+    }
+    
+    /**
+     * Visits conditional node, suppling brackets if needed
+     */
+    void visitConditional(AggregateConditionNode e, String afterText, int childIndex) {
+        if (childIndex == -1 && needBracket(e)) {
+            context.append(" (");
+        }
+
+        afterChild(e, afterText, childIndex);
+        
+        if (childIndex == e.getChildrenCount() - 1 && needBracket(e)) {
+            context.append(")");
+        }
+    }
+    
+    /**
+     * Checks whether expression needs to be rounded by brackets
+     */
+    boolean needBracket(AggregateConditionNode e) {
+        return (e.jjtGetParent() instanceof AggregateConditionNode) &&
+            e.getPriority() > ((AggregateConditionNode) e.jjtGetParent()).getPriority();
     }
 
     protected void afterChild(EJBQLExpression e, String text, int childIndex) {

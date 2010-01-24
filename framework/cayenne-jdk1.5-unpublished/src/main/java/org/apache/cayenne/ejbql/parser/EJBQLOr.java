@@ -23,7 +23,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 /**
  * @since 3.0
  */
-public class EJBQLOr extends SimpleNode {
+public class EJBQLOr extends AggregateConditionNode {
 
     public EJBQLOr(int id) {
         super(id);
@@ -37,5 +37,10 @@ public class EJBQLOr extends SimpleNode {
     @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
         return super.visitChild(visitor, childIndex) && visitor.visitOr(this, childIndex);
+    }
+
+    @Override
+    public int getPriority() {
+        return OR_PRIORITY;
     }
 }

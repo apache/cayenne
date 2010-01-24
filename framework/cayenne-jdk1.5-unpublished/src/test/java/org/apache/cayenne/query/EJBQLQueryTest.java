@@ -339,4 +339,39 @@ public class EJBQLQueryTest extends CayenneCase {
     
         context.performQuery(query);
     }
+    
+    public void testOrBrackets() throws Exception {
+        deleteTestData();
+        ObjectContext context = createDataContext();
+        
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("testOrBrackets");
+        context.commitChanges();
+        
+        //this query is equivalent to (false and (false or true)) and
+        //should always return 0 rows
+        EJBQLQuery query = new EJBQLQuery("select a from Artist a " +
+    		"where a.artistName <> a.artistName and " +
+    		"(a.artistName <> a.artistName or a.artistName = a.artistName)");
+        assertEquals(context.performQuery(query).size(), 0);
+        
+        //on the other hand, the following is equivalent to (false and false) or true) and
+        //should return >0 rows
+        query = new EJBQLQuery("select a from Artist a " +
+            "where a.artistName <> a.artistName and " +
+            "a.artistName <> a.artistName or a.artistName = a.artistName");
+        assertTrue(context.performQuery(query).size() > 0);
+        
+        //checking brackets around not
+        query = new EJBQLQuery("select a from Artist a " +
+            "where not(a.artistName <> a.artistName and " +
+            "a.artistName <> a.artistName or a.artistName = a.artistName)");
+        assertEquals(context.performQuery(query).size(), 0);
+        
+        //not is first to process
+        query = new EJBQLQuery("select a from Artist a " +
+                "where not a.artistName <> a.artistName or " +
+                "a.artistName = a.artistName");
+        assertTrue(context.performQuery(query).size() > 0);
+    }
 }
