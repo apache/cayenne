@@ -19,9 +19,14 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.art.Artist;
+import org.apache.art.Gallery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -171,4 +176,64 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertEquals(new BigDecimal(1d), row0[0], 0.001d);
         assertEquals(new Long(3l), row0[1]);
     }
+    
+    public void testGroupByJoinedRelatedEntities() throws Exception {
+        createTestData("testGroupByRelatedEntity");
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT COUNT(p), p.toArtist FROM Painting p GROUP BY p.toArtist ");
+        List<Object[]> data = createDataContext().performQuery(query);
+        assertNotNull(data);
+        assertEquals(2, data.size());
+        
+        List<String> expectedArtists=new ArrayList<String>();
+        expectedArtists.add("AA1");
+        expectedArtists.add("AA2");
+        
+        Object[]row = data.get(0);
+        String artistName = ((Artist)row[1]).getArtistName();
+        assertEquals(1L, row[0]);
+        assertTrue("error artistName:"+artistName, expectedArtists.contains(artistName));
+        
+        row = data.get(1);
+        artistName = ((Artist)row[1]).getArtistName();
+        assertEquals(1L, row[0]);
+        assertTrue("error artistName:"+artistName, expectedArtists.contains(artistName));
+    }
+
+    public void testGroupByJoinedEntities() throws Exception {
+        createTestData("testGroupByEntities");
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT COUNT(p), p.toArtist, p.toGallery FROM Painting p " +
+                "GROUP BY p.toGallery, p.toArtist ");
+        List<Object[]> data = createDataContext().performQuery(query);
+        assertNotNull(data);
+        assertEquals(5, data.size());
+        
+        HashSet<List> expectedResults=new HashSet<List>();
+        expectedResults.add(Arrays.asList(3L, null,null));
+        expectedResults.add(Arrays.asList(1L, "AA1",null));
+        expectedResults.add(Arrays.asList(1L, "AA2",null));
+        expectedResults.add(Arrays.asList(1L, "AA2","gallery1"));
+        expectedResults.add(Arrays.asList(1L, "AA1","gallery2"));
+        
+        for(Object[] row:data){
+            assertFalse(expectedResults.add(Arrays.asList(
+                    row[0], 
+                    row[1]==null?null:((Artist)row[1]).getArtistName(),
+                    row[2]==null?null:((Gallery)row[2]).getGalleryName())));
+        }
+    }
+
+    public void testGroupByJoinedEntityInCount() throws Exception {
+        createTestData("testGroupByEntities");
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT COUNT(p.toArtist) FROM Painting p GROUP BY p.toArtist");
+        List<Long> data = createDataContext().performQuery(query);
+        assertNotNull(data);
+        assertEquals(3, data.size());
+        for(Long result:data){
+            assertTrue(result==3L||result==2L);
+        }
+    }
+    
 }

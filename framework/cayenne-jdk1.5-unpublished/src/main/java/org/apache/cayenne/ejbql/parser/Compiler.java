@@ -606,9 +606,10 @@ class Compiler {
         @Override
         public boolean visitAggregate(EJBQLExpression expression) {
             addResultSetColumn();
+            expression.getChild(0).getChild(0).visit(pathVisitor);
             return false;
         }
-
+        
         @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             addPath((EJBQLPath) expression);

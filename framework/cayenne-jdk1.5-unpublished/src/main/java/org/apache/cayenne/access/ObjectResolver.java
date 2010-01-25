@@ -108,21 +108,13 @@ class ObjectResolver {
         }
 
         List<Persistent> results = new ArrayList<Persistent>(rows.size());
-
         for (DataRow row : rows) {
-
-            Persistent object = objectFromDataRow(row);
-
-            if (object == null) {
-                throw new CayenneRuntimeException("Can't build Object from row: " + row);
-            }
-
-            results.add(object);
+            // nulls are possible here since 3.0 for soem varieties of EJBQL
+            results.add(objectFromDataRow(row));
         }
 
         // now deal with snapshots
         cache.snapshotsUpdatedForObjects(results, rows, refreshObjects);
-
         return results;
     }
 
