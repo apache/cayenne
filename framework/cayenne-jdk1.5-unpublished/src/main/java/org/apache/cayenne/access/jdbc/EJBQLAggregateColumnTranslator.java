@@ -131,37 +131,16 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
                     table.getFullyQualifiedName());
             context.append(alias).append('.').append(attribute.getDbAttributeName());
         }
-        @Override
-        public boolean visitIdentificationVariable(EJBQLExpression expression) {
-
-            String idVariableAbsolutePath = idPath+"."+expression.getText();
-            ClassDescriptor descriptor = context.getEntityDescriptor(idVariableAbsolutePath);
-            if (descriptor != null) {
-                this.lastAlias = context.getTableAlias(idVariableAbsolutePath, descriptor.getEntity().getDbEntityName());
-            }
-
-            this.lastPathComponent = expression.getText();
-            
-            return true;
-        }
         
         @Override
         protected void processTerminatingRelationship(ObjRelationship relationship) {
-
             Collection<DbAttribute> dbAttr = ((ObjEntity) relationship
                     .getTargetEntity()).getDbEntity().getAttributes();
-
-            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
-            DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
 
             if (dbAttr.size() > 0) {
                 this.resolveJoin(false);
             }
-
-            String alias = this.lastAlias != null ? lastAlias : context
-                    .getTableAlias(idPath, table.getFullyQualifiedName());
-
-            context.append(alias).append(".*");
+            context.append('*');
         }
     }
 
