@@ -227,12 +227,20 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     public void testGroupByJoinedEntityInCount() throws Exception {
         createTestData("testGroupByEntities");
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT COUNT(p.toArtist) FROM Painting p GROUP BY p.toArtist");
-        List<Long> data = createDataContext().performQuery(query);
+                "SELECT COUNT(p.toArtist), p.paintingTitle FROM Painting p " +
+                "GROUP BY p.paintingTitle " +
+                "HAVING p.paintingTitle LIKE 'P1%'");
+        List<Object[]> data = createDataContext().performQuery(query);
         assertNotNull(data);
         assertEquals(3, data.size());
-        for(Long result:data){
-            assertTrue(result==3L||result==2L);
+        
+        HashSet<List> expectedResults=new HashSet<List>();
+        expectedResults.add(Arrays.asList(1L, "P1"));
+        expectedResults.add(Arrays.asList(1L, "P111"));
+        expectedResults.add(Arrays.asList(1L, "P112"));
+        
+        for(Object[] row:data){
+            assertFalse(expectedResults.add(Arrays.asList(row[0], row[1])));
         }
     }
     
