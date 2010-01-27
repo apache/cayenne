@@ -61,6 +61,7 @@ CAY-1367 EJBQL: Implement support for relationship-ending paths in GROUP BY clau
 CAY-1368 Left Join and Prefetches do not work together
 CAY-1369 EJBQL: Fix likeIgnoreCase issues
 CAY-1371 EJBQL query doesn't preserve grouping by brackets
+CAY-1377 EJBQLQuery: when using relationships in the SELECT clause, must generate INNER, not OUTER JOINS
 
 ----------------------------------
 Release: 3.0 RC 1
