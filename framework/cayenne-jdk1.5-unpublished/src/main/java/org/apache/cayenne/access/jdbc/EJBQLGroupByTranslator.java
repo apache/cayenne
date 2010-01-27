@@ -76,7 +76,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                 String idVariableAbsolutePath = idPath+"."+expression.getText();
                 ClassDescriptor descriptor = context.getEntityDescriptor(idVariableAbsolutePath);
                 if (descriptor != null) {
-                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath, descriptor.getEntity().getDbEntityName());
+                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath, descriptor.getEntity().getDbEntity().getFullyQualifiedName());
                 }
 
                 this.lastPathComponent = expression.getText();
