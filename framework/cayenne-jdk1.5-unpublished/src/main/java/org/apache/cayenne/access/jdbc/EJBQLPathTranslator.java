@@ -226,7 +226,11 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
         if (relationship.isSourceIndependentFromTargetChange()) {
 
-            // use an outer join for to-many matches
+            // (andrus) use an outer join for to-many matches.. This is somewhat different
+            // from traditional Cayenne SelectQuery, as EJBQL spec does not allow regular
+            // path matches done against to-many relationships, and instead provides
+            // MEMBER OF and IS EMPTY operators. Outer join is needed for IS EMPTY... I
+            // guess MEMBER OF could've been done with an inner join though..
             resolveJoin(false);
 
             DbRelationship dbRelationship = chooseDbRelationship(relationship);
@@ -235,8 +239,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
                     table.getFullyQualifiedName());
-           
-            
+
             Collection<DbAttribute> pks = table.getPrimaryKeys();
 
             if (pks.size() == 1) {
@@ -251,7 +254,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 throw new EJBQLException(
                         "Multi-column PK to-many matches are not yet supported.");
             }
-            
+
         }
         else {
             // match FK against the target object
