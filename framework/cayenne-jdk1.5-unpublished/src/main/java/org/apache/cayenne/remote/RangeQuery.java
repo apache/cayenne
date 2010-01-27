@@ -168,4 +168,11 @@ class RangeQuery implements Query {
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * @since 3.1
+     */
+    public DataMap getDataMap() {
+        throw new UnsupportedOperationException();
+    }
 }

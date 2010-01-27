@@ -45,6 +45,7 @@ class SQLTemplateBuilder extends QueryLoader {
         }
 
         template.setName(name);
+        template.setDataMap(dataMap);
         template.initWithProperties(properties);
 
         // init SQL

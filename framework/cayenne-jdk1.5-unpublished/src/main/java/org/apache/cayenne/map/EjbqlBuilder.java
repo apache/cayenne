@@ -27,7 +27,8 @@ public class EjbqlBuilder extends QueryLoader{
     @Override
     Query getQuery() {
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setName(name);    
+        query.setName(name);   
+        query.setDataMap(dataMap);
         query.initWithProperties(properties);
         return query;
     }

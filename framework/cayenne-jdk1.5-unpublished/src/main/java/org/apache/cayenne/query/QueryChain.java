@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -38,6 +39,12 @@ public class QueryChain implements Query {
 
     protected Collection<Query> chain;
     protected String name;
+    
+    /**
+     * @since 3.1
+     */
+    protected DataMap dataMap;
+
 
     /**
      * Creates an empty QueryChain.
@@ -122,6 +129,20 @@ public class QueryChain implements Query {
         this.name = name;
     }
 
+    /**
+     * @since 3.1
+     */
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setDataMap(DataMap dataMap) {
+        this.dataMap = dataMap;
+    }
+    
     /**
      * Returns default metadata.
      */

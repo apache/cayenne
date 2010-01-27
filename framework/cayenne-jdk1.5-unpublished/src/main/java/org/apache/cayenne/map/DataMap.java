@@ -268,6 +268,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         for (Query q : getQueries()) {
             NamedQuery proxy = new NamedQuery(q.getName());
             proxy.setName(q.getName());
+            proxy.setDataMap(this);
 
             // resolve metadata so that client can have access to it without knowing about
             // the server query.
@@ -518,7 +519,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         if (query.getName() == null) {
             throw new NullPointerException("Query name can't be null.");
         }
-
+        
         // TODO: change method signature to return replaced procedure and make sure the
         // Modeler handles it...
         Object existingQuery = queryMap.get(query.getName());

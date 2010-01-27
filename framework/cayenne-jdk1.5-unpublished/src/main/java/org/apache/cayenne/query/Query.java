@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import org.apache.cayenne.access.QueryEngine;
 import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -71,4 +72,9 @@ public interface Query extends Serializable, ConfigurationNode {
      * @since 1.1
      */
     String getName();
+    
+    /**
+     * @since 3.1
+     */
+    DataMap getDataMap();
 }

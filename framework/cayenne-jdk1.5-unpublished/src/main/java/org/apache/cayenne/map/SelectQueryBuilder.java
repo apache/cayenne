@@ -37,6 +37,7 @@ class SelectQueryBuilder extends QueryLoader {
         SelectQuery query = new SelectQuery();
         query.setRoot(getRoot());
         query.setName(name);
+        query.setDataMap(dataMap);
         query.setQualifier(qualifier);
 
         if (orderings != null && !orderings.isEmpty()) {

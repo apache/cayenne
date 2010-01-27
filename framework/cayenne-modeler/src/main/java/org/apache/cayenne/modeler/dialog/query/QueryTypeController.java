@@ -101,8 +101,10 @@ public class QueryTypeController extends BasicController {
 		String queryName = NamedObjectFactory.createName(Query.class, dataMap);
 		if (query instanceof EJBQLQuery) {
 			((EJBQLQuery) query).setName(queryName);
+			((EJBQLQuery) query).setDataMap(dataMap);
 		} else {
 			((AbstractQuery) query).setName(queryName);
+			((AbstractQuery) query).setDataMap(dataMap);
 		}
 		
 		dataMap.addQuery(query);

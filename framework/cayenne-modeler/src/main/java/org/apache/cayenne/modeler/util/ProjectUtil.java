@@ -149,9 +149,11 @@ public class ProjectUtil {
 
         if (query instanceof AbstractQuery) {
             ((AbstractQuery) query).setName(newName);
+            ((AbstractQuery) query).setDataMap(map);
         }
         if (query instanceof EJBQLQuery) {
             ((EJBQLQuery) query).setName(newName);
+            ((EJBQLQuery) query).setDataMap(map);
         }
         map.removeQuery(oldName);
         map.addQuery(query);

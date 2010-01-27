@@ -42,6 +42,7 @@ class ProcedureQueryBuilder extends QueryLoader {
         }
 
         query.setName(name);
+        query.setDataMap(dataMap);
         query.setResultEntityName(resultEntity);
         query.initWithProperties(properties);
 

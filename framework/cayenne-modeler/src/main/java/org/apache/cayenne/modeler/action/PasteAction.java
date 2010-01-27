@@ -309,6 +309,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 }
 
                 query.setName(getFreeName(new QueryNameChecker(domain), query.getName()));
+                query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);
                 QueryTypeController.fireQueryEvent(this, mediator, mediator

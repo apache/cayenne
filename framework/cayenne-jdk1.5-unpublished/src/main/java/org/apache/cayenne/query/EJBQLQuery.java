@@ -40,7 +40,9 @@ import org.apache.cayenne.util.XMLSerializable;
 public class EJBQLQuery implements Query, XMLSerializable {
 
     protected String name;
+    protected DataMap dataMap;
     protected String ejbqlStatement;
+    
     protected Map<String, Object> namedParameters;
     protected Map<Integer, Object> positionalParameters;
 
@@ -52,6 +54,21 @@ public class EJBQLQuery implements Query, XMLSerializable {
     }
 
     public EJBQLQuery() {
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+    
+    
+    /**
+     * @since 3.1
+     */
+    public void setDataMap(DataMap dataMap) {
+        this.dataMap = dataMap;
     }
     
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {

@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -49,7 +50,13 @@ public abstract class BatchQuery implements Query {
     protected DbEntity dbEntity;
 
     protected String name;
+    
+    /**
+     * @since 3.1
+     */
+    protected DataMap dataMap;
 
+    
     public BatchQuery(DbEntity dbEntity) {
         this.dbEntity = dbEntity;
         this.batchIndex = -1;
@@ -65,6 +72,20 @@ public abstract class BatchQuery implements Query {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setDataMap(DataMap dataMap) {
+        this.dataMap = dataMap;
     }
 
     /**

@@ -24,6 +24,7 @@ import java.util.Collection;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -160,6 +161,14 @@ public class RefreshQuery implements Query {
                     Query substitutedQuery) {
                 query.route(router, resolver, this);
             }
+
+            public DataMap getDataMap() {
+                return query.getDataMap();
+            }
         };
+    }
+
+    public DataMap getDataMap() {
+        return null;
     }
 }

@@ -20,11 +20,13 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 public class MockQuery implements Query {
 
     protected String name;
+    protected DataMap dataMap;
     protected boolean selecting;
     protected boolean routeCalled;
 
@@ -33,6 +35,16 @@ public class MockQuery implements Query {
     }
 
     public MockQuery() {
+    }
+
+    
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+
+    
+    public void setDataMap(DataMap dataMap) {
+        this.dataMap = dataMap;
     }
 
     public MockQuery(String name) {
