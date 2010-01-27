@@ -268,7 +268,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         for (Query q : getQueries()) {
             NamedQuery proxy = new NamedQuery(q.getName());
             proxy.setName(q.getName());
-            proxy.setDataMap(this);
+            proxy.setDataMap(clientMap);
 
             // resolve metadata so that client can have access to it without knowing about
             // the server query.
