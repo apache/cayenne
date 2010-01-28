@@ -138,7 +138,7 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
                     .getTargetEntity()).getDbEntity().getAttributes();
 
             if (dbAttr.size() > 0) {
-                this.resolveJoin(false);
+                this.resolveJoin(true);
             }
             context.append('*');
         }

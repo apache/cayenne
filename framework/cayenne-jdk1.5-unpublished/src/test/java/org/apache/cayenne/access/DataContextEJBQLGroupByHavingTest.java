@@ -207,12 +207,9 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
                 "GROUP BY p.toGallery, p.toArtist ");
         List<Object[]> data = createDataContext().performQuery(query);
         assertNotNull(data);
-        assertEquals(5, data.size());
+        assertEquals(2, data.size());
         
         HashSet<List> expectedResults=new HashSet<List>();
-        expectedResults.add(Arrays.asList(3L, null,null));
-        expectedResults.add(Arrays.asList(1L, "AA1",null));
-        expectedResults.add(Arrays.asList(1L, "AA2",null));
         expectedResults.add(Arrays.asList(1L, "AA2","gallery1"));
         expectedResults.add(Arrays.asList(1L, "AA1","gallery2"));
         
