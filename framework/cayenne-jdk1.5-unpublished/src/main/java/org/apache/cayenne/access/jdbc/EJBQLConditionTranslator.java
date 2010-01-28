@@ -321,7 +321,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // reverse order to get the nearest to the correlated of the direct relation
         for (int i = dbRelationships.size() - 1; i > 0; i--) {
             DbRelationship dbRelationship = dbRelationships.get(i);
-            String subqueryTargetTableName = dbRelationship.getTargetEntityName();
+            String subqueryTargetTableName = ((DbEntity)dbRelationship.getTargetEntity()).getFullyQualifiedName();
             String subqueryTargetAlias;
             if (i == dbRelationships.size() - 1) {
                 subqueryTargetAlias = subqueryRootAlias;
@@ -337,9 +337,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
             context.append(" JOIN ");
 
-            String subquerySourceTableName = dbRelationship
-                    .getSourceEntity()
-                    .getName();
+            String subquerySourceTableName = ((DbEntity)dbRelationship
+                    .getSourceEntity())
+                    .getFullyQualifiedName();
             String subquerySourceAlias = context.getTableAlias(
                     subquerySourceTableName,
                     subquerySourceTableName);

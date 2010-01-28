@@ -134,14 +134,14 @@ public class EJBQLJoinAppender {
                 for (int i = 1; i < joinRelationships.size(); i++) {
                     DbRelationship dbRelationship = joinRelationships.get(i);
 
-                    String subquerySourceTableName = dbRelationship
-                            .getSourceEntity()
-                            .getName();
+                    String subquerySourceTableName = ((DbEntity)dbRelationship
+                            .getSourceEntity())
+                            .getFullyQualifiedName();
                     String subquerySourceAlias = context.getTableAlias(
                             subquerySourceTableName,
                             subquerySourceTableName);
 
-                    String subqueryTargetTableName = dbRelationship.getTargetEntityName();
+                    String subqueryTargetTableName = ((DbEntity)dbRelationship.getTargetEntity()).getFullyQualifiedName();
                     
                     String subqueryTargetAlias = "";
                     if(i==joinRelationships.size()-1){
@@ -329,13 +329,13 @@ public class EJBQLJoinAppender {
                         if (next instanceof DbRelationship) {
                             DbRelationship rel = (DbRelationship) next;
                             context.append(" LEFT OUTER JOIN ");
-                            String targetEntityName = rel.getTargetEntityName();
+                            String targetEntityName = ((DbEntity)rel.getTargetEntity()).getFullyQualifiedName();
                             String subqueryTargetAlias = context.getTableAlias(id
                                     .getEntityId(), targetEntityName);
                             context.append(targetEntityName).append(' ').append(
                                     subqueryTargetAlias);
                             generateJoiningExpression(rel, context.getTableAlias(id
-                                    .getEntityId(), rel.getSourceEntity().getName()), subqueryTargetAlias);
+                                    .getEntityId(), ((DbEntity)rel.getSourceEntity()).getFullyQualifiedName()), subqueryTargetAlias);
                         }
 
                     }

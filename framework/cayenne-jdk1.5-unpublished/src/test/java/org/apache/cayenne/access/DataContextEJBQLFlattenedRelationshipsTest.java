@@ -257,5 +257,12 @@ public class DataContextEJBQLFlattenedRelationshipsTest extends RelationshipCase
         assertTrue(ids.contains(new Integer(2)));
 
     }
-   
+    public void testGroupByFlattenedRelationship() throws Exception {
+        String ejbql = "SELECT COUNT(ft3), ft3.toFT1 FROM FlattenedTest3 ft3  GROUP BY ft3.toFT1 ";
+  
+         ObjectContext context = createDataContext();
+         EJBQLQuery query = new EJBQLQuery(ejbql);
+         List<?> objects = context.performQuery(query);
+         assertEquals(2, objects.size());
+    }
 }
