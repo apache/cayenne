@@ -3,24 +3,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component cay:post-persist</title>
+      <title>Schema documentation for component cay:embedded-attribute</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id57', 
-				'properties_id58');
+        var propertiesBoxes= new Array('properties_id37', 
+				'properties_id41', 
+				'properties_id42');
 
         
-        var usedByBoxes= new Array('usedBy_id57', 
-				'usedBy_id58');
+        var usedByBoxes= new Array('usedBy_id37', 
+				'usedBy_id41', 
+				'usedBy_id42');
 
-        var sourceBoxes= new Array('source_id57', 
-				'source_id58');
+        var sourceBoxes= new Array('source_id37', 
+				'source_id41', 
+				'source_id42');
+
+        var instanceBoxes= new Array('instance_id37');
+
+        var diagramBoxes= new Array('diagram_id37');
 
         
-        var diagramBoxes= new Array('diagram_id57');
-
-        
-        var attributesBoxes= new Array('attributes_id57');
+        var attributesBoxes= new Array('attributes_id37');
 
         
         var button_prefix = 'button_';
@@ -266,6 +270,11 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, instanceBoxes);"
+                                     class="control" /></span><span class="globalControlName">Instances</span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
                      </tr>
@@ -292,7 +301,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id57"></a><div class="componentTitle">Element <span class="qname">cay:post-persist</span></div>
+      </div><a id="id37"></a><div class="componentTitle">Element <span class="qname">cay:embedded-attribute</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -311,26 +320,28 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Diagram</b></div>
-                           <div class="floatRight"><input id="button_diagram_id57" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('diagram_id57');"
+                           <div class="floatRight"><input id="button_diagram_id37" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('diagram_id37');"
                                      class="control" /></div>
                         </td>
                         <td class="diagram">
-                           <div id="diagram_id57" style="display:block"><img alt="Diagram" border="0" src="images/modelMap.html22.png"
-                                   usemap="#modelMap_46_html22" /><map name="modelMap_46_html22" id="modelMap_46_html22">
-                                 <area alt="modelMap3.tmp#id58" href="modelMap3.html#id58" coords="140,40,264,82" /></map></div>
+                           <div id="diagram_id37" style="display:block"><img alt="Diagram" border="0" src="images/modelMap.html20.png"
+                                   usemap="#modelMap_46_html20" /><map name="modelMap_46_html20" id="modelMap_46_html20">
+                                 <area alt="modelMap3.tmp#id41" href="modelMap3.html#id41" coords="181,40,294,82" />
+                                 <area alt="modelMap3.tmp#id42" href="modelMap3.html#id42" coords="181,92,294,134" />
+                                 <area alt="modelMap27.tmp#id38" href="modelMap27.html#id38" coords="259,155,479,179" /></map></div>
                         </td>
                      </tr>
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id57" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_properties_id37" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('properties_id57');"
+                                     onclick="switchState('properties_id37');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id57" style="display:block">
+                           <div id="properties_id37" style="display:block">
                               <table class="propertiesTable">
                                  <tr>
                                     <td class="firstColumn">content:
@@ -345,18 +356,16 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id57" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id57');"
+                           <div class="floatRight"><input id="button_usedBy_id37" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id37');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="usedBy_id57" style="display:block">
+                           <div id="usedBy_id37" style="display:block">
                               <table class="usedByTable">
                                  <tr>
-                                    <td class="firstColumn">Elements </td>
-                                    <td><b><a href="modelMap0.html#id52" target="mainFrame"
-                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:entity-listener')">cay:entity-listener</a></b>, <b><a href="modelMap14.html#id35" target="mainFrame"
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="modelMap1.html#id36" target="mainFrame"
                                              title="http://cayenne.apache.org/schema/3.0/modelMap"
                                              onclick="updatePageTitle('Schema documentation for component cay:obj-entity')">cay:obj-entity</a></b></td>
                                  </tr>
@@ -365,15 +374,47 @@
                         </td>
                      </tr>
                      <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="modelMap27.html#id38" target="mainFrame"
+                                 title="http://cayenne.apache.org/schema/3.0/modelMap"
+                                 onclick="updatePageTitle('Schema documentation for component cay:embeddable-attribute-override*')">cay:embeddable-attribute-override*</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="modelMap27.html#id38" target="mainFrame"
+                                 title="http://cayenne.apache.org/schema/3.0/modelMap"
+                                 onclick="updatePageTitle('Schema documentation for component cay:embeddable-attribute-override')">cay:embeddable-attribute-override</a></b></td>
+                     </tr>
+                     <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Attributes</b></div>
-                           <div class="floatRight"><input id="button_attributes_id57" type="image" src="images/button_minus.gif"
-                                     value="-"
-                                     onclick="switchState('attributes_id57');"
+                           <div class="floatLeft"><b>Instance</b></div>
+                           <div class="floatRight"><input id="button_instance_id37" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('instance_id37');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="attributes_id57" style="display:block">
+                           <div id="instance_id37" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tokenElement">&lt;cay:embedded-attribute</span><span class="tokenText"> </span><span class="tokenAttrName">name=</span><span class="tokenAttrValue">""</span><span class="tokenText"> </span><span class="tokenAttrName">type=</span><span class="tokenAttrValue">""</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+  </span><span class="tokenElement">&lt;cay:embeddable-attribute-override</span><span class="tokenText"> </span><span class="tokenAttrName">db-attribute-path=</span><span class="tokenAttrValue">""</span><span class="tokenText"> </span><span class="tokenAttrName">name=</span><span class="tokenAttrValue">""</span><span class="tokenElement">&gt;</span><span class="tokenText" style="white-space:normal">{0,unbounded}</span><span class="tokenElement">&lt;/cay:embeddable-attribute-override&gt;</span><span class="tokenIndent">
+</span><span class="tokenElement">&lt;/cay:embedded-attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id37" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id37');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id37" style="display:block">
                               <table class="attributesTable">
                                  <thead>
                                     <tr>
@@ -386,8 +427,19 @@
                                     </tr>
                                  </thead>
                                  <tr>
-                                    <td class="firstColumn"><b><a href="modelMap3.html#id58" target="mainFrame" title="No namespace"
-                                             onclick="updatePageTitle('Schema documentation for component method-name')">method-name</a></b></td>
+                                    <td class="firstColumn"><b><a href="modelMap3.html#id42" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component name')">name</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="modelMap3.html#id41" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component type')">type</a></b></td>
                                     <td><b>xs:string</b></td>
                                     <td></td>
                                     <td></td>
@@ -403,18 +455,22 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id57" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id57');"
+                           <div class="floatRight"><input id="button_source_id37" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('source_id37');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="source_id57" style="display:block">
+                           <div id="source_id37" style="display:block">
                               <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                      class="preWrapContainer">
                                  <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:element</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"post-persist"</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:element</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"embedded-attribute"</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
   </span><span class="tokenElement">&lt;xs:complexType</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
-    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"method-name"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
+    </span><span class="tokenElement">&lt;xs:sequence</span><span class="tokenElement">&gt;</span><span class="tokenIndent">
+      </span><span class="tokenElement">&lt;xs:element</span><span class="tokenAttrName"> minOccurs=</span><span class="tokenAttrValue">"0"</span><span class="tokenAttrName"> maxOccurs=</span><span class="tokenAttrValue">"unbounded"</span><span class="tokenAttrName"> ref=</span><span class="tokenAttrValue">"cay:embeddable-attribute-override"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
+    </span><span class="tokenElement">&lt;/xs:sequence&gt;</span><span class="tokenIndent">
+    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"type"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
+    </span><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"name"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span><span class="tokenIndent">
   </span><span class="tokenElement">&lt;/xs:complexType&gt;</span><span class="tokenIndent">
 </span><span class="tokenElement">&lt;/xs:element&gt;</span></pre></td>
                                  </tr>
@@ -436,9 +492,9 @@
             <td class="rt_lineBottom"></td>
             <td class="rt_cornerBottomRight"></td>
          </tr>
-      </table><a id="id58"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap3.html#id57" target="mainFrame"
+      </table><a id="id41"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap3.html#id37" target="mainFrame"
                   title="http://cayenne.apache.org/schema/3.0/modelMap"
-                  onclick="updatePageTitle('Schema documentation for component cay:post-persist')">cay:post-persist</a></b> / @method-name</span></div>
+                  onclick="updatePageTitle('Schema documentation for component cay:embedded-attribute')">cay:embedded-attribute</a></b> / @type</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -461,13 +517,13 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id58" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_properties_id41" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('properties_id58');"
+                                     onclick="switchState('properties_id41');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id58" style="display:block">
+                           <div id="properties_id41" style="display:block">
                               <table class="propertiesTable">
                                  <tr>
                                     <td class="firstColumn">use:
@@ -482,18 +538,18 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Used by</b></div>
-                           <div class="floatRight"><input id="button_usedBy_id58" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('usedBy_id58');"
+                           <div class="floatRight"><input id="button_usedBy_id41" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id41');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="usedBy_id58" style="display:block">
+                           <div id="usedBy_id41" style="display:block">
                               <table class="usedByTable">
                                  <tr>
                                     <td class="firstColumn">Element </td>
-                                    <td><b><a href="modelMap3.html#id57" target="mainFrame"
+                                    <td><b><a href="modelMap3.html#id37" target="mainFrame"
                                              title="http://cayenne.apache.org/schema/3.0/modelMap"
-                                             onclick="updatePageTitle('Schema documentation for component cay:post-persist')">cay:post-persist</a></b></td>
+                                             onclick="updatePageTitle('Schema documentation for component cay:embedded-attribute')">cay:embedded-attribute</a></b></td>
                                  </tr>
                               </table>
                            </div>
@@ -502,16 +558,111 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Source</b></div>
-                           <div class="floatRight"><input id="button_source_id58" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('source_id58');"
+                           <div class="floatRight"><input id="button_source_id41" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('source_id41');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="source_id58" style="display:block">
+                           <div id="source_id41" style="display:block">
                               <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                      class="preWrapContainer">
                                  <tr>
-                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"method-name"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
+                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"type"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Schema location</b></td>
+                        <td>file:/Users/ari/svn/cayenne30/framework/cayenne-jdk1.5-unpublished/src/main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id42"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="modelMap3.html#id37" target="mainFrame"
+                  title="http://cayenne.apache.org/schema/3.0/modelMap"
+                  onclick="updatePageTitle('Schema documentation for component cay:embedded-attribute')">cay:embedded-attribute</a></b> / @name</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:string</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id42" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id42');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id42" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>required</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id42" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id42');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id42" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="modelMap3.html#id37" target="mainFrame"
+                                             title="http://cayenne.apache.org/schema/3.0/modelMap"
+                                             onclick="updatePageTitle('Schema documentation for component cay:embedded-attribute')">cay:embedded-attribute</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id42" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('source_id42');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id42" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tokenElement">&lt;xs:attribute</span><span class="tokenAttrName"> name=</span><span class="tokenAttrValue">"name"</span><span class="tokenAttrName"> use=</span><span class="tokenAttrValue">"required"</span><span class="tokenAttrName"> type=</span><span class="tokenAttrValue">"xs:string"</span><span class="tokenElement">/&gt;</span></pre></td>
                                  </tr>
                               </table>
                            </div>
