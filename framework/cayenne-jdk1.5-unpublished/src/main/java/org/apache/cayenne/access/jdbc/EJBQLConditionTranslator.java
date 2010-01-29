@@ -166,7 +166,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         String subqueryId = context.createIdAlias(id);
         ClassDescriptor targetDescriptor = context.getEntityDescriptor(subqueryId);
-       
+
         if (expression.isNegated()) {
             context.append(" NOT");
         }
@@ -182,7 +182,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
                 .getEntity()
                 .getRelationship(path.getRelativePath());
-        
+
         if (relationship.getDbRelationshipPath().contains(".")) {
             // if the DbRelationshipPath contains '.', the relationship is flattened
             subqueryRootAlias = processFlattenedRelationShip(
@@ -274,7 +274,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
                 .getEntity()
                 .getRelationship(path.getRelativePath());
-        
+
         if (relationship.getDbRelationshipPath().contains(".")) {
             // if the DbRelationshipPath contains '.', the relationship is flattened
             subqueryRootAlias = processFlattenedRelationShip(
@@ -316,12 +316,12 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     private String processFlattenedRelationShip(
             String subqueryRootAlias,
             ObjRelationship relationship) {
-        List<DbRelationship> dbRelationships = relationship
-                .getDbRelationships();
+        List<DbRelationship> dbRelationships = relationship.getDbRelationships();
         // reverse order to get the nearest to the correlated of the direct relation
         for (int i = dbRelationships.size() - 1; i > 0; i--) {
             DbRelationship dbRelationship = dbRelationships.get(i);
-            String subqueryTargetTableName = ((DbEntity)dbRelationship.getTargetEntity()).getFullyQualifiedName();
+            String subqueryTargetTableName = ((DbEntity) dbRelationship.getTargetEntity())
+                    .getFullyQualifiedName();
             String subqueryTargetAlias;
             if (i == dbRelationships.size() - 1) {
                 subqueryTargetAlias = subqueryRootAlias;
@@ -333,18 +333,17 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                         subqueryTargetTableName,
                         subqueryTargetTableName);
             }
-           
 
             context.append(" JOIN ");
 
-            String subquerySourceTableName = ((DbEntity)dbRelationship
-                    .getSourceEntity())
+            String subquerySourceTableName = ((DbEntity) dbRelationship.getSourceEntity())
                     .getFullyQualifiedName();
             String subquerySourceAlias = context.getTableAlias(
                     subquerySourceTableName,
                     subquerySourceTableName);
 
-            context.append(subquerySourceTableName).append(' ').append(subquerySourceAlias);
+            context.append(subquerySourceTableName).append(' ').append(
+                    subquerySourceAlias);
 
             context.append(" ON (");
 
@@ -390,15 +389,18 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         switch (finishedChildIndex) {
             case 0:
                 if (expression.getChildrenCount() == 2) {
-                    for (int j = 0; j < expression.getChildrenCount(); j++) {
-                        if (expression.getChild(j) instanceof EJBQLNamedInputParameter) {
-                            EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression
-                                    .getChild(j);
-                            if (context.namedParameters.containsKey(par.getText())
-                                    && context.namedParameters.get(par.getText()) == null) {
-                                context.append(" IS NULL");
-                                return false;
-                            }
+
+                    // We rewrite expression "parameter = :x" where x=null
+                    // as "parameter IS NULL"
+                    // BUT in such as ":x = parameter" (where x=null) we don't do anything
+                    // as a result it can be unsupported in some DB
+                    if (expression.getChild(1) instanceof EJBQLNamedInputParameter) {
+                        EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression
+                                .getChild(1);
+                        if (context.namedParameters.containsKey(par.getText())
+                                && context.namedParameters.get(par.getText()) == null) {
+                            context.append(" IS NULL");
+                            return false;
                         }
                     }
                 }
@@ -573,7 +575,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         return true;
     }
-    
+
     /**
      * Visits conditional node, suppling brackets if needed
      */
@@ -583,18 +585,19 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
 
         afterChild(e, afterText, childIndex);
-        
+
         if (childIndex == e.getChildrenCount() - 1 && needBracket(e)) {
             context.append(")");
         }
     }
-    
+
     /**
      * Checks whether expression needs to be rounded by brackets
      */
     boolean needBracket(AggregateConditionNode e) {
-        return (e.jjtGetParent() instanceof AggregateConditionNode) &&
-            e.getPriority() > ((AggregateConditionNode) e.jjtGetParent()).getPriority();
+        return (e.jjtGetParent() instanceof AggregateConditionNode)
+                && e.getPriority() > ((AggregateConditionNode) e.jjtGetParent())
+                        .getPriority();
     }
 
     protected void afterChild(EJBQLExpression e, String text, int childIndex) {
@@ -835,7 +838,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
                 Property property = descriptor.getProperty(pathChunk);
                 if (property instanceof AttributeProperty) {
-                    String atrType = ((AttributeProperty) property).getAttribute().getType();
+                    String atrType = ((AttributeProperty) property)
+                            .getAttribute()
+                            .getType();
 
                     type = TypesMapping.getSqlNameByType(TypesMapping
                             .getSqlTypeByJava(atrType));
