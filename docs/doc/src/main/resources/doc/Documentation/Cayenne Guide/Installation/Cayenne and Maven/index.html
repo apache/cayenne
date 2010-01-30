@@ -56,9 +56,7 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="CayenneandMaven-CayenneandMaven"></a>Cayenne and Maven</h2>
 
-<h3><a name="CayenneandMaven-ImportingCayenneinaMavenProject"></a>Importing Cayenne in a Maven Project</h3>
-
-<p>Cayenne publishes Maven2 artifacts to ibiblio repository, so they can be declared in the POM:</p>
+<p>Cayenne publishes Maven2 artifacts to the central Maven repository, so they can be declared as dependencies in the user application <tt>pom.xml</tt>:</p>
 
 <div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>&lt;dependency&gt;
@@ -72,12 +70,7 @@
    &lt;artifactId&gt;cayenne-client&lt;/artifactId&gt;
    &lt;version&gt;X.Y&lt;/version&gt;
 &lt;/dependency&gt;
-...
-&lt;dependency&gt;
-   &lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
-   &lt;artifactId&gt;cayenne-agent&lt;/artifactId&gt;
-   &lt;version&gt;X.Y&lt;/version&gt;
-&lt;/dependency&gt;</pre>
+</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>
