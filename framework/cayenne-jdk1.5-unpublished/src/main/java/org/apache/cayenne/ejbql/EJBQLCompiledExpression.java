@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -63,4 +64,9 @@ public interface EJBQLCompiledExpression {
      * expression.
      */
     SQLResult getResult();
+    
+    /**
+     * Returns prefetched columns tree for fetch joins.
+     */
+    PrefetchTreeNode getPrefetchTree();
 }

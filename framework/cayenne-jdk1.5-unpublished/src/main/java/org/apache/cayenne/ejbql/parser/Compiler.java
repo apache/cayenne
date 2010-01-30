@@ -40,6 +40,7 @@ import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -69,7 +70,8 @@ class Compiler {
     private EJBQLExpressionVisitor pathVisitor;
     private EJBQLExpressionVisitor rootDescriptorVisitor;
     private List<Object> resultComponents;
-
+    private PrefetchTreeNode prefetchTree = null;
+    
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
         this.descriptorsById = new HashMap<String, ClassDescriptor>();
@@ -85,7 +87,7 @@ class Compiler {
         parsed.visit(new CompilationVisitor());
 
         Map<EJBQLPath, Integer> pathsInSelect = new HashMap<EJBQLPath, Integer>();
-
+       
         if (parsed != null) {
             for (int i = 0; i < parsed.getChildrenCount(); i++) {
                 if (parsed.getChild(i) instanceof EJBQLSelectClause) {
@@ -129,10 +131,8 @@ class Compiler {
                 }
             }
         }
-
         // postprocess paths, now that all id vars are resolved
         if (paths != null) {
-            int elenent = 0;
             for (EJBQLPath path : paths) {
                 String id = normalizeIdPath(path.getId());
                 ClassDescriptor descriptor = descriptorsById.get(id);
@@ -156,7 +156,7 @@ class Compiler {
                         incoming = ((ArcProperty) property).getRelationship();
                         descriptor = ((ArcProperty) property).getTargetDescriptor();
                         pathRelationshipString = buffer.substring(0, buffer.length());
-
+                        
                         descriptorsById.put(pathRelationshipString, descriptor);
                         incomingById.put(pathRelationshipString, incoming);
                         
@@ -178,11 +178,12 @@ class Compiler {
                         resultComponents.add(pathsInSelect.get(path).intValue(), ident);
                         rootId = pathRelationshipString;
                     }
-                };
-                elenent++;
+                }
             }
         }
-
+       
+        
+        
         CompiledExpression compiled = new CompiledExpression();
         compiled.setExpression(parsed);
         compiled.setSource(source);
@@ -190,7 +191,8 @@ class Compiler {
         compiled.setRootId(rootId);
         compiled.setDescriptorsById(descriptorsById);
         compiled.setIncomingById(incomingById);
-
+        compiled.setPrefetchTree(prefetchTree);
+        
         if (resultComponents != null) {
             SQLResult mapping = new SQLResult();
 
@@ -200,9 +202,27 @@ class Compiler {
                     mapping.addColumnResult((String) nextMapping);
                 }
                 else if (nextMapping instanceof EJBQLExpression) {
-                    mapping.addEntityResult(compileEntityResult(
+                    EntityResult compileEntityResult = compileEntityResult(
                             (EJBQLExpression) nextMapping,
-                            i));
+                            i);
+                    if (prefetchTree != null) {
+                        for (PrefetchTreeNode prefetch : prefetchTree.getChildren()) {
+                            if (((EJBQLExpression) nextMapping).getText().equals(
+                                    prefetch.getEjbqlPathEntityId())) {
+                                EJBQLIdentifier ident = new EJBQLIdentifier(0);
+                                ident.text = prefetch.getEjbqlPathEntityId()
+                                        + "."
+                                        + prefetch.getPath();
+
+                                compileEntityResult = compileEntityResultWithPrefetch(
+                                        compileEntityResult,
+                                        ident);
+
+                            }
+                        }
+                    }
+                    mapping.addEntityResult(compileEntityResult);
+                    
                 }
             }
 
@@ -213,6 +233,72 @@ class Compiler {
         return compiled;
     }
 
+    private EntityResult compileEntityResultWithPrefetch(EntityResult compiledResult, EJBQLExpression prefetchExpression){
+        final EntityResult result = compiledResult;
+        String id = prefetchExpression.getText().toLowerCase();
+        ClassDescriptor descriptor = descriptorsById.get(id);
+        if (descriptor == null) {
+            descriptor = descriptorsById.get(prefetchExpression.getText());
+        }
+        final String prefix = prefetchExpression.getText().substring(prefetchExpression.getText().indexOf(".")+1);
+      
+        final Set<String> visited = new HashSet<String>();
+
+        PropertyVisitor visitor = new PropertyVisitor() {
+
+            public boolean visitAttribute(AttributeProperty property) {
+                ObjAttribute oa = property.getAttribute();
+                if (visited.add(oa.getDbAttributePath())) {
+                    result.addObjectField(
+                            oa.getEntity().getName(),
+                            "fetch."+prefix+"."+oa.getName(),
+                            prefix +"."+ oa.getDbAttributeName());
+                }
+                return true;
+            }
+
+            public boolean visitToMany(ToManyProperty property) {
+                return true;
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                ObjRelationship rel = property.getRelationship();
+                DbRelationship dbRel = rel.getDbRelationships().get(0);
+
+                for (DbJoin join : dbRel.getJoins()) {
+                    DbAttribute src = join.getSource();
+                    if (src.isForeignKey() && visited.add(src.getName())) {
+                        result.addDbField("fetch."+prefix+"."+src.getName(), prefix +"."+ src.getName());
+                    }
+                }
+
+                return true;
+            }
+        };
+
+        descriptor.visitAllProperties(visitor);
+
+        // append id columns ... (some may have been appended already via relationships)
+        for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
+            if (visited.add(pkName)) {
+                result.addDbField("fetch."+prefix+"."+pkName, prefix +"."+ pkName);
+            }
+        }
+
+        // append inheritance discriminator columns...
+        Iterator<ObjAttribute> discriminatorColumns = descriptor
+                .getDiscriminatorColumns();
+        while (discriminatorColumns.hasNext()) {
+            ObjAttribute column = discriminatorColumns.next();
+
+            if (visited.add(column.getName())) {
+                result.addDbField("fetch."+prefix+"."+column.getDbAttributePath(), prefix +"."+ column.getDbAttributePath());
+            }
+        }
+
+        return result;
+    }
+    
     private EntityResult compileEntityResult(EJBQLExpression expression, int position) {
         String id = expression.getText().toLowerCase();
         ClassDescriptor descriptor = descriptorsById.get(id);
@@ -329,6 +415,7 @@ class Compiler {
 
         @Override
         public boolean visitInnerFetchJoin(EJBQLJoin join) {
+            prepareFetchJoin(join);
             join.visit(joinVisitor);
             return false;
         }
@@ -341,6 +428,7 @@ class Compiler {
 
         @Override
         public boolean visitOuterFetchJoin(EJBQLJoin join) {
+            prepareFetchJoin(join);
             join.visit(joinVisitor);
             return false;
         }
@@ -370,6 +458,20 @@ class Compiler {
         public boolean visitSubselect(EJBQLExpression expression) {
             return super.visitSubselect(expression);
         }
+        
+        private void prepareFetchJoin(EJBQLJoin join) {
+            if (prefetchTree == null) {
+                prefetchTree = new PrefetchTreeNode();
+            }
+            EJBQLPath fetchJoin = (EJBQLPath) join.getChild(0);
+            addPath(fetchJoin);
+
+            PrefetchTreeNode node = prefetchTree.addPath(fetchJoin.getRelativePath());
+            node.setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+            node.setPhantom(false);
+            node.setEjbqlPathEntityId(fetchJoin.getChild(0).getText());
+        }
+
     }
 
     class FromItemVisitor extends EJBQLBaseVisitor {
@@ -504,9 +606,10 @@ class Compiler {
         @Override
         public boolean visitAggregate(EJBQLExpression expression) {
             addResultSetColumn();
+            expression.getChild(0).getChild(0).visit(pathVisitor);
             return false;
         }
-
+        
         @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             addPath((EJBQLPath) expression);

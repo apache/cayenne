@@ -14,9 +14,11 @@ Date:
 
 Changes/New Features Since 3.0RC1:
 
+CAY-1069 EJBQL: support paths across flattened relationships
 CAY-1216 Improve the Remote-Object-Persistence-Tutorial for 3.0
 CAY-1326 Document Cayenne Embeddables Feature
 CAY-1352 in "code generation" dialog add generation embeddables
+CAY-1366 EJBQL: Support for fetch joins
 
 Bug Fixes Since 3.0RC1:
 
@@ -28,6 +30,12 @@ CAY-1353 warning "attribute.name" contains invalid character: . in Code generati
 CAY-1355 Warning if rename Embeddable.
 CAY-1361 SelectQuery.aliasPathSplits does nothing
 CAY-1365 "= NULL" being used instead of "IS NULL" on an EJBQL expression..
+CAY-1367 EJBQL: Implement support for relationship-ending paths in GROUP BY clause
+CAY-1368 Left Join and Prefetches do not work together
+CAY-1369 EJBQL: Fix likeIgnoreCase issues
+CAY-1371 EJBQL query doesn't preserve grouping by brackets
+CAY-1376 Certain EJBQL queries have mismatched table aliases
+CAY-1377 EJBQLQuery: when using relationships in the SELECT clause, must generate INNER, not OUTER JOINS
 
 ----------------------------------
 Release: 3.0 RC 1

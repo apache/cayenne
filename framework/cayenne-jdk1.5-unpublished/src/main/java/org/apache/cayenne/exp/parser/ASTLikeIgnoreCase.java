@@ -26,7 +26,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Case insensitive like" expression.
  * 
  */
-public class ASTLikeIgnoreCase extends PatternMatchNode {
+public class ASTLikeIgnoreCase extends IgnoreCaseNode {
     ASTLikeIgnoreCase(int id) {
         super(id, true);
     }
@@ -73,5 +73,10 @@ public class ASTLikeIgnoreCase extends PatternMatchNode {
     @Override
     public int getType() {
         return Expression.LIKE_IGNORE_CASE;
+    }
+    
+    @Override
+    protected String getEJBQLExpressionOperator(int index) {
+        return "like";
     }
 }

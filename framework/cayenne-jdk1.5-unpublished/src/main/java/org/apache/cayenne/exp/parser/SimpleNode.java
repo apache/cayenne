@@ -353,24 +353,31 @@ public abstract class SimpleNode extends Expression implements Node {
         }
 
         if ((children != null) && (children.length > 0)) {
-            for (int i = 0; i < children.length; ++i) {
-                if (i > 0) {
-                    pw.print(' ');
-                    pw.print(getEJBQLExpressionOperator(i));
-                    pw.print(' ');
-                }
-
-                if (children[i] == null) {
-                    pw.print("null");
-                }
-                else {
-                    ((SimpleNode) children[i]).encodeAsEJBQL(pw, rootId);
-                }
-            }
+            encodeChildrenAsEJBQL(pw, rootId);
         }
 
         if (parent != null) {
             pw.print(')');
+        }
+    }
+    
+    /**
+     * Encodes child of this node with specified index to EJBQL
+     */
+    protected void encodeChildrenAsEJBQL(PrintWriter pw, String rootId) {
+        for (int i = 0; i < children.length; ++i) {
+            if (i > 0) {
+                pw.print(' ');
+                pw.print(getEJBQLExpressionOperator(i));
+                pw.print(' ');
+            }
+    
+            if (children[i] == null) {
+                pw.print("null");
+            }
+            else {
+                ((SimpleNode) children[i]).encodeAsEJBQL(pw, rootId);
+            }
         }
     }
 }

@@ -18,10 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
@@ -60,8 +69,54 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                 throw new EJBQLException(
                         "Can't GROUP BY on multi-column paths or objects");
             }
+            
+            @Override
+            public boolean visitIdentificationVariable(EJBQLExpression expression) {
+
+                String idVariableAbsolutePath = idPath+"."+expression.getText();
+                ClassDescriptor descriptor = context.getEntityDescriptor(idVariableAbsolutePath);
+                if (descriptor != null) {
+                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath, descriptor.getEntity().getDbEntity().getFullyQualifiedName());
+                }
+
+                this.lastPathComponent = expression.getText();
+                
+                return true;
+            }
+            
+            
+            @Override
+            protected void processTerminatingRelationship(ObjRelationship relationship) {
+
+                Collection<DbAttribute> dbAttr = ((ObjEntity) relationship
+                        .getTargetEntity()).getDbEntity().getAttributes();
+
+                DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
+                DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
+
+                Iterator<DbAttribute> it = dbAttr.iterator();
+                
+
+                String alias = this.lastAlias != null ? lastAlias : context
+                        .getTableAlias(idPath, table.getFullyQualifiedName());
+
+                boolean first = true;
+                while (it.hasNext()) {
+
+                    context.append(!first ? ", " : " ");
+
+                    DbAttribute dbAttribute = it.next();
+                    context.append(alias).append('.').append(dbAttribute.getName());
+
+                    first = false;
+                }
+
+            }
+            
         };
+       
         expression.visit(childVisitor);
+        
         return false;
     }
 }

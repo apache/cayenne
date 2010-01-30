@@ -23,7 +23,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 /**
  * @since 3.0
  */
-public class EJBQLNot extends SimpleNode {
+public class EJBQLNot extends AggregateConditionNode {
 
     public EJBQLNot(int id) {
         super(id);
@@ -32,5 +32,10 @@ public class EJBQLNot extends SimpleNode {
     @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitNot(this);
+    }
+
+    @Override
+    public int getPriority() {
+        return NOT_PRIORITY;
     }
 }

@@ -27,12 +27,16 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.PathComponent;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -151,7 +155,56 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             appendColumn(idVar, attribute, attribute.getDbAttribute(), fields);
         }
 
+        addPrefetchedColumnsIfAny(idVar);
+        
         return false;
+    }
+
+    private void addPrefetchedColumnsIfAny(final String visitedIdentifier) {
+        PrefetchTreeNode prefetchTree = context.getCompiledExpression().getPrefetchTree();
+        if (prefetchTree != null) {
+            for (PrefetchTreeNode prefetch : prefetchTree.adjacentJointNodes()) {
+                ClassDescriptor descriptor = context.getEntityDescriptor(prefetch
+                        .getEjbqlPathEntityId());
+                if (visitedIdentifier.equals(prefetch.getEjbqlPathEntityId())) {
+                    DbEntity table = descriptor.getRootDbEntities().iterator().next();
+                    ObjEntity objectEntity = descriptor.getEntity();
+                    prefetch.setEntityName(objectEntity.getName());
+                    Expression prefetchExp = Expression.fromString(prefetch.getPath());
+                    Expression dbPrefetch = objectEntity.translateToDbPath(prefetchExp);
+
+                    DbRelationship r = null;
+                    for (PathComponent<DbAttribute, DbRelationship> component : table
+                            .resolvePath(dbPrefetch, context
+                                    .getMetadata()
+                                    .getPathSplitAliases())) {
+                        r = component.getRelationship();
+
+                    }
+
+                    if (r == null) {
+                        throw new CayenneRuntimeException("Invalid joint prefetch '"
+                                + prefetch
+                                + "' for entity: "
+                                + objectEntity.getName());
+                    }
+
+                    Iterator<DbAttribute> targetAttributes = (Iterator<DbAttribute>) r
+                            .getTargetEntity()
+                            .getAttributes()
+                            .iterator();
+                    while (targetAttributes.hasNext()) {
+                        DbAttribute attribute = targetAttributes.next();
+                        appendColumn(prefetch.getEjbqlPathEntityId()
+                                + "."
+                                + prefetch.getPath(), attribute, "", prefetch.getPath()
+                                + "."
+                                + attribute.getName(), null);
+
+                    }
+                }
+            }
+        }
     }
 
     public void appendColumn(
@@ -167,6 +220,20 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             ObjAttribute property,
             DbAttribute column,
             Map<String, String> fields,
+            String javaType) {
+        String columnLabel = "";
+        if (context.isAppendingResultColumns()) {
+               columnLabel = fields.get(property != null ? property
+                        .getDbAttributePath() : column.getName());
+        }
+        appendColumn(identifier, column, columnLabel, columnLabel, javaType);
+    }
+    
+    public void appendColumn(
+            String identifier,
+            DbAttribute column,
+            String columnAlias,
+            String dataRowKey,
             String javaType) {
 
         DbEntity table = (DbEntity) column.getEntity();
@@ -190,18 +257,15 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     javaType = TypesMapping.getJavaBySqlType(column.getType());
                 }
 
-                String columnLabel = fields.get(property != null ? property
-                        .getDbAttributePath() : column.getName());
-
                 // TODO: andrus 6/27/2007 - the last parameter is an unofficial "jdbcType"
                 // pending CAY-813 implementation, switch to #column directive
                 context
                         .append("' '")
                         .append(javaType)
                         .append("' '")
-                        .append(columnLabel)
+                        .append(columnAlias)
                         .append("' '")
-                        .append(columnLabel)
+                        .append(dataRowKey)
                         .append("' " + column.getType())
                         .append(")");
             }

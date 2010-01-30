@@ -45,6 +45,8 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     protected String name;
     protected boolean phantom;
     protected int semantics;
+    protected String ejbqlPathEntityId;
+    protected String entityName;
 
     // transient parent allows cloning parts of the tree via serialization
     protected transient PrefetchTreeNode parent;
@@ -343,6 +345,23 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     public boolean isDisjointPrefetch() {
         return semantics == DISJOINT_PREFETCH_SEMANTICS;
     }
+    
+    public String getEjbqlPathEntityId() {
+        return ejbqlPathEntityId;
+    }
+
+    public void setEjbqlPathEntityId(String ejbqlPathEntityId) {
+        this.ejbqlPathEntityId = ejbqlPathEntityId;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+    
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
+    }
+    
 
     // **** custom serialization that supports serializing subtrees...
 

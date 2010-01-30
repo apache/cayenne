@@ -32,6 +32,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
@@ -43,11 +44,20 @@ class HierarchicalObjectResolver {
     DataContext context;
     QueryMetadata queryMetadata;
     DataRowStore cache;
+    ClassDescriptor descriptor;
+    boolean needToSaveDuplicates;
 
     HierarchicalObjectResolver(DataContext context, QueryMetadata queryMetadata) {
         this.queryMetadata = queryMetadata;
         this.context = context;
         this.cache = context.getObjectStore().getDataRowCache();
+    }
+
+    HierarchicalObjectResolver(DataContext context, QueryMetadata metadata,
+            ClassDescriptor descriptor, boolean needToSaveDuplicates) {
+        this(context, metadata);
+        this.descriptor = descriptor;
+        this.needToSaveDuplicates = needToSaveDuplicates;
     }
 
     /**
@@ -175,7 +185,7 @@ class HierarchicalObjectResolver {
 
             // TODO: see TODO in ObjectResolver.relatedObjectsFromDataRows
 
-            if (node.isDisjointPrefetch()) {
+            if (node.isDisjointPrefetch() && !needToSaveDuplicates) {
                 PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
                 if (processorNode.isJointChildren()) {
                     List<Persistent> objects = processorNode.getObjects();

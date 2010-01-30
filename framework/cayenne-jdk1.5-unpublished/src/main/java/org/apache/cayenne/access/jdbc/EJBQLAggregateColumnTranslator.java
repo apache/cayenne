@@ -18,13 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
@@ -116,12 +124,23 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         protected void processTerminatingAttribute(ObjAttribute attribute) {
 
             EJBQLAggregateColumnTranslator.this.attributeType = attribute.getType();
-
+            
             DbEntity table = currentEntity.getDbEntity();
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
                     table.getFullyQualifiedName());
             context.append(alias).append('.').append(attribute.getDbAttributeName());
+        }
+        
+        @Override
+        protected void processTerminatingRelationship(ObjRelationship relationship) {
+            Collection<DbAttribute> dbAttr = ((ObjEntity) relationship
+                    .getTargetEntity()).getDbEntity().getAttributes();
+
+            if (dbAttr.size() > 0) {
+                this.resolveJoin(true);
+            }
+            context.append('*');
         }
     }
 

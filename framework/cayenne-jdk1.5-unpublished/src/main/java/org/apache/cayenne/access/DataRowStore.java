@@ -233,6 +233,11 @@ public class DataRowStore implements Serializable {
         synchronized (this) {
             for (int i = 0; i < size; i++) {
                 Persistent object = (Persistent) objects.get(i);
+                
+                // skip null objects... possible since 3.0 in some EJBQL results
+                if (object == null) {
+                    continue;
+                }
 
                 // skip HOLLOW objects as they likely were created from partial snapshots
                 if (object.getPersistenceState() == PersistenceState.HOLLOW) {

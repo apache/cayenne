@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -91,7 +92,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 Iterator<DbAttribute> it = dbAttr.iterator();
                 if (dbAttr.size() > 0) {
-                    this.resolveJoin(false);
+                    this.resolveJoin(true);
                 }
 
                 String alias = this.lastAlias != null ? lastAlias : context
@@ -103,26 +104,11 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     context.append(!first ? ", " : " ");
 
                     DbAttribute dbAttribute = it.next();
-
-                    if (context.isAppendingResultColumns()) {
-                        context.append(" #result('");
-                    }
-                    else {
-                        context.append(' ');
-                    }
-
-                    context.append(alias).append('.').append(dbAttribute.getName());
-
-                    if (context.isAppendingResultColumns()) {
-
-                        String javaType = TypesMapping.getJavaBySqlType(dbAttribute
-                                .getType());
-                        String columnLabel = fields.get(dbAttribute.getName());
-
-                        context.append("' '").append(javaType).append("' '").append(
-                                columnLabel).append("' '").append(columnLabel).append(
-                                "' " + dbAttribute.getType()).append(")");
-                    }
+                    appendColumn(
+                            TypesMapping.getJavaBySqlType(dbAttribute.getType()),
+                            alias,
+                            dbAttribute,
+                            fields!=null?fields.get(dbAttribute.getName()):"");
 
                     first = false;
                 }
@@ -134,35 +120,44 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 DbEntity table = currentEntity.getDbEntity();
                 String alias = this.lastAlias != null ? lastAlias : context
                         .getTableAlias(idPath, table.getFullyQualifiedName());
+                if (attribute.isFlattened()) {
+                    Iterator<?> dbPathIterator = attribute.getDbPathIterator();
+                    EJBQLTableId lhsId = new EJBQLTableId(idPath);
 
-                DbAttribute dbAttribute = attribute.getDbAttribute();
+                    while (dbPathIterator.hasNext()) {
+                        Object pathPart = dbPathIterator.next();
+                        // DbRelationships not processed, because they will be processed
+                        // later when appending table
+                        if (pathPart == null) {
+                            throw new CayenneRuntimeException(
+                                    "ObjAttribute has no component: "
+                                            + attribute.getName());
+                        }
+                        else if (pathPart instanceof DbAttribute) {
+                            DbAttribute dbAttribute = (DbAttribute) pathPart;
+                            appendColumn(
+                                    attribute.getType(),
+                                    context.getTableAlias(
+                                            lhsId.getEntityId(),
+                                            dbAttribute.getEntity().getName()),
+                                    dbAttribute,
+                                    context.isAppendingResultColumns() ? context
+                                            .nextColumnAlias() : "");
 
-                if (context.isAppendingResultColumns()) {
-                    context.append(" #result('");
+                        }
+
+                    }
+
                 }
                 else {
-                    context.append(' ');
-                }
 
-                context.append(alias).append('.').append(dbAttribute.getName());
+                    DbAttribute dbAttribute = attribute.getDbAttribute();
 
-                if (context.isAppendingResultColumns()) {
-                    String columnAlias = context.nextColumnAlias();
-
-                    // TODO: andrus 6/27/2007 - the last parameter is an unofficial
-                    // "jdbcType"
-                    // pending CAY-813 implementation, switch to #column directive
-                    context
-                            .append("' '")
-                            .append(attribute.getType())
-                            .append("' '")
-                            .append(columnAlias)
-                            .append("' '")
-                            .append(columnAlias)
-                            .append("' " + dbAttribute.getType())
-                            .append(")");
+                    appendColumn(attribute.getType(), alias, dbAttribute, context
+                            .isAppendingResultColumns() ? context.nextColumnAlias() : "");
                 }
             }
+
         };
         expression.visit(pathTranslator);
         return false;
@@ -173,6 +168,39 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(
                 context));
         return false;
+    }
+
+    public void appendColumn(
+            String javaType,
+            String alias,
+            DbAttribute dbAttribute,
+            String columnAlias) {
+        if (context.isAppendingResultColumns()) {
+            context.append(" #result('");
+        }
+        else {
+            context.append(' ');
+        }
+
+        context.append(alias).append('.').append(dbAttribute.getName());
+
+        if (context.isAppendingResultColumns()) {
+            // String columnAlias = context.nextColumnAlias();
+
+            // TODO: andrus 6/27/2007 - the last parameter is an unofficial
+            // "jdbcType"
+            // pending CAY-813 implementation, switch to #column directive
+            context
+                    .append("' '")
+                    .append(javaType)
+                    .append("' '")
+                    .append(columnAlias)
+                    .append("' '")
+                    .append(columnAlias)
+                    .append("' " + dbAttribute.getType())
+                    .append(")");
+        }
+
     }
 
 }

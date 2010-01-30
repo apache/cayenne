@@ -120,7 +120,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
             throws EJBQLException {
         if (expression == null) {
             this.expression = EJBQLParserFactory.getParser().compile(
-                    ejbqlStatement,
+                    ejbqlStatement, 
                     resolver);
         }
 
@@ -265,4 +265,6 @@ public class EJBQLQuery implements Query, XMLSerializable {
     public int getStatementFetchSize() {
         return metadata.getStatementFetchSize();
     }
+    
+    
 }

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +33,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Handles appending joins to the content buffer at a marked position.
@@ -98,7 +102,6 @@ public class EJBQLJoinAppender {
             throw new EJBQLException("No join configured for id " + rhsId);
         }
 
-        // TODO: andrus, 4/8/2007 - support for flattened relationships
         DbRelationship incomingDB = joinRelationships.get(0);
 
         // TODO: andrus, 1/6/2008 - move reusable join check here...
@@ -107,9 +110,10 @@ public class EJBQLJoinAppender {
         String tableName;
 
         if (sourceEntity instanceof DbEntity) {
-           tableName = ((DbEntity) sourceEntity).getFullyQualifiedName();
-        } else {
-           tableName = sourceEntity.getName();
+            tableName = ((DbEntity) sourceEntity).getFullyQualifiedName();
+        }
+        else {
+            tableName = sourceEntity.getName();
         }
 
         String sourceAlias = context.getTableAlias(lhsId.getEntityId(), tableName);
@@ -121,58 +125,125 @@ public class EJBQLJoinAppender {
         try {
 
             context.append(" ").append(semantics);
-            String targetAlias = appendTable(rhsId);
-            context.append(" ON (");
+            String targetAlias = "";
+            if (joinRelationships.size() > 1) {
+                // if size of relationship list greater than 1,
+                // it's a flattened relationship
+                context.append(" ");
 
-            Iterator<DbJoin> it = incomingDB.getJoins().iterator();
-            if (it.hasNext()) {
-                DbJoin dbJoin = it.next();
-                context
-                        .append(sourceAlias)
-                        .append('.')
-                        .append(dbJoin.getSourceName())
-                        .append(" = ")
-                        .append(targetAlias)
-                        .append('.')
-                        .append(dbJoin.getTargetName());
+                for (int i = 1; i < joinRelationships.size(); i++) {
+                    DbRelationship dbRelationship = joinRelationships.get(i);
+
+                    String subquerySourceTableName = ((DbEntity)dbRelationship
+                            .getSourceEntity())
+                            .getFullyQualifiedName();
+                    String subquerySourceAlias = context.getTableAlias(
+                            subquerySourceTableName,
+                            subquerySourceTableName);
+
+                    String subqueryTargetTableName = ((DbEntity)dbRelationship.getTargetEntity()).getFullyQualifiedName();
+                    
+                    String subqueryTargetAlias = "";
+                    if(i==joinRelationships.size()-1){
+                        // it's the last table alias
+                        subqueryTargetAlias = context.getTableAlias(rhsId.getEntityId(), subqueryTargetTableName);
+                    } else {
+                        subqueryTargetAlias = context.getTableAlias(
+                                subqueryTargetTableName,
+                                subqueryTargetTableName);
+                    }
+                    if (i == 1) {
+                        // first apply the joins defined in query
+                        context.append(subquerySourceTableName).append(' ').append(
+                                subquerySourceAlias);
+
+                        generateJoiningExpression(
+                                incomingDB,
+                                sourceAlias,
+                                subquerySourceAlias);
+
+                    }
+
+                    context.append(" JOIN ");
+                    context.append(subqueryTargetTableName).append(' ').append(
+                            subqueryTargetAlias);
+                    generateJoiningExpression(
+                            dbRelationship,
+                            subquerySourceAlias,
+                            subqueryTargetAlias);
+                }
+
+            }
+            else {
+                // non-flattened relationship
+                targetAlias = appendTable(rhsId);
+                // apply the joins defined in query
+                generateJoiningExpression(incomingDB, sourceAlias, targetAlias);
             }
 
-            while (it.hasNext()) {
-                context.append(", ");
-                DbJoin dbJoin = it.next();
-                context
-                        .append(sourceAlias)
-                        .append('.')
-                        .append(dbJoin.getSourceName())
-                        .append(" = ")
-                        .append(targetAlias)
-                        .append('.')
-                        .append(dbJoin.getTargetName());
-            }
-
-            context.append(")");
         }
         finally {
             if (marker != null) {
                 context.popMarker();
             }
         }
+
+    }
+
+    private void generateJoiningExpression(
+            DbRelationship incomingDB,
+            String sourceAlias,
+            String targetAlias) {
+        context.append(" ON (");
+
+        Iterator<DbJoin> it = incomingDB.getJoins().iterator();
+        if (it.hasNext()) {
+            DbJoin dbJoin = it.next();
+            context
+                    .append(sourceAlias)
+                    .append('.')
+                    .append(dbJoin.getSourceName())
+                    .append(" = ")
+                    .append(targetAlias)
+                    .append('.')
+                    .append(dbJoin.getTargetName());
+        }
+
+        while (it.hasNext()) {
+            context.append(", ");
+            DbJoin dbJoin = it.next();
+            context
+                    .append(sourceAlias)
+                    .append('.')
+                    .append(dbJoin.getSourceName())
+                    .append(" = ")
+                    .append(targetAlias)
+                    .append('.')
+                    .append(dbJoin.getTargetName());
+        }
+
+        context.append(")");
     }
 
     public String appendTable(EJBQLTableId id) {
 
-        String tableName = id.getDbEntity(context).getFullyQualifiedName();
+        DbEntity dbEntity = id.getDbEntity(context);
+        
+        String tableName = dbEntity.getFullyQualifiedName();
         String alias;
 
         if (context.isUsingAliases()) {
             // TODO: andrus 1/5/2007 - if the same table is joined more than once, this
             // will create an incorrect alias.
             alias = context.getTableAlias(id.getEntityId(), tableName);
-
+            
             // not using "AS" to separate table name and alias name - OpenBase doesn't
             // support
             // "AS", and the rest of the databases do not care
             context.append(' ').append(tableName).append(' ').append(alias);
+            
+            generateJoinsForFlattenedAttributes(id, alias);
+           
         }
         else {
             context.append(' ').append(tableName);
@@ -207,6 +278,71 @@ public class EJBQLJoinAppender {
         }
 
         return alias;
+    }
+
+    /**
+     * Generates Joins statements for those flattened attributes that appear after the
+     * FROM clause, e.g. in WHERE, ORDER BY, etc clauses. Flattened attributes of the
+     * entity from the SELECT clause are processed earlier and therefore are omitted.
+     * 
+     * @param id table to JOIN id
+     * @param alias table alias
+     */
+    private void generateJoinsForFlattenedAttributes(EJBQLTableId id, String alias) {
+        String entityName = context
+                .getEntityDescriptor(id.getEntityId())
+                .getEntity()
+                .getName();
+        boolean isProcessingOmitted = false;
+        // if the dbPath is not null, all attributes of the entity are processed earlier
+        isProcessingOmitted = id.getDbPath() != null;
+        String sourceExpression = context.getCompiledExpression().getSource();
+
+        List<Object> resultSetMapping = context.getMetadata().getResultSetMapping();
+        for (Object mapping : resultSetMapping) {
+            if (mapping instanceof EntityResultSegment) {
+                if (entityName.equals(((EntityResultSegment) mapping)
+                        .getClassDescriptor()
+                        .getEntity()
+                        .getName())) {
+                    // if entity is included into SELECT clause, all its attributes are processed earlier
+                    isProcessingOmitted = true;
+                    break;
+                }
+
+            }
+        }
+
+        if (!isProcessingOmitted) {
+            Collection<ObjAttribute> attributes = context.getEntityDescriptor(
+                    id.getEntityId()).getEntity().getAttributes();
+            for (ObjAttribute objAttribute : attributes) {
+                if (objAttribute.isFlattened()
+                        && sourceExpression.contains(id.getEntityId()
+                                + "."
+                                + objAttribute.getName())) {
+                    // joins for attribute are generated if it is flattened and appears in original statement
+                    Iterator<CayenneMapEntry> dbPathIterator = objAttribute
+                            .getDbPathIterator();
+                    while (dbPathIterator.hasNext()) {
+                        CayenneMapEntry next = dbPathIterator.next();
+                        if (next instanceof DbRelationship) {
+                            DbRelationship rel = (DbRelationship) next;
+                            context.append(" LEFT OUTER JOIN ");
+                            String targetEntityName = ((DbEntity)rel.getTargetEntity()).getFullyQualifiedName();
+                            String subqueryTargetAlias = context.getTableAlias(id
+                                    .getEntityId(), targetEntityName);
+                            context.append(targetEntityName).append(' ').append(
+                                    subqueryTargetAlias);
+                            generateJoiningExpression(rel, context.getTableAlias(id
+                                    .getEntityId(), ((DbEntity)rel.getSourceEntity()).getFullyQualifiedName()), subqueryTargetAlias);
+                        }
+
+                    }
+                }
+
+            }
+        }
     }
 
     private EJBQLExpression ejbqlQualifierForEntityAndSubclasses(

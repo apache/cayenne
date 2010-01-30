@@ -21,7 +21,9 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
+import org.apache.cayenne.ejbql.parser.EJBQLInnerFetchJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
+import org.apache.cayenne.ejbql.parser.EJBQLOuterFetchJoin;
 
 /**
  * @since 3.0
@@ -53,7 +55,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
 
         String id = expression.getId();
-
+        
         if (lastId != null) {
             context.append(',');
             context.markCurrentPosition(EJBQLJoinAppender.makeJoinTailMarker(lastId));
@@ -66,8 +68,14 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitInnerFetchJoin(EJBQLJoin join) {
-        // TODO: andrus, 4/9/2007 - support for prefetching
-        throw new UnsupportedOperationException("Fetch joins are not yet supported");
+        joinAppender.appendInnerJoin(
+                null,
+                new EJBQLTableId(join.getLeftHandSideId()),
+                new EJBQLTableId(((EJBQLInnerFetchJoin) join).getRightHandSideId()));
+
+        context.markCurrentPosition(EJBQLJoinAppender
+                .makeJoinTailMarker(((EJBQLInnerFetchJoin) join).getRightHandSideId()));
+        return false;
     }
 
     @Override
@@ -84,8 +92,14 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitOuterFetchJoin(EJBQLJoin join) {
-        // TODO: andrus, 4/9/2007 - support for prefetching
-        throw new UnsupportedOperationException("Fetch joins are not yet supported");
+        joinAppender.appendOuterJoin(
+                null,
+                new EJBQLTableId(join.getLeftHandSideId()),
+                new EJBQLTableId(((EJBQLOuterFetchJoin) join).getRightHandSideId()));
+
+        context.markCurrentPosition(EJBQLJoinAppender
+                .makeJoinTailMarker(((EJBQLOuterFetchJoin) join).getRightHandSideId()));
+        return false;
     }
 
     @Override
