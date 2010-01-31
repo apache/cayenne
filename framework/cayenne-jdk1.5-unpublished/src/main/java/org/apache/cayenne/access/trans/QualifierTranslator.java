@@ -63,9 +63,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     protected void doAppendPart() throws IOException {
         doAppendPart(extractQualifier());
     }
-    
+
     /**
-     * Translates query qualifier to SQL WHERE clause. Qualifier is a method parameter     * 
+     * Translates query qualifier to SQL WHERE clause. Qualifier is a method parameter.
+     * 
      * @since 3.0
      */
     protected void doAppendPart(Expression rootNode) throws IOException {
@@ -95,7 +96,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                         : entityQualifier;
             }
         }
-        
+
         /**
          * Attaching root Db entity's qualifier
          */
@@ -103,9 +104,9 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             Expression dbQualifier = getDbEntity().getQualifier();
             if (dbQualifier != null) {
                 dbQualifier = dbQualifier.transform(new DbEntityQualifierTransformer());
-                
-                qualifier = qualifier == null ? dbQualifier :
-                    qualifier.andExp(dbQualifier);
+
+                qualifier = qualifier == null ? dbQualifier : qualifier
+                        .andExp(dbQualifier);
             }
         }
 
@@ -462,12 +463,14 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             objectMatchTranslator.setRelationship(rel, joinSplitAlias);
         }
     }
-    
+
     /**
-     * Class to translate DB Entity qualifiers annotation to Obj-entity qualifiers annotation
-     * This is done by changing all Obj-paths to Db-paths and rejecting all original Db-paths
+     * Class to translate DB Entity qualifiers annotation to Obj-entity qualifiers
+     * annotation This is done by changing all Obj-paths to Db-paths and rejecting all
+     * original Db-paths
      */
     class DbEntityQualifierTransformer implements Transformer {
+
         public Object transform(Object input) {
             if (input instanceof ASTObjPath) {
                 return new ASTDbPath(((SimpleNode) input).getOperand(0));

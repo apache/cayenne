@@ -58,12 +58,17 @@ public abstract class QueryAssemblerHelper {
     public QueryAssemblerHelper(QueryAssembler queryAssembler) {
         this.queryAssembler = queryAssembler;
         boolean status;
-        if(queryAssembler.getQueryMetadata().getDataMap()!=null && queryAssembler.getQueryMetadata().getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (queryAssembler.getQueryMetadata().getDataMap() != null
+                && queryAssembler
+                        .getQueryMetadata()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        strategy =   queryAssembler.getAdapter().getQuotingStrategy(status);
+        strategy = queryAssembler.getAdapter().getQuotingStrategy(status);
     }
 
     public ObjEntity getObjEntity() {
@@ -82,14 +87,14 @@ public abstract class QueryAssemblerHelper {
         doAppendPart();
         return out;
     }
-    
+
     /**
      * Sets ouput buffer
      */
     void setOut(Appendable out) {
         this.out = out;
     }
-    
+
     /**
      * @return output buffer
      */
@@ -246,7 +251,7 @@ public abstract class QueryAssemblerHelper {
                 }
             }
             else {
-                     processColumnWithQuoteSqlIdentifiers(component.getAttribute());
+                processColumnWithQuoteSqlIdentifiers(component.getAttribute());
             }
         }
     }
@@ -256,18 +261,19 @@ public abstract class QueryAssemblerHelper {
                 .getCurrentAlias() : null;
         out.append(dbAttr.getAliasedName(alias));
     }
-    
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr) throws IOException {
-       
-        String alias =  (queryAssembler.supportsTableAliases()) ? queryAssembler
+
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr)
+            throws IOException {
+
+        String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler
                 .getCurrentAlias() : null;
-      
-            if(alias != null){
-                
-                out.append(strategy.quoteString(alias));
-                out.append(".");
-            }
-            out.append(strategy.quoteString(dbAttr.getName()));                     
+
+        if (alias != null) {
+
+            out.append(strategy.quoteString(alias));
+            out.append(".");
+        }
+        out.append(strategy.quoteString(dbAttr.getName()));
     }
 
     /**
