@@ -210,6 +210,18 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(1, objects.size());
     }
+    
+    public void testSelectLikeSingleWildcardMatchAndEscape() throws Exception {
+        query.setRoot(Artist.class);
+        Expression qual = ExpressionFactory.likeExp("artistName", "=artist11%", '=');
+        query.setQualifier(qual);
+        performQuery();
+
+        // check query results
+        List objects = opObserver.rowsForQuery(query);
+        assertNotNull(objects);
+        assertEquals(1, objects.size());
+    }
 
     public void testSelectLikeMultipleWildcardMatch() throws Exception {
         query.setRoot(Artist.class);

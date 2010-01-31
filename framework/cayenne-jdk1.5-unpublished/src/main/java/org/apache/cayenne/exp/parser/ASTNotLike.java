@@ -44,6 +44,13 @@ public class ASTNotLike extends PatternMatchNode {
         connectChildren();
     }
 
+    public ASTNotLike(ASTPath path, Object value, char escapeChar) {
+        super(ExpressionParserTreeConstants.JJTNOTLIKE, false, escapeChar);
+        jjtAddChild(path, 0);
+        jjtAddChild(new ASTScalar(value), 1);
+        connectChildren();
+    }
+    
     @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();

@@ -29,6 +29,10 @@ abstract class IgnoreCaseNode extends PatternMatchNode {
     IgnoreCaseNode(int i, boolean ignoringCase) {
         super(i, ignoringCase);
     }
+
+    IgnoreCaseNode(int i, boolean ignoringCase, char escapeChar) {
+        super(i, ignoringCase, escapeChar);
+    }
     
     @Override
     protected void encodeChildrenAsEJBQL(PrintWriter pw, String rootId) {

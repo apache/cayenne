@@ -30,6 +30,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
@@ -346,14 +347,23 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 appendObjectMatch();
             }
 
-            if (parenthesisNeeded(node, parentNode)) {
-                out.append(')');
-            }
+            boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
+            boolean likeIgnoreCase = (node.getType() == Expression.LIKE_IGNORE_CASE || node
+                    .getType() == Expression.NOT_LIKE_IGNORE_CASE);
+            boolean isPatternMatchNode = PatternMatchNode.class.isAssignableFrom(node
+                    .getClass());
 
-            if (node.getType() == Expression.LIKE_IGNORE_CASE
-                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
+            if (isPatternMatchNode && !likeIgnoreCase)
+                appendLikeEscapeCharacter((PatternMatchNode) node);
+
+            if (parenthesisNeeded)
                 out.append(')');
-            }
+
+            if (isPatternMatchNode && likeIgnoreCase)
+                appendLikeEscapeCharacter((PatternMatchNode) node);
+
+            if (likeIgnoreCase)
+                out.append(')');
         }
         catch (IOException ioex) {
             throw new CayenneRuntimeException("Error appending content", ioex);

@@ -30,6 +30,10 @@ public class ASTLike extends PatternMatchNode {
     ASTLike(int id) {
         super(id, false);
     }
+    
+    ASTLike(int id, char escapeChar) {
+        super(id, false, escapeChar);
+    }
 
     public ASTLike() {
         super(ExpressionParserTreeConstants.JJTLIKE, false);
@@ -42,6 +46,13 @@ public class ASTLike extends PatternMatchNode {
         connectChildren();
     }
 
+    public ASTLike(ASTPath path, Object pattern, char escapeChar) {
+        super(ExpressionParserTreeConstants.JJTLIKE, false, escapeChar);
+        jjtAddChild(path, 0);
+        jjtAddChild(new ASTScalar(pattern), 1);
+        connectChildren();
+    }
+    
     @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
@@ -62,7 +73,7 @@ public class ASTLike extends PatternMatchNode {
      */
     @Override
     public Expression shallowCopy() {
-        return new ASTLike(id);
+        return new ASTLike(id, escapeChar);
     }
 
     @Override

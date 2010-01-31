@@ -30,6 +30,10 @@ public class ASTLikeIgnoreCase extends IgnoreCaseNode {
     ASTLikeIgnoreCase(int id) {
         super(id, true);
     }
+    
+    ASTLikeIgnoreCase(int id, char escapeChar) {
+        super(id, true, escapeChar);
+    }
 
     public ASTLikeIgnoreCase() {
         super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true);
@@ -37,6 +41,13 @@ public class ASTLikeIgnoreCase extends IgnoreCaseNode {
 
     public ASTLikeIgnoreCase(ASTPath path, Object pattern) {
         super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true);
+        jjtAddChild(path, 0);
+        jjtAddChild(new ASTScalar(pattern), 1);
+        connectChildren();
+    }
+    
+    public ASTLikeIgnoreCase(ASTPath path, Object pattern, char escapeChar) {
+        super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true, escapeChar);
         jjtAddChild(path, 0);
         jjtAddChild(new ASTScalar(pattern), 1);
         connectChildren();
@@ -62,7 +73,7 @@ public class ASTLikeIgnoreCase extends IgnoreCaseNode {
      */
     @Override
     public Expression shallowCopy() {
-        return new ASTLikeIgnoreCase(id);
+        return new ASTLikeIgnoreCase(id, escapeChar);
     }
 
     @Override

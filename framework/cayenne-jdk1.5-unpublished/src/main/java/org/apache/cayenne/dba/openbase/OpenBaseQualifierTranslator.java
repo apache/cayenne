@@ -25,6 +25,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -75,6 +76,9 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
                     appendObjectMatch();
                 }
 
+                if(PatternMatchNode.class.isAssignableFrom(node.getClass()))
+                    appendLikeEscapeCharacter((PatternMatchNode) node);
+                
                 if (parenthesisNeeded(node, parentNode))
                     out.append(')');
 
