@@ -86,7 +86,7 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     void setSupportsFkConstraints(boolean flag) {
-        this.supportsFkConstraints = supportsFkConstraints;
+        this.supportsFkConstraints = flag;
     }
 
     @Override
@@ -331,9 +331,9 @@ public class MySQLAdapter extends JdbcAdapter {
         // append size and precision (if applicable)s
         if (TypesMapping.supportsLength(column.getType())) {
             int len = column.getMaxLength();
-            
-            int scale = TypesMapping.isDecimal(column.getType())? column.getScale() : -1;
-            
+
+            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
+
             // sanity check
             if (scale > len) {
                 scale = -1;
