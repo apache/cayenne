@@ -37,6 +37,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.test.TableHelper;
 
 public class SelectQueryTest extends SelectQueryBase {
 
@@ -210,16 +211,19 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(1, objects.size());
     }
-    
-    public void testSelectLikeSingleWildcardMatchAndEscape() throws Exception {
-        query.setRoot(Artist.class);
-        Expression qual = ExpressionFactory.likeExp("artistName", "=artist11%", '=');
-        query.setQualifier(qual);
-        performQuery();
 
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
+    public void testSelectLikeSingleWildcardMatchAndEscape() throws Exception {
+
+        TableHelper artistHelper = new TableHelper(getDbHelper(), "ARTIST");
+        artistHelper.deleteAll();
+        artistHelper.setColumns("ARTIST_ID", "ARTIST_NAME");
+        artistHelper.insert(1, "_X");
+        artistHelper.insert(2, "Y_");
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.andQualifier(ExpressionFactory.likeExp("artistName", "=_%", '='));
+ 
+        List objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -550,17 +554,19 @@ public class SelectQueryTest extends SelectQueryBase {
             }
         }
     }
-    
+
     public void testLeftJoinAndPrefetchToMany() {
-        SelectQuery query = new SelectQuery(Artist.class, 
-            ExpressionFactory.matchExp("paintingArray+.toGallery", null));
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
+                "paintingArray+.toGallery",
+                null));
         query.addPrefetch("artistExhibitArray");
         createDataContext().performQuery(query);
     }
-    
+
     public void testLeftJoinAndPrefetchToOne() {
-        SelectQuery query = new SelectQuery(Painting.class, 
-            ExpressionFactory.matchExp("toArtist+.artistName", null));
+        SelectQuery query = new SelectQuery(Painting.class, ExpressionFactory.matchExp(
+                "toArtist+.artistName",
+                null));
         query.addPrefetch("toGallery");
         createDataContext().performQuery(query);
     }
