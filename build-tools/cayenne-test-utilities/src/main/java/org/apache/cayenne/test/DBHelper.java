@@ -272,6 +272,19 @@ public class DBHelper {
     }
 
     public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        Connection connection = dataSource.getConnection();
+
+        try {
+            connection.setAutoCommit(false);
+        }
+        catch (SQLException e) {
+
+            try {
+                connection.close();
+            }
+            catch (SQLException ignored) {
+            }
+        }
+        return connection;
     }
 }
