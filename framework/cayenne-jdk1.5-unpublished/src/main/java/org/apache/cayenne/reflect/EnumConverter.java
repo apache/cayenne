@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
+import org.apache.cayenne.util.Util;
 
 /**
  * @since 1.2
@@ -30,21 +32,27 @@ class EnumConverter extends Converter {
     @SuppressWarnings("unchecked")
     Object convert(Object object, Class type) {
 
-        if (object == null) {
+        if (ExtendedEnumeration.class.isAssignableFrom(type)) {
+            ExtendedEnumeration[] values;
+
+            try {
+                values = (ExtendedEnumeration[]) type.getMethod("values").invoke(null);
+            }
+            catch (Exception e) {
+                // unexpected, all enums should have values
+                throw new CayenneRuntimeException(e);
+            }
+
+            for (ExtendedEnumeration en : values) {
+                if (Util.nullSafeEquals(en.getDatabaseValue(), object)) {
+                    return en;
+                }
+            }
+
             return null;
         }
 
-        try {
-            if (ExtendedEnumeration.class.isAssignableFrom(type)) {
-                for (ExtendedEnumeration en : (ExtendedEnumeration[]) type.getMethod(
-                        "values").invoke(null)) {
-                    if (en.getDatabaseValue().equals(object))
-                        return en;
-                }
-                return null;
-            }
-        }
-        catch (Exception e1) {
+        if (object == null) {
             return null;
         }
 
