@@ -37,6 +37,15 @@ CAY-1363 Postgress don't support notations float(a, b)
 CAY-1364 SQL server don't support notations float(a, b)
 
 ----------------------------------
+Release: 3.0 RC 3
+Date: 
+----------------------------------
+
+Bug Fixes Since 3.0RC2:
+
+CAY-1382 org.apache.cayenne.reflect.EnumConverter not handling null values for ExtendedEnumerations
+
+----------------------------------
 Release: 3.0 RC 2
 Date: 
 ----------------------------------
