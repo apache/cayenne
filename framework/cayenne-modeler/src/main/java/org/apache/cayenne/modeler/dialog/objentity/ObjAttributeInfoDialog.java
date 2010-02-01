@@ -26,12 +26,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -62,7 +60,6 @@ import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -81,7 +78,6 @@ public class ObjAttributeInfoDialog extends CayenneController implements
 
     protected List<DbEntity> relTargets;
 
-    protected ObjEntity objectTarget;
     protected List<ObjEntity> objectTargets;
 
     protected Map<String, Embeddable> stringToEmbeddables;
@@ -106,7 +102,6 @@ public class ObjAttributeInfoDialog extends CayenneController implements
             stringToEmbeddables.put(emb.getClassName(), emb);
             embeddableNames.add(emb.getClassName());
         }
-
         initController(model.getAttribute(row));
     }
 
@@ -157,10 +152,6 @@ public class ObjAttributeInfoDialog extends CayenneController implements
          * Register auto-selection of the target
          */
         view.getPathBrowser().addTreeSelectionListener(this);
-        this.objectTarget = (ObjEntity) attr.getEntity();
-        if (objectTarget != null) {
-            updateTargetCombo(objectTarget.getDbEntity());
-        }
 
         view.getAttributeName().setText(attribute.getName());
         if (attribute.getDbAttributePath() != null) {
@@ -653,79 +644,6 @@ public class ObjAttributeInfoDialog extends CayenneController implements
     }
 
     public void valueChanged(TreeSelectionEvent e) {
-
-        TreePath selectedPath = e.getPath();
-
-        // first item in the path is Entity, so we must have
-        // at least two elements to constitute a valid ordering path
-        if (selectedPath == null || selectedPath.getPathCount() < 2) {
-            return;
-        }
-
-        DbEntity target = null;
-        if (selectedPath.getLastPathComponent() instanceof Relationship) {
-            Relationship rel = (Relationship) selectedPath.getLastPathComponent();
-            target = (DbEntity) rel.getTargetEntity();
-
-        }
-        else if (selectedPath.getLastPathComponent() instanceof Attribute) {
-            Attribute attr = (Attribute) selectedPath.getLastPathComponent();
-            target = (DbEntity) attr.getEntity();
-        }
-
-        if (target != null) {
-
-            /**
-             * Initialize root with one of mapped ObjEntities.
-             */
-            Collection<ObjEntity> objEntities = target.getDataMap().getMappedEntities(
-                    target);
-
-            List<DbRelationship> relPath = new Vector<DbRelationship>(selectedPath
-                    .getPathCount() - 1);
-            for (int i = 1; i < selectedPath.getPathCount(); i++) {
-                if (selectedPath.getLastPathComponent() instanceof Relationship) {
-                    relPath.add((DbRelationship) selectedPath.getPathComponent(i));
-                }
-            }
-
-            setObjectTarget(objEntities.size() == 0 ? null : objEntities
-                    .iterator()
-                    .next());
-            if (objectTarget != null) {
-                updateTargetCombo(objectTarget.getDbEntity());
-            }
-            else {
-                updateTargetCombo(null);
-            }
-        }
-    }
-
-    public void setObjectTarget(ObjEntity objectTarget) {
-        if (this.objectTarget != objectTarget) {
-            this.objectTarget = objectTarget;
-        }
-    }
-
-    protected void updateTargetCombo(DbEntity dbTarget) {
-        if (dbTarget != null) {
-            // copy those that have DbEntities mapped to dbTarget, and then sort
-
-            view.getTargCombo().removeAllItems();
-            this.objectTargets = new ArrayList<ObjEntity>();
-
-            if (dbTarget != null) {
-                objectTargets.addAll(dbTarget.getDataMap().getMappedEntities(dbTarget));
-                Collections.sort(objectTargets, Comparators.getNamedObjectComparator());
-            }
-
-            for (ObjEntity obj : objectTargets) {
-                view.getTargCombo().addItem(obj.getName());
-            }
-        }
-        else {
-            view.getTargCombo().addItem("");
-        }
     }
 
     private Entity getFirstEntity() {
