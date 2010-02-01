@@ -67,7 +67,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
     protected JTextField attributeName;
     protected JLabel currentPathLabel;
     protected JLabel sourceEntityLabel;
-    protected JComboBox targCombo;
 
     protected JComboBox type;
     protected JPanel typeManagerPane;
@@ -107,8 +106,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
         cancelButton.setEnabled(true);
         selectPathButton.setEnabled(false);
 
-        targCombo = new JComboBox();
-
         setTitle("ObjAttribute Inspector");
         setLayout(new BorderLayout());
 
@@ -129,13 +126,10 @@ public class ObjAttributeInfoDialogView extends JDialog {
         builder.addLabel("Source:", cc.xy(1, 7));
         builder.add(sourceEntityLabel, cc.xywh(3, 7, 1, 1));
 
-        builder.addLabel("Target:", cc.xy(1, 9));
-        builder.add(targCombo, cc.xywh(3, 9, 1, 1));
+        builder.addLabel("Type:", cc.xy(1, 9));
+        builder.add(type, cc.xywh(3, 9, 1, 1));
 
-        builder.addLabel("Type:", cc.xy(1, 11));
-        builder.add(type, cc.xywh(3, 11, 1, 1));
-
-        builder.addSeparator("Mapping to Attributes", cc.xywh(1, 13, 7, 1));
+        builder.addSeparator("Mapping to Attributes", cc.xywh(1, 11, 7, 1));
 
         typeManagerPane = new JPanel();
         typeManagerPane.setLayout(new CardLayout());
@@ -174,7 +168,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         typeManagerPane.add(builderPathPane.getPanel(), FLATTENED_PANEL);
         typeManagerPane.add(embeddablePane.getPanel(), EMBEDDABLE_PANEL);
 
-        builder.add(typeManagerPane, cc.xywh(1, 15, 7, 1));
+        builder.add(typeManagerPane, cc.xywh(1, 13, 7, 1));
 
         add(builder.getPanel(), BorderLayout.CENTER);
 
@@ -245,10 +239,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
     public JComboBox getType() {
         return type;
-    }
-
-    public JComboBox getTargCombo() {
-        return targCombo;
     }
 
     public MultiColumnBrowser getPathBrowser() {
