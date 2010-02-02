@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.event;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 
 /**
@@ -30,7 +30,7 @@ public class DomainEventTest extends TestCase {
 
     public void testConstructor1() throws Exception {
     	Object src = new Object();
-    	DataDomain d = new DataDomain("abc");
+    	DataChannelDescriptor d = new DataChannelDescriptor();
     	DomainEvent e = new DomainEvent(src, d);
     	
     	assertSame(src, e.getSource());
@@ -39,7 +39,7 @@ public class DomainEventTest extends TestCase {
     
     public void testConstructor2() throws Exception  {
     	Object src = new Object();
-    	DataDomain d = new DataDomain("abc");
+    	DataChannelDescriptor d = new DataChannelDescriptor();
     	DomainEvent e = new DomainEvent(src, d, "oldname");
     	
     	assertSame(src, e.getSource());
@@ -49,7 +49,7 @@ public class DomainEventTest extends TestCase {
     
     public void testDomain() throws Exception  {
     	Object src = new Object();
-   	    DataDomain d = new DataDomain("abc");
+   	    DataChannelDescriptor d = new DataChannelDescriptor();
     	DomainEvent e = new DomainEvent(src, null);
     	
     	e.setDomain(d);

@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.event;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 
 /**
@@ -29,12 +29,12 @@ import org.apache.cayenne.map.event.MapEvent;
 public class DataNodeEventTest extends TestCase {
 
     public void testNewName() throws Exception {
-        MapEvent event = new DataNodeEvent(new Object(), new DataNode("someName"));
+        MapEvent event = new DataNodeEvent(new Object(), new DataNodeDescriptor("someName"));
         assertEquals("someName", event.getNewName());
     }
 
     public void testNoNameChange() throws Exception {
-        MapEvent event = new DataNodeEvent(new Object(), new DataNode("someName"));
+        MapEvent event = new DataNodeEvent(new Object(), new DataNodeDescriptor("someName"));
         assertFalse(event.isNameChange());
         
         event.setOldName("someOldName");
@@ -44,7 +44,7 @@ public class DataNodeEventTest extends TestCase {
     public void testNameChange() throws Exception {
         MapEvent event = new DataNodeEvent(
                 new Object(),
-                new DataNode("someName"),
+                new DataNodeDescriptor("someName"),
                 "someOldName");
         assertEquals("someName", event.getNewName());
         assertTrue(event.isNameChange());

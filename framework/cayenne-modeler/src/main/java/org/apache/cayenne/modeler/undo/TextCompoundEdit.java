@@ -29,8 +29,8 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -101,7 +101,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
             tabbedPane = editorView.getEjbqlQueryView();
         }
 
-        if (targetObject instanceof DataNode) {
+        if (targetObject instanceof DataNodeDescriptor) {
             tabbedPane = editorView.getDataNodeView();
         }
 
@@ -109,7 +109,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
             tabbedPane = editorView.getDataMapView();
         }
 
-        if (targetObject instanceof DataDomain) {
+        if (targetObject instanceof DataChannelDescriptor) {
             tabbedPane = editorView.getDataDomainView();
         }
 

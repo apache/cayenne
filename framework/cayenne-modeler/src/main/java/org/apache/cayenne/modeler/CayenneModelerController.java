@@ -35,6 +35,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.WindowConstants;
 
+import org.apache.cayenne.conf.ConfigStatus;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
@@ -43,8 +44,9 @@ import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.project.ApplicationProject;
-import org.apache.cayenne.project.validator.Validator;
+import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
 
 /**
  * Controller of the main application frame.
@@ -152,9 +154,10 @@ public class CayenneModelerController extends CayenneController {
     }
 
     public void projectModifiedAction() {
-        String title = (projectController.getProject().isLocationUndefined())
+        String title = (projectController.getProject().getConfigurationResource() == null)
                 ? "[New]"
-                : projectController.getProject().getMainFile().getAbsolutePath();
+                : projectController.getProject()
+                .getConfigurationResource().getURL().getPath();
 
         frame.setTitle("* - " + ModelerConstants.TITLE + " - " + title);
     }
@@ -164,7 +167,8 @@ public class CayenneModelerController extends CayenneController {
         updateStatus("Project saved...");
         frame.setTitle(ModelerConstants.TITLE
                 + " - "
-                + projectController.getProject().getMainFile().getAbsolutePath());
+                + projectController.getProject()
+                .getConfigurationResource().getURL().getPath());
     }
 
     /**
@@ -190,8 +194,9 @@ public class CayenneModelerController extends CayenneController {
     /**
      * Handles project opening control. Updates main frame, then delegates control to
      * child controllers.
+     * @param config 
      */
-    public void projectOpenedAction(ApplicationProject project) {
+    public void projectOpenedAction(Project project, Configuration config) {
 
         projectController.setProject(project);
 
@@ -201,7 +206,7 @@ public class CayenneModelerController extends CayenneController {
         application.getActionManager().projectOpened();
 
         // do status update AFTER the project is actually opened...
-        if (project.isLocationUndefined()) {
+        if (project.getConfigurationResource() == null){
             updateStatus("New project created...");
             frame.setTitle(ModelerConstants.TITLE + "- [New]");
         }
@@ -209,24 +214,32 @@ public class CayenneModelerController extends CayenneController {
             updateStatus("Project opened...");
             frame.setTitle(ModelerConstants.TITLE
                     + " - "
-                    + project.getMainFile().getAbsolutePath());
+                    + project
+                    .getConfigurationResource().getURL().getPath());
         }
 
         // update preferences
-        if (!project.isLocationUndefined()) {
-            getLastDirectory().setDirectory(project.getProjectDirectory());
+        if (project.getConfigurationResource() != null) {
+            getLastDirectory().setDirectory(new File(project.getConfigurationResource().getURL().getPath()));
             frame.fireRecentFileListChanged();
         }
 
+        
+        ConfigStatus loadStatus = (config != null)
+                ? config.getLoadStatus()
+                : new ConfigStatus();
+                
         // --- check for load errors
-        if (project.getLoadStatus().hasFailures()) {
+        if (loadStatus.hasFailures()) {
             // mark project as unsaved
             project.setModified(true);
             projectController.setDirty(true);
 
+            ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(project);
+            List<ValidationInfo> object = (List<ValidationInfo>) project.getRootNode().acceptVisitor(validatVisitor);
+            
             // show warning dialog
-            ValidatorDialog.showDialog(frame, new Validator(project, project
-                    .getLoadStatus()));
+            ValidatorDialog.showDialog(frame, object);
         }
 
     }
@@ -295,5 +308,39 @@ public class CayenneModelerController extends CayenneController {
                 updateStatus(null);
             }
         }
+    }
+
+    public void changePathInLastProjListAction(String oldPath, String newPath) {
+        Preferences frefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
+        List<String> arr = ModelerPreferences.getLastProjFiles();
+        // Add proj path to the preferences
+        // Prevent duplicate entries.
+        if (arr.contains(oldPath)) {
+            arr.remove(oldPath);
+        }
+        
+        if (arr.contains(newPath)) {
+            arr.remove(newPath);
+        }
+
+        arr.add(0, newPath);
+        while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
+            arr.remove(arr.size() - 1);
+        }
+
+        try {
+            frefLastProjFiles.clear();
+        }
+        catch (BackingStoreException e) {
+            // ignore exception
+        }
+        int size = arr.size();
+        
+        for (int i=0; i< size; i++) {
+            frefLastProjFiles.put(String.valueOf(i), arr.get(i).toString());
+        }
+        
+        getLastDirectory().setDirectory(new File(newPath));
+        frame.fireRecentFileListChanged();
     }
 }

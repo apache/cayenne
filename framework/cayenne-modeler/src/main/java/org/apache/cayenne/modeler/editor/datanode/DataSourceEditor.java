@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.datanode;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -32,7 +32,7 @@ import org.apache.cayenne.util.Util;
 public abstract class DataSourceEditor extends CayenneController {
 
     protected ObjectBinding[] fieldAdapters;
-    protected DataNode node;
+    protected DataNodeDescriptor node;
     protected BindingDelegate nodeChangeProcessor;
 
     public DataSourceEditor(ProjectController controller,
@@ -44,11 +44,11 @@ public abstract class DataSourceEditor extends CayenneController {
 
    
 
-    public DataNode getNode() {
+    public DataNodeDescriptor getNode() {
         return node;
     }
 
-    public void setNode(DataNode node) {
+    public void setNode(DataNodeDescriptor node) {
         if (!Util.nullSafeEquals(this.node, node)) {
             this.node = node;
 

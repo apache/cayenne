@@ -21,14 +21,14 @@ package org.apache.cayenne.modeler.event;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 
 /**
  */
 public class DomainDisplayEventTest extends TestCase {
 
 	public void testDomain() throws Exception {
-		DataDomain d = new DataDomain("abc");
+		DataChannelDescriptor d = new DataChannelDescriptor();
 		DomainDisplayEvent e = new DomainDisplayEvent(new Object(), d);
 		assertSame(d, e.getDomain());
 	}

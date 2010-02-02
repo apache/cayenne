@@ -18,23 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 
 /**
  * Represents a display event of a DataDomain.
  * 
  */
 public class DomainDisplayEvent extends DisplayEvent {
-	protected DataDomain domain;
+	protected DataChannelDescriptor domain;
 	protected boolean domainChanged = true;
 
-	public DomainDisplayEvent(Object src, DataDomain domain) {
+	public DomainDisplayEvent(Object src, DataChannelDescriptor domain) {
 		super(src);
 		this.domain = domain;
 	}
 
 	/** Get domain for this data map. */
-	public DataDomain getDomain() {
+	public DataChannelDescriptor getDomain() {
 		return domain;
 	}
 	
@@ -42,7 +42,7 @@ public class DomainDisplayEvent extends DisplayEvent {
 	 * Sets the domain.
 	 * @param domain The domain to set
 	 */
-	public void setDomain(DataDomain domain) {
+	public void setDomain(DataChannelDescriptor domain) {
 		this.domain = domain;
 	}
 	

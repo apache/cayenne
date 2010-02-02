@@ -26,7 +26,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.modeler.Application;
@@ -80,7 +80,7 @@ public class ImportDataMapAction extends CayenneAction {
             };
 
             DataMap newMap = mapLoader.loadDataMap(dataMapFile.getAbsolutePath());
-            DataDomain domain = getProjectController().getCurrentDataDomain();
+            DataChannelDescriptor domain = (DataChannelDescriptor)getProjectController().getProject().getRootNode();
 
             if (newMap.getName() != null) {
                 newMap.setName(NamedObjectFactory.createName(

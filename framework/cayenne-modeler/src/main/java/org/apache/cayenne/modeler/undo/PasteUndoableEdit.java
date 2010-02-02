@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -43,12 +43,12 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
 
     
 
-    private DataDomain domain;
+    private DataChannelDescriptor domain;
     private DataMap map;
     private Object where;
     private Object content;
 
-    public PasteUndoableEdit(DataDomain domain, DataMap map, Object where, Object content) {
+    public PasteUndoableEdit(DataChannelDescriptor domain, DataMap map, Object where, Object content) {
         this.domain = domain;
         this.map = map;
         this.where = where;
@@ -88,11 +88,11 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                 .getAction(RemoveProcedureParameterAction.getActionName());
 
         if (content instanceof DataMap) {
-            if (where instanceof DataDomain) {
-                rAction.removeDataMap((DataDomain) where, (DataMap) content);
+            if (where instanceof DataChannelDescriptor) {
+                rAction.removeDataMap((DataMap) content);
             }
-            else if (where instanceof DataNode) {
-                rAction.removeDataMapFromDataNode((DataNode) where, (DataMap) content);
+            else if (where instanceof DataNodeDescriptor) {
+                rAction.removeDataMapFromDataNode((DataNodeDescriptor) where, (DataMap) content);
             }
         }
         else if (where instanceof DataMap) {

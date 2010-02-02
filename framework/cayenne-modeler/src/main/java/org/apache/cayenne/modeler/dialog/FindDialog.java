@@ -36,7 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.tree.TreePath;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -60,6 +60,8 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.query.AbstractQuery;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -90,64 +92,55 @@ public class FindDialog extends CayenneController {
         Iterator it = paths.iterator();
         int index = 0;
         while (it.hasNext()) {
-            Object[] path = (Object[]) it.next();
+            Object path = it.next();
 
-            if (path[path.length - 1] instanceof ObjEntity) {
-                objEntityNames.put(
-                        new Integer(index++),
-                        ((ObjEntity) path[path.length - 1]).getName());
+            if (path instanceof ObjEntity) {
+                objEntityNames.put(new Integer(index++), ((ObjEntity) path).getName());
             }
 
-            if (path[path.length - 1] instanceof DbEntity) {
-                dbEntityNames.put(
-                        new Integer(index++),
-                        ((DbEntity) path[path.length - 1]).getName());
+            else if (path instanceof DbEntity) {
+                dbEntityNames.put(new Integer(index++), ((DbEntity) path).getName());
             }
 
-            if (path[path.length - 1] instanceof Query) {
-                queryNames.put(new Integer(index++), ((Query) path[path.length - 1])
-                        .getName());
+            else if (path instanceof Query) {
+                queryNames.put(new Integer(index++), ((Query) path).getName());
             }
 
-            if (path[path.length - 1] instanceof Embeddable) {
-                
-                String name = ((Embeddable) path[path.length - 1]).getClassName();
-                embeddableNames.put(
-                        new Integer(index++),
-                        name);
+            else if (path instanceof Embeddable) {
+                String name = ((Embeddable) path).getClassName();
+                embeddableNames.put(new Integer(index++), name);
             }
-            
-            if (path[path.length - 1] instanceof EmbeddableAttribute) {
-                
-                Object parentObject = ((EmbeddableAttribute) path[path.length - 1]).getEmbeddable();
-                String parName = getParentName(path, parentObject);
-                embeddableAttributeNames.put(new Integer(index++), parName
+
+            else if (path instanceof EmbeddableAttribute) {
+                Embeddable parentObject = ((EmbeddableAttribute) path).getEmbeddable();
+                embeddableAttributeNames.put(new Integer(index++), parentObject
+                        .getClassName()
                         + "."
-                        + ((EmbeddableAttribute) path[path.length - 1]).getName());
+                        + ((EmbeddableAttribute) path).getName());
             }
-            if (path[path.length - 1] instanceof Attribute) {
-                Object parentObject = ((Attribute) path[path.length - 1]).getParent();
-                attrNames.put(new Integer(index++), getParentName(path, parentObject)
+            else if (path instanceof Attribute) {
+                Object parentObject = ((Attribute) path).getParent();
+                attrNames.put(new Integer(index++), getParentName(parentObject)
                         + "."
-                        + ((Attribute) path[path.length - 1]).getName());
+                        + ((Attribute) path).getName());
             }
 
-            if (path[path.length - 1] instanceof Relationship) {
-                Object parentObject = ((Relationship) path[path.length - 1]).getParent();
+            else if (path instanceof Relationship) {
+                Object parentObject = ((Relationship) path).getParent();
 
                 /*
                  * relationships are different from attributes in that they do not
                  * correctly return the owning entity when inheritance is involved.
                  * Hopefully this will be reconciled in the future relases
                  */
-                String parentName = getParentName(path, parentObject);
-                if (!parentObject.equals(path[path.length - 2])) {
-                    parentName = ((ObjEntity) path[path.length - 2]).getName();
-                }
+                String parentName = getParentName(parentObject);
+                // if (!parentObject.equals(path)) {
+                // parentName = ((ObjEntity) path[path.length - 2]).getName();
+                // }
 
                 relatNames.put(new Integer(index++), parentName
                         + "."
-                        + ((Relationship) path[path.length - 1]).getName());
+                        + ((Relationship) path).getName());
             }
         }
 
@@ -196,133 +189,155 @@ public class FindDialog extends CayenneController {
         table.getSelectionModel().setSelectionInterval(0, 0);
     }
 
-    public static void jumpToResult(Object[] path) {
-    	EditorView editor = ((CayenneModelerFrame) Application.getInstance()
+    public static void jumpToResult(Object path) {
+        EditorView editor = ((CayenneModelerFrame) Application
+                .getInstance()
                 .getFrameController()
                 .getView()).getView();
-    	
-        if (path[path.length - 1] instanceof Entity) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) getApplication()
+                .getInstance()
+                .getProject()
+                .getRootNode();
+        if (path instanceof Entity) {
 
+            Object[] o = new Object[3];
+            o[0] = domain;
+            o[1] = ((Entity) path).getDataMap();
+            o[2] = (Entity) path;
             /** Make selection in a project tree, open correspondent entity tab */
             editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(path, editor));
+                    buildTreePath(o, editor));
             EntityDisplayEvent event = new EntityDisplayEvent(
                     editor.getProjectTreeView(),
-                    (Entity) path[path.length - 1],
-                    (DataMap) path[path.length - 2],
-                    (DataDomain) path[path.length - 3]);
+                    (Entity) path,
+                    ((Entity) path).getDataMap(),
+                    domain);
             event.setMainTabFocus(true);
 
-            if (path[path.length - 1] instanceof ObjEntity)
+            if (path instanceof ObjEntity)
                 editor.getObjDetailView().currentObjEntityChanged(event);
-            if (path[path.length - 1] instanceof DbEntity)
+            if (path instanceof DbEntity)
                 editor.getDbDetailView().currentDbEntityChanged(event);
         }
-        
-        if (path[path.length - 1] instanceof Query) {
+        else if (path instanceof Query) {
+
+            DataMap dmForQuery = null;
+
+            if (path instanceof EJBQLQuery) {
+                dmForQuery = ((EJBQLQuery) path).getDataMap();
+            }
+            if (path instanceof AbstractQuery) {
+                dmForQuery = ((AbstractQuery) path).getDataMap();
+            }
+
+            Object[] o = new Object[3];
+            o[0] = domain;
+            o[1] = dmForQuery;
+            o[2] = (Query) path;
 
             /** Make selection in a project tree, open correspondent entity tab */
             editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(path, editor));
+                    buildTreePath(o, editor));
             QueryDisplayEvent event = new QueryDisplayEvent(
                     editor.getProjectTreeView(),
-                    (Query) path[path.length - 1],
-                    (DataMap) path[path.length - 2],
-                    (DataDomain) path[path.length - 3]);
+                    (Query) path,
+                    (DataMap) dmForQuery,
+                    domain);
 
             editor.currentQueryChanged(event);
         }
-        
-        if (path[path.length - 1] instanceof Embeddable) {
+
+        else if (path instanceof Embeddable) {
+
+            Object[] o = new Object[3];
+            o[0] = domain;
+            o[1] = ((Embeddable) path).getDataMap();
+            o[2] = (Embeddable) path;
 
             /** Make selection in a project tree, open correspondent entity tab */
             editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(path, editor));
-            EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
-                    editor.getProjectTreeView(),
-                    (Embeddable) path[path.length - 1],
-                    (DataMap) path[path.length - 2],
-                    (DataDomain) path[path.length - 3]);
+                    buildTreePath(o, editor));
+            EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(editor
+                    .getProjectTreeView(), (Embeddable) path, ((Embeddable) path)
+                    .getDataMap(), domain);
             event.setMainTabFocus(true);
 
             editor.currentEmbeddableChanged(event);
         }
-        
-        if (path[path.length - 1] instanceof EmbeddableAttribute) {
+
+        else if (path instanceof EmbeddableAttribute) {
 
             /** Make selection in a project tree, open correspondent embeddable tab */
-            Object[] o = new Object[path.length - 1];
-            for (int i = 0; i < path.length - 1; i++)
-                o[i] = path[i];
+            Object[] o = new Object[3];
+            o[0] = domain;
+            o[1] = ((EmbeddableAttribute) path).getEmbeddable().getDataMap();
+            o[2] = ((EmbeddableAttribute) path).getEmbeddable();
+
             editor.getProjectTreeView().getSelectionModel().setSelectionPath(
                     buildTreePath(o, editor));
-            
+
             EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(
                     editor.getProjectTreeView(),
-                    (Embeddable) path[path.length - 2],
-                    (EmbeddableAttribute) path[path.length - 1],
-                    (DataMap) path[path.length - 3],
-                    (DataDomain) path[path.length - 4]);
+                    ((EmbeddableAttribute) path).getEmbeddable(),
+                    (EmbeddableAttribute) path,
+                    ((EmbeddableAttribute) path).getEmbeddable().getDataMap(),
+                    domain);
             event.setMainTabFocus(true);
 
             editor.getEmbeddableView().currentEmbeddableAttributeChanged(event);
         }
-        
-        if (path[path.length - 1] instanceof Attribute
-                || path[path.length - 1] instanceof Relationship) {
+
+        else if (path instanceof Attribute || path instanceof Relationship) {
 
             /** Make selection in a project tree, open correspondent attributes tab */
-            Object[] o = new Object[path.length - 1];
-            for (int i = 0; i < path.length - 1; i++)
-                o[i] = path[i];
+            Object[] o = new Object[3];
+            o[0] = domain;
+            if (path instanceof Attribute) {
+                o[1] = ((Attribute) path).getEntity().getDataMap();
+                o[2] = ((Attribute) path).getEntity();
+            }
+            else {
+                o[1] = ((Relationship) path).getSourceEntity().getDataMap();
+                o[2] = ((Relationship) path).getSourceEntity();
+            }
             editor.getProjectTreeView().getSelectionModel().setSelectionPath(
                     buildTreePath(o, editor));
 
-            if (path[path.length - 1] instanceof DbAttribute) {
-                AttributeDisplayEvent event = new AttributeDisplayEvent(
-                        editor.getProjectTreeView(),
-                        (Attribute) path[path.length - 1],
-                        (Entity) path[path.length - 2],
-                        (DataMap) path[path.length - 3],
-                        (DataDomain) path[path.length - 4]);
+            if (path instanceof DbAttribute) {
+                AttributeDisplayEvent event = new AttributeDisplayEvent(editor
+                        .getProjectTreeView(), (Attribute) path, ((Attribute) path)
+                        .getEntity(), ((Attribute) path).getEntity().getDataMap(), domain);
                 event.setMainTabFocus(true);
                 editor.getDbDetailView().currentDbAttributeChanged(event);
             }
 
-            if (path[path.length - 1] instanceof ObjAttribute) {
-                AttributeDisplayEvent event = new AttributeDisplayEvent(
-                        editor.getProjectTreeView(),
-                        (Attribute) path[path.length - 1],
-                        (Entity) path[path.length - 2],
-                        (DataMap) path[path.length - 3],
-                        (DataDomain) path[path.length - 4]);
+            if (path instanceof ObjAttribute) {
+                AttributeDisplayEvent event = new AttributeDisplayEvent(editor
+                        .getProjectTreeView(), (Attribute) path, ((Attribute) path)
+                        .getEntity(), ((Attribute) path).getEntity().getDataMap(), domain);
                 event.setMainTabFocus(true);
                 editor.getObjDetailView().currentObjAttributeChanged(event);
             }
 
-            if (path[path.length - 1] instanceof DbRelationship) {
-                RelationshipDisplayEvent event = new RelationshipDisplayEvent(
-                        editor.getProjectTreeView(),
-                        (Relationship) path[path.length - 1],
-                        (Entity) path[path.length - 2],
-                        (DataMap) path[path.length - 3],
-                        (DataDomain) path[path.length - 4]);
+            if (path instanceof DbRelationship) {
+                RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor
+                        .getProjectTreeView(), (Relationship) path, ((Relationship) path)
+                        .getSourceEntity(), ((Relationship) path)
+                        .getSourceEntity()
+                        .getDataMap(), domain);
                 event.setMainTabFocus(true);
                 editor.getDbDetailView().currentDbRelationshipChanged(event);
             }
+            if (path instanceof ObjRelationship) {
+                RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor
+                        .getProjectTreeView(), (Relationship) path, ((Relationship) path)
+                        .getSourceEntity(), ((Relationship) path)
+                        .getSourceEntity()
+                        .getDataMap(), domain);
+                event.setMainTabFocus(true);
+                editor.getObjDetailView().currentObjRelationshipChanged(event);
+            }
         }
-
-        if (path[path.length - 1] instanceof ObjRelationship) {
-            RelationshipDisplayEvent event = new RelationshipDisplayEvent(
-                    editor.getProjectTreeView(),
-                    (Relationship) path[path.length - 1],
-                    (Entity) path[path.length - 2],
-                    (DataMap) path[path.length - 3],
-                    (DataDomain) path[path.length - 4]);
-            event.setMainTabFocus(true);
-            editor.getObjDetailView().currentObjRelationshipChanged(event);
-        }
-
     }
 
     private class JumpToResultActionListener implements MouseListener {
@@ -333,7 +348,7 @@ public class FindDialog extends CayenneController {
             JLabel label = (JLabel) table.getModel().getValueAt(selectedLine, 0);
             Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(label);
 
-            Object[] path = (Object[]) paths.get(index);
+            Object path = paths.get(index);
             jumpToResult(path);
         }
 
@@ -348,6 +363,7 @@ public class FindDialog extends CayenneController {
 
         public void mouseReleased(MouseEvent e) {
         }
+
     }
 
     private class JumpToResultsKeyListener implements KeyListener {
@@ -398,7 +414,7 @@ public class FindDialog extends CayenneController {
         return new TreePath(mutableTreeNodes);
     }
 
-    private String getParentName(Object[] path, Object parentObject) {
+    private String getParentName(Object parentObject) {
         String nameParent = null;
 
         if (parentObject instanceof ObjEntity) {

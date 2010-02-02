@@ -32,6 +32,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -160,7 +161,7 @@ public class EmbeddableAttributeTab extends JPanel implements
                 mediator.getCurrentEmbeddable(),
                 attrs,
                 mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain());
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireEmbeddableAttributeDisplayEvent(ev);
     }

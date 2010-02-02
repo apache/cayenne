@@ -19,8 +19,8 @@ package org.apache.cayenne.modeler.event;
  ****************************************************************/
 
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 
 /**
@@ -33,17 +33,17 @@ public class DataMapDisplayEvent extends DataNodeDisplayEvent {
 	/** True if different from current data map. */
 	protected boolean dataMapChanged = true;
 
-	public DataMapDisplayEvent(Object src, DataMap map, DataDomain domain) {
-		this(src, map, domain, null);
+	public DataMapDisplayEvent(Object src, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
+		this(src, map, dataChannelDescriptor, null);
 	}
 
 	public DataMapDisplayEvent(
 		Object src,
 		DataMap map,
-		DataDomain domain,
-		DataNode node) {
+		DataChannelDescriptor dataChannelDescriptor,
+		DataNodeDescriptor node) {
 
-		super(src, domain, node);
+		super(src, dataChannelDescriptor, node);
 		this.dataMap = map;
 		setDataNodeChanged(false);
 	}

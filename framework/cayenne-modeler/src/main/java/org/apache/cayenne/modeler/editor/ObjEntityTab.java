@@ -38,7 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -295,7 +295,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                     // fire both EntityEvent and EntityDisplayEvent;
                     // the later is to update attribute and relationship display
 
-                    DataDomain domain = mediator.getCurrentDataDomain();
+                    DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
                     DataMap map = mediator.getCurrentDataMap();
 
                     mediator.fireObjEntityEvent(new EntityEvent(this, entity));
@@ -314,7 +314,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 // Jump to DbEntity of the current ObjEntity
                 DbEntity entity = mediator.getCurrentObjEntity().getDbEntity();
                 if (entity != null) {
-                    DataDomain dom = mediator.getCurrentDataDomain();
+                    DataChannelDescriptor dom = (DataChannelDescriptor)mediator.getProject().getRootNode();
                     mediator.fireDbEntityDisplayEvent(new EntityDisplayEvent(
                             this,
                             entity,
@@ -432,7 +432,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         // init DbEntities
         DataMap map = mediator.getCurrentDataMap();
-        Object[] dbEntities = map.getNamespace().getDbEntities().toArray();
+        Object[] dbEntities = map.getDbEntities().toArray();
         Arrays.sort(dbEntities, Comparators.getDataMapChildrenComparator());
 
         DefaultComboBoxModel dbModel = new DefaultComboBoxModel(dbEntities);
@@ -463,7 +463,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         };
 
         Object[] objEntities = CollectionUtils.select(
-                map.getNamespace().getObjEntities(),
+                map.getObjEntities(),
                 inheritanceFilter).toArray();
         Arrays.sort(objEntities, Comparators.getDataMapChildrenComparator());
         Object[] finalObjEntities = new Object[objEntities.length + 1];
@@ -629,8 +629,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     public void processExistingSelection(EventObject e) {
 
         EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator
-                .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
-                .getCurrentDataDomain());
+                .getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
         mediator.fireObjEntityDisplayEvent(ede);
     }
 

@@ -19,7 +19,7 @@ package org.apache.cayenne.modeler.event;
  ****************************************************************/
 
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
@@ -35,7 +35,7 @@ public class AttributeDisplayEvent extends EntityDisplayEvent {
             Attribute attribute,
             Entity entity,
             DataMap dataMap,
-            DataDomain domain) {
+            DataChannelDescriptor domain) {
         
             super(src, entity, dataMap, domain);
             attributes = new Attribute[] { attribute };
@@ -46,7 +46,7 @@ public class AttributeDisplayEvent extends EntityDisplayEvent {
         Attribute[] attributes,
         Entity entity,
         DataMap dataMap,
-        DataDomain domain) {
+        DataChannelDescriptor domain) {
 
         super(src, entity, dataMap, domain);
         this.attributes = attributes;

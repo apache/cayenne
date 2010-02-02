@@ -39,7 +39,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.map.DataMap;
@@ -81,7 +81,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     /**
      * Domain
      */
-    protected transient DataDomain domain;
+    protected transient DataChannelDescriptor domain;
     
     /**
      * Created entity cells.
@@ -111,7 +111,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     
     boolean undoEventsDisabled;
     
-    public synchronized void buildGraph(ProjectController mediator, DataDomain domain, boolean doLayout) {
+    public synchronized void buildGraph(ProjectController mediator, DataChannelDescriptor domain, boolean doLayout) {
         if (graph != null) {
             //graph already built, exiting silently
             return;
@@ -283,7 +283,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
      * Returns whether an entity is not connected to any other
      * TODO: not fine algorithm, it iterates through all entities and all rels 
      */
-    protected boolean isIsolated(DataDomain domain, Entity entity) {
+    protected boolean isIsolated(DataChannelDescriptor domain, Entity entity) {
         if (entity.getRelationships().size() == 0) {
             //searching for rels that have a target="entity"
             
@@ -480,10 +480,6 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         GraphConstants.setExtraLabelPositions(edge.getAttributes(), labelPositions);
     }
     
-    protected boolean isInCurrentDomain() {
-        return mediator.getCurrentDataDomain() == domain;
-    }
-    
     public JGraph getGraph() {
         return graph;
     }
@@ -506,11 +502,11 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         mediator.addDataMapListener(this);
     }
     
-    public void setDataDomain(DataDomain domain) {
+    public void setDataDomain(DataChannelDescriptor domain) {
         this.domain = domain;
     }
     
-    public DataDomain getDataDomain() {
+    public DataChannelDescriptor getDataDomain() {
         return domain;
     }
     

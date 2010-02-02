@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
@@ -76,7 +77,7 @@ public class CreateProcedureAction extends CayenneAction {
                 src,
                 procedure,
                 mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain()));
+                (DataChannelDescriptor)mediator.getProject().getRootNode()));
     }
 
     public void createProcedure(DataMap map, Procedure procedure) {

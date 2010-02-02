@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.graph;
 import java.util.HashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.XMLEncoder;
@@ -40,16 +40,16 @@ public class GraphMap extends HashMap<GraphType, GraphBuilder> implements XMLSer
     /**
      * Domain
      */
-    DataDomain domain;
+    DataChannelDescriptor domain;
     
-    public GraphMap(DataDomain domain) {
+    public GraphMap(DataChannelDescriptor domain) {
         this.domain = domain;
     }
      
     /**
      * Returns domain
      */
-    public DataDomain getDomain() {
+    public DataChannelDescriptor getDomain() {
         return domain;
     }
     

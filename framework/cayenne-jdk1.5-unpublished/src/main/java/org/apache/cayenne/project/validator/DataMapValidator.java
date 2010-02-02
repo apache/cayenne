@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.project.validator;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;

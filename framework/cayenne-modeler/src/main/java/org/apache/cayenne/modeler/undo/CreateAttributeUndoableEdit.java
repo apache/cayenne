@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -47,7 +47,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 	private ObjEntity objEntity;
 	private ObjAttribute objAttr;
 
-	private DataDomain domain;
+	private DataChannelDescriptor domain;
 	private DataMap dataMap;
 
 	private DbEntity dbEntity;
@@ -59,11 +59,11 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 				.getAction(CreateAttributeAction.getActionName());
 
 		if (objEntity != null) {
-			action.createObjAttribute(domain, dataMap, objEntity, objAttr);
+			action.createObjAttribute(dataMap, objEntity, objAttr);
 		}
 
 		if (dbEntity != null) {
-			action.createDbAttribute(domain, dataMap, dbEntity, dbAttr);
+			action.createDbAttribute(dataMap, dbEntity, dbAttr);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 		}
 	}
 
-	public CreateAttributeUndoableEdit(DataDomain domain, DataMap map,
+	public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
 			ObjEntity objEntity, ObjAttribute attr) {
 		this.domain = domain;
 		this.dataMap = map;
@@ -103,7 +103,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 		this.objAttr = attr;
 	}
 
-	public CreateAttributeUndoableEdit(DataDomain domain, DataMap map,
+	public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
 			DbEntity dbEntity, DbAttribute attr) {
 		this.domain = domain;
 		this.dataMap = map;

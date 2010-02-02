@@ -41,6 +41,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.TreePath;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -610,8 +611,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                 MapEvent.CHANGE));
 
         EntityDisplayEvent event = new EntityDisplayEvent(this, mediator
-                .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
-                .getCurrentDataDomain());
+                .getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireObjEntityDisplayEvent(event);
 
@@ -623,7 +623,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
                 attributeSaved,
                 mediator.getCurrentObjEntity(),
                 mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain());
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireObjAttributeDisplayEvent(eventAttr);
 

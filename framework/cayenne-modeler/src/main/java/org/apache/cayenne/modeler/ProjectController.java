@@ -34,8 +34,6 @@ import java.util.prefs.Preferences;
 import javax.swing.event.EventListenerList;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
@@ -48,6 +46,8 @@ import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.configuration.event.ProcedureParameterListener;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.event.QueryListener;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -73,7 +73,6 @@ import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.modeler.action.ModelerProjectConfiguration;
 import org.apache.cayenne.modeler.action.NavigateBackwardAction;
 import org.apache.cayenne.modeler.action.NavigateForwardAction;
 import org.apache.cayenne.modeler.action.RevertAction;
@@ -117,9 +116,8 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CircularArray;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.project.ApplicationProject;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.commons.logging.Log;
@@ -146,8 +144,8 @@ public class ProjectController extends CayenneController {
 
         private boolean isRefiring;
         private DisplayEvent event;
-        private DataDomain domain;
-        private DataNode node;
+        private DataChannelDescriptor domain;
+        private DataNodeDescriptor node;
         private DataMap map;
         private ObjEntity objEntity;
         private DbEntity dbEntity;
@@ -263,7 +261,7 @@ public class ProjectController extends CayenneController {
     protected EventListenerList listenerList;
     protected boolean dirty;
 
-    protected ApplicationProject project;
+    protected Project project;
     protected Domain projectPreferences;
 
     protected Preferences projectControllerPreferences;
@@ -290,20 +288,15 @@ public class ProjectController extends CayenneController {
         return parent.getView();
     }
 
-    public ApplicationProject getProject() {
+    public Project getProject() {
         return project;
     }
 
-    public void setProject(ApplicationProject currentProject) {
+    public void setProject(Project currentProject) {
         if (this.project != currentProject) // strange enough, this method is called twice
         // during project opening. Not to disturb
         // watchdog extra time, adding this check
         {
-            if (this.project != null) {
-                ((ModelerProjectConfiguration) project.getConfiguration())
-                        .getGraphRegistry()
-                        .unregister(this);
-            }
 
             this.project = currentProject;
             this.projectPreferences = null;
@@ -324,8 +317,8 @@ public class ProjectController extends CayenneController {
 
                 watchdog.reconfigure();
 
-                addDomainListener(((ModelerProjectConfiguration) project
-                        .getConfiguration()).getGraphRegistry());
+//                addDomainListener(((ModelerProjectConfiguration) project
+//                        .getConfiguration()).getGraphRegistry());
             }
         }
     }
@@ -347,10 +340,10 @@ public class ProjectController extends CayenneController {
         }
 
         if (projectPreferences == null) {
-            String key = getProject().isLocationUndefined() ? new String(IDUtil
+            String key = getProject().getConfigurationResource() == null//getProject().isLocationUndefined() 
+                    ? new String(IDUtil
                     .pseudoUniqueByteSequence16()) : project
-                    .getMainFile()
-                    .getAbsolutePath();
+                    .getConfigurationResource().getURL().getPath();
 
             projectPreferences = getApplicationPreferenceDomain().getSubdomain(
                     Project.class).getSubdomain(key);
@@ -364,10 +357,10 @@ public class ProjectController extends CayenneController {
             throw new CayenneRuntimeException("No Project selected");
         }
         if (projectControllerPreferences == null) {
-            String key = getProject().isLocationUndefined() ? new String(IDUtil
+            String key = getProject().getConfigurationResource() == null//getProject().isLocationUndefined() 
+                ? new String(IDUtil
                     .pseudoUniqueByteSequence16()) : project
-                    .getMainFile()
-                    .getAbsolutePath();
+                    .getConfigurationResource().getURL().getPath();
 
             projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
 
@@ -386,23 +379,24 @@ public class ProjectController extends CayenneController {
      * project is selected.
      */
     public Domain getPreferenceDomainForDataDomain() {
-        DataDomain dataDomain = getCurrentDataDomain();
+        DataChannelDescriptor dataDomain = (DataChannelDescriptor)getProject().getRootNode();
         if (dataDomain == null) {
             throw new CayenneRuntimeException("No DataDomain selected");
         }
 
         return getPreferenceDomainForProject()
-                .getSubdomain(DataDomain.class)
+                .getSubdomain(DataChannelDescriptor.class)
                 .getSubdomain(dataDomain.getName());
     }
 
     public Preferences getPreferenceForDataDomain() {
-        DataDomain dataDomain = getCurrentDataDomain();
+        
+        DataChannelDescriptor dataDomain = (DataChannelDescriptor)getProject().getRootNode();
         if (dataDomain == null) {
             throw new CayenneRuntimeException("No DataDomain selected");
         }
 
-        return getPreferenceForProject().node("DataDomains").node(dataDomain.getName());
+        return getPreferenceForProject().node(dataDomain.getName());
     }
 
     /**
@@ -432,7 +426,7 @@ public class ProjectController extends CayenneController {
      * DataMap is selected.
      */
     public DataNodeDefaults getDataNodePreferences() {
-        DataNode node = getCurrentDataNode();
+        DataNodeDescriptor node = getCurrentDataNode();
         if (node == null) {
             throw new CayenneRuntimeException("No DataNode selected");
         }
@@ -493,50 +487,6 @@ public class ProjectController extends CayenneController {
             currentState.event = e;
             controllerStateHistory.add(currentState);
         }
-    }
-
-    protected void refreshNamespace() {
-        refreshNamespace(getCurrentDataDomain());
-    }
-
-    protected void refreshNamespace(DataDomain domain) {
-        if (domain != null) {
-            domain.getEntityResolver().clearCache();
-        }
-    }
-
-    /**
-     * Finds a domain containing specified DataNode.
-     */
-    public DataDomain findDomain(DataNode node) {
-        Collection<DataDomain> domains = (getProject()).getConfiguration().getDomains();
-
-        for (DataDomain domain : domains) {
-            if (domain.getNode(node.getName()) == node) {
-                return domain;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Finds a domain containing specified DataMap.
-     */
-    public DataDomain findDomain(DataMap map) {
-        Collection<DataDomain> domains = (getProject()).getConfiguration().getDomains();
-
-        if (map == null) {
-            map = getCurrentDataMap();
-        }
-
-        for (DataDomain domain : domains) {
-            if (domain.getMap(map.getName()) == map) {
-                return domain;
-            }
-        }
-
-        return null;
     }
 
     private void removeFromHistory(EventObject e) {
@@ -610,12 +560,8 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public DataNode getCurrentDataNode() {
+    public DataNodeDescriptor getCurrentDataNode() {
         return currentState.node;
-    }
-
-    public DataDomain getCurrentDataDomain() {
-        return currentState.domain;
     }
 
     public DataMap getCurrentDataMap() {
@@ -874,21 +820,14 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
         for (EventListener listener : listenerList.getListeners(DomainListener.class)) {
             DomainListener temp = (DomainListener) listener;
             switch (e.getId()) {
-                case MapEvent.ADD:
-                    temp.domainAdded(e);
-                    break;
                 case MapEvent.CHANGE:
                     temp.domainChanged(e);
-                    break;
-                case MapEvent.REMOVE:
-                    temp.domainRemoved(e);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid DomainEvent type: "
@@ -937,7 +876,6 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -1000,7 +938,6 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -1036,7 +973,6 @@ public class ProjectController extends CayenneController {
         }
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -1071,7 +1007,6 @@ public class ProjectController extends CayenneController {
         }
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -1102,7 +1037,6 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -1133,7 +1067,6 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -1721,12 +1654,11 @@ public class ProjectController extends CayenneController {
     public void addDataMap(Object src, DataMap map, boolean makeCurrent) {
 
         // new map was added.. link it to domain (and node if possible)
-        currentState.domain.addMap(map);
+        currentState.domain.getDataMaps().add(map);
 
-        if (currentState.node != null && !currentState.node.getDataMaps().contains(map)) {
-            currentState.node.addDataMap(map);
+        if (currentState.node != null && !currentState.node.getDataMapNames().contains(map.getName())) {
+            currentState.node.getDataMapNames().add(map.getName());
             fireDataNodeEvent(new DataNodeEvent(this, currentState.node));
-            currentState.domain.reindexNodes();
         }
 
         fireDataMapEvent(new DataMapEvent(src, map, MapEvent.ADD));
@@ -1902,9 +1834,6 @@ public class ProjectController extends CayenneController {
         else if (getCurrentDataNode() != null) {
             return getCurrentDataNode();
         }
-        else if (getCurrentDataDomain() != null) {
-            return getCurrentDataDomain();
-        }
         else if (getCurrentPaths() != null) { // multiple objects
             ProjectPath[] paths = getCurrentPaths();
             List<Object> result = new Vector<Object>();
@@ -1985,8 +1914,8 @@ public class ProjectController extends CayenneController {
     }
 
     public ArrayList<Embeddable> getEmbeddableNamesInCurRentDataDomain() {
-        DataDomain dd = getCurrentDataDomain();
-        Collection<DataMap> maps = dd.getDataMaps();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)getProject().getRootNode();
+        Collection<DataMap> maps = dataChannelDescriptor.getDataMaps();
         Iterator<DataMap> it = maps.iterator();
         ArrayList<Embeddable> embs = new ArrayList<Embeddable>();
         while (it.hasNext()) {

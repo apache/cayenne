@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.map.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.event.CayenneEvent;
 import org.apache.cayenne.util.Util;
 
@@ -52,7 +52,7 @@ public abstract class MapEvent extends CayenneEvent {
     /**
      * Domain of event object. Might be null
      */
-    protected DataDomain domain;
+    protected DataChannelDescriptor domain;
 
     /**
      * Constructor for MapEvent.
@@ -116,14 +116,14 @@ public abstract class MapEvent extends CayenneEvent {
     /**
      * Sets domain of event object.
      */
-    public void setDomain(DataDomain domain) {
+    public void setDomain(DataChannelDescriptor domain) {
         this.domain = domain;
     }
     
     /**
      * @return Domain of event object. Might be null
      */
-    public DataDomain getDomain() {
+    public DataChannelDescriptor getDomain() {
         return domain;
     }
 }

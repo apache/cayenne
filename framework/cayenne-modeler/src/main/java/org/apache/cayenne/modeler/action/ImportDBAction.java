@@ -24,7 +24,7 @@ import java.sql.Connection;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.ConnectionWizard;
@@ -104,6 +104,6 @@ public class ImportDBAction extends DBWizardAction {
             return false;
         }
 
-        return path.firstInstanceOf(DataDomain.class) != null;
+        return path.firstInstanceOf(DataChannelDescriptor.class) != null;
     }
 }

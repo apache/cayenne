@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.query;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
@@ -49,13 +49,13 @@ public class QueryTypeController extends BasicController {
 
 	protected ProjectController mediator;
 	protected DataMap dataMap;
-	protected DataDomain domain;
+	protected DataChannelDescriptor domain;
 	protected Query query;
 
 	public QueryTypeController(ProjectController mediator) {
 		this.mediator = mediator;
 		this.dataMap = mediator.getCurrentDataMap();
-		this.domain = mediator.getCurrentDataDomain();
+		this.domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class QueryTypeController extends BasicController {
 				new CreateQueryUndoableEdit(domain, dataMap, query));
 
 		// notify listeners
-		fireQueryEvent(this, mediator, domain, dataMap, query);
+		fireQueryEvent(this, mediator,dataMap, query);
 		shutdown();
 	}
 
@@ -121,10 +121,10 @@ public class QueryTypeController extends BasicController {
 	 * Fires events when a query was added
 	 */
 	public static void fireQueryEvent(Object src, ProjectController mediator,
-			DataDomain domain, DataMap dataMap, Query query) {
+			DataMap dataMap, Query query) {
 		mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD,
 				dataMap));
 		mediator.fireQueryDisplayEvent(new QueryDisplayEvent(src, query,
-				dataMap, domain));
+				dataMap, (DataChannelDescriptor)mediator.getProject().getRootNode()));
 	}
 }

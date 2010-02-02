@@ -23,6 +23,7 @@
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.swing.KeyStroke;
 
@@ -30,9 +31,10 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.validator.Validator;
+import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
 
 /**
  * UI action that performs full project validation.
@@ -58,15 +60,18 @@ public class ValidateAction extends CayenneAction {
 	 * Validates project for possible conflicts and incomplete mappings.
 	 */
 	public void performAction(ActionEvent e) {
-		Validator val = getCurrentProject().getValidator();
-		int validationCode = val.validate();
 
+        ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(getCurrentProject());
+        List<ValidationInfo> object = (List<ValidationInfo>) getCurrentProject().getRootNode().acceptVisitor(validatVisitor);
+        int validationCode = validatVisitor.getMaxSeverity();
+        
+        
 		// If there were errors or warnings at validation, display them
 		if (validationCode >= ValidationDisplayHandler.WARNING) {
-			ValidatorDialog.showDialog(Application.getFrame(), val);
+			ValidatorDialog.showDialog(Application.getFrame(), object);
 		}
 		else {
-			ValidatorDialog.showValidationSuccess(Application.getFrame(), val);
+			ValidatorDialog.showValidationSuccess(Application.getFrame());
 		}
 	}
 	

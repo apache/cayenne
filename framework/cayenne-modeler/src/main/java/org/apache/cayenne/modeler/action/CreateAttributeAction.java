@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -95,13 +95,13 @@ public class CreateAttributeAction extends CayenneAction {
             ObjAttribute attr = (ObjAttribute) NamedObjectFactory.createObject(
                     ObjAttribute.class,
                     objEntity);
-
-            createObjAttribute(mediator.getCurrentDataDomain(), mediator
+            
+            createObjAttribute(mediator
                     .getCurrentDataMap(), objEntity, attr);
 
             application.getUndoManager().addEdit(
                     new CreateAttributeUndoableEdit(
-                            mediator.getCurrentDataDomain(),
+                            (DataChannelDescriptor)mediator.getProject().getRootNode(),
                             mediator.getCurrentDataMap(),
                             objEntity,
                             attr));
@@ -113,12 +113,13 @@ public class CreateAttributeAction extends CayenneAction {
                     DbAttribute.class,
                     dbEntity);
 
-            createDbAttribute(mediator.getCurrentDataDomain(), mediator
+            createDbAttribute(
+                    mediator
                     .getCurrentDataMap(), dbEntity, attr);
 
             application.getUndoManager().addEdit(
                     new CreateAttributeUndoableEdit(
-                            mediator.getCurrentDataDomain(),
+                            (DataChannelDescriptor)mediator.getProject().getRootNode(),
                             mediator.getCurrentDataMap(),
                             dbEntity,
                             attr));
@@ -148,20 +149,19 @@ public class CreateAttributeAction extends CayenneAction {
                 embeddable,
                 attr,
                 mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain());
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireEmbeddableAttributeDisplayEvent(e);
     }
 
     public void createObjAttribute(
-            DataDomain domain,
             DataMap map,
             ObjEntity objEntity,
             ObjAttribute attr) {
 
         ProjectController mediator = getProjectController();
         objEntity.addAttribute(attr);
-        fireObjAttributeEvent(this, mediator, domain, map, objEntity, attr);
+        fireObjAttributeEvent(this, mediator, map, objEntity, attr);
     }
 
     /**
@@ -170,7 +170,6 @@ public class CreateAttributeAction extends CayenneAction {
     static void fireObjAttributeEvent(
             Object src,
             ProjectController mediator,
-            DataDomain domain,
             DataMap map,
             ObjEntity objEntity,
             ObjAttribute attr) {
@@ -180,6 +179,8 @@ public class CreateAttributeAction extends CayenneAction {
                 attr,
                 objEntity,
                 MapEvent.ADD));
+        
+        DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
 
         AttributeDisplayEvent ade = new AttributeDisplayEvent(
                 src,
@@ -192,13 +193,12 @@ public class CreateAttributeAction extends CayenneAction {
     }
 
     public void createDbAttribute(
-            DataDomain domain,
             DataMap map,
             DbEntity dbEntity,
             DbAttribute attr) {
         dbEntity.addAttribute(attr);
         ProjectController mediator = getProjectController();
-        fireDbAttributeEvent(this, mediator, domain, map, dbEntity, attr);
+        fireDbAttributeEvent(this, mediator, map, dbEntity, attr);
     }
 
     /**
@@ -207,7 +207,6 @@ public class CreateAttributeAction extends CayenneAction {
     static void fireDbAttributeEvent(
             Object src,
             ProjectController mediator,
-            DataDomain domain,
             DataMap map,
             DbEntity dbEntity,
             DbAttribute attr) {
@@ -222,7 +221,7 @@ public class CreateAttributeAction extends CayenneAction {
                 attr,
                 dbEntity,
                 map,
-                domain);
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireDbAttributeDisplayEvent(ade);
     }

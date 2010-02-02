@@ -24,17 +24,17 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.ejbql.EJBQLException;
 
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.EJBQLQuery;
 
 public class EJBQLQueryValidator extends TreeNodeValidator {
 
-    // private DataDomain dd;
     @Override
     public void validateObject(ProjectPath treeNodePath, Validator validator) {
         EJBQLQuery query = (EJBQLQuery) treeNodePath.getObject();
         PositionException message = validateEJBQL(query, treeNodePath
-                .firstInstanceOf(DataDomain.class));
+                .firstInstanceOf(DataDomain.class).getEntityResolver());
 
         if (message != null) {
             validator.registerWarning(
@@ -43,7 +43,7 @@ public class EJBQLQueryValidator extends TreeNodeValidator {
         }
     }
 
-    public PositionException validateEJBQL(EJBQLQuery query, DataDomain dd) {
+    public PositionException validateEJBQL(EJBQLQuery query, EntityResolver er) {
 
         if (query.getEjbqlStatement() != null) {
             PositionException message = null;
@@ -52,7 +52,7 @@ public class EJBQLQueryValidator extends TreeNodeValidator {
             queryTemp.setEjbqlStatement(query.getEjbqlStatement());
             
             try {
-                queryTemp.getExpression(dd.getEntityResolver());
+                queryTemp.getExpression(er);
             }
             catch (CayenneRuntimeException e) {
                 message = new PositionException();

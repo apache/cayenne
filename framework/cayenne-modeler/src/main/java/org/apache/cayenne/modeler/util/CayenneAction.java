@@ -33,8 +33,8 @@ import javax.swing.KeyStroke;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.util.Util;
 
 /**

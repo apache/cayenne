@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -80,8 +81,8 @@ public class DbEntitySyncAction extends CayenneAction {
                 return;
             }
 
-            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(mediator
-                    .getCurrentDataDomain(), mediator.getCurrentDataMap());
+            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor)mediator.getProject().getRootNode()
+                    , mediator.getCurrentDataMap());
 
             while (it.hasNext()) {
                 ObjEntity entity = (ObjEntity) it.next();

@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 import javax.swing.event.UndoableEditListener;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.XMLSerializable;
@@ -38,7 +38,7 @@ public interface GraphBuilder extends Serializable, XMLSerializable, UndoableEdi
     /**
      * Builds graph
      */
-    public void buildGraph(ProjectController mediator, DataDomain domain, boolean layout);
+    public void buildGraph(ProjectController mediator, DataChannelDescriptor domain, boolean layout);
     
     /**
      * Invoked at destroying of the builder
@@ -53,7 +53,7 @@ public interface GraphBuilder extends Serializable, XMLSerializable, UndoableEdi
     /**
      * Returns domain.
      */
-    public DataDomain getDataDomain();
+    public DataChannelDescriptor getDataDomain();
         
     /**
      * Returns type of the graph

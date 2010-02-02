@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -28,16 +28,16 @@ public class EmbeddableAttributeDisplayEvent extends EmbeddableDisplayEvent {
     protected EmbeddableAttribute[] embeddableAttributes;
 
     public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable,
-            EmbeddableAttribute attr, DataMap dataMap, DataDomain domain) {
+            EmbeddableAttribute attrs, DataMap dataMap, DataChannelDescriptor dataChannelDescriptor) {
 
-        super(src, embeddable, dataMap, domain);
+        super(src, embeddable, dataMap, dataChannelDescriptor);
         embeddableAttributes = new EmbeddableAttribute[] {
-            attr
+            attrs
         };
     }
 
     public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable,
-            EmbeddableAttribute[] attr, DataMap dataMap, DataDomain domain) {
+            EmbeddableAttribute[] attr, DataMap dataMap, DataChannelDescriptor domain) {
         super(src, embeddable, dataMap, domain);
         this.embeddableAttributes = attr;
     }

@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.event.EmbeddableEvent;
@@ -81,7 +82,7 @@ public class CreateEmbeddableAction extends CayenneAction {
                 src,
                 embeddable,
                 dataMap,
-                mediator.getCurrentDataDomain());
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
         mediator.fireEmbeddableDisplayEvent(displayEvent);
 

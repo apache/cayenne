@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
@@ -62,7 +62,7 @@ public class CreateQueryAction extends CayenneAction {
         new QueryTypeController(getProjectController()).startup();
     }
     
-    public void createQuery(DataDomain domain, DataMap dataMap, Query query) {
+    public void createQuery(DataChannelDescriptor domain, DataMap dataMap, Query query) {
         dataMap.addQuery(query);
         // notify listeners
         fireQueryEvent(this, getProjectController(), domain, dataMap, query);
@@ -71,7 +71,7 @@ public class CreateQueryAction extends CayenneAction {
     /**
      * Fires events when a query was added
      */
-    public static void fireQueryEvent(Object src, ProjectController mediator, DataDomain domain,
+    public static void fireQueryEvent(Object src, ProjectController mediator, DataChannelDescriptor domain,
             DataMap dataMap, Query query) {
         mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD, dataMap));
         mediator.fireQueryDisplayEvent(new QueryDisplayEvent(src, query, dataMap, domain));

@@ -33,14 +33,13 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.conf.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -55,7 +54,6 @@ import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.NamedObjectFactory;
-import org.apache.cayenne.project.ProjectDataSource;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.wocompat.EOModelProcessor;
@@ -148,12 +146,12 @@ public class ImportEOModelAction extends CayenneAction {
 
             // this should make created node current, resulting in the new map being added
             // to the node automatically once it is loaded
-            DataNode node = nodeBuilder.buildDataNode();
+            DataNodeDescriptor node = nodeBuilder.buildDataNode();
 
             // configure node...
             if ("JNDI".equalsIgnoreCase(adapter)) {
-                node.setDataSourceFactory(JNDIDataSourceFactory.class.getName());
-                node.setDataSourceLocation((String) connection.get("serverUrl"));
+                node.setDataSourceFactoryType(JNDIDataSourceFactory.class.getName());
+                node.setParameters((String) connection.get("serverUrl"));
             }
             else {
                 // guess adapter from plugin or driver
@@ -166,17 +164,16 @@ public class ImportEOModelAction extends CayenneAction {
                         Class adapterClass = getApplication()
                                 .getClassLoadingService()
                                 .loadClass(cayenneAdapter);
-                        node.setAdapter((DbAdapter) adapterClass.newInstance());
+                        node.setAdapterType(adapterClass.toString());
                     }
                     catch (Throwable ex) {
                         // ignore...
                     }
                 }
 
-                node.setDataSourceFactory(DriverDataSourceFactory.class.getName());
+                node.setDataSourceFactoryType(DriverDataSourceFactory.class.getName());
 
-                DataSourceInfo dsi = ((ProjectDataSource) node.getDataSource())
-                        .getDataSourceInfo();
+                DataSourceInfo dsi = node.getDataSourceDescriptor();
                 
                 
                 
@@ -190,8 +187,7 @@ public class ImportEOModelAction extends CayenneAction {
             getProjectController().fireDataNodeEvent(
                     new DataNodeEvent(this, node, MapEvent.ADD));
             getProjectController().fireDataNodeDisplayEvent(
-                    new DataNodeDisplayEvent(this, getProjectController()
-                            .getCurrentDataDomain(), node));
+                    new DataNodeDisplayEvent(this, (DataChannelDescriptor)getProjectController().getProject().getRootNode(), node));
         }
     }
     
@@ -210,7 +206,7 @@ public class ImportEOModelAction extends CayenneAction {
             return false;
         }
 
-        return path.firstInstanceOf(DataDomain.class) != null;
+        return path.firstInstanceOf(DataChannelDescriptor.class) != null;
     }
 
     /**
@@ -295,12 +291,12 @@ public class ImportEOModelAction extends CayenneAction {
             }
 
             mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(Application
-                    .getFrame(), map, mediator.getCurrentDataDomain(), mediator
+                    .getFrame(), map, (DataChannelDescriptor)mediator.getProject().getRootNode(), mediator
                     .getCurrentDataNode()));
         }
         else {
             // fix DataMap name, as there maybe a map with the same name already
-            DataDomain domain = mediator.getCurrentDataDomain();
+            DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
             map.setName(NamedObjectFactory.createName(DataMap.class, domain, map
                     .getName()));
 

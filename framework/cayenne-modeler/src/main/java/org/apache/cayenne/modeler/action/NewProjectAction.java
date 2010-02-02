@@ -25,14 +25,13 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.NamedObjectFactory;
+import org.apache.cayenne.project2.Project;
 
 /**
  */
@@ -65,16 +64,18 @@ public class NewProjectAction extends ProjectAction {
         }
 
         Configuration config = buildProjectConfiguration(null);
-        ApplicationProject project = ModelerUtil.createModelerProject(null, config, getProjectController());
+        
+        DataChannelDescriptor domain = new DataChannelDescriptor();
+        
+        String name = NamedObjectFactory.createName(
+                DataChannelDescriptor.class,
+                domain);
+        
+        domain.setName(name);
+        
+        Project project = new Project(domain);
 
-        // stick a DataDomain
-        DataDomain domain = (DataDomain) NamedObjectFactory.createObject(
-                DataDomain.class,
-                config);
-        domain.getEntityResolver().setIndexedByClass(false);
-        config.addDomain(domain);
-
-        controller.projectOpenedAction(project);
+        controller.projectOpenedAction(project, config);
 
         // select default domain
         getProjectController().fireDomainDisplayEvent(

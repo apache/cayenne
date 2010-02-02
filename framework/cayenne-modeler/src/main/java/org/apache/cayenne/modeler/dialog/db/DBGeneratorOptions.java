@@ -254,7 +254,7 @@ public class DBGeneratorOptions extends CayenneController {
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle("Save SQL Script");
 
-        File projectDir = Application.getProject().getProjectDirectory();
+        File projectDir = new File(Application.getProject().getConfigurationResource().getURL().getPath());
 
         if (projectDir != null) {
             fc.setCurrentDirectory(projectDir);

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
@@ -50,7 +50,7 @@ public class DataMapErrorMsg extends ValidationDisplayHandler {
         }
 
         if (len >= 2) {
-            domain = (DataDomain) path[len - 2];
+            domain = (DataChannelDescriptor) path[len - 2];
         }
     }
 

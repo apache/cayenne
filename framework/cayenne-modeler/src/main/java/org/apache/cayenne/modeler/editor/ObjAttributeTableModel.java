@@ -28,6 +28,8 @@ import java.util.Iterator;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
+
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
@@ -303,8 +305,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                 mediator.fireObjEntityEvent(new EntityEvent(this, ent, MapEvent.CHANGE));
 
                 EntityDisplayEvent ev = new EntityDisplayEvent(this, mediator
-                        .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
-                        .getCurrentDataDomain());
+                        .getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
 
                 mediator.fireObjEntityDisplayEvent(ev);
 
@@ -319,7 +320,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                         attributeNew,
                         mediator.getCurrentObjEntity(),
                         mediator.getCurrentDataMap(),
-                        mediator.getCurrentDataDomain());
+                        (DataChannelDescriptor)mediator.getProject().getRootNode());
 
                 mediator.fireObjAttributeDisplayEvent(eventAttr);
             }

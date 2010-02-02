@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.dialog.db;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project.validator.ValidationInfo;
-import org.apache.cayenne.project.validator.Validator;
+import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
@@ -55,7 +54,6 @@ public class TableSelectorController extends CayenneController {
     protected List<DbEntity> selectableTablesList;
 
     protected Map validationMessages;
-  
 
     public TableSelectorController(ProjectController parent) {
         super(parent);
@@ -181,13 +179,18 @@ public class TableSelectorController extends CayenneController {
         // TODO: this is inefficient.. we need targeted validation
         // instead of doing it on the whole project
 
-        Validator validator = ((ProjectController) getParent())
+        ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(
+                ((ProjectController) getParent()).getProject());
+        List<ValidationInfo> object = (List<ValidationInfo>) getApplication()
                 .getProject()
-                .getValidator();
-        int validationCode = validator.validate();
+                .getRootNode()
+                .acceptVisitor(validatVisitor);
+        
+        int validationCode = validatVisitor.getMaxSeverity();
+
         if (validationCode >= ValidationDisplayHandler.WARNING) {
 
-            for (ValidationInfo nextProblem : validator.validationResults()) {
+            for (ValidationInfo nextProblem : object) {
                 Entity failedEntity = null;
 
                 if (nextProblem.getValidatedObject() instanceof DbAttribute) {

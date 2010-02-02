@@ -33,9 +33,8 @@ import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -61,7 +60,8 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
@@ -260,8 +260,8 @@ public class MergerOptions extends CayenneController {
         final ProjectController c = getProjectController();
         
         final Object src = this;
-        final DataDomain domain = getProjectController().getCurrentDataDomain();
-        final DataNode node = getProjectController().getCurrentDataNode();
+        final DataChannelDescriptor domain = (DataChannelDescriptor)getProjectController().getProject().getRootNode();
+        final DataNodeDescriptor node = getProjectController().getCurrentDataNode();
 
         final ModelMergeDelegate delegate = new ModelMergeDelegate (){
 
@@ -413,11 +413,11 @@ public class MergerOptions extends CayenneController {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle("Save SQL Script");
-
-        File projectDir = Application.getProject().getProjectDirectory();
+        
+        Resource projectDir = Application.getProject().getConfigurationResource();
 
         if (projectDir != null) {
-            fc.setCurrentDirectory(projectDir);
+            fc.setCurrentDirectory(new File(projectDir.getURL().getPath()));//projectDir);
         }
 
         if (fc.showSaveDialog(getView()) == JFileChooser.APPROVE_OPTION) {

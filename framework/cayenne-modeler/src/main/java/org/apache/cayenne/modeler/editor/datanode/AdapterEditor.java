@@ -23,15 +23,12 @@ import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
-import org.apache.cayenne.dba.AutoAdapter;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.ModelerDbAdapter;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
@@ -40,7 +37,7 @@ import org.apache.cayenne.swing.ObjectBinding;
 public class AdapterEditor extends CayenneController {
 
     protected AdapterView view;
-    protected DataNode node;
+    protected DataNodeDescriptor node;
     protected ObjectBinding adapterNameBinding;
 
     public AdapterEditor(CayenneController parent) {
@@ -78,10 +75,10 @@ public class AdapterEditor extends CayenneController {
         });
     }
 
-    protected void refreshView(DataNode node) {
-        this.node = node;
+    protected void refreshView(DataNodeDescriptor dataNodeDescriptor) {
+        this.node = dataNodeDescriptor;
 
-        if (node == null) {
+        if (dataNodeDescriptor == null) {
             getView().setVisible(false);
             return;
         }
@@ -97,25 +94,8 @@ public class AdapterEditor extends CayenneController {
         if (node == null) {
             return null;
         }
-
-        DbAdapter adapter = node.getAdapter();
-
-        // TODO, Andrus, 11/3/2005 - to simplify this logic, it would be nice to
-        // consistently load CustomDbAdapter... this would require an ability to set a
-        // load delegate in OpenProjectAction
-        if (adapter == null) {
-            return null;
-        }
-        else if (adapter instanceof ModelerDbAdapter) {
-            return ((ModelerDbAdapter) adapter).getAdapterClassName();
-        }
-        // don't do "instanceof" here, as we maybe dealing with a custom subclass...
-        else if (adapter.getClass() == AutoAdapter.class) {
-            return null;
-        }
-        else {
-            return adapter.getClass().getName();
-        }
+        
+        return node.getAdapterType();
     }
 
     public void setAdapterName(String name) {
@@ -123,9 +103,9 @@ public class AdapterEditor extends CayenneController {
             return;
         }
 
-        ModelerDbAdapter adapter = new ModelerDbAdapter(name, node.getDataSource());
-        adapter.validate();
-        node.setAdapter(adapter);
+//        ModelerDbAdapter adapter = new ModelerDbAdapter(name, node.getDataSource());
+//        adapter.validate();
+        node.setAdapterType(name);
         
         DataNodeEvent e = new DataNodeEvent(AdapterEditor.this, node);
         ((ProjectController) getParent()).fireDataNodeEvent(e);

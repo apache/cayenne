@@ -24,9 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -71,7 +70,7 @@ public class ProjectUtil {
         procedure.addCallParameter(parameter);
     }
 
-    public static void setDataMapName(DataDomain domain, DataMap map, String newName) {
+    public static void setDataMapName(DataChannelDescriptor domain, DataMap map, String newName) {
         String oldName = map.getName();
 
         // If name hasn't changed, just return
@@ -80,24 +79,23 @@ public class ProjectUtil {
         }
 
         // must fully relink renamed map
-        List<DataNode> nodes = new ArrayList<DataNode>();
-        for (DataNode node : domain.getDataNodes())
-            if (node.getDataMaps().contains(map))
+        List<DataNodeDescriptor> nodes = new ArrayList<DataNodeDescriptor>();
+        for (DataNodeDescriptor node : domain.getNodeDescriptors())
+            if (node.getDataMapNames().contains(map.getName()))
                 nodes.add(node);
 
-        domain.removeMap(oldName);
+        domain.getDataMaps().remove(domain.getDataMap(oldName));
         map.setName(newName);
-        domain.addMap(map);
+        domain.getDataMaps().add(map);
 
-        for (DataNode node : nodes) {
-            node.removeDataMap(oldName);
-            node.addDataMap(map);
+        for (DataNodeDescriptor node : nodes) {
+            node.getDataMapNames().remove(oldName);
+            node.getDataMapNames().add(map.getName());
         }
     }
 
     public static void setDataDomainName(
-            Configuration configuration,
-            DataDomain domain,
+            DataChannelDescriptor domain,
             String newName) {
 
         String oldName = domain.getName();
@@ -107,15 +105,13 @@ public class ProjectUtil {
         }
 
         domain.setName(newName);
-        configuration.removeDomain(oldName);
-        configuration.addDomain(domain);
     }
 
-    public static void setDataNodeName(DataDomain domain, DataNode node, String newName) {
+    public static void setDataNodeName(DataChannelDescriptor domain, DataNodeDescriptor node, String newName) {
         String oldName = node.getName();
         node.setName(newName);
-        domain.removeDataNode(oldName);
-        domain.addNode(node);
+        domain.getNodeDescriptors().remove(oldName);
+        domain.getNodeDescriptors().add(node);
     }
 
     public static void setProcedureName(DataMap map, Procedure procedure, String newName) {

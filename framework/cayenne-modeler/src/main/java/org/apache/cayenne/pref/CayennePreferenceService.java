@@ -20,6 +20,7 @@
 package org.apache.cayenne.pref;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -158,7 +159,18 @@ public abstract class CayennePreferenceService implements PreferenceService {
 
         for (DataMap dataMap : domain.getDataMaps()) {
             DataMap map = dataMap;
-            DataNode node = domain.lookupDataNode(map);
+            
+            DataNode node = null;
+                
+            Iterator<DataNode> it = domain.getDataNodes().iterator();
+            while(it.hasNext()){
+                DataNode descr = it.next();
+                if(descr.getDataMaps().contains(map)){
+                    node = descr;
+                    break;
+                }
+            }
+            
             DbAdapter adapter = node.getAdapter();
             DbGenerator generator = new DbGenerator(adapter, map);
 

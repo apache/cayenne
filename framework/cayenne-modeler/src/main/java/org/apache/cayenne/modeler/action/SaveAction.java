@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
@@ -26,7 +25,9 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.ProjectSaver;
 
 /**
  * An action that saves a project using to its default location.
@@ -42,14 +43,42 @@ public class SaveAction extends SaveAsAction {
     }
 
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit
+                .getDefaultToolkit()
+                .getMenuShortcutKeyMask());
     }
 
     public String getIconName() {
         return "icon-save.gif";
     }
 
-    protected boolean chooseDestination(Project p) {
-        return (p.isLocationUndefined()) ? super.chooseDestination(p) : true;
+    @Override
+    protected boolean saveAll() throws Exception {
+        Project p = getCurrentProject();
+        // obtain preference object before save, when the project path may change.....
+        Domain preference = getProjectController().getPreferenceDomainForProject();
+
+        if (p.getConfigurationResource() == null) {
+            return super.saveAll();
+        }
+
+        getProjectController().getProjectWatcher().pauseWatching();
+
+        ProjectSaver saver = getApplication().getInjector().getInstance(
+                ProjectSaver.class);
+        saver.save(p);
+
+        preference.rename(p.getConfigurationResource().getURL().getPath());
+
+        getApplication().getFrameController().addToLastProjListAction(
+                p.getConfigurationResource().getURL().getPath());
+        Application.getFrame().fireRecentFileListChanged();
+
+        /**
+         * Reset the watcher now
+         */
+        getProjectController().getProjectWatcher().reconfigure();
+
+        return true;
     }
 }

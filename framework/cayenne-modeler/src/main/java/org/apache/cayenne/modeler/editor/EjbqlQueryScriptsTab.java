@@ -30,12 +30,13 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
-import org.apache.cayenne.project.validator.EJBQLQueryValidator;
-import org.apache.cayenne.project.validator.EJBQLQueryValidator.PositionException;
+import org.apache.cayenne.project2.validate.EJBQLQueryValidator;
+import org.apache.cayenne.project2.validate.EJBQLQueryValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
@@ -46,7 +47,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     protected ProjectController mediator;
     protected JCayenneTextPane scriptArea;
     private boolean updateDisabled;
-    protected EJBQLQueryValidator ejbqlQueryValidator = new EJBQLQueryValidator();
+    protected EJBQLQueryValidator  ejbqlQueryValidator = new EJBQLQueryValidator();
 
     public EjbqlQueryScriptsTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -215,7 +216,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     void validateEJBQL() {
         PositionException positionException = ejbqlQueryValidator.validateEJBQL(
                 getQuery(),
-                mediator.getCurrentDataDomain());
+                new EntityResolver(((DataChannelDescriptor)mediator.getProject().getRootNode()).getDataMaps()));
         if (positionException != null) {
             if (positionException.getBeginLine() != null
                     || positionException.getBeginColumn() != null

@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -126,7 +127,7 @@ public class CreateRelationshipAction extends CayenneAction {
                 rel,
                 objEntity,
                 mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain());
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireObjRelationshipDisplayEvent(rde);
     }
@@ -160,7 +161,7 @@ public class CreateRelationshipAction extends CayenneAction {
                 rel,
                 dbEntity,
                 mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain());
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireDbRelationshipDisplayEvent(rde);
     }

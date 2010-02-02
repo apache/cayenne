@@ -21,9 +21,7 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.BorderLayout;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -32,10 +30,9 @@ import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -180,7 +177,7 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
                attrs,
                mediator.getCurrentDbEntity(),
                mediator.getCurrentDataMap(),
-               mediator.getCurrentDataDomain()));
+               (DataChannelDescriptor)mediator.getProject().getRootNode()));
     }
 
     public void dbAttributeChanged(AttributeEvent e) {

@@ -46,7 +46,6 @@ import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.project.validator.ValidationInfo;
-import org.apache.cayenne.project.validator.Validator;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -68,22 +67,18 @@ public class ValidatorDialog extends CayenneDialog {
     protected JButton refreshButton;
     protected List validationObjects;
 
-    public static synchronized void showDialog(
-            CayenneModelerFrame editor,
-            Validator validator) {
-
+    public static synchronized void showDialog(CayenneModelerFrame frame, List<ValidationInfo> object) {
         if (instance == null) {
-            instance = new ValidatorDialog(editor);
+            instance = new ValidatorDialog(frame);
             instance.centerWindow();
         }
 
-        instance.refreshFromModel(validator);
+        instance.refreshFromModel(object);
         instance.setVisible(true);
     }
 
     public static synchronized void showValidationSuccess(
-            CayenneModelerFrame editor,
-            Validator val) {
+            CayenneModelerFrame editor) {
 
         if (instance != null) {
             instance.dispose();
@@ -183,8 +178,8 @@ public class ValidatorDialog extends CayenneDialog {
         });
     }
 
-    protected void refreshFromModel(Validator validator) {
-        validationObjects = validator.validationResults();
+    protected void refreshFromModel(List<ValidationInfo> object) {
+        validationObjects = object;
         problemsTable.setModel(new ValidatorTableModel());
     }
 

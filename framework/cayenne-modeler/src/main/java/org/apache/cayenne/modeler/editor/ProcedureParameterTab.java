@@ -40,6 +40,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.configuration.event.ProcedureParameterListener;
@@ -234,7 +235,7 @@ public class ProcedureParameterTab
                 parameters,
                 eventController.getCurrentProcedure(),
                 eventController.getCurrentDataMap(),
-                eventController.getCurrentDataDomain());
+                (DataChannelDescriptor)eventController.getProject().getRootNode());
         eventController.fireProcedureParameterDisplayEvent(ppde);
     }
 

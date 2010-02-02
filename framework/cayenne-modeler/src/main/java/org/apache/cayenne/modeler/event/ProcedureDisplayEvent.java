@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 
@@ -35,7 +35,7 @@ public class ProcedureDisplayEvent extends DataMapDisplayEvent {
     /**
      * Creates a new ProcedureDisplayEvent
      */
-    public ProcedureDisplayEvent(Object src, Procedure procedure, DataMap map, DataDomain domain) {
+    public ProcedureDisplayEvent(Object src, Procedure procedure, DataMap map, DataChannelDescriptor domain) {
         super(src, map, domain);
         this.procedure = procedure;
     }

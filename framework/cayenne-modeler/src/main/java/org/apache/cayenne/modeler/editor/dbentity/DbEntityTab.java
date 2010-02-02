@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -187,8 +188,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
     public void processExistingSelection(EventObject e) {
         EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator
-                .getCurrentDbEntity(), mediator.getCurrentDataMap(), mediator
-                .getCurrentDataDomain());
+                .getCurrentDbEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
         mediator.fireDbEntityDisplayEvent(ede);
     }
 

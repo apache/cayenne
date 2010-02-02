@@ -47,6 +47,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -265,8 +266,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         resolveMenu.setEnabled(resolve.isEnabled());
 
         RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rels, mediator
-                .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
-                .getCurrentDataDomain());
+                .getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireObjRelationshipDisplayEvent(ev);
     }

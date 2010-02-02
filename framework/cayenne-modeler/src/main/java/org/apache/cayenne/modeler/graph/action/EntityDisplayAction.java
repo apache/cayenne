@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.Icon;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -87,7 +88,7 @@ public class EntityDisplayAction extends CayenneAction {
         
         //we're always in same domain
         FindDialog.jumpToResult(new Object[] { 
-                Application.getProject(), mediator.getCurrentDataDomain(), entity.getDataMap(), entity
+                Application.getProject(), (DataChannelDescriptor)mediator.getProject().getRootNode(), entity.getDataMap(), entity
         });
         
         return true;

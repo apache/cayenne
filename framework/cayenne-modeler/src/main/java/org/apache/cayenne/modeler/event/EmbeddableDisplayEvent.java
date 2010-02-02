@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 
@@ -30,8 +30,8 @@ public class EmbeddableDisplayEvent extends DataMapDisplayEvent {
     protected boolean mainTabFocus;
 
     public EmbeddableDisplayEvent(Object src, Embeddable embeddable, DataMap dataMap,
-            DataDomain dataDomain) {
-        super(src, dataMap, dataDomain);
+            DataChannelDescriptor dataChannelDescriptor) {
+        super(src, dataMap, dataChannelDescriptor);
         this.embeddable = embeddable;
         setDataMapChanged(false);
     }

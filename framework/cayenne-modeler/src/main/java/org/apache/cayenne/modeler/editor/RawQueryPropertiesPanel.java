@@ -30,7 +30,9 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -122,9 +124,8 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
      */
     public void initFromModel(Query query) {
         super.initFromModel(query);
-
-        boolean fetchingDO = !query.getMetaData(
-                mediator.getCurrentDataDomain().getEntityResolver()).isFetchingDataRows();
+        EntityResolver entRes = new EntityResolver(((DataChannelDescriptor)mediator.getProject().getRootNode()).getDataMaps());
+        boolean fetchingDO = !query.getMetaData(entRes).isFetchingDataRows();
         dataObjects.setSelected(fetchingDO);
 
         // TODO: now we only allow ObjEntities from the current map,

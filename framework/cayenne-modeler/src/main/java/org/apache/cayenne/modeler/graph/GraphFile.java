@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.graph;
 
 import java.io.PrintWriter;
 
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectFile;
+import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -33,7 +33,7 @@ public class GraphFile extends ProjectFile {
     GraphMap graphMap;
     
     public GraphFile(Project project, GraphMap graphMap) {
-        super(project, null);
+        //super(project, null);
         this.graphMap = graphMap;
     }
     

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import java.util.Comparator;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -118,7 +118,7 @@ public class Comparators {
             if (o instanceof DataMap) {
                 return 1;
             }
-            else if (o instanceof DataNode) {
+            else if (o instanceof DataNodeDescriptor) {
                 return 2;
             }
             else {

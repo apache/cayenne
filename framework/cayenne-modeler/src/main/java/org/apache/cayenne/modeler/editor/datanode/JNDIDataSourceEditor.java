@@ -47,6 +47,6 @@ public class JNDIDataSourceEditor extends DataSourceEditor {
         fieldAdapters = new ObjectBinding[1];
         fieldAdapters[0] = builder.bindToTextField(
                 view.getJndiPath(),
-                "node.dataSourceLocation");
+                "node.parameters");
     }
 }

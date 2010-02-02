@@ -23,7 +23,8 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
@@ -187,18 +188,22 @@ public class DbRelationshipTableModel extends CayenneTableModel {
 
     void updateDependentObjRelationships(DbRelationship relationship) {
 
-        DataDomain domain = mediator.getCurrentDataDomain();
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
         if (domain != null) {
 
-            for (ObjEntity entity : domain.getEntityResolver().getObjEntities()) {
-                for (ObjRelationship objRelationship : entity.getRelationships()) {
+            for (DataMap map : domain.getDataMaps()) {
+                for (ObjEntity entity : map.getObjEntities()) {
+                    for (ObjRelationship objRelationship : entity.getRelationships()) {
 
-                    for (DbRelationship dbRelationship : objRelationship
-                            .getDbRelationships()) {
-                        if (dbRelationship == relationship) {
-                            objRelationship.recalculateToManyValue();
-                            objRelationship.recalculateReadOnlyValue();
-                            break;
+                        for (DbRelationship dbRelationship : objRelationship
+                                .getDbRelationships()) {
+                            if (dbRelationship == relationship) {
+                                objRelationship.recalculateToManyValue();
+                                objRelationship.recalculateReadOnlyValue();
+                                break;
+                            }
                         }
                     }
                 }

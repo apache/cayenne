@@ -43,7 +43,7 @@ public class DBCPDataSourceEditor extends DataSourceEditor {
         fieldAdapters = new ObjectBinding[1];
         fieldAdapters[0] = builder.bindToTextField(
                 view.getPropertiesFile(),
-                "node.dataSourceLocation");
+                "node.parameters");
     }
 
     public Component getView() {

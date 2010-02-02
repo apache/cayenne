@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 
@@ -46,15 +46,15 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
         this(src, entity, null, null, null);
     }
 
-    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataDomain domain) {
+    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
 
-        this(src, entity, map, null, domain);
+        this(src, entity, map, null, dataChannelDescriptor);
     }
 
-    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataNode node,
-            DataDomain domain) {
+    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataNodeDescriptor node,
+            DataChannelDescriptor dataChannelDescriptor) {
 
-        super(src, map, domain, node);
+        super(src, map, dataChannelDescriptor, node);
         this.entity = entity;
         setDataMapChanged(false);
     }

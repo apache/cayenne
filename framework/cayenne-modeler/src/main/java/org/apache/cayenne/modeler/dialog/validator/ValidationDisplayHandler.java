@@ -21,8 +21,7 @@ package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -32,6 +31,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.ValidationInfo;
 import org.apache.cayenne.query.Query;
@@ -51,7 +51,7 @@ public abstract class ValidationDisplayHandler {
     public static final int ERROR = ValidationInfo.ERROR;
 
     protected ValidationInfo validationInfo;
-    protected DataDomain domain;
+    protected DataChannelDescriptor domain;
 
     public static ValidationDisplayHandler getErrorMsg(ValidationInfo result) {
         Object validatedObj = result.getValidatedObject();
@@ -72,13 +72,13 @@ public abstract class ValidationDisplayHandler {
         else if (validatedObj instanceof Entity) {
             msg = new EntityErrorMsg(result);
         }
-        else if (validatedObj instanceof DataNode) {
+        else if (validatedObj instanceof DataNodeDefaults) {
             msg = new DataNodeErrorMsg(result);
         }
         else if (validatedObj instanceof DataMap) {
             msg = new DataMapErrorMsg(result);
         }
-        else if (validatedObj instanceof DataDomain) {
+        else if (validatedObj instanceof DataChannelDescriptor) {
             msg = new DomainErrorMsg(result);
         }
         else if (validatedObj instanceof Procedure) {
@@ -118,11 +118,11 @@ public abstract class ValidationDisplayHandler {
         return validationInfo.getSeverity();
     }
 
-    public DataDomain getDomain() {
+    public DataChannelDescriptor getDomain() {
         return domain;
     }
 
-    public void setDomain(DataDomain domain) {
+    public void setDomain(DataChannelDescriptor domain) {
         this.domain = domain;
     }
 

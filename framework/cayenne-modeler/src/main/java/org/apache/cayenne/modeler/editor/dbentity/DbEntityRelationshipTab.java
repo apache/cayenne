@@ -41,6 +41,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -242,8 +243,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         resolveMenu.setEnabled(resolve.isEnabled());
 
         RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rels, mediator
-                .getCurrentDbEntity(), mediator.getCurrentDataMap(), mediator
-                .getCurrentDataDomain());
+                .getCurrentDbEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
 
         mediator.fireDbRelationshipDisplayEvent(ev);
     }
@@ -363,7 +363,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
      */
     private ComboBoxModel createComboModel(Entity entity) {
         DataMap map = entity.getDataMap();
-        Object[] objects = map.getNamespace().getDbEntities().toArray();
+        Object[] objects = map.getDbEntities().toArray();
         return new DefaultComboBoxModel(objects);
     }
 

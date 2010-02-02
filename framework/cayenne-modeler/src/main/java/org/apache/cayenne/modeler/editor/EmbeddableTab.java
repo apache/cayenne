@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
@@ -90,8 +90,7 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     public void processExistingSelection(EventObject e) {
         EmbeddableDisplayEvent ede = new EmbeddableDisplayEvent(this, mediator
-                .getCurrentEmbeddable(), mediator.getCurrentDataMap(), mediator
-                .getCurrentDataDomain());
+                .getCurrentEmbeddable(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
         mediator.fireEmbeddableDisplayEvent(ede);
     }
 
@@ -116,7 +115,7 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
         else if (embeddable.getDataMap().getEmbeddable(newClassName) == null) {
             
             // if newClassName dupliucates in other DataMaps 
-            DataDomain domain = mediator.getCurrentDataDomain();
+            DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
             if (domain != null) {
                 for (DataMap nextMap : domain.getDataMaps()) {
                     if (nextMap == embeddable.getDataMap()) {
@@ -141,7 +140,7 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
             mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
 
-            Iterator it = mediator.getCurrentDataDomain().getDataMaps().iterator();
+            Iterator it =((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps().iterator();
             while (it.hasNext()) {
                 DataMap dataMap = (DataMap) it.next();
                 Iterator<ObjEntity> ent = dataMap.getObjEntities().iterator();

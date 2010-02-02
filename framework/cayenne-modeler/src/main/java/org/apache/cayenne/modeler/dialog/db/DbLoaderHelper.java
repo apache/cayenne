@@ -34,6 +34,7 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
@@ -355,8 +356,7 @@ public class DbLoaderHelper {
 
             if (!existingMap) {
                 dataMap = (DataMap) NamedObjectFactory.createObject(DataMap.class, null);
-                dataMap.setName(NamedObjectFactory.createName(DataMap.class, mediator
-                        .getCurrentDataDomain()));
+                dataMap.setName(NamedObjectFactory.createName(DataMap.class, (DataChannelDescriptor)mediator.getProject().getRootNode()));
                 dataMap.setDefaultSchema(schemaName);
             }
 
@@ -411,7 +411,7 @@ public class DbLoaderHelper {
                 mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(
                         Application.getFrame(),
                         dataMap,
-                        mediator.getCurrentDataDomain(),
+                        (DataChannelDescriptor)mediator.getProject().getRootNode(),
                         mediator.getCurrentDataNode()));
             }
             else {

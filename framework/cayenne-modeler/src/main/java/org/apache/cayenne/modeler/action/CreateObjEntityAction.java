@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -143,7 +144,7 @@ public class CreateObjEntityAction extends CayenneAction {
                 entity,
                 dataMap,
                 mediator.getCurrentDataNode(),
-                mediator.getCurrentDataDomain());
+                (DataChannelDescriptor)mediator.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
         mediator.fireObjEntityDisplayEvent(displayEvent);
     }

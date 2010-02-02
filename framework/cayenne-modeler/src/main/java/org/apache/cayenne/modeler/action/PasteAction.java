@@ -31,8 +31,8 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -104,7 +104,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             if (content != null && currentObject != null) {
                 
                 PasteCompoundUndoableEdit undoableEdit = new PasteCompoundUndoableEdit();
-                DataDomain domain = getProjectController().getCurrentDataDomain();
+                
+                DataChannelDescriptor domain = (DataChannelDescriptor)getProjectController().getProject().getRootNode();
                 DataMap map = getProjectController().getCurrentDataMap();
                 
                 if (content instanceof List) {
@@ -130,13 +131,13 @@ public class PasteAction extends CayenneAction implements FlavorListener {
     }
     
     private void paste(Object where, Object content) {
-    	paste(where, content, getProjectController().getCurrentDataDomain(), getProjectController().getCurrentDataMap()); 
+    	paste(where, content, (DataChannelDescriptor)getProjectController().getProject().getRootNode(), getProjectController().getCurrentDataMap()); 
     }
 
     /**
      * Pastes single object
      */
-    public void paste(Object where, Object content, DataDomain domain, DataMap map) {
+    public void paste(Object where, Object content, DataChannelDescriptor domain, DataMap map) {
         final ProjectController mediator = getProjectController();
       
 
@@ -148,7 +149,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             where = mediator.getCurrentDataMap();
         }
 
-        if ((where instanceof DataDomain || where instanceof DataNode)
+        if ((where instanceof DataChannelDescriptor || where instanceof DataNodeDescriptor)
                 && content instanceof DataMap) {
             // paste DataMap to DataDomain or DataNode
             DataMap dataMap = ((DataMap) content);
@@ -312,8 +313,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);
-                QueryTypeController.fireQueryEvent(this, mediator, mediator
-                        .getCurrentDataDomain(), dataMap, query);
+                QueryTypeController.fireQueryEvent(this, mediator, dataMap, query);
             }
             else if (content instanceof Procedure) {
                 // paste Procedure to DataMap
@@ -347,7 +347,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
                 dbEntity.addAttribute(attr);
                 CreateAttributeAction
-                        .fireDbAttributeEvent(this, mediator, domain, mediator.getCurrentDataMap(), dbEntity, attr);
+                        .fireDbAttributeEvent(this, mediator, mediator.getCurrentDataMap(), dbEntity, attr);
             }
             else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
@@ -380,7 +380,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 objEntity.addAttribute(attr);
                 CreateAttributeAction.fireObjAttributeEvent(
                         this,
-                        mediator, domain, mediator.getCurrentDataMap(), 
+                        mediator,
+                        mediator.getCurrentDataMap(),
                         objEntity,
                         attr);
             }
@@ -509,7 +510,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
              * Checking all avaliable pairs source-pasting object
              */
 
-            return ((currentObject instanceof DataDomain || currentObject instanceof DataNode) && content instanceof DataMap)
+            return ((currentObject instanceof DataChannelDescriptor || currentObject instanceof DataNodeDescriptor) && content instanceof DataMap)
                     ||
 
                     (currentObject instanceof DataMap && isTreeLeaf(content))
@@ -565,14 +566,14 @@ public class PasteAction extends CayenneAction implements FlavorListener {
      */
     class DataMapNameChecker implements FreeNameChecker {
 
-        DataDomain domain;
+        DataChannelDescriptor domain;
 
-        public DataMapNameChecker(DataDomain domain) {
+        public DataMapNameChecker(DataChannelDescriptor domain) {
             this.domain = domain;
         }
 
         public boolean isNameFree(String name) {
-            return domain.getMap(name) == null;
+            return domain.getDataMap(name) == null;
         }
     }
 
@@ -581,16 +582,16 @@ public class PasteAction extends CayenneAction implements FlavorListener {
      */
     class DbEntityNameChecker implements FreeNameChecker {
 
-        DataDomain domain;
+        DataChannelDescriptor domain;
 
-        public DbEntityNameChecker(DataDomain domain) {
+        public DbEntityNameChecker(DataChannelDescriptor domain) {
             this.domain = domain;
         }
 
         public boolean isNameFree(String name) {
             /**
              * Name mast be unique through all DataDomain, for EntityResolver to work
-             * correctly
+             * correctlys
              */
             for (DataMap map : domain.getDataMaps()) {
                 if (map.getDbEntity(name) != null) {
@@ -607,9 +608,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
      */
     class ObjEntityNameChecker implements FreeNameChecker {
 
-        DataDomain domain;
+        DataChannelDescriptor domain;
 
-        public ObjEntityNameChecker(DataDomain domain) {
+        public ObjEntityNameChecker(DataChannelDescriptor domain) {
             this.domain = domain;
         }
 
@@ -630,9 +631,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
     class EmbeddableNameChecker implements FreeNameChecker {
 
-        DataDomain domain;
+        DataChannelDescriptor domain;
 
-        public EmbeddableNameChecker(DataDomain domain) {
+        public EmbeddableNameChecker(DataChannelDescriptor domain) {
             this.domain = domain;
         }
 
@@ -656,9 +657,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
      */
     class ProcedureNameChecker implements FreeNameChecker {
 
-        DataDomain domain;
+        DataChannelDescriptor domain;
 
-        public ProcedureNameChecker(DataDomain domain) {
+        public ProcedureNameChecker(DataChannelDescriptor domain) {
             this.domain = domain;
         }
 
@@ -682,9 +683,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
      */
     class QueryNameChecker implements FreeNameChecker {
 
-        DataDomain domain;
+        DataChannelDescriptor domain;
 
-        public QueryNameChecker(DataDomain domain) {
+        public QueryNameChecker(DataChannelDescriptor domain) {
             this.domain = domain;
         }
 

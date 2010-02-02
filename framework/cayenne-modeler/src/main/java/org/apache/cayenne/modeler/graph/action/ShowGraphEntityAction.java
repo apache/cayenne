@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.graph.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
@@ -82,7 +83,7 @@ public class ShowGraphEntityAction extends CayenneAction {
                 editor.getProjectTreeView(),
                 entity,
                 entity.getDataMap(),
-                getProjectController().getCurrentDataDomain());
+                (DataChannelDescriptor)getProjectController().getProject().getRootNode());
         getProjectController().fireDomainDisplayEvent(event);
     }
 }

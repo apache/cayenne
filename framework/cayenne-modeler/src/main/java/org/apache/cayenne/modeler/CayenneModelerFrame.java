@@ -49,7 +49,6 @@ import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.CopyAction;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.CreateDbEntityAction;
-import org.apache.cayenne.modeler.action.CreateDomainAction;
 import org.apache.cayenne.modeler.action.CreateEmbeddableAction;
 import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
@@ -104,7 +103,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.OperatingSystem;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
-import org.apache.cayenne.pref.Domain;
 import org.apache.commons.logging.LogFactory;
 
 /**
@@ -216,7 +214,6 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         projectMenu.add(getAction(ValidateAction.getActionName()).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(getAction(CreateDomainAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateNodeAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateDataMapAction.getActionName()).buildMenu());
 
@@ -383,7 +380,6 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateDomainAction.getActionName()).buildButton());
         toolBar.add(getAction(CreateNodeAction.getActionName()).buildButton());
         toolBar.add(getAction(CreateDataMapAction.getActionName()).buildButton());
 

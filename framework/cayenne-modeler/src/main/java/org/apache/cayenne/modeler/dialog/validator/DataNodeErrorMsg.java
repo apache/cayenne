@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.project.validator.ValidationInfo;
@@ -33,7 +33,7 @@ import org.apache.cayenne.project.validator.ValidationInfo;
  * 
  */
 public class DataNodeErrorMsg extends ValidationDisplayHandler {
-	protected DataNode node;
+	protected DataNodeDescriptor node;
 
     /**
      * Constructor for DataNodeErrorMsg.
@@ -45,11 +45,11 @@ public class DataNodeErrorMsg extends ValidationDisplayHandler {
         int len = path.length;
 
         if (len >= 1) {
-            node = (DataNode) path[len - 1];
+            node = (DataNodeDescriptor) path[len - 1];
         }
 
         if (len >= 2) {
-            domain = (DataDomain) path[len - 2];
+            domain = (DataChannelDescriptor) path[len - 2];
         }
     }
 

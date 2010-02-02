@@ -22,9 +22,9 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.configuration.event.DomainEvent;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,7 +75,9 @@ public class CacheSyncConfigController extends BasicController implements
      * model to update subviews on model changes.
      */
     public void startup() {
-        DataDomain domain = eventController.getCurrentDataDomain();
+        
+        DataChannelDescriptor domain = (DataChannelDescriptor)eventController.getProject().getRootNode();
+        
         String factory = (String) domain.getProperties().get(
                 DataRowStore.EVENT_BRIDGE_FACTORY_PROPERTY);
 
@@ -157,7 +159,7 @@ public class CacheSyncConfigController extends BasicController implements
             SPanel card = (SPanel) existingCards.get(topModel.getFactoryLabel());
             CacheSyncConfigModel model = (CacheSyncConfigModel) card.getShownModel();
 
-            DataDomain domain = eventController.getCurrentDataDomain();
+            DataChannelDescriptor domain = (DataChannelDescriptor)eventController.getProject().getRootNode();
 
             logObj.warn("domain properties BEFORE: " + domain.getProperties());
             model.storeProperties(domain.getProperties());
@@ -241,7 +243,7 @@ public class CacheSyncConfigController extends BasicController implements
             model = new CacheSyncConfigModel();
         }
 
-        model.setMap(new HashMap(eventController.getCurrentDataDomain().getProperties()));
+        model.setMap(new HashMap(((DataChannelDescriptor)eventController.getProject().getRootNode()).getProperties()));
         model.setFactoryClass(factory);
         model.addModelChangeListener(this);
 

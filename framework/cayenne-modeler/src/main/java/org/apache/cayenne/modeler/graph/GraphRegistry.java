@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.graph;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.configuration.event.DomainListener;
 import org.apache.cayenne.modeler.ProjectController;
@@ -38,16 +38,16 @@ public class GraphRegistry implements DomainListener {
     /**
      * Main storage of graph builders
      */
-    Map<DataDomain, GraphMap> graphMaps;
+    Map<DataChannelDescriptor, GraphMap> graphMaps;
 
     public GraphRegistry() {
-        graphMaps = new HashMap<DataDomain, GraphMap>();
+        graphMaps = new HashMap<DataChannelDescriptor, GraphMap>();
     }
 
     /**
      * Builds graph with specified type, or returns existing one
      */
-    public JGraph loadGraph(ProjectController mediator, DataDomain domain, GraphType type) {
+    public JGraph loadGraph(ProjectController mediator, DataChannelDescriptor domain, GraphType type) {
         GraphMap graphMap = graphMaps.get(domain);
         if (graphMap == null) {
             graphMap = new GraphMap(domain);
@@ -70,7 +70,7 @@ public class GraphRegistry implements DomainListener {
     /**
      * Gets graph map for specified domain, creating it if needed
      */
-    public GraphMap getGraphMap(DataDomain domain) {
+    public GraphMap getGraphMap(DataChannelDescriptor domain) {
         GraphMap map = graphMaps.get(domain);
         if (map == null) {
             map = new GraphMap(domain);
@@ -79,23 +79,16 @@ public class GraphRegistry implements DomainListener {
         return map;
     }
 
-    public void domainAdded(DomainEvent e) {
-    }
-
     public void domainChanged(DomainEvent e) {
     }
 
-    public void domainRemoved(DomainEvent e) {
-        unregisterDomain(e.getDomain());
-    }
-    
-    void unregisterDomain(DataDomain domain) {
-        GraphMap map = graphMaps.get(domain);
+    void unregisterDomain(DataChannelDescriptor dataChannelDescriptor) {
+        GraphMap map = graphMaps.get(dataChannelDescriptor);
         if (map != null) {
             for (GraphBuilder builder : map.values()) {
                 builder.destroy();
             }
-            graphMaps.remove(domain);
+            graphMaps.remove(dataChannelDescriptor);
         }
     }
     
@@ -103,9 +96,7 @@ public class GraphRegistry implements DomainListener {
      * Removes all listeners (and itself) from ProjectController
      */
     public void unregister(ProjectController mediator) {
-        for (DataDomain domain : mediator.getProject().getConfiguration().getDomains()) {
-            unregisterDomain(domain);
-        }
+        unregisterDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
         mediator.removeDomainListener(this);
     }
 }

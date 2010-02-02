@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.modeler.ProjectController;
@@ -49,7 +49,7 @@ public class EmbeddableErrorMsg extends ValidationDisplayHandler {
         }
 
         if (len >= 3) {
-            domain = (DataDomain) path[len - 3];
+            domain = (DataChannelDescriptor) path[len - 3];
         }
     }
 

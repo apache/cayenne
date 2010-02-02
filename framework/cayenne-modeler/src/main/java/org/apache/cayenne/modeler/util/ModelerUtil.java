@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.io.File;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
@@ -33,18 +32,15 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerConstants;
-import org.apache.cayenne.modeler.ModelerProject;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.MultipleObjectsAction;
-import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -143,24 +139,15 @@ public final class ModelerUtil {
         return finalList;
     }
 
-    public static DataNode getNodeLinkedToMap(DataDomain domain, DataMap map) {
-        Collection<DataNode> nodes = domain.getDataNodes();
+    public static DataNodeDescriptor getNodeLinkedToMap(DataChannelDescriptor domain, DataMap map) {
+        Collection<DataNodeDescriptor> nodes = domain.getNodeDescriptors();
 
         // go via an iterator in an indexed loop, since
         // we already obtained the size
         // (and index is required to initialize array)
-        for (DataNode node : nodes)
-            if (node.getDataMaps().contains(map))
+        for (DataNodeDescriptor node : nodes)
+            if (node.getDataMapNames().contains(map.getName()))
                 return node;
-            
-//        Iterator nodesIt = nodes.iterator();
-//        while (nodesIt.hasNext()) {
-//            DataNode node = (DataNode) nodesIt.next();
-//
-//            if (node.getDataMaps().contains(map)) {
-//                return node;
-//            }
-//        }
 
         return null;
     }
@@ -178,13 +165,5 @@ public final class ModelerUtil {
                 action.setName(((MultipleObjectsAction) action).getActionName(numSelected > 1));
             }
         }
-    }
-    
-    /**
-     * Factory method to create modeler-specific project
-     */
-    public static ApplicationProject createModelerProject(File projectFile, Configuration configuration,
-            ProjectController mediator) {
-        return new ModelerProject(projectFile, configuration);
     }
 }

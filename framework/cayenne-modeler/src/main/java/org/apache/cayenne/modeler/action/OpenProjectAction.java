@@ -23,17 +23,23 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URL;
 
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.project.ApplicationProject;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectException;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.ProjectLoader;
+import org.apache.cayenne.project2.upgrade.ProjectUpgrader;
+import org.apache.cayenne.project2.upgrade.UpgradeHandler;
+import org.apache.cayenne.project2.upgrade.UpgradeMetaData;
+import org.apache.cayenne.project2.upgrade.UpgradeType;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.swing.control.FileMenuItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,13 +80,13 @@ public class OpenProjectAction extends ProjectAction {
         if (getProjectController() != null && !checkSaveOnClose()) {
             return;
         }
-       
+
         File f = null;
         if (e.getSource() instanceof FileMenuItem) {
             FileMenuItem menu = (FileMenuItem) e.getSource();
             f = menu.getFile();
         }
-        else if(e.getSource() instanceof File) {
+        else if (e.getSource() instanceof File) {
             f = (File) e.getSource();
         }
 
@@ -102,31 +108,43 @@ public class OpenProjectAction extends ProjectAction {
 
             openProject(f);
         }
-        
+
         application.getUndoManager().discardAllEdits();
     }
 
     /** Opens specified project file. File must already exist. */
     public void openProject(File file) {
-
         try {
             if (!file.exists()) {
-                JOptionPane.showMessageDialog(Application.getFrame(),
-                        "Can't open project - file \"" + file.getPath() + "\" does not exist",
-                        "Can't Open Project", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(
+                        Application.getFrame(),
+                        "Can't open project - file \""
+                                + file.getPath()
+                                + "\" does not exist",
+                        "Can't Open Project",
+                        JOptionPane.OK_OPTION);
                 return;
             }
-            
-            getApplication().getFrameController().addToLastProjListAction(
-                    file.getAbsolutePath());
+
+            CayenneModelerController controller = Application
+                    .getInstance()
+                    .getFrameController();
+            controller.addToLastProjListAction(file.getAbsolutePath());
 
             Configuration config = buildProjectConfiguration(file);
-            ApplicationProject project = ModelerUtil.createModelerProject(file, config, getProjectController());
-            getProjectController().setProject(project);
 
-            // if upgrade was canceled
-            int upgradeStatus = project.getUpgradeStatus();
-            if (upgradeStatus > 0) {
+            URL url = file.toURL();
+            Resource rootSource = new URLResource(url);
+
+            ProjectUpgrader upgrader = getApplication().getInjector().getInstance(
+                    ProjectUpgrader.class);
+            UpgradeHandler handler = upgrader.getUpgradeHandler(rootSource);
+            UpgradeMetaData md = handler.getUpgradeMetaData();
+
+            Project project = getApplication().getInjector().getInstance(
+                    ProjectLoader.class).loadProject(rootSource);
+
+            if (UpgradeType.DOWNGRADE_NEEDED == md.getUpgradeType()) {
                 JOptionPane
                         .showMessageDialog(
                                 Application.getFrame(),
@@ -135,16 +153,39 @@ public class OpenProjectAction extends ProjectAction {
                                 JOptionPane.OK_OPTION);
                 closeProject(false);
             }
-            else if (upgradeStatus < 0) {
-                if (processUpgrades(project)) {
-                    getApplication().getFrameController().projectOpenedAction(project);
-                }
-                else {
-                    closeProject(false);
+            else if (UpgradeType.UPGRADE_NEEDED == md.getUpgradeType()) {
+                if (processUpgrades(md)) {
+                    // perform upgrade
+                    logObj.info("Will upgrade project "
+                            + project.getConfigurationResource().getURL().getPath());
+                    Resource upgraded = handler.performUpgrade();
+                    if (upgraded != null) {
+                        project = getApplication().getInjector().getInstance(
+                                ProjectLoader.class).loadProject(upgraded);
+
+                        controller.projectOpenedAction(project, config);
+
+                        getProjectController().getProjectWatcher().pauseWatching();
+                        getProjectController().getProjectWatcher().reconfigure();
+
+                        // if project file name changed
+                        // need upgrade all
+                        if (!file.getAbsolutePath().equals(
+                                project.getConfigurationResource().getURL().getPath())) {
+                            controller.changePathInLastProjListAction(file
+                                    .getAbsolutePath(), project
+                                    .getConfigurationResource()
+                                    .getURL()
+                                    .getPath());
+                        }
+                    }
+                    else {
+                        closeProject(false);
+                    }
                 }
             }
             else {
-                getApplication().getFrameController().projectOpenedAction(project);
+                controller.projectOpenedAction(project, config);
             }
         }
         catch (Exception ex) {
@@ -153,24 +194,18 @@ public class OpenProjectAction extends ProjectAction {
         }
     }
 
-    protected boolean processUpgrades(Project project) throws ProjectException {
-        // must really concat all messages, this is a temp hack...
-        String msg = project.getUpgradeMessages().get(0);
+    protected boolean processUpgrades(UpgradeMetaData md) {
         // need an upgrade
         int returnCode = JOptionPane.showConfirmDialog(
                 Application.getFrame(),
-                "Project needs an upgrade to a newer version. " + msg + ". Upgrade?",
+                "Project needs an upgrade to a newer version. "
+                        + md.getSupportedVersion()
+                        + ". Upgrade?",
                 "Upgrade Needed",
                 JOptionPane.YES_NO_OPTION);
         if (returnCode == JOptionPane.NO_OPTION) {
             return false;
         }
-
-        // perform upgrade
-        logObj.info("Will upgrade project " + project.getMainFile());
-        getProjectController().getProjectWatcher().pauseWatching();
-        project.upgrade();
-        getProjectController().getProjectWatcher().reconfigure();
         return true;
     }
 }

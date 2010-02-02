@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph;
 
+import java.util.Iterator;
+
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Entity;
 
@@ -32,7 +35,14 @@ class DbEntityCellMetadata extends EntityCellMetadata {
     
     @Override
     public Entity fetchEntity() {
-        return builder.getDataDomain().getEntityResolver().getDbEntity(entityName);
+        Iterator<DataMap> it = builder.getDataDomain().getDataMaps().iterator();
+        while(it.hasNext()){
+            DataMap dm = (DataMap)it.next();
+            if(dm.getDbEntity(entityName)!=null){
+                return dm.getDbEntity(entityName);
+            }
+        }
+        return null;
     }
 
     @Override

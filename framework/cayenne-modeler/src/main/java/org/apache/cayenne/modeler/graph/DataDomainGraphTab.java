@@ -31,12 +31,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.ModelerProjectConfiguration;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
@@ -74,19 +73,23 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     /**
      * Current domain
      */
-    DataDomain domain;
+    DataChannelDescriptor domain;
     
     /**
      * True to invoke rebuild next time component becomes visible
      */
     boolean needRebuild;
     
+    GraphRegistry graphRegistry;
+    
     public DataDomainGraphTab(ProjectController mediator) {
         this.mediator = mediator;
         initView();
     }
     
+    
     private void initView() {
+        graphRegistry = new GraphRegistry();
         needRebuild = true;
         mediator.addDomainDisplayListener(this);
         
@@ -179,9 +182,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             dialog.setVisible(true);
             
             if (pane.getValue().equals(JOptionPane.YES_OPTION)) {
-                ModelerProjectConfiguration conf = (ModelerProjectConfiguration)
-                    mediator.getProject().getConfiguration();
-                conf.getGraphRegistry().getGraphMap(domain).remove(getSelectedType());
+                graphRegistry.getGraphMap(domain).remove(getSelectedType());
                 itemStateChanged(null);
             }
         }
@@ -197,7 +198,10 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
     
     GraphRegistry getGraphRegistry() {
-        return ((ModelerProjectConfiguration) mediator.getProject().getConfiguration())
-            .getGraphRegistry();
+        
+        if(graphRegistry == null) {
+            this.graphRegistry = new GraphRegistry();
+        }
+        return graphRegistry;
     }
 }

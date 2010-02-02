@@ -19,16 +19,17 @@
 package org.apache.cayenne.modeler;
 
 import java.io.File;
-import java.util.List;
+import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.dialog.FileDeletedDialog;
 import org.apache.cayenne.modeler.util.FileWatchdog;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectFile;
+import org.apache.cayenne.project2.Project;
 
 /**
  * ProjectWatchdog class is responsible for tracking changes in cayenne.xml and other
@@ -61,14 +62,19 @@ public class ProjectWatchdog extends FileWatchdog {
         removeAllFiles();
 
         Project project = mediator.getProject();
-        if (project != null // project opened
-                && project.getProjectDirectory() != null) // not new project
-        {
-            String projectPath = project.getProjectDirectory().getPath() + File.separator;
 
-            List<ProjectFile> files = project.buildFileList();
-            for (ProjectFile pr : files)
-                addFile(projectPath + pr.getLocation());
+        if (project != null // project opened
+                && project.getConfigurationResource() != null) // not new project
+        {
+            String projectPath = project.getConfigurationResource().getURL().getPath() + File.separator;
+            addFile(projectPath);
+
+            Iterator<DataMap> it = ((DataChannelDescriptor)project.getRootNode()).getDataMaps().iterator();
+            while (it.hasNext()) {
+                DataMap dm = it.next();
+                addFile(dm.getConfigurationSource().getURL().getPath());
+            }
+            
         }
 
         resumeWatching();
@@ -82,10 +88,10 @@ public class ProjectWatchdog extends FileWatchdog {
              * Currently we are reloading all project
              */
             if (mediator.getProject() != null) {
+                
+                File fileDirectory = new File(mediator.getProject().getConfigurationResource().getURL().getPath());
                 ((OpenProjectAction) Application.getInstance().getAction(
-                        OpenProjectAction.getActionName())).openProject(mediator
-                        .getProject()
-                        .getMainFile());
+                        OpenProjectAction.getActionName())).openProject(fileDirectory);
             }
 
         }

@@ -33,8 +33,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -86,10 +86,10 @@ public final class CellRenderers {
             return null;
         }
 
-        if (object instanceof DataDomain) {
+        if (object instanceof DataChannelDescriptor) {
             return domainIcon;
         }
-        else if (object instanceof DataNode) {
+        else if (object instanceof DataNodeDescriptor) {
             return nodeIcon;
         }
         else if (object instanceof DataMap) {

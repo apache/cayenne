@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
@@ -29,13 +29,11 @@ import org.apache.cayenne.query.Query;
 
 public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
 
-    
-
-    private DataDomain domain;
+    private DataChannelDescriptor domain;
     private DataMap map;
     private Query query;
 
-    public CreateQueryUndoableEdit(DataDomain domain, DataMap map, Query query) {
+    public CreateQueryUndoableEdit(DataChannelDescriptor domain, DataMap map, Query query) {
         this.domain = domain;
         this.map = map;
         this.query = query;

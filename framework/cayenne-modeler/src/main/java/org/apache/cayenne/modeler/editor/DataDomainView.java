@@ -35,8 +35,8 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.OSQueryCacheFactory;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.configuration.event.DomainEvent;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.datadomain.CacheSyncConfigController;
@@ -46,7 +46,6 @@ import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -255,7 +254,10 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
      */
     protected void setDomainProperty(String property, String value, String defaultValue) {
 
-        DataDomain domain = projectController.getCurrentDataDomain();
+        DataChannelDescriptor domain = (DataChannelDescriptor) projectController
+                .getProject()
+                .getRootNode();
+
         if (domain == null) {
             return;
         }
@@ -281,7 +283,11 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     }
 
     public String getDomainProperty(String property, String defaultValue) {
-        DataDomain domain = projectController.getCurrentDataDomain();
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) projectController
+                .getProject()
+                .getRootNode();
+
         if (domain == null) {
             return null;
         }
@@ -299,7 +305,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
      * selected domain.
      */
     public void currentDomainChanged(DomainDisplayEvent e) {
-        DataDomain domain = e.getDomain();
+        DataChannelDescriptor domain = e.getDomain();
         if (null == domain) {
             return;
         }
@@ -343,26 +349,18 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             throw new ValidationException("Enter name for DataDomain");
         }
 
-        Configuration configuration = ((ApplicationProject) Application.getProject())
-                .getConfiguration();
-        
-        DataDomain domain = projectController.getCurrentDataDomain();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
+                .getProject()
+                .getRootNode();
+        Domain prefs = projectController.getPreferenceDomainForDataDomain();
 
-        DataDomain matchingDomain = configuration.getDomain(newName);
-
-        if (matchingDomain == null) {
-            Domain prefs = projectController.getPreferenceDomainForDataDomain();
-
-            DomainEvent e = new DomainEvent(this, domain, domain.getName());
-            ProjectUtil.setDataDomainName(configuration, domain, newName);
-            prefs.rename(newName);
-            projectController.fireDomainEvent(e);
-        }
-        else if (matchingDomain != domain) {
-            throw new ValidationException("There is another DataDomain named '"
-                    + newName
-                    + "'. Use a different name.");
-        }
+        DomainEvent e = new DomainEvent(
+                this,
+                dataChannelDescriptor,
+                dataChannelDescriptor.getName());
+        ProjectUtil.setDataDomainName(dataChannelDescriptor, newName);
+        prefs.rename(newName);
+        projectController.fireDomainEvent(e);
     }
 
     void setCacheSize(String text) {

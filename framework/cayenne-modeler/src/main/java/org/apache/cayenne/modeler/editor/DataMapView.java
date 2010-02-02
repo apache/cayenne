@@ -32,11 +32,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
@@ -53,7 +52,6 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -291,7 +289,8 @@ public class DataMapView extends JPanel {
 
         quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
         // rebuild data node list
-        Object nodes[] = eventController.getCurrentDataDomain().getDataNodes().toArray();
+        
+        Object nodes[] = ((DataChannelDescriptor) eventController.getProject().getRootNode()).getNodeDescriptors().toArray();
 
         // add an empty item to the front
         Object[] objects = new Object[nodes.length + 1];
@@ -307,8 +306,8 @@ public class DataMapView extends JPanel {
 
         // find selected node
         for (int i = 0; i < nodes.length; i++) {
-            DataNode node = (DataNode) nodes[i];
-            if (node.getDataMaps().contains(map)) {
+            DataNodeDescriptor node = (DataNodeDescriptor) nodes[i];
+            if (node.getDataMapNames().contains(map.getName())) {
                 model.setSelectedItem(node);
                 break;
             }
@@ -505,25 +504,11 @@ public class DataMapView extends JPanel {
 
         // search for matching map name across domains, as currently they have to be
         // unique globally
-        Configuration config = ((ApplicationProject) Application.getProject())
-                .getConfiguration();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)Application.getProject().getRootNode();
 
-        DataMap matchingMap = null;
+        DataMap matchingMap = dataChannelDescriptor.getDataMap(newName);
 
-        for (DataDomain domain : config.getDomains()) {
-            DataMap nextMap = domain.getMap(newName);
-
-            if (nextMap == map) {
-                continue;
-            }
-
-            if (nextMap != null) {
-                matchingMap = nextMap;
-                break;
-            }
-        }
-
-        if (matchingMap != null) {
+        if (matchingMap != null && !matchingMap.equals(map)) {
 
             // there is an entity with the same name
             throw new ValidationException("There is another DataMap named '"
@@ -537,17 +522,17 @@ public class DataMapView extends JPanel {
         // completely new name, set new name for domain
         DataMapDefaults pref = eventController.getDataMapPreferences("");
         DataMapEvent e = new DataMapEvent(this, map, map.getName());
-        ProjectUtil.setDataMapName(eventController.getCurrentDataDomain(), map, newName);
+        ProjectUtil.setDataMapName((DataChannelDescriptor)eventController.getProject().getRootNode(), map, newName);
         pref.rename(newName);
         eventController.fireDataMapEvent(e);
     }
 
     void setDataNode() {
-        DataNode node = (DataNode) nodeSelector.getSelectedItem();
+        DataNodeDescriptor node = (DataNodeDescriptor) nodeSelector.getSelectedItem();
         DataMap map = eventController.getCurrentDataMap();
 
         // no change?
-        if (node != null && node.getDataMaps().contains(map)) {
+        if (node != null && node.getDataMapNames().contains(map.getName())) {
             return;
         }
 
@@ -555,12 +540,12 @@ public class DataMapView extends JPanel {
 
         // unlink map from any nodes
 
-        for (DataNode nextNode : eventController.getCurrentDataDomain().getDataNodes()) {
+        for (DataNodeDescriptor nextNode : ((DataChannelDescriptor)eventController.getProject().getRootNode()).getNodeDescriptors()) {
 
             // Theoretically only one node may contain a datamap at each given time.
             // Being paranoid, we will still scan through all.
-            if (nextNode != node && nextNode.getDataMaps().contains(map)) {
-                nextNode.removeDataMap(map.getName());
+            if (nextNode != node && nextNode.getDataMapNames().contains(map.getName())) {
+                nextNode.getDataMapNames().remove(map.getName());
 
                 // announce DataNode change
                 eventController.fireDataNodeEvent(new DataNodeEvent(this, nextNode));
@@ -571,16 +556,11 @@ public class DataMapView extends JPanel {
 
         // link to a selected node
         if (node != null) {
-            node.addDataMap(map);
+            node.getDataMapNames().add(map.getName());
             hasChanges = true;
 
             // announce DataNode change
             eventController.fireDataNodeEvent(new DataNodeEvent(this, node));
-        }
-
-        if (hasChanges) {
-            // TODO: maybe reindexing is an overkill in the modeler?
-            eventController.getCurrentDataDomain().reindexNodes();
         }
     }
 

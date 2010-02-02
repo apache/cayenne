@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -117,7 +118,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
                 application.getUndoManager().addEdit(
                         new RemoveAttributeUndoableEdit(
-                                mediator.getCurrentDataDomain(),
+                                (DataChannelDescriptor)mediator.getProject().getRootNode(),
                                 mediator.getCurrentDataMap(),
                                 entity,
                                 attribs));
@@ -140,7 +141,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
                     application.getUndoManager().addEdit(
                             new RemoveAttributeUndoableEdit(
-                                    mediator.getCurrentDataDomain(),
+                                    (DataChannelDescriptor)mediator.getProject().getRootNode(),
                                     mediator.getCurrentDataMap(),
                                     entity,
                                     attribs));

@@ -23,23 +23,25 @@ import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.DBCPDataSourceFactory;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.conf.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
@@ -47,7 +49,6 @@ import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
-import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
@@ -75,7 +76,7 @@ public class MainDataNodeEditor extends CayenneController {
 
     protected MainDataNodeView view;
     protected DataNodeEditor tabbedPaneController;
-    protected DataNode node;
+    protected DataNodeDescriptor node;
     protected Map datasourceEditors;
     protected List localDataSources;
 
@@ -121,23 +122,23 @@ public class MainDataNodeEditor extends CayenneController {
     }
 
     public String getFactoryName() {
-        return (node != null) ? node.getDataSourceFactory() : null;
+        return (node != null) ? node.getDataSourceFactoryType() : null;
     }
 
     public void setFactoryName(String factoryName) {
         if (node != null) {
-            node.setDataSourceFactory(factoryName);
+            node.setDataSourceFactoryType(factoryName);
             showDataSourceSubview(factoryName);
         }
     }
 
     public String getSchemaUpdateStrategy() {
-        return (node != null) ? node.getSchemaUpdateStrategyName() : null;
+        return (node != null) ? node.getSchemaUpdateStrategyType() : null;
     }
 
     public void setSchemaUpdateStrategy(String schemaUpdateStrategy) {
         if (node != null) {
-            node.setSchemaUpdateStrategyName(schemaUpdateStrategy);
+            node.setSchemaUpdateStrategyType(schemaUpdateStrategy);
         }
     }
 
@@ -156,36 +157,28 @@ public class MainDataNodeEditor extends CayenneController {
         }
 
         ProjectController parent = (ProjectController) getParent();
-        Configuration config = ((ApplicationProject) parent.getProject())
-                .getConfiguration();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)Application.getProject().getRootNode();
 
-        DataNode matchingNode = null;
+        Collection<DataNodeDescriptor> matchingNode = dataChannelDescriptor.getNodeDescriptors();
 
-        for (DataDomain domain : config.getDomains()) {
-            DataNode nextNode = domain.getNode(newName);
-
-            if (nextNode == node) {
-                continue;
-            }
-
-            if (nextNode != null) {
-                matchingNode = nextNode;
-                break;
-            }
+        Iterator<DataNodeDescriptor> it = matchingNode.iterator();
+        while (it.hasNext()) {
+            DataNodeDescriptor node = it.next();
+            if (node.getName().equals(newName)) {
+                // there is an entity with the same name
+                throw new ValidationException("There is another DataNode named '"
+                        + newName
+                        + "'. Use a different name.");
+            } 
         }
-
-        if (matchingNode != null) {
-            // there is an entity with the same name
-            throw new ValidationException("There is another DataNode named '"
-                    + newName
-                    + "'. Use a different name.");
-        }
+        
+        
 
         // passed validation, set value...
 
         // TODO: fixme....there is a slight chance that domain is different than the one
         // cached node belongs to
-        ProjectUtil.setDataNodeName(parent.getCurrentDataDomain(), node, newName);
+        ProjectUtil.setDataNodeName((DataChannelDescriptor)parent.getProject().getRootNode(), node, newName);
     }
 
     // ======== other stuff
@@ -276,7 +269,7 @@ public class MainDataNodeEditor extends CayenneController {
     /**
      * Reinitializes widgets to display selected DataNode.
      */
-    protected void refreshView(DataNode node) {
+    protected void refreshView(DataNodeDescriptor node) {
         this.node = node;
 
         if (node == null) {

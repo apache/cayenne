@@ -38,20 +38,20 @@ import org.jgraph.graph.GraphConstants;
 /**
  * Class for building ER-graph, based on DbEntity information
  */
-class DbGraphBuilder extends BaseGraphBuilder 
-    implements DbEntityListener, DbAttributeListener, DbRelationshipListener {
-    
+class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener,
+        DbAttributeListener, DbRelationshipListener {
+
     static final Color ENTITY_COLOR = new Color(197, 253, 252);
-    
+
     @Override
     protected Collection<? extends Entity> getEntities(DataMap map) {
         return map.getDbEntities();
     }
-    
+
     @Override
     protected void postProcessEntity(Entity entity, DefaultGraphCell cell) {
         super.postProcessEntity(entity, cell);
-        
+
         GraphConstants.setBackground(cell.getAttributes(), ENTITY_COLOR);
         GraphConstants.setOpaque(cell.getAttributes(), true);
     }
@@ -60,20 +60,22 @@ class DbGraphBuilder extends BaseGraphBuilder
     protected EntityCellMetadata getCellMetadata(Entity e) {
         return new DbEntityCellMetadata(this, e.getName());
     }
-    
+
     @Override
     protected DefaultEdge createRelationshipCell(Relationship rel) {
         DefaultEdge edge = super.createRelationshipCell(rel);
         if (edge != null) {
-            GraphConstants.setDashPattern(edge.getAttributes(), new float[] { 10, 3 });
+            GraphConstants.setDashPattern(edge.getAttributes(), new float[] {
+                    10, 3
+            });
         }
         return edge;
     }
-        
+
     @Override
     public void setProjectController(ProjectController mediator) {
         super.setProjectController(mediator);
-        
+
         mediator.addDbEntityListener(this);
         mediator.addDbAttributeListener(this);
         mediator.addDbRelationshipListener(this);
@@ -81,65 +83,49 @@ class DbGraphBuilder extends BaseGraphBuilder
 
     public void destroy() {
         super.destroy();
-        
+
         mediator.removeDbEntityListener(this);
         mediator.removeDbAttributeListener(this);
         mediator.removeDbRelationshipListener(this);
     }
 
     public void dbEntityAdded(EntityEvent e) {
-        if (isInCurrentDomain()) {
-            insertEntityCell(e.getEntity());
-        }
+        insertEntityCell(e.getEntity());
     }
 
     public void dbEntityChanged(EntityEvent e) {
-        if (isInCurrentDomain()) {
-            remapEntity(e);
-            
-            updateEntityCell(e.getEntity());
-        }
+        remapEntity(e);
+
+        updateEntityCell(e.getEntity());
     }
 
     public void dbEntityRemoved(EntityEvent e) {
-        if (isInCurrentDomain()) {
-            removeEntityCell(e.getEntity());
-        }
+        removeEntityCell(e.getEntity());
     }
 
     public void dbAttributeAdded(AttributeEvent e) {
-        if (isInCurrentDomain()) {
-            updateEntityCell(e.getEntity());
-        }
+        updateEntityCell(e.getEntity());
     }
 
     public void dbAttributeChanged(AttributeEvent e) {
-        if (isInCurrentDomain()) {
-            updateEntityCell(e.getEntity());
-        }
+        updateEntityCell(e.getEntity());
     }
 
     public void dbAttributeRemoved(AttributeEvent e) {
-        if (isInCurrentDomain()) {
-            updateEntityCell(e.getEntity());
-        }
+        updateEntityCell(e.getEntity());
     }
 
     public void dbRelationshipAdded(RelationshipEvent e) {
-        //nothing because relationship does not have target yet
+        // nothing because relationship does not have target yet
     }
 
     public void dbRelationshipChanged(RelationshipEvent e) {
-        if (isInCurrentDomain()) {
-            updateRelationshipCell(e.getRelationship());
-        }
+        updateRelationshipCell(e.getRelationship());
     }
 
     public void dbRelationshipRemoved(RelationshipEvent e) {
-        if (isInCurrentDomain()) {
-            remapRelationship(e);
-            removeRelationshipCell(e.getRelationship());
-        }
+        remapRelationship(e);
+        removeRelationshipCell(e.getRelationship());
     }
 
     public GraphType getType() {

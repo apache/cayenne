@@ -19,16 +19,17 @@
 
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.access.DataNode;
+import java.util.Collection;
+
 import org.apache.cayenne.conf.DriverDataSourceFactory;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.ModelerDbAdapter;
-import org.apache.cayenne.project.ProjectDataSource;
 
 /**
  */
@@ -40,15 +41,21 @@ public abstract class DBWizardAction extends CayenneAction {
 
     // ==== Guessing user preferences... *****
 
-    protected DataNode getPreferredNode() {
+    protected DataNodeDescriptor getPreferredNode() {
         ProjectController projectController = getProjectController();
-        DataNode node = projectController.getCurrentDataNode();
+        DataNodeDescriptor node = projectController.getCurrentDataNode();
 
         // try a node that belongs to the current DataMap ...
         if (node == null) {
             DataMap map = projectController.getCurrentDataMap();
             if (map != null) {
-                node = projectController.getCurrentDataDomain().lookupDataNode(map);
+                Collection<DataNodeDescriptor> nodes = ((DataChannelDescriptor)projectController.getProject().getRootNode()).getNodeDescriptors();
+                for(DataNodeDescriptor n:nodes){
+                    if(n.getDataMapNames().contains(map.getName())){
+                        node = n;
+                        break;
+                    }
+                }
             }
         }
 
@@ -59,9 +66,9 @@ public abstract class DBWizardAction extends CayenneAction {
         if (nodeInfo == null) {
 
             // only driver nodes have meaningful connection info set
-            DataNode node = getPreferredNode();
+            DataNodeDescriptor node = getPreferredNode();
             return (node != null && DriverDataSourceFactory.class.getName().equals(
-                    node.getDataSourceFactory())) ? "DataNode Connection Info" : null;
+                    node.getDataSourceFactoryType())) ? "DataNode Connection Info" : null;
         }
 
         return nodeInfo.getNodeName();
@@ -71,7 +78,7 @@ public abstract class DBWizardAction extends CayenneAction {
      * Determines the most reasonable default DataSource choice.
      */
     protected DBConnectionInfo preferredDataSource() {
-        DataNode node = getPreferredNode();
+        DataNodeDescriptor node = getPreferredNode();
 
         // no current node...
         if (node == null) {
@@ -98,20 +105,16 @@ public abstract class DBWizardAction extends CayenneAction {
         }
 
         // extract data from the node
-        if (!DriverDataSourceFactory.class.getName().equals(node.getDataSourceFactory())) {
+        if (!DriverDataSourceFactory.class.getName().equals(node.getDataSourceFactoryType())) {
             return null;
         }
 
         // create transient object..
         DBConnectionInfo nodeInfo = new DBConnectionInfo();
 
-        nodeInfo.copyFrom(((ProjectDataSource) node.getDataSource()).getDataSourceInfo());
+        nodeInfo.copyFrom(node.getDataSourceDescriptor());
 
-        nodeInfo.setDbAdapter(null);
-        if (node.getAdapter() instanceof ModelerDbAdapter) {
-            nodeInfo.setDbAdapter(((ModelerDbAdapter) node.getAdapter())
-                    .getAdapterClassName());
-        }
+        nodeInfo.setDbAdapter(node.getAdapterType());
 
         return nodeInfo;
     }

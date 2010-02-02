@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.project.validator.ValidationInfo;
@@ -44,7 +44,7 @@ public class DomainErrorMsg extends ValidationDisplayHandler {
         int len = path.length;
 
         if (len >= 1) {
-            domain = (DataDomain) path[len - 1];
+            domain = (DataChannelDescriptor) path[len - 1];
         }
     }
 

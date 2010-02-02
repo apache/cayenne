@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
@@ -33,7 +33,7 @@ public class RelationshipDisplayEvent extends EntityDisplayEvent {
             Relationship relationship,
             Entity entity,
             DataMap map,
-            DataDomain domain) {
+            DataChannelDescriptor domain) {
 
             super(src, entity, map, domain);
             this.relationships = new Relationship[] { relationship };
@@ -44,7 +44,7 @@ public class RelationshipDisplayEvent extends EntityDisplayEvent {
         Relationship[] relationships,
         Entity entity,
         DataMap map,
-        DataDomain domain) {
+        DataChannelDescriptor domain) {
 
         super(src, entity, map, domain);
         this.relationships = relationships;

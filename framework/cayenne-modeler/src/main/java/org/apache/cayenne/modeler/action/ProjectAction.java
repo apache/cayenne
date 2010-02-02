@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.UnsavedChangesDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectConfiguration;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
@@ -65,10 +64,7 @@ public class ProjectAction extends CayenneAction {
      * @since 1.2
      */
     protected Configuration buildProjectConfiguration(File projectFile) {
-        ProjectConfiguration config = new ModelerProjectConfiguration(projectFile);
-        config.setLoaderDelegate(new ModelerProjectLoadDelegate(config));
-        config.setSaverDelegate(new ModelerProjectSaveDelegate(config));
-        return config;
+        return new ModelerProjectConfiguration(projectFile);
     }
 
     /** Returns true if successfully closed project, false otherwise. */

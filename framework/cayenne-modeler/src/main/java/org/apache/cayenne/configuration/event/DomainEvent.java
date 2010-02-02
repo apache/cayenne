@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.configuration.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 
 /** 
@@ -29,19 +29,19 @@ import org.apache.cayenne.map.event.MapEvent;
  */
 public class DomainEvent extends MapEvent {
 	/** Creates a domain change event. */
-	public DomainEvent(Object src, DataDomain domain) {
+	public DomainEvent(Object src, DataChannelDescriptor domain) {
 		super(src);
 		setDomain(domain);
 	}
 
 	/** Creates a domain event of a specified type. */
-	public DomainEvent(Object src, DataDomain domain, int id) {
+	public DomainEvent(Object src, DataChannelDescriptor domain, int id) {
 		this(src, domain);
 		setId(id);
 	}
 
 	/** Creates a domain name change event.*/
-	public DomainEvent(Object src, DataDomain domain, String oldName) {
+	public DomainEvent(Object src, DataChannelDescriptor domain, String oldName) {
 		this(src, domain);	
 		setOldName(oldName);
 	}

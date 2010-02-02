@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -77,8 +78,7 @@ public class CreateDbEntityAction extends CayenneAction {
     static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
         mediator.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, mediator
-                .getCurrentDataMap(), mediator.getCurrentDataNode(), mediator
-                .getCurrentDataDomain());
+                .getCurrentDataMap(), mediator.getCurrentDataNode(),  (DataChannelDescriptor)mediator.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
         mediator.fireDbEntityDisplayEvent(displayEvent);
     }

@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -88,7 +89,7 @@ public class ObjEntitySyncAction extends CayenneAction {
                         this,
                         entity,
                         entity.getDataMap(),
-                        mediator.getCurrentDataDomain()));
+                        (DataChannelDescriptor)mediator.getProject().getRootNode()));
             }
         }
     }

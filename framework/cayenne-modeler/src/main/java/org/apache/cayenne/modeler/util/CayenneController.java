@@ -52,7 +52,7 @@ public abstract class CayenneController implements BoundComponent {
     private static Log logObj = LogFactory.getLog(CayenneController.class);
 
     protected CayenneController parent;
-    protected Application application;
+    protected static Application application;
     protected PropertyChangeSupport propertyChangeSupport;
 
     public CayenneController(CayenneController parent) {
@@ -64,7 +64,7 @@ public abstract class CayenneController implements BoundComponent {
         this.application = application;
     }
 
-    public Application getApplication() {
+    public static Application getApplication() {
         return application;
     }
 

@@ -21,13 +21,11 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.sql.DataSource;
-
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
@@ -35,9 +33,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.ModelerDbAdapter;
 import org.apache.cayenne.project.NamedObjectFactory;
-import org.apache.cayenne.project.ProjectDataSource;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
@@ -67,15 +63,15 @@ public class CreateNodeAction extends CayenneAction {
      * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
      */
     public void performAction(ActionEvent e) {
-        DataNode node = buildDataNode();
-        createDataNode(getProjectController().getCurrentDataDomain(), node);
+        DataNodeDescriptor node = buildDataNode();
+        createDataNode(node);
         application.getUndoManager().addEdit(
-                new CreateNodeUndoableEdit(application, getProjectController()
-                        .getCurrentDataDomain(), node));
+                new CreateNodeUndoableEdit(application,node));
     }
 
-    public void createDataNode(DataDomain domain, DataNode node) {
-        domain.addNode(node);
+    public void createDataNode(DataNodeDescriptor node) {
+        DataChannelDescriptor domain = (DataChannelDescriptor)getProjectController().getProject().getRootNode();
+        domain.getNodeDescriptors().add(node);
         getProjectController().fireDataNodeEvent(
                 new DataNodeEvent(this, node, MapEvent.ADD));
         getProjectController().fireDataNodeDisplayEvent(
@@ -90,27 +86,26 @@ public class CreateNodeAction extends CayenneAction {
             return false;
         }
 
-        return path.firstInstanceOf(DataDomain.class) != null;
+        return path.firstInstanceOf(DataChannelDescriptor.class) != null;
     }
 
     /**
      * Creates a new DataNode, adding to the current domain, but doesn't send any events.
      */
-    public DataNode buildDataNode() {
+    public DataNodeDescriptor buildDataNode() {
         ProjectController mediator = getProjectController();
-        DataDomain domain = mediator.getCurrentDataDomain();
+        DataChannelDescriptor domain =  (DataChannelDescriptor)mediator.getProject().getRootNode();
 
         // use domain name as DataNode base, as node names must be unique across the
         // project...
-        DataNode node = buildDataNode(domain);
+        DataNodeDescriptor node =  buildDataNode(domain);
 
-        ProjectDataSource src = new ProjectDataSource(new DataSourceInfo());
-        node.setDataSource(src);
-        node.setAdapter(new ModelerDbAdapter(src));
-
+        DataSourceInfo src = new DataSourceInfo();
+        node.setDataSourceDescriptor(src);
+        
         // by default create JDBC Node
-        node.setDataSourceFactory(DriverDataSourceFactory.class.getName());
-        node.setSchemaUpdateStrategyName(SkipSchemaUpdateStrategy.class.getName());
+        node.setDataSourceFactoryType(DriverDataSourceFactory.class.getName());
+        node.setSchemaUpdateStrategyType(SkipSchemaUpdateStrategy.class.getName());
 
         return node;
     }
@@ -118,17 +113,19 @@ public class CreateNodeAction extends CayenneAction {
     /**
      * A factory method that makes a new DataNode.
      */
-    DataNode buildDataNode(DataDomain domain) {
-        String name = NamedObjectFactory.createName(DataNode.class, domain, domain
+    DataNodeDescriptor buildDataNode(DataChannelDescriptor domain) {
+        String name = NamedObjectFactory.createName(DataNodeDescriptor.class, domain, domain
                 .getName()
                 + "Node");
 
+        
         // ensure that DataNode exposes DataSource directly, so that UI widgets could work
         // with it.
-        return new DataNode(name) {
+        return new DataNodeDescriptor(name) 
+        {
 
-            public DataSource getDataSource() {
-                return dataSource;
+            public DataSourceInfo getDataSourceDescriptor() {
+                return dataSourceDescriptor;
             }
         };
     }

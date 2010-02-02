@@ -31,6 +31,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.cayenne.configuration.CayenneServerModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
@@ -44,7 +48,8 @@ import org.apache.cayenne.pref.DomainPreference;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
 import org.apache.cayenne.pref.PreferenceService;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project2.CayenneProjectModule;
+import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.swing.BindingFactory;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -98,15 +103,21 @@ public class Application {
     private boolean isQuittingApplication = false;
 
     protected CayennePreference cayennePreference;
+    
+    protected Injector injector;
 
     public static Application getInstance() {
         return instance;
     }
 
     // static methods that should probably go away eventually...
-
     public static CayenneModelerFrame getFrame() {
         return (CayenneModelerFrame) getInstance().getFrameController().getView();
+    }
+
+    
+    public Injector getInjector() {
+        return injector;
     }
 
     public static Project getProject() {
@@ -116,6 +127,11 @@ public class Application {
     public Application(File initialProject) {
         this.initialProject = initialProject;
 
+        Module module = new CayenneProjectModule();
+        Module moduleSer = new CayenneServerModule("CayenneModeler");
+
+        injector = DIBootstrap.createInjector(module, moduleSer);
+        
         // configure startup settings
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
@@ -40,7 +40,7 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
 
     public void displayField(ProjectController mediator, JFrame frame) {
         ProjectPath path = super.validationInfo.getPath();
-        DataDomain domain = path.firstInstanceOf(DataDomain.class);
+        DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
         DataMap map = path.firstInstanceOf(DataMap.class);
         Query query = path.firstInstanceOf(Query.class);
 

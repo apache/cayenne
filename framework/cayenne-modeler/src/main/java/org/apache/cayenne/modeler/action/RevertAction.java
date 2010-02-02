@@ -20,13 +20,13 @@
 package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ApplicationProject;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project2.Project;
 
 /**
  */
@@ -49,23 +49,24 @@ public class RevertAction extends CayenneAction {
             return;
         }
 
-        boolean isNew = project.isLocationUndefined();
-
+       boolean isNew = project.getConfigurationResource() == null; 
+        
         CayenneModelerController controller = getApplication().getFrameController();
 
         // close ... don't use OpenProjectAction close method as it will ask for save, we
         // don't want that here
         controller.projectClosedAction();
 
+        File fileDirectory = new File(project.getConfigurationResource().getURL().getPath());
         // reopen existing
-        if (!isNew && project.getMainFile().isFile()) {
+        if (!isNew && fileDirectory.isFile()) {
             OpenProjectAction openAction = (OpenProjectAction) controller
                     .getApplication()
                     .getAction(OpenProjectAction.getActionName());
-            openAction.openProject(project.getMainFile());
+            openAction.openProject(fileDirectory);
         }
         // create new
-        else if (!(project instanceof ApplicationProject)) {
+        else if (!(project instanceof Project)) {
             throw new CayenneRuntimeException("Only ApplicationProjects are supported.");
         }
         else {

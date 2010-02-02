@@ -22,7 +22,7 @@ import java.util.Collection;
 
 import javax.swing.undo.CompoundEdit;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
@@ -42,10 +42,10 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
         return !edits.isEmpty();
     }
 
-    private DataDomain domain;
+    private DataChannelDescriptor domain;
     private DataMap map;
 
-    public DbEntitySyncUndoableEdit(DataDomain domain, DataMap map) {
+    public DbEntitySyncUndoableEdit(DataChannelDescriptor domain, DataMap map) {
         super();
         this.domain = domain;
         this.map = map;

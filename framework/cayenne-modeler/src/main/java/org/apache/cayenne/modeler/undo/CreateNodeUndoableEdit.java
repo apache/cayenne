@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
@@ -34,14 +34,11 @@ public class CreateNodeUndoableEdit extends CayenneUndoableEdit {
         return "Create DataNode";
     }
 
-    
+    private DataNodeDescriptor node;
+    private DataChannelDescriptor domain;
 
-    private DataNode node;
-    private DataDomain domain;
-
-    public CreateNodeUndoableEdit(Application application, DataDomain domain,
-            DataNode node) {
-        this.domain = domain;
+    public CreateNodeUndoableEdit(Application application, DataNodeDescriptor node) {
+        this.domain = (DataChannelDescriptor)application.getProject().getRootNode();;
         this.node = node;
     }
 
@@ -49,14 +46,13 @@ public class CreateNodeUndoableEdit extends CayenneUndoableEdit {
     public void undo() throws CannotUndoException {
         RemoveAction action = (RemoveAction) actionManager.getAction(RemoveAction
                 .getActionName());
-        action.removeDataNode(domain, node);
+        action.removeDataNode(node);
     }
 
-    @Override
     public void redo() throws CannotRedoException {
-        domain.addNode(node);
+        domain.getNodeDescriptors().add(node);
         CreateNodeAction action = (CreateNodeAction) actionManager
                 .getAction(CreateNodeAction.getActionName());
-        action.createDataNode(domain, node);
+        action.createDataNode(node);
     }
 }

@@ -41,7 +41,7 @@ public class DataNodeDefaults extends CayennePreferenceForProject {
 
     public String getLocalDataSource() {
         if(localDataSource == null){
-            localDataSource = getCurrentPreference().get(LOCAL_DATA_SOURCE_PROPERTY, null);
+            localDataSource = getCurrentPreference().get(LOCAL_DATA_SOURCE_PROPERTY, "");
         }
         return localDataSource;
     }

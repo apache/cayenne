@@ -26,10 +26,6 @@ public interface DomainListener extends EventListener
 {
 	/** Domain property (usually - name) changed. */
 	public void domainChanged(DomainEvent e);
-	/** New data map has been created/added.*/
-	public void domainAdded(DomainEvent e);
-	/** Domain has been removed.*/
-	public void domainRemoved(DomainEvent e);
 	
 }
 

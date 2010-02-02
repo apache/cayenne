@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -66,7 +66,7 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
         }
 
         if (len >= 4) {
-            domain = (DataDomain) path[len - 4];
+            domain = (DataChannelDescriptor) path[len - 4];
         }
 
     }

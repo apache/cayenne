@@ -19,14 +19,12 @@
 
 package org.apache.cayenne.modeler.action;
 
-import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
-
-import com.mockrunner.mock.jdbc.MockDataSource;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.conn.DataSourceInfo;
 
 public class CreateNodeActionTest extends TestCase {
 
@@ -42,15 +40,17 @@ public class CreateNodeActionTest extends TestCase {
             return;
         }
 
-        DataNode node = action.buildDataNode(new DataDomain("DD"));
+        DataChannelDescriptor domain = new DataChannelDescriptor();
+        domain.setName("aa");
+        DataNodeDescriptor node = action.buildDataNode(domain);
 
         assertNotNull(node);
         assertNotNull(node.getName());
 
-        DataSource ds1 = new MockDataSource();
-        node.setDataSource(ds1);
+        DataSourceInfo ds1 = new DataSourceInfo();
+        node.setDataSourceDescriptor(ds1);
 
         assertSame("Project DataNode must not wrap the DataSource", ds1, node
-                .getDataSource());
+                .getDataSourceDescriptor());
     }
 }

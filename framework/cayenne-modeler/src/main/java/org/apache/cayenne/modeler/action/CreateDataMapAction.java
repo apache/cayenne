@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.resource.Resource;
 
 /**
  * Action that creates new DataMap in the project.
@@ -51,14 +52,15 @@ public class CreateDataMapAction extends CayenneAction {
     }
 
     /** Calls addDataMap() or creates new data map if no data node selected. */
-    public void createDataMap(DataDomain domain, DataMap map) {
+    public void createDataMap(DataMap map) {
         ProjectController mediator = getProjectController();
         mediator.addDataMap(this, map);
     }
 
     public void performAction(ActionEvent e) {
         ProjectController mediator = getProjectController();
-        DataDomain currentDomain = mediator.getCurrentDataDomain();
+       
+        DataChannelDescriptor currentDomain =  (DataChannelDescriptor)mediator.getProject().getRootNode();
 
         // use domain name as DataMap base, as map names must be unique across the
         // project...
@@ -67,7 +69,15 @@ public class CreateDataMapAction extends CayenneAction {
                 currentDomain,
                 currentDomain.getName() + "Map");
 
-        createDataMap(currentDomain, map);
+        // set configuration source for new dataMap 
+        Resource baseResource = currentDomain.getConfigurationSource();
+
+        Resource dataMapResource = baseResource
+                .getRelativeResource(map.getName());
+        
+        map.setConfigurationSource(dataMapResource);
+        
+        createDataMap(map);
 
         application.getUndoManager().addEdit(
                 new CreateDataMapUndoableEdit(currentDomain, map));
@@ -81,6 +91,6 @@ public class CreateDataMapAction extends CayenneAction {
             return false;
         }
 
-        return path.firstInstanceOf(DataDomain.class) != null;
+        return path.firstInstanceOf(DataChannelDescriptor.class) != null;
     }
 }

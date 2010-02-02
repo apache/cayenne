@@ -16,33 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.project2.validate;
 
-package org.apache.cayenne.modeler.action;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.util.Util;
 
-import javax.sql.DataSource;
 
-import junit.framework.TestCase;
+public class DataChannelValidator  implements Validator{
 
-import org.apache.cayenne.access.DataNode;
+    public void validate(Object object, ConfigurationValidationVisitor configurationValidationVisitor) {
+        
+        // check for empty name
+        DataChannelDescriptor domain = (DataChannelDescriptor) object;
+        String name = domain.getName();
+        if (Util.isEmptyString(name)) {
+            Object[] path = new Object[]{domain}; 
+            configurationValidationVisitor.registerError("Unnamed DataDomain.", new ProjectPath(path));
 
-import com.mockrunner.mock.jdbc.MockDataSource;
-
-public class ModelerProjectLoaderDelegateTest extends TestCase {
-
-    public void testDataSource() {
-
-        ModelerProjectLoadDelegate loader = new ModelerProjectLoadDelegate(
-                new MockConfiguration());
-
-        DataNode node = loader.createDataNode("ABC");
-
-        assertNotNull(node);
-        assertEquals("ABC", node.getName());
-
-        DataSource ds1 = new MockDataSource();
-        node.setDataSource(ds1);
-
-        assertSame("Project DataNode must not wrap the DataSource", ds1, node
-                .getDataSource());
+            // no more name assertions
+            return;
+        }
     }
 }

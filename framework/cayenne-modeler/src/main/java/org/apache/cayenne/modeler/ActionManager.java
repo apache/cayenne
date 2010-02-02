@@ -44,7 +44,6 @@ import org.apache.cayenne.modeler.action.CreateCallbackMethodForListenerAction;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.CreateDataMapEntityListenerAction;
 import org.apache.cayenne.modeler.action.CreateDbEntityAction;
-import org.apache.cayenne.modeler.action.CreateDomainAction;
 import org.apache.cayenne.modeler.action.CreateEmbeddableAction;
 import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
@@ -106,7 +105,8 @@ public class ActionManager {
 
     // search action added to project actions
     static final Collection<String> PROJECT_ACTIONS = Arrays.asList(RevertAction
-            .getActionName(), CreateDomainAction.getActionName(), ProjectAction
+            .getActionName(), 
+            ProjectAction
             .getActionName(), ValidateAction.getActionName(), SaveAsAction
             .getActionName(), FindAction.getActionName());
 
@@ -196,7 +196,6 @@ public class ActionManager {
         registerAction(new RevertAction(application));
         registerAction(new ValidateAction(application));
         registerAction(new RemoveAction(application));
-        registerAction(new CreateDomainAction(application));
         registerAction(new CreateNodeAction(application));
         registerAction(new CreateDataMapAction(application));
         registerAction(new GenerateCodeAction(application));
@@ -307,8 +306,6 @@ public class ActionManager {
     public void dataMapSelected() {
         processActionsState(DATA_MAP_ACTIONS);
         updateActions("DataMap");
-        // reset
-        // getAction(CreateAttributeAction.getActionName()).setName("Create Attribute");
     }
 
     public void objEntitySelected() {

@@ -24,21 +24,20 @@ import java.awt.event.ComponentEvent;
 
 import javax.swing.JOptionPane;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.project.ProjectDataSource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
 
 public class PasswordEncoderEditor extends CayenneController {
 
-    protected DataNode node;
+    protected DataNodeDescriptor node;
     protected ObjectBinding[] bindings;
     protected PasswordEncoderView view;
     protected BindingDelegate nodeChangeProcessor;
@@ -75,16 +74,16 @@ public class PasswordEncoderEditor extends CayenneController {
 
         bindings[0] = builder.bindToComboSelection(
                 view.getPasswordEncoder(),
-                "node.dataSource.dataSourceInfo.passwordEncoderClass");
+                "node.dataSourceDescriptor.passwordEncoderClass");
         bindings[1] = builder.bindToTextField(
                 view.getPasswordKey(),
-                "node.dataSource.dataSourceInfo.passwordEncoderKey");
+                "node.dataSourceDescriptor.passwordEncoderKey");
         bindings[2] = builder.bindToComboSelection(
                 view.getPasswordLocation(),
-                "node.dataSource.dataSourceInfo.passwordLocation");
+                "node.dataSourceDescriptor.passwordLocation");
         bindings[3] = builder.bindToTextField(
                 view.getPasswordSource(),
-                "node.dataSource.dataSourceInfo.passwordSource");
+                "node.dataSourceDescriptor.passwordSource");
 
         ((ProjectController) getParent())
                 .addDataNodeDisplayListener(new DataNodeDisplayListener() {
@@ -112,10 +111,10 @@ public class PasswordEncoderEditor extends CayenneController {
 
     }
 
-    protected void refreshView(DataNode node) {
-        this.node = node;
+    protected void refreshView(DataNodeDescriptor dataNodeDescriptor) {
+        this.node = dataNodeDescriptor;
 
-        if (node == null) {
+        if (dataNodeDescriptor == null || dataNodeDescriptor.getDataSourceDescriptor() == null) {
             getView().setVisible(false);
             return;
         }
@@ -126,11 +125,10 @@ public class PasswordEncoderEditor extends CayenneController {
     }
 
     public void validatePasswordEncoderAction() {
-        if (node == null || node.getDataSource() == null)
+        if (node == null || node.getDataSourceDescriptor() == null)
             return;
 
-        DataSourceInfo dsi = ((ProjectDataSource) node.getDataSource())
-                .getDataSourceInfo();
+        DataSourceInfo dsi = node.getDataSourceDescriptor();
 
         if (view.getPasswordEncoder().getSelectedItem().equals(
                 dsi.getPasswordEncoderClass()) == false)
@@ -159,11 +157,10 @@ public class PasswordEncoderEditor extends CayenneController {
     }
 
     public void passwordLocationChangedAction() {
-        if (node == null || node.getDataSource() == null)
+        if (node == null || node.getDataSourceDescriptor() == null)
             return;
 
-        DataSourceInfo dsi = ((ProjectDataSource) node.getDataSource())
-                .getDataSourceInfo();
+        DataSourceInfo dsi = node.getDataSourceDescriptor();
 
         String selectedItem = (String) view.getPasswordLocation().getSelectedItem();
 
@@ -193,11 +190,11 @@ public class PasswordEncoderEditor extends CayenneController {
         return view;
     }
 
-    public DataNode getNode() {
+    public DataNodeDescriptor getNode() {
         return node;
     }
 
-    public void setNode(DataNode node) {
+    public void setNode(DataNodeDescriptor node) {
         this.node = node;
     }
 

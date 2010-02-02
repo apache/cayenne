@@ -64,19 +64,19 @@ public class MappingNamesHelper {
      * This is more of a sanity check than a real validation. As different DBs allow
      * different chars in identifiers, here we simply check for dots.
      */
-    String invalidCharsInDbPathComponent(String dbPathComponent) {
+    public String invalidCharsInDbPathComponent(String dbPathComponent) {
         return (dbPathComponent.indexOf('.') >= 0) ? "." : null;
     }
 
     /**
      * Scans a name of ObjAttribute or ObjRelationship for invalid characters.
      */
-    String invalidCharsInObjPathComponent(String objPathComponent) {
+    public String invalidCharsInObjPathComponent(String objPathComponent) {
         String invalidChars = validateJavaIdentifier(objPathComponent, "");
         return (invalidChars.length() > 0) ? invalidChars : null;
     }
 
-    String invalidCharsInJavaClassName(String javaClassName) {
+    public String invalidCharsInJavaClassName(String javaClassName) {
         if (javaClassName == null) {
             return null;
         }
@@ -91,7 +91,7 @@ public class MappingNamesHelper {
         return (invalidChars.length() > 0) ? invalidChars : null;
     }
 
-    boolean invalidDataObjectClass(String dataObjectClassFQN) {
+    public boolean invalidDataObjectClass(String dataObjectClassFQN) {
         if (dataObjectClassFQN == null) {
             return true;
         }
@@ -138,7 +138,7 @@ public class MappingNamesHelper {
      * considered invalid if there is a getter or a setter for it in java.lang.Object or
      * CayenneDataObject.
      */
-    boolean invalidDataObjectProperty(String dataObjectProperty) {
+    public boolean invalidDataObjectProperty(String dataObjectProperty) {
         return dataObjectProperty == null
                 || INVALID_JAVA_PROPERTIES.contains(dataObjectProperty);
     }

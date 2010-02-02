@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.configuration.event;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 
 /** 
@@ -27,28 +27,28 @@ import org.apache.cayenne.map.event.MapEvent;
  * in CayenneModeler.
  */
 public class DataNodeEvent extends MapEvent {
-	protected DataNode dataNode;
+	protected DataNodeDescriptor dataNode;
 
 	/** Creates a node change event. */
-	public DataNodeEvent(Object src, DataNode node) {
+	public DataNodeEvent(Object src, DataNodeDescriptor nextNode) {
 		super(src);
-		setDataNode(node);
+		setDataNode(nextNode);
 	}
 
 	/** Creates a node event of a specified type. */
-	public DataNodeEvent(Object src, DataNode node, int id) {
+	public DataNodeEvent(Object src, DataNodeDescriptor node, int id) {
 		this(src, node);
 		setId(id);
 	}
 
 	/** Creates a node name change event.*/
-	public DataNodeEvent(Object src, DataNode node, String oldName) {
+	public DataNodeEvent(Object src, DataNodeDescriptor node, String oldName) {
 		this(src, node);
 		setOldName(oldName);
 	}
 
 	/** Returns node object associated with this event. */
-	public DataNode getDataNode() {
+	public DataNodeDescriptor getDataNode() {
 		return dataNode;
 	}
 
@@ -57,7 +57,7 @@ public class DataNodeEvent extends MapEvent {
 	 * 
 	 * @param dataNode The dataNode to set
 	 */
-	public void setDataNode(DataNode dataNode) {
+	public void setDataNode(DataNodeDescriptor dataNode) {
 		this.dataNode = dataNode;
 	}
 	

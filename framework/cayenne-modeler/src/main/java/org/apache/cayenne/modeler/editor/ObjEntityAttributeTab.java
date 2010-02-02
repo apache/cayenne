@@ -47,6 +47,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
@@ -86,7 +87,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     protected ProjectController mediator;
     protected CayenneTable table;
     private TableColumnPreferences tablePreferences;
-    
+
     JButton resolve;
 
     public ObjEntityAttributeTab(ProjectController mediator) {
@@ -123,8 +124,10 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new CellRenderer());
-        
-        tablePreferences = new TableColumnPreferences(ObjAttributeTableModel.class, "objEntity/attributeTable");
+
+        tablePreferences = new TableColumnPreferences(
+                ObjAttributeTableModel.class,
+                "objEntity/attributeTable");
 
         /**
          * Create and install a popup
@@ -192,7 +195,9 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         List<String> embeddableNames = new ArrayList<String>();
         List<String> typeNames = new ArrayList<String>();
 
-        Iterator it = mediator.getCurrentDataDomain().getDataMaps().iterator();
+        Iterator it = ((DataChannelDescriptor) mediator.getProject().getRootNode())
+                .getDataMaps()
+                .iterator();
         while (it.hasNext()) {
             DataMap dataMap = (DataMap) it.next();
             Iterator<Embeddable> embs = dataMap.getEmbeddables().iterator();
@@ -201,17 +206,18 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                 embeddableNames.add(emb.getClassName());
             }
         }
-        
+
         String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
-        for(int i=0; i< registeredTypes.length; i++){
+        for (int i = 0; i < registeredTypes.length; i++) {
             typeNames.add(registeredTypes[i]);
         }
         typeNames.addAll(embeddableNames);
-     
+
         TableColumn typeColumn = table.getColumnModel().getColumn(
                 ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
-        JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(typeNames.toArray(), false);
+        JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(typeNames
+                .toArray(), false);
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
 
@@ -277,9 +283,12 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
             resolve.setEnabled(false);
         }
 
-        AttributeDisplayEvent ev = new AttributeDisplayEvent(this, attrs, mediator
-                .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
-                .getCurrentDataDomain());
+        AttributeDisplayEvent ev = new AttributeDisplayEvent(
+                this,
+                attrs,
+                mediator.getCurrentObjEntity(),
+                mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireObjAttributeDisplayEvent(ev);
     }
@@ -330,18 +339,24 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     protected void setUpTableStructure(ObjAttributeTableModel model) {
-       
+
         int inheritanceColumnWidth = 30;
-               
+
         Map<Integer, Integer> minSizes = new HashMap<Integer, Integer>();
         Map<Integer, Integer> maxSizes = new HashMap<Integer, Integer>();
-        
+
         minSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
         maxSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
-        
+
         initComboBoxes(model);
 
-        tablePreferences.bind(table, minSizes, maxSizes, null, ObjAttributeTableModel.OBJ_ATTRIBUTE, true);
+        tablePreferences.bind(
+                table,
+                minSizes,
+                maxSizes,
+                null,
+                ObjAttributeTableModel.OBJ_ATTRIBUTE,
+                true);
     }
 
     /**

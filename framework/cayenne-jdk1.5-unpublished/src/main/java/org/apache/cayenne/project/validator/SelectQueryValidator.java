@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.project.validator;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.access.QueryEngine;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;

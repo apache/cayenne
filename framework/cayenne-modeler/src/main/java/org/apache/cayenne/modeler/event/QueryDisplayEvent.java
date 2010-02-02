@@ -20,7 +20,7 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.Query;
 
@@ -31,7 +31,7 @@ public class QueryDisplayEvent extends DataMapDisplayEvent {
     protected Query query;
     protected boolean queryChanged = true;
 
-    public QueryDisplayEvent(Object src, Query query, DataMap map, DataDomain domain) {
+    public QueryDisplayEvent(Object src, Query query, DataMap map, DataChannelDescriptor domain) {
         super(src, map, domain);
         this.query = query;
     }

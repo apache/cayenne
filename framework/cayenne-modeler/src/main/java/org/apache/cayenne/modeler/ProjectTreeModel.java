@@ -28,13 +28,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.ProjectTraversal;
 import org.apache.cayenne.project.ProjectTraversalHandler;
+import org.apache.cayenne.project2.Project;
 
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
@@ -57,7 +57,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
      * Constructor for ProjectTreeModel.
      */
     public ProjectTreeModel(Project project) {
-        super(wrapProjectNode(project));
+        super(ProjectTreeFactory.wrapProjectNode(project.getRootNode()));
     }
 
     /**
@@ -82,48 +82,51 @@ public class ProjectTreeModel extends DefaultTreeModel {
 
         Object object = treeNode.getUserObject();
 
-        int len = parent.getChildCount();
-        int ins = -1;
-        int rm = -1;
+        if (parent != null) {
+            int len = parent.getChildCount();
+            int ins = -1;
+            int rm = -1;
 
-        for (int i = 0; i < len; i++) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent.getChildAt(i);
+            for (int i = 0; i < len; i++) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent
+                        .getChildAt(i);
 
-            // remember to remove node
-            if (node == treeNode) {
-                rm = i;
-                continue;
+                // remember to remove node
+                if (node == treeNode) {
+                    rm = i;
+                    continue;
+                }
+
+                // no more insert checks
+                if (ins >= 0) {
+                    continue;
+                }
+
+                // ObjEntities go before DbEntities
+                if (comparator.compare(object, node.getUserObject()) <= 0) {
+                    ins = i;
+                }
             }
 
-            // no more insert checks
-            if (ins >= 0) {
-                continue;
+            if (ins < 0) {
+                ins = len;
             }
 
-            // ObjEntities go before DbEntities
-            if (comparator.compare(object, node.getUserObject()) <= 0) {
-                ins = i;
+            if (rm == ins) {
+                return;
             }
-        }
 
-        if (ins < 0) {
-            ins = len;
-        }
-
-        if (rm == ins) {
-            return;
-        }
-
-        // remove
-        if (rm >= 0) {
-            removeNodeFromParent(treeNode);
-            if (rm < ins) {
-                ins--;
+            // remove
+            if (rm >= 0) {
+                removeNodeFromParent(treeNode);
+                if (rm < ins) {
+                    ins--;
+                }
             }
-        }
 
-        // insert
-        insertNodeInto(treeNode, parent, ins);
+            // insert
+            insertNodeInto(treeNode, parent, ins);
+        }
     }
 
     /**
@@ -207,14 +210,14 @@ public class ProjectTreeModel extends DefaultTreeModel {
             // do not read deatils of linked maps
             if ((node instanceof DataMap)
                     && parentPath != null
-                    && (parentPath.getObject() instanceof DataNode)) {
+                    && (parentPath.getObject() instanceof DataNodeDescriptor)) {
                 return false;
             }
 
             return (node instanceof Project)
-                    || (node instanceof DataDomain)
+                    || (node instanceof DataChannelDescriptor)
                     || (node instanceof DataMap)
-                    || (node instanceof DataNode);
+                    || (node instanceof DataNodeDescriptor);
         }
     }
 

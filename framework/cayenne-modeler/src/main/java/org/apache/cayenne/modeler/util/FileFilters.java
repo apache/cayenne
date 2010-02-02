@@ -20,10 +20,7 @@
 package org.apache.cayenne.modeler.util;
 
 import java.io.File;
-
 import javax.swing.filechooser.FileFilter;
-
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.project.DataMapFile;
 
 /**
@@ -139,14 +136,14 @@ public class FileFilters {
          */
         public boolean accept(File f) {
             return f.isDirectory()
-                || Configuration.DEFAULT_DOMAIN_FILE.equals(f.getName());
+                || (f.getName().startsWith("cayenne") && f.getName().endsWith(".xml"));
         }
 
         /**
          *  Returns description of this filter.
          */
         public String getDescription() {
-            return "Cayenne Applications (" + Configuration.DEFAULT_DOMAIN_FILE + ")";
+            return "Cayenne Applications (" + "cayenne*.xml" + ")";
         }
     }
 

@@ -26,12 +26,11 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.OverwriteDialog;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.project.ApplicationProject;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project2.Project;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,9 +46,14 @@ class ProjectOpener extends JFileChooser {
      * Selects a directory to store the project.
      */
     File newProjectDir(Frame f, Project p) {
-        if (p instanceof ApplicationProject) {
+        if (p instanceof Project) {
+            StringBuilder nameProject = new StringBuilder("cayenne");
+            if(((DataChannelDescriptor)p.getRootNode()).getName()!=null){
+                nameProject.append("-").append(((DataChannelDescriptor)p.getRootNode()).getName());
+            }
+            nameProject.append(".xml");
             // configure for application project
-            return newProjectDir(f, Configuration.DEFAULT_DOMAIN_FILE, FileFilters
+            return newProjectDir(f, nameProject.toString(), FileFilters
                     .getApplicationFilter());
         }
         else {

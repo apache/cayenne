@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
 public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
-    private DataDomain domain;
+    private DataChannelDescriptor domain;
     private DataMap dataMap;
 
     private DbAttribute[] dbAttributes;
@@ -55,7 +55,7 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
         this.embeddableAttrs = embeddableAttrs;
     }
 
-    public RemoveAttributeUndoableEdit(DataDomain domain, DataMap dataMap,
+    public RemoveAttributeUndoableEdit(DataChannelDescriptor domain, DataMap dataMap,
             ObjEntity entity, ObjAttribute[] attribs) {
         this.objEntity = entity;
         this.objAttributes = attribs;
@@ -63,7 +63,7 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
         this.dataMap = dataMap;
     }
 
-    public RemoveAttributeUndoableEdit(DataDomain domain, DataMap dataMap,
+    public RemoveAttributeUndoableEdit(DataChannelDescriptor domain, DataMap dataMap,
             DbEntity entity, DbAttribute[] attribs) {
         this.dbEntity = entity;
         this.dbAttributes = attribs;
@@ -112,13 +112,13 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
         if (objEntity != null) {
             for (ObjAttribute attr : objAttributes) {
-                action.createObjAttribute(domain, dataMap, objEntity, attr);
+                action.createObjAttribute(dataMap, objEntity, attr);
             }
         }
 
         if (dbEntity != null) {
             for (DbAttribute attr : dbAttributes) {
-                action.createDbAttribute(domain, dataMap, dbEntity, attr);
+                action.createDbAttribute(dataMap, dbEntity, attr);
             }
         }
 

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
  * Represents a display event of a DataNode.
@@ -28,20 +28,20 @@ import org.apache.cayenne.access.DataNode;
  */
 public class DataNodeDisplayEvent extends DomainDisplayEvent {
 
-	protected DataNode dataNode;
+	protected DataNodeDescriptor dataNode;
 	
 	/** True if data node is different from the current data node. */
 	protected boolean dataNodeChanged = true;
 
 	/** Current DataNode changed. */
-	public DataNodeDisplayEvent(Object src, DataDomain domain, DataNode node) {
-		super(src, domain);
+	public DataNodeDisplayEvent(Object src, DataChannelDescriptor dataChannelDescriptor, DataNodeDescriptor node) {
+		super(src, dataChannelDescriptor);
 		this.dataNode = node;
 		setDomainChanged(false);
 	}
 
 	/** Get data node (data source) associated with this data map. */
-	public DataNode getDataNode() {
+	public DataNodeDescriptor getDataNode() {
 		return dataNode;
 	}
 
@@ -57,7 +57,7 @@ public class DataNodeDisplayEvent extends DomainDisplayEvent {
 	 * Sets the dataNode.
 	 * @param dataNode The dataNode to set
 	 */
-	public void setDataNode(DataNode dataNode) {
+	public void setDataNode(DataNodeDescriptor dataNode) {
 		this.dataNode = dataNode;
 	}
 

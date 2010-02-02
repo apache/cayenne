@@ -21,10 +21,10 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.Component;
 
+import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.project.ProjectDataSource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
@@ -49,17 +49,17 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
         
         fieldAdapters = new ObjectBinding[6];
         fieldAdapters[0] =
-          builder.bindToTextField(view.getUserName(), "node.dataSource.dataSourceInfo.userName");
+          builder.bindToTextField(view.getUserName(), "node.dataSourceDescriptor.userName");
         fieldAdapters[1] =
-          builder.bindToTextField(view.getPassword(), "node.dataSource.dataSourceInfo.password");
+          builder.bindToTextField(view.getPassword(), "node.dataSourceDescriptor.password");
         fieldAdapters[2] =
-          builder.bindToTextField(view.getUrl(), "node.dataSource.dataSourceInfo.dataSourceUrl");
+          builder.bindToTextField(view.getUrl(), "node.dataSourceDescriptor.dataSourceUrl");
         fieldAdapters[3] =
-          builder.bindToTextField(view.getDriver(), "node.dataSource.dataSourceInfo.jdbcDriver");
+          builder.bindToTextField(view.getDriver(), "node.dataSourceDescriptor.jdbcDriver");
         fieldAdapters[4] =
-          builder.bindToTextField(view.getMaxConnections(), "node.dataSource.dataSourceInfo.maxConnections");
+          builder.bindToTextField(view.getMaxConnections(), "node.dataSourceDescriptor.maxConnections");
         fieldAdapters[5] =
-          builder.bindToTextField(view.getMinConnections(), "node.dataSource.dataSourceInfo.minConnections");
+          builder.bindToTextField(view.getMinConnections(), "node.dataSourceDescriptor.minConnections");
         
 
         builder.bindToAction(view.getSyncWithLocal(),    "syncDataSourceAction()");
@@ -76,11 +76,11 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
     public void syncDataSourceAction() {
         CayenneModelerController mainController = getApplication().getFrameController();
 
-        if (getNode() == null || getNode().getDataSource() == null) {
+        if (getNode() == null || getNode().getDataSourceDescriptor() == null) {
             return;
         }
 
-        ProjectDataSource projectDS = (ProjectDataSource) getNode().getDataSource();
+        DataSourceInfo projectDSI = getNode().getDataSourceDescriptor();
 
         ProjectController parent = (ProjectController) getParent();
         String key = parent.getDataNodePreferences().getLocalDataSource();
@@ -95,7 +95,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
             .getObject(key);
 
         if (dataSource != null) {
-            if (dataSource.copyTo(projectDS.getDataSourceInfo())) {
+            if (dataSource.copyTo(projectDSI)) {
                 refreshView();
                 super.nodeChangeProcessor.modelUpdated(null, null, null);
                 mainController.updateStatus(null);

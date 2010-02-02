@@ -23,6 +23,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URL;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -33,9 +35,12 @@ import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.validator.Validator;
+import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.ProjectSaver;
+import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
+import org.apache.cayenne.resource.URLResource;
 
 /**
  * A "Save As" action that allows user to pick save location.
@@ -75,26 +80,32 @@ public class SaveAsAction extends CayenneAction {
         // obtain preference object before save, when the project path may change.....
         Domain preference = getProjectController().getPreferenceDomainForProject();
 
-        if (!chooseDestination(p)) {
+        File projectDir = fileChooser.newProjectDir(Application.getFrame(), p);
+        if (projectDir == null) {
             return false;
         }
         
-        if (p.getMainFile().exists() && !p.getMainFile().canWrite()) {
+        if (projectDir.exists() && !projectDir.canWrite()) {
             JOptionPane.showMessageDialog(Application.getFrame(),
-                    "Can't save project - unable to write to file \"" + p.getMainFile().getPath() + "\"",
+                    "Can't save project - unable to write to file \"" + projectDir.getPath() + "\"",
                     "Can't Save Project", JOptionPane.OK_OPTION);
             return false;
         }
         
         getProjectController().getProjectWatcher().pauseWatching();
         
-        p.save();
+        URL url = projectDir.toURL();
+        
+        URLResource res = new URLResource(url);
+        ///!!!!!!!!!!!!!!!!!!! SAVE AS!!!!!!!!!!!!!!
+        ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
+        saver.saveAs(p, res);
 
         // update preferences domain key
-        preference.rename(p.getMainFile().getAbsolutePath());
-
+        preference.rename(projectDir.getPath());
+        
         getApplication().getFrameController().addToLastProjListAction(
-                p.getMainFile().getAbsolutePath());
+                p.getConfigurationResource().getURL().getPath());
         Application.getFrame().fireRecentFileListChanged();
 
         /**
@@ -102,16 +113,6 @@ public class SaveAsAction extends CayenneAction {
          */
         getProjectController().getProjectWatcher().reconfigure();
 
-        return true;
-    }
-
-    protected boolean chooseDestination(Project p) {
-        File projectDir = fileChooser.newProjectDir(Application.getFrame(), p);
-        if (projectDir == null) {
-            return false;
-        }
-
-        p.setProjectDirectory(projectDir);
         return true;
     }
 
@@ -123,8 +124,10 @@ public class SaveAsAction extends CayenneAction {
     }
 
     public synchronized void performAction(int warningLevel) {
-        Validator val = getCurrentProject().getValidator();
-        int validationCode = val.validate();
+        
+        ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(getCurrentProject());
+        List<ValidationInfo> object = (List<ValidationInfo>) getCurrentProject().getRootNode().acceptVisitor(validatVisitor);
+        int validationCode = validatVisitor.getMaxSeverity();
 
         // If no serious errors, perform save.
         if (validationCode < ValidationDisplayHandler.ERROR) {
@@ -142,7 +145,7 @@ public class SaveAsAction extends CayenneAction {
 
         // If there were errors or warnings at validation, display them
         if (validationCode >= warningLevel) {
-            ValidatorDialog.showDialog(Application.getFrame(), val);
+            ValidatorDialog.showDialog(Application.getFrame(), object);
         }
     }
 

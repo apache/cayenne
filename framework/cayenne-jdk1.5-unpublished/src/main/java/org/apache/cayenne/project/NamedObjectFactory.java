@@ -20,11 +20,14 @@
 package org.apache.cayenne.project;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -42,33 +45,30 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 
-/** 
- * Factory class that generates various Cayenne objects with 
- * default names that are unique in their corresponding context. 
- * Supports creation of the following
- * objects:
+/**
+ * Factory class that generates various Cayenne objects with default names that are unique
+ * in their corresponding context. Supports creation of the following objects:
  * <ul>
- *    <li>DataMap</li>
- *    <li>ObjEntity</li>
- *    <li>ObjAttribute</li>
- *    <li>ObjRelationship</li>
- *    <li>DbEntity</li>
- *    <li>DerivedDbEntity</li>
- *    <li>DbAttribute</li>
- *    <li>DerivedDbAttribute</li>
- *    <li>DbRelationship</li>
- *    <li>DataNode</li>
- *    <li>DataDomain</li>
- *    <li>Query</li>
- * 	  <li>Procedure</li>
- *    <li>ProcedureParameter</li>
+ * <li>DataMap</li>
+ * <li>ObjEntity</li>
+ * <li>ObjAttribute</li>
+ * <li>ObjRelationship</li>
+ * <li>DbEntity</li>
+ * <li>DerivedDbEntity</li>
+ * <li>DbAttribute</li>
+ * <li>DerivedDbAttribute</li>
+ * <li>DbRelationship</li>
+ * <li>DataNode</li>
+ * <li>DataNodeDescriptor</li>
+ * <li>DataDomain</li>
+ * <li>Query</li>
+ * <li>Procedure</li>
+ * <li>ProcedureParameter</li>
  * </ul>
- * 
- * This is a helper class used mostly by GUI and database 
- * reengineering classes.
- * 
+ * This is a helper class used mostly by GUI and database reengineering classes.
  */
 public abstract class NamedObjectFactory {
+
     private static final Map<Class, NamedObjectFactory> factories = new HashMap<Class, NamedObjectFactory>();
 
     static {
@@ -78,6 +78,8 @@ public abstract class NamedObjectFactory {
         factories.put(ObjAttribute.class, new ObjAttributeFactory());
         factories.put(DbAttribute.class, new DbAttributeFactory());
         factories.put(DataNode.class, new DataNodeFactory());
+        factories.put(DataNodeDescriptor.class, new DataNodeDescriptorFactory());
+        factories.put(DataChannelDescriptor.class, new DataChannelDescriptorFactory());
         factories.put(DbRelationship.class, new DbRelationshipFactory(null, false));
         factories.put(ObjRelationship.class, new ObjRelationshipFactory(null, false));
         factories.put(DataDomain.class, new DataDomainFactory());
@@ -91,66 +93,64 @@ public abstract class NamedObjectFactory {
     public static String createName(Class objectClass, Object namingContext) {
         return (factories.get(objectClass)).makeName(namingContext);
     }
-    
+
     /**
      * @since 1.0.5
      */
-    public static String createName(Class objectClass, Object namingContext, String nameBase) {
+    public static String createName(
+            Class objectClass,
+            Object namingContext,
+            String nameBase) {
         return (factories.get(objectClass)).makeName(namingContext, nameBase);
     }
 
     /**
-     * Creates an object using an appropriate factory class.
-     * If no factory is found for the object, NullPointerException is 
-     * thrown. 
-     * 
-     * <p><i>Note that newly created object is not added to the parent.
-     * This behavior can be changed later.</i></p>
+     * Creates an object using an appropriate factory class. If no factory is found for
+     * the object, NullPointerException is thrown.
+     * <p>
+     * <i>Note that newly created object is not added to the parent. This behavior can be
+     * changed later.</i>
+     * </p>
      */
     public static Object createObject(Class objectClass, Object namingContext) {
-        return (factories.get(objectClass)).makeObject(
-            namingContext);
+        return (factories.get(objectClass)).makeObject(namingContext);
     }
 
     /**
      * @since 1.0.5
      */
     public static Object createObject(
-        Class<? extends DataMap> objectClass,
-        Object namingContext,
-        String nameBase) {
-        return (factories.get(objectClass)).makeObject(
-            namingContext,
-            nameBase);
+            Class<? extends DataMap> objectClass,
+            Object namingContext,
+            String nameBase) {
+        return (factories.get(objectClass)).makeObject(namingContext, nameBase);
     }
 
     /**
-     * Creates a relationship using an appropriate factory class.
-     * If no factory is found for the object, NullPointerException is 
-     * thrown. 
-     * 
-     * <p><i>Note that newly created object is not added to the parent.
-     * This behavior can be changed later.</i></p>
+     * Creates a relationship using an appropriate factory class. If no factory is found
+     * for the object, NullPointerException is thrown.
+     * <p>
+     * <i>Note that newly created object is not added to the parent. This behavior can be
+     * changed later.</i>
+     * </p>
      */
     public static Relationship createRelationship(
-        Entity srcEnt,
-        Entity targetEnt,
-        boolean toMany) {
-        NamedObjectFactory factory =
-            (srcEnt instanceof ObjEntity)
+            Entity srcEnt,
+            Entity targetEnt,
+            boolean toMany) {
+        NamedObjectFactory factory = (srcEnt instanceof ObjEntity)
                 ? new ObjRelationshipFactory(targetEnt, toMany)
                 : new DbRelationshipFactory(targetEnt, toMany);
         return (Relationship) factory.makeObject(srcEnt);
     }
 
     /**
-     * Creates a unique name for the new object and constructs
-     * this object.
+     * Creates a unique name for the new object and constructs this object.
      */
     protected synchronized String makeName(Object namingContext) {
-        return  makeName(namingContext, nameBase());
+        return makeName(namingContext, nameBase());
     }
-    
+
     /**
      * @since 1.0.5
      */
@@ -160,7 +160,7 @@ public abstract class NamedObjectFactory {
         while (isNameInUse(name, namingContext)) {
             name = nameBase + c++;
         }
-        
+
         return name;
     }
 
@@ -170,7 +170,7 @@ public abstract class NamedObjectFactory {
     protected Object makeObject(Object namingContext) {
         return makeObject(namingContext, nameBase());
     }
-    
+
     /**
      * @since 1.0.5
      */
@@ -184,14 +184,14 @@ public abstract class NamedObjectFactory {
     /** Internal factory method. Invoked after the name is figured out. */
     protected abstract Object create(String name, Object namingContext);
 
-    /** 
-     * Checks if the name is already taken by another sibling
-     * in the same context.
+    /**
+     * Checks if the name is already taken by another sibling in the same context.
      */
     protected abstract boolean isNameInUse(String name, Object namingContext);
 
     // concrete factories
     static class DataDomainFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledDomain";
@@ -208,8 +208,30 @@ public abstract class NamedObjectFactory {
             return config.getDomain(name) != null;
         }
     }
+    
+    
+    static class  DataChannelDescriptorFactory extends NamedObjectFactory {
+
+        @Override
+        protected String nameBase() {
+            return "UntitledDomain";
+        }
+
+        @Override
+        protected Object create(String name, Object namingContext) {
+            DataChannelDescriptor dataChDes = new DataChannelDescriptor();
+            dataChDes.setName(name);
+            return dataChDes;
+        }
+
+        @Override
+        protected boolean isNameInUse(String name, Object namingContext) {
+            return false;
+        }
+    }
 
     static class DataMapFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledMap";
@@ -228,12 +250,22 @@ public abstract class NamedObjectFactory {
                 return false;
             }
 
-            DataDomain domain = (DataDomain) namingContext;
-            return domain.getMap(name) != null;
+            if (namingContext instanceof DataDomain) {
+                DataDomain domain = (DataDomain) namingContext;
+                return domain.getMap(name) != null;
+            }
+            
+            if (namingContext instanceof DataChannelDescriptor) {
+                DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
+                return domain.getDataMap(name) != null;
+            }
+            return false;
+           
         }
     }
 
     static class ObjEntityFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledObjEntity";
@@ -252,15 +284,13 @@ public abstract class NamedObjectFactory {
     }
 
     static class EmbeddableFactory extends NamedObjectFactory {
-        
+
         private String nameBase;
-        
-        
+
         public String getNameBase() {
             return nameBase;
         }
 
-        
         public void setNameBase(String nameBase) {
             this.nameBase = nameBase;
         }
@@ -268,17 +298,17 @@ public abstract class NamedObjectFactory {
         @Override
         protected String nameBase() {
             System.out.println("nameBase");
-            if(getNameBase()==null){
+            if (getNameBase() == null) {
                 setNameBase("UntitledEmbeddable");
             }
             return getNameBase();
-           
+
         }
 
         @Override
         protected Object create(String name, Object namingContext) {
             DataMap map = (DataMap) namingContext;
-            if(map.getDefaultPackage() != null){
+            if (map.getDefaultPackage() != null) {
                 return new Embeddable(map.getDefaultPackage() + "." + name);
             }
             return new Embeddable(name);
@@ -287,14 +317,15 @@ public abstract class NamedObjectFactory {
         @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             DataMap map = (DataMap) namingContext;
-            if(map.getDefaultPackage() != null){
+            if (map.getDefaultPackage() != null) {
                 return map.getEmbeddable((map.getDefaultPackage() + "." + name)) != null;
             }
             return map.getEmbeddable(name) != null;
         }
     }
-    
+
     static class EmbeddableAttributeFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "untitledAttr";
@@ -312,9 +343,8 @@ public abstract class NamedObjectFactory {
         }
     }
 
-    
-    
     static class DbEntityFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledDbEntity";
@@ -333,6 +363,7 @@ public abstract class NamedObjectFactory {
     }
 
     static class ProcedureParameterFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledProcedureParameter";
@@ -345,8 +376,8 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected boolean isNameInUse(String name, Object namingContext) {
-        	
-            // it doesn't matter if we create a parameter with 
+
+            // it doesn't matter if we create a parameter with
             // a duplicate name.. parameters are positional anyway..
             // still try to use unique names for visual consistency
             Procedure procedure = (Procedure) namingContext;
@@ -361,6 +392,7 @@ public abstract class NamedObjectFactory {
     }
 
     static class ProcedureFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledProcedure";
@@ -377,8 +409,9 @@ public abstract class NamedObjectFactory {
             return map.getProcedure(name) != null;
         }
     }
-    
+
     static class SelectQueryFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledQuery";
@@ -399,6 +432,7 @@ public abstract class NamedObjectFactory {
     }
 
     static class ObjAttributeFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "untitledAttr";
@@ -417,16 +451,18 @@ public abstract class NamedObjectFactory {
     }
 
     static class DbAttributeFactory extends ObjAttributeFactory {
+
         @Override
         protected Object create(String name, Object namingContext) {
             return new DbAttribute(
-                name,
-                TypesMapping.NOT_DEFINED,
-                (DbEntity) namingContext);
+                    name,
+                    TypesMapping.NOT_DEFINED,
+                    (DbEntity) namingContext);
         }
     }
 
     static class DataNodeFactory extends NamedObjectFactory {
+
         @Override
         protected String nameBase() {
             return "UntitledDataNode";
@@ -444,7 +480,33 @@ public abstract class NamedObjectFactory {
         }
     }
 
+    static class DataNodeDescriptorFactory extends NamedObjectFactory {
+
+        @Override
+        protected String nameBase() {
+            return "UntitledDataNode";
+        }
+
+        @Override
+        protected Object create(String name, Object namingContext) {
+            return new DataNodeDescriptor(name);
+        }
+
+        @Override
+        protected boolean isNameInUse(String name, Object namingContext) {
+            DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
+            Iterator<DataNodeDescriptor> nodeIt = domain.getNodeDescriptors().iterator();
+            while (nodeIt.hasNext()) {
+                if (nodeIt.next().getName().equals(name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     static class ObjRelationshipFactory extends NamedObjectFactory {
+
         protected Entity target;
         protected boolean toMany;
 
@@ -464,10 +526,10 @@ public abstract class NamedObjectFactory {
             return ent.getRelationship(name) != null;
         }
 
-        /** 
-         * Returns generated name for the ObjRelationships. 
-         * For to-one case and entity name "xxxx" it generates name "toXxxx".
-         * For to-many case and entity name "Xxxx" it generates name "xxxxArray".
+        /**
+         * Returns generated name for the ObjRelationships. For to-one case and entity
+         * name "xxxx" it generates name "toXxxx". For to-many case and entity name "Xxxx"
+         * it generates name "xxxxArray".
          */
         @Override
         protected String nameBase() {
@@ -476,13 +538,16 @@ public abstract class NamedObjectFactory {
             }
 
             String name = target.getName();
-            return (toMany)
-                ? Character.toLowerCase(name.charAt(0)) + name.substring(1) + "Array"
-                : "to" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            return (toMany) ? Character.toLowerCase(name.charAt(0))
+                    + name.substring(1)
+                    + "Array" : "to"
+                    + Character.toUpperCase(name.charAt(0))
+                    + name.substring(1);
         }
     }
 
     static class DbRelationshipFactory extends ObjRelationshipFactory {
+
         public DbRelationshipFactory(Entity target, boolean toMany) {
             super(target, toMany);
         }
@@ -492,10 +557,9 @@ public abstract class NamedObjectFactory {
             return new DbRelationship(name);
         }
 
-        /** 
-         * Returns generated name for the DbRelationships. 
-         * For to-one case it generates name "TO_XXXX".
-         * For to-many case it generates name "XXXX_ARRAY". 
+        /**
+         * Returns generated name for the DbRelationships. For to-one case it generates
+         * name "TO_XXXX". For to-many case it generates name "XXXX_ARRAY".
          */
         @Override
         protected String nameBase() {

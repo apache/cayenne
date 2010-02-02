@@ -43,7 +43,7 @@ public class CustomDataSourceEditor extends DataSourceEditor {
         fieldAdapters = new ObjectBinding[1];
         fieldAdapters[0] = builder.bindToTextField(
                 view.getLocationHint(),
-                "node.dataSourceLocation");
+                "node.parameters");
     }
 
     public Component getView() {

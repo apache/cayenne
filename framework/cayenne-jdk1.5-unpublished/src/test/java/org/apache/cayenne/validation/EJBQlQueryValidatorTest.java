@@ -69,7 +69,7 @@ public class EJBQlQueryValidatorTest  extends CayenneCase{
         for (int i=0; i<ejbqlError.length;i++) {            
             EJBQLQuery queryError = new EJBQLQuery(ejbqlError[i]);
             EJBQLQueryValidator ejbqlQueryValidator = new EJBQLQueryValidator();
-            PositionException s = ejbqlQueryValidator.validateEJBQL(queryError, getDomain());
+            PositionException s = ejbqlQueryValidator.validateEJBQL(queryError, getDomain().getEntityResolver());
             assertEquals(typeError[i].getClass(),s.getE().getClass());
           }
     }
