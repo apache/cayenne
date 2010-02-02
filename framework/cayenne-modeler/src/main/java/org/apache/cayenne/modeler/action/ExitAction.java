@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.project.ProjectPath;
 
