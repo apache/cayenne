@@ -21,19 +21,10 @@ package org.apache.cayenne.modeler;
 
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.ProjectTraversal;
-import org.apache.cayenne.project.ProjectTraversalHandler;
 import org.apache.cayenne.project2.Project;
 
 /**
@@ -41,18 +32,7 @@ import org.apache.cayenne.project2.Project;
  */
 public class ProjectTreeModel extends DefaultTreeModel {
 
-    /**
-     * Creates a tree of Swing TreeNodes wrapping Cayenne project object. Returns the root
-     * node of the tree.
-     * 
-     * @deprecated since 3.1 use {@link ProjectTreeFactory}.
-     */
-    public static DefaultMutableTreeNode wrapProjectNode(Object node) {
-        TraversalHelper helper = new TraversalHelper();
-        new ProjectTraversal(helper, true).traverse(node);
-        return helper.getStartNode();
-    }
-
+   
     /**
      * Constructor for ProjectTreeModel.
      */
@@ -171,54 +151,4 @@ public class ProjectTreeModel extends DefaultTreeModel {
 
         return currentNode;
     }
-
-    static class TraversalHelper implements ProjectTraversalHandler {
-
-        protected DefaultMutableTreeNode startNode;
-        protected Map<Object, DefaultMutableTreeNode> nodesMap;
-
-        public TraversalHelper() {
-            this.nodesMap = new HashMap<Object, DefaultMutableTreeNode>();
-        }
-
-        public DefaultMutableTreeNode getStartNode() {
-            return startNode;
-        }
-
-        public void registerNode(DefaultMutableTreeNode node) {
-            nodesMap.put(node.getUserObject(), node);
-        }
-
-        public void projectNode(ProjectPath nodePath) {
-
-            Object parent = nodePath.getObjectParent();
-            Object object = nodePath.getObject();
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(object);
-
-            if (startNode == null) {
-                startNode = node;
-            }
-            else {
-                DefaultMutableTreeNode nodeParent = nodesMap.get(parent);
-                nodeParent.add(node);
-            }
-
-            registerNode(node);
-        }
-
-        public boolean shouldReadChildren(Object node, ProjectPath parentPath) {
-            // do not read deatils of linked maps
-            if ((node instanceof DataMap)
-                    && parentPath != null
-                    && (parentPath.getObject() instanceof DataNodeDescriptor)) {
-                return false;
-            }
-
-            return (node instanceof Project)
-                    || (node instanceof DataChannelDescriptor)
-                    || (node instanceof DataMap)
-                    || (node instanceof DataNodeDescriptor);
-        }
-    }
-
 }
