@@ -77,6 +77,8 @@ public class SaveAsAction extends CayenneAction {
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
 
+        String oldPath = p.getConfigurationResource().getURL().getPath();
+
         // obtain preference object before save, when the project path may change.....
         Domain preference = getProjectController().getPreferenceDomainForProject();
 
@@ -84,28 +86,40 @@ public class SaveAsAction extends CayenneAction {
         if (projectDir == null) {
             return false;
         }
-        
+
         if (projectDir.exists() && !projectDir.canWrite()) {
-            JOptionPane.showMessageDialog(Application.getFrame(),
-                    "Can't save project - unable to write to file \"" + projectDir.getPath() + "\"",
-                    "Can't Save Project", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(
+                    Application.getFrame(),
+                    "Can't save project - unable to write to file \""
+                            + projectDir.getPath()
+                            + "\"",
+                    "Can't Save Project",
+                    JOptionPane.OK_OPTION);
             return false;
         }
-        
+
         getProjectController().getProjectWatcher().pauseWatching();
-        
+
         URL url = projectDir.toURL();
-        
+
         URLResource res = new URLResource(url);
-        ///!!!!!!!!!!!!!!!!!!! SAVE AS!!!!!!!!!!!!!!
-        ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
+        // /!!!!!!!!!!!!!!!!!!! SAVE AS!!!!!!!!!!!!!!
+        ProjectSaver saver = getApplication().getInjector().getInstance(
+                ProjectSaver.class);
         saver.saveAs(p, res);
 
         // update preferences domain key
         preference.rename(projectDir.getPath());
-        
-        getApplication().getFrameController().addToLastProjListAction(
-                p.getConfigurationResource().getURL().getPath());
+
+        if (oldPath != null && oldPath.length() != 0) {
+            getApplication().getFrameController().changePathInLastProjListAction(
+                    oldPath,
+                    p.getConfigurationResource().getURL().getPath());
+        }
+        else {
+            getApplication().getFrameController().addToLastProjListAction(
+                    p.getConfigurationResource().getURL().getPath());
+        }
         Application.getFrame().fireRecentFileListChanged();
 
         /**
@@ -124,9 +138,12 @@ public class SaveAsAction extends CayenneAction {
     }
 
     public synchronized void performAction(int warningLevel) {
-        
-        ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(getCurrentProject());
-        List<ValidationInfo> object = (List<ValidationInfo>) getCurrentProject().getRootNode().acceptVisitor(validatVisitor);
+
+        ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(
+                getCurrentProject());
+        List<ValidationInfo> object = (List<ValidationInfo>) getCurrentProject()
+                .getRootNode()
+                .acceptVisitor(validatVisitor);
         int validationCode = validatVisitor.getMaxSeverity();
 
         // If no serious errors, perform save.

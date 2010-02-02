@@ -55,6 +55,8 @@ public class SaveAction extends SaveAsAction {
     @Override
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
+        
+        String oldPath = p.getConfigurationResource().getURL().getPath();
         // obtain preference object before save, when the project path may change.....
         Domain preference = getProjectController().getPreferenceDomainForProject();
 
@@ -70,7 +72,7 @@ public class SaveAction extends SaveAsAction {
 
         preference.rename(p.getConfigurationResource().getURL().getPath());
 
-        getApplication().getFrameController().addToLastProjListAction(
+        getApplication().getFrameController().changePathInLastProjListAction(oldPath, 
                 p.getConfigurationResource().getURL().getPath());
         Application.getFrame().fireRecentFileListChanged();
 

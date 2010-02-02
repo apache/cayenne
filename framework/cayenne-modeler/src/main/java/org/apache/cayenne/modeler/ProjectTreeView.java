@@ -437,6 +437,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         updateNode(path);
 
         if (e.isNameChange()) {
+            
             positionNode(path, Comparators.getNamedObjectComparator());
             showNode(path);
         }
