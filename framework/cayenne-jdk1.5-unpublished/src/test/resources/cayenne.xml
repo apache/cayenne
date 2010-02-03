@@ -4,6 +4,7 @@
 	<map name="embeddable" location="embeddable.map.xml"/>
 	<map name="generic" location="generic.map.xml"/>
 	<map name="inheritance" location="inheritance.map.xml"/>
+	<map name="inheritance-flat" location="inheritance-flat.map.xml"/>
 	<map name="locking" location="locking.map.xml"/>
 	<map name="map-db1" location="map-db1.map.xml"/>
 	<map name="map-db2" location="map-db2.map.xml"/>
