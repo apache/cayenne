@@ -28,7 +28,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -194,14 +193,12 @@ class DataRowUtils {
                                     property.writeProperty(object, null, null);
                                 }
                                 else {
-                                    // if inheritance is involved, we can't use
-                                    // 'localObject'
+                                    // we can't use 'localObject' if relationship is
+                                    // optional or inheritance is involved
                                     // .. must turn to fault instead
-                                    ObjEntity targetEntity = (ObjEntity) relationship
-                                            .getTargetEntity();
-                                    if (context
-                                            .getEntityResolver()
-                                            .lookupInheritanceTree(targetEntity) != null) {
+                                    if (!relationship
+                                            .isSourceDefiningTargetPrecenseAndType(context
+                                                    .getEntityResolver())) {
                                         property.invalidate(object);
                                     }
                                     else {

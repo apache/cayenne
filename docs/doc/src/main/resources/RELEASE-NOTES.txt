@@ -44,6 +44,7 @@ Date:
 
 Bug Fixes Since 3.0RC2:
 
+CAY-1379 Error resolving fault, no matching row exists in the database
 CAY-1382 org.apache.cayenne.reflect.EnumConverter not handling null values for ExtendedEnumerations
 CAY-1383 unneeded target in modeler attributes inspection 
 
