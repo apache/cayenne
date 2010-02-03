@@ -80,7 +80,6 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
             buffer.append("<font size='-2' face='Arial,Helvetica'>");
             buffer.append("<br>JVM: " + System.getProperty("java.vm.name") + " " + 
                     System.getProperty("java.version"));
-            buffer.append("<font size='-2' face='Arial,Helvetica'>");
             buffer.append("<br>Max Heap Size: " + mBytes + " MB");
             
             String version = LocalizedStringsHandler.getString("cayenne.version");
