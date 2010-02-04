@@ -73,11 +73,6 @@ public class ProjectUtil {
     public static void setDataMapName(DataChannelDescriptor domain, DataMap map, String newName) {
         String oldName = map.getName();
 
-        // If name hasn't changed, just return
-        if (Util.nullSafeEquals(oldName, newName)) {
-            return;
-        }
-
         // must fully relink renamed map
         List<DataNodeDescriptor> nodes = new ArrayList<DataNodeDescriptor>();
         for (DataNodeDescriptor node : domain.getNodeDescriptors())
@@ -95,21 +90,10 @@ public class ProjectUtil {
     public static void setDataDomainName(
             DataChannelDescriptor domain,
             String newName) {
-
-        String oldName = domain.getName();
-        // If name hasn't changed, just return
-        if (Util.nullSafeEquals(oldName, newName)) {
-            return;
-        }
         domain.setName(newName);
     }
 
     public static void setDataNodeName(DataChannelDescriptor domain, DataNodeDescriptor node, String newName) {
-        String oldName = node.getName();
-        // If name hasn't changed, just return
-        if (Util.nullSafeEquals(oldName, newName)) {
-            return;
-        }
         node.setName(newName);
     }
 
