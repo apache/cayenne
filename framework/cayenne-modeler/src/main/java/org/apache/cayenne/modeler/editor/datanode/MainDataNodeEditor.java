@@ -172,8 +172,6 @@ public class MainDataNodeEditor extends CayenneController {
             } 
         }
         
-        
-
         // passed validation, set value...
 
         // TODO: fixme....there is a slight chance that domain is different than the one

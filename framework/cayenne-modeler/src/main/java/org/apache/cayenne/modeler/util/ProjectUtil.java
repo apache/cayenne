@@ -84,9 +84,7 @@ public class ProjectUtil {
             if (node.getDataMapNames().contains(map.getName()))
                 nodes.add(node);
 
-        domain.getDataMaps().remove(domain.getDataMap(oldName));
         map.setName(newName);
-        domain.getDataMaps().add(map);
 
         for (DataNodeDescriptor node : nodes) {
             node.getDataMapNames().remove(oldName);
@@ -103,11 +101,15 @@ public class ProjectUtil {
         if (Util.nullSafeEquals(oldName, newName)) {
             return;
         }
-
         domain.setName(newName);
     }
 
     public static void setDataNodeName(DataChannelDescriptor domain, DataNodeDescriptor node, String newName) {
+        String oldName = node.getName();
+        // If name hasn't changed, just return
+        if (Util.nullSafeEquals(oldName, newName)) {
+            return;
+        }
         node.setName(newName);
     }
 
