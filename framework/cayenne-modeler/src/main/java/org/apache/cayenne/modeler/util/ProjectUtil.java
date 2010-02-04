@@ -108,10 +108,7 @@ public class ProjectUtil {
     }
 
     public static void setDataNodeName(DataChannelDescriptor domain, DataNodeDescriptor node, String newName) {
-        String oldName = node.getName();
         node.setName(newName);
-        domain.getNodeDescriptors().remove(oldName);
-        domain.getNodeDescriptors().add(node);
     }
 
     public static void setProcedureName(DataMap map, Procedure procedure, String newName) {

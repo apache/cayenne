@@ -350,7 +350,6 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(
                 new Object[] {
-                       // mediator.findDomain(e.getProcedure().getDataMap()),
                         (DataChannelDescriptor)mediator.getProject().getRootNode(),
                         e.getProcedure().getDataMap()
                 });
