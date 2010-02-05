@@ -150,19 +150,21 @@ public abstract class BaseRemoteService implements RemoteService {
             return DispatchHelper.dispatch(handler.getChannel(), message);
         }
         catch (Throwable th) {
-            th = Util.unwindException(th);
-            logObj.info("error processing message", th);
+
+            StringBuilder wrapperMessage = new StringBuilder();
+            wrapperMessage.append("Exception processing message ").append(
+                    message.getClass().getName()).append(" of type ").append(message);
+
+            String wrapperMessageString = wrapperMessage.toString();
+            logObj.info(wrapperMessageString, th);
 
             // This exception will probably be propagated to the client.
             // Recast the exception to a serializable form.
-            Exception cause = new Exception(th.getLocalizedMessage());
+            Exception cause = new Exception(Util
+                    .unwindException(th)
+                    .getLocalizedMessage());
 
-            StringBuilder wrapperMessage = new StringBuilder();
-            wrapperMessage.append("Exception processing message ")
-                .append(message.getClass().getName())
-                .append(" of type ").append(message.toString());
-            
-            throw new CayenneRuntimeException(wrapperMessage.toString(), cause);
+            throw new CayenneRuntimeException(wrapperMessageString, cause);
         }
     }
 
