@@ -64,7 +64,7 @@ public class ClientModeController extends StandardModeController {
         DataMapDefaults prefs = getApplication()
                 .getFrameController()
                 .getProjectController()
-                .getDataMapPreferences("__client");
+                .getDataMapPreferences(this.getClass().getName().replace(".", "/"));
 
         prefs.updateSuperclassPackage(getParentController().getDataMap(), true);
         this.preferences = prefs;

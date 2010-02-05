@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.pref.CayennePreferenceForProject;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.ValidationInfo;
@@ -110,6 +111,8 @@ public class SaveAsAction extends CayenneAction {
 
         // update preferences domain key
         preference.rename(projectDir.getPath());
+        
+        CayennePreferenceForProject.removeOldPreferences();
 
         if (oldPath != null && oldPath.length() != 0) {
             getApplication().getFrameController().changePathInLastProjListAction(

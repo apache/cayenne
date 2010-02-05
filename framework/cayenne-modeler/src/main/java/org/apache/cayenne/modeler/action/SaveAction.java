@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.pref.CayennePreferenceForProject;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
@@ -72,6 +73,8 @@ public class SaveAction extends SaveAsAction {
 
         preference.rename(p.getConfigurationResource().getURL().getPath());
 
+        CayennePreferenceForProject.removeOldPreferences();
+        
         getApplication().getFrameController().changePathInLastProjListAction(oldPath, 
                 p.getConfigurationResource().getURL().getPath());
         Application.getFrame().fireRecentFileListChanged();

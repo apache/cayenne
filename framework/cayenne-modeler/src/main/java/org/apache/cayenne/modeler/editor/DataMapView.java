@@ -523,7 +523,7 @@ public class DataMapView extends JPanel {
         DataMapDefaults pref = eventController.getDataMapPreferences("");
         DataMapEvent e = new DataMapEvent(this, map, map.getName());
         ProjectUtil.setDataMapName((DataChannelDescriptor)eventController.getProject().getRootNode(), map, newName);
-        pref.rename(newName);
+        pref.copyPreferences(newName);
         eventController.fireDataMapEvent(e);
     }
 

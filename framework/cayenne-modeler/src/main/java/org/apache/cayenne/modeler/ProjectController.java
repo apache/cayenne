@@ -317,8 +317,8 @@ public class ProjectController extends CayenneController {
 
                 watchdog.reconfigure();
 
-//                addDomainListener(((ModelerProjectConfiguration) project
-//                        .getConfiguration()).getGraphRegistry());
+                // addDomainListener(((ModelerProjectConfiguration) project
+                // .getConfiguration()).getGraphRegistry());
             }
         }
     }
@@ -340,10 +340,9 @@ public class ProjectController extends CayenneController {
         }
 
         if (projectPreferences == null) {
-            String key = getProject().getConfigurationResource() == null//getProject().isLocationUndefined() 
-                    ? new String(IDUtil
-                    .pseudoUniqueByteSequence16()) : project
-                    .getConfigurationResource().getURL().getPath();
+            String key = getProject().getConfigurationResource() == null
+                    ? new String(IDUtil.pseudoUniqueByteSequence16())
+                    : project.getConfigurationResource().getURL().getPath();
 
             projectPreferences = getApplicationPreferenceDomain().getSubdomain(
                     Project.class).getSubdomain(key);
@@ -357,10 +356,9 @@ public class ProjectController extends CayenneController {
             throw new CayenneRuntimeException("No Project selected");
         }
         if (projectControllerPreferences == null) {
-            String key = getProject().getConfigurationResource() == null//getProject().isLocationUndefined() 
-                ? new String(IDUtil
-                    .pseudoUniqueByteSequence16()) : project
-                    .getConfigurationResource().getURL().getPath();
+            String key = getProject().getConfigurationResource() == null
+                    ? new String(IDUtil.pseudoUniqueByteSequence16())
+                    : project.getConfigurationResource().getURL().getPath();
 
             projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
 
@@ -375,23 +373,13 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-     * Returns top preferences Domain for the current project, throwing an exception if no
+     * Returns top preferences for the current project, throwing an exception if no
      * project is selected.
      */
-    public Domain getPreferenceDomainForDataDomain() {
-        DataChannelDescriptor dataDomain = (DataChannelDescriptor)getProject().getRootNode();
-        if (dataDomain == null) {
-            throw new CayenneRuntimeException("No DataDomain selected");
-        }
-
-        return getPreferenceDomainForProject()
-                .getSubdomain(DataChannelDescriptor.class)
-                .getSubdomain(dataDomain.getName());
-    }
-
     public Preferences getPreferenceForDataDomain() {
-        
-        DataChannelDescriptor dataDomain = (DataChannelDescriptor)getProject().getRootNode();
+
+        DataChannelDescriptor dataDomain = (DataChannelDescriptor) getProject()
+                .getRootNode();
         if (dataDomain == null) {
             throw new CayenneRuntimeException("No DataDomain selected");
         }
@@ -411,14 +399,17 @@ public class ProjectController extends CayenneController {
             throw new CayenneRuntimeException("No DataMap selected");
         }
 
-        if (nameSuffix == null) {
-            nameSuffix = "";
+        Preferences pref;
+        if (nameSuffix == null || nameSuffix.length() == 0) {
+            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName());
         }
-
-        return (DataMapDefaults) getPreferenceDomainForDataDomain().getDetail(
-                map.getName() + nameSuffix,
-                DataMapDefaults.class,
-                true);
+        else {
+            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName()).node(
+                    nameSuffix);
+        }
+        return (DataMapDefaults) application
+                .getCayenneProjectPreferences()
+                .getProjectDetailObject(DataMapDefaults.class, pref);
     }
 
     /**
@@ -1656,7 +1647,8 @@ public class ProjectController extends CayenneController {
         // new map was added.. link it to domain (and node if possible)
         currentState.domain.getDataMaps().add(map);
 
-        if (currentState.node != null && !currentState.node.getDataMapNames().contains(map.getName())) {
+        if (currentState.node != null
+                && !currentState.node.getDataMapNames().contains(map.getName())) {
             currentState.node.getDataMapNames().add(map.getName());
             fireDataNodeEvent(new DataNodeEvent(this, currentState.node));
         }
@@ -1914,7 +1906,8 @@ public class ProjectController extends CayenneController {
     }
 
     public ArrayList<Embeddable> getEmbeddableNamesInCurRentDataDomain() {
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)getProject().getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProject()
+                .getRootNode();
         Collection<DataMap> maps = dataChannelDescriptor.getDataMaps();
         Iterator<DataMap> it = maps.iterator();
         ArrayList<Embeddable> embs = new ArrayList<Embeddable>();

@@ -47,6 +47,7 @@ import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -157,6 +158,7 @@ public class MainDataNodeEditor extends CayenneController {
         }
 
         ProjectController parent = (ProjectController) getParent();
+        DataNodeDefaults oldPref = parent.getDataNodePreferences();
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)Application.getProject().getRootNode();
 
         Collection<DataNodeDescriptor> matchingNode = dataChannelDescriptor.getNodeDescriptors();
@@ -177,6 +179,9 @@ public class MainDataNodeEditor extends CayenneController {
         // TODO: fixme....there is a slight chance that domain is different than the one
         // cached node belongs to
         ProjectUtil.setDataNodeName((DataChannelDescriptor)parent.getProject().getRootNode(), node, newName);
+        
+    
+        oldPref.copyPreferences(newName);
     }
 
     // ======== other stuff

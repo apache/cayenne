@@ -146,10 +146,11 @@ public class CustomModeController extends GeneratorController {
     }
 
     protected DataMapDefaults createDefaults() {
+        Class obt = this.getClass();
         DataMapDefaults prefs = getApplication()
                 .getFrameController()
                 .getProjectController()
-                .getDataMapPreferences("__custom");
+                .getDataMapPreferences(this.getClass().getName().replace(".", "/"));
 
         prefs.updateSuperclassPackage(getParentController().getDataMap(), false);
         this.preferences = prefs;

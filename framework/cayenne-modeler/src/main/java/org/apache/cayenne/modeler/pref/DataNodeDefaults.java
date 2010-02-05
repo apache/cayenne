@@ -25,12 +25,12 @@ import org.apache.cayenne.pref.CayennePreferenceForProject;
 public class DataNodeDefaults extends CayennePreferenceForProject {
     
     private String localDataSource;
+    
+    public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 
     public DataNodeDefaults(Preferences pref) {
         super(pref);
     }
-
-    public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 
     public void setLocalDataSource(String localDataSource) {
         if (getCurrentPreference() != null) {
