@@ -20,17 +20,9 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.scopemvc.util.UIStrings;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -38,6 +30,24 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.util.LocalizedStringsHandler;
+import org.apache.cayenne.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scopemvc.util.UIStrings;
 
 /**
  * Displays CayenneModeler exceptions and warning messages.
@@ -213,10 +223,10 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
             PrintWriter out = new PrintWriter(str);
 
             // first add extra diagnostics
-            String version = UIStrings.get("cayenne.version");
+            String version = LocalizedStringsHandler.getString("cayenne.version");
             version = (version != null) ? version : "(unknown)";
 
-            String buildDate = UIStrings.get("cayenne.build.date");
+            String buildDate = LocalizedStringsHandler.getString("cayenne.build.date");
             buildDate = (buildDate != null) ? buildDate : "(unknown)";
 
             out.println("CayenneModeler Info");
