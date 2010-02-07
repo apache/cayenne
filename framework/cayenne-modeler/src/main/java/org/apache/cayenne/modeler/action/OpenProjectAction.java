@@ -198,9 +198,7 @@ public class OpenProjectAction extends ProjectAction {
         // need an upgrade
         int returnCode = JOptionPane.showConfirmDialog(
                 Application.getFrame(),
-                "Project needs an upgrade to a newer version. "
-                        + md.getSupportedVersion()
-                        + ". Upgrade?",
+                "Project needs an upgrade to a newer version. Upgrade?",
                 "Upgrade Needed",
                 JOptionPane.YES_NO_OPTION);
         if (returnCode == JOptionPane.NO_OPTION) {
