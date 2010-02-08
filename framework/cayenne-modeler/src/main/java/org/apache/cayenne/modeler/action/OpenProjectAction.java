@@ -141,9 +141,6 @@ public class OpenProjectAction extends ProjectAction {
             UpgradeHandler handler = upgrader.getUpgradeHandler(rootSource);
             UpgradeMetaData md = handler.getUpgradeMetaData();
 
-            Project project = getApplication().getInjector().getInstance(
-                    ProjectLoader.class).loadProject(rootSource);
-
             if (UpgradeType.DOWNGRADE_NEEDED == md.getUpgradeType()) {
                 JOptionPane
                         .showMessageDialog(
@@ -153,17 +150,24 @@ public class OpenProjectAction extends ProjectAction {
                                 JOptionPane.OK_OPTION);
                 closeProject(false);
             }
+            else if (UpgradeType.INTERMEDIATE_UPGRADE_NEEDED == md.getUpgradeType()) {
+                JOptionPane
+                .showMessageDialog(
+                        Application.getFrame(),
+                        "Can't upgrade project. Use the Modeller "+ md.getIntermediateUpgradeVersion() +
+                        " and do an intermediate upgrade before doing 3.1 upgrade.",
+                        "Can't Upgrade Project",
+                        JOptionPane.OK_OPTION);
+                closeProject(false);
+            }
             else if (UpgradeType.UPGRADE_NEEDED == md.getUpgradeType()) {
                 if (processUpgrades(md)) {
                     // perform upgrade
                     logObj.info("Will upgrade project "
-                            + project.getConfigurationResource().getURL().getPath());
+                            + url.getPath());
                     Resource upgraded = handler.performUpgrade();
                     if (upgraded != null) {
-                        project = getApplication().getInjector().getInstance(
-                                ProjectLoader.class).loadProject(upgraded);
-
-                        controller.projectOpenedAction(project, config);
+                        Project project = openProjectResourse(upgraded, config, controller);
 
                         getProjectController().getProjectWatcher().pauseWatching();
                         getProjectController().getProjectWatcher().reconfigure();
@@ -185,13 +189,22 @@ public class OpenProjectAction extends ProjectAction {
                 }
             }
             else {
-                controller.projectOpenedAction(project, config);
+                openProjectResourse(rootSource, config, controller);
             }
         }
         catch (Exception ex) {
             logObj.warn("Error loading project file.", ex);
             ErrorDebugDialog.guiWarning(ex, "Error loading project");
         }
+    }
+    
+    private Project openProjectResourse(Resource resource, Configuration config, CayenneModelerController controller) {
+        Project project = getApplication().getInjector().getInstance(
+                ProjectLoader.class).loadProject(resource);
+        
+        controller.projectOpenedAction(project, config);
+        
+        return project;
     }
 
     protected boolean processUpgrades(UpgradeMetaData md) {

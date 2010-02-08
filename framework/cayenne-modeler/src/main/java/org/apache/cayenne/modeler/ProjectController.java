@@ -273,6 +273,7 @@ public class ProjectController extends CayenneController {
     
     private EntityResolver entityResolver;
 
+    
     /**
      * Project files watcher. When project file is changed, user will be asked to confirm
      * loading the changes
@@ -293,6 +294,10 @@ public class ProjectController extends CayenneController {
 
     public Project getProject() {
         return project;
+    }
+    
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
     }
 
     public void setProject(Project currentProject) {
@@ -339,6 +344,17 @@ public class ProjectController extends CayenneController {
      */
     public Domain getApplicationPreferenceDomain() {
         return getApplication().getPreferenceDomain();
+    }
+    
+    public void updateEntityResolver() {
+        entityResolver.clearCache();
+        entityResolver.setDataMaps(((DataChannelDescriptor)project.getRootNode()).getDataMaps());
+        
+        Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
+        while (it.hasNext()) {
+            DataMap map = it.next();
+            map.setNamespace(entityResolver);
+        }
     }
 
     /**
@@ -1655,9 +1671,6 @@ public class ProjectController extends CayenneController {
 
     public void addDataMap(Object src, DataMap map, boolean makeCurrent) {
 
-        entityResolver.addDataMap(map);
-        map.setNamespace(entityResolver);
-        
         // new map was added.. link it to domain (and node if possible)
         currentState.domain.getDataMaps().add(map);
 

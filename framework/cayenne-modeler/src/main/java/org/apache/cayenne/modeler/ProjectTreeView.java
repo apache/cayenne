@@ -559,6 +559,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         updateNode(path);
 
         if (e.isNameChange()) {
+            mediator.updateEntityResolver();
             positionNode(path, Comparators.getDataDomainChildrenComparator());
             showNode(path);
         }
@@ -572,6 +573,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         DefaultMutableTreeNode newMapNode = ProjectTreeFactory.wrapProjectNode(e
                 .getDataMap());
+        
+        mediator.getEntityResolver().addDataMap(e.getDataMap());
+        
         positionNode(domainNode, newMapNode, Comparators
                 .getDataDomainChildrenComparator());
         showNode(newMapNode);
@@ -584,6 +588,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 dataChannelDescriptor, map
         });
 
+        mediator.getEntityResolver().removeDataMap(e.getDataMap());
+        
         // Clean up map from the nodes
         for (DataNodeDescriptor dataNode : new ArrayList<DataNodeDescriptor>(dataChannelDescriptor.getNodeDescriptors())) {
             removeNode(new Object[] {
