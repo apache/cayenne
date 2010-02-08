@@ -200,6 +200,7 @@ public class TypesMapping {
         javaSqlEnum.put(JAVA_SHORT, new Integer(Types.SMALLINT));
         javaSqlEnum.put(JAVA_BYTE, new Integer(Types.TINYINT));
         javaSqlEnum.put(JAVA_TIME, new Integer(Types.TIME));
+        javaSqlEnum.put(JAVA_UTILDATE, new Integer(Types.TIMESTAMP));
         javaSqlEnum.put(JAVA_TIMESTAMP, new Integer(Types.TIMESTAMP));
 
         // add primitives
