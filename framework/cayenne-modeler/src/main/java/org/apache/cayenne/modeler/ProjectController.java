@@ -54,6 +54,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -179,7 +180,7 @@ public class ProjectController extends CayenneController {
          * currently selected callback methods
          */
         private String[] callbackMethods;
-
+        
         public ControllerState() {
             domain = null;
             node = null;
@@ -269,6 +270,8 @@ public class ProjectController extends CayenneController {
     protected ControllerState currentState;
     protected CircularArray controllerStateHistory;
     protected int maxHistorySize = 20;
+    
+    private EntityResolver entityResolver;
 
     /**
      * Project files watcher. When project file is changed, user will be asked to confirm
@@ -316,6 +319,14 @@ public class ProjectController extends CayenneController {
                 }
 
                 watchdog.reconfigure();
+                
+                entityResolver = new EntityResolver(((DataChannelDescriptor)currentProject.getRootNode()).getDataMaps());
+                
+                Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
+                while (it.hasNext()) {
+                    DataMap map = it.next();
+                    map.setNamespace(entityResolver);
+                }
 
                 // addDomainListener(((ModelerProjectConfiguration) project
                 // .getConfiguration()).getGraphRegistry());
@@ -1644,9 +1655,14 @@ public class ProjectController extends CayenneController {
 
     public void addDataMap(Object src, DataMap map, boolean makeCurrent) {
 
+        entityResolver.addDataMap(map);
+        map.setNamespace(entityResolver);
+        
         // new map was added.. link it to domain (and node if possible)
         currentState.domain.getDataMaps().add(map);
 
+        
+        
         if (currentState.node != null
                 && !currentState.node.getDataMapNames().contains(map.getName())) {
             currentState.node.getDataMapNames().add(map.getName());
