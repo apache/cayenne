@@ -19,7 +19,10 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +46,57 @@ public class BindDirectiveTest extends CayenneCase {
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
+    }
+
+    public void testBindTimestamp() throws Exception {
+        Map parameters = new HashMap();
+        parameters.put("id", new Integer(1));
+        parameters.put("name", "ArtistWithDOB");
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2010, 2, 8);
+        parameters.put("dob", new Timestamp(cal.getTime().getTime()));
+        
+        //without JDBC usage
+        Map row = performInsertForParameters(parameters, false, 1);
+        assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
+        assertEquals(cal.getTime(), row.get("DATE_OF_BIRTH"));
+        assertNotNull(row.get("DATE_OF_BIRTH"));
+        assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
+    }
+
+    public void testBindSQLDate() throws Exception {
+        Map parameters = new HashMap();
+        parameters.put("id", new Integer(1));
+        parameters.put("name", "ArtistWithDOB");
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2010, 2, 8);
+        parameters.put("dob", new java.sql.Date(cal.getTime().getTime()));
+        
+        //without JDBC usage
+        Map row = performInsertForParameters(parameters, false, 1);
+        assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
+        assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
+        assertNotNull(row.get("DATE_OF_BIRTH"));
+        assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
+    }
+
+    public void testBindUtilDate() throws Exception {
+        Map parameters = new HashMap();
+        parameters.put("id", new Integer(1));
+        parameters.put("name", "ArtistWithDOB");
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2010, 2, 8);
+        parameters.put("dob", cal.getTime());
+        
+        //without JDBC usage
+        Map row = performInsertForParameters(parameters, false, 1);
+        assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
+        assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
+        assertNotNull(row.get("DATE_OF_BIRTH"));
+        assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
     }
 
     public void testBindingForCollection() throws Exception {
