@@ -346,6 +346,17 @@ public class ProjectController extends CayenneController {
         return getApplication().getPreferenceDomain();
     }
     
+    public void updateEntityResolver() {
+        entityResolver.clearCache();
+        entityResolver.setDataMaps(((DataChannelDescriptor)project.getRootNode()).getDataMaps());
+        
+        Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
+        while (it.hasNext()) {
+            DataMap map = it.next();
+            map.setNamespace(entityResolver);
+        }
+    }
+
     /**
      * Returns top preferences Domain for the current project, throwing an exception if no
      * project is selected.
