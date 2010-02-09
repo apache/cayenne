@@ -21,9 +21,11 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.util.prefs.Preferences;
 
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.pref.CayennePreferenceForProject;
 import org.apache.cayenne.pref.Domain;
@@ -74,6 +76,17 @@ public class SaveAction extends SaveAsAction {
         preference.rename(p.getConfigurationResource().getURL().getPath());
 
         CayennePreferenceForProject.removeOldPreferences();
+        
+        // if change DataChanelDescriptor name - as result change name of xml file
+        // we will need change preferences path 
+        String[] path = oldPath.split("/");
+        String[] newPath = p.getConfigurationResource().getURL().getPath().split("/");
+        
+        if(!path[path.length -1].equals(newPath[newPath.length -1])){
+            String newName = newPath[newPath.length -1].replace(".xml", "");
+            CayennePreferenceForProject.copyPreferences(newName, getProjectController().getPreferenceForProject());
+            CayennePreferenceForProject.removeOldPreferences();
+        }
         
         getApplication().getFrameController().changePathInLastProjListAction(oldPath, 
                 p.getConfigurationResource().getURL().getPath());

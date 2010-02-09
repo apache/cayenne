@@ -23,7 +23,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.DefaultComboBoxModel;
@@ -33,7 +32,6 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.cache.MapQueryCacheFactory;
@@ -48,7 +46,7 @@ import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.pref.CayennePreferenceForProject;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -363,24 +361,9 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
                 dataChannelDescriptor.getName());
         ProjectUtil.setDataDomainName(dataChannelDescriptor, newName);
 
-        // rename preference
-        
+        // copy all old preference to new preferences 
         Preferences oldPref = prefs;
-        try {
-            String[] names = oldPref.keys();
-            
-            Preferences parent = oldPref.parent();
-            Preferences newPref = parent.node(newName);
-            for(int i=0; i<names.length; i++){
-                newPref.put(names[i], oldPref.get(names[i], ""));
-            }
-          
-          
-            oldPref.removeNode();
-        }
-        catch (BackingStoreException ex) {
-           new CayenneRuntimeException("Error remane preferences");
-        }
+        CayennePreferenceForProject.copyPreferences(newName, oldPref);
         
         projectController.fireDomainEvent(e);
     }

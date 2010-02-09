@@ -36,8 +36,11 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
     }
 
     public void copyPreferences(String newName) {
+        setCurrentPreference(copyPreferences(newName, getCurrentPreference()));
+    }
 
-        Preferences oldPref = getCurrentPreference();
+    public static Preferences copyPreferences(String newName, Preferences oldPref) {
+
         try {
             
             // copy all preferences in this node
@@ -48,12 +51,10 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                 newPref.put(names[i], oldPref.get(names[i], ""));
             }
 
-            String[] children = oldPref.childrenNames();
             String oldPath = oldPref.absolutePath();
             String newPath = newPref.absolutePath();
 
             // copy children nodes and its preferences
-
             ArrayList<Preferences> childrenOldPref = childrenCopy(oldPref, oldPath, newPath);
 
             while (childrenOldPref.size() > 0) {
@@ -81,14 +82,16 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
 
             newNode.add(newPref);
             oldNode.add(oldPref);
-            setCurrentPreference(newPref);
+            
+            return newPref;
         }
         catch (BackingStoreException e) {
             new CayenneRuntimeException("Error remane preferences");
         }
+        return oldPref;
     }
-
-    private ArrayList<Preferences> childrenCopy(Preferences pref, String oldPath, String newPath) {
+      
+    private static ArrayList<Preferences> childrenCopy(Preferences pref, String oldPath, String newPath) {
 
         try {
             String[] children = pref.childrenNames();
@@ -107,7 +110,7 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                 String[] names = childNode.keys();
                 Preferences newPref = Preferences.userRoot().node(path);
                 for (int i = 0; i < names.length; i++) {
-                    newPref.put(names[i], pref.get(names[i], ""));
+                    newPref.put(names[i], childNode.get(names[i], ""));
                 }
                 prefChild.add(childNode);
             }
