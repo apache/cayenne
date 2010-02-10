@@ -404,7 +404,7 @@ public class DataRowStore implements Serializable {
 
         synchronized (this) {
             processDeletedIDs(deletedSnapshotIds);
-            processInvalidatedIDs(deletedSnapshotIds);
+            processInvalidatedIDs(invalidatedSnapshotIds);
             processUpdateDiffs(diffs);
             sendUpdateNotification(
                     event.getPostedBy(),
