@@ -37,8 +37,6 @@ import org.apache.cayenne.resource.Resource;
  */
 public class CreateDataMapAction extends CayenneAction {
 
-    
-
     public static String getActionName() {
         return "Create DataMap";
     }
@@ -59,8 +57,10 @@ public class CreateDataMapAction extends CayenneAction {
 
     public void performAction(ActionEvent e) {
         ProjectController mediator = getProjectController();
-       
-        DataChannelDescriptor currentDomain =  (DataChannelDescriptor)mediator.getProject().getRootNode();
+
+        DataChannelDescriptor currentDomain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
 
         // use domain name as DataMap base, as map names must be unique across the
         // project...
@@ -69,14 +69,15 @@ public class CreateDataMapAction extends CayenneAction {
                 currentDomain,
                 currentDomain.getName() + "Map");
 
-        // set configuration source for new dataMap 
+        // set configuration source for new dataMap
         Resource baseResource = currentDomain.getConfigurationSource();
 
-        Resource dataMapResource = baseResource
-                .getRelativeResource(map.getName());
-        
-        map.setConfigurationSource(dataMapResource);
-        
+        if (baseResource != null) {
+            Resource dataMapResource = baseResource.getRelativeResource(map.getName());
+
+            map.setConfigurationSource(dataMapResource);
+        }
+
         createDataMap(map);
 
         application.getUndoManager().addEdit(

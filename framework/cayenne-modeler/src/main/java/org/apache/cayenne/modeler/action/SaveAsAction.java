@@ -78,7 +78,10 @@ public class SaveAsAction extends CayenneAction {
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
 
-        String oldPath = p.getConfigurationResource().getURL().getPath();
+        String oldPath = null;
+        if(p.getConfigurationResource()!=null){
+            oldPath = p.getConfigurationResource().getURL().getPath();
+        }
 
         // obtain preference object before save, when the project path may change.....
         Domain preference = getProjectController().getPreferenceDomainForProject();
