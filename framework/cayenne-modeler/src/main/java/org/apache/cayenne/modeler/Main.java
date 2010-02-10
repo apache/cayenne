@@ -75,7 +75,7 @@ public class Main {
                 f = new File(f, Configuration.DEFAULT_DOMAIN_FILE);
             }
 
-            if (f.isFile() && Configuration.DEFAULT_DOMAIN_FILE.equals(f.getName())) {
+            if (f.isFile() && f.getName().startsWith("cayenne") && f.getName().endsWith(".xml")) {
                 return f;
             }
         }
