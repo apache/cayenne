@@ -48,6 +48,7 @@ CAY-1379 Error resolving fault, no matching row exists in the database
 CAY-1382 org.apache.cayenne.reflect.EnumConverter not handling null values for ExtendedEnumerations
 CAY-1383 unneeded target in modeler attributes inspection 
 CAY-1385 Modeler: error dialog doesn't show the correct version
+CAY-1390 DataRowStore.processRemoteEvent processInvalidatedIDs typo
 
 ----------------------------------
 Release: 3.0 RC 2
