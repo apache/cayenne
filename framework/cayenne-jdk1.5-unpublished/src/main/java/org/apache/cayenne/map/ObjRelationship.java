@@ -163,6 +163,7 @@ public class ObjRelationship extends Relationship {
      * Returns a "complimentary" ObjRelationship going in the opposite direction. Returns
      * null if no such relationship is found.
      */
+    @Override
     public ObjRelationship getReverseRelationship() {
 
         // reverse the list
@@ -170,8 +171,8 @@ public class ObjRelationship extends Relationship {
         List<DbRelationship> reversed = new ArrayList<DbRelationship>(relationships
                 .size());
 
-        for (DbRelationship rel : relationships) {
-            DbRelationship reverse = rel.getReverseRelationship();
+        for (DbRelationship relationship : relationships) {
+            DbRelationship reverse = relationship.getReverseRelationship();
             if (reverse == null) {
                 return null;
             }
@@ -183,15 +184,16 @@ public class ObjRelationship extends Relationship {
         if (target == null) {
             return null;
         }
+        
+        Entity source = getSourceEntity();
 
-        Iterator<?> it = target.getRelationships().iterator();
-        while (it.hasNext()) {
-            ObjRelationship rel = (ObjRelationship) it.next();
-            if (target.isSubentityOf((ObjEntity) rel.getTargetEntity())) {
+        for (ObjRelationship relationship : target.getRelationships()) {
+ 
+            if (relationship.getTargetEntity() != source) {
                 continue;
             }
 
-            List<?> otherRels = rel.getDbRelationships();
+            List<?> otherRels = relationship.getDbRelationships();
             if (reversed.size() != otherRels.size()) {
                 continue;
             }
@@ -206,7 +208,7 @@ public class ObjRelationship extends Relationship {
             }
 
             if (relsMatch) {
-                return rel;
+                return relationship;
             }
         }
 
