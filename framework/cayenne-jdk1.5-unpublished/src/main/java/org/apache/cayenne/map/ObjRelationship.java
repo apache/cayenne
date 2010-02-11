@@ -163,7 +163,6 @@ public class ObjRelationship extends Relationship {
      * Returns a "complimentary" ObjRelationship going in the opposite direction. Returns
      * null if no such relationship is found.
      */
-    @Override
     public ObjRelationship getReverseRelationship() {
 
         // reverse the list
