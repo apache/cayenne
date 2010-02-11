@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -79,7 +80,7 @@ public class SaveAsAction extends CayenneAction {
         Project p = getCurrentProject();
 
         String oldPath = null;
-        if(p.getConfigurationResource()!=null){
+        if (p.getConfigurationResource() != null) {
             oldPath = p.getConfigurationResource().getURL().getPath();
         }
 
@@ -114,18 +115,29 @@ public class SaveAsAction extends CayenneAction {
 
         // update preferences domain key
         preference.rename(projectDir.getPath());
-        
-        CayennePreferenceForProject.removeOldPreferences();
 
-        if (oldPath != null && oldPath.length() != 0) {
-            getApplication().getFrameController().changePathInLastProjListAction(
-                    oldPath,
-                    p.getConfigurationResource().getURL().getPath());
+        if (oldPath != null
+                && oldPath.length() != 0
+                && !oldPath.equals(p.getConfigurationResource().getURL().getPath())) {
+
+            String newName = p.getConfigurationResource().getURL().getPath().replace(
+                    ".xml",
+                    "");
+            String oldName = oldPath.replace(".xml", "");
+            
+            Preferences oldPref = getProjectController().getPreferenceForProject();
+            String projPath = oldPref.absolutePath().replace(oldName, "");
+            Preferences newPref = getProjectController().getPreferenceForProject().node(
+                    projPath + newName);
+            CayennePreferenceForProject.copyPreferences(newPref, getProjectController()
+                    .getPreferenceForProject(), false);
         }
-        else {
-            getApplication().getFrameController().addToLastProjListAction(
-                    p.getConfigurationResource().getURL().getPath());
-        }
+
+        CayennePreferenceForProject.removeNewPreferences();
+
+        getApplication().getFrameController().addToLastProjListAction(
+                p.getConfigurationResource().getURL().getPath());
+
         Application.getFrame().fireRecentFileListChanged();
 
         /**

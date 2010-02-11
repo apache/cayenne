@@ -28,7 +28,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 
 public abstract class CayennePreferenceForProject extends CayennePreference {
 
-    private static List<Preferences> newNode; 
+    private static List<Preferences> newNode;
     private static List<Preferences> oldNode;
 
     public CayennePreferenceForProject(Preferences pref) {
@@ -41,57 +41,15 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
 
     public static Preferences copyPreferences(String newName, Preferences oldPref) {
 
-        try {
-            
-            // copy all preferences in this node
-            String[] names = oldPref.keys();
-            Preferences parent = oldPref.parent();
-            Preferences newPref = parent.node(newName);
-            for (int i = 0; i < names.length; i++) {
-                newPref.put(names[i], oldPref.get(names[i], ""));
-            }
-
-            String oldPath = oldPref.absolutePath();
-            String newPath = newPref.absolutePath();
-
-            // copy children nodes and its preferences
-            ArrayList<Preferences> childrenOldPref = childrenCopy(oldPref, oldPath, newPath);
-
-            while (childrenOldPref.size() > 0) {
-
-                ArrayList<Preferences> childrenPrefTemp = new ArrayList<Preferences>();
-
-                Iterator<Preferences> it = childrenOldPref.iterator();
-                while (it.hasNext()) {
-                    Preferences child = it.next();
-                    ArrayList<Preferences> childArray = childrenCopy(child, oldPath, newPath);
-
-                    childrenPrefTemp.addAll(childArray);
-                }
-
-                childrenOldPref.clear();
-                childrenOldPref.addAll(childrenPrefTemp);
-            }
-
-            if (newNode == null) {
-                newNode = new ArrayList<Preferences>();
-            }
-            if (oldNode == null) {
-                oldNode = new ArrayList<Preferences>();
-            }
-
-            newNode.add(newPref);
-            oldNode.add(oldPref);
-            
-            return newPref;
-        }
-        catch (BackingStoreException e) {
-            new CayenneRuntimeException("Error remane preferences");
-        }
-        return oldPref;
+        Preferences parent = oldPref.parent();
+        Preferences newPref = parent.node(newName);
+        return copyPreferences(newPref, oldPref, true);
     }
-      
-    private static ArrayList<Preferences> childrenCopy(Preferences pref, String oldPath, String newPath) {
+
+    private static ArrayList<Preferences> childrenCopy(
+            Preferences pref,
+            String oldPath,
+            String newPath) {
 
         try {
             String[] children = pref.childrenNames();
@@ -102,17 +60,19 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                 String child = children[j];
                 // get old preference
                 Preferences childNode = pref.node(child);
-                
-                // path to node
-                String path = childNode.absolutePath().replace(oldPath, newPath);
-                
-                // copy all preferences in this node
-                String[] names = childNode.keys();
-                Preferences newPref = Preferences.userRoot().node(path);
-                for (int i = 0; i < names.length; i++) {
-                    newPref.put(names[i], childNode.get(names[i], ""));
+
+                if (!oldNode.contains(childNode)) {
+                    // path to node
+                    String path = childNode.absolutePath().replace(oldPath, newPath);
+
+                    // copy all preferences in this node
+                    String[] names = childNode.keys();
+                    Preferences newPref = Preferences.userRoot().node(path);
+                    for (int i = 0; i < names.length; i++) {
+                        newPref.put(names[i], childNode.get(names[i], ""));
+                    }
+                    prefChild.add(childNode);
                 }
-                prefChild.add(childNode);
             }
 
             return prefChild;
@@ -134,8 +94,7 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                 catch (BackingStoreException e) {
                 }
             }
-            oldNode.clear();
-            newNode.clear();
+            clearPreferences();
         }
 
     }
@@ -152,8 +111,74 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                 catch (BackingStoreException e) {
                 }
             }
-            oldNode.clear();
-            newNode.clear();
+            clearPreferences();
         }
     }
+
+    public static void clearPreferences() {
+        oldNode.clear();
+        newNode.clear();
+    }
+
+    public static Preferences copyPreferences(
+            Preferences newPref,
+            Preferences oldPref,
+            boolean addToPreferenceList) {
+
+        try {
+            // copy all preferences in this node
+            String[] names = oldPref.keys();
+
+            for (int i = 0; i < names.length; i++) {
+                newPref.put(names[i], oldPref.get(names[i], ""));
+            }
+
+            String oldPath = oldPref.absolutePath();
+            String newPath = newPref.absolutePath();
+
+            // copy children nodes and its preferences
+            ArrayList<Preferences> childrenOldPref = childrenCopy(
+                    oldPref,
+                    oldPath,
+                    newPath);
+
+            while (childrenOldPref.size() > 0) {
+
+                ArrayList<Preferences> childrenPrefTemp = new ArrayList<Preferences>();
+
+                Iterator<Preferences> it = childrenOldPref.iterator();
+                while (it.hasNext()) {
+                    Preferences child = it.next();
+                    ArrayList<Preferences> childArray = childrenCopy(
+                            child,
+                            oldPath,
+                            newPath);
+
+                    childrenPrefTemp.addAll(childArray);
+                }
+
+                childrenOldPref.clear();
+                childrenOldPref.addAll(childrenPrefTemp);
+            }
+
+            if (newNode == null) {
+                newNode = new ArrayList<Preferences>();
+            }
+            if (oldNode == null) {
+                oldNode = new ArrayList<Preferences>();
+            }
+
+            if (addToPreferenceList) {
+                newNode.add(newPref);
+                oldNode.add(oldPref);
+            }
+
+            return newPref;
+        }
+        catch (BackingStoreException e) {
+            new CayenneRuntimeException("Error remane preferences");
+        }
+        return oldPref;
+    }
+
 }
