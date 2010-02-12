@@ -67,4 +67,8 @@ public class CayennePreference implements Preference {
     
     public void saveObjectPreference() {
     }
+    
+    public static String filePathToPrefereceNodePath(String path) {
+        return path.replace(".xml", "");
+    }
 }
