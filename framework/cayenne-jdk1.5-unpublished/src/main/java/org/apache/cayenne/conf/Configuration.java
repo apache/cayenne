@@ -363,11 +363,6 @@ public abstract class Configuration {
         return overrideFactory;
     }
 
-    /**
-     * @deprecated since 3.0 as a more flexible mechanism for customizing
-     *             DataSourceFactory is implemented. Note that the factory set via this
-     *             method would still work, although using this method is discouraged.
-     */
     public void setDataSourceFactory(DataSourceFactory overrideFactory) {
         this.overrideFactory = overrideFactory;
     }
