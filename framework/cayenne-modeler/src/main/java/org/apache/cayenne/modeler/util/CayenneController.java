@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -104,6 +105,17 @@ public abstract class CayenneController implements BoundComponent {
         return getApplication().getPreferenceDomain().getSubdomain(getView().getClass());
     }
 
+    /**
+     * Returns preference for this component view.
+     */
+    protected Preferences getViewPreferences() {
+        Preferences pref = getApplication().getMainPreferenceForProject();
+        String pathToProject = pref.absolutePath();
+        String path = pathToProject +"/"+ getView().getClass().getName().replace(".", "/");
+        
+        return pref.node(path);
+    }
+    
     /**
      * Utility method to provide a visual indication an execution error. This
      * implementation logs an error and pops up a dialog window with error message.

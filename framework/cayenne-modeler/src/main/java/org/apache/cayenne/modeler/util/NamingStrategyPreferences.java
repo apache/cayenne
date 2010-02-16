@@ -49,14 +49,7 @@ public class NamingStrategyPreferences {
     }
 
     Preferences getPreference() {
-        String path = CayennePreference
-                .filePathToPrefereceNodePath(((DataChannelDescriptor) Application
-                        .getProject()
-                        .getRootNode()).getConfigurationSource().getURL().getPath());
-        Preferences pref = Application.getInstance().getPreferencesNode(
-                Application.getProject().getClass(),
-                "");
-        return pref.node(pref.absolutePath() + path);
+        return Application.getMainPreferenceForProject();
     }
 
     /**

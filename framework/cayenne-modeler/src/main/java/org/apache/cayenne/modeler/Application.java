@@ -32,6 +32,7 @@ import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.cayenne.configuration.CayenneServerModule;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -91,19 +92,19 @@ public class Application {
     protected File initialProject;
     protected String name;
     protected String preferencesDB;
-    
+
     protected BindingFactory bindingFactory;
     protected AdapterMapping adapterMapping;
 
     protected CayenneUndoManager undoManager;
 
     protected CayenneProjectPreferences cayenneProjectPreferences;
-    
+
     // This is for OS X support
     private boolean isQuittingApplication = false;
 
     protected CayennePreference cayennePreference;
-    
+
     protected Injector injector;
 
     public static Application getInstance() {
@@ -115,7 +116,6 @@ public class Application {
         return (CayenneModelerFrame) getInstance().getFrameController().getView();
     }
 
-    
     public Injector getInjector() {
         return injector;
     }
@@ -131,7 +131,7 @@ public class Application {
         Module moduleSer = new CayenneServerModule("CayenneModeler");
 
         injector = DIBootstrap.createInjector(module, moduleSer);
-        
+
         // configure startup settings
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
@@ -247,12 +247,22 @@ public class Application {
     public CayenneProjectPreferences getCayenneProjectPreferences() {
         return cayenneProjectPreferences;
     }
-    
+
     /**
      * Returns top preferences Domain for the application.
      */
     public Domain getPreferenceDomain() {
         return getPreferenceService().getDomain(getName(), true);
+    }
+
+    public static Preferences getMainPreferenceForProject() {
+        String path = CayennePreference
+                .filePathToPrefereceNodePath(((DataChannelDescriptor) getProject()
+                        .getRootNode()).getConfigurationSource().getURL().getPath());
+        Preferences pref = Application.getInstance().getPreferencesNode(
+                getProject().getClass(),
+                "");
+        return pref.node(pref.absolutePath() + path);
     }
 
     /**
