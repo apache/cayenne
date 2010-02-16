@@ -180,7 +180,7 @@ public class ProjectController extends CayenneController {
          * currently selected callback methods
          */
         private String[] callbackMethods;
-        
+
         public ControllerState() {
             domain = null;
             node = null;
@@ -270,10 +270,9 @@ public class ProjectController extends CayenneController {
     protected ControllerState currentState;
     protected CircularArray controllerStateHistory;
     protected int maxHistorySize = 20;
-    
+
     private EntityResolver entityResolver;
 
-    
     /**
      * Project files watcher. When project file is changed, user will be asked to confirm
      * loading the changes
@@ -295,7 +294,7 @@ public class ProjectController extends CayenneController {
     public Project getProject() {
         return project;
     }
-    
+
     public EntityResolver getEntityResolver() {
         return entityResolver;
     }
@@ -324,9 +323,13 @@ public class ProjectController extends CayenneController {
                 }
 
                 watchdog.reconfigure();
-                
-                entityResolver = new EntityResolver(((DataChannelDescriptor)currentProject.getRootNode()).getDataMaps());
-                
+
+                if (entityResolver == null) {
+                    entityResolver = new EntityResolver(
+                            ((DataChannelDescriptor) currentProject.getRootNode())
+                                    .getDataMaps());
+                }
+
                 Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
                 while (it.hasNext()) {
                     DataMap map = it.next();
@@ -345,11 +348,13 @@ public class ProjectController extends CayenneController {
     public Domain getApplicationPreferenceDomain() {
         return getApplication().getPreferenceDomain();
     }
-    
+
     public void updateEntityResolver() {
+
         entityResolver.clearCache();
-        entityResolver.setDataMaps(((DataChannelDescriptor)project.getRootNode()).getDataMaps());
-        
+        entityResolver.setDataMaps(((DataChannelDescriptor) project.getRootNode())
+                .getDataMaps());
+
         Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
         while (it.hasNext()) {
             DataMap map = it.next();
@@ -367,9 +372,11 @@ public class ProjectController extends CayenneController {
         }
 
         if (projectPreferences == null) {
-            String key = getProject().getConfigurationResource() == null
-                    ? new String(IDUtil.pseudoUniqueByteSequence16())
-                    : project.getConfigurationResource().getURL().getPath();
+            String key = getProject().getConfigurationResource() == null ? new String(
+                    IDUtil.pseudoUniqueByteSequence16()) : project
+                    .getConfigurationResource()
+                    .getURL()
+                    .getPath();
 
             projectPreferences = getApplicationPreferenceDomain().getSubdomain(
                     Project.class).getSubdomain(key);
@@ -383,9 +390,11 @@ public class ProjectController extends CayenneController {
             throw new CayenneRuntimeException("No Project selected");
         }
         if (projectControllerPreferences == null) {
-            String key = getProject().getConfigurationResource() == null
-                    ? new String(IDUtil.pseudoUniqueByteSequence16())
-                    : project.getConfigurationResource().getURL().getPath();
+            String key = getProject().getConfigurationResource() == null ? new String(
+                    IDUtil.pseudoUniqueByteSequence16()) : project
+                    .getConfigurationResource()
+                    .getURL()
+                    .getPath();
 
             projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
 
@@ -1674,8 +1683,6 @@ public class ProjectController extends CayenneController {
         // new map was added.. link it to domain (and node if possible)
         currentState.domain.getDataMaps().add(map);
 
-        
-        
         if (currentState.node != null
                 && !currentState.node.getDataMapNames().contains(map.getName())) {
             currentState.node.getDataMapNames().add(map.getName());

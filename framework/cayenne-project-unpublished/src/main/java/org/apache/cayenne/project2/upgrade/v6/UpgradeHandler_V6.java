@@ -21,12 +21,15 @@ package org.apache.cayenne.project2.upgrade.v6;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
 import org.apache.cayenne.project2.upgrade.BaseUpgradeHandler;
@@ -114,6 +117,14 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
         // save in the new format
         for (DataChannelDescriptor descriptor : domains) {
             Project project = new Project(descriptor);
+            
+            EntityResolver entityResolver = new EntityResolver(((DataChannelDescriptor)project.getRootNode()).getDataMaps());
+            
+            Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
+            while (it.hasNext()) {
+                DataMap map = it.next();
+                map.setNamespace(entityResolver);
+            }
 
             // side effect of that is deletion of the common "cayenne.xml"
             projectSaver.save(project);
