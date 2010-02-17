@@ -31,7 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.pref.PreferenceDetail;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
@@ -86,12 +86,11 @@ public class Main {
     protected static File projectFileFromPrefs() {
         // This must be run after the application has already been bootstrapped.  Otherwise, the returned
         // app instance will be null.
-        PreferenceDetail autoLoadPref = Application.getInstance().getPreferenceDomain().getDetail(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, true);
         
-        if ((autoLoadPref != null) && (true == autoLoadPref.getBooleanProperty(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE))) {
-            Preferences modelerPreferences = ModelerPreferences.getEditorPreferences();
-            
-            Preferences lastProjFilesPref = ModelerPreferences.getLastProjFilesPref();
+        Preferences autoLoadPref = Application.getInstance().getPreferencesNode(ClassGenerationAction.class, "");
+        
+        if ((autoLoadPref != null) && (true == autoLoadPref.getBoolean(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, false))) {
+
             List<String> arr = ModelerPreferences.getLastProjFiles();
             if(arr.size()>0){
                 return new File((String) arr.get(0));

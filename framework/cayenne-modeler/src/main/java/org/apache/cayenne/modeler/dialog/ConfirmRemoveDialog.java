@@ -18,13 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog;
 
+import java.util.prefs.Preferences;
+
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
-import org.apache.cayenne.pref.PreferenceDetail;
 
 /**
  * Used to confirm deleting items in the model.
@@ -58,8 +60,8 @@ public class ConfirmRemoveDialog {
 
         // If the user clicks "no", we'll just ignore whatever's in the checkbox because it's non-sensical.
         if (shouldDelete) {
-            PreferenceDetail pref = Application.getInstance().getPreferenceDomain().getDetail(GeneralPreferences.DELETE_PROMPT_PREFERENCE, true);
-            pref.setBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE, neverPromptAgainBox.isSelected());
+            Preferences pref = Application.getInstance().getPreferencesNode(ClassGenerationAction.class, "");
+            pref.putBoolean(GeneralPreferences.DELETE_PROMPT_PREFERENCE, neverPromptAgainBox.isSelected());
             Application.getInstance().getPreferenceService().savePreferences();
         }
     }
@@ -70,10 +72,11 @@ public class ConfirmRemoveDialog {
 
     public boolean shouldDelete(String name) {
         if (allowAsking) {
-            PreferenceDetail pref = Application.getInstance().getPreferenceDomain().getDetail(GeneralPreferences.DELETE_PROMPT_PREFERENCE, true);
+            
+            Preferences pref = Application.getInstance().getPreferencesNode(ClassGenerationAction.class, "");
 
             // See if the user has opted not to showDialog the delete dialog.
-            if ((pref == null) || (false == pref.getBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE))) {
+            if ((pref == null) || (false == pref.getBoolean(GeneralPreferences.DELETE_PROMPT_PREFERENCE, false))) {
                 showDialog(name);
             }
         }
