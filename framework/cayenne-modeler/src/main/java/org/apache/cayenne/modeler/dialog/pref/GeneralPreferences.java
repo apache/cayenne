@@ -20,13 +20,13 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.Component;
+import java.util.prefs.Preferences;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.CayennePreferenceService;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceDetail;
+import org.apache.cayenne.pref.PrefDetail;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
@@ -42,9 +42,11 @@ public class GeneralPreferences extends CayenneController {
 
     protected GeneralPreferencesView view;
     protected CayennePreferenceEditor editor;
-    protected PreferenceDetail autoLoadProjectPreference;
-    protected PreferenceDetail classGeneratorPreferences;
-    protected PreferenceDetail deletePromptPreference;
+    protected boolean autoLoadProjectPreference;
+    protected PrefDetail classGeneratorPreferences;
+    protected boolean deletePromptPreference;
+    
+    protected Preferences preferences;
 
     protected ObjectBinding saveIntervalBinding;
     protected ObjectBinding encodingBinding;
@@ -77,17 +79,11 @@ public class GeneralPreferences extends CayenneController {
 
     protected void initBindings() {
         // init model objects
-        Domain classGeneratorDomain = editor.editableInstance(getApplication()
-                .getPreferenceDomain()).getSubdomain(ClassGenerationAction.class);
-        this.classGeneratorPreferences = classGeneratorDomain
-                .getDetail(ENCODING_PREFERENCE, true);
-
-        this.autoLoadProjectPreference = editor.editableInstance(getApplication().getPreferenceDomain())
-                .getDetail(AUTO_LOAD_PROJECT_PREFERENCE, true);
-
-        this.deletePromptPreference = editor.editableInstance(getApplication().getPreferenceDomain())
-                .getDetail(DELETE_PROMPT_PREFERENCE, true);
-
+        preferences = application.getPreferencesNode(ClassGenerationAction.class, "");
+        
+        this.classGeneratorPreferences = new PrefDetail(preferences.node(ENCODING_PREFERENCE));
+        this.autoLoadProjectPreference = preferences.getBoolean(AUTO_LOAD_PROJECT_PREFERENCE, false);
+        this.deletePromptPreference = preferences.getBoolean(DELETE_PROMPT_PREFERENCE, false);
 
         // build child controllers...
         EncodingSelector encodingSelector = new EncodingSelector(this, view
@@ -128,22 +124,22 @@ public class GeneralPreferences extends CayenneController {
     }
 
     public boolean getAutoLoadProject() {
-        return autoLoadProjectPreference.getBooleanProperty(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE);
+        return preferences.getBoolean(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, false);
     }
 
     public void setAutoLoadProject(boolean autoLoadProject) {
-        autoLoadProjectPreference.setBooleanProperty(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, autoLoadProject);
+        preferences.putBoolean(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, autoLoadProject);
     }
 
     public boolean getDeletePrompt() {
-        return deletePromptPreference.getBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE);
+        return preferences.getBoolean(GeneralPreferences.DELETE_PROMPT_PREFERENCE, false);
     }
 
     public void setDeletePrompt(boolean deletePrompt) {
-        deletePromptPreference.setBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE, deletePrompt);
+        preferences.putBoolean(GeneralPreferences.DELETE_PROMPT_PREFERENCE, deletePrompt);
     }
 
-    public PreferenceDetail getClassGeneratorPreferences() {
+    public PrefDetail getClassGeneratorPreferences() {
         return classGeneratorPreferences;
     }
 }

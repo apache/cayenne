@@ -22,11 +22,11 @@ package org.apache.cayenne.modeler.dialog.codegen;
 import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.CayennePreference;
+import org.apache.cayenne.pref.CayenneProjectPreferences;
+import org.apache.cayenne.pref.PrefDetail;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 
@@ -83,8 +83,10 @@ public class GeneratorTabController extends CayenneController {
         
         builder.bindToAction(view.getGenerationMode(), "updateModeAction()");
         
-        this.preferences = new PrefDetail(getViewPreferences().node("controller"));
-
+        CayenneProjectPreferences cayPrPref = application.getCayenneProjectPreferences();
+        
+        this.preferences = (PrefDetail) cayPrPref.getProjectDetailObject(PrefDetail.class, getViewPreferences().node("controller"));
+        
         if (Util.isEmptyString(preferences.getProperty("mode"))) {
             preferences.setProperty("mode", STANDARD_OBJECTS_MODE);
         }
@@ -116,23 +118,5 @@ public class GeneratorTabController extends CayenneController {
     public ClassGenerationAction getGenerator() {
         GeneratorController modeController = getGeneratorController();
         return (modeController != null) ? modeController.createGenerator() : null;
-    }
-}
-
-class PrefDetail extends CayennePreference {
-
-    public PrefDetail(Preferences node) {
-        setCurrentPreference(node);
-    }
-
-    /**
-     * Returns a named property for a given key.
-     */
-    public String getProperty(String key) {
-        return getCurrentPreference().get(key, null);
-    }
-
-    public void setProperty(String key, String value) {
-        getCurrentPreference().put(key, value);
     }
 }
