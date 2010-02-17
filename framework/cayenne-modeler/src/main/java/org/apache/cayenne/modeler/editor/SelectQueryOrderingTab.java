@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -50,8 +51,6 @@ import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
@@ -98,12 +97,10 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        PreferenceDetail detail = getDomain().getDetail(
-                getDividerLocationProperty(),
-                false);
+        Preferences detail = Application.getInstance().getPreferencesNode(this.getClass(), "");
 
         int defLocation = Application.getFrame().getHeight() / 2;
-        int location = detail != null ? detail.getIntProperty(
+        int location = detail != null ? detail.getInt(
                 getDividerLocationProperty(),
                 defLocation) : defLocation;
 
@@ -396,10 +393,8 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(evt.getPropertyName())) {
             int value = (Integer) evt.getNewValue();
 
-            PreferenceDetail detail = getDomain().getDetail(
-                    getDividerLocationProperty(),
-                    true);
-            detail.setIntProperty(getDividerLocationProperty(), value);
+            Preferences detail = Application.getInstance().getPreferencesNode(this.getClass(), "");
+            detail.putInt(getDividerLocationProperty(), value);
         }
     }
 
@@ -408,10 +403,5 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
      */
     protected String getDividerLocationProperty() {
         return SPLIT_DIVIDER_LOCATION_PROPERTY;
-    }
-
-    protected Domain getDomain() {
-        // note: getClass() returns different values for Orderings and Prefetches tabs
-        return Application.getInstance().getPreferenceDomain().getSubdomain(getClass());
     }
 }

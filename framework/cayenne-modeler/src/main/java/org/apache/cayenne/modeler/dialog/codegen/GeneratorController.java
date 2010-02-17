@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -44,8 +45,6 @@ import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CodeValidationUtil;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.BeanValidationFailure;
@@ -154,19 +153,12 @@ public abstract class GeneratorController extends CayenneController {
         generator.addEntities(entities);
         generator.addEmbeddables(getParentController().getSelectedEmbeddables());
         generator.addQueries(getParentController().getDataMap().getQueries());
+        
+        Preferences preferences = application.getPreferencesNode(ClassGenerationAction.class, "").node(GeneralPreferences.ENCODING_PREFERENCE);
 
-        // configure encoding from preferences
-        Domain generatorPrefs = Application
-                .getInstance()
-                .getPreferenceDomain()
-                .getSubdomain(ClassGenerationAction.class);
-
-        PreferenceDetail detail = generatorPrefs.getDetail(
-                GeneralPreferences.ENCODING_PREFERENCE,
-                false);
-        if (detail != null) {
-            generator.setEncoding(detail
-                    .getProperty(GeneralPreferences.ENCODING_PREFERENCE));
+        if (preferences != null) {
+            generator.setEncoding(preferences
+                    .get(GeneralPreferences.ENCODING_PREFERENCE, null));
         }
 
         generator.setDestDir(outputDir);
