@@ -58,7 +58,7 @@ public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassNa
 #end
 
 #if( $object.DbEntity )
-#foreach( $idAttr in ${object.DbEntity.PrimaryKey} )
+#foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
     public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";
 #end
 #end
