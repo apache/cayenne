@@ -198,7 +198,6 @@
 					<!-- this is relative to target/site/apidocs  -->
 					<destDir>doc/api</destDir>
 					<stylesheet>java</stylesheet>
-					<detectOfflineLinks>false</detectOfflineLinks>
 				</configuration>
 				<executions>
 					<execution>
