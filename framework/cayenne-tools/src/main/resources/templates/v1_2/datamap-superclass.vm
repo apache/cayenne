@@ -32,8 +32,8 @@
 ##    basePackageName
 ##
 ${importUtils.setPackage($superPackageName)}##
-${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
-${importUtils.addType("${basePackageName}.${baseClassName}")}##
+#if(${superPackageName})${importUtils.addReservedType("${superPackageName}.${superClassName}")}#end##
+#if(${basePackageName})${importUtils.addType("${basePackageName}.${baseClassName}")}#end##
 #if( ${object.hasSelectQueries()} )
 ${importUtils.addType('java.util.List')}##
 ${importUtils.addType('org.apache.cayenne.ObjectContext')}##
