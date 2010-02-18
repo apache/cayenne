@@ -21,51 +21,59 @@ package org.apache.cayenne.project2.validate;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
+class DataNodeValidator {
 
-public class DataNodeValidator implements Validator{
-
-    public void validate(Object object, ConfigurationValidationVisitor configurationValidationVisitor) {
+    void validate(
+            Object object,
+            ConfigurationValidationVisitor configurationValidationVisitor) {
         DataNodeDescriptor node = (DataNodeDescriptor) object;
-        ProjectPath path = new ProjectPath(new Object[]{configurationValidationVisitor.getProject(), node});
-        validateName(node, path, configurationValidationVisitor);
-        validateConnection(node, path, configurationValidationVisitor);
+        validateName(node, object, configurationValidationVisitor);
+        validateConnection(node, object, configurationValidationVisitor);
     }
 
-    protected void validateConnection(DataNodeDescriptor node, ProjectPath path, ConfigurationValidationVisitor validator) {
+    void validateConnection(
+            DataNodeDescriptor node,
+            Object object,
+            ConfigurationValidationVisitor validator) {
         String factory = node.getDataSourceFactoryType();
 
         // If direct factory, make sure the location is a valid file name.
         if (Util.isEmptyString(factory)) {
-            validator.registerError("No DataSource factory.", path);
+            validator.registerError("No DataSource factory.", object);
         }
-        else if(!DriverDataSourceFactory.class.getName().equals(factory)){
+        else if (!DriverDataSourceFactory.class.getName().equals(factory)) {
             String location = node.getParameters();
             if (Util.isEmptyString(location)) {
-                validator.registerError("DataNode has no location parameter.", path);
+                validator.registerError("DataNode has no location parameter.", object);
             }
         }
     }
 
-    protected void validateName(DataNodeDescriptor node, ProjectPath path, ConfigurationValidationVisitor validator) {
+    void validateName(
+            DataNodeDescriptor node,
+            Object object,
+            ConfigurationValidationVisitor validator) {
         String name = node.getName();
 
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed DataNode.", path);
+            validator.registerError("Unnamed DataNode.", object);
             return;
         }
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)validator.getProject().getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) validator
+                .getProject()
+                .getRootNode();
         // check for duplicate names in the parent context
-        for (final DataNodeDescriptor otherNode : dataChannelDescriptor.getNodeDescriptors()) {
+        for (final DataNodeDescriptor otherNode : dataChannelDescriptor
+                .getNodeDescriptors()) {
             if (otherNode == node) {
                 continue;
             }
 
             if (name.equals(otherNode.getName())) {
-                validator.registerError("Duplicate DataNode name: " + name + ".", path);
+                validator.registerError("Duplicate DataNode name: " + name + ".", object);
                 break;
             }
         }

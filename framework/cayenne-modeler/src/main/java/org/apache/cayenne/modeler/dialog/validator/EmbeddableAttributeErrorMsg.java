@@ -24,9 +24,10 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
 
@@ -36,24 +37,15 @@ public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
 
     public EmbeddableAttributeErrorMsg(ValidationInfo result) {
         super(result);
-        Object[] path = result.getPath().getPath();
-        int len = path.length;
+        Object path = result.getPath();
 
-        if (len >= 1) {
-            embeddableAttribute = (EmbeddableAttribute) path[len - 1];
-        }
-
-        if (len >= 2) {
-            embeddable = (Embeddable) path[len - 2];
-        }
-
-        if (len >= 3) {
-            map = (DataMap) path[len - 3];
-        }
-
-        if (len >= 4) {
-            domain = (DataChannelDescriptor) path[len - 4];
-        }
+        embeddableAttribute = (EmbeddableAttribute) path;
+        embeddable = embeddableAttribute.getEmbeddable();
+        map = embeddable.getDataMap();
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
 
     @Override

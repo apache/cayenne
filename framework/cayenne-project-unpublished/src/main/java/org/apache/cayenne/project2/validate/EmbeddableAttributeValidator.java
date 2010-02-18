@@ -18,37 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
-public class EmbeddableAttributeValidator implements Validator {
+class EmbeddableAttributeValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
 
         EmbeddableAttribute emAttribute = (EmbeddableAttribute) object;
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                emAttribute.getEmbeddable().getDataMap(),
-                emAttribute.getEmbeddable(), emAttribute
-        });
-
         // Must have name
         if (Util.isEmptyString(emAttribute.getName())) {
-            validator.registerError("Unnamed ObjAttribute.", path);
-        }
-
-        // skip validation of inherited attributes
-        if (path.getObjectParent() != null
-                && path.getObjectParent() != emAttribute.getEmbeddable()) {
-            return;
+            validator.registerError("Unnamed ObjAttribute.", object);
         }
 
         // all attributes must have type
         if (Util.isEmptyString(emAttribute.getType())) {
-            validator.registerWarning("EmbeddableAttribute has no type.", path);
+            validator.registerWarning("EmbeddableAttribute has no type.", object);
         }
     }
 }

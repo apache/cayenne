@@ -83,12 +83,12 @@ public class FindDialog extends CayenneController {
         return fontSelected;
     }
 
-    public FindDialog(CayenneController parent, java.util.List paths) {
+    public FindDialog(CayenneController parent, List paths) {
         super(parent);
 
         this.paths = paths;
 
-        Map objEntityNames = new HashMap(), dbEntityNames = new HashMap(), attrNames = new HashMap(), relatNames = new HashMap(), queryNames = new HashMap(), embeddableNames = new HashMap(), embeddableAttributeNames = new HashMap();
+        Map<Integer, String> objEntityNames = new HashMap<Integer, String>(), dbEntityNames = new HashMap<Integer, String>(), attrNames = new HashMap<Integer, String>(), relatNames = new HashMap<Integer, String>(), queryNames = new HashMap<Integer, String>(), embeddableNames = new HashMap<Integer, String>(), embeddableAttributeNames = new HashMap<Integer, String>();
         Iterator it = paths.iterator();
         int index = 0;
         while (it.hasNext()) {

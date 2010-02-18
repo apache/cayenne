@@ -23,39 +23,35 @@ import javax.swing.JFrame;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.project.validator.ValidationInfo;
-
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 public class EmbeddableErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
     protected Embeddable embeddable;
-    
+
     public EmbeddableErrorMsg(ValidationInfo result) {
         super(result);
-        
-        
-        Object[] path = result.getPath().getPath();
-        int len = path.length;
 
-        if (len >= 1) {
-            embeddable = (Embeddable) path[len - 1];
-        }
-
-        if (len >= 2) {
-            map = (DataMap) path[len - 2];
-        }
-
-        if (len >= 3) {
-            domain = (DataChannelDescriptor) path[len - 3];
-        }
+        Object path = result.getPath();
+        embeddable = (Embeddable) path;
+        map = embeddable.getDataMap();
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
 
     @Override
     public void displayField(ProjectController mediator, JFrame frame) {
-        EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(frame, embeddable, map, domain);
+        EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
+                frame,
+                embeddable,
+                map,
+                domain);
         mediator.fireEmbeddableDisplayEvent(event);
     }
 

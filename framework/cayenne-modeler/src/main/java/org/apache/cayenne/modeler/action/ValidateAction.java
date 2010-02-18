@@ -32,9 +32,9 @@ import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.validator.ValidationInfo;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  * UI action that performs full project validation.

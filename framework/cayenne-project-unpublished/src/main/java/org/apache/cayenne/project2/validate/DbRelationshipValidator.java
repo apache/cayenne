@@ -18,32 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
-public class DbRelationshipValidator implements Validator {
+class DbRelationshipValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         DbRelationship rel = (DbRelationship) object;
-
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                rel.getTargetEntity().getDataMap(), rel.getTargetEntity(), rel
-        });
 
         if (rel.getTargetEntity() == null) {
             validator.registerWarning("DbRelationship "
                     + dbRelationshipIdentifier(rel)
-                    + " has no target entity.", path);
+                    + " has no target entity.", object);
         }
         else if (rel.getJoins().size() == 0) {
             validator.registerWarning("DbRelationship "
                     + dbRelationshipIdentifier(rel)
-                    + " has no joins.", path);
+                    + " has no joins.", object);
         }
         else {
             // validate joins
@@ -54,29 +47,29 @@ public class DbRelationshipValidator implements Validator {
                                     "DbRelationship "
                                             + dbRelationshipIdentifier(rel)
                                             + " join has no source and target attributes selected.",
-                                    path);
+                                    object);
                 }
                 else if (join.getSource() == null) {
                     validator.registerWarning("DbRelationship "
                             + dbRelationshipIdentifier(rel)
-                            + " join has no source attribute selected.", path);
+                            + " join has no source attribute selected.", object);
                 }
                 else if (join.getTarget() == null) {
                     validator.registerWarning("DbRelationship "
                             + dbRelationshipIdentifier(rel)
-                            + " join has no target attribute selected.", path);
+                            + " join has no target attribute selected.", object);
                 }
             }
         }
 
         if (Util.isEmptyString(rel.getName())) {
-            validator.registerError("Unnamed DbRelationship.", path);
+            validator.registerError("Unnamed DbRelationship.", object);
         }
         // check if there are attributes having the same name
         else if (rel.getSourceEntity().getAttribute(rel.getName()) != null) {
             validator.registerError("DbRelationship "
                     + dbRelationshipIdentifier(rel)
-                    + " has the same name as one of DbAttributes", path);
+                    + " has the same name as one of DbAttributes", object);
         }
         else {
             MappingNamesHelper helper = MappingNamesHelper.getInstance();
@@ -86,12 +79,12 @@ public class DbRelationshipValidator implements Validator {
                 validator.registerWarning("DbRelationship "
                         + dbRelationshipIdentifier(rel)
                         + " name contains invalid characters: "
-                        + invalidChars, path);
+                        + invalidChars, object);
             }
         }
     }
 
-    public String dbRelationshipIdentifier(DbRelationship rel) {
+    String dbRelationshipIdentifier(DbRelationship rel) {
         if (null == rel.getSourceEntity()) {
             return "<[null source entity]." + rel.getName() + ">";
         }

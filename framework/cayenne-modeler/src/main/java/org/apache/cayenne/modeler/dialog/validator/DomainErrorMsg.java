@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
@@ -25,7 +24,7 @@ import javax.swing.JFrame;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  * DataDomain validation message.
@@ -35,23 +34,20 @@ public class DomainErrorMsg extends ValidationDisplayHandler {
 
     /**
      * Constructor for DomainErrorMsg.
+     * 
      * @param result
      */
     public DomainErrorMsg(ValidationInfo result) {
         super(result);
-        
-        Object[] path = result.getPath().getPath();
-        int len = path.length;
 
-        if (len >= 1) {
-            domain = (DataChannelDescriptor) path[len - 1];
-        }
+        Object path = result.getPath();
+        domain = (DataChannelDescriptor) path;
     }
 
-	public void displayField(ProjectController mediator, JFrame frame) {
-		DomainDisplayEvent event;
-		event = new DomainDisplayEvent(frame, domain);
-		mediator.fireDomainDisplayEvent(event);
-	}
+    public void displayField(ProjectController mediator, JFrame frame) {
+        DomainDisplayEvent event;
+        event = new DomainDisplayEvent(frame, domain);
+        mediator.fireDomainDisplayEvent(event);
+    }
 
 }

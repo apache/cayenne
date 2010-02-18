@@ -25,8 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -39,10 +38,12 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        ProjectPath path = super.validationInfo.getPath();
-        DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
-        DataMap map = path.firstInstanceOf(DataMap.class);
-        Query query = path.firstInstanceOf(Query.class);
+        Object path = super.validationInfo.getPath();
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
+        Query query = (Query) path;
+        DataMap map = query.getDataMap();
 
         QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);
         mediator.fireQueryDisplayEvent(event);

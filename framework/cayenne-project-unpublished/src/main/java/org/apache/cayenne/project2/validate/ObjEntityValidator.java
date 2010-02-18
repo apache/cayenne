@@ -21,33 +21,27 @@ package org.apache.cayenne.project2.validate;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
-public class ObjEntityValidator implements Validator {
+class ObjEntityValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         ObjEntity ent = (ObjEntity) object;
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                ent.getDataMap(), ent
-        });
-
-        validateName(ent, path, validator);
-        validateClassName(ent, path, validator);
-        validateSuperClassName(ent, path, validator);
+        validateName(ent, object, validator);
+        validateClassName(ent, object, validator);
+        validateSuperClassName(ent, object, validator);
 
         // validate DbEntity presence
         if (ent.getDbEntity() == null && !ent.isAbstract()) {
-            validator.registerWarning("ObjEntity has no DbEntity mapping.", path);
+            validator.registerWarning("ObjEntity has no DbEntity mapping.", object);
         }
     }
 
-    private void validateClassName(
+    void validateClassName(
             ObjEntity ent,
-            ProjectPath path,
+            Object object,
             ConfigurationValidationVisitor validator) {
         String className = ent.getClassName();
 
@@ -62,23 +56,23 @@ public class ObjEntityValidator implements Validator {
         if (invalidChars != null) {
             validator.registerWarning(
                     "ObjEntity Java class contains invalid characters: " + invalidChars,
-                    path);
+                    object);
         }
         else if (helper.invalidDataObjectClass(className)) {
             validator.registerWarning(
                     "ObjEntity Java class is invalid: " + className,
-                    path);
+                    object);
         }
         else if (className.indexOf('.') < 0) {
             validator.registerWarning(
                     "Placing Java class in default package is discouraged: " + className,
-                    path);
+                    object);
         }
     }
 
-    private void validateSuperClassName(
+    void validateSuperClassName(
             ObjEntity ent,
-            ProjectPath path,
+            Object object,
             ConfigurationValidationVisitor validator) {
         String superClassName = ent.getSuperClassName();
 
@@ -93,11 +87,11 @@ public class ObjEntityValidator implements Validator {
             validator.registerWarning(
                     "ObjEntity Java superclass contains invalid characters: "
                             + invalidChars,
-                    path);
+                    object);
         }
         else if (helper.invalidDataObjectClass(superClassName)) {
             validator.registerWarning("ObjEntity Java superclass is invalid: "
-                    + superClassName, path);
+                    + superClassName, object);
         }
 
         DataMap map = ent.getDataMap();
@@ -106,15 +100,15 @@ public class ObjEntityValidator implements Validator {
         }
     }
 
-    protected void validateName(
+    void validateName(
             ObjEntity entity,
-            ProjectPath path,
+            Object object,
             ConfigurationValidationVisitor validator) {
         String name = entity.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed ObjEntity.", path);
+            validator.registerError("Unnamed ObjEntity.", object);
             return;
         }
 
@@ -130,7 +124,8 @@ public class ObjEntityValidator implements Validator {
             }
 
             if (name.equals(otherEnt.getName())) {
-                validator.registerError("Duplicate ObjEntity name: " + name + ".", path);
+                validator
+                        .registerError("Duplicate ObjEntity name: " + name + ".", object);
                 break;
             }
         }
@@ -154,12 +149,11 @@ public class ObjEntityValidator implements Validator {
                                 "Duplicate ObjEntity name in another DataMap: "
                                         + name
                                         + ".",
-                                path);
+                                object);
                         break;
                     }
                 }
             }
         }
     }
-
 }

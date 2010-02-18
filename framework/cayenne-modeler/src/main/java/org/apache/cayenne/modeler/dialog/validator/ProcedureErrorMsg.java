@@ -26,26 +26,31 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  */
 public class ProcedureErrorMsg extends ValidationDisplayHandler {
+
     public ProcedureErrorMsg(ValidationInfo validationInfo) {
         super(validationInfo);
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-		ProjectPath path = super.validationInfo.getPath();
-		
-		DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode(); 
-		
-		DataMap map = path.firstInstanceOf(DataMap.class);
-		Procedure procedure = path.firstInstanceOf(Procedure.class);
-	
-        ProcedureDisplayEvent event =
-            new ProcedureDisplayEvent(frame, procedure, map, domain);
+        Object path = super.validationInfo.getPath();
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
+
+        Procedure procedure = (Procedure) path;
+        DataMap map = procedure.getDataMap();
+
+        ProcedureDisplayEvent event = new ProcedureDisplayEvent(
+                frame,
+                procedure,
+                map,
+                domain);
         event.setTabReset(true);
         mediator.fireProcedureDisplayEvent(event);
     }

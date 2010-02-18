@@ -18,39 +18,35 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
+class DbAttributeValidator {
 
-public class DbAttributeValidator  implements Validator{
-
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         DbAttribute attribute = (DbAttribute) object;
-        
-        ProjectPath path = new ProjectPath(new Object[]{(DataChannelDescriptor)validator.getProject().getRootNode(), });
-        
+
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
-            validator.registerError("Unnamed DbAttribute.", path);
+            validator.registerError("Unnamed DbAttribute.", object);
         }
         else {
             MappingNamesHelper helper = MappingNamesHelper.getInstance();
             String invalidChars = helper.invalidCharsInDbPathComponent(attribute
                     .getName());
-            
+
             if (invalidChars != null) {
-                validator.registerWarning("DbAttribute name contains invalid characters: "
-                        + invalidChars, path);
+                validator.registerWarning(
+                        "DbAttribute name contains invalid characters: " + invalidChars,
+                        object);
             }
         }
 
         // all attributes must have type
         if (attribute.getType() == TypesMapping.NOT_DEFINED) {
-            validator.registerWarning("DbAttribute has no type.", path);
+            validator.registerWarning("DbAttribute has no type.", object);
         }
 
         // VARCHAR and CHAR attributes must have max length
@@ -59,7 +55,7 @@ public class DbAttributeValidator  implements Validator{
 
             validator.registerWarning(
                     "Character DbAttribute doesn't have max length.",
-                    path);
+                    object);
         }
     }
 }

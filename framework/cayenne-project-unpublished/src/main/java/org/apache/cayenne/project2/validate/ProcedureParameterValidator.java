@@ -18,32 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
-public class ProcedureParameterValidator implements Validator {
+class ProcedureParameterValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
 
         ProcedureParameter parameter = (ProcedureParameter) object;
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                parameter.getProcedure().getDataMap(), parameter.getProcedure(),
-                parameter
-        });
-
         // Must have name
         if (Util.isEmptyString(parameter.getName())) {
-            validator.registerError("Unnamed ProcedureParameter.", path);
+            validator.registerError("Unnamed ProcedureParameter.", object);
         }
 
         // all attributes must have type
         if (parameter.getType() == TypesMapping.NOT_DEFINED) {
-            validator.registerWarning("ProcedureParameter has no type.", path);
+            validator.registerWarning("ProcedureParameter has no type.", object);
         }
 
         // VARCHAR and CHAR attributes must have max length
@@ -52,15 +44,12 @@ public class ProcedureParameterValidator implements Validator {
 
             validator.registerWarning(
                     "Character procedure parameter doesn't have max length.",
-                    path);
+                    object);
         }
 
         // all attributes must have type
         if (parameter.getDirection() <= 0) {
-            validator.registerWarning(
-                    "ProcedureParameter has no direction.",
-                    path);
+            validator.registerWarning("ProcedureParameter has no direction.", object);
         }
     }
-
 }

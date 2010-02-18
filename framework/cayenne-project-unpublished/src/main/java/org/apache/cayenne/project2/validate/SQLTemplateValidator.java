@@ -18,33 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 
-public class SQLTemplateValidator implements Validator {
+class SQLTemplateValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         SQLTemplate query = (SQLTemplate) object;
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                query.getDataMap(), query
-        });
-
-        validateName(query, path, validator);
-        validateRoot(query, path, validator);
-        validateDefaultSQL(query, path, validator);
+        validateName(query, validator);
+        validateRoot(query, validator);
+        validateDefaultSQL(query, validator);
     }
 
-    private void validateDefaultSQL(
-            SQLTemplate query,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
-        
+    void validateDefaultSQL(SQLTemplate query, ConfigurationValidationVisitor validator) {
+
         if (Util.isEmptyString(query.getDefaultTemplate())) {
             // see if there is at least one adapter-specific template...
 
@@ -54,33 +44,27 @@ public class SQLTemplateValidator implements Validator {
                 }
             }
 
-            validator.registerWarning("Query has no default SQL template", path);
+            validator.registerWarning("Query has no default SQL template", query);
         }
     }
 
-    private void validateRoot(
-            SQLTemplate query,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
-        DataMap map = path.firstInstanceOf(DataMap.class);
+    void validateRoot(SQLTemplate query, ConfigurationValidationVisitor validator) {
+        DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
-            validator.registerWarning("Query has no root", path);
+            validator.registerWarning("Query has no root", query);
         }
     }
 
-    private void validateName(
-            SQLTemplate query,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
+    void validateName(SQLTemplate query, ConfigurationValidationVisitor validator) {
         String name = query.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed Query.", path);
+            validator.registerError("Unnamed Query.", query);
             return;
         }
 
-        DataMap map = (DataMap) path.getObjectParent();
+        DataMap map = query.getDataMap();
         if (map == null) {
             return;
         }
@@ -92,7 +76,7 @@ public class SQLTemplateValidator implements Validator {
             }
 
             if (name.equals(otherQuery.getName())) {
-                validator.registerError("Duplicate Query name: " + name + ".", path);
+                validator.registerError("Duplicate Query name: " + name + ".", query);
                 break;
             }
         }

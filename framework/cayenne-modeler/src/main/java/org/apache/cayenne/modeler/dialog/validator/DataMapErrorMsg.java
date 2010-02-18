@@ -17,41 +17,39 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  * DataMap validation message.
  * 
  */
 public class DataMapErrorMsg extends ValidationDisplayHandler {
+
     protected DataMap map;
 
     /**
      * Constructor for DataMapErrorMsg.
+     * 
      * @param result
      */
     public DataMapErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object[] path = result.getPath().getPath();
-        int len = path.length;
-
-        if (len >= 1) {
-            map = (DataMap) path[len - 1];
-        }
-
-        if (len >= 2) {
-            domain = (DataChannelDescriptor) path[len - 2];
-        }
+        Object path = result.getPath();
+        map = (DataMap) path;
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {

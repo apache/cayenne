@@ -18,18 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import java.lang.reflect.Field;
-
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.project2.validate.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
 
-public class EJBQLQueryValidator implements Validator {
+class EJBQLQueryValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         EJBQLQuery query = (EJBQLQuery) object;
 
         ProjectPath path = new ProjectPath(new Object[] {
@@ -37,7 +34,7 @@ public class EJBQLQueryValidator implements Validator {
                 query.getDataMap(), query
         });
 
-        PositionException message = validateEJBQL(query, new EntityResolver(
+        PositionException message = (new EJBQLStatementValidator()).validateEJBQL(query, new EntityResolver(
                 ((DataChannelDescriptor) validator.getProject().getRootNode())
                         .getDataMaps()));
 
@@ -47,157 +44,4 @@ public class EJBQLQueryValidator implements Validator {
                     path);
         }
     }
-
-    public PositionException validateEJBQL(EJBQLQuery query, EntityResolver er) {
-        if (query.getEjbqlStatement() != null) {
-            PositionException message = null;
-
-            EJBQLQuery queryTemp = new EJBQLQuery();
-            queryTemp.setEjbqlStatement(query.getEjbqlStatement());
-
-            try {
-                queryTemp.getExpression(er);
-            }
-            catch (CayenneRuntimeException e) {
-                message = new PositionException();
-                message.setE(e);
-                if (e.getCause() != null) {
-
-                    message.setMessage(e.getCause().getMessage());
-
-                    if (e instanceof EJBQLException) {
-
-                        EJBQLException ejbqlException = (EJBQLException) e;
-                        Throwable cause = ejbqlException.getCause();
-
-                        if (cause != null) {
-                            try {
-                                Field tokenField = cause.getClass().getField(
-                                        "currentToken");
-
-                                Object token = tokenField.get(cause);
-                                Field nextTokenField = token.getClass().getField("next");
-                                Object nextToken = nextTokenField.get(token);
-                                Field beginColumnField = nextToken.getClass().getField(
-                                        "beginColumn");
-                                Field beginLineField = nextToken.getClass().getField(
-                                        "beginLine");
-                                Field endColumnField = nextToken.getClass().getField(
-                                        "endColumn");
-                                Field endLineField = nextToken.getClass().getField(
-                                        "endLine");
-                                Field imageField = nextToken.getClass().getField("image");
-
-                                message.setBeginColumn((Integer) beginColumnField
-                                        .get(nextToken));
-                                message.setBeginLine((Integer) beginLineField
-                                        .get(nextToken));
-                                message.setEndColumn((Integer) endColumnField
-                                        .get(nextToken));
-                                message.setEndLine((Integer) endLineField.get(nextToken));
-                                message.setImage((String) imageField.get(nextToken));
-                                message.setLength(message.getImage().length());
-                            }
-                            catch (Exception e1) {
-                                throw new CayenneRuntimeException(e1);
-                            }
-                        }
-
-                    }
-                }
-                else {
-                    message.setE(e);
-                    message.setMessage(e.getUnlabeledMessage());
-                }
-
-            }
-            catch (Exception e) {
-                message = new PositionException();
-                message.setE(e);
-                message.setMessage(e.getMessage());
-            }
-
-            return message;
-        }
-        else {
-            return null;
-        }
-    }
-
-    public class PositionException {
-
-        private Integer beginColumn;
-        private Integer beginLine;
-        private Integer endColumn;
-        private Integer endLine;
-        private Integer length;
-        private String image;
-        private String message;
-        private Exception e;
-
-        public Integer getLength() {
-            return length;
-        }
-
-        public void setLength(Integer length) {
-            this.length = length;
-        }
-
-        public Exception getE() {
-            return e;
-        }
-
-        public void setE(Exception e) {
-            this.e = e;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public Integer getBeginColumn() {
-            return beginColumn;
-        }
-
-        public void setBeginColumn(Integer beginColumn) {
-            this.beginColumn = beginColumn;
-        }
-
-        public Integer getBeginLine() {
-            return beginLine;
-        }
-
-        public void setBeginLine(Integer beginLine) {
-            this.beginLine = beginLine;
-        }
-
-        public Integer getEndColumn() {
-            return endColumn;
-        }
-
-        public void setEndColumn(Integer endColumn) {
-            this.endColumn = endColumn;
-        }
-
-        public Integer getEndLine() {
-            return endLine;
-        }
-
-        public void setEndLine(Integer endLine) {
-            this.endLine = endLine;
-        }
-
-        public String getImage() {
-            return image;
-        }
-
-        public void setImage(String image) {
-            this.image = image;
-        }
-    }
-
 }

@@ -19,20 +19,19 @@
 package org.apache.cayenne.project2.validate;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
+class DataChannelValidator {
 
-public class DataChannelValidator  implements Validator{
+    void validate(
+            Object object,
+            ConfigurationValidationVisitor configurationValidationVisitor) {
 
-    public void validate(Object object, ConfigurationValidationVisitor configurationValidationVisitor) {
-        
         // check for empty name
         DataChannelDescriptor domain = (DataChannelDescriptor) object;
         String name = domain.getName();
         if (Util.isEmptyString(name)) {
-            Object[] path = new Object[]{domain}; 
-            configurationValidationVisitor.registerError("Unnamed DataDomain.", new ProjectPath(path));
+            configurationValidationVisitor.registerError("Unnamed DataDomain.", object);
 
             // no more name assertions
             return;

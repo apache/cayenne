@@ -21,26 +21,31 @@ package org.apache.cayenne.project2.validate;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
-public class DataMapValidator implements Validator {
+class DataMapValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor configurationValidationVisitor) {
+    void validate(
+            Object object,
+            ConfigurationValidationVisitor configurationValidationVisitor) {
         DataMap map = (DataMap) object;
-        ProjectPath path = new ProjectPath(new Object[]{(DataChannelDescriptor)configurationValidationVisitor.getProject().getRootNode(), map});
-        validateName(map, path, configurationValidationVisitor);
+        validateName(map, object, configurationValidationVisitor);
 
         // check if data map is not attached to any nodes
-        validateNodeLinks(map, path, configurationValidationVisitor);
+        validateNodeLinks(map, object, configurationValidationVisitor);
     }
-  
-    protected void validateNodeLinks(DataMap map, ProjectPath path, ConfigurationValidationVisitor validator) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) validator.getProject().getRootNode();
+
+    void validateNodeLinks(
+            DataMap map,
+            Object object,
+            ConfigurationValidationVisitor validator) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) validator
+                .getProject()
+                .getRootNode();
         if (domain == null) {
             return;
         }
-        
+
         boolean unlinked = true;
         int nodeCount = 0;
         for (final DataNodeDescriptor node : domain.getNodeDescriptors()) {
@@ -50,21 +55,23 @@ public class DataMapValidator implements Validator {
                 break;
             }
         }
-        
-        if(unlinked && nodeCount > 0) {
-             validator.registerWarning("DataMap is not linked to any DataNodes.", path);
+
+        if (unlinked && nodeCount > 0) {
+            validator.registerWarning("DataMap is not linked to any DataNodes.", object);
         }
     }
 
-    protected void validateName(DataMap map, ProjectPath path, ConfigurationValidationVisitor validator) {
+    void validateName(DataMap map, Object object, ConfigurationValidationVisitor validator) {
         String name = map.getName();
 
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed DataMap.", path);
+            validator.registerError("Unnamed DataMap.", object);
             return;
         }
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) validator.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) validator
+                .getProject()
+                .getRootNode();
         if (domain == null) {
             return;
         }
@@ -76,10 +83,10 @@ public class DataMapValidator implements Validator {
             }
 
             if (name.equals(otherMap.getName())) {
-                validator.registerError("Duplicate DataMap name: " + name + ".", path);
+                validator.registerError("Duplicate DataMap name: " + name + ".", object);
                 return;
             }
         }
     }
-    
+
 }

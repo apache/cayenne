@@ -44,9 +44,9 @@ import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.project.validator.ValidationInfo;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  * Controller of the main application frame.

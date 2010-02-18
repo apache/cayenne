@@ -35,8 +35,8 @@ import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
-import org.apache.cayenne.project2.validate.EJBQLQueryValidator;
-import org.apache.cayenne.project2.validate.EJBQLQueryValidator.PositionException;
+import org.apache.cayenne.project2.validate.EJBQLStatementValidator;
+import org.apache.cayenne.project2.validate.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
@@ -47,7 +47,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     protected ProjectController mediator;
     protected JCayenneTextPane scriptArea;
     private boolean updateDisabled;
-    protected EJBQLQueryValidator  ejbqlQueryValidator = new EJBQLQueryValidator();
+    protected EJBQLStatementValidator  ejbqlQueryValidator = new EJBQLStatementValidator();
 
     public EjbqlQueryScriptsTab(ProjectController mediator) {
         this.mediator = mediator;

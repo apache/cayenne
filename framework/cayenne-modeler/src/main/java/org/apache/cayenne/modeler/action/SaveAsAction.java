@@ -38,10 +38,10 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.pref.CayennePreferenceForProject;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.validator.ValidationInfo;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
 import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 import org.apache.cayenne.resource.URLResource;
 
 /**

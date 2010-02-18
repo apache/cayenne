@@ -21,34 +21,28 @@ package org.apache.cayenne.project2.validate;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
-public class ObjRelationshipValidator implements Validator {
+class ObjRelationshipValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         ObjRelationship rel = (ObjRelationship) object;
 
-        ProjectPath path = new ProjectPath(new Object[]{(DataChannelDescriptor)validator.getProject().getRootNode(),
-                rel.getSourceEntity().getDataMap(), 
-                rel.getSourceEntity(), rel});
-        
         if (Util.isEmptyString(rel.getName())) {
-            validator.registerError("Unnamed ObjRelationship.", path);
+            validator.registerError("Unnamed ObjRelationship.", object);
         }
         // check if there are attributes having the same name
         else if (rel.getSourceEntity().getAttribute(rel.getName()) != null) {
             validator.registerWarning("ObjRelationship "
                     + objRelationshipIdentifier(rel)
-                    + " has the same name as one of ObjAttributes", path);
+                    + " has the same name as one of ObjAttributes", object);
         }
         else {
             MappingNamesHelper helper = MappingNamesHelper.getInstance();
@@ -58,19 +52,19 @@ public class ObjRelationshipValidator implements Validator {
                 validator.registerWarning("ObjRelationship "
                         + objRelationshipIdentifier(rel)
                         + " name contains invalid characters: "
-                        + invalidChars, path);
+                        + invalidChars, object);
             }
             else if (helper.invalidDataObjectProperty(rel.getName())) {
                 validator.registerWarning("ObjRelationship "
                         + objRelationshipIdentifier(rel)
-                        + " name is invalid.", path);
+                        + " name is invalid.", object);
             }
         }
 
         if (rel.getTargetEntity() == null) {
             validator.registerWarning("ObjRelationship "
                     + objRelationshipIdentifier(rel)
-                    + " has no target entity.", path);
+                    + " has no target entity.", object);
         }
         else {
             // check for missing DbRelationship mappings
@@ -78,7 +72,7 @@ public class ObjRelationshipValidator implements Validator {
             if (dbRels.size() == 0) {
                 validator.registerWarning("ObjRelationship "
                         + objRelationshipIdentifier(rel)
-                        + " has no DbRelationship mapping.", path);
+                        + " has no DbRelationship mapping.", object);
             }
             else {
                 DbEntity expectedSrc = ((ObjEntity) rel.getSourceEntity()).getDbEntity();
@@ -86,11 +80,10 @@ public class ObjRelationshipValidator implements Validator {
                         .getDbEntity();
 
                 if ((dbRels.get(0)).getSourceEntity() != expectedSrc
-                        || (dbRels.get(dbRels.size() - 1))
-                                .getTargetEntity() != expectedTarget) {
+                        || (dbRels.get(dbRels.size() - 1)).getTargetEntity() != expectedTarget) {
                     validator.registerWarning("ObjRelationship "
                             + objRelationshipIdentifier(rel)
-                            + " has incomplete DbRelationship mapping.", path);
+                            + " has incomplete DbRelationship mapping.", object);
                 }
             }
         }
@@ -102,9 +95,7 @@ public class ObjRelationshipValidator implements Validator {
                 && (rel.getDeleteRule() == DeleteRule.NULLIFY)) {
             ObjRelationship inverse = rel.getReverseRelationship();
             if (inverse != null) {
-                DbRelationship firstRel = inverse
-                        .getDbRelationships()
-                        .get(0);
+                DbRelationship firstRel = inverse.getDbRelationships().get(0);
                 Iterator<DbJoin> attributePairIterator = firstRel.getJoins().iterator();
                 // by default, the relation will be check for mandatory.
                 boolean check = true;
@@ -116,20 +107,20 @@ public class ObjRelationshipValidator implements Validator {
                         break;
                     }
                 }
-                
+
                 if (check) {
                     validator
                             .registerWarning(
                                     "ObjRelationship "
                                             + objRelationshipIdentifier(rel)
                                             + " has a Nullify delete rule and a mandatory reverse relationship ",
-                                    path);
+                                    object);
                 }
             }
         }
     }
 
-    public String objRelationshipIdentifier(ObjRelationship rel) {
+    String objRelationshipIdentifier(ObjRelationship rel) {
         if (null == rel.getSourceEntity()) {
             return "<[null source entity]." + rel.getName() + ">";
         }

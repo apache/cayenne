@@ -23,20 +23,14 @@ import java.util.List;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
-public class ProcedureValidator implements Validator {
+class ProcedureValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         Procedure procedure = (Procedure) object;
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelValidator) validator.getProject().getRootNode(),
-                procedure.getDataMap(), procedure
-        });
-
-        validateName(procedure, path, validator);
+        validateName(procedure, validator);
 
         // check that return value is present
         if (procedure.isReturningValue()) {
@@ -44,24 +38,21 @@ public class ProcedureValidator implements Validator {
             if (parameters.size() == 0) {
                 validator.registerWarning(
                         "Procedure returns a value, but has no parameters.",
-                        path);
+                        object);
             }
         }
     }
 
-    protected void validateName(
-            Procedure procedure,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
+    void validateName(Procedure procedure, ConfigurationValidationVisitor validator) {
         String name = procedure.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed Procedure.", path);
+            validator.registerError("Unnamed Procedure.", procedure);
             return;
         }
 
-        DataMap map = (DataMap) path.getObjectParent();
+        DataMap map = procedure.getDataMap();
         if (map == null) {
             return;
         }
@@ -73,7 +64,9 @@ public class ProcedureValidator implements Validator {
             }
 
             if (name.equals(otherProcedure.getName())) {
-                validator.registerError("Duplicate Procedure name: " + name + ".", path);
+                validator.registerError(
+                        "Duplicate Procedure name: " + name + ".",
+                        procedure);
                 break;
             }
         }

@@ -28,8 +28,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  */
@@ -40,14 +39,15 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        ProjectPath path = super.validationInfo.getPath();
-        
-        DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
-        
-        DataMap map = path.firstInstanceOf(DataMap.class);
-        Procedure procedure = path.firstInstanceOf(Procedure.class);
-        ProcedureParameter procedureParameter = path
-                .firstInstanceOf(ProcedureParameter.class);
+        Object path = super.validationInfo.getPath();
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
+
+        ProcedureParameter procedureParameter = (ProcedureParameter) path;
+        Procedure procedure = procedureParameter.getProcedure();
+        DataMap map = procedure.getDataMap();
 
         // Race condition between the two events...?
 

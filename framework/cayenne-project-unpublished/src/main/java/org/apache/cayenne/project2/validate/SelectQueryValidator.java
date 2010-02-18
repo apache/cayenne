@@ -18,82 +18,65 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.access.QueryEngine;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.Util;
 
+class SelectQueryValidator {
 
-public class SelectQueryValidator  implements Validator{
-
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         SelectQuery query = (SelectQuery) object;
-        
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                query.getDataMap(), query
-        });
 
-        validateName(query, path, validator);
+        validateName(query, validator);
 
         // Resolve root to Entity for further validation
-        Entity root = validateRoot(query, path, validator);
+        Entity root = validateRoot(query, validator);
 
         // validate path-based parts
         if (root != null) {
-            validateQualifier(root, query.getQualifier(), path, validator);
+            validateQualifier(root, query.getQualifier(), validator);
 
             for (final Ordering ordering : query.getOrderings()) {
-                validateOrdering(
-                        root,
-                        ordering,
-                        path,
-                        validator);
+                validateOrdering(root, ordering, validator);
             }
 
             if (query.getPrefetchTree() != null) {
-                for (final PrefetchTreeNode prefetchTreeNode : query.getPrefetchTree().nonPhantomNodes()) {
-                    validatePrefetch(root, prefetchTreeNode.getPath(), path, validator);
+                for (final PrefetchTreeNode prefetchTreeNode : query
+                        .getPrefetchTree()
+                        .nonPhantomNodes()) {
+                    validatePrefetch(root, prefetchTreeNode.getPath(), validator);
                 }
             }
         }
     }
 
-    private void validatePrefetch(
+    void validatePrefetch(
             Entity root,
             String path,
-            ProjectPath path2,
             ConfigurationValidationVisitor validator) {
     }
 
-    private void validateOrdering(
+    void validateOrdering(
             Entity root,
             Ordering ordering,
-            ProjectPath path,
             ConfigurationValidationVisitor validator) {
     }
 
-    private void validateQualifier(
+    void validateQualifier(
             Entity root,
             Expression qualifier,
-            ProjectPath path,
             ConfigurationValidationVisitor validator) {
     }
 
-    private Entity validateRoot(
-            SelectQuery query,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
-        DataMap map = path.firstInstanceOf(DataMap.class);
+    Entity validateRoot(SelectQuery query, ConfigurationValidationVisitor validator) {
+        DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
-            validator.registerWarning("Query has no root", path);
+            validator.registerWarning("Query has no root", query);
             return null;
         }
 
@@ -119,29 +102,26 @@ public class SelectQueryValidator  implements Validator{
         // resolve entity
         if (query.getRoot() instanceof String) {
 
-            QueryEngine parent = path.firstInstanceOf(QueryEngine.class);
+            DataMap parent = query.getDataMap();
 
             if (parent != null) {
-                return parent.getEntityResolver().getObjEntity((String) query.getRoot());
+                return parent.getNamespace().getObjEntity((String) query.getRoot());
             }
         }
 
         return null;
     }
 
-    private void validateName(
-            SelectQuery query,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
+    void validateName(SelectQuery query, ConfigurationValidationVisitor validator) {
         String name = query.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed SelectQuery.", path);
+            validator.registerError("Unnamed SelectQuery.", query);
             return;
         }
 
-        DataMap map = (DataMap) path.getObjectParent();
+        DataMap map = query.getDataMap();
         if (map == null) {
             return;
         }
@@ -154,10 +134,9 @@ public class SelectQueryValidator  implements Validator{
             }
 
             if (name.equals(otherQuery.getName())) {
-                validator.registerError("Duplicate Query name: " + name + ".", path);
+                validator.registerError("Duplicate Query name: " + name + ".", query);
                 break;
             }
         }
     }
-
 }

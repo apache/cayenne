@@ -18,37 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
 
-public class ProcedureQueryValidator implements Validator {
+class ProcedureQueryValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         ProcedureQuery query = (ProcedureQuery) object;
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                query.getDataMap(), query
-        });
-
-        validateName(query, path, validator);
-        validateRoot(query, path, validator);
+        validateName(query, validator);
+        validateRoot(query, validator);
     }
 
-    private void validateRoot(
-            ProcedureQuery query,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
-        DataMap map = path.firstInstanceOf(DataMap.class);
+    void validateRoot(ProcedureQuery query, ConfigurationValidationVisitor validator) {
+
+        DataMap map = query.getDataMap();
         Object root = query.getRoot();
 
         if (root == null && map != null) {
-            validator.registerWarning("Query has no root", path);
+            validator.registerWarning("Query has no root", query);
         }
 
         // procedure query only supports procedure root
@@ -58,7 +49,7 @@ public class ProcedureQueryValidator implements Validator {
             // procedure may have been deleted...
             if (map != null && map.getProcedure(procedure.getName()) != procedure) {
                 validator.registerWarning("Invalid Procedure Root - "
-                        + procedure.getName(), path);
+                        + procedure.getName(), query);
             }
 
             return;
@@ -66,24 +57,21 @@ public class ProcedureQueryValidator implements Validator {
 
         if (root instanceof String) {
             if (map != null && map.getProcedure(root.toString()) == null) {
-                validator.registerWarning("Invalid Procedure Root - " + root, path);
+                validator.registerWarning("Invalid Procedure Root - " + root, query);
             }
         }
     }
 
-    private void validateName(
-            ProcedureQuery query,
-            ProjectPath path,
-            ConfigurationValidationVisitor validator) {
+    void validateName(ProcedureQuery query, ConfigurationValidationVisitor validator) {
         String name = query.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed Query.", path);
+            validator.registerError("Unnamed Query.", query);
             return;
         }
 
-        DataMap map = (DataMap) path.getObjectParent();
+        DataMap map = query.getDataMap();
         if (map == null) {
             return;
         }
@@ -95,10 +83,9 @@ public class ProcedureQueryValidator implements Validator {
             }
 
             if (name.equals(otherQuery.getName())) {
-                validator.registerError("Duplicate Query name: " + name + ".", path);
+                validator.registerError("Duplicate Query name: " + name + ".", query);
                 break;
             }
         }
     }
-
 }

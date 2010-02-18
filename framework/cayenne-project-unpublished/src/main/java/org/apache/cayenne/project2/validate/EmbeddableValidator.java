@@ -21,28 +21,26 @@ package org.apache.cayenne.project2.validate;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
-public class EmbeddableValidator implements Validator {
+class EmbeddableValidator {
 
-    public void validate(
+    void validate(
             Object object,
             ConfigurationValidationVisitor configurationValidationVisitor) {
         Embeddable emb = (Embeddable) object;
-        ProjectPath path = new ProjectPath();
-        validateName(emb, path, configurationValidationVisitor);
+        validateName(emb, object, configurationValidationVisitor);
     }
 
-    protected void validateName(
+    void validateName(
             Embeddable emb,
-            ProjectPath path,
+            Object object,
             ConfigurationValidationVisitor validator) {
         String name = emb.getClassName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed Embeddable.", path);
+            validator.registerError("Unnamed Embeddable.", object);
             return;
         }
 
@@ -58,7 +56,9 @@ public class EmbeddableValidator implements Validator {
             }
 
             if (name.equals(otherEmb.getClassName())) {
-                validator.registerError("Duplicate Embeddable name: " + name + ".", path);
+                validator.registerError(
+                        "Duplicate Embeddable name: " + name + ".",
+                        object);
                 break;
             }
         }
@@ -81,7 +81,7 @@ public class EmbeddableValidator implements Validator {
                                     "Duplicate Embeddable name in another DataMap: "
                                             + name
                                             + ".",
-                                    path);
+                                    object);
                     break;
                 }
             }

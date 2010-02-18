@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
@@ -28,9 +27,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  * Relationship validation message.
@@ -49,24 +49,14 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
      */
     public RelationshipErrorMsg(ValidationInfo result) {
         super(result);
-        Object[] path = result.getPath().getPath();
-        int len = path.length;
-
-        if (len >= 1) {
-            rel = (Relationship) path[len - 1];
-        }
-
-        if (len >= 2) {
-            entity = (Entity) path[len - 2];
-        }
-
-        if (len >= 3) {
-            map = (DataMap) path[len - 3];
-        }
-
-        if (len >= 4) {
-            domain = (DataChannelDescriptor) path[len - 4];
-        }
+        Object path = result.getPath();
+        rel = (Relationship) path;
+        entity = rel.getSourceEntity();
+        map = entity.getDataMap();
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {

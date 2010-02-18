@@ -27,23 +27,17 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
-public class ObjAttributeValidator implements Validator {
+class ObjAttributeValidator {
 
-    public void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidationVisitor validator) {
         ObjAttribute attribute = (ObjAttribute) object;
-
-        ProjectPath path = new ProjectPath(new Object[] {
-                validator.getProject().getRootNode(), attribute.getEntity().getDataMap(),
-                attribute.getEntity(), attribute
-        });
 
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
-            validator.registerError("Unnamed ObjAttribute.", path);
+            validator.registerError("Unnamed ObjAttribute.", object);
         }
         else {
             MappingNamesHelper helper = MappingNamesHelper.getInstance();
@@ -53,17 +47,17 @@ public class ObjAttributeValidator implements Validator {
             if (invalidChars != null) {
                 validator.registerWarning(
                         "ObjAttribute name contains invalid characters: " + invalidChars,
-                        path);
+                        object);
             }
             else if (helper.invalidDataObjectProperty(attribute.getName())) {
                 validator.registerWarning("ObjAttribute name is invalid: "
-                        + attribute.getName(), path);
+                        + attribute.getName(), object);
             }
         }
 
         // all attributes must have type
         if (Util.isEmptyString(attribute.getType())) {
-            validator.registerWarning("ObjAttribute has no type.", path);
+            validator.registerWarning("ObjAttribute has no type.", object);
         }
 
         if (attribute.getEntity() instanceof ObjEntity
@@ -77,10 +71,10 @@ public class ObjAttributeValidator implements Validator {
             if (emb == null && ((EmbeddedAttribute) attribute).getType() != null) {
                 validator.registerWarning(
                         "EmbeddedAttribute has incorrect Embeddable.",
-                        path);
+                        object);
             }
             else if (emb == null && ((EmbeddedAttribute) attribute).getType() == null) {
-                validator.registerWarning("EmbeddedAttribute has no Embeddable.", path);
+                validator.registerWarning("EmbeddedAttribute has no Embeddable.", object);
             }
 
             if (emb != null) {
@@ -101,30 +95,28 @@ public class ObjAttributeValidator implements Validator {
                     if (dbAttributeName == "" || dbAttributeName == null) {
                         validator.registerWarning(
                                 "EmbeddedAttribute has no DbAttribute mapping.",
-                                path);
+                                object);
                     }
                     else if (((ObjEntity) attribute.getEntity())
                             .getDbEntity()
                             .getAttribute(dbAttributeName) == null) {
                         validator.registerWarning(
                                 "EmbeddedAttribute has incorrect DbAttribute mapping.",
-                                path);
+                                object);
                     }
                 }
             }
 
         }
         else if (attribute.getDbAttribute() == null) {
-            validator.registerWarning("ObjAttribute has no DbAttribute mapping.", path);
+            validator.registerWarning("ObjAttribute has no DbAttribute mapping.", object);
         }
         // can't support generated meaningful attributes for now; besides they don't make
         // sense.
         else if (attribute.getDbAttribute().isPrimaryKey()
                 && attribute.getDbAttribute().isGenerated()) {
             validator.registerWarning("ObjAttribute is mapped to a generated PK: "
-                    + attribute.getDbAttributeName(), path);
+                    + attribute.getDbAttributeName(), object);
         }
-
     }
-
 }

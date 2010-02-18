@@ -17,46 +17,44 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.dialog.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.project.validator.ValidationInfo;
+import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  * DataNode validation message.
  * 
  */
 public class DataNodeErrorMsg extends ValidationDisplayHandler {
-	protected DataNodeDescriptor node;
+
+    protected DataNodeDescriptor node;
 
     /**
      * Constructor for DataNodeErrorMsg.
+     * 
      * @param result
      */
     public DataNodeErrorMsg(ValidationInfo result) {
         super(result);
-        Object[] path = result.getPath().getPath();
-        int len = path.length;
-
-        if (len >= 1) {
-            node = (DataNodeDescriptor) path[len - 1];
-        }
-
-        if (len >= 2) {
-            domain = (DataChannelDescriptor) path[len - 2];
-        }
+        Object path = result.getPath();
+        node = (DataNodeDescriptor) path;
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
 
-	public void displayField(ProjectController mediator, JFrame frame) {
-		DataNodeDisplayEvent event;
-		event = new DataNodeDisplayEvent(frame, domain, node);
-		mediator.fireDataNodeDisplayEvent(event);
-	}
+    public void displayField(ProjectController mediator, JFrame frame) {
+        DataNodeDisplayEvent event;
+        event = new DataNodeDisplayEvent(frame, domain, node);
+        mediator.fireDataNodeDisplayEvent(event);
+    }
 
 }
