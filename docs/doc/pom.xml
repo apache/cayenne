@@ -56,7 +56,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>velocity</groupId>
+			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 		</dependency>
 
@@ -198,6 +198,7 @@
 					<!-- this is relative to target/site/apidocs  -->
 					<destDir>doc/api</destDir>
 					<stylesheet>java</stylesheet>
+					<detectOfflineLinks>false</detectOfflineLinks>
 				</configuration>
 				<executions>
 					<execution>
