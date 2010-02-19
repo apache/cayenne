@@ -35,9 +35,9 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.validate.DefaultValidator;
-import org.apache.cayenne.project2.validate.ValidationInfo;
 import org.apache.cayenne.project2.validate.Validator;
+import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validate.DefaultValidator;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
@@ -183,11 +183,11 @@ public class TableSelectorController extends CayenneController {
 
         Project project = getApplication().getProject();
 
-        DefaultValidator validator = getApplication().getInjector().getInstance(
-                DefaultValidator.class);
+        Validator validator = getApplication().getInjector().getInstance(
+                Validator.class);
         List<ValidationInfo> object = validator.validate(project.getRootNode(), project);
 
-        int validationCode = ((Validator) validator).getMaxSeverity();
+        int validationCode = ((DefaultValidator) validator).getMaxSeverity();
 
         if (validationCode >= ValidationDisplayHandler.WARNING) {
 

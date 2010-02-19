@@ -23,16 +23,7 @@ import java.util.List;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.project2.Project;
 
-public class Validator implements DefaultValidator {
+public interface Validator {
 
-    private ConfigurationValidator validateVisitor;
-    
-    public List<ValidationInfo> validate(ConfigurationNode node, Project project) {
-        validateVisitor = new ConfigurationValidator(project);
-        return node.acceptVisitor(validateVisitor);
-    }
-    
-    public int getMaxSeverity(){
-        return validateVisitor.getMaxSeverity();
-    }
+    public List<ValidationInfo> validate(ConfigurationNode node, Project project);
 }

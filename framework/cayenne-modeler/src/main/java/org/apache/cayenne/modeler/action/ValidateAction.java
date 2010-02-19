@@ -33,9 +33,9 @@ import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.validate.DefaultValidator;
-import org.apache.cayenne.project2.validate.ValidationInfo;
 import org.apache.cayenne.project2.validate.Validator;
+import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validate.DefaultValidator;
 
 /**
  * UI action that performs full project validation.
@@ -62,11 +62,11 @@ public class ValidateAction extends CayenneAction {
 	 */
 	public void performAction(ActionEvent e) {
 	    
-	    DefaultValidator validator = getApplication().getInjector().getInstance(
-                DefaultValidator.class);
+	    Validator validator = getApplication().getInjector().getInstance(
+                Validator.class);
         List<ValidationInfo> object = validator.validate(getCurrentProject().getRootNode(), getCurrentProject());
         
-        int validationCode = ((Validator)validator).getMaxSeverity();
+        int validationCode = ((DefaultValidator)validator).getMaxSeverity();
         
 		// If there were errors or warnings at validation, display them
 		if (validationCode >= ValidationDisplayHandler.WARNING) {
