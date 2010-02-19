@@ -25,7 +25,7 @@ import org.apache.cayenne.util.Util;
 
 class DbAttributeValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         DbAttribute attribute = (DbAttribute) object;
 
         // Must have name

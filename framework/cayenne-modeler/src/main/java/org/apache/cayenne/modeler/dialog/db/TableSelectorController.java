@@ -34,8 +34,10 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
+import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.validate.DefaultValidator;
 import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validate.Validator;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
@@ -53,14 +55,14 @@ public class TableSelectorController extends CayenneController {
     protected Map excludedTables;
     protected List<DbEntity> selectableTablesList;
 
-    protected Map validationMessages;
+    protected Map<String, String> validationMessages;
 
     public TableSelectorController(ProjectController parent) {
         super(parent);
         this.view = new TableSelectorView();
         this.excludedTables = new HashMap();
         this.selectableTablesList = new ArrayList();
-        this.validationMessages = new HashMap();
+        this.validationMessages = new HashMap<String, String>();
         initController();
     }
 
@@ -179,14 +181,13 @@ public class TableSelectorController extends CayenneController {
         // TODO: this is inefficient.. we need targeted validation
         // instead of doing it on the whole project
 
-        ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(
-                ((ProjectController) getParent()).getProject());
-        List<ValidationInfo> object = (List<ValidationInfo>) getApplication()
-                .getProject()
-                .getRootNode()
-                .acceptVisitor(validatVisitor);
-        
-        int validationCode = validatVisitor.getMaxSeverity();
+        Project project = getApplication().getProject();
+
+        DefaultValidator validator = getApplication().getInjector().getInstance(
+                DefaultValidator.class);
+        List<ValidationInfo> object = validator.validate(project.getRootNode(), project);
+
+        int validationCode = ((Validator) validator).getMaxSeverity();
 
         if (validationCode >= ValidationDisplayHandler.WARNING) {
 

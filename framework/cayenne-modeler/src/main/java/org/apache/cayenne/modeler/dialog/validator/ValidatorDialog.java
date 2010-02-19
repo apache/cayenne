@@ -65,7 +65,7 @@ public class ValidatorDialog extends CayenneDialog {
     protected JTable problemsTable;
     protected JButton closeButton;
     protected JButton refreshButton;
-    protected List validationObjects;
+    protected List<ValidationInfo> validationObjects;
 
     public static synchronized void showDialog(
             CayenneModelerFrame frame,

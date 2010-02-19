@@ -25,7 +25,7 @@ import org.apache.cayenne.util.Util;
 
 class DbEntityValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         DbEntity ent = (DbEntity) object;
         validateName(ent, object, validator);
         validateAttributes(ent, object, validator);
@@ -37,7 +37,7 @@ class DbEntityValidator {
      * map also conatins an ObjEntity mapped to this entity, since unmapped primary key is
      * ok if working with data rows.
      */
-    void validatePK(DbEntity ent, Object object, ConfigurationValidationVisitor validator) {
+    void validatePK(DbEntity ent, Object object, ConfigurationValidator validator) {
         if (ent.getAttributes().size() > 0 && ent.getPrimaryKeys().size() == 0) {
             DataMap map = ent.getDataMap();
             if (map != null && map.getMappedEntities(ent).size() > 0) {
@@ -55,7 +55,7 @@ class DbEntityValidator {
     void validateAttributes(
             DbEntity ent,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         if (ent.getAttributes().size() == 0) {
             // complain about missing attributes
             validator.registerWarning("DbEntity \""
@@ -67,7 +67,7 @@ class DbEntityValidator {
     void validateName(
             DbEntity ent,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         String name = ent.getName();
 
         // Must have name

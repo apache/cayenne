@@ -25,7 +25,7 @@ import org.apache.cayenne.util.Util;
 
 class SQLTemplateValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         SQLTemplate query = (SQLTemplate) object;
 
         validateName(query, validator);
@@ -33,7 +33,7 @@ class SQLTemplateValidator {
         validateDefaultSQL(query, validator);
     }
 
-    void validateDefaultSQL(SQLTemplate query, ConfigurationValidationVisitor validator) {
+    void validateDefaultSQL(SQLTemplate query, ConfigurationValidator validator) {
 
         if (Util.isEmptyString(query.getDefaultTemplate())) {
             // see if there is at least one adapter-specific template...
@@ -48,14 +48,14 @@ class SQLTemplateValidator {
         }
     }
 
-    void validateRoot(SQLTemplate query, ConfigurationValidationVisitor validator) {
+    void validateRoot(SQLTemplate query, ConfigurationValidator validator) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             validator.registerWarning("Query has no root", query);
         }
     }
 
-    void validateName(SQLTemplate query, ConfigurationValidationVisitor validator) {
+    void validateName(SQLTemplate query, ConfigurationValidator validator) {
         String name = query.getName();
 
         // Must have name

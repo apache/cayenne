@@ -26,7 +26,7 @@ import org.apache.cayenne.util.Util;
 
 class ObjEntityValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         ObjEntity ent = (ObjEntity) object;
 
         validateName(ent, object, validator);
@@ -42,7 +42,7 @@ class ObjEntityValidator {
     void validateClassName(
             ObjEntity ent,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         String className = ent.getClassName();
 
         // if mapped to default class, ignore...
@@ -73,7 +73,7 @@ class ObjEntityValidator {
     void validateSuperClassName(
             ObjEntity ent,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         String superClassName = ent.getSuperClassName();
 
         if (Util.isEmptyString(superClassName)) {
@@ -103,7 +103,7 @@ class ObjEntityValidator {
     void validateName(
             ObjEntity entity,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         String name = entity.getName();
 
         // Must have name

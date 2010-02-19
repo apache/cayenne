@@ -29,7 +29,7 @@ import org.apache.cayenne.util.Util;
 
 class SelectQueryValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         SelectQuery query = (SelectQuery) object;
 
         validateName(query, validator);
@@ -58,22 +58,22 @@ class SelectQueryValidator {
     void validatePrefetch(
             Entity root,
             String path,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
     }
 
     void validateOrdering(
             Entity root,
             Ordering ordering,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
     }
 
     void validateQualifier(
             Entity root,
             Expression qualifier,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
     }
 
-    Entity validateRoot(SelectQuery query, ConfigurationValidationVisitor validator) {
+    Entity validateRoot(SelectQuery query, ConfigurationValidator validator) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             validator.registerWarning("Query has no root", query);
@@ -112,7 +112,7 @@ class SelectQueryValidator {
         return null;
     }
 
-    void validateName(SelectQuery query, ConfigurationValidationVisitor validator) {
+    void validateName(SelectQuery query, ConfigurationValidator validator) {
         String name = query.getName();
 
         // Must have name

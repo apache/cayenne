@@ -32,7 +32,7 @@ import org.apache.cayenne.util.Util;
 
 class ObjRelationshipValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         ObjRelationship rel = (ObjRelationship) object;
 
         if (Util.isEmptyString(rel.getName())) {

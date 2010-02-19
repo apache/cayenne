@@ -32,7 +32,7 @@ import org.apache.cayenne.util.Util;
 
 class ObjAttributeValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         ObjAttribute attribute = (ObjAttribute) object;
 
         // Must have name

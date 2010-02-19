@@ -24,7 +24,7 @@ import org.apache.cayenne.util.Util;
 
 class ProcedureParameterValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
 
         ProcedureParameter parameter = (ProcedureParameter) object;
 

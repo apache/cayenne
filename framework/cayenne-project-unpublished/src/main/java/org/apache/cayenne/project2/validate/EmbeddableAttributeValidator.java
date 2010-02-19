@@ -23,7 +23,7 @@ import org.apache.cayenne.util.Util;
 
 class EmbeddableAttributeValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
 
         EmbeddableAttribute emAttribute = (EmbeddableAttribute) object;
 

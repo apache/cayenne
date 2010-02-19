@@ -27,7 +27,7 @@ import org.apache.cayenne.util.Util;
 
 class ProcedureValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         Procedure procedure = (Procedure) object;
 
         validateName(procedure, validator);
@@ -43,7 +43,7 @@ class ProcedureValidator {
         }
     }
 
-    void validateName(Procedure procedure, ConfigurationValidationVisitor validator) {
+    void validateName(Procedure procedure, ConfigurationValidator validator) {
         String name = procedure.getName();
 
         // Must have name

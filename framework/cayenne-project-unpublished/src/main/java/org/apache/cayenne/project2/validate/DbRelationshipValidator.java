@@ -25,7 +25,7 @@ import org.apache.cayenne.util.Util;
 
 class DbRelationshipValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         DbRelationship rel = (DbRelationship) object;
 
         if (rel.getTargetEntity() == null) {

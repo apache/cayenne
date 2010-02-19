@@ -27,15 +27,15 @@ class EmbeddableValidator {
 
     void validate(
             Object object,
-            ConfigurationValidationVisitor configurationValidationVisitor) {
+            ConfigurationValidator configurationValidator) {
         Embeddable emb = (Embeddable) object;
-        validateName(emb, object, configurationValidationVisitor);
+        validateName(emb, object, configurationValidator);
     }
 
     void validateName(
             Embeddable emb,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         String name = emb.getClassName();
 
         // Must have name

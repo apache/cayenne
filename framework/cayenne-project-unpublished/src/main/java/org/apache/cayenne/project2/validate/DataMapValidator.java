@@ -27,18 +27,18 @@ class DataMapValidator {
 
     void validate(
             Object object,
-            ConfigurationValidationVisitor configurationValidationVisitor) {
+            ConfigurationValidator configurationValidator) {
         DataMap map = (DataMap) object;
-        validateName(map, object, configurationValidationVisitor);
+        validateName(map, object, configurationValidator);
 
         // check if data map is not attached to any nodes
-        validateNodeLinks(map, object, configurationValidationVisitor);
+        validateNodeLinks(map, object, configurationValidator);
     }
 
     void validateNodeLinks(
             DataMap map,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         DataChannelDescriptor domain = (DataChannelDescriptor) validator
                 .getProject()
                 .getRootNode();
@@ -61,7 +61,7 @@ class DataMapValidator {
         }
     }
 
-    void validateName(DataMap map, Object object, ConfigurationValidationVisitor validator) {
+    void validateName(DataMap map, Object object, ConfigurationValidator validator) {
         String name = map.getName();
 
         if (Util.isEmptyString(name)) {

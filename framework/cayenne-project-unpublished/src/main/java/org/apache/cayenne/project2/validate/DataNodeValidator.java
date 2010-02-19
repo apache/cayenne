@@ -27,16 +27,16 @@ class DataNodeValidator {
 
     void validate(
             Object object,
-            ConfigurationValidationVisitor configurationValidationVisitor) {
+            ConfigurationValidator configurationValidator) {
         DataNodeDescriptor node = (DataNodeDescriptor) object;
-        validateName(node, object, configurationValidationVisitor);
-        validateConnection(node, object, configurationValidationVisitor);
+        validateName(node, object, configurationValidator);
+        validateConnection(node, object, configurationValidator);
     }
 
     void validateConnection(
             DataNodeDescriptor node,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         String factory = node.getDataSourceFactoryType();
 
         // If direct factory, make sure the location is a valid file name.
@@ -54,7 +54,7 @@ class DataNodeValidator {
     void validateName(
             DataNodeDescriptor node,
             Object object,
-            ConfigurationValidationVisitor validator) {
+            ConfigurationValidator validator) {
         String name = node.getName();
 
         if (Util.isEmptyString(name)) {

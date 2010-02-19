@@ -26,14 +26,14 @@ import org.apache.cayenne.util.Util;
 
 class ProcedureQueryValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         ProcedureQuery query = (ProcedureQuery) object;
 
         validateName(query, validator);
         validateRoot(query, validator);
     }
 
-    void validateRoot(ProcedureQuery query, ConfigurationValidationVisitor validator) {
+    void validateRoot(ProcedureQuery query, ConfigurationValidator validator) {
 
         DataMap map = query.getDataMap();
         Object root = query.getRoot();
@@ -62,7 +62,7 @@ class ProcedureQueryValidator {
         }
     }
 
-    void validateName(ProcedureQuery query, ConfigurationValidationVisitor validator) {
+    void validateName(ProcedureQuery query, ConfigurationValidator validator) {
         String name = query.getName();
 
         // Must have name

@@ -26,7 +26,7 @@ import org.apache.cayenne.query.EJBQLQuery;
 
 class EJBQLQueryValidator {
 
-    void validate(Object object, ConfigurationValidationVisitor validator) {
+    void validate(Object object, ConfigurationValidator validator) {
         EJBQLQuery query = (EJBQLQuery) object;
 
         ProjectPath path = new ProjectPath(new Object[] {

@@ -18,23 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.util.Util;
+import java.util.List;
 
-class DataChannelValidator {
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.project2.Project;
 
-    void validate(
-            Object object,
-            ConfigurationValidator configurationValidator) {
+public class Validator implements DefaultValidator {
 
-        // check for empty name
-        DataChannelDescriptor domain = (DataChannelDescriptor) object;
-        String name = domain.getName();
-        if (Util.isEmptyString(name)) {
-            configurationValidator.registerError("Unnamed DataDomain.", object);
-
-            // no more name assertions
-            return;
-        }
+    private ConfigurationValidator validateVisitor;
+    
+    public List<ValidationInfo> validate(ConfigurationNode node, Project project) {
+        validateVisitor = new ConfigurationValidator(project);
+        return node.acceptVisitor(validateVisitor);
+    }
+    
+    public int getMaxSeverity(){
+        return validateVisitor.getMaxSeverity();
     }
 }

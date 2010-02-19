@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.validate.ConfigurationValidationVisitor;
+import org.apache.cayenne.project2.validate.DefaultValidator;
 import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
@@ -234,9 +234,10 @@ public class CayenneModelerController extends CayenneController {
             // mark project as unsaved
             project.setModified(true);
             projectController.setDirty(true);
-
-            ConfigurationValidationVisitor validatVisitor = new ConfigurationValidationVisitor(project);
-            List<ValidationInfo> object = (List<ValidationInfo>) project.getRootNode().acceptVisitor(validatVisitor);
+            
+            DefaultValidator validator = getApplication().getInjector().getInstance(
+                    DefaultValidator.class);
+            List<ValidationInfo> object = validator.validate(project.getRootNode(), project);
             
             // show warning dialog
             ValidatorDialog.showDialog(frame, object);
