@@ -36,7 +36,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -82,7 +81,7 @@ public class ConfigurationValidationVisitor implements
         return project;
     }
 
-    public List visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
+    public List<ValidationInfo> visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
         dataChannelValidator.validate(channelDescriptor, this);
         Iterator<DataNodeDescriptor> it = channelDescriptor
                 .getNodeDescriptors()
@@ -100,7 +99,7 @@ public class ConfigurationValidationVisitor implements
         return validationResults;
     }
 
-    public List visitDataMap(DataMap dataMap) {
+    public List<ValidationInfo> visitDataMap(DataMap dataMap) {
         mapValidator.validate(dataMap, this);
         Iterator<Embeddable> itEmb = dataMap.getEmbeddables().iterator();
         while (itEmb.hasNext()) {
@@ -163,7 +162,8 @@ public class ConfigurationValidationVisitor implements
     }
 
     public List<ValidationInfo> visitDbRelationship(DbRelationship relationship) {
-        return null;
+        dbRelValidator.validate(relationship, this);
+        return validationResults;
     }
 
     public List<ValidationInfo> visitEmbeddable(Embeddable embeddable) {
