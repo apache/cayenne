@@ -46,14 +46,13 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * A superclass of CayenneModeler controllers.
- * 
  */
 public abstract class CayenneController implements BoundComponent {
 
     private static Log logObj = LogFactory.getLog(CayenneController.class);
 
     protected CayenneController parent;
-    protected static Application application;
+    protected Application application;
     protected PropertyChangeSupport propertyChangeSupport;
 
     public CayenneController(CayenneController parent) {
@@ -65,7 +64,7 @@ public abstract class CayenneController implements BoundComponent {
         this.application = application;
     }
 
-    public static Application getApplication() {
+    public Application getApplication() {
         return application;
     }
 
@@ -111,11 +110,13 @@ public abstract class CayenneController implements BoundComponent {
     protected Preferences getViewPreferences() {
         Preferences pref = getApplication().getMainPreferenceForProject();
         String pathToProject = pref.absolutePath();
-        String path = pathToProject +"/"+ getView().getClass().getName().replace(".", "/");
-        
+        String path = pathToProject
+                + "/"
+                + getView().getClass().getName().replace(".", "/");
+
         return pref.node(path);
     }
-    
+
     /**
      * Utility method to provide a visual indication an execution error. This
      * implementation logs an error and pops up a dialog window with error message.
@@ -125,7 +126,8 @@ public abstract class CayenneController implements BoundComponent {
         logObj.info("Error in " + getClass().getName(), th);
         th.printStackTrace();
 
-        JOptionPane.showMessageDialog(getView(),
+        JOptionPane.showMessageDialog(
+                getView(),
                 th.getMessage(),
                 title,
                 JOptionPane.ERROR_MESSAGE);
@@ -184,7 +186,8 @@ public abstract class CayenneController implements BoundComponent {
                 }
             }
         };
-        dialog.getRootPane().registerKeyboardAction(closeAction,
+        dialog.getRootPane().registerKeyboardAction(
+                closeAction,
                 escReleased,
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
     }

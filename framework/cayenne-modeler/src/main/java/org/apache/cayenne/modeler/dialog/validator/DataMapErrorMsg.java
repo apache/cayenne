@@ -30,26 +30,17 @@ import org.apache.cayenne.project2.validate.ValidationInfo;
 
 /**
  * DataMap validation message.
- * 
  */
 public class DataMapErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
 
-    /**
-     * Constructor for DataMapErrorMsg.
-     * 
-     * @param result
-     */
     public DataMapErrorMsg(ValidationInfo result) {
         super(result);
 
         Object object = result.getValidatedObject();
         map = (DataMap) object;
-        domain = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
+        domain = (DataChannelDescriptor) Application.getProject().getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
@@ -57,5 +48,4 @@ public class DataMapErrorMsg extends ValidationDisplayHandler {
         event = new DataMapDisplayEvent(frame, map, domain);
         mediator.fireDataMapDisplayEvent(event);
     }
-
 }

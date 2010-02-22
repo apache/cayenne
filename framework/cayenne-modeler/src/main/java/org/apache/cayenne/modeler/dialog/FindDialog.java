@@ -194,7 +194,7 @@ public class FindDialog extends CayenneController {
                 .getInstance()
                 .getFrameController()
                 .getView()).getView();
-        DataChannelDescriptor domain = (DataChannelDescriptor) getApplication()
+        DataChannelDescriptor domain = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()
                 .getRootNode();
