@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.commons.collections.ExtendedProperties;
 
-public class UpgradeCayennePreference extends CayennePreferenceDecorator {
+public class UpgradeCayennePreference extends PreferenceDecorator {
 
     /** Name of the preferences file. */
     public static final String PREFERENCES_NAME_OLD = "modeler.preferences";
@@ -45,14 +45,14 @@ public class UpgradeCayennePreference extends CayennePreferenceDecorator {
     public static final String EDITOR_LOGFILE_ENABLED_OLD = "Editor.logfileEnabled";
     public static final String EDITOR_LOGFILE_OLD = "Editor.logfile";
 
-    public UpgradeCayennePreference(Preference decoratedPreference) {
-        super(decoratedPreference);
+    public UpgradeCayennePreference(Preference delegate) {
+        super(delegate);
     }
 
     public void upgrade() {
         try {
 
-            if (!Preferences.userRoot().nodeExists(CAYENNE_PREFERENCE)) {
+            if (!Preferences.userRoot().nodeExists(CAYENNE_PREFERENCES_PATH)) {
 
                 File prefsFile = new File(preferencesDirectory(), PREFERENCES_NAME_OLD);
                 if (prefsFile.exists()) {
@@ -61,26 +61,33 @@ public class UpgradeCayennePreference extends CayennePreferenceDecorator {
                         ep.load(new FileInputStream(prefsFile));
 
                         Preferences prefEditor = Preferences.userRoot().node(
-                                CAYENNE_PREFERENCE).node(EDITOR);
+                                CAYENNE_PREFERENCES_PATH).node(EDITOR);
 
-                        prefEditor.putBoolean(ModelerPreferences.EDITOR_LOGFILE_ENABLED, ep.getBoolean(EDITOR_LOGFILE_ENABLED_OLD));
-                        prefEditor.put(ModelerPreferences.EDITOR_LOGFILE, ep.getString(EDITOR_LOGFILE_OLD));
-                        prefEditor.put(ModelerPreferences.EDITOR_LAFNAME, ep.getString(EDITOR_LAFNAME_OLD));
-                        prefEditor.put(ModelerPreferences.EDITOR_THEMENAME, ep.getString(EDITOR_THEMENAME_OLD));
-                        
+                        prefEditor.putBoolean(
+                                ModelerPreferences.EDITOR_LOGFILE_ENABLED,
+                                ep.getBoolean(EDITOR_LOGFILE_ENABLED_OLD));
+                        prefEditor.put(ModelerPreferences.EDITOR_LOGFILE, ep
+                                .getString(EDITOR_LOGFILE_OLD));
+                        prefEditor.put(ModelerPreferences.EDITOR_LAFNAME, ep
+                                .getString(EDITOR_LAFNAME_OLD));
+                        prefEditor.put(ModelerPreferences.EDITOR_THEMENAME, ep
+                                .getString(EDITOR_THEMENAME_OLD));
+
                         Preferences frefLastProjFiles = prefEditor.node(LAST_PROJ_FILES);
-                        
+
                         Vector arr = ep.getVector(LAST_PROJ_FILES_OLD);
-                        
+
                         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
                             arr.remove(arr.size() - 1);
                         }
-                        
+
                         frefLastProjFiles.clear();
                         int size = arr.size();
-                        
-                        for (int i=0; i< size; i++) {
-                            frefLastProjFiles.put(String.valueOf(i), arr.get(i).toString());
+
+                        for (int i = 0; i < size; i++) {
+                            frefLastProjFiles.put(String.valueOf(i), arr
+                                    .get(i)
+                                    .toString());
                         }
                     }
                     catch (FileNotFoundException e) {
@@ -105,19 +112,21 @@ public class UpgradeCayennePreference extends CayennePreferenceDecorator {
         return CayenneUserDir.getInstance().getDirectory();
     }
 
+    @Override
     public Preferences getRootPreference() {
         upgrade();
-        return decoratedPreference.getRootPreference();
+        return delegate.getRootPreference();
     }
 
+    @Override
     public Preferences getCayennePreference() {
         upgrade();
-        return decoratedPreference.getCayennePreference();
+        return delegate.getCayennePreference();
     }
 
+    @Override
     public Preferences getCurrentPreference() {
         upgrade();
-        return decoratedPreference.getCayennePreference();
+        return delegate.getCayennePreference();
     }
-
 }

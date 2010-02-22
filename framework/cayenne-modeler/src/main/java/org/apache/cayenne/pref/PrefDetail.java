@@ -20,7 +20,6 @@ package org.apache.cayenne.pref;
 
 import java.util.prefs.Preferences;
 
-
 public class PrefDetail extends CayennePreference {
 
     public PrefDetail(Preferences node) {

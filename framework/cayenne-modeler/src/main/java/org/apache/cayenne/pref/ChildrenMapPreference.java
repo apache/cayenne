@@ -29,31 +29,21 @@ import java.util.prefs.Preferences;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
+public class ChildrenMapPreference extends PreferenceDecorator {
 
-public class ChildrenMapPreference extends CayennePreferenceDecorator {
-
-    private Map<String, Object> childrens;
+    private Map<String, Object> children;
     private List<String> removeObject;
-    
 
-    public ChildrenMapPreference(CayennePreference decoratedPreference) {
-        super(decoratedPreference);
-        this.childrens = new HashMap<String, Object>();
+    public ChildrenMapPreference(CayennePreference delegate) {
+        super(delegate);
+        this.children = new HashMap<String, Object>();
         this.removeObject = new ArrayList<String>();
     }
-    
-    public ChildrenMapPreference(CayennePreference decoratedPreference, Preferences preferences) {
-        super(decoratedPreference);
-        decoratedPreference.setCurrentPreference(preferences);
-        this.childrens = new HashMap<String, Object>();
-    }
 
-    public Preferences getCayennePreference() {
-        return decoratedPreference.getCayennePreference();
-    }
-
-    public Preferences getRootPreference() {
-        return decoratedPreference.getRootPreference();
+    public ChildrenMapPreference(CayennePreference delegate, Preferences preferences) {
+        super(delegate);
+        delegate.setCurrentPreference(preferences);
+        this.children = new HashMap<String, Object>();
     }
 
     public void initChildrenPreferences() {
@@ -63,7 +53,7 @@ public class ChildrenMapPreference extends CayennePreferenceDecorator {
             for (int i = 0; i < names.length; i++) {
 
                 try {
-                    Class cls = decoratedPreference.getClass();
+                    Class cls = delegate.getClass();
                     Class partypes[] = new Class[2];
                     partypes[0] = String.class;
                     partypes[1] = boolean.class;
@@ -80,7 +70,7 @@ public class ChildrenMapPreference extends CayennePreferenceDecorator {
 
             }
 
-            this.childrens.putAll(children);
+            this.children.putAll(children);
         }
         catch (BackingStoreException e) {
             e.printStackTrace();
@@ -88,25 +78,21 @@ public class ChildrenMapPreference extends CayennePreferenceDecorator {
     }
 
     public Map getChildrenPreferences() {
-        return childrens;
-    }
-
-    public Preferences getCurrentPreference() {
-        return decoratedPreference.getCurrentPreference();
+        return children;
     }
 
     public CayennePreference getObject(String key) {
-        return (CayennePreference) childrens.get(key);
+        return (CayennePreference) children.get(key);
     }
 
     public void remove(String key) {
         removeObject.add(key);
-        childrens.remove(key);
+        children.remove(key);
     }
 
     public CayennePreference create(String nodeName) {
         try {
-            Class cls = decoratedPreference.getClass();
+            Class cls = delegate.getClass();
             Class partypes[] = new Class[2];
             partypes[0] = String.class;
             partypes[1] = boolean.class;
@@ -115,23 +101,23 @@ public class ChildrenMapPreference extends CayennePreferenceDecorator {
             arglist[0] = nodeName;
             arglist[1] = false;
             Object retobj = ct.newInstance(arglist);
-            childrens.put(nodeName, retobj);
+            children.put(nodeName, retobj);
         }
         catch (Throwable e) {
             new CayenneRuntimeException("Error creating preference");
         }
-        return (CayennePreference) childrens.get(nodeName);
+        return (CayennePreference) children.get(nodeName);
     }
 
     public void create(String nodeName, Object obj) {
-        childrens.put(nodeName, obj);
+        children.put(nodeName, obj);
     }
 
     public void save() {
         if (removeObject.size() > 0) {
             for (int i = 0; i < removeObject.size(); i++) {
                 try {
-                    decoratedPreference
+                    delegate
                             .getCurrentPreference()
                             .node(removeObject.get(i))
                             .removeNode();
@@ -141,20 +127,19 @@ public class ChildrenMapPreference extends CayennePreferenceDecorator {
                 }
             }
         }
-        
-        Iterator it = childrens.entrySet().iterator();
+
+        Iterator it = children.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            
-            decoratedPreference.getCurrentPreference().node((String) pairs.getKey());
-            ((CayennePreference) pairs.getValue())
-                    .saveObjectPreference();
-            
+            Map.Entry pairs = (Map.Entry) it.next();
+
+            delegate.getCurrentPreference().node((String) pairs.getKey());
+            ((CayennePreference) pairs.getValue()).saveObjectPreference();
+
         }
     }
 
     public void cancel() {
-        this.childrens.clear();
+        this.children.clear();
         initChildrenPreferences();
     }
 }

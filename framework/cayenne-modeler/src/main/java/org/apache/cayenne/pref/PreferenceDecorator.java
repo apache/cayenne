@@ -18,13 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.pref;
 
-public abstract class CayennePreferenceDecorator implements Preference {
+import java.util.prefs.Preferences;
 
-    protected Preference decoratedPreference;
-    
-    public CayennePreferenceDecorator (Preference decoratedPreference) {
-        this.decoratedPreference = decoratedPreference;
+public abstract class PreferenceDecorator implements Preference {
+
+    protected Preference delegate;
+
+    public PreferenceDecorator(Preference delegate) {
+        this.delegate = delegate;
     }
 
-    
+    public Preferences getCayennePreference() {
+        return delegate.getCayennePreference();
+    }
+
+    public Preferences getCurrentPreference() {
+        return delegate.getCurrentPreference();
+    }
+
+    public Preferences getRootPreference() {
+        return delegate.getRootPreference();
+    }
 }

@@ -20,21 +20,26 @@ package org.apache.cayenne.pref;
 
 import java.util.prefs.Preferences;
 
-
 public interface Preference {
 
-    /** Key for preferences. */
-    public static final String CAYENNE_PREFERENCE = "org/apache/cayenne";
-    
-    /**  node name for editor */ 
+    /**
+     * Key for preferences.
+     */
+    public static final String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
+
+    /**
+     * Preferences node name for the editor
+     */
     public static final String EDITOR = "editor";
-    
-    /** node name for list of the last 12 opened project files. */
+
+    /**
+     * Preferences node name for list of the last 12 opened project files.
+     */
     public static final String LAST_PROJ_FILES = "lastSeveralProjectFiles";
-    
-    public Preferences getRootPreference();
-    
-    public Preferences getCayennePreference();
-    
-    public Preferences getCurrentPreference();
+
+    Preferences getRootPreference();
+
+    Preferences getCayennePreference();
+
+    Preferences getCurrentPreference();
 }

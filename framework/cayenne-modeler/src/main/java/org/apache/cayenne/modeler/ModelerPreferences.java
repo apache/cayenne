@@ -42,12 +42,12 @@ import org.apache.commons.logging.LogFactory;
 public class ModelerPreferences implements PreferenceChangeListener {
 
     private static Preferences cayennePrefs;
-    
+
     private static final Log logObj = LogFactory.getLog(ModelerPreferences.class);
 
     /** Name of the log file. */
     public static final String LOGFILE_NAME = "modeler.log";
-    
+
     /** List of the last 12 opened project files. */
     public static final int LAST_PROJ_FILES_SIZE = 12;
 
@@ -58,9 +58,9 @@ public class ModelerPreferences implements PreferenceChangeListener {
     /** Log file */
     public static final String EDITOR_LOGFILE_ENABLED = "logfileEnabled";
     public static final String EDITOR_LOGFILE = "logfile";
-    
+
     /*
-     * Number of items in combobox visible without scrolling 
+     * Number of items in combobox visible without scrolling
      */
     public static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;
 
@@ -68,18 +68,19 @@ public class ModelerPreferences implements PreferenceChangeListener {
      * Returns Cayenne preferences singleton.
      */
     public static Preferences getPreferences() {
-        if(cayennePrefs==null){
-            Preference decoratedPref = new UpgradeCayennePreference(new CayennePreference());
+        if (cayennePrefs == null) {
+            Preference decoratedPref = new UpgradeCayennePreference(
+                    new CayennePreference());
             cayennePrefs = decoratedPref.getCayennePreference();
             cayennePrefs.addPreferenceChangeListener(new ModelerPreferences());
         }
         return cayennePrefs;
     }
-    
+
     public static Preferences getEditorPreferences() {
         return getPreferences().node(CayennePreference.EDITOR);
     }
-    
+
     public static Preferences getLastProjFilesPref() {
         return getEditorPreferences().node(CayennePreference.LAST_PROJ_FILES);
     }
@@ -94,10 +95,10 @@ public class ModelerPreferences implements PreferenceChangeListener {
         catch (BackingStoreException e) {
             logObj.warn("Error reading preferences file.", e);
         }
-        if(keys!=null){
+        if (keys != null) {
             int len = keys.length;
-            for(int i = 0; i< len; i++){
-               arrayLastProjFiles.add(filesPrefs.get(keys[i], "")); 
+            for (int i = 0; i < len; i++) {
+                arrayLastProjFiles.add(filesPrefs.get(keys[i], ""));
             }
         }
         return arrayLastProjFiles;

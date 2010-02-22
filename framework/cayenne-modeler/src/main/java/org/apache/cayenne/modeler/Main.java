@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler;
 
 import java.io.File;
@@ -48,7 +47,7 @@ import com.jgoodies.looks.plastic.PlasticTheme;
  */
 public class Main {
 
-    private static Log logObj = LogFactory.getLog(Main.class);
+    private static Log logger = LogFactory.getLog(Main.class);
 
     /**
      * Main method that starts the CayenneModeler.
@@ -75,7 +74,9 @@ public class Main {
                 f = new File(f, Configuration.DEFAULT_DOMAIN_FILE);
             }
 
-            if (f.isFile() && f.getName().startsWith("cayenne") && f.getName().endsWith(".xml")) {
+            if (f.isFile()
+                    && f.getName().startsWith("cayenne")
+                    && f.getName().endsWith(".xml")) {
                 return f;
             }
         }
@@ -84,15 +85,21 @@ public class Main {
     }
 
     protected static File projectFileFromPrefs() {
-        // This must be run after the application has already been bootstrapped.  Otherwise, the returned
+        // This must be run after the application has already been bootstrapped.
+        // Otherwise, the returned
         // app instance will be null.
-        
-        Preferences autoLoadPref = Application.getInstance().getPreferencesNode(ClassGenerationAction.class, "");
-        
-        if ((autoLoadPref != null) && (true == autoLoadPref.getBoolean(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, false))) {
+
+        Preferences autoLoadPref = Application.getInstance().getPreferencesNode(
+                ClassGenerationAction.class,
+                "");
+
+        if ((autoLoadPref != null)
+                && (true == autoLoadPref.getBoolean(
+                        GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE,
+                        false))) {
 
             List<String> arr = ModelerPreferences.getLastProjFiles();
-            if(arr.size()>0){
+            if (arr.size() > 0) {
                 return new File((String) arr.get(0));
             }
         }
@@ -100,7 +107,7 @@ public class Main {
     }
 
     protected void runModeler(final File projectFile) {
-        logObj.info("Starting CayenneModeler.");
+        logger.info("Starting CayenneModeler.");
 
         // set up UI
         configureLookAndFeel();
@@ -117,7 +124,8 @@ public class Main {
                     File projectFileFromPrefs = projectFileFromPrefs();
 
                     if (null != projectFileFromPrefs) {
-                        OpenProjectAction action = new OpenProjectAction(Application.instance);
+                        OpenProjectAction action = new OpenProjectAction(
+                                Application.instance);
                         action.openProject(projectFileFromPrefs);
                     }
                 }
@@ -133,8 +141,8 @@ public class Main {
             return true;
         }
         catch (Exception ex) {
-            logObj.fatal("CayenneModeler requires JDK 1.5.");
-            logObj.fatal("Found : '"
+            logger.fatal("CayenneModeler requires JDK 1.5.");
+            logger.fatal("Found : '"
                     + System.getProperty("java.version")
                     + "' at "
                     + System.getProperty("java.home"));
@@ -154,10 +162,10 @@ public class Main {
      * Configures Log4J appenders to perform logging to $HOME/.cayenne/modeler.log.
      */
     protected void configureLogging() {
- 
+
         // get preferences
         Preferences prefs = ModelerPreferences.getEditorPreferences();
-        
+
         // check whether to set up logging to a file
         boolean logfileEnabled = prefs.getBoolean(
                 ModelerPreferences.EDITOR_LOGFILE_ENABLED,
@@ -167,9 +175,8 @@ public class Main {
 
         if (logfileEnabled) {
             String defaultPath = getLogFile().getPath();
-            String logfilePath = prefs.get(
-                    ModelerPreferences.EDITOR_LOGFILE,
-                    defaultPath);
+            String logfilePath = prefs
+                    .get(ModelerPreferences.EDITOR_LOGFILE, defaultPath);
             try {
                 // use logfile from preferences or default
 
@@ -190,13 +197,10 @@ public class Main {
 
                     // remember working path
                     prefs.put(ModelerPreferences.EDITOR_LOGFILE, logfilePath);
-
-                    // TODO: andrus, 8/16/2006 - redirect STDOUT and STDERR to file??
-                    // TODO: andrus, 8/16/2006 - use Java logging API with comons-logging
                 }
             }
             catch (IOException ioex) {
-                logObj.warn("Error setting logging - " + logfilePath, ioex);
+                logger.warn("Error setting logging - " + logfilePath, ioex);
             }
         }
     }
@@ -231,7 +235,7 @@ public class Main {
             if (PlasticLookAndFeel.class.isAssignableFrom(lf)) {
                 PlasticTheme foundTheme = themeWithName(themeName);
                 if (foundTheme == null) {
-                    logObj.warn("Could not set selected theme '"
+                    logger.warn("Could not set selected theme '"
                             + themeName
                             + "' - using default '"
                             + ModelerConstants.DEFAULT_THEME_NAME
@@ -249,7 +253,7 @@ public class Main {
             UIManager.setLookAndFeel(lfName);
         }
         catch (Exception e) {
-            logObj.warn("Could not set selected LookAndFeel '"
+            logger.warn("Could not set selected LookAndFeel '"
                     + lfName
                     + "' - using default '"
                     + ModelerConstants.DEFAULT_LAF_NAME

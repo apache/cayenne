@@ -24,15 +24,12 @@ public class CayennePreference implements Preference {
 
     private Preferences rootPreference;
     private Preferences cayennePreference;
-
     private Preferences currentPreference;
 
-    
     public Preferences getCurrentPreference() {
         return currentPreference;
     }
 
-    
     public void setCurrentPreference(Preferences currentPreference) {
         this.currentPreference = currentPreference;
     }
@@ -46,7 +43,7 @@ public class CayennePreference implements Preference {
 
     public Preferences getCayennePreference() {
         if (cayennePreference == null) {
-            cayennePreference = getRootPreference().node(CAYENNE_PREFERENCE);
+            cayennePreference = getRootPreference().node(CAYENNE_PREFERENCES_PATH);
         }
         return cayennePreference;
     }
@@ -61,13 +58,13 @@ public class CayennePreference implements Preference {
     public void setCurrentNodeForPreference(Class className, String path) {
         currentPreference = getNode(className, path);
     }
-    
-    public void setObject(CayennePreference object){
+
+    public void setObject(CayennePreference object) {
     }
-    
+
     public void saveObjectPreference() {
     }
-    
+
     public static String filePathToPrefereceNodePath(String path) {
         return path.replace(".xml", "");
     }
