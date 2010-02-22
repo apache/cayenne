@@ -16,14 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.project2.Project;
 
-public class DefaultValidator implements Validator {
+public class DefaultProjectValidator implements ProjectValidator {
 
-    private ConfigurationValidator validateVisitor;
+    private ValidationResults validateVisitor;
 
     /* Validators */
     private DataChannelValidator dataChannelValidator;
@@ -44,7 +44,7 @@ public class DefaultValidator implements Validator {
     private EJBQLQueryValidator ejbqlQueryValidator;
     private SQLTemplateValidator sqlTemplateValidator;
 
-    DefaultValidator() {
+    DefaultProjectValidator() {
         dataChannelValidator = new DataChannelValidator();
         nodeValidator = new DataNodeValidator();
         mapValidator = new DataMapValidator();
@@ -64,19 +64,9 @@ public class DefaultValidator implements Validator {
         sqlTemplateValidator = new SQLTemplateValidator();
     }
 
-    public ConfigurationValidator validate(ConfigurationNode node, Project project) {
-        initConfigurationValidator(project);
-        node.acceptVisitor(validateVisitor);
-        return validateVisitor;
-    }
-
-    private void initConfigurationValidator(Project project) {
-        if (validateVisitor == null || !validateVisitor.getProject().equals(project)) {
-            validateVisitor = new ConfigurationValidator(project, this);
-        }
-        else {
-            validateVisitor.getValidationResults().clear();
-        }
+    public ValidationResults validate(ConfigurationNode node, Project project) {
+        ValidationResults res = new ValidationResults(node, project, this);
+        return res;
     }
 
     DataChannelValidator getDataChannelValidator() {

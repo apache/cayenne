@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -25,21 +25,16 @@ import org.apache.cayenne.util.Util;
 
 class DataMapValidator {
 
-    void validate(
-            Object object,
-            ConfigurationValidator configurationValidator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         DataMap map = (DataMap) object;
-        validateName(map, object, configurationValidator);
+        validateName(map, object, validationVisitor);
 
         // check if data map is not attached to any nodes
-        validateNodeLinks(map, object, configurationValidator);
+        validateNodeLinks(map, object, validationVisitor);
     }
 
-    void validateNodeLinks(
-            DataMap map,
-            Object object,
-            ConfigurationValidator validator) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) validator
+    void validateNodeLinks(DataMap map, Object object, ValidationVisitor validationVisitor) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) validationVisitor
                 .getProject()
                 .getRootNode();
         if (domain == null) {
@@ -57,19 +52,19 @@ class DataMapValidator {
         }
 
         if (unlinked && nodeCount > 0) {
-            validator.registerWarning("DataMap is not linked to any DataNodes.", object);
+            validationVisitor.registerWarning("DataMap is not linked to any DataNodes.", object);
         }
     }
 
-    void validateName(DataMap map, Object object, ConfigurationValidator validator) {
+    void validateName(DataMap map, Object object, ValidationVisitor validationVisitor) {
         String name = map.getName();
 
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed DataMap.", object);
+            validationVisitor.registerError("Unnamed DataMap.", object);
             return;
         }
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) validator
+        DataChannelDescriptor domain = (DataChannelDescriptor) validationVisitor
                 .getProject()
                 .getRootNode();
         if (domain == null) {
@@ -83,7 +78,7 @@ class DataMapValidator {
             }
 
             if (name.equals(otherMap.getName())) {
-                validator.registerError("Duplicate DataMap name: " + name + ".", object);
+                validationVisitor.registerError("Duplicate DataMap name: " + name + ".", object);
                 return;
             }
         }

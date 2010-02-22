@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -25,12 +25,12 @@ import org.apache.cayenne.util.Util;
 
 class DbAttributeValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         DbAttribute attribute = (DbAttribute) object;
 
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
-            validator.registerError("Unnamed DbAttribute.", object);
+            validationVisitor.registerError("Unnamed DbAttribute.", object);
         }
         else {
             MappingNamesHelper helper = MappingNamesHelper.getInstance();
@@ -38,7 +38,7 @@ class DbAttributeValidator {
                     .getName());
 
             if (invalidChars != null) {
-                validator.registerWarning(
+                validationVisitor.registerWarning(
                         "DbAttribute name contains invalid characters: " + invalidChars,
                         object);
             }
@@ -46,14 +46,14 @@ class DbAttributeValidator {
 
         // all attributes must have type
         if (attribute.getType() == TypesMapping.NOT_DEFINED) {
-            validator.registerWarning("DbAttribute has no type.", object);
+            validationVisitor.registerWarning("DbAttribute has no type.", object);
         }
 
         // VARCHAR and CHAR attributes must have max length
         else if (attribute.getMaxLength() < 0
                 && (attribute.getType() == java.sql.Types.VARCHAR || attribute.getType() == java.sql.Types.CHAR)) {
 
-            validator.registerWarning(
+            validationVisitor.registerWarning(
                     "Character DbAttribute doesn't have max length.",
                     object);
         }

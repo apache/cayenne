@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -24,32 +24,34 @@ import org.apache.cayenne.util.Util;
 
 class ProcedureParameterValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
 
         ProcedureParameter parameter = (ProcedureParameter) object;
 
         // Must have name
         if (Util.isEmptyString(parameter.getName())) {
-            validator.registerError("Unnamed ProcedureParameter.", object);
+            validationVisitor.registerError("Unnamed ProcedureParameter.", object);
         }
 
         // all attributes must have type
         if (parameter.getType() == TypesMapping.NOT_DEFINED) {
-            validator.registerWarning("ProcedureParameter has no type.", object);
+            validationVisitor.registerWarning("ProcedureParameter has no type.", object);
         }
 
         // VARCHAR and CHAR attributes must have max length
         if (parameter.getMaxLength() < 0
                 && (parameter.getType() == java.sql.Types.VARCHAR || parameter.getType() == java.sql.Types.CHAR)) {
 
-            validator.registerWarning(
+            validationVisitor.registerWarning(
                     "Character procedure parameter doesn't have max length.",
                     object);
         }
 
         // all attributes must have type
         if (parameter.getDirection() <= 0) {
-            validator.registerWarning("ProcedureParameter has no direction.", object);
+            validationVisitor.registerWarning(
+                    "ProcedureParameter has no direction.",
+                    object);
         }
     }
 }

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -25,11 +25,11 @@ import org.apache.cayenne.util.Util;
 
 class DbEntityValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         DbEntity ent = (DbEntity) object;
-        validateName(ent, object, validator);
-        validateAttributes(ent, object, validator);
-        validatePK(ent, object, validator);
+        validateName(ent, object, validationVisitor);
+        validateAttributes(ent, object, validationVisitor);
+        validatePK(ent, object, validationVisitor);
     }
 
     /**
@@ -37,12 +37,12 @@ class DbEntityValidator {
      * map also conatins an ObjEntity mapped to this entity, since unmapped primary key is
      * ok if working with data rows.
      */
-    void validatePK(DbEntity ent, Object object, ConfigurationValidator validator) {
+    void validatePK(DbEntity ent, Object object, ValidationVisitor validationVisitor) {
         if (ent.getAttributes().size() > 0 && ent.getPrimaryKeys().size() == 0) {
             DataMap map = ent.getDataMap();
             if (map != null && map.getMappedEntities(ent).size() > 0) {
                 // there is an objentity, so complain about no pk
-                validator.registerWarning("DbEntity \""
+                validationVisitor.registerWarning("DbEntity \""
                         + ent.getName()
                         + "\" has no primary key attributes defined.", object);
             }
@@ -55,24 +55,21 @@ class DbEntityValidator {
     void validateAttributes(
             DbEntity ent,
             Object object,
-            ConfigurationValidator validator) {
+            ValidationVisitor validationVisitor) {
         if (ent.getAttributes().size() == 0) {
             // complain about missing attributes
-            validator.registerWarning("DbEntity \""
+            validationVisitor.registerWarning("DbEntity \""
                     + ent.getName()
                     + "\" has no attributes defined.", object);
         }
     }
 
-    void validateName(
-            DbEntity ent,
-            Object object,
-            ConfigurationValidator validator) {
+    void validateName(DbEntity ent, Object object, ValidationVisitor validationVisitor) {
         String name = ent.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed DbEntity.", object);
+            validationVisitor.registerError("Unnamed DbEntity.", object);
             return;
         }
 
@@ -89,9 +86,9 @@ class DbEntityValidator {
                 }
 
                 if (name.equals(otherEnt.getName())) {
-                    validator.registerError(
-                            "Duplicate DbEntity name: " + name + ".",
-                            object);
+                    validationVisitor.registerError("Duplicate DbEntity name: "
+                            + name
+                            + ".", object);
                     break;
                 }
             }

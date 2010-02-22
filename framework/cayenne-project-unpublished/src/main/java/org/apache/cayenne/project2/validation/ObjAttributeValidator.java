@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,12 +32,12 @@ import org.apache.cayenne.util.Util;
 
 class ObjAttributeValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         ObjAttribute attribute = (ObjAttribute) object;
 
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
-            validator.registerError("Unnamed ObjAttribute.", object);
+            validationVisitor.registerError("Unnamed ObjAttribute.", object);
         }
         else {
             MappingNamesHelper helper = MappingNamesHelper.getInstance();
@@ -45,19 +45,19 @@ class ObjAttributeValidator {
                     .getName());
 
             if (invalidChars != null) {
-                validator.registerWarning(
+                validationVisitor.registerWarning(
                         "ObjAttribute name contains invalid characters: " + invalidChars,
                         object);
             }
             else if (helper.invalidDataObjectProperty(attribute.getName())) {
-                validator.registerWarning("ObjAttribute name is invalid: "
+                validationVisitor.registerWarning("ObjAttribute name is invalid: "
                         + attribute.getName(), object);
             }
         }
 
         // all attributes must have type
         if (Util.isEmptyString(attribute.getType())) {
-            validator.registerWarning("ObjAttribute has no type.", object);
+            validationVisitor.registerWarning("ObjAttribute has no type.", object);
         }
 
         if (attribute.getEntity() instanceof ObjEntity
@@ -69,12 +69,14 @@ class ObjAttributeValidator {
                     .getAttributeOverrides();
             Embeddable emb = ((EmbeddedAttribute) attribute).getEmbeddable();
             if (emb == null && ((EmbeddedAttribute) attribute).getType() != null) {
-                validator.registerWarning(
+                validationVisitor.registerWarning(
                         "EmbeddedAttribute has incorrect Embeddable.",
                         object);
             }
             else if (emb == null && ((EmbeddedAttribute) attribute).getType() == null) {
-                validator.registerWarning("EmbeddedAttribute has no Embeddable.", object);
+                validationVisitor.registerWarning(
+                        "EmbeddedAttribute has no Embeddable.",
+                        object);
             }
 
             if (emb != null) {
@@ -93,14 +95,14 @@ class ObjAttributeValidator {
                     }
 
                     if (dbAttributeName == "" || dbAttributeName == null) {
-                        validator.registerWarning(
+                        validationVisitor.registerWarning(
                                 "EmbeddedAttribute has no DbAttribute mapping.",
                                 object);
                     }
                     else if (((ObjEntity) attribute.getEntity())
                             .getDbEntity()
                             .getAttribute(dbAttributeName) == null) {
-                        validator.registerWarning(
+                        validationVisitor.registerWarning(
                                 "EmbeddedAttribute has incorrect DbAttribute mapping.",
                                 object);
                     }
@@ -109,14 +111,18 @@ class ObjAttributeValidator {
 
         }
         else if (attribute.getDbAttribute() == null) {
-            validator.registerWarning("ObjAttribute has no DbAttribute mapping.", object);
+            validationVisitor.registerWarning(
+                    "ObjAttribute has no DbAttribute mapping.",
+                    object);
         }
         // can't support generated meaningful attributes for now; besides they don't make
         // sense.
         else if (attribute.getDbAttribute().isPrimaryKey()
                 && attribute.getDbAttribute().isGenerated()) {
-            validator.registerWarning("ObjAttribute is mapped to a generated PK: "
-                    + attribute.getDbAttributeName(), object);
+            validationVisitor.registerWarning(
+                    "ObjAttribute is mapped to a generated PK: "
+                            + attribute.getDbAttributeName(),
+                    object);
         }
     }
 }

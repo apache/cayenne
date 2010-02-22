@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 /**
  * ValidationInfo encapsulates information about a single node validation on the project
@@ -44,7 +44,7 @@ public class ValidationInfo {
     /**
      * Returns the object identifing a location described by this ValidationInfo.
      */
-    public Object getValidatedObject() {
+    public Object getObject() {
         return object;
     }
 

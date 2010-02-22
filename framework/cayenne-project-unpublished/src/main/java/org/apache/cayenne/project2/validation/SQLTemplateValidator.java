@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.Query;
@@ -25,15 +25,15 @@ import org.apache.cayenne.util.Util;
 
 class SQLTemplateValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         SQLTemplate query = (SQLTemplate) object;
 
-        validateName(query, validator);
-        validateRoot(query, validator);
-        validateDefaultSQL(query, validator);
+        validateName(query, validationVisitor);
+        validateRoot(query, validationVisitor);
+        validateDefaultSQL(query, validationVisitor);
     }
 
-    void validateDefaultSQL(SQLTemplate query, ConfigurationValidator validator) {
+    void validateDefaultSQL(SQLTemplate query, ValidationVisitor validationVisitor) {
 
         if (Util.isEmptyString(query.getDefaultTemplate())) {
             // see if there is at least one adapter-specific template...
@@ -44,23 +44,23 @@ class SQLTemplateValidator {
                 }
             }
 
-            validator.registerWarning("Query has no default SQL template", query);
+            validationVisitor.registerWarning("Query has no default SQL template", query);
         }
     }
 
-    void validateRoot(SQLTemplate query, ConfigurationValidator validator) {
+    void validateRoot(SQLTemplate query, ValidationVisitor validationVisitor) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
-            validator.registerWarning("Query has no root", query);
+            validationVisitor.registerWarning("Query has no root", query);
         }
     }
 
-    void validateName(SQLTemplate query, ConfigurationValidator validator) {
+    void validateName(SQLTemplate query, ValidationVisitor validationVisitor) {
         String name = query.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed Query.", query);
+            validationVisitor.registerError("Unnamed Query.", query);
             return;
         }
 
@@ -76,7 +76,9 @@ class SQLTemplateValidator {
             }
 
             if (name.equals(otherQuery.getName())) {
-                validator.registerError("Duplicate Query name: " + name + ".", query);
+                validationVisitor.registerError(
+                        "Duplicate Query name: " + name + ".",
+                        query);
                 break;
             }
         }

@@ -16,32 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project2.validate.EJBQLStatementValidator.PositionException;
-import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.util.Util;
 
-class EJBQLQueryValidator {
+class DataChannelValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
-        EJBQLQuery query = (EJBQLQuery) object;
+    void validate(Object object, ValidationVisitor validationVisitor) {
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validator.getProject().getRootNode(),
-                query.getDataMap(), query
-        });
+        // check for empty name
+        DataChannelDescriptor domain = (DataChannelDescriptor) object;
+        String name = domain.getName();
+        if (Util.isEmptyString(name)) {
+            validationVisitor.registerError("Unnamed DataDomain.", object);
 
-        PositionException message = (new EJBQLStatementValidator()).validateEJBQL(query, new EntityResolver(
-                ((DataChannelDescriptor) validator.getProject().getRootNode())
-                        .getDataMaps()));
-
-        if (message != null) {
-            validator.registerWarning(
-                    "EJBQL query " + query.getName() + " has error.",
-                    path);
+            // no more name assertions
+            return;
         }
     }
 }

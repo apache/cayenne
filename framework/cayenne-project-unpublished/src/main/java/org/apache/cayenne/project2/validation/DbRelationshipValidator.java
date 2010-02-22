@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -25,16 +25,16 @@ import org.apache.cayenne.util.Util;
 
 class DbRelationshipValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         DbRelationship rel = (DbRelationship) object;
 
         if (rel.getTargetEntity() == null) {
-            validator.registerWarning("DbRelationship "
+            validationVisitor.registerWarning("DbRelationship "
                     + dbRelationshipIdentifier(rel)
                     + " has no target entity.", object);
         }
         else if (rel.getJoins().size() == 0) {
-            validator.registerWarning("DbRelationship "
+            validationVisitor.registerWarning("DbRelationship "
                     + dbRelationshipIdentifier(rel)
                     + " has no joins.", object);
         }
@@ -42,7 +42,7 @@ class DbRelationshipValidator {
             // validate joins
             for (final DbJoin join : rel.getJoins()) {
                 if (join.getSource() == null && join.getTarget() == null) {
-                    validator
+                    validationVisitor
                             .registerWarning(
                                     "DbRelationship "
                                             + dbRelationshipIdentifier(rel)
@@ -50,12 +50,12 @@ class DbRelationshipValidator {
                                     object);
                 }
                 else if (join.getSource() == null) {
-                    validator.registerWarning("DbRelationship "
+                    validationVisitor.registerWarning("DbRelationship "
                             + dbRelationshipIdentifier(rel)
                             + " join has no source attribute selected.", object);
                 }
                 else if (join.getTarget() == null) {
-                    validator.registerWarning("DbRelationship "
+                    validationVisitor.registerWarning("DbRelationship "
                             + dbRelationshipIdentifier(rel)
                             + " join has no target attribute selected.", object);
                 }
@@ -63,11 +63,11 @@ class DbRelationshipValidator {
         }
 
         if (Util.isEmptyString(rel.getName())) {
-            validator.registerError("Unnamed DbRelationship.", object);
+            validationVisitor.registerError("Unnamed DbRelationship.", object);
         }
         // check if there are attributes having the same name
         else if (rel.getSourceEntity().getAttribute(rel.getName()) != null) {
-            validator.registerError("DbRelationship "
+            validationVisitor.registerError("DbRelationship "
                     + dbRelationshipIdentifier(rel)
                     + " has the same name as one of DbAttributes", object);
         }
@@ -76,7 +76,7 @@ class DbRelationshipValidator {
             String invalidChars = helper.invalidCharsInDbPathComponent(rel.getName());
 
             if (invalidChars != null) {
-                validator.registerWarning("DbRelationship "
+                validationVisitor.registerWarning("DbRelationship "
                         + dbRelationshipIdentifier(rel)
                         + " name contains invalid characters: "
                         + invalidChars, object);

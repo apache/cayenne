@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
 
 /**
  * DataNode validation message.
@@ -43,7 +43,7 @@ public class DataNodeErrorMsg extends ValidationDisplayHandler {
      */
     public DataNodeErrorMsg(ValidationInfo result) {
         super(result);
-        Object object = result.getValidatedObject();
+        Object object = result.getObject();
         node = (DataNodeDescriptor) object;
         domain = (DataChannelDescriptor) Application
                 .getInstance()

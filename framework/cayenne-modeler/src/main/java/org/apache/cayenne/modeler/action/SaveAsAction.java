@@ -39,8 +39,8 @@ import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
-import org.apache.cayenne.project2.validate.ConfigurationValidator;
-import org.apache.cayenne.project2.validate.Validator;
+import org.apache.cayenne.project2.validation.ValidationResults;
+import org.apache.cayenne.project2.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
 
 /**
@@ -156,11 +156,11 @@ public class SaveAsAction extends CayenneAction {
 
     public synchronized void performAction(int warningLevel) {
         
-        Validator validator = getApplication().getInjector().getInstance(
-                Validator.class);
-        ConfigurationValidator configurationValidator = validator.validate(getCurrentProject().getRootNode(), getCurrentProject());
+        ProjectValidator projectValidator = getApplication().getInjector().getInstance(
+                ProjectValidator.class);
+        ValidationResults validationResults = projectValidator.validate(getCurrentProject().getRootNode(), getCurrentProject());
         
-        int validationCode = configurationValidator.getMaxSeverity();
+        int validationCode = validationResults.getMaxSeverity();
 
         // If no serious errors, perform save.
         if (validationCode < ValidationDisplayHandler.ERROR) {
@@ -178,7 +178,7 @@ public class SaveAsAction extends CayenneAction {
 
         // If there were errors or warnings at validation, display them
         if (validationCode >= warningLevel) {
-            ValidatorDialog.showDialog(Application.getFrame(), configurationValidator.getValidationResults());
+            ValidatorDialog.showDialog(Application.getFrame(), validationResults.getValidationResults());
         }
     }
 

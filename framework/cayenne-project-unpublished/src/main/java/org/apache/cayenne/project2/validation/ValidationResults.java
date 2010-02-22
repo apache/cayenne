@@ -16,12 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -43,17 +44,18 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 
-public class ConfigurationValidator implements ConfigurationNodeVisitor<List<ValidationInfo>> {
+public class ValidationResults {
 
-    private List<ValidationInfo> validationResults = new ArrayList<ValidationInfo>();
-    
+    private List<ValidationInfo> validationResults;
     private int maxSeverity;
-    private Project project;
-    DefaultValidator defaultValidator;
 
-    ConfigurationValidator(Project project, DefaultValidator defaultValidator) {
-        this.project = project;
-        this.defaultValidator = defaultValidator;
+    public ValidationResults(ConfigurationNode node, Project project,
+            DefaultProjectValidator defaultProjectValidator) {
+        ValidationVisitor vis = new ValidationVisitor(
+                defaultProjectValidator,
+                project);
+        validationResults = node.acceptVisitor(vis);
+        this.maxSeverity = vis.getMaxSeverity();
     }
 
     public int getMaxSeverity() {
@@ -63,14 +65,33 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
     public List<ValidationInfo> getValidationResults() {
         return validationResults;
     }
-    
+}
+
+class ValidationVisitor implements ConfigurationNodeVisitor<List<ValidationInfo>> {
+
+    private List<ValidationInfo> validationResults = new ArrayList<ValidationInfo>();
+    private int maxSeverity;
+
+    private DefaultProjectValidator defaultProjectValidator;
+    private Project project;
+
+    int getMaxSeverity() {
+        return maxSeverity;
+    }
+
     Project getProject() {
         return project;
     }
 
+    ValidationVisitor(DefaultProjectValidator defaultProjectValidator,
+            Project project) {
+        this.defaultProjectValidator = defaultProjectValidator;
+        this.project = project;
+    }
+
     public List<ValidationInfo> visitDataChannelDescriptor(
             DataChannelDescriptor channelDescriptor) {
-        defaultValidator.getDataChannelValidator().validate(
+        defaultProjectValidator.getDataChannelValidator().validate(
                 channelDescriptor,
                 this);
         Iterator<DataNodeDescriptor> it = channelDescriptor
@@ -90,7 +111,7 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
     }
 
     public List<ValidationInfo> visitDataMap(DataMap dataMap) {
-        defaultValidator.getMapValidator().validate(dataMap, this);
+        defaultProjectValidator.getMapValidator().validate(dataMap, this);
         Iterator<Embeddable> itEmb = dataMap.getEmbeddables().iterator();
         while (itEmb.hasNext()) {
             Embeddable emb = itEmb.next();
@@ -125,17 +146,17 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
     }
 
     public List<ValidationInfo> visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-        defaultValidator.getNodeValidator().validate(nodeDescriptor, this);
+        defaultProjectValidator.getNodeValidator().validate(nodeDescriptor, this);
         return validationResults;
     }
 
     public List<ValidationInfo> visitDbAttribute(DbAttribute attribute) {
-        defaultValidator.getDbAttrValidator().validate(attribute, this);
+        defaultProjectValidator.getDbAttrValidator().validate(attribute, this);
         return validationResults;
     }
 
     public List<ValidationInfo> visitDbEntity(DbEntity entity) {
-        defaultValidator.getDbEntityValidator().validate(entity, this);
+        defaultProjectValidator.getDbEntityValidator().validate(entity, this);
 
         Iterator<DbAttribute> itAttr = entity.getAttributes().iterator();
         while (itAttr.hasNext()) {
@@ -152,12 +173,12 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
     }
 
     public List<ValidationInfo> visitDbRelationship(DbRelationship relationship) {
-        defaultValidator.getDbRelValidator().validate(relationship, this);
+        defaultProjectValidator.getDbRelValidator().validate(relationship, this);
         return validationResults;
     }
 
     public List<ValidationInfo> visitEmbeddable(Embeddable embeddable) {
-        defaultValidator.getEmbeddableValidator().validate(embeddable, this);
+        defaultProjectValidator.getEmbeddableValidator().validate(embeddable, this);
         Iterator<EmbeddableAttribute> it = embeddable.getAttributes().iterator();
         while (it.hasNext()) {
             EmbeddableAttribute attr = it.next();
@@ -167,19 +188,19 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
     }
 
     public List<ValidationInfo> visitEmbeddableAttribute(EmbeddableAttribute attribute) {
-        defaultValidator.getEmbeddableAttributeValidator().validate(
+        defaultProjectValidator.getEmbeddableAttributeValidator().validate(
                 attribute,
                 this);
         return validationResults;
     }
 
     public List<ValidationInfo> visitObjAttribute(ObjAttribute attribute) {
-        defaultValidator.getObjAttrValidator().validate(attribute, this);
+        defaultProjectValidator.getObjAttrValidator().validate(attribute, this);
         return validationResults;
     }
 
     public List<ValidationInfo> visitObjEntity(ObjEntity entity) {
-        defaultValidator.getObjEntityValidator().validate(entity, this);
+        defaultProjectValidator.getObjEntityValidator().validate(entity, this);
 
         Iterator<ObjAttribute> itAttr = entity.getAttributes().iterator();
         while (itAttr.hasNext()) {
@@ -196,12 +217,12 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
     }
 
     public List<ValidationInfo> visitObjRelationship(ObjRelationship relationship) {
-        defaultValidator.getObjRelValidator().validate(relationship, this);
+        defaultProjectValidator.getObjRelValidator().validate(relationship, this);
         return validationResults;
     }
 
     public List<ValidationInfo> visitProcedure(Procedure procedure) {
-        defaultValidator.getProcedureValidator().validate(procedure, this);
+        defaultProjectValidator.getProcedureValidator().validate(procedure, this);
         ProcedureParameter parameter = procedure.getResultParam();
         visitProcedureParameter(parameter);
         Iterator<ProcedureParameter> itPrOut = procedure
@@ -221,24 +242,24 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
     }
 
     public List<ValidationInfo> visitProcedureParameter(ProcedureParameter parameter) {
-        defaultValidator.getProcedureParameterValidator().validate(
-                parameter,
-                this);
+        defaultProjectValidator
+                .getProcedureParameterValidator()
+                .validate(parameter, this);
         return validationResults;
     }
 
     public List<ValidationInfo> visitQuery(Query query) {
         if (query instanceof SelectQuery) {
-            defaultValidator.getSelectQueryValidator().validate(query, this);
+            defaultProjectValidator.getSelectQueryValidator().validate(query, this);
         }
         else if (query instanceof SQLTemplate) {
-            defaultValidator.getSqlTemplateValidator().validate(query, this);
+            defaultProjectValidator.getSqlTemplateValidator().validate(query, this);
         }
         else if (query instanceof ProcedureQuery) {
-            defaultValidator.getProcedureQueryValidator().validate(query, this);
+            defaultProjectValidator.getProcedureQueryValidator().validate(query, this);
         }
         else if (query instanceof EJBQLQuery) {
-            defaultValidator.getEjbqlQueryValidator().validate(query, this);
+            defaultProjectValidator.getEjbqlQueryValidator().validate(query, this);
         }
         else {
             // ignore unknown nodes
@@ -266,10 +287,5 @@ public class ConfigurationValidator implements ConfigurationNodeVisitor<List<Val
 
     public void registerWarning(String message, Object object) {
         registerValidated(ValidationInfo.WARNING, message, object);
-    }
-
-    /** Return collection of ValidationInfo objects from last validation. */
-    public List<ValidationInfo> validationResults() {
-        return validationResults;
     }
 }

@@ -32,7 +32,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
 import org.apache.cayenne.query.Query;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +53,7 @@ public abstract class ValidationDisplayHandler {
     protected DataChannelDescriptor domain;
 
     public static ValidationDisplayHandler getErrorMsg(ValidationInfo result) {
-        Object validatedObj = result.getValidatedObject();
+        Object validatedObj = result.getObject();
 
         ValidationDisplayHandler msg = null;
         if (validatedObj instanceof Embeddable) {
@@ -130,7 +130,7 @@ public abstract class ValidationDisplayHandler {
     }
 
     public Object getObject() {
-        return validationInfo.getValidatedObject();
+        return validationInfo.getObject();
     }
 
     public ValidationInfo getValidationInfo() {

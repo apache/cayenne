@@ -28,7 +28,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
 
 /**
  */
@@ -39,7 +39,7 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        Object object = super.validationInfo.getValidatedObject();
+        Object object = super.validationInfo.getObject();
 
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator
                 .getProject()

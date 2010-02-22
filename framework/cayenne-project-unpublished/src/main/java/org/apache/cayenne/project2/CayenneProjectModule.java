@@ -23,8 +23,8 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Scopes;
 import org.apache.cayenne.project2.upgrade.ProjectUpgrader;
 import org.apache.cayenne.project2.upgrade.v6.ProjectUpgrader_V6;
-import org.apache.cayenne.project2.validate.DefaultValidator;
-import org.apache.cayenne.project2.validate.Validator;
+import org.apache.cayenne.project2.validation.DefaultProjectValidator;
+import org.apache.cayenne.project2.validation.ProjectValidator;
 
 /**
  * A dependency injection (DI) module contributing configuration related to Cayenne
@@ -40,6 +40,6 @@ public class CayenneProjectModule implements Module {
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(Scopes.SINGLETON);
         binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V6.class).in(
                 Scopes.SINGLETON);
-        binder.bind(Validator.class).to(DefaultValidator.class).in(Scopes.SINGLETON);
+        binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class).in(Scopes.SINGLETON);
     }
 }

@@ -30,7 +30,7 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
 
 /**
  * Relationship validation message.
@@ -49,7 +49,7 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
      */
     public RelationshipErrorMsg(ValidationInfo result) {
         super(result);
-        Object object = result.getValidatedObject();
+        Object object = result.getObject();
         rel = (Relationship) object;
         entity = rel.getSourceEntity();
         map = entity.getDataMap();

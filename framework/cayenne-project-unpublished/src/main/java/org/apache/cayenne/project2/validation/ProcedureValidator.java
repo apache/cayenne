@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import java.util.List;
 
@@ -27,28 +27,28 @@ import org.apache.cayenne.util.Util;
 
 class ProcedureValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         Procedure procedure = (Procedure) object;
 
-        validateName(procedure, validator);
+        validateName(procedure, validationVisitor);
 
         // check that return value is present
         if (procedure.isReturningValue()) {
             List<ProcedureParameter> parameters = procedure.getCallParameters();
             if (parameters.size() == 0) {
-                validator.registerWarning(
+                validationVisitor.registerWarning(
                         "Procedure returns a value, but has no parameters.",
                         object);
             }
         }
     }
 
-    void validateName(Procedure procedure, ConfigurationValidator validator) {
+    void validateName(Procedure procedure, ValidationVisitor validationVisitor) {
         String name = procedure.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed Procedure.", procedure);
+            validationVisitor.registerError("Unnamed Procedure.", procedure);
             return;
         }
 
@@ -64,7 +64,7 @@ class ProcedureValidator {
             }
 
             if (name.equals(otherProcedure.getName())) {
-                validator.registerError(
+                validationVisitor.registerError(
                         "Duplicate Procedure name: " + name + ".",
                         procedure);
                 break;

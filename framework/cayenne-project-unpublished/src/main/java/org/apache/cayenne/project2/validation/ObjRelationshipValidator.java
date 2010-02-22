@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import java.util.Iterator;
 import java.util.List;
@@ -32,15 +32,15 @@ import org.apache.cayenne.util.Util;
 
 class ObjRelationshipValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         ObjRelationship rel = (ObjRelationship) object;
 
         if (Util.isEmptyString(rel.getName())) {
-            validator.registerError("Unnamed ObjRelationship.", object);
+            validationVisitor.registerError("Unnamed ObjRelationship.", object);
         }
         // check if there are attributes having the same name
         else if (rel.getSourceEntity().getAttribute(rel.getName()) != null) {
-            validator.registerWarning("ObjRelationship "
+            validationVisitor.registerWarning("ObjRelationship "
                     + objRelationshipIdentifier(rel)
                     + " has the same name as one of ObjAttributes", object);
         }
@@ -49,20 +49,20 @@ class ObjRelationshipValidator {
             String invalidChars = helper.invalidCharsInObjPathComponent(rel.getName());
 
             if (invalidChars != null) {
-                validator.registerWarning("ObjRelationship "
+                validationVisitor.registerWarning("ObjRelationship "
                         + objRelationshipIdentifier(rel)
                         + " name contains invalid characters: "
                         + invalidChars, object);
             }
             else if (helper.invalidDataObjectProperty(rel.getName())) {
-                validator.registerWarning("ObjRelationship "
+                validationVisitor.registerWarning("ObjRelationship "
                         + objRelationshipIdentifier(rel)
                         + " name is invalid.", object);
             }
         }
 
         if (rel.getTargetEntity() == null) {
-            validator.registerWarning("ObjRelationship "
+            validationVisitor.registerWarning("ObjRelationship "
                     + objRelationshipIdentifier(rel)
                     + " has no target entity.", object);
         }
@@ -70,7 +70,7 @@ class ObjRelationshipValidator {
             // check for missing DbRelationship mappings
             List<DbRelationship> dbRels = rel.getDbRelationships();
             if (dbRels.size() == 0) {
-                validator.registerWarning("ObjRelationship "
+                validationVisitor.registerWarning("ObjRelationship "
                         + objRelationshipIdentifier(rel)
                         + " has no DbRelationship mapping.", object);
             }
@@ -81,7 +81,7 @@ class ObjRelationshipValidator {
 
                 if ((dbRels.get(0)).getSourceEntity() != expectedSrc
                         || (dbRels.get(dbRels.size() - 1)).getTargetEntity() != expectedTarget) {
-                    validator.registerWarning("ObjRelationship "
+                    validationVisitor.registerWarning("ObjRelationship "
                             + objRelationshipIdentifier(rel)
                             + " has incomplete DbRelationship mapping.", object);
                 }
@@ -109,7 +109,7 @@ class ObjRelationshipValidator {
                 }
 
                 if (check) {
-                    validator
+                    validationVisitor
                             .registerWarning(
                                     "ObjRelationship "
                                             + objRelationshipIdentifier(rel)

@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
 
 /**
  * DataDomain validation message.
@@ -48,7 +48,7 @@ public class EntityErrorMsg extends ValidationDisplayHandler {
     public EntityErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object object = result.getValidatedObject();
+        Object object = result.getObject();
         entity = (Entity) object;
         map = entity.getDataMap();
         domain = (DataChannelDescriptor) Application

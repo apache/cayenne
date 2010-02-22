@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -25,28 +25,28 @@ import org.apache.cayenne.util.Util;
 
 class DataNodeValidator {
 
-    void validate(
-            Object object,
-            ConfigurationValidator configurationValidator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         DataNodeDescriptor node = (DataNodeDescriptor) object;
-        validateName(node, object, configurationValidator);
-        validateConnection(node, object, configurationValidator);
+        validateName(node, object, validationVisitor);
+        validateConnection(node, object, validationVisitor);
     }
 
     void validateConnection(
             DataNodeDescriptor node,
             Object object,
-            ConfigurationValidator validator) {
+            ValidationVisitor validationVisitor) {
         String factory = node.getDataSourceFactoryType();
 
         // If direct factory, make sure the location is a valid file name.
         if (Util.isEmptyString(factory)) {
-            validator.registerError("No DataSource factory.", object);
+            validationVisitor.registerError("No DataSource factory.", object);
         }
         else if (!DriverDataSourceFactory.class.getName().equals(factory)) {
             String location = node.getParameters();
             if (Util.isEmptyString(location)) {
-                validator.registerError("DataNode has no location parameter.", object);
+                validationVisitor.registerError(
+                        "DataNode has no location parameter.",
+                        object);
             }
         }
     }
@@ -54,15 +54,15 @@ class DataNodeValidator {
     void validateName(
             DataNodeDescriptor node,
             Object object,
-            ConfigurationValidator validator) {
+            ValidationVisitor validationVisitor) {
         String name = node.getName();
 
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed DataNode.", object);
+            validationVisitor.registerError("Unnamed DataNode.", object);
             return;
         }
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) validator
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) validationVisitor
                 .getProject()
                 .getRootNode();
         // check for duplicate names in the parent context
@@ -73,7 +73,9 @@ class DataNodeValidator {
             }
 
             if (name.equals(otherNode.getName())) {
-                validator.registerError("Duplicate DataNode name: " + name + ".", object);
+                validationVisitor.registerError(
+                        "Duplicate DataNode name: " + name + ".",
+                        object);
                 break;
             }
         }

@@ -45,8 +45,8 @@ import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.validate.ConfigurationValidator;
-import org.apache.cayenne.project2.validate.Validator;
+import org.apache.cayenne.project2.validation.ValidationResults;
+import org.apache.cayenne.project2.validation.ProjectValidator;
 
 /**
  * Controller of the main application frame.
@@ -235,12 +235,12 @@ public class CayenneModelerController extends CayenneController {
             project.setModified(true);
             projectController.setDirty(true);
             
-            Validator validator = getApplication().getInjector().getInstance(
-                    Validator.class);
-            ConfigurationValidator configurationValidator = validator.validate(project.getRootNode(), project);
+            ProjectValidator projectValidator = getApplication().getInjector().getInstance(
+                    ProjectValidator.class);
+            ValidationResults validationResults = projectValidator.validate(project.getRootNode(), project);
             
             // show warning dialog
-            ValidatorDialog.showDialog(frame, configurationValidator.getValidationResults());
+            ValidatorDialog.showDialog(frame, validationResults.getValidationResults());
         }
 
     }

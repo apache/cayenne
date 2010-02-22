@@ -35,9 +35,9 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.validate.ConfigurationValidator;
-import org.apache.cayenne.project2.validate.Validator;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationResults;
+import org.apache.cayenne.project2.validation.ProjectValidator;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
@@ -183,29 +183,29 @@ public class TableSelectorController extends CayenneController {
 
         Project project = getApplication().getProject();
 
-        Validator validator = getApplication().getInjector().getInstance(
-                Validator.class);
-        ConfigurationValidator configurationValidator = validator.validate(project.getRootNode(), project);
+        ProjectValidator projectValidator = getApplication().getInjector().getInstance(
+                ProjectValidator.class);
+        ValidationResults validationResults = projectValidator.validate(project.getRootNode(), project);
 
-        int validationCode = configurationValidator.getMaxSeverity();
+        int validationCode = validationResults.getMaxSeverity();
 
         if (validationCode >= ValidationDisplayHandler.WARNING) {
 
-            for (ValidationInfo nextProblem : configurationValidator.getValidationResults()) {
+            for (ValidationInfo nextProblem : validationResults.getValidationResults()) {
                 Entity failedEntity = null;
 
-                if (nextProblem.getValidatedObject() instanceof DbAttribute) {
+                if (nextProblem.getObject() instanceof DbAttribute) {
                     DbAttribute failedAttribute = (DbAttribute) nextProblem
-                            .getValidatedObject();
+                            .getObject();
                     failedEntity = failedAttribute.getEntity();
                 }
-                else if (nextProblem.getValidatedObject() instanceof DbRelationship) {
+                else if (nextProblem.getObject() instanceof DbRelationship) {
                     DbRelationship failedRelationship = (DbRelationship) nextProblem
-                            .getValidatedObject();
+                            .getObject();
                     failedEntity = failedRelationship.getSourceEntity();
                 }
-                else if (nextProblem.getValidatedObject() instanceof DbEntity) {
-                    failedEntity = (Entity) nextProblem.getValidatedObject();
+                else if (nextProblem.getObject() instanceof DbEntity) {
+                    failedEntity = (Entity) nextProblem.getObject();
                 }
 
                 if (failedEntity == null) {

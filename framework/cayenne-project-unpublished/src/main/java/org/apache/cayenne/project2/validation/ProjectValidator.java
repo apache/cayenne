@@ -16,25 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.util.Util;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.project2.Project;
 
-class DataChannelValidator {
+public interface ProjectValidator {
 
-    void validate(
-            Object object,
-            ConfigurationValidator configurationValidator) {
-
-        // check for empty name
-        DataChannelDescriptor domain = (DataChannelDescriptor) object;
-        String name = domain.getName();
-        if (Util.isEmptyString(name)) {
-            configurationValidator.registerError("Unnamed DataDomain.", object);
-
-            // no more name assertions
-            return;
-        }
-    }
+    public ValidationResults validate(ConfigurationNode node, Project project);
 }

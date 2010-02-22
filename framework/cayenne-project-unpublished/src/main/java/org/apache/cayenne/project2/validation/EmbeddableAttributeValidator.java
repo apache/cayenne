@@ -16,25 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.util.Util;
 
 class EmbeddableAttributeValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
 
         EmbeddableAttribute emAttribute = (EmbeddableAttribute) object;
 
         // Must have name
         if (Util.isEmptyString(emAttribute.getName())) {
-            validator.registerError("Unnamed ObjAttribute.", object);
+            validationVisitor.registerError("Unnamed ObjAttribute.", object);
         }
 
         // all attributes must have type
         if (Util.isEmptyString(emAttribute.getType())) {
-            validator.registerWarning("EmbeddableAttribute has no type.", object);
+            validationVisitor.registerWarning("EmbeddableAttribute has no type.", object);
         }
     }
 }

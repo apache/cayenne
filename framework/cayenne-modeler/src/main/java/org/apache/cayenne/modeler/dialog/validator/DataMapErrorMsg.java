@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
 
 /**
  * DataMap validation message.
@@ -38,7 +38,7 @@ public class DataMapErrorMsg extends ValidationDisplayHandler {
     public DataMapErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object object = result.getValidatedObject();
+        Object object = result.getObject();
         map = (DataMap) object;
         domain = (DataChannelDescriptor) Application.getProject().getRootNode();
     }

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -25,22 +25,17 @@ import org.apache.cayenne.util.Util;
 
 class EmbeddableValidator {
 
-    void validate(
-            Object object,
-            ConfigurationValidator configurationValidator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         Embeddable emb = (Embeddable) object;
-        validateName(emb, object, configurationValidator);
+        validateName(emb, object, validationVisitor);
     }
 
-    void validateName(
-            Embeddable emb,
-            Object object,
-            ConfigurationValidator validator) {
+    void validateName(Embeddable emb, Object object, ValidationVisitor validationVisitor) {
         String name = emb.getClassName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed Embeddable.", object);
+            validationVisitor.registerError("Unnamed Embeddable.", object);
             return;
         }
 
@@ -56,15 +51,15 @@ class EmbeddableValidator {
             }
 
             if (name.equals(otherEmb.getClassName())) {
-                validator.registerError(
-                        "Duplicate Embeddable name: " + name + ".",
-                        object);
+                validationVisitor.registerError("Duplicate Embeddable name: "
+                        + name
+                        + ".", object);
                 break;
             }
         }
 
         // check for dupliucates in other DataMaps
-        DataChannelDescriptor domain = (DataChannelDescriptor) validator
+        DataChannelDescriptor domain = (DataChannelDescriptor) validationVisitor
                 .getProject()
                 .getRootNode();
         if (domain != null) {
@@ -76,7 +71,7 @@ class EmbeddableValidator {
                 Embeddable conflictingEmbeddable = nextMap.getEmbeddable(name);
                 if (conflictingEmbeddable != null) {
 
-                    validator
+                    validationVisitor
                             .registerWarning(
                                     "Duplicate Embeddable name in another DataMap: "
                                             + name

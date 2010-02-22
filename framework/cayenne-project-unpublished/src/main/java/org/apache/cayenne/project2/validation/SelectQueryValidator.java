@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.validate;
+package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
@@ -29,54 +29,51 @@ import org.apache.cayenne.util.Util;
 
 class SelectQueryValidator {
 
-    void validate(Object object, ConfigurationValidator validator) {
+    void validate(Object object, ValidationVisitor validationVisitor) {
         SelectQuery query = (SelectQuery) object;
 
-        validateName(query, validator);
+        validateName(query, validationVisitor);
 
         // Resolve root to Entity for further validation
-        Entity root = validateRoot(query, validator);
+        Entity root = validateRoot(query, validationVisitor);
 
         // validate path-based parts
         if (root != null) {
-            validateQualifier(root, query.getQualifier(), validator);
+            validateQualifier(root, query.getQualifier(), validationVisitor);
 
             for (final Ordering ordering : query.getOrderings()) {
-                validateOrdering(root, ordering, validator);
+                validateOrdering(root, ordering, validationVisitor);
             }
 
             if (query.getPrefetchTree() != null) {
                 for (final PrefetchTreeNode prefetchTreeNode : query
                         .getPrefetchTree()
                         .nonPhantomNodes()) {
-                    validatePrefetch(root, prefetchTreeNode.getPath(), validator);
+                    validatePrefetch(root, prefetchTreeNode.getPath(), validationVisitor);
                 }
             }
         }
     }
 
-    void validatePrefetch(
-            Entity root,
-            String path,
-            ConfigurationValidator validator) {
+    void validatePrefetch(Entity root, String path, ValidationVisitor validationVisitor) {
     }
 
     void validateOrdering(
             Entity root,
             Ordering ordering,
-            ConfigurationValidator validator) {
+            ValidationVisitor validationVisitor) {
     }
 
     void validateQualifier(
             Entity root,
             Expression qualifier,
-            ConfigurationValidator validator) {
+            ValidationVisitor validationVisitor) {
     }
 
-    Entity validateRoot(SelectQuery query, ConfigurationValidator validator) {
+    Entity validateRoot(SelectQuery query, ValidationVisitor validationVisitor) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
-            validator.registerWarning("Query has no root", query);
+            validationVisitor.registerWarning("Query has no root", query);
             return null;
         }
 
@@ -112,12 +109,12 @@ class SelectQueryValidator {
         return null;
     }
 
-    void validateName(SelectQuery query, ConfigurationValidator validator) {
+    void validateName(SelectQuery query, ValidationVisitor validationVisitor) {
         String name = query.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validator.registerError("Unnamed SelectQuery.", query);
+            validationVisitor.registerError("Unnamed SelectQuery.", query);
             return;
         }
 
@@ -134,7 +131,9 @@ class SelectQueryValidator {
             }
 
             if (name.equals(otherQuery.getName())) {
-                validator.registerError("Duplicate Query name: " + name + ".", query);
+                validationVisitor.registerError(
+                        "Duplicate Query name: " + name + ".",
+                        query);
                 break;
             }
         }

@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.project2.validate.ValidationInfo;
+import org.apache.cayenne.project2.validation.ValidationInfo;
 
 /**
  * Attribute validation message.
@@ -50,7 +50,7 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
     public AttributeErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object object = result.getValidatedObject();
+        Object object = result.getObject();
         attribute = (Attribute) object;
         entity = attribute.getEntity();
         map = entity.getDataMap();
