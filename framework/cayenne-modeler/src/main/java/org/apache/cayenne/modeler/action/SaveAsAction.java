@@ -24,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
@@ -40,9 +39,8 @@ import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
+import org.apache.cayenne.project2.validate.ConfigurationValidator;
 import org.apache.cayenne.project2.validate.Validator;
-import org.apache.cayenne.project2.validate.ValidationInfo;
-import org.apache.cayenne.project2.validate.DefaultValidator;
 import org.apache.cayenne.resource.URLResource;
 
 /**
@@ -160,9 +158,9 @@ public class SaveAsAction extends CayenneAction {
         
         Validator validator = getApplication().getInjector().getInstance(
                 Validator.class);
-        List<ValidationInfo> object = validator.validate(getCurrentProject().getRootNode(), getCurrentProject());
+        ConfigurationValidator configurationValidator = validator.validate(getCurrentProject().getRootNode(), getCurrentProject());
         
-        int validationCode = ((DefaultValidator)validator).getMaxSeverity();
+        int validationCode = configurationValidator.getMaxSeverity();
 
         // If no serious errors, perform save.
         if (validationCode < ValidationDisplayHandler.ERROR) {
@@ -180,7 +178,7 @@ public class SaveAsAction extends CayenneAction {
 
         // If there were errors or warnings at validation, display them
         if (validationCode >= warningLevel) {
-            ValidatorDialog.showDialog(Application.getFrame(), object);
+            ValidatorDialog.showDialog(Application.getFrame(), configurationValidator.getValidationResults());
         }
     }
 

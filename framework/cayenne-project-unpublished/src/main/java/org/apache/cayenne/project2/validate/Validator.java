@@ -18,12 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import java.util.List;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.project2.Project;
 
 public interface Validator {
 
-    public List<ValidationInfo> validate(ConfigurationNode node, Project project);
+    public ConfigurationValidator validate(ConfigurationNode node, Project project);
 }

@@ -43,8 +43,8 @@ public class DataNodeErrorMsg extends ValidationDisplayHandler {
      */
     public DataNodeErrorMsg(ValidationInfo result) {
         super(result);
-        Object path = result.getPath();
-        node = (DataNodeDescriptor) path;
+        Object object = result.getValidatedObject();
+        node = (DataNodeDescriptor) object;
         domain = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()

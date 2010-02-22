@@ -49,8 +49,8 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
      */
     public RelationshipErrorMsg(ValidationInfo result) {
         super(result);
-        Object path = result.getPath();
-        rel = (Relationship) path;
+        Object object = result.getValidatedObject();
+        rel = (Relationship) object;
         entity = rel.getSourceEntity();
         map = entity.getDataMap();
         domain = (DataChannelDescriptor) Application

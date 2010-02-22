@@ -48,8 +48,8 @@ public class EntityErrorMsg extends ValidationDisplayHandler {
     public EntityErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object path = result.getPath();
-        entity = (Entity) path;
+        Object object = result.getValidatedObject();
+        entity = (Entity) object;
         map = entity.getDataMap();
         domain = (DataChannelDescriptor) Application
                 .getInstance()

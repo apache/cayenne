@@ -28,21 +28,24 @@ public class ValidationInfo {
     public static final int WARNING = 1;
     public static final int ERROR = 2;
 
-    protected Object path;
+    protected Object object;
     protected String message;
     protected int severity;
 
     /**
      * Constructor for ValidationInfo.
      */
-    public ValidationInfo(int severity, String message, Object path) {
+    public ValidationInfo(int severity, String message, Object object) {
         this.severity = severity;
         this.message = message;
-        this.path = path;
+        this.object = object;
     }
 
+    /**
+     * Returns the object identifing a location described by this ValidationInfo.
+     */
     public Object getValidatedObject() {
-        return path;
+        return object;
     }
 
     @Override
@@ -66,12 +69,5 @@ public class ValidationInfo {
      */
     public int getSeverity() {
         return severity;
-    }
-
-    /**
-     * Returns the object identifing a location described by this ValidationInfo.
-     */
-    public Object getPath() {
-        return path;
     }
 }

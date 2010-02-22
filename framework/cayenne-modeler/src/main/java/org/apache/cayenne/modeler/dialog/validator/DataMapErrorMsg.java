@@ -44,8 +44,8 @@ public class DataMapErrorMsg extends ValidationDisplayHandler {
     public DataMapErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object path = result.getPath();
-        map = (DataMap) path;
+        Object object = result.getValidatedObject();
+        map = (DataMap) object;
         domain = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()

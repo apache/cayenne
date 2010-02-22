@@ -129,8 +129,8 @@ public abstract class ValidationDisplayHandler {
         return getMessage();
     }
 
-    public Object getPath() {
-        return validationInfo.getPath();
+    public Object getObject() {
+        return validationInfo.getValidatedObject();
     }
 
     public ValidationInfo getValidationInfo() {

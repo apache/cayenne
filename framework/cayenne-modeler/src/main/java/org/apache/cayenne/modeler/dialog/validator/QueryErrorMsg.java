@@ -38,11 +38,11 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        Object path = super.validationInfo.getPath();
+        Object object = super.validationInfo.getValidatedObject();
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator
                 .getProject()
                 .getRootNode();
-        Query query = (Query) path;
+        Query query = (Query) object;
         DataMap map = query.getDataMap();
 
         QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);

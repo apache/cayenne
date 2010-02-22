@@ -37,13 +37,13 @@ public class ProcedureErrorMsg extends ValidationDisplayHandler {
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        Object path = super.validationInfo.getPath();
+        Object object = super.validationInfo.getValidatedObject();
 
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator
                 .getProject()
                 .getRootNode();
 
-        Procedure procedure = (Procedure) path;
+        Procedure procedure = (Procedure) object;
         DataMap map = procedure.getDataMap();
 
         ProcedureDisplayEvent event = new ProcedureDisplayEvent(

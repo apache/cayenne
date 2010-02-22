@@ -40,8 +40,8 @@ public class DomainErrorMsg extends ValidationDisplayHandler {
     public DomainErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object path = result.getPath();
-        domain = (DataChannelDescriptor) path;
+        Object object = result.getValidatedObject();
+        domain = (DataChannelDescriptor) object;
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {

@@ -50,8 +50,8 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
     public AttributeErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object path = result.getPath();
-        attribute = (Attribute) path;
+        Object object = result.getValidatedObject();
+        attribute = (Attribute) object;
         entity = attribute.getEntity();
         map = entity.getDataMap();
         domain = (DataChannelDescriptor) Application

@@ -23,7 +23,6 @@
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.List;
 
 import javax.swing.KeyStroke;
 
@@ -33,9 +32,8 @@ import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project2.validate.ConfigurationValidator;
 import org.apache.cayenne.project2.validate.Validator;
-import org.apache.cayenne.project2.validate.ValidationInfo;
-import org.apache.cayenne.project2.validate.DefaultValidator;
 
 /**
  * UI action that performs full project validation.
@@ -64,13 +62,13 @@ public class ValidateAction extends CayenneAction {
 	    
 	    Validator validator = getApplication().getInjector().getInstance(
                 Validator.class);
-        List<ValidationInfo> object = validator.validate(getCurrentProject().getRootNode(), getCurrentProject());
+        ConfigurationValidator configurationValidator = validator.validate(getCurrentProject().getRootNode(), getCurrentProject());
         
-        int validationCode = ((DefaultValidator)validator).getMaxSeverity();
+        int validationCode = configurationValidator.getMaxSeverity();
         
 		// If there were errors or warnings at validation, display them
 		if (validationCode >= ValidationDisplayHandler.WARNING) {
-			ValidatorDialog.showDialog(Application.getFrame(), object);
+			ValidatorDialog.showDialog(Application.getFrame(), configurationValidator.getValidationResults());
 		}
 		else {
 			ValidatorDialog.showValidationSuccess(Application.getFrame());

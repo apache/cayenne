@@ -36,8 +36,8 @@ public class EmbeddableErrorMsg extends ValidationDisplayHandler {
     public EmbeddableErrorMsg(ValidationInfo result) {
         super(result);
 
-        Object path = result.getPath();
-        embeddable = (Embeddable) path;
+        Object object = result.getValidatedObject();
+        embeddable = (Embeddable) object;
         map = embeddable.getDataMap();
         domain = (DataChannelDescriptor) Application
                 .getInstance()

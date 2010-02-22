@@ -18,21 +18,132 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validate;
 
-import java.util.List;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.project2.Project;
 
 public class DefaultValidator implements Validator {
 
     private ConfigurationValidator validateVisitor;
-    
-    public List<ValidationInfo> validate(ConfigurationNode node, Project project) {
-        validateVisitor = new ConfigurationValidator(project);
-        return node.acceptVisitor(validateVisitor);
+
+    /* Validators */
+    private DataChannelValidator dataChannelValidator;
+    private DataNodeValidator nodeValidator;
+    private DataMapValidator mapValidator;
+    private ObjEntityValidator objEntityValidator;
+    private ObjAttributeValidator objAttrValidator;
+    private ObjRelationshipValidator objRelValidator;
+    private DbEntityValidator dbEntityValidator;
+    private DbAttributeValidator dbAttrValidator;
+    private DbRelationshipValidator dbRelValidator;
+    private EmbeddableAttributeValidator embeddableAttributeValidator;
+    private EmbeddableValidator embeddableValidator;
+    private ProcedureValidator procedureValidator;
+    private ProcedureParameterValidator procedureParameterValidator;
+    private SelectQueryValidator selectQueryValidator;
+    private ProcedureQueryValidator procedureQueryValidator;
+    private EJBQLQueryValidator ejbqlQueryValidator;
+    private SQLTemplateValidator sqlTemplateValidator;
+
+    DefaultValidator() {
+        dataChannelValidator = new DataChannelValidator();
+        nodeValidator = new DataNodeValidator();
+        mapValidator = new DataMapValidator();
+        objEntityValidator = new ObjEntityValidator();
+        objAttrValidator = new ObjAttributeValidator();
+        objRelValidator = new ObjRelationshipValidator();
+        dbEntityValidator = new DbEntityValidator();
+        dbAttrValidator = new DbAttributeValidator();
+        dbRelValidator = new DbRelationshipValidator();
+        embeddableAttributeValidator = new EmbeddableAttributeValidator();
+        embeddableValidator = new EmbeddableValidator();
+        procedureValidator = new ProcedureValidator();
+        procedureParameterValidator = new ProcedureParameterValidator();
+        selectQueryValidator = new SelectQueryValidator();
+        procedureQueryValidator = new ProcedureQueryValidator();
+        ejbqlQueryValidator = new EJBQLQueryValidator();
+        sqlTemplateValidator = new SQLTemplateValidator();
     }
-    
-    public int getMaxSeverity(){
-        return validateVisitor.getMaxSeverity();
+
+    public ConfigurationValidator validate(ConfigurationNode node, Project project) {
+        initConfigurationValidator(project);
+        node.acceptVisitor(validateVisitor);
+        return validateVisitor;
+    }
+
+    private void initConfigurationValidator(Project project) {
+        if (validateVisitor == null || !validateVisitor.getProject().equals(project)) {
+            validateVisitor = new ConfigurationValidator(project, this);
+        }
+        else {
+            validateVisitor.getValidationResults().clear();
+        }
+    }
+
+    DataChannelValidator getDataChannelValidator() {
+        return dataChannelValidator;
+    }
+
+    DataNodeValidator getNodeValidator() {
+        return nodeValidator;
+    }
+
+    DataMapValidator getMapValidator() {
+        return mapValidator;
+    }
+
+    ObjEntityValidator getObjEntityValidator() {
+        return objEntityValidator;
+    }
+
+    ObjAttributeValidator getObjAttrValidator() {
+        return objAttrValidator;
+    }
+
+    ObjRelationshipValidator getObjRelValidator() {
+        return objRelValidator;
+    }
+
+    DbEntityValidator getDbEntityValidator() {
+        return dbEntityValidator;
+    }
+
+    DbAttributeValidator getDbAttrValidator() {
+        return dbAttrValidator;
+    }
+
+    DbRelationshipValidator getDbRelValidator() {
+        return dbRelValidator;
+    }
+
+    EmbeddableAttributeValidator getEmbeddableAttributeValidator() {
+        return embeddableAttributeValidator;
+    }
+
+    EmbeddableValidator getEmbeddableValidator() {
+        return embeddableValidator;
+    }
+
+    ProcedureValidator getProcedureValidator() {
+        return procedureValidator;
+    }
+
+    ProcedureParameterValidator getProcedureParameterValidator() {
+        return procedureParameterValidator;
+    }
+
+    SelectQueryValidator getSelectQueryValidator() {
+        return selectQueryValidator;
+    }
+
+    ProcedureQueryValidator getProcedureQueryValidator() {
+        return procedureQueryValidator;
+    }
+
+    EJBQLQueryValidator getEjbqlQueryValidator() {
+        return ejbqlQueryValidator;
+    }
+
+    SQLTemplateValidator getSqlTemplateValidator() {
+        return sqlTemplateValidator;
     }
 }
