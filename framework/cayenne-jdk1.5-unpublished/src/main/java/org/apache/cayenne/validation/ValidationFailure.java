@@ -22,7 +22,7 @@ package org.apache.cayenne.validation;
 import java.io.Serializable;
 
 /**
- * Definea a single failure during the validation process. Implementing classes may
+ * Defines a single failure during the validation process. Implementing classes may
  * store any extra information to help callers to identify the source and reasons 
  * for the failure.
  *
