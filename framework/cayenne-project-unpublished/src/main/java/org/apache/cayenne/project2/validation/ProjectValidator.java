@@ -19,9 +19,8 @@
 package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.project2.Project;
 
 public interface ProjectValidator {
 
-    public ValidationResults validate(ConfigurationNode node, Project project);
+    public ValidationResults validate(ConfigurationNode node);
 }

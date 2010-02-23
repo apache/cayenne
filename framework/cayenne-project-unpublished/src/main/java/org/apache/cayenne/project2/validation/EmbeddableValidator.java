@@ -59,9 +59,7 @@ class EmbeddableValidator {
         }
 
         // check for dupliucates in other DataMaps
-        DataChannelDescriptor domain = (DataChannelDescriptor) validationVisitor
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor domain = emb.getDataMap().getDataChannelDescriptor();
         if (domain != null) {
             for (DataMap nextMap : domain.getDataMaps()) {
                 if (nextMap == map) {

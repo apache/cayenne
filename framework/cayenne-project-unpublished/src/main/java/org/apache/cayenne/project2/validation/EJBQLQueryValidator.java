@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.validation.EJBQLStatementValidator.PositionException;
@@ -30,15 +29,15 @@ class EJBQLQueryValidator {
         EJBQLQuery query = (EJBQLQuery) object;
 
         ProjectPath path = new ProjectPath(new Object[] {
-                (DataChannelDescriptor) validationVisitor.getProject().getRootNode(),
-                query.getDataMap(), query
+                query.getDataMap().getDataChannelDescriptor(), query.getDataMap(), query
         });
 
         PositionException message = (new EJBQLStatementValidator()).validateEJBQL(
                 query,
-                new EntityResolver(((DataChannelDescriptor) validationVisitor
-                        .getProject()
-                        .getRootNode()).getDataMaps()));
+                new EntityResolver(query
+                        .getDataMap()
+                        .getDataChannelDescriptor()
+                        .getDataMaps()));
 
         if (message != null) {
             validationVisitor.registerWarning("EJBQL query "

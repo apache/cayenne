@@ -19,11 +19,8 @@
 package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.project2.Project;
 
 public class DefaultProjectValidator implements ProjectValidator {
-
-    private ValidationResults validateVisitor;
 
     /* Validators */
     private DataChannelValidator dataChannelValidator;
@@ -64,8 +61,8 @@ public class DefaultProjectValidator implements ProjectValidator {
         sqlTemplateValidator = new SQLTemplateValidator();
     }
 
-    public ValidationResults validate(ConfigurationNode node, Project project) {
-        ValidationResults res = new ValidationResults(node, project, this);
+    public ValidationResults validate(ConfigurationNode node) {
+        ValidationResults res = new ValidationResults(node, this);
         return res;
     }
 

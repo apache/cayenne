@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
@@ -140,6 +141,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     protected Resource configurationSource;
 
     /**
+     * @since 3.1
+     */
+    protected DataChannelDescriptor dataChannelDescriptor;
+
+    /**
      * Creates a new unnamed DataMap.
      */
     public DataMap() {
@@ -168,17 +174,31 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     /**
      * @since 3.1
      */
+    public DataChannelDescriptor getDataChannelDescriptor() {
+        return dataChannelDescriptor;
+    }
+    
+    /**
+     * @since 3.1
+     */ 
+    public void setDataChannelDescriptor(DataChannelDescriptor dataChannelDescriptor) {
+        this.dataChannelDescriptor = dataChannelDescriptor;
+    }
+
+    /**
+     * @since 3.1
+     */
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitDataMap(this);
     }
-    
+
     /**
      * @since 3.1
      */
     public int compareTo(DataMap o) {
         String o1 = getName();
         String o2 = o.getName();
-        
+
         if (o1 == null) {
             return (o2 != null) ? -1 : 0;
         }
@@ -519,7 +539,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         if (query.getName() == null) {
             throw new NullPointerException("Query name can't be null.");
         }
-        
+
         // TODO: change method signature to return replaced procedure and make sure the
         // Modeler handles it...
         Object existingQuery = queryMap.get(query.getName());

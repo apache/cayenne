@@ -269,7 +269,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             String newType = attribute.getType();
             String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
             Collection<String> registeredTypesList = Arrays.asList(registeredTypes);
-            ;
+            
             if (oldType != null
                     && newType != null
                     && !(registeredTypesList.contains(oldType) == registeredTypesList

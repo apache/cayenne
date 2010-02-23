@@ -43,6 +43,7 @@ class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
 
         // update child configurations
         for (DataNodeDescriptor childDescriptor : node.getNodeDescriptors()) {
+            childDescriptor.setDataChannelDescriptor(node);
             childDescriptor.setConfigurationSource(configurationSource);
         }
         return null;

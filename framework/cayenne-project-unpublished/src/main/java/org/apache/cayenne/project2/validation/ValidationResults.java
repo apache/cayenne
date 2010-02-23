@@ -37,7 +37,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
@@ -49,11 +48,9 @@ public class ValidationResults {
     private List<ValidationInfo> validationResults;
     private int maxSeverity;
 
-    public ValidationResults(ConfigurationNode node, Project project,
+    public ValidationResults(ConfigurationNode node,
             DefaultProjectValidator defaultProjectValidator) {
-        ValidationVisitor vis = new ValidationVisitor(
-                defaultProjectValidator,
-                project);
+        ValidationVisitor vis = new ValidationVisitor(defaultProjectValidator);
         validationResults = node.acceptVisitor(vis);
         this.maxSeverity = vis.getMaxSeverity();
     }
@@ -73,20 +70,13 @@ class ValidationVisitor implements ConfigurationNodeVisitor<List<ValidationInfo>
     private int maxSeverity;
 
     private DefaultProjectValidator defaultProjectValidator;
-    private Project project;
 
     int getMaxSeverity() {
         return maxSeverity;
     }
 
-    Project getProject() {
-        return project;
-    }
-
-    ValidationVisitor(DefaultProjectValidator defaultProjectValidator,
-            Project project) {
+    ValidationVisitor(DefaultProjectValidator defaultProjectValidator) {
         this.defaultProjectValidator = defaultProjectValidator;
-        this.project = project;
     }
 
     public List<ValidationInfo> visitDataChannelDescriptor(
@@ -97,13 +87,13 @@ class ValidationVisitor implements ConfigurationNodeVisitor<List<ValidationInfo>
         Iterator<DataNodeDescriptor> it = channelDescriptor
                 .getNodeDescriptors()
                 .iterator();
-        if (it.hasNext()) {
+        while (it.hasNext()) {
             DataNodeDescriptor node = it.next();
             visitDataNodeDescriptor(node);
         }
 
         Iterator<DataMap> itMap = channelDescriptor.getDataMaps().iterator();
-        if (itMap.hasNext()) {
+        while (itMap.hasNext()) {
             DataMap map = itMap.next();
             visitDataMap(map);
         }

@@ -50,6 +50,11 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
     protected DataSourceInfo dataSourceDescriptor;
 
     protected Resource configurationSource;
+    
+    /**
+     * @since 3.1
+     */
+    protected DataChannelDescriptor dataChannelDescriptor;
 
     public DataNodeDescriptor() {
         this(null);
@@ -58,6 +63,20 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
     public DataNodeDescriptor(String name) {
         this.dataMapNames = new ArrayList<String>();
         this.name = name;
+    }
+    
+    /**
+     * @since 3.1
+     */    
+    public DataChannelDescriptor getDataChannelDescriptor() {
+        return dataChannelDescriptor;
+    }
+    
+    /**
+     * @since 3.1
+     */ 
+    public void setDataChannelDescriptor(DataChannelDescriptor dataChannelDescriptor) {
+        this.dataChannelDescriptor = dataChannelDescriptor;
     }
 
     public int compareTo(DataNodeDescriptor o) {

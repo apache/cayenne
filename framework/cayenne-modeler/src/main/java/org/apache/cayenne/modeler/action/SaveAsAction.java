@@ -123,7 +123,7 @@ public class SaveAsAction extends CayenneAction {
                     ".xml",
                     "");
             String oldName = oldPath.replace(".xml", "");
-            
+
             Preferences oldPref = getProjectController().getPreferenceForProject();
             String projPath = oldPref.absolutePath().replace(oldName, "");
             Preferences newPref = getProjectController().getPreferenceForProject().node(
@@ -155,11 +155,12 @@ public class SaveAsAction extends CayenneAction {
     }
 
     public synchronized void performAction(int warningLevel) {
-        
+
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(
                 ProjectValidator.class);
-        ValidationResults validationResults = projectValidator.validate(getCurrentProject().getRootNode(), getCurrentProject());
-        
+        ValidationResults validationResults = projectValidator
+                .validate(getCurrentProject().getRootNode());
+
         int validationCode = validationResults.getMaxSeverity();
 
         // If no serious errors, perform save.
@@ -178,7 +179,8 @@ public class SaveAsAction extends CayenneAction {
 
         // If there were errors or warnings at validation, display them
         if (validationCode >= warningLevel) {
-            ValidatorDialog.showDialog(Application.getFrame(), validationResults.getValidationResults());
+            ValidatorDialog.showDialog(Application.getFrame(), validationResults
+                    .getValidationResults());
         }
     }
 

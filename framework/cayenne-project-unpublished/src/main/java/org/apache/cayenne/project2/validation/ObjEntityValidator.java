@@ -130,9 +130,7 @@ class ObjEntityValidator {
         }
 
         // check for dupliucates in other DataMaps
-        DataChannelDescriptor domain = (DataChannelDescriptor) validationVisitor
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor domain = entity.getDataMap().getDataChannelDescriptor();
         if (domain != null) {
             for (DataMap nextMap : domain.getDataMaps()) {
                 if (nextMap == map) {

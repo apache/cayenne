@@ -185,7 +185,8 @@ public class TableSelectorController extends CayenneController {
 
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(
                 ProjectValidator.class);
-        ValidationResults validationResults = projectValidator.validate(project.getRootNode(), project);
+        ValidationResults validationResults = projectValidator.validate(project
+                .getRootNode());
 
         int validationCode = validationResults.getMaxSeverity();
 
@@ -195,8 +196,7 @@ public class TableSelectorController extends CayenneController {
                 Entity failedEntity = null;
 
                 if (nextProblem.getObject() instanceof DbAttribute) {
-                    DbAttribute failedAttribute = (DbAttribute) nextProblem
-                            .getObject();
+                    DbAttribute failedAttribute = (DbAttribute) nextProblem.getObject();
                     failedEntity = failedAttribute.getEntity();
                 }
                 else if (nextProblem.getObject() instanceof DbRelationship) {

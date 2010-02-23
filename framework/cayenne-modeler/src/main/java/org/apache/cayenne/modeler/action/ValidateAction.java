@@ -17,8 +17,7 @@
  *  under the License.
  ****************************************************************/
 
- 
- package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -41,50 +40,53 @@ import org.apache.cayenne.project2.validation.ProjectValidator;
  */
 public class ValidateAction extends CayenneAction {
 
-	public static String getActionName() {
-		return "Validate Project";
-	}
+    public static String getActionName() {
+        return "Validate Project";
+    }
 
-	public ValidateAction(Application application) {
-		super(getActionName(), application);
-	}
+    public ValidateAction(Application application) {
+        super(getActionName(), application);
+    }
 
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke
-                 (KeyEvent.VK_V,
-                  Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | ActionEvent.SHIFT_MASK);
+        return KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit
+                .getDefaultToolkit()
+                .getMenuShortcutKeyMask()
+                | ActionEvent.SHIFT_MASK);
     }
 
     /**
-	 * Validates project for possible conflicts and incomplete mappings.
-	 */
-	public void performAction(ActionEvent e) {
-	    
-	    ProjectValidator projectValidator = getApplication().getInjector().getInstance(
-                ProjectValidator.class);
-        ValidationResults validationResults = projectValidator.validate(getCurrentProject().getRootNode(), getCurrentProject());
-        
-        int validationCode = validationResults.getMaxSeverity();
-        
-		// If there were errors or warnings at validation, display them
-		if (validationCode >= ValidationDisplayHandler.WARNING) {
-			ValidatorDialog.showDialog(Application.getFrame(), validationResults.getValidationResults());
-		}
-		else {
-			ValidatorDialog.showValidationSuccess(Application.getFrame());
-		}
-	}
-	
-	/**
-	* Returns <code>true</code> if path contains a Project object 
-	* and the project is modified.
-	*/
-	public boolean enableForPath(ProjectPath path) {
-		if (path == null) {
-			return false;
-		}
+     * Validates project for possible conflicts and incomplete mappings.
+     */
+    public void performAction(ActionEvent e) {
 
-		Project project = path.firstInstanceOf(Project.class);
-		return project != null;
-	}
+        ProjectValidator projectValidator = getApplication().getInjector().getInstance(
+                ProjectValidator.class);
+        ValidationResults validationResults = projectValidator
+                .validate(getCurrentProject().getRootNode());
+
+        int validationCode = validationResults.getMaxSeverity();
+
+        // If there were errors or warnings at validation, display them
+        if (validationCode >= ValidationDisplayHandler.WARNING) {
+            ValidatorDialog.showDialog(Application.getFrame(), validationResults
+                    .getValidationResults());
+        }
+        else {
+            ValidatorDialog.showValidationSuccess(Application.getFrame());
+        }
+    }
+
+    /**
+     * Returns <code>true</code> if path contains a Project object and the project is
+     * modified.
+     */
+    public boolean enableForPath(ProjectPath path) {
+        if (path == null) {
+            return false;
+        }
+
+        Project project = path.firstInstanceOf(Project.class);
+        return project != null;
+    }
 }

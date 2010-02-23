@@ -62,9 +62,8 @@ class DataNodeValidator {
             return;
         }
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) validationVisitor
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = node.getDataChannelDescriptor();
+        
         // check for duplicate names in the parent context
         for (final DataNodeDescriptor otherNode : dataChannelDescriptor
                 .getNodeDescriptors()) {

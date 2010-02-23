@@ -230,6 +230,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 dataMap.setName(dataMapName);
                 dataMap.setLocation(dataMapLocation);
                 dataMap.setConfigurationSource(dataMapResource);
+                dataMap.setDataChannelDescriptor(descriptor);
 
                 descriptor.getDataMaps().add(dataMap);
             }
@@ -256,6 +257,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue(
                         "",
                         "schema-update-strategy"));
+                nodeDescriptor.setDataChannelDescriptor(descriptor);
 
                 return new DataNodeChildrenHandler(parser, this, nodeDescriptor);
             }

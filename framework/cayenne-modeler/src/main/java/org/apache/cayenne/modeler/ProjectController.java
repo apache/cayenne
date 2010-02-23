@@ -1679,7 +1679,8 @@ public class ProjectController extends CayenneController {
     }
 
     public void addDataMap(Object src, DataMap map, boolean makeCurrent) {
-
+        
+        map.setDataChannelDescriptor(currentState.domain);
         // new map was added.. link it to domain (and node if possible)
         currentState.domain.getDataMaps().add(map);
 

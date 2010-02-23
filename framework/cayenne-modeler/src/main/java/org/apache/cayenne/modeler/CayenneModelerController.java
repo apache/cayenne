@@ -156,8 +156,11 @@ public class CayenneModelerController extends CayenneController {
     public void projectModifiedAction() {
         String title = (projectController.getProject().getConfigurationResource() == null)
                 ? "[New]"
-                : projectController.getProject()
-                .getConfigurationResource().getURL().getPath();
+                : projectController
+                        .getProject()
+                        .getConfigurationResource()
+                        .getURL()
+                        .getPath();
 
         frame.setTitle("* - " + ModelerConstants.TITLE + " - " + title);
     }
@@ -167,8 +170,11 @@ public class CayenneModelerController extends CayenneController {
         updateStatus("Project saved...");
         frame.setTitle(ModelerConstants.TITLE
                 + " - "
-                + projectController.getProject()
-                .getConfigurationResource().getURL().getPath());
+                + projectController
+                        .getProject()
+                        .getConfigurationResource()
+                        .getURL()
+                        .getPath());
     }
 
     /**
@@ -194,7 +200,8 @@ public class CayenneModelerController extends CayenneController {
     /**
      * Handles project opening control. Updates main frame, then delegates control to
      * child controllers.
-     * @param config 
+     * 
+     * @param config
      */
     public void projectOpenedAction(Project project, Configuration config) {
 
@@ -206,7 +213,7 @@ public class CayenneModelerController extends CayenneController {
         application.getActionManager().projectOpened();
 
         // do status update AFTER the project is actually opened...
-        if (project.getConfigurationResource() == null){
+        if (project.getConfigurationResource() == null) {
             updateStatus("New project created...");
             frame.setTitle(ModelerConstants.TITLE + "- [New]");
         }
@@ -214,31 +221,32 @@ public class CayenneModelerController extends CayenneController {
             updateStatus("Project opened...");
             frame.setTitle(ModelerConstants.TITLE
                     + " - "
-                    + project
-                    .getConfigurationResource().getURL().getPath());
+                    + project.getConfigurationResource().getURL().getPath());
         }
 
         // update preferences
         if (project.getConfigurationResource() != null) {
-            getLastDirectory().setDirectory(new File(project.getConfigurationResource().getURL().getPath()));
+            getLastDirectory().setDirectory(
+                    new File(project.getConfigurationResource().getURL().getPath()));
             frame.fireRecentFileListChanged();
         }
 
-        
         ConfigStatus loadStatus = (config != null)
                 ? config.getLoadStatus()
                 : new ConfigStatus();
-                
+
         // --- check for load errors
         if (loadStatus.hasFailures()) {
             // mark project as unsaved
             project.setModified(true);
             projectController.setDirty(true);
-            
-            ProjectValidator projectValidator = getApplication().getInjector().getInstance(
-                    ProjectValidator.class);
-            ValidationResults validationResults = projectValidator.validate(project.getRootNode(), project);
-            
+
+            ProjectValidator projectValidator = getApplication()
+                    .getInjector()
+                    .getInstance(ProjectValidator.class);
+            ValidationResults validationResults = projectValidator.validate(project
+                    .getRootNode());
+
             // show warning dialog
             ValidatorDialog.showDialog(frame, validationResults.getValidationResults());
         }
@@ -268,8 +276,8 @@ public class CayenneModelerController extends CayenneController {
             // ignore exception
         }
         int size = arr.size();
-        
-        for (int i=0; i< size; i++) {
+
+        for (int i = 0; i < size; i++) {
             frefLastProjFiles.put(String.valueOf(i), arr.get(i).toString());
         }
     }
@@ -319,7 +327,7 @@ public class CayenneModelerController extends CayenneController {
         if (arr.contains(oldPath)) {
             arr.remove(oldPath);
         }
-        
+
         if (arr.contains(newPath)) {
             arr.remove(newPath);
         }
@@ -336,11 +344,11 @@ public class CayenneModelerController extends CayenneController {
             // ignore exception
         }
         int size = arr.size();
-        
-        for (int i=0; i< size; i++) {
+
+        for (int i = 0; i < size; i++) {
             frefLastProjFiles.put(String.valueOf(i), arr.get(i).toString());
         }
-        
+
         getLastDirectory().setDirectory(new File(newPath));
         frame.fireRecentFileListChanged();
     }

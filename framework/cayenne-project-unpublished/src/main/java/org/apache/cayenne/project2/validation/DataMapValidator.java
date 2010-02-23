@@ -34,9 +34,7 @@ class DataMapValidator {
     }
 
     void validateNodeLinks(DataMap map, Object object, ValidationVisitor validationVisitor) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) validationVisitor
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor domain = map.getDataChannelDescriptor();
         if (domain == null) {
             return;
         }
@@ -52,7 +50,9 @@ class DataMapValidator {
         }
 
         if (unlinked && nodeCount > 0) {
-            validationVisitor.registerWarning("DataMap is not linked to any DataNodes.", object);
+            validationVisitor.registerWarning(
+                    "DataMap is not linked to any DataNodes.",
+                    object);
         }
     }
 
@@ -64,9 +64,7 @@ class DataMapValidator {
             return;
         }
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) validationVisitor
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor domain = map.getDataChannelDescriptor();
         if (domain == null) {
             return;
         }
@@ -78,7 +76,9 @@ class DataMapValidator {
             }
 
             if (name.equals(otherMap.getName())) {
-                validationVisitor.registerError("Duplicate DataMap name: " + name + ".", object);
+                validationVisitor.registerError(
+                        "Duplicate DataMap name: " + name + ".",
+                        object);
                 return;
             }
         }
