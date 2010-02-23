@@ -32,8 +32,8 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
-import org.apache.cayenne.project2.validation.ValidationInfo;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,15 +45,15 @@ public abstract class ValidationDisplayHandler {
 
     private static Log logObj = LogFactory.getLog(ValidationDisplayHandler.class);
 
-    public static final int NO_ERROR = ValidationInfo.VALID;
-    public static final int WARNING = ValidationInfo.WARNING;
-    public static final int ERROR = ValidationInfo.ERROR;
+    public static final int NO_ERROR = 0;
+    public static final int WARNING = 1;
+    public static final int ERROR = 2;
 
-    protected ValidationInfo validationInfo;
+    protected ValidationFailure validationFailure;
     protected DataChannelDescriptor domain;
 
-    public static ValidationDisplayHandler getErrorMsg(ValidationInfo result) {
-        Object validatedObj = result.getObject();
+    public static ValidationDisplayHandler getErrorMsg(ValidationFailure result) {
+        Object validatedObj = result.getSource();
 
         ValidationDisplayHandler msg = null;
         if (validatedObj instanceof Embeddable) {
@@ -98,8 +98,8 @@ public abstract class ValidationDisplayHandler {
         return msg;
     }
 
-    public ValidationDisplayHandler(ValidationInfo validationInfo) {
-        this.validationInfo = validationInfo;
+    public ValidationDisplayHandler(ValidationFailure validationFailure) {
+        this.validationFailure = validationFailure;
     }
 
     /**
@@ -109,12 +109,7 @@ public abstract class ValidationDisplayHandler {
 
     /** Returns the text of the error message. */
     public String getMessage() {
-        return validationInfo.getMessage();
-    }
-
-    /** Returns the severity of the error message. */
-    public int getSeverity() {
-        return validationInfo.getSeverity();
+        return validationFailure.getDescription();
     }
 
     public DataChannelDescriptor getDomain() {
@@ -130,16 +125,16 @@ public abstract class ValidationDisplayHandler {
     }
 
     public Object getObject() {
-        return validationInfo.getObject();
+        return validationFailure.getSource();
     }
 
-    public ValidationInfo getValidationInfo() {
-        return validationInfo;
+    public ValidationFailure getValidationFailure() {
+        return validationFailure;
     }
 
     private static final class NullHanlder extends ValidationDisplayHandler {
 
-        NullHanlder(ValidationInfo info) {
+        NullHanlder(ValidationFailure info) {
             super(info);
         }
 

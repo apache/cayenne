@@ -32,15 +32,14 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.validation.ValidationInfo;
-import org.apache.cayenne.project2.validation.ValidationResults;
 import org.apache.cayenne.project2.validation.ProjectValidator;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
+import org.apache.cayenne.validation.ValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
 
 /**
  */
@@ -185,27 +184,25 @@ public class TableSelectorController extends CayenneController {
 
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(
                 ProjectValidator.class);
-        ValidationResults validationResults = projectValidator.validate(project
+        ValidationResult validationResult = projectValidator.validate(project
                 .getRootNode());
 
-        int validationCode = validationResults.getMaxSeverity();
+        if (validationResult.getFailures().size() > 0) {
 
-        if (validationCode >= ValidationDisplayHandler.WARNING) {
-
-            for (ValidationInfo nextProblem : validationResults.getValidationResults()) {
+            for (ValidationFailure nextProblem : validationResult.getFailures()) {
                 Entity failedEntity = null;
 
-                if (nextProblem.getObject() instanceof DbAttribute) {
-                    DbAttribute failedAttribute = (DbAttribute) nextProblem.getObject();
+                if (nextProblem.getSource() instanceof DbAttribute) {
+                    DbAttribute failedAttribute = (DbAttribute) nextProblem.getSource();
                     failedEntity = failedAttribute.getEntity();
                 }
-                else if (nextProblem.getObject() instanceof DbRelationship) {
+                else if (nextProblem.getSource() instanceof DbRelationship) {
                     DbRelationship failedRelationship = (DbRelationship) nextProblem
-                            .getObject();
+                            .getSource();
                     failedEntity = failedRelationship.getSourceEntity();
                 }
-                else if (nextProblem.getObject() instanceof DbEntity) {
-                    failedEntity = (Entity) nextProblem.getObject();
+                else if (nextProblem.getSource() instanceof DbEntity) {
+                    failedEntity = (Entity) nextProblem.getSource();
                 }
 
                 if (failedEntity == null) {
@@ -213,7 +210,8 @@ public class TableSelectorController extends CayenneController {
                 }
 
                 excludedTables.put(failedEntity.getName(), failedEntity);
-                validationMessages.put(failedEntity.getName(), nextProblem.getMessage());
+                validationMessages.put(failedEntity.getName(), nextProblem
+                        .getDescription());
             }
         }
 

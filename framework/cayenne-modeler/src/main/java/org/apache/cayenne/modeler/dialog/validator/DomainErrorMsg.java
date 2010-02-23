@@ -24,7 +24,7 @@ import javax.swing.JFrame;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.project2.validation.ValidationInfo;
+import org.apache.cayenne.validation.ValidationFailure;
 
 /**
  * DataDomain validation message.
@@ -37,10 +37,10 @@ public class DomainErrorMsg extends ValidationDisplayHandler {
      * 
      * @param result
      */
-    public DomainErrorMsg(ValidationInfo result) {
+    public DomainErrorMsg(ValidationFailure result) {
         super(result);
 
-        Object object = result.getObject();
+        Object object = result.getSource();
         domain = (DataChannelDescriptor) object;
     }
 

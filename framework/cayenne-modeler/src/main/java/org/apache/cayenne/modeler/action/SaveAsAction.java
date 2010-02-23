@@ -39,9 +39,9 @@ import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
-import org.apache.cayenne.project2.validation.ValidationResults;
 import org.apache.cayenne.project2.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * A "Save As" action that allows user to pick save location.
@@ -158,29 +158,24 @@ public class SaveAsAction extends CayenneAction {
 
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(
                 ProjectValidator.class);
-        ValidationResults validationResults = projectValidator
-                .validate(getCurrentProject().getRootNode());
+        ValidationResult validationResult = projectValidator.validate(getCurrentProject()
+                .getRootNode());
 
-        int validationCode = validationResults.getMaxSeverity();
-
-        // If no serious errors, perform save.
-        if (validationCode < ValidationDisplayHandler.ERROR) {
-            try {
-                if (!saveAll()) {
-                    return;
-                }
+        try {
+            if (!saveAll()) {
+                return;
             }
-            catch (Exception ex) {
-                throw new CayenneRuntimeException("Error on save", ex);
-            }
-
-            getApplication().getFrameController().projectSavedAction();
+        }
+        catch (Exception ex) {
+            throw new CayenneRuntimeException("Error on save", ex);
         }
 
+        getApplication().getFrameController().projectSavedAction();
+
         // If there were errors or warnings at validation, display them
-        if (validationCode >= warningLevel) {
-            ValidatorDialog.showDialog(Application.getFrame(), validationResults
-                    .getValidationResults());
+        if (validationResult.getFailures().size() > 0) {
+            ValidatorDialog.showDialog(Application.getFrame(), validationResult
+                    .getFailures());
         }
     }
 

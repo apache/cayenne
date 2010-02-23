@@ -25,20 +25,20 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.project2.validation.ValidationInfo;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.validation.ValidationFailure;
 
 /**
  * @since 1.1
  */
 public class QueryErrorMsg extends ValidationDisplayHandler {
 
-    public QueryErrorMsg(ValidationInfo validationInfo) {
-        super(validationInfo);
+    public QueryErrorMsg(ValidationFailure result) {
+        super(result);
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        Object object = super.validationInfo.getObject();
+        Object object = super.validationFailure.getSource();
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator
                 .getProject()
                 .getRootNode();

@@ -26,18 +26,18 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.project2.validation.ValidationInfo;
+import org.apache.cayenne.validation.ValidationFailure;
 
 /**
  */
 public class ProcedureErrorMsg extends ValidationDisplayHandler {
 
-    public ProcedureErrorMsg(ValidationInfo validationInfo) {
-        super(validationInfo);
+    public ProcedureErrorMsg(ValidationFailure result) {
+        super(result);
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        Object object = super.validationInfo.getObject();
+        Object object = super.validationFailure.getSource();
 
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator
                 .getProject()

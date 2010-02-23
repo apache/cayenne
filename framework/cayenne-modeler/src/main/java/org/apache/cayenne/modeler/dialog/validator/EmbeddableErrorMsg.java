@@ -26,17 +26,17 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.project2.validation.ValidationInfo;
+import org.apache.cayenne.validation.ValidationFailure;
 
 public class EmbeddableErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
     protected Embeddable embeddable;
 
-    public EmbeddableErrorMsg(ValidationInfo result) {
+    public EmbeddableErrorMsg(ValidationFailure result) {
         super(result);
 
-        Object object = result.getObject();
+        Object object = result.getSource();
         embeddable = (Embeddable) object;
         map = embeddable.getDataMap();
         domain = (DataChannelDescriptor) Application

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.project2.validation.ValidationInfo;
+import org.apache.cayenne.validation.ValidationFailure;
 
 public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
 
@@ -35,9 +35,9 @@ public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
     protected Embeddable embeddable;
     protected EmbeddableAttribute embeddableAttribute;
 
-    public EmbeddableAttributeErrorMsg(ValidationInfo result) {
+    public EmbeddableAttributeErrorMsg(ValidationFailure result) {
         super(result);
-        Object object = result.getObject();
+        Object object = result.getSource();
 
         embeddableAttribute = (EmbeddableAttribute) object;
         embeddable = embeddableAttribute.getEmbeddable();

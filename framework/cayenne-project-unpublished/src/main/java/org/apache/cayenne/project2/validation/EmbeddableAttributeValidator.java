@@ -29,7 +29,7 @@ class EmbeddableAttributeValidator {
 
         // Must have name
         if (Util.isEmptyString(emAttribute.getName())) {
-            validationVisitor.registerError("Unnamed ObjAttribute.", object);
+            validationVisitor.registerError("Unnamed EmbeddableAttribute.", object);
         }
 
         // all attributes must have type
