@@ -53,10 +53,11 @@ CAY-1383 unneeded target in modeler attributes inspection
 CAY-1385 Modeler: error dialog doesn't show the correct version
 CAY-1390 DataRowStore.processRemoteEvent processInvalidatedIDs typo
 CAY-1396 merge: unneeded cast to SQLServerAdapter
+CAY-1397 ROP: Missing the COMMIT state when deleting HOLLOW object
 
 ----------------------------------
 Release: 3.0 RC 2
-Date: 
+Date: 5 February 2010
 ----------------------------------
 
 Changes/New Features Since 3.0RC1:

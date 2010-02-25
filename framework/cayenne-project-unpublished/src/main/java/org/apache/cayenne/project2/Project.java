@@ -37,11 +37,12 @@ public class Project {
     protected boolean modified;
     
     protected ConfigurationNode rootNode;
-    private ConfigurationSourceGetter configurationSourceGetter = new ConfigurationSourceGetter();
+    private ConfigurationSourceGetter configurationSourceGetter;
 
 
     public Project(ConfigurationNode rootNode) {
         this.rootNode = rootNode;
+        this.configurationSourceGetter = new ConfigurationSourceGetter();
     }
 
     public ConfigurationNode getRootNode() {
