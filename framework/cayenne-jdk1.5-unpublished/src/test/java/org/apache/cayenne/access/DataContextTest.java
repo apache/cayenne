@@ -536,4 +536,23 @@ public class DataContextTest extends DataContextCase {
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
         assertSame(object, context.getObjectStore().getNode(oid));
     }
+    
+    public void testBeforeHollowDeleteShouldChangeStateToCommited() throws Exception {
+        ObjectId gid = new ObjectId("Artist","ARTIST_ID",33001);  
+        final Artist inflated = new Artist();
+        inflated.setPersistenceState(PersistenceState.COMMITTED);
+        inflated.setObjectId(gid);
+        inflated.setArtistName("artist1");
+        
+        Artist hollow = (Artist) context.localObject(gid, null);
+        assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
+
+        // testing this...
+        context.deleteObject(hollow);
+        assertSame(hollow, context.getGraphManager().getNode(gid));
+        assertEquals(inflated.getArtistName(), hollow.getArtistName());
+          
+        assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
+    }
+
 }

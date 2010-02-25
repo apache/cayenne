@@ -326,5 +326,32 @@ public class CayenneContextTest extends CayenneCase {
                 .getGlobalAttribute1Direct());
         assertEquals(PersistenceState.COMMITTED, hollow.getPersistenceState());
     }
+    
+    public void testBeforeHollowDeleteShouldChangeStateToCommited() {
+
+        ObjectId gid = new ObjectId("MtTable1", "a", "b");
+        final ClientMtTable1 inflated = new ClientMtTable1();
+        inflated.setPersistenceState(PersistenceState.COMMITTED);
+        inflated.setObjectId(gid);
+        inflated.setGlobalAttribute1("abc");
+
+        MockClientConnection connection = new MockClientConnection(new GenericResponse(
+                Arrays.asList(inflated)));
+        ClientChannel channel = new ClientChannel(connection);
+
+        CayenneContext context = new CayenneContext(channel);
+        context.setEntityResolver(getDomain()
+                .getEntityResolver()
+                .getClientEntityResolver());
+        ClientMtTable1 hollow = (ClientMtTable1) context.localObject(gid, null);
+        assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
+
+        // testing this...
+        context.deleteObject(hollow);
+        assertSame(hollow, context.getGraphManager().getNode(gid));
+        assertEquals(inflated.getGlobalAttribute1Direct(), hollow
+                .getGlobalAttribute1Direct());
+        assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
+    }
 
 }
