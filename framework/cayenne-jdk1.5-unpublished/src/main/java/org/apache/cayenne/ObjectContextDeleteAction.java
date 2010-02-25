@@ -70,6 +70,11 @@ class ObjectContextDeleteAction {
                             + context);
         }
 
+        // must resolve HOLLOW objects before delete... needed
+        // to process relationships and optimistic locking...
+
+        context.prepareForAccess(object, null, false);
+        
         if (oldState == PersistenceState.NEW) {
             deleteNew(object);
         }
