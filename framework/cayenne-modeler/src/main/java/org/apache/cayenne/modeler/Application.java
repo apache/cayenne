@@ -23,7 +23,9 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
@@ -37,6 +39,7 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.modeler.dialog.LogConsole;
+import org.apache.cayenne.modeler.dialog.pref.ClasspathPreferences;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -45,7 +48,6 @@ import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.DomainPreference;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
 import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
 import org.apache.cayenne.pref.PreferenceService;
@@ -280,18 +282,32 @@ public class Application {
         final FileClassLoadingService classLoader = new FileClassLoadingService();
 
         // init from preferences...
-        Domain classLoaderDomain = getPreferenceDomain().getSubdomain(
-                FileClassLoadingService.class);
+        Preferences classLoaderPreference = Application.getInstance().getPreferencesNode(
+                ClasspathPreferences.class,
+                "");
 
-        Collection details = classLoaderDomain.getPreferences();
+        Collection details = new ArrayList<String>();
+        String[] keys = null;
+
+        try {
+            keys = classLoaderPreference.keys();
+        }
+        catch (BackingStoreException e) {
+            // do nothing
+        }
+
+        for (int i = 0; i < keys.length; i++) {
+            details.add(keys[i]);
+        }
+
         if (details.size() > 0) {
 
             // transform preference to file...
             Transformer transformer = new Transformer() {
 
                 public Object transform(Object object) {
-                    DomainPreference pref = (DomainPreference) object;
-                    return new File(pref.getKey());
+                    String pref = (String) object;
+                    return new File(pref);
                 }
             };
 

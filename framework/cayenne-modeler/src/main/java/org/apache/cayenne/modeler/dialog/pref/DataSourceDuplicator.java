@@ -26,8 +26,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 
 /**
@@ -35,8 +33,6 @@ import org.apache.cayenne.swing.BindingBuilder;
 public class DataSourceDuplicator extends CayenneController {
 
     protected DataSourceDuplicatorView view;
-    protected PreferenceEditor editor;
-    protected Domain domain;
     protected boolean canceled;
     protected Map dataSources;
     protected String prototypeKey;
@@ -46,8 +42,6 @@ public class DataSourceDuplicator extends CayenneController {
         this.view = new DataSourceDuplicatorView("Create a copy of \""
                 + prototypeKey
                 + "\"");
-        this.editor = parent.getEditor();
-        this.domain = parent.getDataSourceDomain();
         this.dataSources = parent.getDataSources();
         this.prototypeKey = prototypeKey;
 

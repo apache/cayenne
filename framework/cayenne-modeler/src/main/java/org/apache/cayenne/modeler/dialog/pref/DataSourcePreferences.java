@@ -20,24 +20,33 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.Component;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.prefs.Preferences;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.modeler.FileClassLoadingService;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.ChildrenMapPreference;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 
 /**
  * Editor for the local DataSources configured in preferences.
@@ -46,16 +55,20 @@ import org.apache.cayenne.util.Util;
 public class DataSourcePreferences extends CayenneController {
 
     protected DataSourcePreferencesView view;
-    protected PreferenceEditor editor;
     protected String dataSourceKey;
     protected Map dataSources;
     protected ChildrenMapPreference dataSourcePreferences;
+    protected CayennePreferenceEditor editor;
 
     public DataSourcePreferences(PreferenceDialog parentController) {
         super(parentController);
 
         this.view = new DataSourcePreferencesView(this);
-        this.editor = parentController.getEditor();
+
+        PreferenceEditor editor = parentController.getEditor();
+        if (editor instanceof CayennePreferenceEditor) {
+            this.editor = (CayennePreferenceEditor) editor;
+        }
 
         // init view data
         this.dataSourcePreferences = getApplication()
@@ -94,14 +107,6 @@ public class DataSourcePreferences extends CayenneController {
         builder.bindToAction(view.getTestDataSource(), "testDataSourceAction()");
 
         builder.bindToComboSelection(view.getDataSources(), "dataSourceKey");
-    }
-
-    public Domain getDataSourceDomain() {
-        return editor.editableInstance(getApplication().getPreferenceDomain());
-    }
-
-    public PreferenceEditor getEditor() {
-        return editor;
     }
 
     public Map getDataSources() {
@@ -170,7 +175,6 @@ public class DataSourcePreferences extends CayenneController {
     public void removeDataSourceAction() {
         String key = getDataSourceKey();
         if (key != null) {
-            editor.deleteDetail(getDataSourceDomain(), key);
             dataSourcePreferences.remove(key);
 
             dataSources = dataSourcePreferences.getChildrenPreferences();
@@ -224,8 +228,63 @@ public class DataSourcePreferences extends CayenneController {
         }
 
         try {
-            Class driverClass = getApplication().getClassLoadingService().loadClass(
-                    currentDataSource.getJdbcDriver());
+
+            FileClassLoadingService classLoader = new FileClassLoadingService();
+
+            List<File> oldPathFiles = ((FileClassLoadingService) getApplication()
+                    .getClassLoadingService()).getPathFiles();
+
+            Collection details = new ArrayList<String>();
+            for (int i = 0; i < oldPathFiles.size(); i++) {
+                details.add(oldPathFiles.get(i).getAbsolutePath());
+            }
+
+            Preferences classPathPreferences = getApplication().getPreferencesNode(
+                    ClasspathPreferences.class,
+                    "");
+            if (editor.getChangedPreferences().containsKey(classPathPreferences)) {
+                Map<String, String> map = editor.getChangedPreferences().get(
+                        classPathPreferences);
+
+                Iterator iterator = map.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry en = (Map.Entry) iterator.next();
+                    String key = (String) en.getKey();
+                    if (!details.contains(key)) {
+                        details.add(key);
+                    }
+                }
+            }
+
+            if (editor.getRemovedPreferences().containsKey(classPathPreferences)) {
+                Map<String, String> map = editor.getRemovedPreferences().get(
+                        classPathPreferences);
+
+                Iterator iterator = map.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry en = (Map.Entry) iterator.next();
+                    String key = (String) en.getKey();
+                    if (details.contains(key)) {
+                        details.remove(key);
+                    }
+                }
+            }
+
+            if (details.size() > 0) {
+
+                // transform preference to file...
+                Transformer transformer = new Transformer() {
+
+                    public Object transform(Object object) {
+                        String pref = (String) object;
+                        return new File(pref);
+                    }
+                };
+
+                classLoader.setPathFiles(CollectionUtils.collect(details, transformer));
+            }
+
+            Class driverClass = classLoader.loadClass(currentDataSource.getJdbcDriver());
             Driver driver = (Driver) driverClass.newInstance();
 
             // connect via Cayenne DriverDataSource - it addresses some driver issues...
@@ -276,5 +335,4 @@ public class DataSourcePreferences extends CayenneController {
             return;
         }
     }
-
 }

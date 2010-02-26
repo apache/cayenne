@@ -23,17 +23,20 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.cayenne.modeler.FileClassLoadingService;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceDetail;
+import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
 
 /**
@@ -41,16 +44,31 @@ import org.apache.cayenne.pref.PreferenceEditor;
 public class ClasspathPreferences extends CayenneController {
 
     protected ClasspathPreferencesView view;
-    protected PreferenceEditor editor;
-    protected List classPathEntries;
+    protected List<String> classPathEntries;
     protected ClasspathTableModel tableModel;
+    protected CayennePreferenceEditor editor;
 
     public ClasspathPreferences(PreferenceDialog parentController) {
         super(parentController);
 
-        this.editor = parentController.getEditor();
         this.view = new ClasspathPreferencesView();
-        this.classPathEntries = getClassLoaderDomain().getDetails();
+
+        PreferenceEditor editor = parentController.getEditor();
+        if (editor instanceof CayennePreferenceEditor) {
+            this.editor = (CayennePreferenceEditor) editor;
+        }
+
+        String[] arr = null;
+        try {
+            arr = getClassLoader().keys();
+        }
+        catch (BackingStoreException e) {
+        }
+        this.classPathEntries = new ArrayList<String>();
+        for (int i = 0; i < arr.length; i++) {
+            classPathEntries.add(arr[i]);
+        }
+
         this.tableModel = new ClasspathTableModel();
 
         initBindings();
@@ -60,10 +78,8 @@ public class ClasspathPreferences extends CayenneController {
         return view;
     }
 
-    protected Domain getClassLoaderDomain() {
-        return editor
-                .editableInstance(getApplication().getPreferenceDomain())
-                .getSubdomain(FileClassLoadingService.class);
+    protected Preferences getClassLoader() {
+        return getApplication().getPreferencesNode(this.getClass(), "");
     }
 
     protected void initBindings() {
@@ -111,8 +127,8 @@ public class ClasspathPreferences extends CayenneController {
             return;
         }
 
-        PreferenceDetail selection = (PreferenceDetail) classPathEntries.remove(selected);
-        editor.deleteDetail(getClassLoaderDomain(), selection.getKey());
+        addRemovedPreferences((String) classPathEntries.get(selected));
+        classPathEntries.remove(selected);
         tableModel.fireTableRowsDeleted(selected, selected);
     }
 
@@ -142,9 +158,28 @@ public class ClasspathPreferences extends CayenneController {
 
             int len = classPathEntries.size();
             String key = selected.getAbsolutePath();
-            classPathEntries.add(editor.createDetail(getClassLoaderDomain(), key));
+            addChangedPreferences(key, "");
+            classPathEntries.add(key);
             tableModel.fireTableRowsInserted(len, len);
         }
+    }
+
+    public void addChangedPreferences(String key, String value) {
+        Map<String, String> map = editor.getChangedPreferences().get(getClassLoader());
+        if (map == null) {
+            map = new HashMap<String, String>();
+        }
+        map.put(key, value);
+        editor.getChangedPreferences().put(getClassLoader(), map);
+    }
+    
+    public void addRemovedPreferences(String key) {
+        Map<String, String> map = editor.getRemovedPreferences().get(getClassLoader());
+        if (map == null) {
+            map = new HashMap<String, String>();
+        }
+        map.put(key, "");
+        editor.getRemovedPreferences().put(getClassLoader(), map);
     }
 
     class ClasspathTableModel extends AbstractTableModel {
@@ -158,9 +193,7 @@ public class ClasspathPreferences extends CayenneController {
         }
 
         public Object getValueAt(int rowIndex, int columnIndex) {
-            PreferenceDetail preference = (PreferenceDetail) classPathEntries
-                    .get(rowIndex);
-            return preference.getKey();
+            return classPathEntries.get(rowIndex);
         }
 
         public String getColumnName(int column) {

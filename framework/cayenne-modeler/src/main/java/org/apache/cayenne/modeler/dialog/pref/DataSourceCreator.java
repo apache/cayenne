@@ -31,8 +31,6 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 
 /**
@@ -42,8 +40,6 @@ public class DataSourceCreator extends CayenneController {
     private static final String NO_ADAPTER = "Custom / Undefined";
 
     protected DataSourceCreatorView view;
-    protected PreferenceEditor editor;
-    protected Domain domain;
     protected boolean canceled;
     protected Map dataSources;
 
@@ -51,8 +47,6 @@ public class DataSourceCreator extends CayenneController {
         super(parent);
         this.view = new DataSourceCreatorView((JDialog) SwingUtilities
                 .getWindowAncestor(parent.getView()));
-        this.editor = parent.getEditor();
-        this.domain = parent.getDataSourceDomain();
         this.dataSources = parent.getDataSources();
 
         DefaultComboBoxModel model = new DefaultComboBoxModel(DbAdapterInfo

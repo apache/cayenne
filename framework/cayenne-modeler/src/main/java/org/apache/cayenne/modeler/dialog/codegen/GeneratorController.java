@@ -154,7 +154,7 @@ public abstract class GeneratorController extends CayenneController {
         generator.addEmbeddables(getParentController().getSelectedEmbeddables());
         generator.addQueries(getParentController().getDataMap().getQueries());
         
-        Preferences preferences = application.getPreferencesNode(ClassGenerationAction.class, "").node(GeneralPreferences.ENCODING_PREFERENCE);
+        Preferences preferences = application.getPreferencesNode(ClassGenerationAction.class, "");
 
         if (preferences != null) {
             generator.setEncoding(preferences

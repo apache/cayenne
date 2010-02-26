@@ -19,8 +19,15 @@
 
 package org.apache.cayenne.pref;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+
 
 /**
  * An editor for modifying CayennePreferenceService.
@@ -33,8 +40,12 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     protected boolean restartRequired;
     protected int saveInterval;
     protected CayenneProjectPreferences cayenneProjectPreferences;
+    private Map<Preferences, Map<String, String>> changedPreferences;
+    private Map<Preferences, Map<String, String>> removedPreferences;
+    private Map<Preferences, Map<String, Boolean>> changedBooleanPreferences;
 
-    public CayennePreferenceEditor(CayennePreferenceService service, CayenneProjectPreferences cayenneProjectPreferences) {
+    public CayennePreferenceEditor(CayennePreferenceService service,
+            CayenneProjectPreferences cayenneProjectPreferences) {
         this.service = service;
         this.editingContext = service
                 .getDataContext()
@@ -42,6 +53,24 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
                 .createDataContext();
         this.saveInterval = service.getSaveInterval();
         this.cayenneProjectPreferences = cayenneProjectPreferences;
+        this.changedPreferences = new HashMap<Preferences, Map<String, String>>();
+        this.removedPreferences = new HashMap<Preferences, Map<String, String>>();
+        this.changedBooleanPreferences = new HashMap<Preferences, Map<String, Boolean>>();
+    }
+
+    
+    
+    public Map<Preferences, Map<String, String>> getRemovedPreferences() {
+        return removedPreferences;
+    }
+
+
+    public Map<Preferences, Map<String, String>> getChangedPreferences() {
+        return changedPreferences;
+    }
+
+    public Map<Preferences, Map<String, Boolean>> getChangedBooleanPreferences() {
+        return changedBooleanPreferences;
     }
 
     protected boolean isRestartRequired() {
@@ -66,7 +95,8 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
 
     public PreferenceDetail createDetail(Domain domain, String key) {
         domain = editableInstance(domain);
-        DomainPreference preference = getEditingContext().newObject(DomainPreference.class);
+        DomainPreference preference = getEditingContext().newObject(
+                DomainPreference.class);
         preference.setDomain(domain);
         preference.setKey(key);
 
@@ -75,7 +105,8 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
 
     public PreferenceDetail createDetail(Domain domain, String key, Class javaClass) {
         domain = editableInstance(domain);
-        DomainPreference preferenceLink = getEditingContext().newObject(DomainPreference.class);
+        DomainPreference preferenceLink = getEditingContext().newObject(
+                DomainPreference.class);
         preferenceLink.setDomain(domain);
         preferenceLink.setKey(key);
 
@@ -123,6 +154,57 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
         if (restartRequired) {
             restart();
         }
+
+        // update boolean preferences
+        Iterator it = changedBooleanPreferences.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            Preferences pref = (Preferences) entry.getKey();
+            Map<String, Boolean> map =  (Map<String, Boolean>) entry.getValue();
+
+            Iterator iterator = map.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry en = (Map.Entry) iterator.next();
+                String key = (String) en.getKey();
+                Boolean value = (Boolean) en.getValue();
+                
+                pref.putBoolean(key, value);
+            }
+        }
+        
+        // update string preferences
+        Iterator iter = changedPreferences.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            Preferences pref = (Preferences) entry.getKey();
+            Map<String, String> map =  (Map<String, String>) entry.getValue();
+
+            Iterator iterator = map.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry en = (Map.Entry) iterator.next();
+                String key = (String) en.getKey();
+                String value = (String) en.getValue();
+                
+                pref.put(key, value);
+            }
+        }
+        
+        // remove string preferences
+        Iterator iterator = removedPreferences.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            Preferences pref = (Preferences) entry.getKey();
+            Map<String, String> map =  (Map<String, String>) entry.getValue();
+
+            Iterator itRem = map.entrySet().iterator();
+            while (itRem.hasNext()) {
+                Map.Entry en = (Map.Entry) itRem.next();
+                String key = (String) en.getKey();
+                pref.remove(key);
+            }
+        }
+        
+        Application.getInstance().initClassLoader();
     }
 
     public void revert() {
