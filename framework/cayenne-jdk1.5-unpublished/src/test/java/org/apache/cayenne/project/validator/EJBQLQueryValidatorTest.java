@@ -16,15 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.validation;
+package org.apache.cayenne.project.validator;
 
-import org.apache.cayenne.project.validator.EJBQLQueryValidator;
 import org.apache.cayenne.project.validator.EJBQLQueryValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 
-public class EJBQlQueryValidatorTest  extends CayenneCase{
+public class EJBQLQueryValidatorTest  extends CayenneCase{
 
     public void testValidateEJBQL(){
         String[] ejbqlError = new String[] {

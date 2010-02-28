@@ -26,7 +26,7 @@ import java.util.TreeMap;
 /**
  * QueryFormatter is utility class for formatting queries.
  */
-public final class QueryFormatter {
+final class QueryFormatter {
 
     private QueryFormatter() {
         // no instances
@@ -50,7 +50,7 @@ public final class QueryFormatter {
         KEY_WORDS.put(" case ", "CASE");
     }
 
-    public static String formatQuery(String sql) {
+    static String formatQuery(String sql) {
         Map<Integer, String> scanResult = scanQuery(sql);
         Iterator<Integer> iter = scanResult.keySet().iterator();
         int nextKeyIdx = (iter.hasNext()) ? iter.next() : -1;
