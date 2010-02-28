@@ -68,7 +68,7 @@ public class CayenneServerModule implements Module {
                 runtimeName);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
-        // add their own for their own to install custom adapters automatically
+        // add their own to install custom adapters automatically
         binder
                 .bindList(DbAdapterFactory.class)
                 .add(new OpenBaseSniffer())
@@ -87,8 +87,8 @@ public class CayenneServerModule implements Module {
 
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class).in(
                 Scopes.SINGLETON);
-        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class).in(
-                Scopes.SINGLETON);
+        binder.bind(ConfigurationNameMapper.class).to(
+                DefaultConfigurationNameMapper.class).in(Scopes.SINGLETON);
 
         // a service to provide the main stack DataDomain
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class).in(

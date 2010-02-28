@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory1;
@@ -81,5 +84,57 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
                 "Injection on the factory hasn't been performed",
                 injector,
                 ((MockDataSourceFactory1) factory).getInjector());
+    }
+
+    public void testGetDataSourceFactory_Property() throws Exception {
+
+        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
+        channelDescriptor.setName("X");
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setName("node1");
+        nodeDescriptor.setDataSourceFactoryType(MockDataSourceFactory1.class.getName());
+        nodeDescriptor.setDataChannelDescriptor(channelDescriptor);
+
+        Module testModule = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
+            }
+        };
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+
+        final Map<String, String> properties = new HashMap<String, String>();
+
+        properties.put(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY, "x");
+        properties.put(PropertyDataSourceFactory.JDBC_URL_PROPERTY, "y");
+        DefaultDataSourceFactoryLoader factoryLoader = new DefaultDataSourceFactoryLoader() {
+
+            @Override
+            protected String getProperty(String key) {
+                return properties.get(key);
+            }
+        };
+        injector.injectMembers(factoryLoader);
+
+        DataSourceFactory factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertTrue(factory instanceof PropertyDataSourceFactory);
+
+        properties.remove(PropertyDataSourceFactory.JDBC_URL_PROPERTY);
+        factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertFalse(factory instanceof PropertyDataSourceFactory);
+
+        properties.put(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node2", "y");
+        factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertFalse(factory instanceof PropertyDataSourceFactory);
+        
+        properties.put(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node1", "y");
+        factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertTrue(factory instanceof PropertyDataSourceFactory);
     }
 }
