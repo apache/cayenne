@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain project-version="6">
+	<map name="embeddable"/>
+	<map name="generic"/>
+	<map name="inheritance"/>
+	<map name="inheritance-flat"/>
+	<map name="locking"/>
+	<map name="map-db1"/>
+	<map name="map-db2"/>
+	<map name="multi-tier"/>
+	<map name="people"/>
+	<map name="qualified"/>
+	<map name="quotemap"/>
+	<map name="relationships"/>
+	<map name="sus-map"/>
+	<map name="testmap"/>
+</domain>

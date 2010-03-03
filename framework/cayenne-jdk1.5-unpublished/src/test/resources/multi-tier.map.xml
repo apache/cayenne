@@ -2,7 +2,7 @@
 <data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
-	>
+	 project-version="6">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.mt"/>
 	<property name="clientSupported" value="true"/>
 	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.mt"/>
