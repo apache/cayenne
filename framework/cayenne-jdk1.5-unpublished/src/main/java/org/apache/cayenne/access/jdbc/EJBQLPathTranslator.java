@@ -50,7 +50,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     protected String lastAlias;
     protected String idPath;
     protected String joinMarker;
-    private String fullPath;
+    protected String fullPath;
     private boolean usingAliases;
 
     public EJBQLPathTranslator(EJBQLTranslationContext context) {

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.art.Artist;
 import org.apache.art.Gallery;
@@ -239,6 +238,20 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         for(Object[] row:data){
             assertFalse(expectedResults.add(Arrays.asList(row[0], row[1])));
         }
+    }
+    
+    public void testGroupByChainedJoins() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT p.painting.toArtist.paintingArray FROM PaintingInfo p"
+                + " GROUP BY p.painting.toArtist.paintingArray";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List data = createDataContext().performQuery(query);
+        
+        ejbql = "SELECT p.painting.toArtist FROM PaintingInfo p"
+            + " GROUP BY p.painting.toArtist";
+        query = new EJBQLQuery(ejbql);
+        createDataContext().performQuery(query);
     }
     
 }
