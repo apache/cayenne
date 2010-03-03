@@ -239,5 +239,19 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
             assertFalse(expectedResults.add(Arrays.asList(row[0], row[1])));
         }
     }
+
+    public void testGroupByChainedJoins() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT p.painting.toArtist.paintingArray FROM PaintingInfo p"
+                + " GROUP BY p.painting.toArtist.paintingArray";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List data = createDataContext().performQuery(query);
+        
+        ejbql = "SELECT p.painting.toArtist FROM PaintingInfo p"
+            + " GROUP BY p.painting.toArtist";
+        query = new EJBQLQuery(ejbql);
+        createDataContext().performQuery(query);
+    }
     
 }

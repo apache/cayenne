@@ -73,13 +73,14 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
             @Override
             public boolean visitIdentificationVariable(EJBQLExpression expression) {
 
-                String idVariableAbsolutePath = idPath+"."+expression.getText();
+                String idVariableAbsolutePath = fullPath + "." + expression.getText();
                 ClassDescriptor descriptor = context.getEntityDescriptor(idVariableAbsolutePath);
                 if (descriptor != null) {
                     this.lastAlias = context.getTableAlias(idVariableAbsolutePath, descriptor.getEntity().getDbEntity().getFullyQualifiedName());
                 }
 
                 this.lastPathComponent = expression.getText();
+                this.fullPath = fullPath + '.' + lastPathComponent;
                 
                 return true;
             }
