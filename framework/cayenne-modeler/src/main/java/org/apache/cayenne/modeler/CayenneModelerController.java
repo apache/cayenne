@@ -82,7 +82,7 @@ public class CayenneModelerController extends CayenneController {
         FSPath path = (FSPath) application
                 .getCayenneProjectPreferences()
                 .getProjectDetailObject(
-                        DataMapDefaults.class,
+                        FSPath.class,
                         getViewPreferences().node("lastEOMDir"));
 
         if (path.getPath() == null) {
