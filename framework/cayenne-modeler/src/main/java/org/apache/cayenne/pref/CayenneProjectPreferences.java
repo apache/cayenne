@@ -40,6 +40,7 @@ public class CayenneProjectPreferences {
         cayennePreferences = new HashMap<Class, Object>();
         cayennePreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(
                 new DBConnectionInfo()));
+       
         projectCayennePreferences = new HashMap<Preferences, Object>();
         initPreference();
     }

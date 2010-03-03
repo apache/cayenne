@@ -24,6 +24,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
+
 import org.apache.cayenne.pref.CayennePreference;
 
 /**
@@ -48,6 +49,7 @@ public class NamingStrategyPreferences {
         return instance;
     }
 
+
     Preferences getPreference() {
         return Application.getMainPreferenceForProject();
     }
@@ -57,6 +59,7 @@ public class NamingStrategyPreferences {
      */
     public Vector<String> getLastUsedStrategies() {
         String prop = getPreference().get(STRATEGIES_PREFERENCE, null);
+
         if (prop == null) {
             return PREDEFINED_STRATEGIES;
         }

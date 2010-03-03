@@ -19,14 +19,19 @@
 
 package org.apache.cayenne.pref;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -43,6 +48,10 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     private Map<Preferences, Map<String, String>> changedPreferences;
     private Map<Preferences, Map<String, String>> removedPreferences;
     private Map<Preferences, Map<String, Boolean>> changedBooleanPreferences;
+    private List<Preferences> removedNode;
+    private List<Preferences> addedNode;
+    
+    private static Log logger = LogFactory.getLog(CayennePreferenceEditor.class);
 
     public CayennePreferenceEditor(CayennePreferenceService service,
             CayenneProjectPreferences cayenneProjectPreferences) {
@@ -56,10 +65,19 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
         this.changedPreferences = new HashMap<Preferences, Map<String, String>>();
         this.removedPreferences = new HashMap<Preferences, Map<String, String>>();
         this.changedBooleanPreferences = new HashMap<Preferences, Map<String, Boolean>>();
+        this.removedNode = new ArrayList<Preferences>();
+        this.addedNode = new ArrayList<Preferences>();
+    }
+    
+    
+    public List<Preferences> getAddedNode() {
+        return addedNode;
+    }
+    
+    public List<Preferences> getRemovedNode() {
+        return removedNode;
     }
 
-    
-    
     public Map<Preferences, Map<String, String>> getRemovedPreferences() {
         return removedPreferences;
     }
@@ -204,10 +222,35 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
             }
         }
         
+        // remove preferences node
+        Iterator<Preferences> iteratorNode = removedNode.iterator();
+        while (iteratorNode.hasNext()) {
+             Preferences pref = iteratorNode.next();
+             try {
+                pref.removeNode();
+            }
+            catch (BackingStoreException e) {
+                logger.warn("Error removing preferences");
+            }
+        }
+        
         Application.getInstance().initClassLoader();
     }
 
     public void revert() {
+        
+        // remove added preferences node
+        Iterator<Preferences> iteratorNode = addedNode.iterator();
+        while (iteratorNode.hasNext()) {
+             Preferences pref = iteratorNode.next();
+             try {
+                pref.removeNode();
+            }
+            catch (BackingStoreException e) {
+                // do nothing
+            }
+        }
+        
         cayenneProjectPreferences.getDetailObject(DBConnectionInfo.class).cancel();
         editingContext.rollbackChanges();
         restartRequired = false;

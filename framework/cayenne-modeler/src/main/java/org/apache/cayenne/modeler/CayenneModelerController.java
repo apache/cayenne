@@ -42,6 +42,7 @@ import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project2.Project;
@@ -78,8 +79,11 @@ public class CayenneModelerController extends CayenneController {
     public FSPath getLastEOModelDirectory() {
         // find start directory in preferences
 
-        FSPath path = (FSPath) getViewDomain()
-                .getDetail("lastEOMDir", FSPath.class, true);
+        FSPath path = (FSPath) application
+                .getCayenneProjectPreferences()
+                .getProjectDetailObject(
+                        DataMapDefaults.class,
+                        getViewPreferences().node("lastEOMDir"));
 
         if (path.getPath() == null) {
             path.setPath(getLastDirectory().getPath());

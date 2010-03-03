@@ -22,32 +22,54 @@ package org.apache.cayenne.modeler.dialog.pref;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceDetail;
+import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class TemplatePreferences extends CayenneController {
 
     protected TemplatePreferencesView view;
-    protected PreferenceEditor editor;
+    protected CayennePreferenceEditor editor;
     protected List<FSPath> templateEntries;
     protected ObjectBinding tableBinding;
+    
+    private static Log logger = LogFactory.getLog(TemplatePreferences.class);
 
     public TemplatePreferences(PreferenceDialog parent) {
         super(parent);
 
         this.view = new TemplatePreferencesView();
-        this.editor = parent.getEditor();
-        this.templateEntries = new ArrayList(getTemplateDomain().getDetails(FSPath.class));
+        PreferenceEditor editor = parent.getEditor();
+        if (editor instanceof CayennePreferenceEditor) {
+            this.editor = (CayennePreferenceEditor) editor;
+        }
+        this.templateEntries = new ArrayList<FSPath>();
+
+        try {
+            String[] keys = getTemplatePreferences().childrenNames();
+            for (int i = 0; i < keys.length; i++) {
+                templateEntries.add((FSPath) application
+                        .getCayenneProjectPreferences()
+                        .getProjectDetailObject(
+                                FSPath.class,
+                                getTemplatePreferences().node(keys[i])));
+            }
+        }
+        catch (BackingStoreException e) {
+            logger.warn("Error reading preferences");
+        }
 
         initBindings();
     }
@@ -56,9 +78,10 @@ public class TemplatePreferences extends CayenneController {
         return view;
     }
 
-    protected Domain getTemplateDomain() {
-        Domain domain = CodeTemplateManager.getTemplateDomain(getApplication());
-        return editor.editableInstance(domain);
+    protected Preferences getTemplatePreferences() {
+        Preferences preferences = CodeTemplateManager
+                .getTemplatePreferences(getApplication());
+        return preferences;
     }
 
     protected void initBindings() {
@@ -115,10 +138,16 @@ public class TemplatePreferences extends CayenneController {
             return;
         }
 
-        PreferenceDetail selection = (PreferenceDetail) templateEntries.remove(selected);
-        editor.deleteDetail(getTemplateDomain(), selection.getKey());
+        Object key = ((AbstractTableModel) view.getTable().getModel()).getValueAt(
+                selected,
+                0);
+
+        editor.getRemovedNode().add(getTemplatePreferences().node((String) key));
+        templateEntries.remove(selected);
+
         ((AbstractTableModel) view.getTable().getModel()).fireTableRowsDeleted(
                 selected,
                 selected);
+
     }
 }

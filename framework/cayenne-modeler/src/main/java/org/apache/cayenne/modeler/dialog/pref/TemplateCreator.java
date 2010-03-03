@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -32,7 +33,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.control.FileChooser;
@@ -43,8 +44,8 @@ public class TemplateCreator extends CayenneController {
     protected TemplateCreatorView view;
     protected boolean canceled;
     protected Set existingNames;
-    protected PreferenceEditor editor;
-    protected Domain domain;
+    protected CayennePreferenceEditor editor;
+    protected Preferences preferences;
 
     public TemplateCreator(TemplatePreferences parent) {
         super(parent);
@@ -54,8 +55,11 @@ public class TemplateCreator extends CayenneController {
                 parent.getView());
         this.view = new TemplateCreatorView(parentDialog);
         this.existingNames = new HashSet();
-        this.editor = parent.getEditor();
-        this.domain = parent.getTemplateDomain();
+        PreferenceEditor editor = parent.getEditor();
+        if (editor instanceof CayennePreferenceEditor) {
+            this.editor = (CayennePreferenceEditor) editor;
+        }
+        this.preferences = parent.getTemplatePreferences();
 
         for (FSPath path : parent.getTemplateEntries()) {
             existingNames.add(path.getKey());
@@ -70,10 +74,11 @@ public class TemplateCreator extends CayenneController {
     FSPath getLastTemplateDirectory() {
         // find start directory in preferences
 
-        FSPath path = (FSPath) getViewDomain().getDetail(
-                "lastTemplate",
-                FSPath.class,
-                true);
+        FSPath path = (FSPath) application
+                .getCayenneProjectPreferences()
+                .getProjectDetailObject(
+                        FSPath.class,
+                        getViewPreferences().node("lastTemplate"));
 
         if (path.getPath() == null) {
             path.setPath(getLastDirectory().getPath());
@@ -162,7 +167,11 @@ public class TemplateCreator extends CayenneController {
 
         String key = view.getTemplateName().getText();
         File file = view.getTemplateChooser().getFile();
-        FSPath path = (FSPath) editor.createDetail(domain, key, FSPath.class);
+        Preferences newNode = preferences.node(key);
+        FSPath path = (FSPath) application
+                .getCayenneProjectPreferences()
+                .getProjectDetailObject(FSPath.class, newNode);
+        editor.getAddedNode().add(newNode);
         path.setPath(file != null ? file.getAbsolutePath() : null);
         return path;
     }

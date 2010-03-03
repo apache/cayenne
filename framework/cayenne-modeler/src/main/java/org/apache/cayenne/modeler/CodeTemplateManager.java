@@ -23,11 +23,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.pref.Domain;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Manages code generation templates.
@@ -38,7 +41,7 @@ public class CodeTemplateManager {
     public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
     static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
     static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
-    
+
     static final String LIGHT_SERVER_SUPERCLASS = "Light Server Superclass";
 
     protected List<String> standardSubclassTemplates;
@@ -46,8 +49,10 @@ public class CodeTemplateManager {
     protected Map<String, String> customTemplates;
     protected Map<String, String> standardTemplates;
 
-    public static Domain getTemplateDomain(Application application) {
-        return application.getPreferenceDomain().getSubdomain(CodeTemplateManager.class);
+    private static Log logger = LogFactory.getLog(CodeTemplateManager.class);
+
+    public static Preferences getTemplatePreferences(Application application) {
+        return application.getMainPreferenceForProject().node("CodeTemplateManager");
     }
 
     public CodeTemplateManager(Application application) {
@@ -61,7 +66,7 @@ public class CodeTemplateManager {
         standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
         standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 
-        updateCustomTemplates(getTemplateDomain(application));
+        updateCustomTemplates(getTemplatePreferences(application));
 
         standardTemplates = new HashMap<String, String>();
         standardTemplates.put(
@@ -84,13 +89,19 @@ public class CodeTemplateManager {
     /**
      * Updates custom templates from preferences.
      */
-    public void updateCustomTemplates(Domain preferenceDomain) {
-        Map<String, FSPath> templates = preferenceDomain.getDetailsMap(FSPath.class);
-        this.customTemplates = new HashMap<String, String>(templates.size(), 1);
+    public void updateCustomTemplates(Preferences preference) {
+        String[] keys = null;
+        try {
+            keys = preference.childrenNames();
+        }
+        catch (BackingStoreException e) {
+            logger.warn("Error reading preferences");
+        }
+        this.customTemplates = new HashMap<String, String>(keys.length, 1);
 
-        for (Map.Entry<String, FSPath> entry : templates.entrySet()) {
-            FSPath path = entry.getValue();
-            customTemplates.put(entry.getKey(), path.getPath());
+        for (int j = 0; j < keys.length; j++) {
+            FSPath path = new FSPath(preference.node(keys[j]));
+            customTemplates.put(keys[j], path.getPath());
         }
     }
 

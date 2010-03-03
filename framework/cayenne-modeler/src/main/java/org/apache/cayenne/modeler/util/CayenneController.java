@@ -38,7 +38,6 @@ import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.swing.BoundComponent;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
@@ -84,7 +83,11 @@ public abstract class CayenneController implements BoundComponent {
      */
     public FSPath getLastDirectory() {
         // find start directory in preferences
-        FSPath path = (FSPath) getViewDomain().getDetail("lastDir", FSPath.class, true);
+        FSPath path = (FSPath) application
+                .getCayenneProjectPreferences()
+                .getProjectDetailObject(
+                        FSPath.class,
+                        getViewPreferences().node("lastDir"));
 
         if (path.getPath() == null) {
 
@@ -95,13 +98,6 @@ public abstract class CayenneController implements BoundComponent {
         }
 
         return path;
-    }
-
-    /**
-     * Returns preference domain for this component view.
-     */
-    protected Domain getViewDomain() {
-        return getApplication().getPreferenceDomain().getSubdomain(getView().getClass());
     }
 
     /**
