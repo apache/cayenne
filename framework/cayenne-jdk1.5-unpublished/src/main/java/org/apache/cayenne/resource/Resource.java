@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.resource;
 
+import java.io.Serializable;
 import java.net.URL;
 
 /**
@@ -25,7 +26,7 @@ import java.net.URL;
  * 
  * @since 3.1
  */
-public interface Resource {
+public interface Resource extends Serializable {
 
     /**
      * Returns a resource URL to read (and possibly write) the resource data.

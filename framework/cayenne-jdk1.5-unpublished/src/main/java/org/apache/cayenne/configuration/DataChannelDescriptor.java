@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +36,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.1
  */
-public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable {
+public class DataChannelDescriptor implements ConfigurationNode, Serializable, XMLSerializable {
 
     protected String name;
     protected Map<String, String> properties;
