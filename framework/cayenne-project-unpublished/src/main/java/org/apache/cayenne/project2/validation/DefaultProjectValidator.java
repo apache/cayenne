@@ -303,7 +303,10 @@ class ValidationVisitor implements ConfigurationNodeVisitor<ValidationResult> {
     public ValidationResult visitProcedure(Procedure procedure) {
         defaultProjectValidator.getProcedureValidator().validate(procedure, this);
         ProcedureParameter parameter = procedure.getResultParam();
-        visitProcedureParameter(parameter);
+        if (parameter != null) {
+            visitProcedureParameter(parameter);
+        }
+
         Iterator<ProcedureParameter> itPrOut = procedure
                 .getCallOutParameters()
                 .iterator();
@@ -317,6 +320,7 @@ class ValidationVisitor implements ConfigurationNodeVisitor<ValidationResult> {
             ProcedureParameter procPar = itPr.next();
             visitProcedureParameter(procPar);
         }
+
         return validationResults;
     }
 
