@@ -297,7 +297,7 @@ public class ObjRelationshipInfoModel extends BasicModel {
         // the unsaved dbrels selection.
 
         for (DbRelationship relationship : dbRelationships) {
-            if (this.relationship != null && this.relationship.isToMany()) {
+            if (relationship != null && relationship.isToMany()) {
                 return true;
             }
         }

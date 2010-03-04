@@ -372,9 +372,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
             public void tableChanged(TableModelEvent e) {
                 if (table.getSelectedRow() >= 0) {
                     ObjRelationship rel = model.getRelationship(table.getSelectedRow());
-                    if (rel.getTargetEntity() != null
-                            && ((ObjEntity) rel.getSourceEntity()).getDbEntity() != null
-                            && ((ObjEntity) rel.getTargetEntity()).getDbEntity() != null) {
+                    if (((ObjEntity) rel.getSourceEntity()).getDbEntity() != null) {
                         resolve.setEnabled(true);
                     }
                     else
