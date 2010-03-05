@@ -123,11 +123,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
 		</dependency>
