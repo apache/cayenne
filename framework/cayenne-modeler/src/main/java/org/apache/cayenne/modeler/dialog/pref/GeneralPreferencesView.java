@@ -30,17 +30,13 @@ import java.awt.*;
  */
 public class GeneralPreferencesView extends JPanel {
 
-    protected JTextField saveInterval;
-    protected JLabel saveIntervalLabel;
     protected EncodingSelectorView encodingSelector;
     protected JLabel encodingSelectorLabel;
     protected JCheckBox autoLoadProjectBox;
     protected JCheckBox deletePromptBox;
 
     public GeneralPreferencesView() {
-        this.saveInterval = new JTextField();
         this.encodingSelector = new EncodingSelectorView();
-        this.saveIntervalLabel = new JLabel("Preferences Save Interval (sec):");
         this.encodingSelectorLabel = new JLabel("File Encoding:");
         this.autoLoadProjectBox = new JCheckBox("Automatically Load Last Opened Project");
         this.deletePromptBox = new JCheckBox("Always Delete Items Without Prompt");
@@ -53,8 +49,7 @@ public class GeneralPreferencesView extends JPanel {
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.addSeparator("General Preferences", cc.xyw(1, 1, 5));
-        builder.add(saveIntervalLabel, cc.xy(1, 3));
-        builder.add(saveInterval, cc.xy(3, 3));
+
         builder.add(encodingSelectorLabel, cc.xy(1, 5));
         builder.add(encodingSelector, cc.xywh(3, 5, 3, 3));
         builder.add(autoLoadProjectBox, cc.xy(1, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
@@ -68,16 +63,11 @@ public class GeneralPreferencesView extends JPanel {
 
     public void setEnabled(boolean b) {
         super.setEnabled(b);
-        saveInterval.setEnabled(b);
-        saveIntervalLabel.setEnabled(b);
+
         encodingSelector.setEnabled(b);
         encodingSelectorLabel.setEnabled(b);
         autoLoadProjectBox.setEnabled(b);
         deletePromptBox.setEnabled(b);
-    }
-
-    public JTextField getSaveInterval() {
-        return saveInterval;
     }
 
     public EncodingSelectorView getEncodingSelector() {

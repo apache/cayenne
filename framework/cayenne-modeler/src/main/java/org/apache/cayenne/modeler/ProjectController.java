@@ -116,7 +116,6 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CircularArray;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.query.Query;
@@ -263,7 +262,6 @@ public class ProjectController extends CayenneController {
     protected boolean dirty;
 
     protected Project project;
-    protected Domain projectPreferences;
 
     protected Preferences projectControllerPreferences;
 
@@ -306,7 +304,6 @@ public class ProjectController extends CayenneController {
         {
 
             this.project = currentProject;
-            this.projectPreferences = null;
             this.projectControllerPreferences = null;
 
             if (project == null) // null project -> no files to watch
@@ -342,13 +339,6 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /**
-     * Returns top preferences Domain for the application.
-     */
-    public Domain getApplicationPreferenceDomain() {
-        return getApplication().getPreferenceDomain();
-    }
-
     public void updateEntityResolver() {
 
         entityResolver.clearCache();
@@ -360,29 +350,6 @@ public class ProjectController extends CayenneController {
             DataMap map = it.next();
             map.setNamespace(entityResolver);
         }
-    }
-
-    /**
-     * Returns top preferences Domain for the current project, throwing an exception if no
-     * project is selected.
-     */
-    public Domain getPreferenceDomainForProject() {
-        if (getProject() == null) {
-            throw new CayenneRuntimeException("No Project selected");
-        }
-
-        if (projectPreferences == null) {
-            String key = getProject().getConfigurationResource() == null ? new String(
-                    IDUtil.pseudoUniqueByteSequence16()) : project
-                    .getConfigurationResource()
-                    .getURL()
-                    .getPath();
-
-            projectPreferences = getApplicationPreferenceDomain().getSubdomain(
-                    Project.class).getSubdomain(key);
-        }
-
-        return projectPreferences;
     }
 
     public Preferences getPreferenceForProject() {

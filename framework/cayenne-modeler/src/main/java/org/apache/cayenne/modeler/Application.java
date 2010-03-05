@@ -29,7 +29,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
@@ -47,10 +46,6 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
-import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
-import org.apache.cayenne.pref.PreferenceService;
 import org.apache.cayenne.project2.CayenneProjectModule;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.swing.BindingFactory;
@@ -87,7 +82,6 @@ public class Application {
     protected static Application instance;
 
     protected FileClassLoadingService modelerClassLoader;
-    protected HSQLEmbeddedPreferenceService preferenceService;
     protected ActionManager actionManager;
     protected CayenneModelerController frameController;
 
@@ -239,22 +233,8 @@ public class Application {
         return bindingFactory;
     }
 
-    /**
-     * Returns Application preferences service.
-     */
-    public PreferenceService getPreferenceService() {
-        return preferenceService;
-    }
-
     public CayenneProjectPreferences getCayenneProjectPreferences() {
         return cayenneProjectPreferences;
-    }
-
-    /**
-     * Returns top preferences Domain for the application.
-     */
-    public Domain getPreferenceDomain() {
-        return getPreferenceService().getDomain(getName(), true);
     }
 
     public static Preferences getMainPreferenceForProject() {
@@ -332,40 +312,7 @@ public class Application {
     }
 
     protected void initPreferences() {
-        HSQLEmbeddedPreferenceService service = new HSQLEmbeddedPreferenceService(
-                preferencesDB,
-                PREFERENCES_MAP_PACKAGE,
-                getName());
         this.cayenneProjectPreferences = new CayenneProjectPreferences();
-        service.stopOnShutdown();
-        this.preferenceService = service;
-        this.preferenceService.startService();
-
-        // test service
-        getPreferenceDomain();
-    }
-
-    static final class PreferencesDelegate implements
-            HSQLEmbeddedPreferenceEditor.Delegate {
-
-        static final String message = "Preferences Database is locked by another application. "
-                + "Do you want to remove the lock?";
-        static final String failureMessage = "Failed to remove database lock. "
-                + "Preferences will we saved for this session only.";
-
-        static final HSQLEmbeddedPreferenceEditor.Delegate sharedInstance = new PreferencesDelegate();
-
-        public boolean deleteMasterLock(File lock) {
-            int result = JOptionPane.showConfirmDialog(null, message);
-            if (result == JOptionPane.YES_OPTION || result == JOptionPane.OK_OPTION) {
-                if (!lock.delete()) {
-                    JOptionPane.showMessageDialog(null, failureMessage);
-                    return false;
-                }
-            }
-
-            return true;
-        }
     }
 
     final class ModelerContext extends SwingContext {

@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.pref.CayennePreferenceForProject;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
@@ -83,9 +82,6 @@ public class SaveAsAction extends CayenneAction {
             oldPath = p.getConfigurationResource().getURL().getPath();
         }
 
-        // obtain preference object before save, when the project path may change.....
-        Domain preference = getProjectController().getPreferenceDomainForProject();
-
         File projectDir = fileChooser.newProjectDir(Application.getFrame(), p);
         if (projectDir == null) {
             return false;
@@ -111,9 +107,6 @@ public class SaveAsAction extends CayenneAction {
         ProjectSaver saver = getApplication().getInjector().getInstance(
                 ProjectSaver.class);
         saver.saveAs(p, res);
-
-        // update preferences domain key
-        preference.rename(projectDir.getPath());
 
         if (oldPath != null
                 && oldPath.length() != 0

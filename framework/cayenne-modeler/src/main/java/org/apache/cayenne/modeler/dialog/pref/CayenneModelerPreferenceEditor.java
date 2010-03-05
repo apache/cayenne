@@ -20,23 +20,19 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.FileClassLoadingService;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
-import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
-import org.apache.cayenne.pref.PreferenceDetail;
+import org.apache.cayenne.pref.CayennePreferenceEditor;
 
 /**
  * Specialized preferences editor for CayenneModeler.
  * 
  */
-public class CayenneModelerPreferenceEditor extends HSQLEmbeddedPreferenceEditor {
+public class CayenneModelerPreferenceEditor extends CayennePreferenceEditor {
 
     protected boolean refreshingClassLoader;
     protected Application application;
 
     public CayenneModelerPreferenceEditor(Application application) {
-        super((HSQLEmbeddedPreferenceService) application.getPreferenceService(), application.getCayenneProjectPreferences());
+        super(application.getCayenneProjectPreferences());
         this.application = application;
     }
 
@@ -57,21 +53,7 @@ public class CayenneModelerPreferenceEditor extends HSQLEmbeddedPreferenceEditor
         }
     }
 
-    public PreferenceDetail createDetail(Domain domain, String key) {
-        changeInDomain(domain);
-        return super.createDetail(domain, key);
-    }
-
-    public PreferenceDetail deleteDetail(Domain domain, String key) {
-        changeInDomain(domain);
-        return super.deleteDetail(domain, key);
-    }
-
-    protected void changeInDomain(Domain domain) {
-        if (!refreshingClassLoader
-                && domain != null
-                && FileClassLoadingService.class.getName().equals(domain.getName())) {
-            refreshingClassLoader = true;
-        }
+    @Override
+    protected void restart() {
     }
 }

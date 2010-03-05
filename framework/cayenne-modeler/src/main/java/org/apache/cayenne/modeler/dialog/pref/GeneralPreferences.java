@@ -27,11 +27,9 @@ import java.util.prefs.Preferences;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
-import org.apache.cayenne.pref.CayennePreferenceService;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
-import org.apache.cayenne.validation.ValidationException;
 
 /**
  */
@@ -50,7 +48,6 @@ public class GeneralPreferences extends CayenneController {
 
     protected Preferences preferences;
 
-    protected ObjectBinding saveIntervalBinding;
     protected ObjectBinding encodingBinding;
     protected ObjectBinding autoLoadProjectBinding;
     protected ObjectBinding deletePromptBinding;
@@ -65,7 +62,6 @@ public class GeneralPreferences extends CayenneController {
             this.view.setEnabled(true);
             initBindings();
 
-            saveIntervalBinding.updateView();
             encodingBinding.updateView();
             autoLoadProjectBinding.updateView();
             deletePromptBinding.updateView();
@@ -101,10 +97,6 @@ public class GeneralPreferences extends CayenneController {
                 getApplication().getBindingFactory(),
                 this);
 
-        this.saveIntervalBinding = builder.bindToTextField(
-                view.getSaveInterval(),
-                "timeInterval");
-
         this.encodingBinding = builder.bindToProperty(
                 encodingSelector,
                 "encoding",
@@ -119,10 +111,6 @@ public class GeneralPreferences extends CayenneController {
                 "deletePrompt");
     }
 
-    public double getTimeInterval() {
-        return this.editor.getSaveInterval() / 1000.0;
-    }
-
     public String getEncoding() {
         return encoding;
     }
@@ -130,17 +118,6 @@ public class GeneralPreferences extends CayenneController {
     public void setEncoding(String encoding) {
         addChangedPreferences(ENCODING_PREFERENCE, encoding);
         this.encoding = encoding;
-    }
-
-    public void setTimeInterval(double d) {
-        int ms = (int) (d * 1000.0);
-        if (ms < CayennePreferenceService.MIN_SAVE_INTERVAL) {
-            throw new ValidationException(
-                    "Time interval is too small, minimum allowed is "
-                            + (CayennePreferenceService.MIN_SAVE_INTERVAL / 1000.0));
-        }
-
-        this.editor.setSaveInterval(ms);
     }
 
     public boolean getAutoLoadProject() {

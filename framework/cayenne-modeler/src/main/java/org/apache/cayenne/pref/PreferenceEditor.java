@@ -26,25 +26,6 @@ package org.apache.cayenne.pref;
  */
 public interface PreferenceEditor {
 
-    /**
-     * Returns an underlying PreferenceService which is a parent of this editor.
-     */
-    public PreferenceService getService();
-
-    /**
-     * Creates a generic PreferenceDetail.
-     */
-    public PreferenceDetail createDetail(Domain domain, String key);
-
-    /**
-     * Creates PreferenceDetail of specified class.
-     */
-    public PreferenceDetail createDetail(Domain domain, String key, Class javaClass);
-
-    public PreferenceDetail deleteDetail(Domain domain, String key);
-
-    public Domain editableInstance(Domain domain);
-
     public void save();
 
     public void revert();

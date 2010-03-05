@@ -62,7 +62,6 @@ public class ConfirmRemoveDialog {
         if (shouldDelete) {
             Preferences pref = Application.getInstance().getPreferencesNode(ClassGenerationAction.class, "");
             pref.putBoolean(GeneralPreferences.DELETE_PROMPT_PREFERENCE, neverPromptAgainBox.isSelected());
-            Application.getInstance().getPreferenceService().savePreferences();
         }
     }
     

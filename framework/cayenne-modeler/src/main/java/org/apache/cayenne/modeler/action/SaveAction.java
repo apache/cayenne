@@ -26,7 +26,6 @@ import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.pref.CayennePreferenceForProject;
-import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
 
@@ -63,16 +62,12 @@ public class SaveAction extends SaveAsAction {
         else {
 
             String oldPath = p.getConfigurationResource().getURL().getPath();
-            // obtain preference object before save, when the project path may change.....
-            Domain preference = getProjectController().getPreferenceDomainForProject();
 
             getProjectController().getProjectWatcher().pauseWatching();
 
             ProjectSaver saver = getApplication().getInjector().getInstance(
                     ProjectSaver.class);
             saver.save(p);
-
-            preference.rename(p.getConfigurationResource().getURL().getPath());
 
             CayennePreferenceForProject.removeOldPreferences();
 

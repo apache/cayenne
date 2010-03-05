@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
-import org.apache.cayenne.pref.PrefDetail;
+import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 
@@ -46,7 +46,7 @@ public class GeneratorTabController extends CayenneController {
 
     protected GeneratorTabPanel view;
     protected Map controllers;
-    protected PrefDetail preferences;
+    protected PreferenceDetail preferences;
 
     public GeneratorTabController(CodeGeneratorControllerBase parent) {
         super(parent);
@@ -85,7 +85,7 @@ public class GeneratorTabController extends CayenneController {
         
         CayenneProjectPreferences cayPrPref = application.getCayenneProjectPreferences();
         
-        this.preferences = (PrefDetail) cayPrPref.getProjectDetailObject(PrefDetail.class, getViewPreferences().node("controller"));
+        this.preferences = (PreferenceDetail) cayPrPref.getProjectDetailObject(PreferenceDetail.class, getViewPreferences().node("controller"));
         
         if (Util.isEmptyString(preferences.getProperty("mode"))) {
             preferences.setProperty("mode", STANDARD_OBJECTS_MODE);
@@ -99,7 +99,7 @@ public class GeneratorTabController extends CayenneController {
     }
 
     
-    public PrefDetail getPreferences() {
+    public PreferenceDetail getPreferences() {
         return preferences;
     }
 
