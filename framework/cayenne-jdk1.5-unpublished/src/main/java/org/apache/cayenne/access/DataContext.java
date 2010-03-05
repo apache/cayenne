@@ -1428,7 +1428,8 @@ public class DataContext extends BaseContext implements DataChannel {
         Object value = in.readObject();
         if (value instanceof DataChannel) {
             // A real QueryEngine object - use it
-            this.channel = (DataChannel) value;
+        	// call a setter to initialize EntityResolver 
+            setChannel((DataChannel) value);
         }
         else if (value instanceof String) {
             // The name of a DataDomain - use it

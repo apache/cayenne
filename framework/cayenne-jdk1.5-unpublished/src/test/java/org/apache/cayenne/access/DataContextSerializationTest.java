@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.unit.CayenneCase;
@@ -70,6 +71,16 @@ public class DataContextSerializationTest extends CayenneCase {
 
         assertNotNull(deserializedContext.getChannel());
         assertSame(context.getChannel(), deserializedContext.getChannel());
+    }
+    
+    public void testSerializeNestedChannel() throws Exception {
+        DataContext context = createDataContextWithSharedCache();
+        ObjectContext child = context.createChildContext();
+
+        ObjectContext deserializedContext = (ObjectContext) Util.cloneViaSerialization(child);
+
+        assertNotNull(deserializedContext.getChannel());
+        assertNotNull(deserializedContext.getEntityResolver());
     }
 
     public void testSerializeWithSharedCache() throws Exception {
