@@ -55,6 +55,7 @@ CAY-1385 Modeler: error dialog doesn't show the correct version
 CAY-1390 DataRowStore.processRemoteEvent processInvalidatedIDs typo
 CAY-1396 merge: unneeded cast to SQLServerAdapter
 CAY-1397 ROP: Missing the COMMIT state when deleting HOLLOW object
+CAY-1400 lazyInitParentDomainName will become null when using Child Context
 
 ----------------------------------
 Release: 3.0 RC 2
