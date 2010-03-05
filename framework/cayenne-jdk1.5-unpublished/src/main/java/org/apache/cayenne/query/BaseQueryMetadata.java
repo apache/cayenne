@@ -80,6 +80,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.pageSize = info.getPageSize();
         this.cacheStrategy = info.getCacheStrategy();
         this.cacheKey = info.getCacheKey();
+        this.cacheGroups = info.getCacheGroups();
         this.resultSetMapping = info.getResultSetMapping();
 
         setPrefetchTree(info.getPrefetchTree());
