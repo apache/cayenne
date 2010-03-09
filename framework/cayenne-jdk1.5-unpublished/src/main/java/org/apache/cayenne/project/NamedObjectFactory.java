@@ -297,7 +297,6 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            System.out.println("nameBase");
             if (getNameBase() == null) {
                 setNameBase("UntitledEmbeddable");
             }

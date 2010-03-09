@@ -118,15 +118,9 @@ public class CreateNodeAction extends CayenneAction {
                 .getName()
                 + "Node");
 
-        
-        // ensure that DataNode exposes DataSource directly, so that UI widgets could work
-        // with it.
-        return new DataNodeDescriptor(name) 
-        {
-
-            public DataSourceInfo getDataSourceDescriptor() {
-                return dataSourceDescriptor;
-            }
-        };
+        DataNodeDescriptor node = new DataNodeDescriptor(name);
+        node.setDataChannelDescriptor(domain);
+       
+        return node;
     }
 }
