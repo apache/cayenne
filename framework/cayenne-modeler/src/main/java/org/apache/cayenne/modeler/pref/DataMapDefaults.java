@@ -21,10 +21,10 @@ package org.apache.cayenne.modeler.pref;
 import java.util.prefs.Preferences;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.pref.CayennePreferenceForProject;
+import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.util.Util;
 
-public class DataMapDefaults extends CayennePreferenceForProject {
+public class DataMapDefaults extends RenamedPreferences {
 
     private boolean generatePairs;
     private String outputPath;

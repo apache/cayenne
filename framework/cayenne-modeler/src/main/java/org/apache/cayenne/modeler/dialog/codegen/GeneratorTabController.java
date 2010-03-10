@@ -80,13 +80,15 @@ public class GeneratorTabController extends CayenneController {
         BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
                 this);
-        
+
         builder.bindToAction(view.getGenerationMode(), "updateModeAction()");
-        
+
         CayenneProjectPreferences cayPrPref = application.getCayenneProjectPreferences();
-        
-        this.preferences = (PreferenceDetail) cayPrPref.getProjectDetailObject(PreferenceDetail.class, getViewPreferences().node("controller"));
-        
+
+        this.preferences = (PreferenceDetail) cayPrPref.getProjectDetailObject(
+                PreferenceDetail.class,
+                getViewPreferences().node("controller"));
+
         if (Util.isEmptyString(preferences.getProperty("mode"))) {
             preferences.setProperty("mode", STANDARD_OBJECTS_MODE);
         }
@@ -98,7 +100,6 @@ public class GeneratorTabController extends CayenneController {
         updateModeAction();
     }
 
-    
     public PreferenceDetail getPreferences() {
         return preferences;
     }

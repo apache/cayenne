@@ -46,7 +46,7 @@ import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.pref.CayennePreferenceForProject;
+import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -363,7 +363,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
         // copy all old preference to new preferences 
         Preferences oldPref = prefs;
-        CayennePreferenceForProject.copyPreferences(newName, oldPref);
+        RenamedPreferences.copyPreferences(newName, oldPref);
         
         projectController.fireDomainEvent(e);
     }

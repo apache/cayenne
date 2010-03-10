@@ -365,10 +365,16 @@ public class ProjectController extends CayenneController {
 
             projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
 
-            if (key.length() > 0) {
-                projectControllerPreferences = projectControllerPreferences
-                        .node(projectControllerPreferences.absolutePath()
-                                + key.replace(".xml", ""));
+            if (key.trim().length() > 0) {
+                if (key.contains(".xml")) {
+                    projectControllerPreferences = projectControllerPreferences
+                            .node(projectControllerPreferences.absolutePath()
+                                    + key.replace(".xml", ""));
+                }
+                else {
+                    projectControllerPreferences = projectControllerPreferences
+                    .node(projectControllerPreferences.absolutePath());
+                }
             }
         }
 
@@ -1646,7 +1652,7 @@ public class ProjectController extends CayenneController {
     }
 
     public void addDataMap(Object src, DataMap map, boolean makeCurrent) {
-        
+
         map.setDataChannelDescriptor(currentState.domain);
         // new map was added.. link it to domain (and node if possible)
         currentState.domain.getDataMaps().add(map);

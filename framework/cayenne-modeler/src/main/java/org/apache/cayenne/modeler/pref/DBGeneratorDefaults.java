@@ -21,9 +21,9 @@ package org.apache.cayenne.modeler.pref;
 import java.util.prefs.Preferences;
 
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.pref.CayennePreferenceForProject;
+import org.apache.cayenne.pref.RenamedPreferences;
 
-public class DBGeneratorDefaults extends CayennePreferenceForProject {
+public class DBGeneratorDefaults extends RenamedPreferences {
 
     public static final String CREATE_FK_PROPERTY = "createFK";
     public static final String CREATE_PK_PROPERTY = "createPK";

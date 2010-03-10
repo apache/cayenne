@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.pref.CayennePreferenceForProject;
+import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
@@ -121,11 +121,11 @@ public class SaveAsAction extends CayenneAction {
             String projPath = oldPref.absolutePath().replace(oldName, "");
             Preferences newPref = getProjectController().getPreferenceForProject().node(
                     projPath + newName);
-            CayennePreferenceForProject.copyPreferences(newPref, getProjectController()
+            RenamedPreferences.copyPreferences(newPref, getProjectController()
                     .getPreferenceForProject(), false);
         }
 
-        CayennePreferenceForProject.removeNewPreferences();
+        RenamedPreferences.removeNewPreferences();
 
         getApplication().getFrameController().addToLastProjListAction(
                 p.getConfigurationResource().getURL().getPath());

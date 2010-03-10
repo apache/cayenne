@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.LogConsole;
-import org.apache.cayenne.pref.CayennePreferenceForProject;
+import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project.ProjectPath;
 
 import java.awt.event.ActionEvent;
@@ -53,7 +53,7 @@ public class ExitAction extends ProjectAction {
 		//stop logging before JVM shutdown to prevent hanging
 		LogConsole.getInstance().stopLogging();
 
-		CayennePreferenceForProject.removeNewPreferences();
+		RenamedPreferences.removeNewPreferences();
 		
 		// goodbye
         System.exit(0);

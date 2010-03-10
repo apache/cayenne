@@ -67,7 +67,6 @@ public class ChildrenMapPreference extends PreferenceDecorator {
                 catch (Throwable e) {
                     new CayenneRuntimeException("Error initing preference");
                 }
-
             }
 
             this.children.putAll(children);

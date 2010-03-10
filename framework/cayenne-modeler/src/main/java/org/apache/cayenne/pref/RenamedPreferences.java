@@ -24,14 +24,16 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.CayenneRuntimeException;
-
-public abstract class CayennePreferenceForProject extends CayennePreference {
+/*
+ * use for preferences where in preference's node path contains dependence from name dataChanelDescriptor, 
+ * dataNodeDescriptor, dataMap etc.
+ */
+public abstract class RenamedPreferences extends CayennePreference {
 
     private static List<Preferences> newNode;
     private static List<Preferences> oldNode;
 
-    public CayennePreferenceForProject(Preferences pref) {
+    public RenamedPreferences(Preferences pref) {
         setCurrentPreference(pref);
     }
 
@@ -61,7 +63,7 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                 // get old preference
                 Preferences childNode = pref.node(child);
 
-                if (!oldNode.contains(childNode)) {
+                if (!equalsPath(oldNode, childNode)) {
                     // path to node
                     String path = childNode.absolutePath().replace(oldPath, newPath);
 
@@ -71,7 +73,7 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                     for (int i = 0; i < names.length; i++) {
                         newPref.put(names[i], childNode.get(names[i], ""));
                     }
-                    prefChild.add(childNode);
+                    prefChild.add(newPref);
                 }
             }
 
@@ -93,6 +95,9 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
                 }
                 catch (BackingStoreException e) {
                 }
+                catch (IllegalStateException e) {
+                    // do nothing
+                }
             }
             clearPreferences();
         }
@@ -105,10 +110,14 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
 
             while (it.hasNext()) {
                 Preferences pref = it.next();
+
                 try {
                     pref.removeNode();
                 }
                 catch (BackingStoreException e) {
+                }
+                catch (IllegalStateException e) {
+                    // do nothing
                 }
             }
             clearPreferences();
@@ -169,16 +178,32 @@ public abstract class CayennePreferenceForProject extends CayennePreference {
             }
 
             if (addToPreferenceList) {
-                newNode.add(newPref);
-                oldNode.add(oldPref);
+                if (!equalsPath(newNode, newPref)) {
+                    newNode.add(newPref);
+                }
+                if (!equalsPath(oldNode, oldPref)) {
+                    oldNode.add(oldPref);
+                }
             }
 
             return newPref;
         }
         catch (BackingStoreException e) {
-            new CayenneRuntimeException("Error remane preferences");
+            throw new PreferenceException("Error remane preferences");
         }
-        return oldPref;
+    }
+
+    private static boolean equalsPath(List<Preferences> listPref, Preferences pref) {
+        Iterator<Preferences> it = listPref.iterator();
+        while (it.hasNext()) {
+            Preferences next = it.next();
+            String pathInList = (String) next.absolutePath();
+            String path = (String) pref.absolutePath();
+            if (pathInList.equals(path)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
