@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,16 +38,39 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.TableHelper;
 import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
-public class DataObjectUtilsTest extends CayenneCase {
+public class CayenneTest extends CayenneCase {
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
+    }
+
+    public void testReadNestedProperty_ToMany() throws Exception {
+
+        TableHelper artistHelper = new TableHelper(getDbHelper(), "ARTIST");
+        artistHelper.setColumns("ARTIST_ID", "ARTIST_NAME");
+        artistHelper.insert(1, "a");
+
+        TableHelper paintingHelper = new TableHelper(getDbHelper(), "PAINTING");
+        paintingHelper.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
+        paintingHelper.insert(1, 1, "a1");
+        paintingHelper.insert(2, 1, "a2");
+
+        Artist a = Cayenne.objectForPK(createDataContext(), Artist.class, 1);
+        Collection<String> titles = (Collection<String>) Cayenne.readNestedProperty(
+                a,
+                "paintingArray.paintingTitle");
+
+        assertEquals(2, titles.size());
+        assertTrue(titles.contains("a1"));
+        assertTrue(titles.contains("a2"));
+        
+        int size = (Integer) Cayenne.readNestedProperty(a, "paintingArray.@size");
+        assertEquals(2, size);
     }
 
     public void testScalarObjectForQuery() throws Exception {
@@ -57,8 +81,12 @@ public class DataObjectUtilsTest extends CayenneCase {
 
         DataMap map = getDomain().getMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql);
-        query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
-        query.setTemplate(OpenBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
+        query.setTemplate(
+                FrontBaseAdapter.class.getName(),
+                "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
+        query.setTemplate(
+                OpenBaseAdapter.class.getName(),
+                "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         SQLResult rsMap = new SQLResult();
@@ -70,16 +98,18 @@ public class DataObjectUtilsTest extends CayenneCase {
         assertTrue(object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
     }
-    
+
     public void testScalarObjectForQuery2() throws Exception {
         createTestData("testScalarObjectForQuery");
         DataContext context = createDataContext();
-        
+
         String ejbql = "SELECT count(a) from Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         Object object = Cayenne.objectForQuery(context, query);
         assertNotNull(object);
-        assertTrue("Object class: " + object.getClass().getName(), object instanceof Number);
+        assertTrue(
+                "Object class: " + object.getClass().getName(),
+                object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
     }
 
@@ -128,11 +158,9 @@ public class DataObjectUtilsTest extends CayenneCase {
         assertSame(o2, Cayenne.objectForPK(context, o2.getObjectId()));
 
         try {
-            assertNull(Cayenne.objectForPK(context, new ObjectId(
-                    "Artist",
-                    new byte[] {
-                            1, 2, 3
-                    })));
+            assertNull(Cayenne.objectForPK(context, new ObjectId("Artist", new byte[] {
+                    1, 2, 3
+            })));
 
             fail("An attempt to fetch an object for "
                     + "the non-existent temp id should have failed...");
@@ -197,10 +225,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         Map pk = new HashMap();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
-        Object object = Cayenne.objectForPK(
-                context,
-                CompoundPkTestEntity.class,
-                pk);
+        Object object = Cayenne.objectForPK(context, CompoundPkTestEntity.class, pk);
 
         assertNotNull(object);
         assertTrue(object instanceof CompoundPkTestEntity);

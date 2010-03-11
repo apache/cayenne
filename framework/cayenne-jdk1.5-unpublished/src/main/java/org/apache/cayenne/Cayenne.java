@@ -49,6 +49,14 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * @since 3.1 
  */
 public final class Cayenne {
+    
+    /**
+     * A special property denoting a size of the to-many collection, when encountered at
+     * the end of the path</p>
+     * 
+     * @since 3.1
+     */
+    final static String PROPERTY_COLLECTION_SIZE = "@size";
 
     /**
      * Returns mapped ObjEntity for object. If an object is transient or is not
@@ -160,30 +168,38 @@ public final class Cayenne {
                     tokenIndex);
         }
         else if (property instanceof Collection) {
-            /**
-             * Support for collection property in the middle of the path
-             */
+            
+            Collection<?> collection = (Collection) property;
+            
+            if (tokenIndex < tokenizedPath.length - 1) {
+                if (tokenizedPath[tokenIndex + 1].equals(PROPERTY_COLLECTION_SIZE)) {
+                    return collection.size();
+                }
+            }
+
+            // Support for collection property in the middle of the path
             Collection<Object> result = property instanceof List
                     ? new ArrayList<Object>()
                     : new HashSet<Object>();
-            for (Object obj : (Collection<?>) property) {
-                if (obj instanceof CayenneDataObject) {
-                    Object rest = readNestedProperty(
-                            (CayenneDataObject) obj,
+            for (Object object : collection) {
+                if (object instanceof CayenneDataObject) {
+
+                    Object tail = readNestedProperty(
+                            (CayenneDataObject) object,
                             path,
                             tokenizedPath,
                             tokenIndex + 1,
                             tokenIndex);
-                    if (rest instanceof Collection) {
-                        /**
-                         * We don't want nested collections. E.g.
-                         * readNestedProperty("paintingArray.paintingTitle") should return
-                         * List<String>
-                         */
-                        result.addAll((Collection<?>) rest);
+
+                    if (tail instanceof Collection) {
+
+                        // We don't want nested collections. E.g.
+                        // readNestedProperty("paintingArray.paintingTitle")
+                        // should return List<String>
+                        result.addAll((Collection<?>) tail);
                     }
                     else {
-                        result.add(rest);
+                        result.add(tail);
                     }
                 }
             }
