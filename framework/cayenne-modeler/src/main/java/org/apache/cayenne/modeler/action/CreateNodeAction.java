@@ -33,8 +33,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */

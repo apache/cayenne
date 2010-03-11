@@ -30,8 +30,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.util.NamedObjectFactory;
 
 public class CreateEmbeddableAction extends CayenneAction {
 

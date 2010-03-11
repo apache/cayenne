@@ -40,8 +40,8 @@ import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */

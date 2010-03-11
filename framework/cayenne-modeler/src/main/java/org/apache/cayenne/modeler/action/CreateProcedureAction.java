@@ -31,8 +31,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  * Action class to create a new stored procedure mapping.

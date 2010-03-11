@@ -57,7 +57,7 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.cayenne.project.NamedObjectFactory;
+import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 
 import com.jgoodies.forms.builder.PanelBuilder;

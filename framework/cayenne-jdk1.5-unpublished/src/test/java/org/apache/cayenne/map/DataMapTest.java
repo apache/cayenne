@@ -30,12 +30,12 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.MockAbstractQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.xml.sax.InputSource;

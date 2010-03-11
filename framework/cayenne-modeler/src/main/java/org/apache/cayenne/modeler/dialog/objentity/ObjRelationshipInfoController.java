@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
-import org.apache.cayenne.project.NamedObjectFactory;
+import org.apache.cayenne.util.NamedObjectFactory;
 import org.scopemvc.controller.basic.BasicController;
 import org.scopemvc.core.Control;
 import org.scopemvc.core.ControlException;

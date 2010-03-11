@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.project;
+package org.apache.cayenne.util;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
@@ -54,9 +53,7 @@ import org.apache.cayenne.query.SelectQuery;
  * <li>ObjAttribute</li>
  * <li>ObjRelationship</li>
  * <li>DbEntity</li>
- * <li>DerivedDbEntity</li>
  * <li>DbAttribute</li>
- * <li>DerivedDbAttribute</li>
  * <li>DbRelationship</li>
  * <li>DataNode</li>
  * <li>DataNodeDescriptor</li>
@@ -66,10 +63,13 @@ import org.apache.cayenne.query.SelectQuery;
  * <li>ProcedureParameter</li>
  * </ul>
  * This is a helper class used mostly by GUI and database reengineering classes.
+ * 
+ * @since 3.1 moved from project package
  */
+// TODO andrus 03/10/2010: should we make that a pluggable DI strategy?
 public abstract class NamedObjectFactory {
 
-    private static final Map<Class, NamedObjectFactory> factories = new HashMap<Class, NamedObjectFactory>();
+    private static final Map<Class<?>, NamedObjectFactory> factories = new HashMap<Class<?>, NamedObjectFactory>();
 
     static {
         factories.put(DataMap.class, new DataMapFactory());
@@ -82,7 +82,6 @@ public abstract class NamedObjectFactory {
         factories.put(DataChannelDescriptor.class, new DataChannelDescriptorFactory());
         factories.put(DbRelationship.class, new DbRelationshipFactory(null, false));
         factories.put(ObjRelationship.class, new ObjRelationshipFactory(null, false));
-        factories.put(DataDomain.class, new DataDomainFactory());
         factories.put(Procedure.class, new ProcedureFactory());
         factories.put(Query.class, new SelectQueryFactory());
         factories.put(ProcedureParameter.class, new ProcedureParameterFactory());
@@ -189,28 +188,7 @@ public abstract class NamedObjectFactory {
      */
     protected abstract boolean isNameInUse(String name, Object namingContext);
 
-    // concrete factories
-    static class DataDomainFactory extends NamedObjectFactory {
-
-        @Override
-        protected String nameBase() {
-            return "UntitledDomain";
-        }
-
-        @Override
-        protected Object create(String name, Object namingContext) {
-            return new DataDomain(name);
-        }
-
-        @Override
-        protected boolean isNameInUse(String name, Object namingContext) {
-            Configuration config = (Configuration) namingContext;
-            return config.getDomain(name) != null;
-        }
-    }
-    
-    
-    static class  DataChannelDescriptorFactory extends NamedObjectFactory {
+    static class DataChannelDescriptorFactory extends NamedObjectFactory {
 
         @Override
         protected String nameBase() {
@@ -254,13 +232,13 @@ public abstract class NamedObjectFactory {
                 DataDomain domain = (DataDomain) namingContext;
                 return domain.getMap(name) != null;
             }
-            
+
             if (namingContext instanceof DataChannelDescriptor) {
                 DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
                 return domain.getDataMap(name) != null;
             }
             return false;
-           
+
         }
     }
 

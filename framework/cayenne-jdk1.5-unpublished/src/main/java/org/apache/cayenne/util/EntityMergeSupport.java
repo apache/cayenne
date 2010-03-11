@@ -36,7 +36,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.naming.BasicNamingStrategy;
 import org.apache.cayenne.map.naming.NamingStrategy;
-import org.apache.cayenne.project.NamedObjectFactory;
 
 /**
  * Implements methods for entity merging.
