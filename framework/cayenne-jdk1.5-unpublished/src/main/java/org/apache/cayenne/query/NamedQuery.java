@@ -47,6 +47,11 @@ public class NamedQuery extends IndirectQuery {
 
     // metadata fields...
     transient int hashCode;
+    
+    //to enable serialization
+    @SuppressWarnings("unused")
+    private NamedQuery() {
+    }
 
     public NamedQuery(String name) {
         this(name, null);
