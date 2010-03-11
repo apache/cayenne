@@ -44,7 +44,7 @@ public class TemplatePreferences extends CayenneController {
     protected CayennePreferenceEditor editor;
     protected List<FSPath> templateEntries;
     protected ObjectBinding tableBinding;
-    
+
     private static Log logger = LogFactory.getLog(TemplatePreferences.class);
 
     public TemplatePreferences(PreferenceDialog parent) {
@@ -79,7 +79,9 @@ public class TemplatePreferences extends CayenneController {
     }
 
     protected Preferences getTemplatePreferences() {
-        return application.getPreferencesNode(CodeTemplateManager.class, CodeTemplateManager.NODE_NAME);
+        return application.getPreferencesNode(
+                CodeTemplateManager.class,
+                CodeTemplateManager.NODE_NAME);
     }
 
     protected void initBindings() {

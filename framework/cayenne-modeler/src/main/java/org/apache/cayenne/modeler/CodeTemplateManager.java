@@ -45,7 +45,7 @@ public class CodeTemplateManager {
     static final String LIGHT_SERVER_SUPERCLASS = "Light Server Superclass";
 
     public static final String NODE_NAME = "codeTemplateManager";
-    
+
     protected List<String> standardSubclassTemplates;
     protected List<String> standardSuperclassTemplates;
     protected Map<String, String> customTemplates;

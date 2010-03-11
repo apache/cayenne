@@ -76,7 +76,8 @@ public class TemplateCreator extends CayenneController {
         // find start directory in preferences
 
         FSPath path = new FSPath(application.getPreferencesNode(
-                CodeTemplateManager.class, "lastTemplate"));
+                CodeTemplateManager.class,
+                "lastTemplate"));
 
         if (path.getPath() == null) {
             path.setPath(getLastDirectory().getPath());
