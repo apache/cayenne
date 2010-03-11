@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.project.validator.MappingNamesHelper;
+import org.apache.cayenne.project2.validation.NameValidationHelper;
 import org.apache.cayenne.util.NameConverter;
 import org.apache.cayenne.util.Util;
 
@@ -44,7 +44,7 @@ public class StringUtils {
      * keywords.
      */
     public String formatVariableName(String variableName) {
-        if (MappingNamesHelper.getInstance().isReservedJavaKeyword(variableName)) {
+        if (NameValidationHelper.getInstance().isReservedJavaKeyword(variableName)) {
             return "_" + variableName;
         }
         else {

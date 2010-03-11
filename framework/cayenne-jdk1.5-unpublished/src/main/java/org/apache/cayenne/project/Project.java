@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.cayenne.conf.ConfigStatus;
 import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.project.validator.Validator;
 
 /**
  * Describes a model of Cayenne project. Project is a set of files in the filesystem
@@ -184,12 +183,7 @@ public abstract class Project {
         return projectFiles;
     }
 
-    /**
-     * Creates an instance of Validator for validating this project.
-     */
-    public Validator getValidator() {
-        return new Validator(this);
-    }
+  
 
     /**
      * Looks up and returns a file wrapper for a project object. Returns null if no file

@@ -20,7 +20,6 @@ package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
 class DbRelationshipValidator {
@@ -72,7 +71,7 @@ class DbRelationshipValidator {
                     + " has the same name as one of DbAttributes", object);
         }
         else {
-            MappingNamesHelper helper = MappingNamesHelper.getInstance();
+            NameValidationHelper helper = NameValidationHelper.getInstance();
             String invalidChars = helper.invalidCharsInDbPathComponent(rel.getName());
 
             if (invalidChars != null) {

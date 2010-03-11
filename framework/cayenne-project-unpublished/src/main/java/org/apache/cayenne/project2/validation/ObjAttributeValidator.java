@@ -27,7 +27,6 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
 class ObjAttributeValidator {
@@ -40,7 +39,7 @@ class ObjAttributeValidator {
             validationVisitor.registerError("Unnamed ObjAttribute.", object);
         }
         else {
-            MappingNamesHelper helper = MappingNamesHelper.getInstance();
+            NameValidationHelper helper = NameValidationHelper.getInstance();
             String invalidChars = helper.invalidCharsInObjPathComponent(attribute
                     .getName());
 

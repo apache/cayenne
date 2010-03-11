@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
 class ObjRelationshipValidator {
@@ -45,7 +44,7 @@ class ObjRelationshipValidator {
                     + " has the same name as one of ObjAttributes", object);
         }
         else {
-            MappingNamesHelper helper = MappingNamesHelper.getInstance();
+            NameValidationHelper helper = NameValidationHelper.getInstance();
             String invalidChars = helper.invalidCharsInObjPathComponent(rel.getName());
 
             if (invalidChars != null) {

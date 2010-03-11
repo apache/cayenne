@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.project.validator;
+package org.apache.cayenne.project2.validation;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,35 +28,80 @@ import java.util.StringTokenizer;
  * 
  * @since 1.1
  */
-public class MappingNamesHelper {
+public class NameValidationHelper {
 
-    // TODO: used by StringUtils and ClassGenerationInfo... need to refactor..
     static final Collection<String> RESERVED_JAVA_KEYWORDS = Arrays.asList(
-            "abstract", "assert", "default", "if", "private", "this", "boolean", "do",
-            "implements", "protected", "throw", "break", "double", "import", "public",
-            "throws", "byte", "else", "instanceof", "return", "transient", "case",
-            "extends", "int", "short", "try", "catch", "final", "interface", "static",
-            "void", "char", "finally", "long", "strictfp", "volatile", "class", "float",
-            "native", "super", "while", "const", "for", "new", "switch", "continue",
-            "goto", "package", "synchronized"
-    );
+            "abstract",
+            "assert",
+            "default",
+            "if",
+            "private",
+            "this",
+            "boolean",
+            "do",
+            "implements",
+            "protected",
+            "throw",
+            "break",
+            "double",
+            "import",
+            "public",
+            "throws",
+            "byte",
+            "else",
+            "instanceof",
+            "return",
+            "transient",
+            "case",
+            "extends",
+            "int",
+            "short",
+            "try",
+            "catch",
+            "final",
+            "interface",
+            "static",
+            "void",
+            "char",
+            "finally",
+            "long",
+            "strictfp",
+            "volatile",
+            "class",
+            "float",
+            "native",
+            "super",
+            "while",
+            "const",
+            "for",
+            "new",
+            "switch",
+            "continue",
+            "goto",
+            "package",
+            "synchronized");
 
-    public boolean isReservedJavaKeyword(String word)
-    {
+    public boolean isReservedJavaKeyword(String word) {
         return RESERVED_JAVA_KEYWORDS.contains(word);
     }
-    
+
     // a property is considered invalid if there is a getter or a setter for it in
     // java.lang.Object or CayenneDataObject
-    static final Collection INVALID_JAVA_PROPERTIES = Arrays.asList("class", "committedSnapshot", "currentSnapshot",
-            "dataContext", "objectId", "persistenceState", "snapshotVersion");
+    static final Collection<String> INVALID_JAVA_PROPERTIES = Arrays.asList(
+            "class",
+            "committedSnapshot",
+            "currentSnapshot",
+            "dataContext",
+            "objectId",
+            "persistenceState",
+            "snapshotVersion");
 
-    static final MappingNamesHelper sharedInstance = new MappingNamesHelper();
+    static final NameValidationHelper sharedInstance = new NameValidationHelper();
 
     /**
      * Returns shared instance of the validator.
      */
-    public static MappingNamesHelper getInstance() {
+    public static NameValidationHelper getInstance() {
         return sharedInstance;
     }
 
@@ -107,7 +152,8 @@ public class MappingNamesHelper {
     }
 
     private String validateJavaIdentifier(String id, String invalidChars) {
-        // TODO: Java spec seems to allow "$" char in identifiers... Cayenne expressions do
+        // TODO: Java spec seems to allow "$" char in identifiers... Cayenne expressions
+        // do
         // not, so we should probably check for this char presence...
 
         int len = (id != null) ? id.length() : 0;

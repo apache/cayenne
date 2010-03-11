@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.project.validator.Validator;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -35,8 +34,8 @@ public class ProjectTest extends CayenneCase {
     protected File f;
 
     /**
-      * @see junit.framework.TestCase#setUp()
-      */
+     * @see junit.framework.TestCase#setUp()
+     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -45,19 +44,9 @@ public class ProjectTest extends CayenneCase {
     }
 
     public void testModified() throws Exception {
-    	assertFalse(p.isModified());
-    	p.setModified(true);
-    	assertTrue(p.isModified());    	
-    }
-    
-    public void testValidator() throws Exception {
-        Validator v1 = p.getValidator();
-        assertSame(p, v1.getProject());
-
-        Validator v2 = p.getValidator();
-        assertSame(p, v2.getProject());
-
-        assertTrue(v1 != v2);
+        assertFalse(p.isModified());
+        p.setModified(true);
+        assertTrue(p.isModified());
     }
 
     public void testProcessSave() throws Exception {
@@ -80,7 +69,8 @@ public class ProjectTest extends CayenneCase {
         try {
             p.processSave(list);
             fail("Save must have failed.");
-        } catch (ProjectException ex) {
+        }
+        catch (ProjectException ex) {
             // exception expected
             assertEquals(1, file.saveTempCount);
             assertEquals(0, file.commitCount);
@@ -88,8 +78,8 @@ public class ProjectTest extends CayenneCase {
         }
     }
 
-
     class SaveEmulator extends ProjectFile {
+
         protected int commitCount;
         protected int undoCount;
         protected int deleteCount;
@@ -161,9 +151,9 @@ public class ProjectTest extends CayenneCase {
         @Override
         public void saveTemp() throws Exception {
             saveTempCount++;
-            
-            if(shouldFail) {
-            	throw new Exception("You forced me to fail...");
+
+            if (shouldFail) {
+                throw new Exception("You forced me to fail...");
             }
         }
 
@@ -183,7 +173,6 @@ public class ProjectTest extends CayenneCase {
             return null;
         }
 
-
         /**
          * @see org.apache.cayenne.project.ProjectFile#getOldFileName()
          */
@@ -191,7 +180,6 @@ public class ProjectTest extends CayenneCase {
         public String getOldLocation() {
             return null;
         }
-
 
         /**
          * @see org.apache.cayenne.project.ProjectFile#resolveFile()
@@ -201,7 +189,6 @@ public class ProjectTest extends CayenneCase {
             return new File("abc");
         }
 
-
         /**
          * @see org.apache.cayenne.project.ProjectFile#resolveOldFile()
          */
@@ -209,7 +196,6 @@ public class ProjectTest extends CayenneCase {
         public File resolveOldFile() {
             return new File("xyz");
         }
-
 
     }
 }

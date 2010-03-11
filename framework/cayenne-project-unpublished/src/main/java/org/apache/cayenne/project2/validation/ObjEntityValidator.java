@@ -21,7 +21,6 @@ package org.apache.cayenne.project2.validation;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
 class ObjEntityValidator {
@@ -52,7 +51,7 @@ class ObjEntityValidator {
             return;
         }
 
-        MappingNamesHelper helper = MappingNamesHelper.getInstance();
+        NameValidationHelper helper = NameValidationHelper.getInstance();
         String invalidChars = helper.invalidCharsInJavaClassName(className);
 
         if (invalidChars != null) {
@@ -81,7 +80,7 @@ class ObjEntityValidator {
             return; // null is Ok
         }
 
-        MappingNamesHelper helper = MappingNamesHelper.getInstance();
+        NameValidationHelper helper = NameValidationHelper.getInstance();
         String invalidChars = helper.invalidCharsInJavaClassName(superClassName);
 
         if (invalidChars != null) {

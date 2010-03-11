@@ -20,7 +20,6 @@ package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.Util;
 
 class DbAttributeValidator {
@@ -33,7 +32,7 @@ class DbAttributeValidator {
             validationVisitor.registerError("Unnamed DbAttribute.", object);
         }
         else {
-            MappingNamesHelper helper = MappingNamesHelper.getInstance();
+            NameValidationHelper helper = NameValidationHelper.getInstance();
             String invalidChars = helper.invalidCharsInDbPathComponent(attribute
                     .getName());
 
