@@ -28,13 +28,14 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceFactory;
 import org.apache.cayenne.configuration.DataSourceFactoryLoader;
 import org.apache.cayenne.configuration.DbAdapterFactory;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -93,7 +94,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
                         throw e;
                     }
                     catch (Exception e) {
-                        throw new ConfigurationException(
+                        throw new DataDomainLoadException(
                                 "Error loading DataChannel: '%s'",
                                 e,
                                 e.getMessage());
@@ -120,7 +121,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         Collection<Resource> configurations = resourceLocator.findResources(resourceName);
 
         if (configurations.isEmpty()) {
-            throw new ConfigurationException(
+            throw new DataDomainLoadException(
                     "Configuration file \"%s\" is not found.",
                     resourceName);
         }
@@ -135,7 +136,13 @@ public class DataDomainProvider implements Provider<DataDomain> {
                     + configurationResource.getURL());
         }
 
-        DataChannelDescriptor descriptor = loader.load(configurationResource);
+        ConfigurationTree<DataChannelDescriptor> tree = loader
+                .load(configurationResource);
+        if (!tree.getLoadFailures().isEmpty()) {
+            // TODO: andrus 03/10/2010 - log the errors before throwing?
+            throw new DataDomainLoadException(tree, "Error loading DataChannelDescriptor");
+        }
+
         long t1 = System.currentTimeMillis();
 
         if (logger.isDebugEnabled()) {
@@ -146,6 +153,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
                     + " ms.");
         }
 
+        DataChannelDescriptor descriptor = tree.getRootNode();
         DataDomain dataDomain = new DataDomain(descriptor.getName());
         dataDomain.initWithProperties(descriptor.getProperties());
 

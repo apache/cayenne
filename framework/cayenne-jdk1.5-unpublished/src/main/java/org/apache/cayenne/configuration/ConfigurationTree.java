@@ -16,26 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2;
+package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.resource.Resource;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.cayenne.validation.ValidationFailure;
 
 /**
- * A default project loader of Cayenne projects.
+ * A tree of configuration nodes that contains extra information about the nodes, such
+ * as load errors.
  * 
  * @since 3.1
  */
-public class DataChannelProjectLoader implements ProjectLoader {
+public class ConfigurationTree<T extends ConfigurationNode> {
 
-    @Inject
-    protected DataChannelDescriptorLoader loader;
+    protected T rootNode;
+    protected Collection<ValidationFailure> loadFailures;
 
-    public Project loadProject(Resource source) {
-        ConfigurationTree<DataChannelDescriptor> tree = loader.load(source);
-        return new Project(tree);
+    public ConfigurationTree(T rootNode) {
+        this.rootNode = rootNode;
+    }
+
+    public ConfigurationTree(T rootNode, Collection<ValidationFailure> loadFailures) {
+        this.rootNode = rootNode;
+        this.loadFailures = loadFailures;
+    }
+
+    public T getRootNode() {
+        return rootNode;
+    }
+
+    public Collection<ValidationFailure> getLoadFailures() {
+        return loadFailures != null ? loadFailures : Collections.EMPTY_LIST;
     }
 }

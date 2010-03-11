@@ -19,6 +19,7 @@
 package org.apache.cayenne.project2;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.resource.Resource;
 
 
@@ -36,17 +37,21 @@ public class Project {
 
     protected boolean modified;
     
-    protected ConfigurationNode rootNode;
+    protected ConfigurationTree<?> configurationTree;
     private ConfigurationSourceGetter configurationSourceGetter;
 
 
-    public Project(ConfigurationNode rootNode) {
-        this.rootNode = rootNode;
+    public Project(ConfigurationTree<?> configurationTree) {
+        this.configurationTree = configurationTree;
         this.configurationSourceGetter = new ConfigurationSourceGetter();
+    }
+    
+    public ConfigurationTree<?> getConfigurationTree() {
+        return configurationTree;
     }
 
     public ConfigurationNode getRootNode() {
-        return rootNode;
+        return configurationTree.getRootNode();
     }
     
     /**
@@ -68,6 +73,6 @@ public class Project {
     }
     
     public  Resource getConfigurationResource() {
-        return rootNode.acceptVisitor(configurationSourceGetter);
+        return configurationTree.getRootNode().acceptVisitor(configurationSourceGetter);
     }
 }

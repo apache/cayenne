@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
@@ -116,10 +117,12 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
 
         // save in the new format
         for (DataChannelDescriptor descriptor : domains) {
-            Project project = new Project(descriptor);
-            
-            EntityResolver entityResolver = new EntityResolver(((DataChannelDescriptor)project.getRootNode()).getDataMaps());
-            
+            Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(
+                    descriptor));
+
+            EntityResolver entityResolver = new EntityResolver(
+                    ((DataChannelDescriptor) project.getRootNode()).getDataMaps());
+
             Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
             while (it.hasNext()) {
                 DataMap map = it.next();

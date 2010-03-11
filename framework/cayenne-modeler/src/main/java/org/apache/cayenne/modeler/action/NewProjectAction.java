@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
@@ -70,7 +71,8 @@ public class NewProjectAction extends ProjectAction {
 
         domain.setName(name);
 
-        Project project = new Project(domain);
+        Project project = new Project(
+                new ConfigurationTree<DataChannelDescriptor>(domain));
 
         controller.projectOpenedAction(project);
 

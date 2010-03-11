@@ -26,6 +26,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
@@ -77,7 +78,8 @@ public class FileProjectSaverTest extends Project2Case {
 
         rootNode.getNodeDescriptors().addAll(Arrays.asList(nodes));
 
-        Project project = new Project(rootNode);
+        Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(
+                rootNode));
 
         saver.saveAs(project, new URLResource(testFolder.toURL()));
 

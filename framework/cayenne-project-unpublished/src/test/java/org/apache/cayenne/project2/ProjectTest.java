@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ConfigurationTree;
 
 public class ProjectTest extends TestCase {
 
@@ -34,11 +35,11 @@ public class ProjectTest extends TestCase {
             }
         };
 
-        Project project = new Project(object);
+        Project project = new Project(new ConfigurationTree<ConfigurationNode>(object));
         assertSame(object, project.getRootNode());
-        
+
         assertFalse(project.isModified());
-        
+
         project.setModified(true);
         assertTrue(project.isModified());
     }

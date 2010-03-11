@@ -16,26 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2;
+package org.apache.cayenne.runtime;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.resource.Resource;
 
 /**
- * A default project loader of Cayenne projects.
- * 
  * @since 3.1
  */
-public class DataChannelProjectLoader implements ProjectLoader {
+public class DataDomainLoadException extends ConfigurationException {
 
-    @Inject
-    protected DataChannelDescriptorLoader loader;
+    private ConfigurationTree<DataChannelDescriptor> configurationTree;
 
-    public Project loadProject(Resource source) {
-        ConfigurationTree<DataChannelDescriptor> tree = loader.load(source);
-        return new Project(tree);
+    public DataDomainLoadException() {
     }
+
+    public DataDomainLoadException(String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
+    }
+
+    public DataDomainLoadException(
+            ConfigurationTree<DataChannelDescriptor> configurationTree,
+            String messageFormat, Object... messageArgs) {
+        super(messageFormat, messageArgs);
+        this.configurationTree = configurationTree;
+    }
+
+    public DataDomainLoadException(Throwable cause) {
+        super(cause);
+    }
+
+    public DataDomainLoadException(String messageFormat, Throwable cause,
+            Object... messageArgs) {
+        super(messageFormat, cause, messageArgs);
+    }
+
+    public ConfigurationTree<DataChannelDescriptor> getConfigurationTree() {
+        return configurationTree;
+    }
+
 }

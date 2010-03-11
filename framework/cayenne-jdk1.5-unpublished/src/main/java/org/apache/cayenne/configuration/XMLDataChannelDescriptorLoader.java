@@ -116,7 +116,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
     @Inject
     protected ConfigurationNameMapper nameMapper;
 
-    public DataChannelDescriptor load(Resource configurationResource)
+    public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
             throws ConfigurationException {
 
         if (configurationResource == null) {
@@ -163,7 +163,8 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
             }
         }
 
-        return descriptor;
+        // TODO: andrus 03/10/2010 - actually provide load failures here...
+        return new ConfigurationTree<DataChannelDescriptor>(descriptor, null);
     }
 
     final class DataChannelHandler extends SAXNestedTagHandler {

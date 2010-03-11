@@ -30,6 +30,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -234,9 +235,11 @@ public class CayenneModelerController extends CayenneController {
         }
 
         // for validation purposes combine load failures with post-load validation (not
-        // usre if that'll cause duplicate messages?).
+        // sure if that'll cause duplicate messages?).
         List<ValidationFailure> allFailures = new ArrayList<ValidationFailure>();
-        List<ValidationFailure> loadFailures = project.getLoadFailures();
+        Collection<ValidationFailure> loadFailures = project
+                .getConfigurationTree()
+                .getLoadFailures();
 
         if (!loadFailures.isEmpty()) {
             // mark project as unsaved

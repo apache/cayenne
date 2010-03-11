@@ -33,6 +33,6 @@ public interface DataChannelDescriptorLoader {
      * Loads a DataChannelDescriptor from some configuration resource, usually an XML file
      * found on classpath.
      */
-    DataChannelDescriptor load(Resource configurationResource)
+    ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
             throws ConfigurationException;
 }

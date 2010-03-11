@@ -57,10 +57,11 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
         URL url = getClass().getClassLoader().getResource(
                 baseUrl + "/cayenne-" + testConfigName + ".xml");
-        DataChannelDescriptor descriptor = loader.load(new URLResource(url));
+        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
 
-        assertNotNull(descriptor);
-        assertEquals(testConfigName, descriptor.getName());
+        assertNotNull(tree);
+        assertNotNull(tree.getRootNode());
+        assertEquals(testConfigName, tree.getRootNode().getName());
     }
 
     public void testLoad_MissingConfig() throws Exception {
@@ -115,13 +116,14 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         URL url = getClass().getClassLoader().getResource(
                 baseUrl + "/cayenne-" + testConfigName + ".xml");
 
-        DataChannelDescriptor descriptor = loader.load(new URLResource(url));
+        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
 
-        assertNotNull(descriptor);
+        assertNotNull(tree);
+        assertNotNull(tree.getRootNode());
 
-        assertEquals(testConfigName, descriptor.getName());
+        assertEquals(testConfigName, tree.getRootNode().getName());
 
-        Collection<DataMap> maps = descriptor.getDataMaps();
+        Collection<DataMap> maps = tree.getRootNode().getDataMaps();
         assertEquals(1, maps.size());
         assertEquals("testConfigMap2", maps.iterator().next().getName());
     }
@@ -150,10 +152,12 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         URL url = getClass().getClassLoader().getResource(
                 baseUrl + "/cayenne-" + testConfigName + ".xml");
 
-        DataChannelDescriptor descriptor = loader.load(new URLResource(url));
+        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
 
+        assertNotNull(tree);
+
+        DataChannelDescriptor descriptor = tree.getRootNode();
         assertNotNull(descriptor);
-
         assertEquals(testConfigName, descriptor.getName());
 
         Collection<DataMap> maps = descriptor.getDataMaps();
