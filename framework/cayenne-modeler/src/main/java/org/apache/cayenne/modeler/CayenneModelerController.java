@@ -29,13 +29,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.WindowConstants;
 
-import org.apache.cayenne.conf.ConfigStatus;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
@@ -46,6 +46,7 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.validation.ProjectValidator;
+import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
@@ -203,10 +204,8 @@ public class CayenneModelerController extends CayenneController {
     /**
      * Handles project opening control. Updates main frame, then delegates control to
      * child controllers.
-     * 
-     * @param config
      */
-    public void projectOpenedAction(Project project, Configuration config) {
+    public void projectOpenedAction(Project project) {
 
         projectController.setProject(project);
 
@@ -234,26 +233,27 @@ public class CayenneModelerController extends CayenneController {
             frame.fireRecentFileListChanged();
         }
 
-        ConfigStatus loadStatus = (config != null)
-                ? config.getLoadStatus()
-                : new ConfigStatus();
+        // for validation purposes combine load failures with post-load validation (not
+        // usre if that'll cause duplicate messages?).
+        List<ValidationFailure> allFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> loadFailures = project.getLoadFailures();
 
-        // --- check for load errors
-        if (loadStatus.hasFailures()) {
+        if (!loadFailures.isEmpty()) {
             // mark project as unsaved
             project.setModified(true);
             projectController.setDirty(true);
-
-            ProjectValidator projectValidator = getApplication()
-                    .getInjector()
-                    .getInstance(ProjectValidator.class);
-            ValidationResult validationResults = projectValidator.validate(project
-                    .getRootNode());
-
-            // show warning dialog
-            ValidatorDialog.showDialog(frame, validationResults.getFailures());
+            allFailures.addAll(loadFailures);
         }
 
+        ProjectValidator projectValidator = getApplication().getInjector().getInstance(
+                ProjectValidator.class);
+        ValidationResult validationResult = projectValidator.validate(project
+                .getRootNode());
+        allFailures.addAll(validationResult.getFailures());
+
+        if (!allFailures.isEmpty()) {
+            ValidatorDialog.showDialog(frame, validationResult.getFailures());
+        }
     }
 
     /** Adds path to the list of last opened projects in preferences. */

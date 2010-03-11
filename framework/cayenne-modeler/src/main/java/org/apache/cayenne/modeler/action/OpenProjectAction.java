@@ -28,7 +28,6 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -131,8 +130,6 @@ public class OpenProjectAction extends ProjectAction {
                     .getFrameController();
             controller.addToLastProjListAction(file.getAbsolutePath());
 
-            Configuration config = buildProjectConfiguration(file);
-
             URL url = file.toURL();
             Resource rootSource = new URLResource(url);
 
@@ -168,10 +165,7 @@ public class OpenProjectAction extends ProjectAction {
                     logObj.info("Will upgrade project " + url.getPath());
                     Resource upgraded = handler.performUpgrade();
                     if (upgraded != null) {
-                        Project project = openProjectResourse(
-                                upgraded,
-                                config,
-                                controller);
+                        Project project = openProjectResourse(upgraded, controller);
 
                         getProjectController().getProjectWatcher().pauseWatching();
                         getProjectController().getProjectWatcher().reconfigure();
@@ -193,7 +187,7 @@ public class OpenProjectAction extends ProjectAction {
                 }
             }
             else {
-                openProjectResourse(rootSource, config, controller);
+                openProjectResourse(rootSource, controller);
             }
         }
         catch (Exception ex) {
@@ -204,14 +198,13 @@ public class OpenProjectAction extends ProjectAction {
 
     private Project openProjectResourse(
             Resource resource,
-            Configuration config,
             CayenneModelerController controller) {
         Project project = getApplication()
                 .getInjector()
                 .getInstance(ProjectLoader.class)
                 .loadProject(resource);
 
-        controller.projectOpenedAction(project, config);
+        controller.projectOpenedAction(project);
 
         return project;
     }

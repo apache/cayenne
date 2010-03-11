@@ -25,7 +25,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
@@ -50,7 +49,9 @@ public class NewProjectAction extends ProjectAction {
     }
 
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit
+                .getDefaultToolkit()
+                .getMenuShortcutKeyMask());
     }
 
     public void performAction(ActionEvent e) {
@@ -63,19 +64,15 @@ public class NewProjectAction extends ProjectAction {
             return;
         }
 
-        Configuration config = buildProjectConfiguration(null);
-        
         DataChannelDescriptor domain = new DataChannelDescriptor();
-        
-        String name = NamedObjectFactory.createName(
-                DataChannelDescriptor.class,
-                domain);
-        
+
+        String name = NamedObjectFactory.createName(DataChannelDescriptor.class, domain);
+
         domain.setName(name);
-        
+
         Project project = new Project(domain);
 
-        controller.projectOpenedAction(project, config);
+        controller.projectOpenedAction(project);
 
         // select default domain
         getProjectController().fireDomainDisplayEvent(
