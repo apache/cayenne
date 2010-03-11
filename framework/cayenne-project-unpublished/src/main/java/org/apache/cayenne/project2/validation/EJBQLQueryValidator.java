@@ -19,20 +19,15 @@
 package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.validation.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.validation.ValidationResult;
 
-class EJBQLQueryValidator {
+class EJBQLQueryValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        EJBQLQuery query = (EJBQLQuery) object;
+    void validate(EJBQLQuery query, ValidationResult validationResult) {
 
-        ProjectPath path = new ProjectPath(new Object[] {
-                query.getDataMap().getDataChannelDescriptor(), query.getDataMap(), query
-        });
-
-        PositionException message = (new EJBQLStatementValidator()).validateEJBQL(
+        PositionException message = new EJBQLStatementValidator().validateEJBQL(
                 query,
                 new EntityResolver(query
                         .getDataMap()
@@ -40,9 +35,8 @@ class EJBQLQueryValidator {
                         .getDataMaps()));
 
         if (message != null) {
-            validationVisitor.registerWarning("EJBQL query "
-                    + query.getName()
-                    + " has error.", path);
+            addFailure(validationResult, query, "Error in EJBQL query '%s' syntax", query
+                    .getName());
         }
     }
 }

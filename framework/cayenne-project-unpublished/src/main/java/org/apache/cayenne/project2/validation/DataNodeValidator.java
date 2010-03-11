@@ -18,63 +18,56 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validation;
 
-import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class DataNodeValidator {
+class DataNodeValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        DataNodeDescriptor node = (DataNodeDescriptor) object;
-        validateName(node, object, validationVisitor);
-        validateConnection(node, object, validationVisitor);
+    void validate(DataNodeDescriptor node, ValidationResult validationResult) {
+        validateName(node, validationResult);
+        validateConnection(node, validationResult);
     }
 
-    void validateConnection(
-            DataNodeDescriptor node,
-            Object object,
-            ValidationVisitor validationVisitor) {
+    void validateConnection(DataNodeDescriptor node, ValidationResult validationResult) {
+
         String factory = node.getDataSourceFactoryType();
 
-        // If direct factory, make sure the location is a valid file name.
-        if (Util.isEmptyString(factory)) {
-            validationVisitor.registerError("No DataSource factory.", object);
-        }
-        else if (!DriverDataSourceFactory.class.getName().equals(factory)) {
-            String location = node.getParameters();
-            if (Util.isEmptyString(location)) {
-                validationVisitor.registerError(
-                        "DataNode has no location parameter.",
-                        object);
+        // TODO: andrus 03/10/2010 - null factory is allowed, however
+        // 'getDataSourceDescriptor' must ne not null in this case
+
+        if (factory != null
+                && !XMLPoolingDataSourceFactory.class.getName().equals(factory)) {
+            String parameters = node.getParameters();
+            if (Util.isEmptyString(parameters)) {
+                addFailure(
+                        validationResult,
+                        node,
+                        "DataNode has empty 'parameters' string");
             }
         }
     }
 
-    void validateName(
-            DataNodeDescriptor node,
-            Object object,
-            ValidationVisitor validationVisitor) {
+    void validateName(DataNodeDescriptor node, ValidationResult validationResult) {
         String name = node.getName();
 
         if (Util.isEmptyString(name)) {
-            validationVisitor.registerError("Unnamed DataNode.", object);
+            addFailure(validationResult, node, "Unnamed DataNode");
             return;
         }
 
         DataChannelDescriptor dataChannelDescriptor = node.getDataChannelDescriptor();
-        
+
         // check for duplicate names in the parent context
-        for (final DataNodeDescriptor otherNode : dataChannelDescriptor
-                .getNodeDescriptors()) {
+        for (DataNodeDescriptor otherNode : dataChannelDescriptor.getNodeDescriptors()) {
             if (otherNode == node) {
                 continue;
             }
 
             if (name.equals(otherNode.getName())) {
-                validationVisitor.registerError(
-                        "Duplicate DataNode name: " + name + ".",
-                        object);
+                addFailure(validationResult, node, "Duplicate DataNode name: %s", name);
                 break;
             }
         }

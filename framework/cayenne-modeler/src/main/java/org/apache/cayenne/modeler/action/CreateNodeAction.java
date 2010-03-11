@@ -22,10 +22,10 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.conf.DriverDataSourceFactory;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
@@ -104,7 +104,7 @@ public class CreateNodeAction extends CayenneAction {
         node.setDataSourceDescriptor(src);
         
         // by default create JDBC Node
-        node.setDataSourceFactoryType(DriverDataSourceFactory.class.getName());
+        node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
         node.setSchemaUpdateStrategyType(SkipSchemaUpdateStrategy.class.getName());
 
         return node;

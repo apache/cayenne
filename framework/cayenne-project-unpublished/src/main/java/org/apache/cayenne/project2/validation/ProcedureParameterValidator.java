@@ -18,40 +18,49 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validation;
 
+import java.sql.Types;
+
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class ProcedureParameterValidator {
+class ProcedureParameterValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-
-        ProcedureParameter parameter = (ProcedureParameter) object;
+    void validate(ProcedureParameter parameter, ValidationResult validationResult) {
 
         // Must have name
         if (Util.isEmptyString(parameter.getName())) {
-            validationVisitor.registerError("Unnamed ProcedureParameter.", object);
+            addFailure(validationResult, parameter, "Unnamed ProcedureParameter");
         }
 
         // all attributes must have type
         if (parameter.getType() == TypesMapping.NOT_DEFINED) {
-            validationVisitor.registerWarning("ProcedureParameter has no type.", object);
+            addFailure(
+                    validationResult,
+                    parameter,
+                    "ProcedureParameter '%s' has no type",
+                    parameter.getName());
         }
 
         // VARCHAR and CHAR attributes must have max length
         if (parameter.getMaxLength() < 0
-                && (parameter.getType() == java.sql.Types.VARCHAR || parameter.getType() == java.sql.Types.CHAR)) {
+                && (parameter.getType() == Types.VARCHAR || parameter.getType() == Types.CHAR)) {
 
-            validationVisitor.registerWarning(
-                    "Character procedure parameter doesn't have max length.",
-                    object);
+            addFailure(
+                    validationResult,
+                    parameter,
+                    "Character ProcedureParameter '%s' doesn't have max length",
+                    parameter.getName());
         }
 
         // all attributes must have type
         if (parameter.getDirection() <= 0) {
-            validationVisitor.registerWarning(
-                    "ProcedureParameter has no direction.",
-                    object);
+            addFailure(
+                    validationResult,
+                    parameter,
+                    "ProcedureParameter '%s' has no direction",
+                    parameter.getName());
         }
     }
 }

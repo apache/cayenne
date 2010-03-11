@@ -21,15 +21,15 @@ package org.apache.cayenne.project2.validation;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class DbAttributeValidator {
+class DbAttributeValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        DbAttribute attribute = (DbAttribute) object;
+    void validate(DbAttribute attribute, ValidationResult validationResult) {
 
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
-            validationVisitor.registerError("Unnamed DbAttribute.", object);
+            addFailure(validationResult, attribute, "Unnamed DbAttribute");
         }
         else {
             NameValidationHelper helper = NameValidationHelper.getInstance();
@@ -37,24 +37,29 @@ class DbAttributeValidator {
                     .getName());
 
             if (invalidChars != null) {
-                validationVisitor.registerWarning(
-                        "DbAttribute name contains invalid characters: " + invalidChars,
-                        object);
+                addFailure(
+                        validationResult,
+                        attribute,
+                        "DbAttribute name '%s' contains invalid characters: %s",
+                        attribute.getName(),
+                        invalidChars);
             }
         }
 
         // all attributes must have type
         if (attribute.getType() == TypesMapping.NOT_DEFINED) {
-            validationVisitor.registerWarning("DbAttribute has no type.", object);
+            addFailure(validationResult, attribute, "DbAttribute has no type");
         }
 
         // VARCHAR and CHAR attributes must have max length
         else if (attribute.getMaxLength() < 0
                 && (attribute.getType() == java.sql.Types.VARCHAR || attribute.getType() == java.sql.Types.CHAR)) {
 
-            validationVisitor.registerWarning(
-                    "Character DbAttribute doesn't have max length.",
-                    object);
+            addFailure(
+                    validationResult,
+                    attribute,
+                    "Character DbAttribute '%s' doesn't have max length",
+                    attribute.getName());
         }
     }
 }

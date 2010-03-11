@@ -18,17 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-class DataChannelValidator extends ConfigurationNodeValidator {
+/**
+ * A base superclass of various node validators.
+ * 
+ * @since 3.1
+ */
+abstract class ConfigurationNodeValidator {
 
-    void validate(DataChannelDescriptor domain, ValidationResult validationResult) {
+    void addFailure(
+            ValidationResult validationResult,
+            Object source,
+            String messageFormat,
+            Object... messageParameters) {
 
-        String name = domain.getName();
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, domain, "Unnamed DataDomain");
-        }
+        String message = String.format(messageFormat, messageParameters);
+        validationResult.addFailure(new SimpleValidationFailure(source, message));
     }
 }

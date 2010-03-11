@@ -40,12 +40,13 @@ import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
+/**
+ * @since 3.1
+ */
 public class DefaultProjectValidator implements ProjectValidator {
 
-    /* Validators */
     private DataChannelValidator dataChannelValidator;
     private DataNodeValidator nodeValidator;
     private DataMapValidator mapValidator;
@@ -85,288 +86,187 @@ public class DefaultProjectValidator implements ProjectValidator {
     }
 
     public ValidationResult validate(ConfigurationNode node) {
-        ValidationVisitor vis = new ValidationVisitor(this);
-        return node.acceptVisitor(vis);
+        return node.acceptVisitor(new ValidationVisitor());
     }
 
-    DataChannelValidator getDataChannelValidator() {
-        return dataChannelValidator;
-    }
+    class ValidationVisitor implements ConfigurationNodeVisitor<ValidationResult> {
 
-    DataNodeValidator getNodeValidator() {
-        return nodeValidator;
-    }
+        private ValidationResult validationResult;
 
-    DataMapValidator getMapValidator() {
-        return mapValidator;
-    }
-
-    ObjEntityValidator getObjEntityValidator() {
-        return objEntityValidator;
-    }
-
-    ObjAttributeValidator getObjAttrValidator() {
-        return objAttrValidator;
-    }
-
-    ObjRelationshipValidator getObjRelValidator() {
-        return objRelValidator;
-    }
-
-    DbEntityValidator getDbEntityValidator() {
-        return dbEntityValidator;
-    }
-
-    DbAttributeValidator getDbAttrValidator() {
-        return dbAttrValidator;
-    }
-
-    DbRelationshipValidator getDbRelValidator() {
-        return dbRelValidator;
-    }
-
-    EmbeddableAttributeValidator getEmbeddableAttributeValidator() {
-        return embeddableAttributeValidator;
-    }
-
-    EmbeddableValidator getEmbeddableValidator() {
-        return embeddableValidator;
-    }
-
-    ProcedureValidator getProcedureValidator() {
-        return procedureValidator;
-    }
-
-    ProcedureParameterValidator getProcedureParameterValidator() {
-        return procedureParameterValidator;
-    }
-
-    SelectQueryValidator getSelectQueryValidator() {
-        return selectQueryValidator;
-    }
-
-    ProcedureQueryValidator getProcedureQueryValidator() {
-        return procedureQueryValidator;
-    }
-
-    EJBQLQueryValidator getEjbqlQueryValidator() {
-        return ejbqlQueryValidator;
-    }
-
-    SQLTemplateValidator getSqlTemplateValidator() {
-        return sqlTemplateValidator;
-    }
-}
-
-class ValidationVisitor implements ConfigurationNodeVisitor<ValidationResult> {
-
-    private ValidationResult validationResults = new ValidationResult();
-
-    private DefaultProjectValidator defaultProjectValidator;
-
-    ValidationVisitor(DefaultProjectValidator defaultProjectValidator) {
-        this.defaultProjectValidator = defaultProjectValidator;
-    }
-
-    public ValidationResult visitDataChannelDescriptor(
-            DataChannelDescriptor channelDescriptor) {
-        defaultProjectValidator.getDataChannelValidator().validate(
-                channelDescriptor,
-                this);
-        Iterator<DataNodeDescriptor> it = channelDescriptor
-                .getNodeDescriptors()
-                .iterator();
-        while (it.hasNext()) {
-            DataNodeDescriptor node = it.next();
-            visitDataNodeDescriptor(node);
+        ValidationVisitor() {
+            validationResult = new ValidationResult();
         }
 
-        Iterator<DataMap> itMap = channelDescriptor.getDataMaps().iterator();
-        while (itMap.hasNext()) {
-            DataMap map = itMap.next();
-            visitDataMap(map);
-        }
-        return validationResults;
-    }
+        public ValidationResult visitDataChannelDescriptor(
+                DataChannelDescriptor channelDescriptor) {
 
-    public ValidationResult visitDataMap(DataMap dataMap) {
-        defaultProjectValidator.getMapValidator().validate(dataMap, this);
-        Iterator<Embeddable> itEmb = dataMap.getEmbeddables().iterator();
-        while (itEmb.hasNext()) {
-            Embeddable emb = itEmb.next();
-            visitEmbeddable(emb);
-        }
+            dataChannelValidator.validate(channelDescriptor, validationResult);
 
-        Iterator<ObjEntity> itObjEnt = dataMap.getObjEntities().iterator();
-        while (itObjEnt.hasNext()) {
-            ObjEntity ent = itObjEnt.next();
-            visitObjEntity(ent);
+            for (DataNodeDescriptor node : channelDescriptor.getNodeDescriptors()) {
+                visitDataNodeDescriptor(node);
+            }
+
+            for (DataMap map : channelDescriptor.getDataMaps()) {
+                visitDataMap(map);
+            }
+
+            return validationResult;
         }
 
-        Iterator<DbEntity> itDbEnt = dataMap.getDbEntities().iterator();
-        while (itDbEnt.hasNext()) {
-            DbEntity ent = itDbEnt.next();
-            visitDbEntity(ent);
+        public ValidationResult visitDataMap(DataMap dataMap) {
+            mapValidator.validate(dataMap, validationResult);
+            Iterator<Embeddable> itEmb = dataMap.getEmbeddables().iterator();
+            while (itEmb.hasNext()) {
+                Embeddable emb = itEmb.next();
+                visitEmbeddable(emb);
+            }
+
+            Iterator<ObjEntity> itObjEnt = dataMap.getObjEntities().iterator();
+            while (itObjEnt.hasNext()) {
+                ObjEntity ent = itObjEnt.next();
+                visitObjEntity(ent);
+            }
+
+            Iterator<DbEntity> itDbEnt = dataMap.getDbEntities().iterator();
+            while (itDbEnt.hasNext()) {
+                DbEntity ent = itDbEnt.next();
+                visitDbEntity(ent);
+            }
+
+            Iterator<Procedure> itProc = dataMap.getProcedures().iterator();
+            while (itProc.hasNext()) {
+                Procedure proc = itProc.next();
+                visitProcedure(proc);
+            }
+
+            Iterator<Query> itQuer = dataMap.getQueries().iterator();
+            while (itQuer.hasNext()) {
+                Query q = itQuer.next();
+                visitQuery(q);
+            }
+
+            return validationResult;
         }
 
-        Iterator<Procedure> itProc = dataMap.getProcedures().iterator();
-        while (itProc.hasNext()) {
-            Procedure proc = itProc.next();
-            visitProcedure(proc);
+        public ValidationResult visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
+            nodeValidator.validate(nodeDescriptor, validationResult);
+            return validationResult;
         }
 
-        Iterator<Query> itQuer = dataMap.getQueries().iterator();
-        while (itQuer.hasNext()) {
-            Query q = itQuer.next();
-            visitQuery(q);
+        public ValidationResult visitDbAttribute(DbAttribute attribute) {
+            dbAttrValidator.validate(attribute, validationResult);
+            return validationResult;
         }
 
-        return validationResults;
-    }
+        public ValidationResult visitDbEntity(DbEntity entity) {
+            dbEntityValidator.validate(entity, validationResult);
 
-    public ValidationResult visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-        defaultProjectValidator.getNodeValidator().validate(nodeDescriptor, this);
-        return validationResults;
-    }
+            Iterator<DbAttribute> itAttr = entity.getAttributes().iterator();
+            while (itAttr.hasNext()) {
+                DbAttribute attr = itAttr.next();
+                visitDbAttribute(attr);
+            }
 
-    public ValidationResult visitDbAttribute(DbAttribute attribute) {
-        defaultProjectValidator.getDbAttrValidator().validate(attribute, this);
-        return validationResults;
-    }
-
-    public ValidationResult visitDbEntity(DbEntity entity) {
-        defaultProjectValidator.getDbEntityValidator().validate(entity, this);
-
-        Iterator<DbAttribute> itAttr = entity.getAttributes().iterator();
-        while (itAttr.hasNext()) {
-            DbAttribute attr = itAttr.next();
-            visitDbAttribute(attr);
+            Iterator<DbRelationship> itRel = entity.getRelationships().iterator();
+            while (itRel.hasNext()) {
+                DbRelationship rel = itRel.next();
+                visitDbRelationship(rel);
+            }
+            return validationResult;
         }
 
-        Iterator<DbRelationship> itRel = entity.getRelationships().iterator();
-        while (itRel.hasNext()) {
-            DbRelationship rel = itRel.next();
-            visitDbRelationship(rel);
-        }
-        return validationResults;
-    }
-
-    public ValidationResult visitDbRelationship(DbRelationship relationship) {
-        defaultProjectValidator.getDbRelValidator().validate(relationship, this);
-        return validationResults;
-    }
-
-    public ValidationResult visitEmbeddable(Embeddable embeddable) {
-        defaultProjectValidator.getEmbeddableValidator().validate(embeddable, this);
-        Iterator<EmbeddableAttribute> it = embeddable.getAttributes().iterator();
-        while (it.hasNext()) {
-            EmbeddableAttribute attr = it.next();
-            visitEmbeddableAttribute(attr);
-        }
-        return validationResults;
-    }
-
-    public ValidationResult visitEmbeddableAttribute(EmbeddableAttribute attribute) {
-        defaultProjectValidator.getEmbeddableAttributeValidator().validate(
-                attribute,
-                this);
-        return validationResults;
-    }
-
-    public ValidationResult visitObjAttribute(ObjAttribute attribute) {
-        defaultProjectValidator.getObjAttrValidator().validate(attribute, this);
-        return validationResults;
-    }
-
-    public ValidationResult visitObjEntity(ObjEntity entity) {
-        defaultProjectValidator.getObjEntityValidator().validate(entity, this);
-
-        Iterator<ObjAttribute> itAttr = entity.getAttributes().iterator();
-        while (itAttr.hasNext()) {
-            ObjAttribute attr = itAttr.next();
-            visitObjAttribute(attr);
+        public ValidationResult visitDbRelationship(DbRelationship relationship) {
+            dbRelValidator.validate(relationship, validationResult);
+            return validationResult;
         }
 
-        Iterator<ObjRelationship> itRel = entity.getRelationships().iterator();
-        while (itRel.hasNext()) {
-            ObjRelationship rel = itRel.next();
-            visitObjRelationship(rel);
-        }
-        return validationResults;
-    }
-
-    public ValidationResult visitObjRelationship(ObjRelationship relationship) {
-        defaultProjectValidator.getObjRelValidator().validate(relationship, this);
-        return validationResults;
-    }
-
-    public ValidationResult visitProcedure(Procedure procedure) {
-        defaultProjectValidator.getProcedureValidator().validate(procedure, this);
-        ProcedureParameter parameter = procedure.getResultParam();
-        if (parameter != null) {
-            visitProcedureParameter(parameter);
+        public ValidationResult visitEmbeddable(Embeddable embeddable) {
+            embeddableValidator.validate(embeddable, validationResult);
+            Iterator<EmbeddableAttribute> it = embeddable.getAttributes().iterator();
+            while (it.hasNext()) {
+                EmbeddableAttribute attr = it.next();
+                visitEmbeddableAttribute(attr);
+            }
+            return validationResult;
         }
 
-        Iterator<ProcedureParameter> itPrOut = procedure
-                .getCallOutParameters()
-                .iterator();
-        while (itPrOut.hasNext()) {
-            ProcedureParameter procPar = itPrOut.next();
-            visitProcedureParameter(procPar);
+        public ValidationResult visitEmbeddableAttribute(EmbeddableAttribute attribute) {
+            embeddableAttributeValidator.validate(attribute, validationResult);
+            return validationResult;
         }
 
-        Iterator<ProcedureParameter> itPr = procedure.getCallParameters().iterator();
-        while (itPr.hasNext()) {
-            ProcedureParameter procPar = itPr.next();
-            visitProcedureParameter(procPar);
+        public ValidationResult visitObjAttribute(ObjAttribute attribute) {
+            objAttrValidator.validate(attribute, validationResult);
+            return validationResult;
         }
 
-        return validationResults;
-    }
+        public ValidationResult visitObjEntity(ObjEntity entity) {
+            objEntityValidator.validate(entity, validationResult);
 
-    public ValidationResult visitProcedureParameter(ProcedureParameter parameter) {
-        defaultProjectValidator
-                .getProcedureParameterValidator()
-                .validate(parameter, this);
-        return validationResults;
-    }
+            Iterator<ObjAttribute> itAttr = entity.getAttributes().iterator();
+            while (itAttr.hasNext()) {
+                ObjAttribute attr = itAttr.next();
+                visitObjAttribute(attr);
+            }
 
-    public ValidationResult visitQuery(Query query) {
-        if (query instanceof SelectQuery) {
-            defaultProjectValidator.getSelectQueryValidator().validate(query, this);
+            Iterator<ObjRelationship> itRel = entity.getRelationships().iterator();
+            while (itRel.hasNext()) {
+                ObjRelationship rel = itRel.next();
+                visitObjRelationship(rel);
+            }
+            return validationResult;
         }
-        else if (query instanceof SQLTemplate) {
-            defaultProjectValidator.getSqlTemplateValidator().validate(query, this);
-        }
-        else if (query instanceof ProcedureQuery) {
-            defaultProjectValidator.getProcedureQueryValidator().validate(query, this);
-        }
-        else if (query instanceof EJBQLQuery) {
-            defaultProjectValidator.getEjbqlQueryValidator().validate(query, this);
-        }
-        else {
-            // ignore unknown nodes
-            return null;
-        }
-        return validationResults;
-    }
 
-    /**
-     * Registers validation result. Increases internally stored max severity if
-     * <code>result</code> parameter has a higher severity then the current value. Leaves
-     * current value unchanged otherwise.
-     */
-    public void registerValidated(String message, Object object) {
+        public ValidationResult visitObjRelationship(ObjRelationship relationship) {
+            objRelValidator.validate(relationship, validationResult);
+            return validationResult;
+        }
 
-        SimpleValidationFailure result = new SimpleValidationFailure(object, message);
-        validationResults.addFailure(result);
-    }
+        public ValidationResult visitProcedure(Procedure procedure) {
+            procedureValidator.validate(procedure, validationResult);
+            ProcedureParameter parameter = procedure.getResultParam();
+            if (parameter != null) {
+                visitProcedureParameter(parameter);
+            }
 
-    public void registerError(String message, Object object) {
-        registerValidated(message, object);
-    }
+            Iterator<ProcedureParameter> itPrOut = procedure
+                    .getCallOutParameters()
+                    .iterator();
+            while (itPrOut.hasNext()) {
+                ProcedureParameter procPar = itPrOut.next();
+                visitProcedureParameter(procPar);
+            }
 
-    public void registerWarning(String message, Object object) {
-        registerValidated(message, object);
+            Iterator<ProcedureParameter> itPr = procedure.getCallParameters().iterator();
+            while (itPr.hasNext()) {
+                ProcedureParameter procPar = itPr.next();
+                visitProcedureParameter(procPar);
+            }
+
+            return validationResult;
+        }
+
+        public ValidationResult visitProcedureParameter(ProcedureParameter parameter) {
+            procedureParameterValidator.validate(parameter, validationResult);
+            return validationResult;
+        }
+
+        public ValidationResult visitQuery(Query query) {
+            if (query instanceof SelectQuery) {
+                selectQueryValidator.validate((SelectQuery) query, validationResult);
+            }
+            else if (query instanceof SQLTemplate) {
+                sqlTemplateValidator.validate((SQLTemplate) query, validationResult);
+            }
+            else if (query instanceof ProcedureQuery) {
+                procedureQueryValidator
+                        .validate((ProcedureQuery) query, validationResult);
+            }
+            else if (query instanceof EJBQLQuery) {
+                ejbqlQueryValidator.validate((EJBQLQuery) query, validationResult);
+            }
+
+            return validationResult;
+        }
     }
 }

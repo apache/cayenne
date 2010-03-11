@@ -34,6 +34,7 @@ public class NameValidationHelper {
             "abstract",
             "assert",
             "default",
+            "enum",
             "if",
             "private",
             "this",

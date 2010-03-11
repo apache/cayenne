@@ -33,10 +33,10 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.cayenne.conf.DriverDataSourceFactory;
-import org.apache.cayenne.conf.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -171,7 +171,7 @@ public class ImportEOModelAction extends CayenneAction {
                     }
                 }
 
-                node.setDataSourceFactoryType(DriverDataSourceFactory.class.getName());
+                node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
 
                 DataSourceInfo dsi = node.getDataSourceDescriptor();
                 

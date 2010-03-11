@@ -22,44 +22,44 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class EmbeddableValidator {
+class EmbeddableValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        Embeddable emb = (Embeddable) object;
-        validateName(emb, object, validationVisitor);
-    }
+    void validate(Embeddable embeddable, ValidationResult validationResult) {
 
-    void validateName(Embeddable emb, Object object, ValidationVisitor validationVisitor) {
-        String name = emb.getClassName();
+        String name = embeddable.getClassName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validationVisitor.registerError("Unnamed Embeddable.", object);
+            addFailure(validationResult, embeddable, "Unnamed Embeddable");
             return;
         }
 
-        DataMap map = emb.getDataMap();
+        DataMap map = embeddable.getDataMap();
         if (map == null) {
             return;
         }
 
         // check for duplicate names in the parent context
         for (Embeddable otherEmb : map.getEmbeddables()) {
-            if (otherEmb == emb) {
+            if (otherEmb == embeddable) {
                 continue;
             }
 
             if (name.equals(otherEmb.getClassName())) {
-                validationVisitor.registerError("Duplicate Embeddable name: "
-                        + name
-                        + ".", object);
+
+                addFailure(
+                        validationResult,
+                        embeddable,
+                        "Duplicate Embeddable class name: %s",
+                        name);
                 break;
             }
         }
 
-        // check for dupliucates in other DataMaps
-        DataChannelDescriptor domain = emb.getDataMap().getDataChannelDescriptor();
+        // check for duplicates in other DataMaps
+        DataChannelDescriptor domain = map.getDataChannelDescriptor();
         if (domain != null) {
             for (DataMap nextMap : domain.getDataMaps()) {
                 if (nextMap == map) {
@@ -68,13 +68,11 @@ class EmbeddableValidator {
 
                 Embeddable conflictingEmbeddable = nextMap.getEmbeddable(name);
                 if (conflictingEmbeddable != null) {
-
-                    validationVisitor
-                            .registerWarning(
-                                    "Duplicate Embeddable name in another DataMap: "
-                                            + name
-                                            + ".",
-                                    object);
+                    addFailure(
+                            validationResult,
+                            embeddable,
+                            "Duplicate Embeddable name in another DataMap: %s",
+                            name);
                     break;
                 }
             }

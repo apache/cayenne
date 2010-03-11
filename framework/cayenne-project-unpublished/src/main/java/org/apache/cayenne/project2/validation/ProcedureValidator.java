@@ -24,31 +24,33 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class ProcedureValidator {
+class ProcedureValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        Procedure procedure = (Procedure) object;
+    void validate(Procedure procedure, ValidationResult validationResult) {
 
-        validateName(procedure, validationVisitor);
+        validateName(procedure, validationResult);
 
         // check that return value is present
         if (procedure.isReturningValue()) {
             List<ProcedureParameter> parameters = procedure.getCallParameters();
-            if (parameters.size() == 0) {
-                validationVisitor.registerWarning(
-                        "Procedure returns a value, but has no parameters.",
-                        object);
+            if (parameters.isEmpty()) {
+                addFailure(
+                        validationResult,
+                        procedure,
+                        "Procedure '%s' returns a value, but has no parameters",
+                        procedure.getName());
             }
         }
     }
 
-    void validateName(Procedure procedure, ValidationVisitor validationVisitor) {
+    void validateName(Procedure procedure, ValidationResult validationResult) {
         String name = procedure.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validationVisitor.registerError("Unnamed Procedure.", procedure);
+            addFailure(validationResult, procedure, "Unnamed Procedure");
             return;
         }
 
@@ -64,9 +66,11 @@ class ProcedureValidator {
             }
 
             if (name.equals(otherProcedure.getName())) {
-                validationVisitor.registerError(
-                        "Duplicate Procedure name: " + name + ".",
-                        procedure);
+                addFailure(
+                        validationResult,
+                        procedure,
+                        "Duplicate Procedure name: %s",
+                        procedure.getName());
                 break;
             }
         }

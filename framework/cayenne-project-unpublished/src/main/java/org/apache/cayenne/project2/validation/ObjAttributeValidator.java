@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project2.validation;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.map.Embeddable;
@@ -28,15 +26,15 @@ import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class ObjAttributeValidator {
+class ObjAttributeValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        ObjAttribute attribute = (ObjAttribute) object;
+    void validate(ObjAttribute attribute, ValidationResult validationResult) {
 
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
-            validationVisitor.registerError("Unnamed ObjAttribute.", object);
+            addFailure(validationResult, attribute, "Unnamed ObjAttribute");
         }
         else {
             NameValidationHelper helper = NameValidationHelper.getInstance();
@@ -44,19 +42,29 @@ class ObjAttributeValidator {
                     .getName());
 
             if (invalidChars != null) {
-                validationVisitor.registerWarning(
-                        "ObjAttribute name contains invalid characters: " + invalidChars,
-                        object);
+                addFailure(
+                        validationResult,
+                        attribute,
+                        "ObjAttribute name '%s' contains invalid characters: %s",
+                        attribute.getName(),
+                        invalidChars);
             }
             else if (helper.invalidDataObjectProperty(attribute.getName())) {
-                validationVisitor.registerWarning("ObjAttribute name is invalid: "
-                        + attribute.getName(), object);
+                addFailure(
+                        validationResult,
+                        attribute,
+                        "ObjAttribute name '%s' is invalid",
+                        attribute.getName());
             }
         }
 
         // all attributes must have type
         if (Util.isEmptyString(attribute.getType())) {
-            validationVisitor.registerWarning("ObjAttribute has no type.", object);
+            addFailure(
+                    validationResult,
+                    attribute,
+                    "ObjAttribute '%s' has no Java type",
+                    attribute.getName());
         }
 
         if (attribute.getEntity() instanceof ObjEntity
@@ -66,62 +74,79 @@ class ObjAttributeValidator {
         else if (attribute instanceof EmbeddedAttribute) {
             Map<String, String> attrOverrides = ((EmbeddedAttribute) attribute)
                     .getAttributeOverrides();
-            Embeddable emb = ((EmbeddedAttribute) attribute).getEmbeddable();
-            if (emb == null && ((EmbeddedAttribute) attribute).getType() != null) {
-                validationVisitor.registerWarning(
-                        "EmbeddedAttribute has incorrect Embeddable.",
-                        object);
+
+            Embeddable embeddable = ((EmbeddedAttribute) attribute).getEmbeddable();
+            if (embeddable == null && ((EmbeddedAttribute) attribute).getType() != null) {
+
+                addFailure(
+                        validationResult,
+                        attribute,
+                        "EmbeddedAttribute '%s' has incorrect Embeddable",
+                        attribute.getName());
             }
-            else if (emb == null && ((EmbeddedAttribute) attribute).getType() == null) {
-                validationVisitor.registerWarning(
-                        "EmbeddedAttribute has no Embeddable.",
-                        object);
+            else if (embeddable == null
+                    && ((EmbeddedAttribute) attribute).getType() == null) {
+                addFailure(
+                        validationResult,
+                        attribute,
+                        "EmbeddedAttribute '%s' has no Embeddable",
+                        attribute.getName());
             }
 
-            if (emb != null) {
-                Collection<EmbeddableAttribute> embAttributes = emb.getAttributes();
+            if (embeddable != null) {
 
-                Iterator<EmbeddableAttribute> it = embAttributes.iterator();
-                while (it.hasNext()) {
-                    EmbeddableAttribute embAttr = (EmbeddableAttribute) it.next();
+                for (EmbeddableAttribute embeddableAttribute : embeddable.getAttributes()) {
                     String dbAttributeName;
                     if (attrOverrides.size() > 0
-                            && attrOverrides.containsKey(embAttr.getName())) {
-                        dbAttributeName = attrOverrides.get(embAttr.getName());
+                            && attrOverrides.containsKey(embeddableAttribute.getName())) {
+                        dbAttributeName = attrOverrides
+                                .get(embeddableAttribute.getName());
                     }
                     else {
-                        dbAttributeName = embAttr.getDbAttributeName();
+                        dbAttributeName = embeddableAttribute.getDbAttributeName();
                     }
 
                     if (dbAttributeName == "" || dbAttributeName == null) {
-                        validationVisitor.registerWarning(
-                                "EmbeddedAttribute has no DbAttribute mapping.",
-                                object);
+
+                        addFailure(
+                                validationResult,
+                                attribute,
+                                "EmbeddedAttribute '%s' has no DbAttribute mapping",
+                                attribute.getName());
                     }
                     else if (((ObjEntity) attribute.getEntity())
                             .getDbEntity()
                             .getAttribute(dbAttributeName) == null) {
-                        validationVisitor.registerWarning(
-                                "EmbeddedAttribute has incorrect DbAttribute mapping.",
-                                object);
+
+                        addFailure(
+                                validationResult,
+                                attribute,
+                                "EmbeddedAttribute '%s' has incorrect DbAttribute mapping",
+                                attribute.getName());
                     }
                 }
             }
 
         }
         else if (attribute.getDbAttribute() == null) {
-            validationVisitor.registerWarning(
-                    "ObjAttribute has no DbAttribute mapping.",
-                    object);
+            addFailure(
+                    validationResult,
+                    attribute,
+                    "ObjAttribute '%s' has no DbAttribute mapping",
+                    attribute.getName());
         }
         // can't support generated meaningful attributes for now; besides they don't make
         // sense.
+        // TODO: andrus 03/10/2010 - is that really so? I think those are supported...
         else if (attribute.getDbAttribute().isPrimaryKey()
                 && attribute.getDbAttribute().isGenerated()) {
-            validationVisitor.registerWarning(
-                    "ObjAttribute is mapped to a generated PK: "
-                            + attribute.getDbAttributeName(),
-                    object);
+
+            addFailure(
+                    validationResult,
+                    attribute,
+                    "ObjAttribute '%s' is mapped to a generated PK: %s",
+                    attribute.getName(),
+                    attribute.getDbAttributeName());
         }
     }
 }

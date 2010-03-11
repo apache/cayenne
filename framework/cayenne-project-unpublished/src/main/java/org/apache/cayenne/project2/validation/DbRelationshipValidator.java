@@ -21,73 +21,86 @@ package org.apache.cayenne.project2.validation;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class DbRelationshipValidator {
+class DbRelationshipValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        DbRelationship rel = (DbRelationship) object;
+    void validate(DbRelationship relationship, ValidationResult validationResult) {
 
-        if (rel.getTargetEntity() == null) {
-            validationVisitor.registerWarning("DbRelationship "
-                    + dbRelationshipIdentifier(rel)
-                    + " has no target entity.", object);
+        if (relationship.getTargetEntity() == null) {
+            addFailure(
+                    validationResult,
+                    relationship,
+                    "DbRelationship '%s' has no target entity",
+                    toString(relationship));
         }
-        else if (rel.getJoins().size() == 0) {
-            validationVisitor.registerWarning("DbRelationship "
-                    + dbRelationshipIdentifier(rel)
-                    + " has no joins.", object);
+        else if (relationship.getJoins().isEmpty()) {
+            addFailure(
+                    validationResult,
+                    relationship,
+                    "DbRelationship '%s' has no joins",
+                    toString(relationship));
         }
         else {
             // validate joins
-            for (final DbJoin join : rel.getJoins()) {
+            for (DbJoin join : relationship.getJoins()) {
                 if (join.getSource() == null && join.getTarget() == null) {
-                    validationVisitor
-                            .registerWarning(
-                                    "DbRelationship "
-                                            + dbRelationshipIdentifier(rel)
-                                            + " join has no source and target attributes selected.",
-                                    object);
+                    addFailure(
+                            validationResult,
+                            relationship,
+                            "DbRelationship '%s' has a join with no source and target attributes selected",
+                            toString(relationship));
                 }
                 else if (join.getSource() == null) {
-                    validationVisitor.registerWarning("DbRelationship "
-                            + dbRelationshipIdentifier(rel)
-                            + " join has no source attribute selected.", object);
+                    addFailure(
+                            validationResult,
+                            relationship,
+                            "DbRelationship '%s' has a join with no source attribute selected",
+                            toString(relationship));
                 }
                 else if (join.getTarget() == null) {
-                    validationVisitor.registerWarning("DbRelationship "
-                            + dbRelationshipIdentifier(rel)
-                            + " join has no target attribute selected.", object);
+                    addFailure(
+                            validationResult,
+                            relationship,
+                            "DbRelationship '%s' has a join with no target attribute selected",
+                            toString(relationship));
                 }
             }
         }
 
-        if (Util.isEmptyString(rel.getName())) {
-            validationVisitor.registerError("Unnamed DbRelationship.", object);
+        if (Util.isEmptyString(relationship.getName())) {
+            addFailure(validationResult, relationship, "Unnamed DbRelationship");
         }
         // check if there are attributes having the same name
-        else if (rel.getSourceEntity().getAttribute(rel.getName()) != null) {
-            validationVisitor.registerError("DbRelationship "
-                    + dbRelationshipIdentifier(rel)
-                    + " has the same name as one of DbAttributes", object);
+        else if (relationship.getSourceEntity().getAttribute(relationship.getName()) != null) {
+            addFailure(
+                    validationResult,
+                    relationship,
+                    "Name of DbRelationship '%s' conflicts with the name of one of DbAttributes in the same entity",
+                    toString(relationship));
         }
         else {
             NameValidationHelper helper = NameValidationHelper.getInstance();
-            String invalidChars = helper.invalidCharsInDbPathComponent(rel.getName());
+            String invalidChars = helper.invalidCharsInDbPathComponent(relationship
+                    .getName());
 
             if (invalidChars != null) {
-                validationVisitor.registerWarning("DbRelationship "
-                        + dbRelationshipIdentifier(rel)
-                        + " name contains invalid characters: "
-                        + invalidChars, object);
+                addFailure(
+                        validationResult,
+                        relationship,
+                        "Name of DbRelationship '%s' contains invalid characters: %s",
+                        toString(relationship),
+                        invalidChars);
             }
         }
     }
 
-    String dbRelationshipIdentifier(DbRelationship rel) {
-        if (null == rel.getSourceEntity()) {
-            return "<[null source entity]." + rel.getName() + ">";
+    private String toString(DbRelationship relationship) {
+        if (relationship.getSourceEntity() == null) {
+            return "[null source entity]." + relationship.getName();
         }
-        return "<" + rel.getSourceEntity().getName() + "." + rel.getName() + ">";
+
+        return relationship.getSourceEntity().getName() + "." + relationship.getName();
     }
 
 }

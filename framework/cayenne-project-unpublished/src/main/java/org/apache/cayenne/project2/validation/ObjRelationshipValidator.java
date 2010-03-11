@@ -28,71 +28,88 @@ import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class ObjRelationshipValidator {
+class ObjRelationshipValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        ObjRelationship rel = (ObjRelationship) object;
+    void validate(ObjRelationship relationship, ValidationResult validationResult) {
 
-        if (Util.isEmptyString(rel.getName())) {
-            validationVisitor.registerError("Unnamed ObjRelationship.", object);
+        if (Util.isEmptyString(relationship.getName())) {
+            addFailure(validationResult, relationship, "Unnamed ObjRelationship");
         }
+
         // check if there are attributes having the same name
-        else if (rel.getSourceEntity().getAttribute(rel.getName()) != null) {
-            validationVisitor.registerWarning("ObjRelationship "
-                    + objRelationshipIdentifier(rel)
-                    + " has the same name as one of ObjAttributes", object);
+        else if (relationship.getSourceEntity().getAttribute(relationship.getName()) != null) {
+            addFailure(
+                    validationResult,
+                    relationship,
+                    "ObjRelationship '%s' has the same name as one of ObjAttributes",
+                    toString(relationship));
         }
         else {
             NameValidationHelper helper = NameValidationHelper.getInstance();
-            String invalidChars = helper.invalidCharsInObjPathComponent(rel.getName());
+            String invalidChars = helper.invalidCharsInObjPathComponent(relationship
+                    .getName());
 
             if (invalidChars != null) {
-                validationVisitor.registerWarning("ObjRelationship "
-                        + objRelationshipIdentifier(rel)
-                        + " name contains invalid characters: "
-                        + invalidChars, object);
+                addFailure(
+                        validationResult,
+                        relationship,
+                        "ObjRelationship name '%s' contains invalid characters: %s",
+                        toString(relationship),
+                        invalidChars);
             }
-            else if (helper.invalidDataObjectProperty(rel.getName())) {
-                validationVisitor.registerWarning("ObjRelationship "
-                        + objRelationshipIdentifier(rel)
-                        + " name is invalid.", object);
+            else if (helper.invalidDataObjectProperty(relationship.getName())) {
+                addFailure(
+                        validationResult,
+                        relationship,
+                        "ObjRelationship name '%s' is a reserved word",
+                        toString(relationship));
             }
         }
 
-        if (rel.getTargetEntity() == null) {
-            validationVisitor.registerWarning("ObjRelationship "
-                    + objRelationshipIdentifier(rel)
-                    + " has no target entity.", object);
+        if (relationship.getTargetEntity() == null) {
+            addFailure(
+                    validationResult,
+                    relationship,
+                    "ObjRelationship '%s' has no target entity",
+                    toString(relationship));
         }
         else {
+
             // check for missing DbRelationship mappings
-            List<DbRelationship> dbRels = rel.getDbRelationships();
-            if (dbRels.size() == 0) {
-                validationVisitor.registerWarning("ObjRelationship "
-                        + objRelationshipIdentifier(rel)
-                        + " has no DbRelationship mapping.", object);
+            List<DbRelationship> dbRels = relationship.getDbRelationships();
+            if (dbRels.isEmpty()) {
+                addFailure(
+                        validationResult,
+                        relationship,
+                        "ObjRelationship '%s' has no DbRelationship mapping",
+                        toString(relationship));
             }
             else {
-                DbEntity expectedSrc = ((ObjEntity) rel.getSourceEntity()).getDbEntity();
-                DbEntity expectedTarget = ((ObjEntity) rel.getTargetEntity())
+                DbEntity expectedSrc = ((ObjEntity) relationship.getSourceEntity())
+                        .getDbEntity();
+                DbEntity expectedTarget = ((ObjEntity) relationship.getTargetEntity())
                         .getDbEntity();
 
                 if ((dbRels.get(0)).getSourceEntity() != expectedSrc
                         || (dbRels.get(dbRels.size() - 1)).getTargetEntity() != expectedTarget) {
-                    validationVisitor.registerWarning("ObjRelationship "
-                            + objRelationshipIdentifier(rel)
-                            + " has incomplete DbRelationship mapping.", object);
+
+                    addFailure(
+                            validationResult,
+                            relationship,
+                            "ObjRelationship '%s' has incomplete DbRelationship mapping",
+                            toString(relationship));
                 }
             }
         }
 
         // Disallow a Nullify delete rule where the relationship is toMany and the
         // foreign key attributes are mandatory.
-        if (rel.isToMany()
-                && !rel.isFlattened()
-                && (rel.getDeleteRule() == DeleteRule.NULLIFY)) {
-            ObjRelationship inverse = rel.getReverseRelationship();
+        if (relationship.isToMany()
+                && !relationship.isFlattened()
+                && (relationship.getDeleteRule() == DeleteRule.NULLIFY)) {
+            ObjRelationship inverse = relationship.getReverseRelationship();
             if (inverse != null) {
                 DbRelationship firstRel = inverse.getDbRelationships().get(0);
                 Iterator<DbJoin> attributePairIterator = firstRel.getJoins().iterator();
@@ -108,22 +125,22 @@ class ObjRelationshipValidator {
                 }
 
                 if (check) {
-                    validationVisitor
-                            .registerWarning(
-                                    "ObjRelationship "
-                                            + objRelationshipIdentifier(rel)
-                                            + " has a Nullify delete rule and a mandatory reverse relationship ",
-                                    object);
+                    addFailure(
+                            validationResult,
+                            relationship,
+                            "ObjRelationship '%s' has a Nullify delete rule and a mandatory reverse relationship",
+                            toString(relationship));
                 }
             }
         }
     }
 
-    String objRelationshipIdentifier(ObjRelationship rel) {
-        if (null == rel.getSourceEntity()) {
-            return "<[null source entity]." + rel.getName() + ">";
+    private String toString(ObjRelationship relationship) {
+        if (relationship.getSourceEntity() == null) {
+            return "[null source entity]." + relationship.getName();
         }
-        return "<" + rel.getSourceEntity().getName() + "." + rel.getName() + ">";
+
+        return relationship.getSourceEntity().getName() + "." + relationship.getName();
     }
 
 }

@@ -20,31 +20,32 @@ package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class DbEntityValidator {
+class DbEntityValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        DbEntity ent = (DbEntity) object;
-        validateName(ent, object, validationVisitor);
-        validateAttributes(ent, object, validationVisitor);
-        validatePK(ent, object, validationVisitor);
+    void validate(DbEntity entity, ValidationResult validationResult) {
+        validateName(entity, validationResult);
+        validateAttributes(entity, validationResult);
+        validatePK(entity, validationResult);
     }
 
     /**
      * Validates the presence of the primary key. A warning is given only if the parent
-     * map also conatins an ObjEntity mapped to this entity, since unmapped primary key is
+     * map also contains an ObjEntity mapped to this entity, since unmapped primary key is
      * ok if working with data rows.
      */
-    void validatePK(DbEntity ent, Object object, ValidationVisitor validationVisitor) {
-        if (ent.getAttributes().size() > 0 && ent.getPrimaryKeys().size() == 0) {
-            DataMap map = ent.getDataMap();
-            if (map != null && map.getMappedEntities(ent).size() > 0) {
-                // there is an objentity, so complain about no pk
-                validationVisitor.registerWarning("DbEntity \""
-                        + ent.getName()
-                        + "\" has no primary key attributes defined.", object);
+    void validatePK(DbEntity entity, ValidationResult validationResult) {
+        if (entity.getAttributes().size() > 0 && entity.getPrimaryKeys().size() == 0) {
+            DataMap map = entity.getDataMap();
+            if (map != null && map.getMappedEntities(entity).size() > 0) {
+
+                addFailure(
+                        validationResult,
+                        entity,
+                        "DbEntity '%s' has no primary key attributes defined",
+                        entity.getName());
             }
         }
     }
@@ -52,45 +53,39 @@ class DbEntityValidator {
     /**
      * Tables must have columns.
      */
-    void validateAttributes(
-            DbEntity ent,
-            Object object,
-            ValidationVisitor validationVisitor) {
-        if (ent.getAttributes().size() == 0) {
-            // complain about missing attributes
-            validationVisitor.registerWarning("DbEntity \""
-                    + ent.getName()
-                    + "\" has no attributes defined.", object);
+    void validateAttributes(DbEntity entity, ValidationResult validationResult) {
+        if (entity.getAttributes().size() == 0) {
+            addFailure(
+                    validationResult,
+                    entity,
+                    "DbEntity '%s' has no attributes defined",
+                    entity.getName());
         }
     }
 
-    void validateName(DbEntity ent, Object object, ValidationVisitor validationVisitor) {
-        String name = ent.getName();
+    void validateName(DbEntity entity, ValidationResult validationResult) {
+        String name = entity.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validationVisitor.registerError("Unnamed DbEntity.", object);
+            addFailure(validationResult, entity, "Unnamed DbEntity");
             return;
         }
 
-        if (object instanceof Entity) {
-            DataMap map = ((Entity) object).getDataMap();
-            if (map == null) {
-                return;
+        DataMap map = entity.getDataMap();
+        if (map == null) {
+            return;
+        }
+
+        // check for duplicate names in the parent context
+        for (DbEntity otherEntity : map.getDbEntities()) {
+            if (otherEntity == entity) {
+                continue;
             }
 
-            // check for duplicate names in the parent context
-            for (final DbEntity otherEnt : map.getDbEntities()) {
-                if (otherEnt == ent) {
-                    continue;
-                }
-
-                if (name.equals(otherEnt.getName())) {
-                    validationVisitor.registerError("Duplicate DbEntity name: "
-                            + name
-                            + ".", object);
-                    break;
-                }
+            if (name.equals(otherEntity.getName())) {
+                addFailure(validationResult, entity, "Duplicate DbEntity name: %s", name);
+                break;
             }
         }
     }

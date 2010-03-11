@@ -238,9 +238,13 @@ public class Application {
     }
 
     public static Preferences getMainPreferenceForProject() {
-        String path = CayennePreference
-                .filePathToPrefereceNodePath(((DataChannelDescriptor) getProject()
-                        .getRootNode()).getConfigurationSource().getURL().getPath());
+
+        DataChannelDescriptor descriptor = (DataChannelDescriptor) getProject()
+                .getRootNode();
+        String path = CayennePreference.filePathToPrefereceNodePath(descriptor
+                .getConfigurationSource()
+                .getURL()
+                .getPath());
         Preferences pref = Application.getInstance().getPreferencesNode(
                 getProject().getClass(),
                 "");

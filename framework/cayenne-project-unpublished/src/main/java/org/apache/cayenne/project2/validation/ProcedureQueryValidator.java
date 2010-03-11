@@ -23,23 +23,23 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class ProcedureQueryValidator {
+class ProcedureQueryValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        ProcedureQuery query = (ProcedureQuery) object;
-
-        validateName(query, validationVisitor);
-        validateRoot(query, validationVisitor);
+    void validate(ProcedureQuery query, ValidationResult validationResult) {
+        validateName(query, validationResult);
+        validateRoot(query, validationResult);
     }
 
-    void validateRoot(ProcedureQuery query, ValidationVisitor validationVisitor) {
+    void validateRoot(ProcedureQuery query, ValidationResult validationResult) {
 
         DataMap map = query.getDataMap();
         Object root = query.getRoot();
 
         if (root == null && map != null) {
-            validationVisitor.registerWarning("Query has no root", query);
+            addFailure(validationResult, query, "ProcedureQuery '%s' has no root", query
+                    .getName());
         }
 
         // procedure query only supports procedure root
@@ -48,8 +48,12 @@ class ProcedureQueryValidator {
 
             // procedure may have been deleted...
             if (map != null && map.getProcedure(procedure.getName()) != procedure) {
-                validationVisitor.registerWarning("Invalid Procedure Root - "
-                        + procedure.getName(), query);
+                addFailure(
+                        validationResult,
+                        query,
+                        "ProcedureQuery '%s' has invalid Procedure root: %s",
+                        query.getName(),
+                        procedure.getName());
             }
 
             return;
@@ -57,19 +61,22 @@ class ProcedureQueryValidator {
 
         if (root instanceof String) {
             if (map != null && map.getProcedure(root.toString()) == null) {
-                validationVisitor.registerWarning(
-                        "Invalid Procedure Root - " + root,
-                        query);
+                addFailure(
+                        validationResult,
+                        query,
+                        "ProcedureQuery '%s' has invalid Procedure root: %s",
+                        query.getName(),
+                        root);
             }
         }
     }
 
-    void validateName(ProcedureQuery query, ValidationVisitor validationVisitor) {
+    void validateName(ProcedureQuery query, ValidationResult validationResult) {
         String name = query.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validationVisitor.registerError("Unnamed Query.", query);
+            addFailure(validationResult, query, "Unnamed ProcedureQuery");
             return;
         }
 
@@ -85,9 +92,11 @@ class ProcedureQueryValidator {
             }
 
             if (name.equals(otherQuery.getName())) {
-                validationVisitor.registerError(
-                        "Duplicate Query name: " + name + ".",
-                        query);
+                addFailure(
+                        validationResult,
+                        query,
+                        "Dulicate ProcedureQuery name: %s",
+                        name);
                 break;
             }
         }

@@ -26,54 +26,57 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class SelectQueryValidator {
+class SelectQueryValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-        SelectQuery query = (SelectQuery) object;
+    void validate(SelectQuery query, ValidationResult validationResult) {
 
-        validateName(query, validationVisitor);
+        validateName(query, validationResult);
 
         // Resolve root to Entity for further validation
-        Entity root = validateRoot(query, validationVisitor);
+        Entity root = validateRoot(query, validationResult);
 
         // validate path-based parts
         if (root != null) {
-            validateQualifier(root, query.getQualifier(), validationVisitor);
+            validateQualifier(root, query.getQualifier(), validationResult);
 
             for (final Ordering ordering : query.getOrderings()) {
-                validateOrdering(root, ordering, validationVisitor);
+                validateOrdering(root, ordering, validationResult);
             }
 
             if (query.getPrefetchTree() != null) {
-                for (final PrefetchTreeNode prefetchTreeNode : query
+                for (PrefetchTreeNode prefetchTreeNode : query
                         .getPrefetchTree()
                         .nonPhantomNodes()) {
-                    validatePrefetch(root, prefetchTreeNode.getPath(), validationVisitor);
+                    validatePrefetch(root, prefetchTreeNode.getPath(), validationResult);
                 }
             }
         }
     }
 
-    void validatePrefetch(Entity root, String path, ValidationVisitor validationVisitor) {
+    void validatePrefetch(Entity root, String path, ValidationResult validationResult) {
+        // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
     void validateOrdering(
             Entity root,
             Ordering ordering,
-            ValidationVisitor validationVisitor) {
+            ValidationResult validationResult) {
+        // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
     void validateQualifier(
             Entity root,
             Expression qualifier,
-            ValidationVisitor validationVisitor) {
+            ValidationResult validationResult) {
+        // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    Entity validateRoot(SelectQuery query, ValidationVisitor validationVisitor) {
+    Entity validateRoot(SelectQuery query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
-            validationVisitor.registerWarning("Query has no root", query);
+            addFailure(validationResult, query, "Query '%s' has no root", query.getName());
             return null;
         }
 
@@ -92,7 +95,7 @@ class SelectQueryValidator {
         }
 
         // can't validate Class root - it is likely not accessible from here...
-        if (query.getRoot() instanceof Class) {
+        if (query.getRoot() instanceof Class<?>) {
             return null;
         }
 
@@ -109,12 +112,12 @@ class SelectQueryValidator {
         return null;
     }
 
-    void validateName(SelectQuery query, ValidationVisitor validationVisitor) {
+    void validateName(SelectQuery query, ValidationResult validationResult) {
         String name = query.getName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
-            validationVisitor.registerError("Unnamed SelectQuery.", query);
+            addFailure(validationResult, query, "Unnamed SelectQuery");
             return;
         }
 
@@ -131,9 +134,7 @@ class SelectQueryValidator {
             }
 
             if (name.equals(otherQuery.getName())) {
-                validationVisitor.registerError(
-                        "Duplicate Query name: " + name + ".",
-                        query);
+                addFailure(validationResult, query, "Duplicate query name: %s", name);
                 break;
             }
         }

@@ -20,21 +20,24 @@ package org.apache.cayenne.project2.validation;
 
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 
-class EmbeddableAttributeValidator {
+class EmbeddableAttributeValidator extends ConfigurationNodeValidator {
 
-    void validate(Object object, ValidationVisitor validationVisitor) {
-
-        EmbeddableAttribute emAttribute = (EmbeddableAttribute) object;
+    void validate(EmbeddableAttribute attribute, ValidationResult validationResult) {
 
         // Must have name
-        if (Util.isEmptyString(emAttribute.getName())) {
-            validationVisitor.registerError("Unnamed EmbeddableAttribute.", object);
+        if (Util.isEmptyString(attribute.getName())) {
+            addFailure(validationResult, attribute, "Unnamed EmbeddableAttribute");
         }
 
         // all attributes must have type
-        if (Util.isEmptyString(emAttribute.getType())) {
-            validationVisitor.registerWarning("EmbeddableAttribute has no type.", object);
+        if (Util.isEmptyString(attribute.getType())) {
+            addFailure(
+                    validationResult,
+                    attribute,
+                    "EmbeddableAttribute '%s' has no type",
+                    attribute.getName());
         }
     }
 }
