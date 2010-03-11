@@ -31,6 +31,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
@@ -74,11 +75,8 @@ public class TemplateCreator extends CayenneController {
     FSPath getLastTemplateDirectory() {
         // find start directory in preferences
 
-        FSPath path = (FSPath) application
-                .getCayenneProjectPreferences()
-                .getProjectDetailObject(
-                        FSPath.class,
-                        getViewPreferences().node("lastTemplate"));
+        FSPath path = new FSPath(application.getPreferencesNode(
+                CodeTemplateManager.class, "lastTemplate"));
 
         if (path.getPath() == null) {
             path.setPath(getLastDirectory().getPath());

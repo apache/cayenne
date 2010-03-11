@@ -44,6 +44,8 @@ public class CodeTemplateManager {
 
     static final String LIGHT_SERVER_SUPERCLASS = "Light Server Superclass";
 
+    public static final String NODE_NAME = "codeTemplateManager";
+    
     protected List<String> standardSubclassTemplates;
     protected List<String> standardSuperclassTemplates;
     protected Map<String, String> customTemplates;
@@ -51,8 +53,8 @@ public class CodeTemplateManager {
 
     private static Log logger = LogFactory.getLog(CodeTemplateManager.class);
 
-    public static Preferences getTemplatePreferences(Application application) {
-        return application.getMainPreferenceForProject().node("CodeTemplateManager");
+    public Preferences getTemplatePreferences(Application application) {
+        return application.getPreferencesNode(this.getClass(), NODE_NAME);
     }
 
     public CodeTemplateManager(Application application) {

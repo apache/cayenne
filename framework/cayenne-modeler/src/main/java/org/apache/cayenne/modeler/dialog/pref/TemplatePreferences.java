@@ -79,9 +79,7 @@ public class TemplatePreferences extends CayenneController {
     }
 
     protected Preferences getTemplatePreferences() {
-        Preferences preferences = CodeTemplateManager
-                .getTemplatePreferences(getApplication());
-        return preferences;
+        return application.getPreferencesNode(CodeTemplateManager.class, CodeTemplateManager.NODE_NAME);
     }
 
     protected void initBindings() {
