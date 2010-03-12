@@ -31,17 +31,17 @@ public class DataMapDefaults extends RenamedPreferences {
     private String subclassTemplate;
     private String superclassPackage;
     private String superclassTemplate;
-    
+
     private boolean initGeneratePairs;
-    
+
     public static final String GENERATE_PAIRS_PROPERTY = "generatePairs";
     public static final String OUTPUT_PATH_PROPERTY = "outputPath";
     public static final String SUBCLASS_TEMPLATE_PROPERTY = "subclassTemplate";
     public static final String SUPERCLASS_PACKAGE_PROPERTY = "superclassPackage";
     public static final String SUPERCLASS_TEMPLATE_PROPERTY = "superclassTemplate";
-    
+
     public static final String DEFAULT_SUPERCLASS_PACKAGE_SUFFIX = "auto";
-    
+
     public DataMapDefaults(Preferences pref) {
         super(pref);
     }
@@ -77,7 +77,7 @@ public class DataMapDefaults extends RenamedPreferences {
             setSuperclassPackage(null);
         }
     }
-    
+
     /**
      * An initialization callback.
      */
@@ -107,29 +107,31 @@ public class DataMapDefaults extends RenamedPreferences {
         String dot = (suffix.length() > 0 && prefix.length() > 0) ? "." : "";
         setSuperclassPackage(prefix + dot + suffix);
     }
-    
+
     public boolean getGeneratePairs() {
-        if(!initGeneratePairs){
-            generatePairs = getCurrentPreference().getBoolean(GENERATE_PAIRS_PROPERTY, false);
+        if (!initGeneratePairs) {
+            generatePairs = getCurrentPreference().getBoolean(
+                    GENERATE_PAIRS_PROPERTY,
+                    false);
             initGeneratePairs = true;
         }
         return generatePairs;
     }
-    
+
     public void setGeneratePairs(Boolean bool) {
         if (getCurrentPreference() != null) {
             this.generatePairs = bool;
             getCurrentPreference().putBoolean(GENERATE_PAIRS_PROPERTY, bool);
         }
     }
-    
+
     public String getOutputPath() {
-        if(outputPath == null){
+        if (outputPath == null) {
             outputPath = getCurrentPreference().get(OUTPUT_PATH_PROPERTY, null);
         }
         return outputPath;
     }
-    
+
     public void setOutputPath(String outputPath) {
         if (getCurrentPreference() != null) {
             this.outputPath = outputPath;
@@ -138,8 +140,10 @@ public class DataMapDefaults extends RenamedPreferences {
     }
 
     public String getSubclassTemplate() {
-        if(subclassTemplate == null){
-            subclassTemplate = getCurrentPreference().get(SUBCLASS_TEMPLATE_PROPERTY, null);
+        if (subclassTemplate == null) {
+            subclassTemplate = getCurrentPreference().get(
+                    SUBCLASS_TEMPLATE_PROPERTY,
+                    null);
         }
         return subclassTemplate;
     }
@@ -150,56 +154,60 @@ public class DataMapDefaults extends RenamedPreferences {
             getCurrentPreference().put(SUBCLASS_TEMPLATE_PROPERTY, subclassTemplate);
         }
     }
-    
+
     public String getSuperclassPackage() {
-        if(superclassPackage == null){
-            superclassPackage = getCurrentPreference().get(SUPERCLASS_PACKAGE_PROPERTY, null);
+        if (superclassPackage == null) {
+            superclassPackage = getCurrentPreference().get(
+                    SUPERCLASS_PACKAGE_PROPERTY,
+                    null);
         }
         return superclassPackage;
     }
-    
+
     public void setSuperclassPackage(String superclassPackage) {
         if (getCurrentPreference() != null) {
             this.superclassPackage = superclassPackage;
             getCurrentPreference().put(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
         }
     }
-    
+
     public String getSuperclassTemplate() {
-        if(superclassTemplate == null){
-            superclassTemplate = getCurrentPreference().get(SUPERCLASS_TEMPLATE_PROPERTY, null);
+        if (superclassTemplate == null) {
+            superclassTemplate = getCurrentPreference().get(
+                    SUPERCLASS_TEMPLATE_PROPERTY,
+                    null);
         }
         return superclassTemplate;
     }
-    
+
     public void setSuperclassTemplate(String superclassTemplate) {
         if (getCurrentPreference() != null) {
             this.superclassTemplate = superclassTemplate;
             getCurrentPreference().put(SUPERCLASS_TEMPLATE_PROPERTY, superclassTemplate);
         }
     }
-    
+
     public String getProperty(String property) {
-        if(property == null){
+        if (property != null && getCurrentPreference() != null) {
             return getCurrentPreference().get(property, null);
         }
         return null;
     }
-    
+
     public void setProperty(String property, String value) {
         if (getCurrentPreference() != null) {
             getCurrentPreference().put(property, value);
         }
     }
-    
+
     public void setBooleanProperty(String property, boolean value) {
         if (getCurrentPreference() != null) {
             getCurrentPreference().putBoolean(property, value);
         }
     }
-    
+
     public boolean getBooleanProperty(String property) {
-        if(property == null){
+        if (property != null && getCurrentPreference() != null) {
             return getCurrentPreference().getBoolean(property, false);
         }
         return false;
