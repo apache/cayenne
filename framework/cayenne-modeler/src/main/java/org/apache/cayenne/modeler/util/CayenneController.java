@@ -36,6 +36,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.swing.BoundComponent;
@@ -105,10 +106,13 @@ public abstract class CayenneController implements BoundComponent {
      */
     protected Preferences getViewPreferences() {
         Preferences pref;
-        if(getApplication().getProject() == null){
+        if (getApplication().getProject() == null
+                || ((DataChannelDescriptor) getApplication().getProject().getRootNode())
+                        .getConfigurationSource() == null) {
             pref = getApplication().getPreferencesNode(getView().getClass(), "");
             return pref;
-        } 
+        }
+
         pref = getApplication().getMainPreferenceForProject();
         String pathToProject = pref.absolutePath();
         String path = pathToProject
