@@ -28,6 +28,7 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import java.io.Serializable;
 
 /**
  * A descriptor of {@link DataNode} configuration.
@@ -35,7 +36,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * @since 3.1
  */
 public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
-        Comparable<DataNodeDescriptor> {
+        Serializable, Comparable<DataNodeDescriptor> {
 
     protected String name;
     protected Collection<String> dataMapNames;
@@ -50,7 +51,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
     protected DataSourceInfo dataSourceDescriptor;
 
     protected Resource configurationSource;
-    
+
     /**
      * @since 3.1
      */
@@ -64,17 +65,17 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
         this.dataMapNames = new ArrayList<String>();
         this.name = name;
     }
-    
+
     /**
      * @since 3.1
-     */    
+     */
     public DataChannelDescriptor getDataChannelDescriptor() {
         return dataChannelDescriptor;
     }
-    
+
     /**
      * @since 3.1
-     */ 
+     */
     public void setDataChannelDescriptor(DataChannelDescriptor dataChannelDescriptor) {
         this.dataChannelDescriptor = dataChannelDescriptor;
     }
@@ -110,7 +111,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
         encoder.println(">");
 
         if (!dataMapNames.isEmpty()) {
-            
+
             List<String> names = new ArrayList<String>(dataMapNames);
             Collections.sort(names);
 
