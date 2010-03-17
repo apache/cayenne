@@ -21,7 +21,8 @@ package org.apache.cayenne.modeler.util;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
-import org.apache.cayenne.project.DataMapFile;
+
+import org.apache.cayenne.map.MapLoader;
 
 /**
  * A collection of common file filters used by CayenneModeler JFileChoosers.
@@ -158,8 +159,8 @@ public class FileFilters {
             }
 
             String name = f.getName();
-            if (name.endsWith(DataMapFile.LOCATION_SUFFIX)
-                && !name.equals(DataMapFile.LOCATION_SUFFIX)) {
+            if (name.endsWith(MapLoader.LOCATION_SUFFIX)
+                && !name.equals(MapLoader.LOCATION_SUFFIX)) {
                 return true;
             }
 
@@ -170,7 +171,7 @@ public class FileFilters {
          *  Returns description of this filter.
          */
         public String getDescription() {
-            return "DataMaps (*" + DataMapFile.LOCATION_SUFFIX + ")";
+            return "DataMaps (*" + MapLoader.LOCATION_SUFFIX + ")";
         }
     }
 

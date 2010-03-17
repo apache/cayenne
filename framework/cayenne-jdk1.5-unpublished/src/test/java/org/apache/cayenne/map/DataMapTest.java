@@ -30,7 +30,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.MockAbstractQuery;
 import org.apache.cayenne.query.Query;

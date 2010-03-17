@@ -32,7 +32,6 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -43,7 +42,6 @@ import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.NamedObjectFactory;
 
 /**

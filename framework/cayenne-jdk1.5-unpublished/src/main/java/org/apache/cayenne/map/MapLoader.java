@@ -30,7 +30,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.project.DataMapFile;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
@@ -136,6 +135,8 @@ public class MapLoader extends DefaultHandler {
      * @since 3.0
      */
     public static final String JAVA_CLASS_ROOT = "java-class";
+    
+    public static final String LOCATION_SUFFIX = ".map.xml";
 
     // Reading from XML
     private String mapVersion;
@@ -812,9 +813,9 @@ public class MapLoader extends DefaultHandler {
             location = location.substring(lastSlash + 1);
         }
 
-        if (location.endsWith(DataMapFile.LOCATION_SUFFIX)) {
+        if (location.endsWith(LOCATION_SUFFIX)) {
             location = location.substring(0, location.length()
-                    - DataMapFile.LOCATION_SUFFIX.length());
+                    - LOCATION_SUFFIX.length());
         }
 
         return location;
