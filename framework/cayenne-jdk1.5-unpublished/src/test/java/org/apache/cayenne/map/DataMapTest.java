@@ -406,23 +406,24 @@ public class DataMapTest extends TestCase {
         }
     }
 
-
-    public void testQuoteSqlIdentifiersEncodeAsXML(){
+    public void testQuoteSqlIdentifiersEncodeAsXML() {
         DataMap map = new DataMap("aaa");
         map.setQuotingSQLIdentifiers(true);
         StringWriter w = new StringWriter();
         XMLEncoder encoder = new XMLEncoder(new PrintWriter(w));
         map.encodeAsXML(encoder);
-        
+
         assertTrue(map.quotingSQLIdentifiers);
-        
+
         MapLoader loader = new MapLoader();
         try {
-            InputStream is = new ByteArrayInputStream(w.getBuffer().toString().getBytes("UTF-8"));
+            InputStream is = new ByteArrayInputStream(w.getBuffer().toString().getBytes(
+                    "UTF-8"));
             DataMap newMap = loader.loadDataMap(new InputSource(is));
             assertTrue(newMap.quotingSQLIdentifiers);
-            
-        } catch (UnsupportedEncodingException e) {
+
+        }
+        catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
@@ -430,14 +431,16 @@ public class DataMapTest extends TestCase {
         StringWriter w2 = new StringWriter();
         XMLEncoder encoder2 = new XMLEncoder(new PrintWriter(w2));
         map.encodeAsXML(encoder2);
-        
+
         assertFalse(map.quotingSQLIdentifiers);
         try {
-            InputStream is = new ByteArrayInputStream(w2.getBuffer().toString().getBytes("UTF-8"));
+            InputStream is = new ByteArrayInputStream(w2.getBuffer().toString().getBytes(
+                    "UTF-8"));
             DataMap newMap = loader.loadDataMap(new InputSource(is));
             assertFalse(newMap.quotingSQLIdentifiers);
-            
-        } catch (UnsupportedEncodingException e) {
+
+        }
+        catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 

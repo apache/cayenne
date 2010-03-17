@@ -22,8 +22,6 @@ package org.apache.cayenne.modeler.util;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.cayenne.map.MapLoader;
-
 /**
  * A collection of common file filters used by CayenneModeler JFileChoosers.
  * 
@@ -37,6 +35,8 @@ public class FileFilters {
     protected static final FileFilter eomodelSelectFilter = new EOModelSelectFilter();
     protected static final FileFilter dataMapFilter = new DataMapFileFilter();
     protected static final FileFilter classArchiveFilter = new JavaClassArchiveFilter();
+
+    private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
 
     /**
      * Returns a FileFilter for java class archive files, such as JAR and ZIP.
@@ -60,8 +60,8 @@ public class FileFilters {
     }
 
     /**
-     * Returns a FileFilter used to select Velocity template files. 
-     * Filters files with ".vm" extension.
+     * Returns a FileFilter used to select Velocity template files. Filters files with
+     * ".vm" extension.
      */
     public static FileFilter getVelotemplateFilter() {
         return velotemplateFilter;
@@ -76,20 +76,19 @@ public class FileFilters {
     }
 
     /**
-     * Returns FileFilter that defines the rules for EOModel selection.
-     * This filter will only allow selection of the following 
-     * files/directories:
+     * Returns FileFilter that defines the rules for EOModel selection. This filter will
+     * only allow selection of the following files/directories:
      * <ul>
-     *   <li>Directories with name matching <code>*.eomodeld</code>
-     *   that contain <code>index.eomodeld</code>.</li>
-     *   <li><code>index.eomodeld</code> files contained within 
-     *   <code>*.eomodeld</code> directory.</li>
+     * <li>Directories with name matching <code>*.eomodeld</code> that contain
+     * <code>index.eomodeld</code>.</li>
+     * <li><code>index.eomodeld</code> files contained within <code>*.eomodeld</code>
+     * directory.</li>
      * </ul>
      */
     public static FileFilter getEOModelSelectFilter() {
         return eomodelSelectFilter;
     }
-    
+
     /**
      * Returns filter that checks if file has specified extension
      */
@@ -98,6 +97,7 @@ public class FileFilters {
     }
 
     static final class JavaClassArchiveFilter extends FileFilter {
+
         public boolean accept(File f) {
             if (f.isDirectory()) {
                 return true;
@@ -113,6 +113,7 @@ public class FileFilters {
     }
 
     static final class VelotemplateFileFilter extends FileFilter {
+
         /**
          * Accepts all *.vm files.
          */
@@ -137,11 +138,11 @@ public class FileFilters {
          */
         public boolean accept(File f) {
             return f.isDirectory()
-                || (f.getName().startsWith("cayenne") && f.getName().endsWith(".xml"));
+                    || (f.getName().startsWith("cayenne") && f.getName().endsWith(".xml"));
         }
 
         /**
-         *  Returns description of this filter.
+         * Returns description of this filter.
          */
         public String getDescription() {
             return "Cayenne Applications (" + "cayenne*.xml" + ")";
@@ -159,8 +160,8 @@ public class FileFilters {
             }
 
             String name = f.getName();
-            if (name.endsWith(MapLoader.LOCATION_SUFFIX)
-                && !name.equals(MapLoader.LOCATION_SUFFIX)) {
+            if (name.endsWith(DATA_MAP_LOCATION_SUFFIX)
+                    && !name.equals(DATA_MAP_LOCATION_SUFFIX)) {
                 return true;
             }
 
@@ -168,14 +169,15 @@ public class FileFilters {
         }
 
         /**
-         *  Returns description of this filter.
+         * Returns description of this filter.
          */
         public String getDescription() {
-            return "DataMaps (*" + MapLoader.LOCATION_SUFFIX + ")";
+            return "DataMaps (*" + DATA_MAP_LOCATION_SUFFIX + ")";
         }
     }
 
     static final class EOModelFileFilter extends FileFilter {
+
         static final String EOM_SUFFIX = ".eomodeld";
         static final String EOM_INDEX = "index" + EOM_SUFFIX;
 
@@ -189,8 +191,8 @@ public class FileFilters {
 
             File parent = f.getParentFile();
             return parent != null
-                && parent.getName().endsWith(EOM_SUFFIX)
-                && EOM_INDEX.equals(f.getName());
+                    && parent.getName().endsWith(EOM_SUFFIX)
+                    && EOM_INDEX.equals(f.getName());
         }
 
         public String getDescription() {
@@ -199,15 +201,16 @@ public class FileFilters {
     }
 
     static final class EOModelSelectFilter extends FileFilter {
+
         /**
          * Accepts all directories and <code>*.eomodeld/index.eomodeld</code> files.
-         *
+         * 
          * @see EOModelSelectFilter#accept(File)
          */
         public boolean accept(File f) {
             if (f.isDirectory()) {
                 if (f.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
-                    && new File(f, EOModelFileFilter.EOM_INDEX).exists()) {
+                        && new File(f, EOModelFileFilter.EOM_INDEX).exists()) {
 
                     return true;
                 }
@@ -215,8 +218,8 @@ public class FileFilters {
             else if (f.isFile()) {
                 File parent = f.getParentFile();
                 if (parent != null
-                    && parent.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
-                    && EOModelFileFilter.EOM_INDEX.equals(f.getName())) {
+                        && parent.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
+                        && EOModelFileFilter.EOM_INDEX.equals(f.getName())) {
                     return true;
                 }
             }
@@ -233,9 +236,10 @@ public class FileFilters {
      * filter that checks if file has specified extension
      */
     static final class ExtensionFileFilter extends FileFilter {
+
         String ext;
         String description;
-        
+
         ExtensionFileFilter(String ext, String description) {
             this.ext = ext;
             this.description = description;
@@ -250,6 +254,6 @@ public class FileFilters {
         public String getDescription() {
             return description + "(." + ext + ")";
         }
-        
+
     }
 }

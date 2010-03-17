@@ -135,8 +135,8 @@ public class MapLoader extends DefaultHandler {
      * @since 3.0
      */
     public static final String JAVA_CLASS_ROOT = "java-class";
-    
-    public static final String LOCATION_SUFFIX = ".map.xml";
+
+    private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
 
     // Reading from XML
     private String mapVersion;
@@ -813,9 +813,9 @@ public class MapLoader extends DefaultHandler {
             location = location.substring(lastSlash + 1);
         }
 
-        if (location.endsWith(LOCATION_SUFFIX)) {
+        if (location.endsWith(DATA_MAP_LOCATION_SUFFIX)) {
             location = location.substring(0, location.length()
-                    - LOCATION_SUFFIX.length());
+                    - DATA_MAP_LOCATION_SUFFIX.length());
         }
 
         return location;
