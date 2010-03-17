@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -28,7 +29,6 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Removes currently selected parameter from the current procedure.
@@ -60,12 +60,12 @@ public class RemoveProcedureParameterAction extends RemoveAction {
      * parameter.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.getObject() instanceof ProcedureParameter;
+        return object instanceof ProcedureParameter;
     }
 
     @Override

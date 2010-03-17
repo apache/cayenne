@@ -20,10 +20,10 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for cutting attribute(s)
@@ -54,13 +54,13 @@ public class CutAttributeAction extends CutAction implements MultipleObjectsActi
      * attribute.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
-        boolean isEnable = path.getObject() instanceof Attribute;
+        boolean isEnable = object instanceof Attribute;
         if (!isEnable) {
-            isEnable = path.getObject() instanceof EmbeddableAttribute;
+            isEnable = object instanceof EmbeddableAttribute;
         }
 
         return isEnable;

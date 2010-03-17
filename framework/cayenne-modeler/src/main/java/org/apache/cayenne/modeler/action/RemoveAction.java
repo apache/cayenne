@@ -32,6 +32,7 @@ import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
@@ -53,7 +54,6 @@ import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.undo.RemoveCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
 
@@ -62,7 +62,6 @@ import org.apache.cayenne.query.Query;
  * Entity, Attribute or Relationship.
  */
 public class RemoveAction extends CayenneAction {
-
 
     public static String getActionName() {
         return "Remove";
@@ -181,11 +180,9 @@ public class RemoveAction extends CayenneAction {
                 }
                 else {
                     // Not under Data Node, remove completely
-                    application
-                            .getUndoManager()
-                            .addEdit(
-                                    new RemoveUndoableEdit(application, mediator
-                                            .getCurrentDataMap()));
+                    application.getUndoManager().addEdit(
+                            new RemoveUndoableEdit(application, mediator
+                                    .getCurrentDataMap()));
 
                     removeDataMap(mediator.getCurrentDataMap());
 
@@ -194,21 +191,23 @@ public class RemoveAction extends CayenneAction {
         }
         else if (mediator.getCurrentDataNode() != null) {
             if (dialog.shouldDelete("data node", mediator.getCurrentDataNode().getName())) {
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(application, mediator.getCurrentDataNode()));
+                application
+                        .getUndoManager()
+                        .addEdit(
+                                new RemoveUndoableEdit(application, mediator
+                                        .getCurrentDataNode()));
 
-                removeDataNode(mediator
-                        .getCurrentDataNode());
+                removeDataNode(mediator.getCurrentDataNode());
             }
         }
 
         else if (mediator.getCurrentPaths() != null) { // multiple deletion
             if (dialog.shouldDelete("selected objects")) {
-                ProjectPath[] paths = mediator.getCurrentPaths();
+                Object[] paths = mediator.getCurrentPaths();
 
                 CompoundEdit compoundEdit = new RemoveCompoundUndoableEdit();
 
-                for (ProjectPath path : paths) {
+                for (Object path : paths) {
                     compoundEdit.addEdit(removeLastPathComponent(path));
                 }
 
@@ -221,9 +220,11 @@ public class RemoveAction extends CayenneAction {
 
     public void removeDataMap(DataMap map) {
         ProjectController mediator = getProjectController();
-        DataChannelDescriptor domain =  (DataChannelDescriptor)mediator.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
         DataMapEvent e = new DataMapEvent(Application.getFrame(), map, MapEvent.REMOVE);
-        e.setDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getDataMaps().remove(map);
         mediator.fireDataMapEvent(e);
@@ -231,9 +232,11 @@ public class RemoveAction extends CayenneAction {
 
     public void removeDataNode(DataNodeDescriptor node) {
         ProjectController mediator = getProjectController();
-        DataChannelDescriptor domain =  (DataChannelDescriptor)mediator.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
         DataNodeEvent e = new DataNodeEvent(Application.getFrame(), node, MapEvent.REMOVE);
-        e.setDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getNodeDescriptors().remove(node);
         mediator.fireDataNodeEvent(e);
@@ -246,7 +249,7 @@ public class RemoveAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         EntityEvent e = new EntityEvent(Application.getFrame(), ent, MapEvent.REMOVE);
-        e.setDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeDbEntity(ent.getName(), true);
         mediator.fireDbEntityEvent(e);
@@ -259,7 +262,7 @@ public class RemoveAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         QueryEvent e = new QueryEvent(Application.getFrame(), query, MapEvent.REMOVE, map);
-        e.setDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeQuery(query.getName());
         mediator.fireQueryEvent(e);
@@ -275,7 +278,7 @@ public class RemoveAction extends CayenneAction {
                 Application.getFrame(),
                 procedure,
                 MapEvent.REMOVE);
-        e.setDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeProcedure(procedure.getName());
         mediator.fireProcedureEvent(e);
@@ -288,7 +291,7 @@ public class RemoveAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         EntityEvent e = new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE);
-        e.setDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeObjEntity(entity.getName(), true);
         mediator.fireObjEntityEvent(e);
@@ -301,11 +304,10 @@ public class RemoveAction extends CayenneAction {
             if (query instanceof AbstractQuery) {
                 AbstractQuery next = (AbstractQuery) query;
                 Object root = next.getRoot();
-    
+
                 if (root == entity
-                        || (root instanceof String && root
-                                .toString()
-                                .equals(entity.getName()))) {
+                        || (root instanceof String && root.toString().equals(
+                                entity.getName()))) {
                     removeQuery(map, next);
                 }
             }
@@ -319,7 +321,7 @@ public class RemoveAction extends CayenneAction {
                 Application.getFrame(),
                 embeddable,
                 MapEvent.REMOVE);
-        e.setDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeEmbeddable(embeddable.getClassName());
         mediator.fireEmbeddableEvent(e, map);
@@ -329,7 +331,7 @@ public class RemoveAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         DataNodeEvent e = new DataNodeEvent(Application.getFrame(), node);
-        e.setDomain( (DataChannelDescriptor)mediator.getProject().getRootNode());
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         node.getDataMapNames().remove(map.getName());
 
@@ -341,42 +343,39 @@ public class RemoveAction extends CayenneAction {
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        Object lastObject = path.getObject();
-
-        if (lastObject instanceof DataChannelDescriptor) {
+        if (object instanceof DataChannelDescriptor) {
             return true;
         }
-        else 
-        if (lastObject instanceof DataMap) {
+        else if (object instanceof DataMap) {
             return true;
         }
-        else if (lastObject instanceof DataNodeDescriptor) {
+        else if (object instanceof DataNodeDescriptor) {
             return true;
         }
-        else if (lastObject instanceof Entity) {
+        else if (object instanceof Entity) {
             return true;
         }
-        else if (lastObject instanceof Attribute) {
+        else if (object instanceof Attribute) {
             return true;
         }
-        else if (lastObject instanceof Relationship) {
+        else if (object instanceof Relationship) {
             return true;
         }
-        else if (lastObject instanceof Procedure) {
+        else if (object instanceof Procedure) {
             return true;
         }
-        else if (lastObject instanceof ProcedureParameter) {
+        else if (object instanceof ProcedureParameter) {
             return true;
         }
-        else if (lastObject instanceof Embeddable) {
+        else if (object instanceof Embeddable) {
             return true;
         }
-        else if (lastObject instanceof EmbeddableAttribute) {
+        else if (object instanceof EmbeddableAttribute) {
             return true;
         }
         else {
@@ -387,68 +386,50 @@ public class RemoveAction extends CayenneAction {
     /**
      * Removes an object, depending on its type
      */
-    private UndoableEdit removeLastPathComponent(ProjectPath path) {
-        Object lastObject = path.getObject();
+    private UndoableEdit removeLastPathComponent(Object object) {
 
         UndoableEdit undo = null;
 
-        if (lastObject instanceof DataMap) {
-            Object parent = path.getObjectParent();
-
-            if (parent instanceof DataChannelDescriptor) {
-                undo = new RemoveUndoableEdit(
-                        application,
-                        (DataMap) lastObject);
-
-                removeDataMap((DataMap) lastObject);
-            }
-            else { // if(parent instanceof DataNode)
-                undo = new RemoveUndoableEdit(
-                        application,
-                        (DataNodeDescriptor) parent,
-                        (DataMap) lastObject);
-
-                removeDataMapFromDataNode((DataNodeDescriptor) parent, (DataMap) lastObject);
-            }
+        if (object instanceof DataMap) {
+            undo = new RemoveUndoableEdit(application, (DataMap) object);
+            removeDataMap((DataMap) object);
         }
-        else if (lastObject instanceof DataNodeDescriptor) {
-            undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) lastObject);
+        else if (object instanceof DataNodeDescriptor) {
+            undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) object);
 
-            removeDataNode((DataNodeDescriptor) lastObject);
+            removeDataNode((DataNodeDescriptor) object);
         }
-        else if (lastObject instanceof DbEntity) {
+        else if (object instanceof DbEntity) {
             undo = new RemoveUndoableEdit(
-                    (DataMap) path.getObjectParent(),
-                    (DbEntity) lastObject);
+                    ((DbEntity) object).getDataMap(),
+                    (DbEntity) object);
 
-            removeDbEntity((DataMap) path.getObjectParent(), (DbEntity) lastObject);
+            removeDbEntity(((DbEntity) object).getDataMap(), (DbEntity) object);
         }
-        else if (lastObject instanceof ObjEntity) {
+        else if (object instanceof ObjEntity) {
             undo = new RemoveUndoableEdit(
-                    (DataMap) path.getObjectParent(),
-                    (ObjEntity) lastObject);
+                    ((ObjEntity) object).getDataMap(),
+                    (ObjEntity) object);
 
-            removeObjEntity((DataMap) path.getObjectParent(), (ObjEntity) lastObject);
+            removeObjEntity(((ObjEntity) object).getDataMap(), (ObjEntity) object);
         }
-        else if (lastObject instanceof Query) {
-            undo = new RemoveUndoableEdit(
-                    (DataMap) path.getObjectParent(),
-                    (Query) lastObject);
+        else if (object instanceof Query) {
+            undo = new RemoveUndoableEdit(((Query) object).getDataMap(), (Query) object);
 
-            removeQuery((DataMap) path.getObjectParent(), (Query) lastObject);
+            removeQuery(((Query) object).getDataMap(), (Query) object);
         }
-        else if (lastObject instanceof Procedure) {
+        else if (object instanceof Procedure) {
             undo = new RemoveUndoableEdit(
-                    (DataMap) path.getObjectParent(),
-                    (Procedure) lastObject);
+                    ((Procedure) object).getDataMap(),
+                    (Procedure) object);
 
-            removeProcedure((DataMap) path.getObjectParent(), (Procedure) lastObject);
+            removeProcedure(((Procedure) object).getDataMap(), (Procedure) object);
         }
-        else if (lastObject instanceof Embeddable) {
+        else if (object instanceof Embeddable) {
             undo = new RemoveUndoableEdit(
-                    (DataMap) path.getObjectParent(),
-                    (Embeddable) lastObject);
-            removeEmbeddable((DataMap) path.getObjectParent(), (Embeddable) lastObject);
+                    ((Embeddable) object).getDataMap(),
+                    (Embeddable) object);
+            removeEmbeddable(((Embeddable) object).getDataMap(), (Embeddable) object);
         }
 
         return undo;

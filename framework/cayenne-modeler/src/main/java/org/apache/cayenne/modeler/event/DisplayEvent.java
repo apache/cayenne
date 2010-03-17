@@ -21,14 +21,12 @@ package org.apache.cayenne.modeler.event;
 
 import java.util.EventObject;
 
-import org.apache.cayenne.project.ProjectPath;
-
 /**
  */
 public class DisplayEvent extends EventObject {
     protected boolean refired;
     protected boolean changed;
-    protected ProjectPath path;
+    protected Object pathObject;
 
     /**
      * Constructor for DisplayEvent.
@@ -44,26 +42,18 @@ public class DisplayEvent extends EventObject {
      * Constructor for DisplayEvent.
      * @param source
      */
-    public DisplayEvent(Object source, ProjectPath path) {
+    public DisplayEvent(Object source, Object pathObject) {
         super(source);
         refired = false;
         changed = true;
-        this.path = path;
-    }
-
-    public ProjectPath getPath() {
-        return path;
-    }
-
-    public void setPath(ProjectPath path) {
-        this.path = path;
+        this.pathObject = pathObject;
     }
 
     /**
     * Returns the last object in the path.
     */
-    public Object getObject() {
-        return (path != null) ? path.getObject() : null;
+    public Object getPathObject() {
+        return (pathObject != null) ? pathObject : null;
     }
 
     /**
@@ -93,7 +83,7 @@ public class DisplayEvent extends EventObject {
             return false;
         }
 
-        Object last = getObject();
+        Object last = getPathObject();
         return (last != null) ? last.getClass() == nodeClass : false;
     }
 }

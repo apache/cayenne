@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.pref.RenamedPreferences;
-import org.apache.cayenne.project.ProjectPath;
 
 import java.awt.event.ActionEvent;
 
@@ -62,7 +62,7 @@ public class ExitAction extends ProjectAction {
     /**
     * Always returns true.
     */
-    public boolean enableForPath(ProjectPath path) {
+    public boolean enableForPath(ConfigurationNode object) {
         return true;
     }
 }

@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DBGeneratorOptions;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action that generates database tables from a DataMap.
@@ -70,16 +69,5 @@ public class GenerateDBAction extends DBWizardAction {
                 "Generate DB Schema: Options",
                 connectWizard.getConnectionInfo(),
                 map).startupAction();
-    }
-
-    /**
-     * Returns <code>true</code> if path contains a DataMap object.
-     */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        return path.firstInstanceOf(DataMap.class) != null;
     }
 }

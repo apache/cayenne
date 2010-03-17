@@ -21,12 +21,14 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
@@ -34,15 +36,12 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */
 public class CreateRelationshipAction extends CayenneAction {
-
-    
 
     public static String getActionName() {
         return "Create Relationship";
@@ -127,7 +126,7 @@ public class CreateRelationshipAction extends CayenneAction {
                 rel,
                 objEntity,
                 mediator.getCurrentDataMap(),
-                (DataChannelDescriptor)mediator.getProject().getRootNode());
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireObjRelationshipDisplayEvent(rde);
     }
@@ -161,7 +160,7 @@ public class CreateRelationshipAction extends CayenneAction {
                 rel,
                 dbEntity,
                 mediator.getCurrentDataMap(),
-                (DataChannelDescriptor)mediator.getProject().getRootNode());
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireDbRelationshipDisplayEvent(rde);
     }
@@ -170,11 +169,16 @@ public class CreateRelationshipAction extends CayenneAction {
      * Returns <code>true</code> if path contains an Entity object.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.firstInstanceOf(Entity.class) != null;
+        if (object instanceof Relationship) {
+            return ((Relationship) object).getParent() != null
+                    && ((Relationship) object).getParent() instanceof Entity;
+        }
+
+        return false;
     }
 }

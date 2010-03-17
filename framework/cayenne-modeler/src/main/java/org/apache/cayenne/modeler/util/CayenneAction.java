@@ -30,10 +30,10 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.util.Util;
 
@@ -143,7 +143,7 @@ public abstract class CayenneAction extends AbstractAction {
      * path" - a path on the project tree to a currently selected object. Default
      * implementation simply returns <code>false</code>.
      */
-    public boolean enableForPath(ProjectPath obj) {
+    public boolean enableForPath(ConfigurationNode object) {
         return false;
     }
 

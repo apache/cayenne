@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
@@ -33,7 +34,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.ProjectUtil;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Removes currently selected relationship from either the DbEntity or
@@ -69,12 +69,12 @@ public class RemoveRelationshipAction extends RemoveAction implements
 	 * relationship.
 	 */
 	@Override
-	public boolean enableForPath(ProjectPath path) {
-		if (path == null) {
+	public boolean enableForPath(ConfigurationNode object) {
+		if (object == null) {
 			return false;
 		}
 
-		return path.getObject() instanceof Relationship;
+		return object instanceof Relationship;
 	}
 
 	@Override

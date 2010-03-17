@@ -24,14 +24,15 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for cutting entities, queries etc.
  */
 public class CutAction extends CayenneAction {
+
     public static String getActionName() {
         return "Cut";
     }
@@ -42,7 +43,7 @@ public class CutAction extends CayenneAction {
     public CutAction(Application application) {
         this(getActionName(), application);
     }
-    
+
     /**
      * Constructor for descendants
      */
@@ -54,10 +55,12 @@ public class CutAction extends CayenneAction {
     public String getIconName() {
         return "icon-cut.gif";
     }
-    
+
     @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit
+                .getDefaultToolkit()
+                .getMenuShortcutKeyMask());
     }
 
     /**
@@ -66,14 +69,15 @@ public class CutAction extends CayenneAction {
     @Override
     public void performAction(ActionEvent e) {
         application.getAction(CopyAction.getActionName()).performAction(e);
-        ((RemoveAction) application.getAction(RemoveAction.getActionName())).performAction(e, false);
+        ((RemoveAction) application.getAction(RemoveAction.getActionName()))
+                .performAction(e, false);
     }
-    
+
     /**
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        return application.getAction(CopyAction.getActionName()).enableForPath(path);
+    public boolean enableForPath(ConfigurationNode object) {
+        return application.getAction(CopyAction.getActionName()).enableForPath(object);
     }
 }

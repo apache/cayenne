@@ -46,6 +46,7 @@ import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.configuration.event.ProcedureParameterListener;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.event.QueryListener;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -116,7 +117,7 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CircularArray;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.project2.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
@@ -165,7 +166,7 @@ public class ProjectController extends CayenneController {
         /**
          * Paths of multiple selection
          */
-        private ProjectPath[] paths;
+        private Object[] paths;
 
         /**
          * currently selecte entity listener class
@@ -373,7 +374,7 @@ public class ProjectController extends CayenneController {
                 }
                 else {
                     projectControllerPreferences = projectControllerPreferences
-                    .node(projectControllerPreferences.absolutePath());
+                            .node(projectControllerPreferences.absolutePath());
                 }
             }
         }
@@ -627,7 +628,7 @@ public class ProjectController extends CayenneController {
         return currentState.procedureParameters;
     }
 
-    public ProjectPath[] getCurrentPaths() {
+    public Object[] getCurrentPaths() {
         return currentState.paths;
     }
 
@@ -1609,13 +1610,13 @@ public class ProjectController extends CayenneController {
 
     public void fireMultipleObjectsDisplayEvent(MultipleObjectsDisplayEvent e) {
         clearState();
-        currentState.paths = e.getPaths();
+        currentState.paths = e.getNodes();
 
         EventListener[] list = listenerList
                 .getListeners(MultipleObjectsDisplayListener.class);
         for (EventListener listener : list) {
             MultipleObjectsDisplayListener temp = (MultipleObjectsDisplayListener) listener;
-            temp.currentObjectsChanged(e);
+            temp.currentObjectsChanged(e, getApplication());
         }
     }
 
@@ -1837,14 +1838,15 @@ public class ProjectController extends CayenneController {
             return getCurrentDataNode();
         }
         else if (getCurrentPaths() != null) { // multiple objects
-            ProjectPath[] paths = getCurrentPaths();
+            Object[] paths = getCurrentPaths();
             List<Object> result = new Vector<Object>();
 
-            Object parent = paths[0].getObjectParent();
+            ConfigurationNodeParentGetter parentGetter = getApplication().getInjector().getInstance(
+                    ConfigurationNodeParentGetter.class);
+            Object parent = parentGetter.getParent((ConfigurationNode) paths[0]);
 
-            for (ProjectPath path : paths) {
-                Object lastObject = path.getObject();
-                result.add(lastObject);
+            for (Object path : paths) {
+                result.add(path);
             }
 
             /**

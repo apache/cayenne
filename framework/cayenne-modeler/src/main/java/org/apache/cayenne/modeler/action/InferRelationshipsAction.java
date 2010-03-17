@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.autorelationship.InferRelationshipsController;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 
 
 public class InferRelationshipsAction extends CayenneAction {
@@ -48,13 +47,4 @@ public class InferRelationshipsAction extends CayenneAction {
                     .startup();
         }
     }
-    
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        return path.firstInstanceOf(DataMap.class) != null;
-    }
-
 }

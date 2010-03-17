@@ -53,7 +53,6 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.wocompat.EOModelProcessor;
@@ -196,17 +195,6 @@ public class ImportEOModelAction extends CayenneAction {
     private String keyAsString(Map map, String key) {
         Object value = map.get(key);
         return (value != null) ? value.toString() : null;
-    }
-
-    /**
-     * Returns <code>true</code> if path contains a DataDomain object.
-     */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        return path.firstInstanceOf(DataChannelDescriptor.class) != null;
     }
 
     /**

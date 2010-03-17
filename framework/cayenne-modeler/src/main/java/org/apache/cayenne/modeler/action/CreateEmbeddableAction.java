@@ -20,9 +20,11 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
@@ -30,7 +32,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.NamedObjectFactory;
 
 public class CreateEmbeddableAction extends CayenneAction {
@@ -92,11 +93,15 @@ public class CreateEmbeddableAction extends CayenneAction {
      * Returns <code>true</code> if path contains a DataMap object.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.firstInstanceOf(DataMap.class) != null;
+        if(object instanceof ObjEntity){
+            return ((ObjEntity)object).getParent() != null && ((ObjEntity)object).getParent() instanceof DataMap;
+        }
+        
+        return false;
     }
 }

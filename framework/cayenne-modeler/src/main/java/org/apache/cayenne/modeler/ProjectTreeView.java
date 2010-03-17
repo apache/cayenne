@@ -46,6 +46,7 @@ import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.configuration.event.ProcedureListener;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.event.QueryListener;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -90,7 +91,6 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.PropertyUtils;
@@ -139,7 +139,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
                 if (paths != null) {
                     if (paths.length > 1) {
-                        ProjectPath[] projectPaths = new ProjectPath[paths.length];
+                        ConfigurationNode[] projectPaths = new ConfigurationNode[paths.length];
                         for (int i = 0; i < paths.length; i++) {
                             projectPaths[i] = createProjectPath(paths[i]);
                         }
@@ -156,17 +156,14 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             }
 
             /**
-             * Converts TreePath to ProjectPath
+             * Converts TreePath to Object
              */
-            private ProjectPath createProjectPath(TreePath treePath) {
+            private ConfigurationNode createProjectPath(TreePath treePath) {
                 Object[] path = treePath.getPath();
-                Object[] projectPath = new Object[path.length];
+                ConfigurationNode projectPath = (ConfigurationNode) ((DefaultMutableTreeNode) path[path.length - 1])
+                        .getUserObject();
 
-                for (int i = 0; i < projectPath.length; i++) {
-                    projectPath[i] = ((DefaultMutableTreeNode) path[i]).getUserObject();
-                }
-
-                return new ProjectPath(projectPath);
+                return projectPath;
             }
         };
 
@@ -343,7 +340,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         });
     }
 
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
+    public void currentObjectsChanged(
+            MultipleObjectsDisplayEvent e,
+            Application application) {
     }
 
     public void procedureAdded(ProcedureEvent e) {

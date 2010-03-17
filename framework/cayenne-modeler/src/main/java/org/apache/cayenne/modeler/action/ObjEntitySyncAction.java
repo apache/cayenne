@@ -34,7 +34,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.objentity.EntitySyncController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.EntityMergeSupport;
 
 /**
@@ -92,16 +91,5 @@ public class ObjEntitySyncAction extends CayenneAction {
                         (DataChannelDescriptor)mediator.getProject().getRootNode()));
             }
         }
-    }
-
-    /**
-     * Returns <code>true</code> if path contains a ObjEntity object.
-     */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        return path.firstInstanceOf(ObjEntity.class) != null;
     }
 }

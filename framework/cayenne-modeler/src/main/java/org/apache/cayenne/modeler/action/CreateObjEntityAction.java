@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -32,7 +33,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.cayenne.util.NameConverter;
@@ -41,8 +41,6 @@ import org.apache.cayenne.util.NamedObjectFactory;
 /**
  */
 public class CreateObjEntityAction extends CayenneAction {
-
-    
 
     public static String getActionName() {
         return "Create ObjEntity";
@@ -144,7 +142,7 @@ public class CreateObjEntityAction extends CayenneAction {
                 entity,
                 dataMap,
                 mediator.getCurrentDataNode(),
-                (DataChannelDescriptor)mediator.getProject().getRootNode());
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
         mediator.fireObjEntityDisplayEvent(displayEvent);
     }
@@ -153,11 +151,16 @@ public class CreateObjEntityAction extends CayenneAction {
      * Returns <code>true</code> if path contains a DataMap object.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.firstInstanceOf(DataMap.class) != null;
+        if (object instanceof ObjEntity) {
+            return ((ObjEntity) object).getParent() != null
+                    && ((ObjEntity) object).getParent() instanceof DataMap;
+        }
+
+        return false;
     }
 }

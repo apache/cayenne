@@ -31,6 +31,7 @@ import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.action.AboutAction;
 import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.CopyAction;
@@ -92,7 +93,7 @@ import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.project2.ConfigurationNodeParentGetter;
 
 /**
  * An object that manages CayenneModeler actions.
@@ -105,10 +106,8 @@ public class ActionManager {
 
     // search action added to project actions
     static final Collection<String> PROJECT_ACTIONS = Arrays.asList(RevertAction
-            .getActionName(), 
-            ProjectAction
-            .getActionName(), ValidateAction.getActionName(), SaveAsAction
-            .getActionName(), FindAction.getActionName());
+            .getActionName(), ProjectAction.getActionName(), ValidateAction
+            .getActionName(), SaveAsAction.getActionName(), FindAction.getActionName());
 
     static final Collection<String> DOMAIN_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
     static {
@@ -121,7 +120,7 @@ public class ActionManager {
                 ImportEOModelAction.getActionName(),
                 PasteAction.getActionName()));
     }
-    
+
     static final Collection<String> DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
     static {
         DATA_MAP_ACTIONS.addAll(Arrays.asList(
@@ -161,17 +160,16 @@ public class ActionManager {
     static final Collection<String> EMBEDDABLE_ACTIONS = new HashSet<String>(
             DATA_MAP_ACTIONS);
     static {
-        EMBEDDABLE_ACTIONS.addAll(Arrays.asList(
-                CreateAttributeAction.getActionName()));
+        EMBEDDABLE_ACTIONS.addAll(Arrays.asList(CreateAttributeAction.getActionName()));
     }
-    
+
     static final Collection<String> PROCEDURE_ACTIONS = new HashSet<String>(
             DATA_MAP_ACTIONS);
     static {
         PROCEDURE_ACTIONS.addAll(Arrays.asList(CreateProcedureParameterAction
                 .getActionName()));
     }
-    
+
     static final Collection<String> MULTIPLE_OBJECTS_ACTIONS = new HashSet<String>(
             PROJECT_ACTIONS);
     static {
@@ -237,9 +235,9 @@ public class ActionManager {
         registerAction(new NavigateForwardAction(application)).setAlwaysOn(true);
         // search action registered
         registerAction(new FindAction(application));
-        
+
         registerAction(new ShowLogConsoleAction(application)).setAlwaysOn(true);
-        
+
         registerAction(new CutAction(application));
         registerAction(new CutAttributeAction(application));
         registerAction(new CutRelationshipAction(application));
@@ -249,15 +247,15 @@ public class ActionManager {
         registerAction(new CopyRelationshipAction(application));
         registerAction(new CopyProcedureParameterAction(application));
         registerAction(new PasteAction(application));
-        
-        UndoAction undoAction = new UndoAction(application); 
+
+        UndoAction undoAction = new UndoAction(application);
         undoAction.setEnabled(false);
         registerAction(undoAction);
-        
+
         RedoAction redoAction = new RedoAction(application);
         redoAction.setEnabled(false);
         registerAction(redoAction);
-        
+
         registerAction(new CreateEmbeddableAction(application));
         registerAction(new ShowGraphEntityAction(application));
     }
@@ -332,41 +330,47 @@ public class ActionManager {
         processActionsState(DATA_MAP_ACTIONS);
         updateActions("Query");
     }
-    
+
     public void embeddableSelected() {
         processActionsState(EMBEDDABLE_ACTIONS);
         updateActions("Embeddable");
     }
-    
+
     /**
      * Invoked when several objects were selected in ProjectTree at time
      */
-    public void multipleObjectsSelected(ProjectPath[] paths) {
+    public void multipleObjectsSelected(
+            ConfigurationNode[] objects,
+            Application application) {
         processActionsState(MULTIPLE_OBJECTS_ACTIONS);
-        
+
         updateActions("Selected Objects");
-        
+
         CayenneAction cutAction = getAction(CutAction.getActionName());
-        boolean canCopy = true; // cut/copy can be performed if selected objects are on the same level
-        
-        if (!cutAction.enableForPath(paths[0])) {
+        boolean canCopy = true; // cut/copy can be performed if selected objects are on
+        // the same level
+
+        if (!cutAction.enableForPath((ConfigurationNode) objects[0])) {
             canCopy = false;
         }
         else {
-            Object parent = paths[0].getObjectParent();
-            
-            for (int i = 1; i < paths.length; i++) {
-                if (paths[i].getObjectParent() != parent || !cutAction.enableForPath(paths[i])) {
+            ConfigurationNodeParentGetter parentGetter = application.getInjector().getInstance(
+                    ConfigurationNodeParentGetter.class);
+            Object parent = parentGetter.getParent(objects[0]);
+
+            for (int i = 1; i < objects.length; i++) {
+                if (parentGetter.getParent(objects[i]) != parent
+                        || !cutAction.enableForPath((ConfigurationNode) objects[i])) {
                     canCopy = false;
                     break;
                 }
             }
         }
-        
+
         cutAction.setEnabled(canCopy);
         getAction(CopyAction.getActionName()).setEnabled(canCopy);
     }
-    
+
     /**
      * Updates Remove, Cut and Copy actions' names
      */
@@ -374,11 +378,11 @@ public class ActionManager {
         if (postfix.length() > 0) {
             postfix = " " + postfix;
         }
-        
+
         getAction(RemoveAction.getActionName()).setName("Remove" + postfix);
         getAction(CutAction.getActionName()).setName("Cut" + postfix);
         getAction(CopyAction.getActionName()).setName("Copy" + postfix);
-        
+
         ((PasteAction) getAction(PasteAction.getActionName())).updateState();
     }
 
@@ -396,19 +400,20 @@ public class ActionManager {
             }
         }
     }
-    
+
     /**
-     * Replaces standard Cut, Copy and Paste action maps, so that accelerators like 
-     * Ctrl+X, Ctrl+C, Ctrl+V would work 
+     * Replaces standard Cut, Copy and Paste action maps, so that accelerators like
+     * Ctrl+X, Ctrl+C, Ctrl+V would work
      */
     public void setupCCP(JComponent comp, String cutName, String copyName) {
         ActionMap map = comp.getActionMap();
-        
-        map.put(TransferHandler.getCutAction().getValue(Action.NAME), 
-                getAction(cutName));
-        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
+
+        map.put(TransferHandler.getCutAction().getValue(Action.NAME), getAction(cutName));
+        map.put(
+                TransferHandler.getCopyAction().getValue(Action.NAME),
                 getAction(copyName));
-        map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
+        map.put(
+                TransferHandler.getPasteAction().getValue(Action.NAME),
                 getAction(PasteAction.getActionName()));
     }
 }

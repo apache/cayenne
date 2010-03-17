@@ -24,13 +24,11 @@ import java.sql.Connection;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.ConnectionWizard;
 import org.apache.cayenne.modeler.dialog.db.DbLoaderHelper;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action that imports database structure into a DataMap.
@@ -94,16 +92,5 @@ public class ImportDBAction extends DBWizardAction {
         });
         
         th.start();
-    }
-
-    /**
-     * Returns <code>true</code> if path contains a DataDomain object.
-     */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        return path.firstInstanceOf(DataChannelDescriptor.class) != null;
     }
 }

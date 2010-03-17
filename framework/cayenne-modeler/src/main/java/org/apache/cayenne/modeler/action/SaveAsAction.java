@@ -30,12 +30,12 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.pref.RenamedPreferences;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
 import org.apache.cayenne.project2.validation.ProjectValidator;
@@ -176,12 +176,12 @@ public class SaveAsAction extends CayenneAction {
      * Returns <code>true</code> if path contains a Project object and the project is
      * modified.
      */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        Project project = path.firstInstanceOf(Project.class);
+        Project project = getApplication().getProject();
         return project != null && project.isModified();
     }
 }

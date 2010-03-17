@@ -473,8 +473,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         actionManager.procedureSelected();
     }
 
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
-        actionManager.multipleObjectsSelected(e.getPaths());
+    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
+        actionManager.multipleObjectsSelected(e.getNodes(), application);
     }
 
     public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {

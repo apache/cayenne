@@ -20,17 +20,18 @@ package org.apache.cayenne.modeler.action;
 
 import java.util.Arrays;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for copying relationship(s)
  */
 public class CopyRelationshipAction extends CopyAction implements MultipleObjectsAction {
+
     private final static String ACTION_NAME = "Copy Relationship";
-    
+
     /**
      * Name of action if multiple attrs are selected
      */
@@ -39,7 +40,7 @@ public class CopyRelationshipAction extends CopyAction implements MultipleObject
     public static String getActionName() {
         return ACTION_NAME;
     }
-    
+
     public String getActionName(boolean multiple) {
         return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
@@ -53,25 +54,25 @@ public class CopyRelationshipAction extends CopyAction implements MultipleObject
      * attribute.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.getObject() instanceof Relationship;
+        return object instanceof Relationship;
     }
-    
+
     @Override
     public Object copy(ProjectController mediator) {
         Object[] rels = getProjectController().getCurrentObjRelationships();
         if (rels == null || rels.length == 0) {
             rels = getProjectController().getCurrentDbRelationships();
         }
-        
+
         if (rels != null && rels.length > 0) {
             return Arrays.asList(rels);
         }
-        
+
         return null;
     }
 }

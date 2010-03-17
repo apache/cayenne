@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
@@ -31,7 +32,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
@@ -39,8 +39,6 @@ import org.apache.cayenne.util.NamedObjectFactory;
  * 
  */
 public class CreateProcedureAction extends CayenneAction {
-
-    
 
     public static String getActionName() {
         return "Create Stored Procedure";
@@ -77,7 +75,7 @@ public class CreateProcedureAction extends CayenneAction {
                 src,
                 procedure,
                 mediator.getCurrentDataMap(),
-                (DataChannelDescriptor)mediator.getProject().getRootNode()));
+                (DataChannelDescriptor) mediator.getProject().getRootNode()));
     }
 
     public void createProcedure(DataMap map, Procedure procedure) {
@@ -90,12 +88,12 @@ public class CreateProcedureAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains a DataMap object.
      */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.firstInstanceOf(DataMap.class) != null;
+        return ((Procedure) object).getDataMap() != null;
     }
 
     public String getIconName() {

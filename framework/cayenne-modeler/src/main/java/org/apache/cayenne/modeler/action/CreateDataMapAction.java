@@ -21,13 +21,14 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.NamedObjectFactory;
 
@@ -87,11 +88,11 @@ public class CreateDataMapAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains a DataDomain object.
      */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.firstInstanceOf(DataChannelDescriptor.class) != null;
+        return ((DataNodeDescriptor) object).getDataChannelDescriptor() != null;
     }
 }

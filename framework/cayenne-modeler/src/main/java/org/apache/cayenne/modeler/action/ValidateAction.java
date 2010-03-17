@@ -28,8 +28,6 @@ import javax.swing.KeyStroke;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -72,18 +70,5 @@ public class ValidateAction extends CayenneAction {
         else {
             ValidatorDialog.showValidationSuccess(Application.getFrame());
         }
-    }
-
-    /**
-     * Returns <code>true</code> if path contains a Project object and the project is
-     * modified.
-     */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        Project project = path.firstInstanceOf(Project.class);
-        return project != null;
     }
 }

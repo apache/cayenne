@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.editor.datanode.DataNodeEditor;
@@ -86,7 +87,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     protected Container detailPanel;
     protected CardLayout detailLayout;
     private ProjectTreeView treePanel;
-    
+
     private DbEntityTabbedView dbDetailView;
     private ObjEntityTabbedView objDetailView;
     private EmbeddableTabbedView embeddableView;
@@ -98,17 +99,14 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private EjbqlTabbedView ejbqlQueryView;
     private JTabbedPane dataNodeView;
 
-    
     public SelectQueryTabbedView getSelectQueryView() {
         return selectQueryView;
     }
 
-    
     public SQLTemplateTabbedView getSqlTemplateView() {
         return sqlTemplateView;
     }
 
-    
     public EjbqlTabbedView getEjbqlQueryView() {
         return ejbqlQueryView;
     }
@@ -124,7 +122,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     public EmbeddableTabbedView getEmbeddableView() {
         return embeddableView;
     }
-    
+
     public DbEntityTabbedView getDbDetailView() {
         return dbDetailView;
     }
@@ -132,15 +130,15 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     public ObjEntityTabbedView getObjDetailView() {
         return objDetailView;
     }
-    
+
     public DataDomainTabbedView getDataDomainView() {
         return dataDomainView;
     }
-    
+
     public DataMapTabbedView getDataMapView() {
         return dataMapView;
     }
-    
+
     public JTabbedPane getDataNodeView() {
         return dataNodeView;
     }
@@ -176,7 +174,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         DataNodeEditor nodeController = new DataNodeEditor(eventController);
         detailPanel.add(nodeController.getView(), NODE_VIEW);
-        
+
         dataNodeView = nodeController.getTabComponent();
 
         dataMapView = new DataMapTabbedView(eventController);
@@ -228,7 +226,9 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
          * Moving this to try-catch block per CAY-940. Exception will be stack-traced
          */
         try {
-            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), "splitPane/divider");
+            ComponentGeometry geometry = new ComponentGeometry(
+                    this.getClass(),
+                    "splitPane/divider");
 
             geometry
                     .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);
@@ -300,7 +300,9 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         }
     }
 
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
+    public void currentObjectsChanged(
+            MultipleObjectsDisplayEvent e,
+            Application application) {
         detailLayout.show(detailPanel, EMPTY_VIEW);
     }
 

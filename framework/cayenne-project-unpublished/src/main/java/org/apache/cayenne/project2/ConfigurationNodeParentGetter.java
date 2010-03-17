@@ -16,35 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.project2;
 
-package org.apache.cayenne.modeler.action;
+import org.apache.cayenne.configuration.ConfigurationNode;
 
-import java.awt.event.ActionEvent;
+public interface ConfigurationNodeParentGetter {
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.codegen.CodeGeneratorController;
-import org.apache.cayenne.modeler.util.CayenneAction;
+    ConfigurationNode getParent(ConfigurationNode node);
 
-public class GenerateCodeAction extends CayenneAction {
-
-    public static String getActionName() {
-        return "Generate Classes";
-    }
-
-    public GenerateCodeAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public String getIconName() {
-        return "icon-gen_java.gif";
-    }
-
-    public void performAction(ActionEvent e) {
-        DataMap dataMap = getProjectController().getCurrentDataMap();
-        if (dataMap != null) {
-            new CodeGeneratorController(getApplication().getFrameController(), dataMap)
-                    .startup();
-        }
-    }
 }

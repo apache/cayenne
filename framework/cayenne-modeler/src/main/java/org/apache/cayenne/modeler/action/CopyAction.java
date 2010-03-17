@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -40,7 +41,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -113,18 +113,17 @@ public class CopyAction extends CayenneAction {
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
         
-        Object last = path.getObject();
-        if (last instanceof DataMap || last instanceof Query
-                || last instanceof DbEntity || last instanceof ObjEntity
-                || last instanceof Embeddable || last instanceof EmbeddableAttribute
-                || last instanceof DbAttribute || last instanceof DbRelationship
-                || last instanceof ObjAttribute || last instanceof ObjRelationship
-                || last instanceof Procedure || last instanceof ProcedureParameter) {
+        if (object instanceof DataMap || object instanceof Query
+                || object instanceof DbEntity || object instanceof ObjEntity
+                || object instanceof Embeddable || object instanceof EmbeddableAttribute
+                || object instanceof DbAttribute || object instanceof DbRelationship
+                || object instanceof ObjAttribute || object instanceof ObjRelationship
+                || object instanceof Procedure || object instanceof ProcedureParameter) {
             return true;
         }
 

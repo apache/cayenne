@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
@@ -30,21 +31,19 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */
 public class CreateProcedureParameterAction extends CayenneAction {
 
-    
-
     public static String getActionName() {
-    	return "Create Parameter";
+        return "Create Parameter";
     }
 
     /**
      * Constructor for CreateProcedureParameterAction.
+     * 
      * @param name
      */
     public CreateProcedureParameterAction(Application application) {
@@ -67,42 +66,44 @@ public class CreateProcedureParameterAction extends CayenneAction {
     public void createProcedureParameter() {
         Procedure procedure = getProjectController().getCurrentProcedure();
 
-        ProcedureParameter parameter =
-            (ProcedureParameter) NamedObjectFactory.createObject(
-                ProcedureParameter.class,
-                procedure);
-                
+        ProcedureParameter parameter = (ProcedureParameter) NamedObjectFactory
+                .createObject(ProcedureParameter.class, procedure);
+
         procedure.addCallParameter(parameter);
 
         ProjectController mediator = getProjectController();
         fireProcedureParameterEvent(this, mediator, procedure, parameter);
     }
-    
+
     /**
      * Fires events when an proc parameter was added
      */
-    static void fireProcedureParameterEvent(Object src, ProjectController mediator, Procedure procedure, 
+    static void fireProcedureParameterEvent(
+            Object src,
+            ProjectController mediator,
+            Procedure procedure,
             ProcedureParameter parameter) {
-        mediator.fireProcedureParameterEvent(
-                new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
+        mediator.fireProcedureParameterEvent(new ProcedureParameterEvent(
+                src,
+                parameter,
+                MapEvent.ADD));
 
-            mediator.fireProcedureParameterDisplayEvent(
-                new ProcedureParameterDisplayEvent(
-                    src,
-                    parameter,
-                    procedure,
-                    mediator.getCurrentDataMap(),
-                    (DataChannelDescriptor)mediator.getProject().getRootNode()));
+        mediator.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(
+                src,
+                parameter,
+                procedure,
+                mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode()));
     }
 
     /**
      * Returns <code>true</code> if path contains a Procedure object.
      */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.firstInstanceOf(Procedure.class) != null;
+        return ((ProcedureParameter) object).getProcedure() != null;
     }
 }

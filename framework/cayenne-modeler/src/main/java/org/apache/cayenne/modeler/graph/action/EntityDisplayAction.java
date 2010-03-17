@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.Icon;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
@@ -30,7 +31,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action that displays one of the objects in main tree, 
@@ -103,7 +103,7 @@ public class EntityDisplayAction extends CayenneAction {
     }
 
     @Override
-    public boolean enableForPath(ProjectPath obj) {
+    public boolean enableForPath(ConfigurationNode object) {
         return builder.getSelectedEntity() != null;
     }
 }

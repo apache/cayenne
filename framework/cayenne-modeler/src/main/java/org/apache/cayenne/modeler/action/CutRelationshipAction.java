@@ -20,16 +20,17 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for cutting attribute(s)
  */
 public class CutRelationshipAction extends CutAction implements MultipleObjectsAction {
+
     private final static String ACTION_NAME = "Cut Relationship";
-    
+
     /**
      * Name of action if multiple attrs are selected
      */
@@ -38,7 +39,7 @@ public class CutRelationshipAction extends CutAction implements MultipleObjectsA
     public static String getActionName() {
         return ACTION_NAME;
     }
-    
+
     public String getActionName(boolean multiple) {
         return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
@@ -52,20 +53,21 @@ public class CutRelationshipAction extends CutAction implements MultipleObjectsA
      * attribute.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.getObject() instanceof Relationship;
+        return object instanceof Relationship;
     }
-    
+
     /**
      * Performs cutting of items
      */
     @Override
     public void performAction(ActionEvent e) {
         application.getAction(CopyRelationshipAction.getActionName()).performAction(e);
-        ((RemoveAction) application.getAction(RemoveRelationshipAction.getActionName())).performAction(e, false);
+        ((RemoveAction) application.getAction(RemoveRelationshipAction.getActionName()))
+                .performAction(e, false);
     }
 }

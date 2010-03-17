@@ -32,7 +32,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.objentity.EntitySyncController;
 import org.apache.cayenne.modeler.undo.DbEntitySyncUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.EntityMergeSupport;
 
 /**
@@ -110,16 +109,5 @@ public class DbEntitySyncAction extends CayenneAction {
 
             application.getUndoManager().addEdit(undoableEdit);
         }
-    }
-
-    /**
-     * Returns <code>true</code> if path contains a ObjEntity object.
-     */
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
-            return false;
-        }
-
-        return path.firstInstanceOf(DbEntity.class) != null;
     }
 }

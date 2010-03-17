@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -52,7 +53,6 @@ import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
-import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
 
@@ -102,23 +102,33 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             Object currentObject = getProjectController().getCurrentObject();
 
             if (content != null && currentObject != null) {
-                
+
                 PasteCompoundUndoableEdit undoableEdit = new PasteCompoundUndoableEdit();
-                
-                DataChannelDescriptor domain = (DataChannelDescriptor)getProjectController().getProject().getRootNode();
+
+                DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
+                        .getProject()
+                        .getRootNode();
                 DataMap map = getProjectController().getCurrentDataMap();
-                
+
                 if (content instanceof List) {
                     for (Object o : (List) content) {
                         paste(currentObject, o);
-                        undoableEdit.addEdit(new PasteUndoableEdit(domain, map, currentObject, o));
+                        undoableEdit.addEdit(new PasteUndoableEdit(
+                                domain,
+                                map,
+                                currentObject,
+                                o));
                     }
                 }
                 else {
                     paste(currentObject, content);
-                    undoableEdit.addEdit(new PasteUndoableEdit(domain, map, currentObject, content));
+                    undoableEdit.addEdit(new PasteUndoableEdit(
+                            domain,
+                            map,
+                            currentObject,
+                            content));
                 }
-                
+
                 application.getUndoManager().addEdit(undoableEdit);
             }
         }
@@ -129,17 +139,22 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             ErrorDebugDialog.guiException(ex);
         }
     }
-    
+
     private void paste(Object where, Object content) {
-    	paste(where, content, (DataChannelDescriptor)getProjectController().getProject().getRootNode(), getProjectController().getCurrentDataMap()); 
+        paste(where, content, (DataChannelDescriptor) getProjectController()
+                .getProject()
+                .getRootNode(), getProjectController().getCurrentDataMap());
     }
 
     /**
      * Pastes single object
      */
-    public void paste(Object where, Object content, DataChannelDescriptor domain, DataMap map) {
+    public void paste(
+            Object where,
+            Object content,
+            DataChannelDescriptor domain,
+            DataMap map) {
         final ProjectController mediator = getProjectController();
-      
 
         /**
          * Add a little intelligence - if a tree leaf is selected, we can paste to a
@@ -346,8 +361,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 attr.setName(getFreeName(checker, attr.getName()));
 
                 dbEntity.addAttribute(attr);
-                CreateAttributeAction
-                        .fireDbAttributeEvent(this, mediator, mediator.getCurrentDataMap(), dbEntity, attr);
+                CreateAttributeAction.fireDbAttributeEvent(this, mediator, mediator
+                        .getCurrentDataMap(), dbEntity, attr);
             }
             else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
@@ -378,12 +393,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 attr.setName(getFreeName(checker, attr.getName()));
 
                 objEntity.addAttribute(attr);
-                CreateAttributeAction.fireObjAttributeEvent(
-                        this,
-                        mediator,
-                        mediator.getCurrentDataMap(),
-                        objEntity,
-                        attr);
+                CreateAttributeAction.fireObjAttributeEvent(this, mediator, mediator
+                        .getCurrentDataMap(), objEntity, attr);
             }
             else if (content instanceof ObjRelationship) {
                 ObjRelationship rel = (ObjRelationship) content;
@@ -473,8 +484,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
@@ -524,8 +535,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                             || content instanceof ObjRelationship || isTreeLeaf(content)))
                     ||
 
-                    (currentObject instanceof Embeddable 
-                            && (content instanceof EmbeddableAttribute || isTreeLeaf(content))) ||
+                    (currentObject instanceof Embeddable && (content instanceof EmbeddableAttribute || isTreeLeaf(content)))
+                    ||
 
                     (currentObject instanceof Procedure
                             && (content instanceof ProcedureParameter || isTreeLeaf(content)) ||

@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
@@ -38,7 +39,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.undo.RemoveAttributeUndoableEdit;
 import org.apache.cayenne.modeler.util.ProjectUtil;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Removes currently selected attribute from either the DbEntity or ObjEntity.
@@ -72,12 +72,12 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
      * attribute.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.getObject() instanceof Attribute;
+        return object instanceof Attribute;
     }
 
     @Override
@@ -136,8 +136,6 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
                     DbEntity entity = mediator.getCurrentDbEntity();
                     DbAttribute[] attribs = mediator.getCurrentDbAttributes();
-
-                    ProjectPath[] paths = getProjectController().getCurrentPaths();
 
                     application.getUndoManager().addEdit(
                             new RemoveAttributeUndoableEdit(

@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.UnsavedChangesDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  */
@@ -115,7 +114,7 @@ public class ProjectAction extends CayenneAction {
     /**
      * Always returns true.
      */
-    public boolean enableForPath(ProjectPath path) {
+    public boolean enableForPath(Object object) {
         return true;
     }
 }

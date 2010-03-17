@@ -20,10 +20,10 @@ package org.apache.cayenne.modeler.action;
 
 import java.util.Arrays;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for copying procedure parameter(s)
@@ -53,12 +53,12 @@ public class CopyProcedureParameterAction extends CopyAction implements Multiple
      * attribute.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.getObject() instanceof ProcedureParameter;
+        return object instanceof ProcedureParameter;
     }
     
     @Override

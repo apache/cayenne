@@ -20,23 +20,23 @@ package org.apache.cayenne.modeler.event;
 
 import java.util.EventObject;
 
-import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.configuration.ConfigurationNode;
 
 /**
  * Display event for several selected objects
  */
 public class MultipleObjectsDisplayEvent extends EventObject {
-    private ProjectPath[] paths;
+    private ConfigurationNode[] nodes;
     
-    public MultipleObjectsDisplayEvent(Object src, ProjectPath[] paths) {
+    public MultipleObjectsDisplayEvent(Object src, ConfigurationNode[] objects) {
         super(src);
-        this.paths = paths;
+        this.nodes = (ConfigurationNode[]) objects;
     }
     
     /**
      * @return all paths of this event
      */
-    public ProjectPath[] getPaths() {
-        return paths;
+    public ConfigurationNode[] getNodes() {
+        return nodes;
     }
 }

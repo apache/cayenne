@@ -20,16 +20,18 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for cutting procedure parameter(s)
  */
-public class CutProcedureParameterAction extends CutAction implements MultipleObjectsAction {
+public class CutProcedureParameterAction extends CutAction implements
+        MultipleObjectsAction {
+
     private final static String ACTION_NAME = "Cut Procedure Parameter";
-    
+
     /**
      * Name of action if multiple attrs are selected
      */
@@ -38,7 +40,7 @@ public class CutProcedureParameterAction extends CutAction implements MultipleOb
     public static String getActionName() {
         return ACTION_NAME;
     }
-    
+
     public String getActionName(boolean multiple) {
         return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
@@ -52,21 +54,23 @@ public class CutProcedureParameterAction extends CutAction implements MultipleOb
      * attribute.
      */
     @Override
-    public boolean enableForPath(ProjectPath path) {
-        if (path == null) {
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
             return false;
         }
 
-        return path.getObject() instanceof ProcedureParameter;
+        return object instanceof ProcedureParameter;
     }
-    
+
     /**
      * Performs cutting of items
      */
     @Override
     public void performAction(ActionEvent e) {
-        application.getAction(CopyProcedureParameterAction.getActionName()).performAction(e);
-        ((RemoveAction) application.getAction(RemoveProcedureParameterAction.getActionName()))
-            .performAction(e, false);
+        application
+                .getAction(CopyProcedureParameterAction.getActionName())
+                .performAction(e);
+        ((RemoveAction) application.getAction(RemoveProcedureParameterAction
+                .getActionName())).performAction(e, false);
     }
 }
