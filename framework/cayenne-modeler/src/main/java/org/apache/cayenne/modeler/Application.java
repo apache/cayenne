@@ -46,6 +46,7 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneUserDir;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
+import org.apache.cayenne.pref.Preference;
 import org.apache.cayenne.project2.CayenneProjectModule;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.swing.BindingFactory;
@@ -241,6 +242,14 @@ public class Application {
 
         DataChannelDescriptor descriptor = (DataChannelDescriptor) getProject()
                 .getRootNode();
+
+        // if new project
+        if (descriptor.getConfigurationSource() == null) {
+            return Application.getInstance().getPreferencesNode(
+                    getProject().getClass(),
+                    Preference.CAYENNE_TEMP_PREFERENCE_NODE_NAME_FOR_PROJ);
+        }
+
         String path = CayennePreference.filePathToPrefereceNodePath(descriptor
                 .getConfigurationSource()
                 .getURL()

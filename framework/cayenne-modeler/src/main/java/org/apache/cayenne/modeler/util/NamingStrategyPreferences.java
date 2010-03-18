@@ -49,7 +49,6 @@ public class NamingStrategyPreferences {
         return instance;
     }
 
-
     Preferences getPreference() {
         return Application.getMainPreferenceForProject();
     }
@@ -58,7 +57,12 @@ public class NamingStrategyPreferences {
      * @return last used strategies, PREDEFINED_STRATEGIES by default
      */
     public Vector<String> getLastUsedStrategies() {
-        String prop = getPreference().get(STRATEGIES_PREFERENCE, null);
+
+        String prop = null;
+
+        if (getPreference() != null) {
+            prop = getPreference().get(STRATEGIES_PREFERENCE, null);
+        }
 
         if (prop == null) {
             return PREDEFINED_STRATEGIES;

@@ -194,16 +194,17 @@ public abstract class RenamedPreferences extends CayennePreference {
     }
 
     private static boolean equalsPath(List<Preferences> listPref, Preferences pref) {
-        Iterator<Preferences> it = listPref.iterator();
-        while (it.hasNext()) {
-            Preferences next = it.next();
-            String pathInList = (String) next.absolutePath();
-            String path = (String) pref.absolutePath();
-            if (pathInList.equals(path)) {
-                return true;
+        if (listPref != null) {
+            Iterator<Preferences> it = listPref.iterator();
+            while (it.hasNext()) {
+                Preferences next = it.next();
+                String pathInList = (String) next.absolutePath();
+                String path = (String) pref.absolutePath();
+                if (pathInList.equals(path)) {
+                    return true;
+                }
             }
         }
         return false;
     }
-
 }

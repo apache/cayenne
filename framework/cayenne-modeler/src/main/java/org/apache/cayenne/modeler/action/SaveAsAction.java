@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.pref.Preference;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
@@ -106,6 +107,13 @@ public class SaveAsAction extends CayenneAction {
         // /!!!!!!!!!!!!!!!!!!! SAVE AS!!!!!!!!!!!!!!
         ProjectSaver saver = getApplication().getInjector().getInstance(
                 ProjectSaver.class);
+
+        boolean isNewProject = p.getConfigurationResource() == null;
+        Preferences tempOldPref = null;
+        if (isNewProject) {
+            tempOldPref = getApplication().getMainPreferenceForProject();
+        }
+
         saver.saveAs(p, res);
 
         if (oldPath != null
@@ -123,6 +131,25 @@ public class SaveAsAction extends CayenneAction {
                     projPath + newName);
             RenamedPreferences.copyPreferences(newPref, getProjectController()
                     .getPreferenceForProject(), false);
+        }
+        else if (isNewProject) {
+            if (tempOldPref != null
+                    && tempOldPref.absolutePath().contains(
+                            Preference.CAYENNE_TEMP_PREFERENCE_NODE_NAME_FOR_PROJ)) {
+                String projPath = tempOldPref.absolutePath().replace(
+                        "/" + Preference.CAYENNE_TEMP_PREFERENCE_NODE_NAME_FOR_PROJ,
+                        "");
+                String newName = p.getConfigurationResource().getURL().getPath().replace(
+                        ".xml",
+                        "");
+
+                Preferences newPref = getApplication()
+                        .getMainPreferenceForProject()
+                        .node(projPath + newName);
+
+                RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
+                tempOldPref.removeNode();
+            }
         }
 
         RenamedPreferences.removeNewPreferences();
