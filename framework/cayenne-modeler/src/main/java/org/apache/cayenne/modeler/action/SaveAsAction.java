@@ -134,10 +134,10 @@ public class SaveAsAction extends CayenneAction {
         }
         else if (isNewProject) {
             if (tempOldPref != null
-                    && tempOldPref.absolutePath().contains(
-                            Preference.CAYENNE_TEMP_PREFERENCE_NODE_NAME_FOR_PROJ)) {
+                    && tempOldPref.absolutePath().contains(getApplication().getId())) {
+
                 String projPath = tempOldPref.absolutePath().replace(
-                        "/" + Preference.CAYENNE_TEMP_PREFERENCE_NODE_NAME_FOR_PROJ,
+                        "/" + getApplication().getId(),
                         "");
                 String newName = p.getConfigurationResource().getURL().getPath().replace(
                         ".xml",

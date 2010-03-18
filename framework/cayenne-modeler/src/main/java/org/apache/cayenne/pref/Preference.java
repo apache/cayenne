@@ -27,8 +27,6 @@ public interface Preference {
      */
     public static final String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
 
-    public static final String CAYENNE_TEMP_PREFERENCE_NODE_NAME_FOR_PROJ = "*temp";
-    
     /**
      * Preferences node name for the editor
      */

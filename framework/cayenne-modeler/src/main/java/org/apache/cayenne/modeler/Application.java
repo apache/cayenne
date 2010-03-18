@@ -50,6 +50,7 @@ import org.apache.cayenne.pref.Preference;
 import org.apache.cayenne.project2.CayenneProjectModule;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.swing.BindingFactory;
+import org.apache.cayenne.util.IDUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.scopemvc.controller.basic.ViewContext;
@@ -104,8 +105,18 @@ public class Application {
 
     protected Injector injector;
 
+    private static String id;
+
     public static Application getInstance() {
         return instance;
+    }
+
+    public static String getId() {
+        if (id == null) {
+            byte[] byteId = IDUtil.pseudoUniqueByteSequence(16);
+            id = "new_project_" + byteId.toString();
+        }
+        return id;
     }
 
     // static methods that should probably go away eventually...
@@ -247,7 +258,7 @@ public class Application {
         if (descriptor.getConfigurationSource() == null) {
             return Application.getInstance().getPreferencesNode(
                     getProject().getClass(),
-                    Preference.CAYENNE_TEMP_PREFERENCE_NODE_NAME_FOR_PROJ);
+                    getId());
         }
 
         String path = CayennePreference.filePathToPrefereceNodePath(descriptor
