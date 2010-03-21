@@ -21,10 +21,12 @@ package org.apache.cayenne.remote.hessian.service;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.util.PersistentObjectList;
+import org.apache.cayenne.util.PersistentObjectMap;
 
 import com.caucho.hessian.io.AbstractSerializerFactory;
 import com.caucho.hessian.io.Deserializer;
 import com.caucho.hessian.io.HessianProtocolException;
+import com.caucho.hessian.io.JavaSerializer;
 import com.caucho.hessian.io.Serializer;
 
 /**
@@ -35,6 +37,7 @@ import com.caucho.hessian.io.Serializer;
 class ServerSerializerFactory extends AbstractSerializerFactory {
     private ServerPersistentObjectListSerializer persistentObjectListSerializer;
     private ServerDataRowSerializer dataRowSerilaizer;
+    private Serializer javaSerializer;
 
     ServerSerializerFactory() {
         this.persistentObjectListSerializer = new ServerPersistentObjectListSerializer();
@@ -49,6 +52,13 @@ class ServerSerializerFactory extends AbstractSerializerFactory {
         }
         else if (DataRow.class.isAssignableFrom(cl)) {
             return dataRowSerilaizer;
+        }
+        //turns out Hessian uses its own (incorrect) serialization mechanism for maps
+        else if (PersistentObjectMap.class.isAssignableFrom(cl)) {
+            if (javaSerializer == null) {
+                javaSerializer = new JavaSerializer(cl);
+            }
+            return javaSerializer;
         }
 
         return null;
