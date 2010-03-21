@@ -22,8 +22,8 @@ package org.apache.cayenne.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -34,6 +34,7 @@ import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
@@ -128,25 +129,42 @@ public class ObjectDetachOperation {
                     PrefetchTreeNode child = prefetchTree.getNode(property.getName());
 
                     if (child != null) {
-                        Collection collection = (Collection) property
-                                .readProperty(source);
-
-                        Collection targetCollection = new ArrayList(collection.size());
-
-                        Iterator it = collection.iterator();
-                        while (it.hasNext()) {
-                            Object destinationSource = it.next();
-                            Object destinationTarget = destinationSource != null
+                        Object value = property.readProperty(source);
+                        Object targetValue; 
+                        
+                        if (property instanceof ToManyMapProperty) {
+                            Map<?, ?> map = (Map) value;
+                            Map targetMap = new HashMap();
+                            
+                            for (Entry entry : map.entrySet()) {
+                                Object destinationSource = entry.getValue();
+                                Object destinationTarget = destinationSource != null
                                     ? detach(destinationSource, property
-                                            .getTargetDescriptor(), child)
-                                    : null;
+                                        .getTargetDescriptor(), child)
+                                        : null;
 
-                            targetCollection.add(destinationTarget);
+                                targetMap.put(entry.getKey(), destinationTarget);
+                            }
+                            targetValue = targetMap;
+                        }
+                        else {
+                            Collection collection = (Collection) value;
+                            Collection targetCollection = new ArrayList(collection.size());
+    
+                            for (Object destinationSource : collection) {
+                                Object destinationTarget = destinationSource != null
+                                        ? detach(destinationSource, property
+                                                .getTargetDescriptor(), child)
+                                        : null;
+    
+                                targetCollection.add(destinationTarget);
+                            }
+                            targetValue = targetCollection;
                         }
 
                         ToManyProperty targetProperty = (ToManyProperty) targetDescriptor
                                 .getProperty(property.getName());
-                        targetProperty.writeProperty(target, null, targetCollection);
+                        targetProperty.writeProperty(target, null, targetValue);
                     }
                 }
 

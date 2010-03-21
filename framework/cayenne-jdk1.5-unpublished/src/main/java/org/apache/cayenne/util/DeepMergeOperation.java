@@ -22,8 +22,8 @@ package org.apache.cayenne.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
@@ -32,6 +32,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
@@ -99,21 +100,38 @@ public class DeepMergeOperation {
 
             public boolean visitToMany(ToManyProperty property) {
                 if (!property.isFault(source)) {
-                    Collection collection = (Collection) property.readProperty(source);
+                    Object value = property.readProperty(source);
+                    Object targetValue; 
+                    
+                    if (property instanceof ToManyMapProperty) {
+                        Map<?, ?> map = (Map) value;
+                        Map targetMap = new HashMap();
+                        
+                        for (Entry entry : map.entrySet()) {
+                            Object destinationSource = entry.getValue();
+                            Object destinationTarget = destinationSource != null
+                                ? merge(destinationSource, property.getTargetDescriptor())
+                                    : null;
 
-                    Collection targetCollection = new ArrayList(collection.size());
+                            targetMap.put(entry.getKey(), destinationTarget);
+                        }
+                        targetValue = targetMap;
+                    }
+                    else {
+                        Collection collection = (Collection) value;
+                        Collection targetCollection = new ArrayList(collection.size());
 
-                    Iterator it = collection.iterator();
-                    while (it.hasNext()) {
-                        Object destinationSource = it.next();
-                        Object destinationTarget = destinationSource != null ? merge(
-                                destinationSource,
-                                property.getTargetDescriptor()) : null;
+                        for (Object destinationSource : collection) {
+                            Object destinationTarget = destinationSource != null
+                                    ? merge(destinationSource, property.getTargetDescriptor())
+                                    : null;
 
-                        targetCollection.add(destinationTarget);
+                            targetCollection.add(destinationTarget);
+                        }
+                        targetValue = targetCollection;
                     }
 
-                    property.writePropertyDirectly(target, null, targetCollection);
+                    property.writePropertyDirectly(target, null, targetValue);
                 }
 
                 return true;

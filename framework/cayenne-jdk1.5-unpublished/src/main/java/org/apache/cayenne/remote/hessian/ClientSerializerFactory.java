@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.remote.hessian;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.util.PersistentObjectList;
+import org.apache.cayenne.util.PersistentObjectMap;
 
 import com.caucho.hessian.io.AbstractSerializerFactory;
 import com.caucho.hessian.io.Deserializer;
@@ -38,8 +36,9 @@ import com.caucho.hessian.io.Serializer;
  */
 class ClientSerializerFactory extends AbstractSerializerFactory {
 
-    private Map<Class, Deserializer> deserializers;
     private Deserializer dataRowDeserializer;
+    private Deserializer listDeserializer;
+    private Deserializer mapDeserializer;
 
     @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
@@ -48,28 +47,22 @@ class ClientSerializerFactory extends AbstractSerializerFactory {
 
     @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
-        Deserializer deserializer = null;
-
-        if (PersistentObjectList.class.isAssignableFrom(cl)) {
-
-            synchronized (this) {
-
-                if (deserializers != null) {
-                    deserializer = deserializers.get(cl);
-                }
-
-                if (deserializer == null) {
-                    deserializer = new JavaDeserializer(cl);
-
-                    if (deserializers == null) {
-                        deserializers = new HashMap<Class, Deserializer>();
-                    }
-
-                    deserializers.put(cl, deserializer);
-                }
+        //turns out Hessian uses its own (incorrect) serialization mechanism for maps
+        if (PersistentObjectMap.class.isAssignableFrom(cl)) {
+            if (mapDeserializer == null) {
+                mapDeserializer = new JavaDeserializer(cl);
             }
+            return mapDeserializer;
         }
-        else if(DataRow.class.isAssignableFrom(cl)) {
+        
+        if (PersistentObjectList.class.isAssignableFrom(cl)) {
+            if (listDeserializer == null) {
+                listDeserializer = new JavaDeserializer(cl);
+            }
+            return listDeserializer;
+        }
+        
+        if(DataRow.class.isAssignableFrom(cl)) {
             if(dataRowDeserializer == null) {
                 dataRowDeserializer = new DataRowDeserializer();
             }
@@ -77,6 +70,6 @@ class ClientSerializerFactory extends AbstractSerializerFactory {
             return dataRowDeserializer;
         }
 
-        return deserializer;
+        return null;
     }
 }
