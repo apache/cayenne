@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.dialog.autorelationship;
 
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -71,27 +71,38 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     protected void createRelationships(DbEntity entity) {
-        Collection<DbAttribute> attr = entity.getAttributes();
 
-        for (DbAttribute attribute : attr) {
+        for (DbAttribute attribute : entity.getAttributes()) {
 
-            for (DbEntity myEntity : entities) {
-                if (attribute.getName().equalsIgnoreCase(myEntity.getName() + "_ID")
+            String name = attribute.getName();
+            if (name.length() < 4) {
+                continue;
+            }
+
+            if (!name.substring(name.length() - 3, name.length()).equalsIgnoreCase("_ID")) {
+                continue;
+            }
+
+            String baseName = name.substring(0, name.length() - 3);
+            for (DbEntity targetEntity : entities) {
+                // TODO: should we handle relationships to self??
+                if (targetEntity == entity) {
+                    continue;
+                }
+
+                if (baseName.equalsIgnoreCase(targetEntity.getName())
                         && !attribute.isPrimaryKey()
-                        && !myEntity.getAttributes().isEmpty()
-                        && myEntity != entity) {
+                        && !targetEntity.getAttributes().isEmpty()) {
 
                     if (!attribute.isForeignKey()) {
                         InferredRelationship myir = new InferredRelationship();
                         myir.setSource(entity);
-                        myir.setTarget(myEntity);
+                        myir.setTarget(targetEntity);
                         inferredRelationships.add(myir);
                     }
-
-                    createReversRelationship(myEntity, entity);
+                    createReversRelationship(targetEntity, entity);
                 }
             }
-
         }
     }
 
@@ -153,16 +164,35 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     protected void createJoins() {
-        for (InferredRelationship inferred : inferredRelationships) {
-            DbAttribute join = getJoinAttribute(inferred.getSource(), inferred
-                    .getTarget());
-            inferred.setJoinSource(join);
-            if (join.isPrimaryKey()) {
+        Iterator<InferredRelationship> it = inferredRelationships.iterator();
+        while (it.hasNext()) {
+            InferredRelationship inferred = it.next();
+
+            DbAttribute src = getJoinAttribute(inferred.getSource(), inferred.getTarget());
+            if (src == null) {
+                // TODO: andrus 03/28/2010 this is pretty inefficient I guess... We should
+                // check for this condition earlier. See CAY-1405 for the map that caused
+                // this issue
+                it.remove();
+                continue;
+            }
+
+            DbAttribute target = getJoinAttribute(inferred.getTarget(), inferred
+                    .getSource());
+            if (target == null) {
+                // TODO: andrus 03/28/2010 this is pretty inefficient I guess... We should
+                // check for this condition earlier. See CAY-1405 for the map that caused
+                // this issue
+                it.remove();
+                continue;
+            }
+
+            inferred.setJoinSource(src);
+            if (src.isPrimaryKey()) {
                 inferred.setToMany(true);
             }
 
-            inferred.setJoinTarget(getJoinAttribute(inferred.getTarget(), inferred
-                    .getSource()));
+            inferred.setJoinTarget(target);
         }
     }
 
