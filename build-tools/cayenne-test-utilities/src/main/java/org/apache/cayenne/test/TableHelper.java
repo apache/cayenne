@@ -19,6 +19,8 @@
 package org.apache.cayenne.test;
 
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 /**
  * JDBC utilities class for setting up and analyzing the DB data sets for a single table.
@@ -62,6 +64,54 @@ public class TableHelper {
 
         dbHelper.insert(tableName, columns, values);
         return this;
+    }
+
+    public int getRowCount() throws SQLException {
+        return dbHelper.getRowCount(tableName);
+    }
+
+    public Object getObject(String table, String column) throws SQLException {
+        return dbHelper.getObject(tableName, column);
+    }
+
+    public byte getByte(String table, String column) throws SQLException {
+        return dbHelper.getByte(tableName, column);
+    }
+
+    public byte[] getBytes(String table, String column) throws SQLException {
+        return dbHelper.getBytes(tableName, column);
+    }
+
+    public int getInt(String table, String column) throws SQLException {
+        return dbHelper.getInt(tableName, column);
+    }
+
+    public long getLong(String table, String column) throws SQLException {
+        return dbHelper.getLong(tableName, column);
+    }
+
+    public double getDouble(String table, String column) throws SQLException {
+        return dbHelper.getDouble(tableName, column);
+    }
+
+    public boolean getBoolean(String table, String column) throws SQLException {
+        return dbHelper.getBoolean(tableName, column);
+    }
+
+    public java.util.Date getUtilDate(String table, String column) throws SQLException {
+        return dbHelper.getUtilDate(tableName, column);
+    }
+
+    public java.sql.Date getSqlDate(String table, String column) throws SQLException {
+        return dbHelper.getSqlDate(tableName, column);
+    }
+
+    public Time getTime(String table, String column) throws SQLException {
+        return dbHelper.getTime(tableName, column);
+    }
+
+    public Timestamp getTimestamp(String table, String column) throws SQLException {
+        return dbHelper.getTimestamp(tableName, column);
     }
 
 }
