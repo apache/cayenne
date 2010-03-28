@@ -162,7 +162,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         }
 
         setNamingStrategy(strategy);
-        createName();
+        createNames();
         entitySelector.initBindings();
         view.setChoice(SELECT);
 
@@ -184,7 +184,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         
         InferRelationshipsUndoableEdit undoableEdit = new InferRelationshipsUndoableEdit();
         
-        for (InferRelationships temp : selectedEntities) {
+        for (InferredRelationship temp : selectedEntities) {
             DbRelationship rel = new DbRelationship(uniqueRelName(temp.getSource(), temp
                     .getName()));
 

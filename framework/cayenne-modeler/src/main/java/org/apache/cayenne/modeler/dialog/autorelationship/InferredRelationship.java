@@ -21,21 +21,19 @@ package org.apache.cayenne.modeler.dialog.autorelationship;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+public class InferredRelationship {
 
-public class InferRelationships {
     private DbEntity source;
     private DbEntity target;
     private DbAttribute joinSource;
     private DbAttribute joinTarget;
     private String name;
     private boolean toMany;
-    
-    
+
     public boolean isToMany() {
         return toMany;
     }
 
-    
     public void setToMany(boolean toMany) {
         this.toMany = toMany;
     }
@@ -43,41 +41,40 @@ public class InferRelationships {
     public DbEntity getSource() {
         return source;
     }
-    
+
     public void setSource(DbEntity source) {
         this.source = source;
     }
-    
+
     public DbEntity getTarget() {
         return target;
     }
-    
+
     public void setTarget(DbEntity target) {
         this.target = target;
     }
-    
+
     public DbAttribute getJoinSource() {
         return joinSource;
     }
-    
+
     public void setJoinSource(DbAttribute joinSource) {
         this.joinSource = joinSource;
     }
-    
+
     public DbAttribute getJoinTarget() {
         return joinTarget;
     }
-    
+
     public void setJoinTarget(DbAttribute joinTarget) {
         this.joinTarget = joinTarget;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-
 }

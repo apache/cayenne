@@ -30,7 +30,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -42,52 +41,53 @@ public class InferRelationshipsControllerBase extends CayenneController {
 
     protected DataMap dataMap;
 
-    protected List<InferRelationships> ir;
+    protected List<InferredRelationship> inferredRelationships;
 
     protected List<DbEntity> entities;
-    protected Set<InferRelationships> selectedEntities;
+    protected Set<InferredRelationship> selectedEntities;
     protected int index = 0;
     protected NamingStrategy strategy;
 
-    protected transient InferRelationships currentEntity;
+    protected transient InferredRelationship currentEntity;
     protected transient Integer entityNumber;
 
     public InferRelationshipsControllerBase(CayenneController parent, DataMap dataMap) {
         super(parent);
 
         this.dataMap = dataMap;
-        this.entities = new ArrayList(dataMap.getDbEntities());
-        this.selectedEntities = new HashSet();
-
+        this.entities = new ArrayList<DbEntity>(dataMap.getDbEntities());
+        this.selectedEntities = new HashSet<InferredRelationship>();
     }
 
     public void setRelationships() {
-        ir = new ArrayList<InferRelationships>();
+        inferredRelationships = new ArrayList<InferredRelationship>();
 
         for (DbEntity entity : entities) {
             createRelationships(entity);
         }
 
-        createJoin();
-        createName();
+        createJoins();
+        createNames();
     }
 
-    public void createRelationships(DbEntity entity) {
+    protected void createRelationships(DbEntity entity) {
         Collection<DbAttribute> attr = entity.getAttributes();
 
         for (DbAttribute attribute : attr) {
 
             for (DbEntity myEntity : entities) {
-                if ((attribute.getName().equalsIgnoreCase(myEntity.getName() + "_ID"))
-                        && (!attribute.isPrimaryKey())
-                        && (myEntity.getAttributes().size() != 0)
-                        && (myEntity != entity)) {
+                if (attribute.getName().equalsIgnoreCase(myEntity.getName() + "_ID")
+                        && !attribute.isPrimaryKey()
+                        && !myEntity.getAttributes().isEmpty()
+                        && myEntity != entity) {
+
                     if (!attribute.isForeignKey()) {
-                        InferRelationships myir = new InferRelationships();
+                        InferredRelationship myir = new InferredRelationship();
                         myir.setSource(entity);
                         myir.setTarget(myEntity);
-                        ir.add(myir);
+                        inferredRelationships.add(myir);
                     }
+
                     createReversRelationship(myEntity, entity);
                 }
             }
@@ -96,9 +96,9 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     public void createReversRelationship(DbEntity eSourse, DbEntity eTarget) {
-        InferRelationships myir = new InferRelationships();
-        for (Relationship relationship : eSourse.getRelationships()) {
-            for (DbJoin join : ((DbRelationship) relationship).getJoins()) {
+        InferredRelationship myir = new InferredRelationship();
+        for (DbRelationship relationship : eSourse.getRelationships()) {
+            for (DbJoin join : relationship.getJoins()) {
                 if (((DbEntity) join.getSource().getEntity()).equals(eSourse)
                         && ((DbEntity) join.getTarget().getEntity()).equals(eTarget)) {
                     return;
@@ -107,16 +107,16 @@ public class InferRelationshipsControllerBase extends CayenneController {
         }
         myir.setSource(eSourse);
         myir.setTarget(eTarget);
-        ir.add(myir);
+        inferredRelationships.add(myir);
     }
 
-    public String getJoin(InferRelationships irItem) {
+    public String getJoin(InferredRelationship irItem) {
         return irItem.getJoinSource().getName()
                 + " : "
                 + irItem.getJoinTarget().getName();
     }
 
-    public String getToMany(InferRelationships irItem) {
+    public String getToMany(InferredRelationship irItem) {
         if (irItem.isToMany()) {
             return "to many";
         }
@@ -125,7 +125,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
         }
     }
 
-    public DbAttribute getJoinAttribute(DbEntity sEntity, DbEntity tEntity) {
+    protected DbAttribute getJoinAttribute(DbEntity sEntity, DbEntity tEntity) {
         if (sEntity.getAttributes().size() == 1) {
             return sEntity.getAttributes().iterator().next();
         }
@@ -135,12 +135,14 @@ public class InferRelationshipsControllerBase extends CayenneController {
                     return attr;
                 }
             }
+
             for (DbAttribute attr : sEntity.getAttributes()) {
                 if ((attr.getName().equalsIgnoreCase(sEntity.getName() + "_ID"))
                         && (!attr.isPrimaryKey())) {
-                    return (DbAttribute) sEntity.getAttribute(attr.getName());
+                    return attr;
                 }
             }
+
             for (DbAttribute attr : sEntity.getAttributes()) {
                 if (attr.isPrimaryKey()) {
                     return attr;
@@ -150,22 +152,24 @@ public class InferRelationshipsControllerBase extends CayenneController {
         return null;
     }
 
-    public void createJoin() {
-        for (InferRelationships myir : ir) {
-            DbAttribute temp = getJoinAttribute(myir.getSource(), myir.getTarget());
-            myir.setJoinSource(temp);
-            if (temp.isPrimaryKey()) {
-                myir.setToMany(true);
+    protected void createJoins() {
+        for (InferredRelationship inferred : inferredRelationships) {
+            DbAttribute join = getJoinAttribute(inferred.getSource(), inferred
+                    .getTarget());
+            inferred.setJoinSource(join);
+            if (join.isPrimaryKey()) {
+                inferred.setToMany(true);
             }
-            myir.setJoinTarget(getJoinAttribute(myir.getTarget(), myir.getSource()));
-        }
 
+            inferred.setJoinTarget(getJoinAttribute(inferred.getTarget(), inferred
+                    .getSource()));
+        }
     }
 
-    public void createName() {
+    protected void createNames() {
 
         ExportedKey key = null;
-        for (InferRelationships myir : ir) {
+        for (InferredRelationship myir : inferredRelationships) {
             if (myir.getJoinSource().isPrimaryKey()) {
                 key = getExportedKey(myir.getSource().getName(), myir
                         .getJoinSource()
@@ -192,11 +196,11 @@ public class InferRelationshipsControllerBase extends CayenneController {
         return new ExportedKey(pkTable, pkColumn, null, fkTable, fkColumn, null);
     }
 
-    public List<InferRelationships> getSelectedEntities() {
-        List<InferRelationships> selected = new ArrayList<InferRelationships>(
+    public List<InferredRelationship> getSelectedEntities() {
+        List<InferredRelationship> selected = new ArrayList<InferredRelationship>(
                 selectedEntities.size());
 
-        for (InferRelationships entity : ir) {
+        for (InferredRelationship entity : inferredRelationships) {
             if (selectedEntities.contains(entity)) {
                 selected.add(entity);
             }
@@ -208,7 +212,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
     public boolean updateSelection(Predicate predicate) {
         boolean modified = false;
 
-        for (InferRelationships entity : ir) {
+        for (InferredRelationship entity : inferredRelationships) {
             boolean select = predicate.evaluate(entity);
 
             if (select) {
@@ -256,14 +260,14 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     public List getEntities() {
-        return ir;
+        return inferredRelationships;
     }
 
-    public InferRelationships getCurrentEntity() {
+    public InferredRelationship getCurrentEntity() {
         return currentEntity;
     }
 
-    public void setCurrentEntity(InferRelationships currentEntity) {
+    public void setCurrentEntity(InferredRelationship currentEntity) {
         this.currentEntity = currentEntity;
     }
 
