@@ -23,7 +23,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
- * JDBC utilities class for setting up and analyzing the DB data sets for a single table.
+ * JDBC utility class for setting up and analyzing the DB data sets for a single table.
  * TableHelper intentionally bypasses Cayenne stack.
  */
 public class TableHelper {
@@ -70,48 +70,47 @@ public class TableHelper {
         return dbHelper.getRowCount(tableName);
     }
 
-    public Object getObject(String table, String column) throws SQLException {
+    public Object getObject(String column) throws SQLException {
         return dbHelper.getObject(tableName, column);
     }
 
-    public byte getByte(String table, String column) throws SQLException {
+    public byte getByte(String column) throws SQLException {
         return dbHelper.getByte(tableName, column);
     }
 
-    public byte[] getBytes(String table, String column) throws SQLException {
+    public byte[] getBytes(String column) throws SQLException {
         return dbHelper.getBytes(tableName, column);
     }
 
-    public int getInt(String table, String column) throws SQLException {
+    public int getInt(String column) throws SQLException {
         return dbHelper.getInt(tableName, column);
     }
 
-    public long getLong(String table, String column) throws SQLException {
+    public long getLong(String column) throws SQLException {
         return dbHelper.getLong(tableName, column);
     }
 
-    public double getDouble(String table, String column) throws SQLException {
+    public double getDouble(String column) throws SQLException {
         return dbHelper.getDouble(tableName, column);
     }
 
-    public boolean getBoolean(String table, String column) throws SQLException {
+    public boolean getBoolean(String column) throws SQLException {
         return dbHelper.getBoolean(tableName, column);
     }
 
-    public java.util.Date getUtilDate(String table, String column) throws SQLException {
+    public java.util.Date getUtilDate(String column) throws SQLException {
         return dbHelper.getUtilDate(tableName, column);
     }
 
-    public java.sql.Date getSqlDate(String table, String column) throws SQLException {
+    public java.sql.Date getSqlDate(String column) throws SQLException {
         return dbHelper.getSqlDate(tableName, column);
     }
 
-    public Time getTime(String table, String column) throws SQLException {
+    public Time getTime(String column) throws SQLException {
         return dbHelper.getTime(tableName, column);
     }
 
-    public Timestamp getTimestamp(String table, String column) throws SQLException {
+    public Timestamp getTimestamp(String column) throws SQLException {
         return dbHelper.getTimestamp(tableName, column);
     }
-
 }

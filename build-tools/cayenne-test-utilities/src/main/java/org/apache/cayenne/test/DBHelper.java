@@ -30,7 +30,7 @@ import java.sql.Timestamp;
 import javax.sql.DataSource;
 
 /**
- * JDBC utilities class for setting up and analyzing the DB data sets. DBHelper
+ * JDBC utility class for setting up and analyzing the DB data sets. DBHelper
  * intentionally bypasses Cayenne stack.
  */
 public class DBHelper {
