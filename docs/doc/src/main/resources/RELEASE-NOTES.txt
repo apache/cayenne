@@ -47,6 +47,7 @@ Date:
 
 Bug Fixes Since 3.0RC2:
 
+CAY-1111 Expression.toEJBQL() support for single-column PK Persistent objects
 CAY-1378 Error unsetting to-many DataObject property
 	(this also reverts CAY-1009)
 CAY-1379 Error resolving fault, no matching row exists in the database

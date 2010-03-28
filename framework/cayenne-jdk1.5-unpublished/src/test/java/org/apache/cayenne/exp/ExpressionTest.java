@@ -23,6 +23,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 
+import org.apache.art.Artist;
+import org.apache.cayenne.ObjectId;
+
 import junit.framework.TestCase;
 
 /**
@@ -103,5 +106,23 @@ public class ExpressionTest extends TestCase {
         String ejbql = buffer.toString();
 
         assertEquals("x.artistName in ('a', 'b', 'c')", ejbql);
+    }
+    
+    public void testEncodeAsEJBQL_PersistentParamater() {
+        
+        Artist a = new Artist();
+        ObjectId aId = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
+        a.setObjectId(aId);
+
+        Expression e = ExpressionFactory.matchExp("artist", a);
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e.encodeAsEJBQL(pw, "x");
+        pw.close();
+        buffer.flush();
+        String ejbql = buffer.toString();
+
+        assertEquals("x.artist = 1", ejbql);
     }
 }

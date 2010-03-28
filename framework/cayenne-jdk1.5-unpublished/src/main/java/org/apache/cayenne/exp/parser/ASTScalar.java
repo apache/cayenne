@@ -21,6 +21,9 @@ package org.apache.cayenne.exp.parser;
 
 import java.io.PrintWriter;
 
+import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -29,6 +32,7 @@ import org.apache.cayenne.exp.Expression;
  * @since 1.1
  */
 public class ASTScalar extends SimpleNode {
+
     protected Object value;
 
     /**
@@ -66,13 +70,27 @@ public class ASTScalar extends SimpleNode {
     public void encodeAsString(PrintWriter pw) {
         SimpleNode.encodeScalarAsString(pw, value, '\"');
     }
-    
+
     /**
      * @since 3.0
      */
     @Override
     public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        SimpleNode.encodeScalarAsString(pw, value, '\'');
+
+        // TODO: see CAY-1111
+        // Persistent processing is a hack for a rather special case of a single column PK
+        // object.. full implementation pending...
+        Object scalar = value;
+        if (scalar instanceof Persistent) {
+
+            Persistent persistent = (Persistent) scalar;
+            ObjectId id = persistent.getObjectId();
+            if (!id.isTemporary() && id.getIdSnapshot().size() == 1) {
+                scalar = id.getIdSnapshot().values().iterator().next();
+            }
+        }
+
+        SimpleNode.encodeScalarAsString(pw, scalar, '\'');
     }
 
     public void setValue(Object value) {
@@ -85,7 +103,8 @@ public class ASTScalar extends SimpleNode {
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException(
-            "No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+        throw new UnsupportedOperationException("No operator for '"
+                + ExpressionParserTreeConstants.jjtNodeName[id]
+                + "'");
     }
 }
