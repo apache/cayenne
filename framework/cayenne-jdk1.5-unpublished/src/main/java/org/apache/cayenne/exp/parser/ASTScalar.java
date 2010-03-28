@@ -21,7 +21,6 @@ package org.apache.cayenne.exp.parser;
 
 import java.io.PrintWriter;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
