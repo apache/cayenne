@@ -29,7 +29,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
 import org.apache.cayenne.access.util.DefaultOperationObserver;
-import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -112,6 +112,14 @@ final class FlattenedArcKey {
                 continue;
             }
 
+            DbAdapter adapter = node.getAdapter();
+
+            // skip db-generated... looks like we don't care about the actual PK value
+            // here, so no need to retrieve db-generated pk back to Java.
+            if (adapter.supportsGeneratedKeys() && dbAttr.isGenerated()) {
+                continue;
+            }
+
             if (autoPkDone) {
                 throw new CayenneRuntimeException(
                         "Primary Key autogeneration only works for a single attribute.");
@@ -119,8 +127,7 @@ final class FlattenedArcKey {
 
             // finally, use database generation mechanism
             try {
-                PkGenerator pkGenerator = node.getAdapter().getPkGenerator();
-                Object pkValue = pkGenerator.generatePk(node, dbAttr);
+                Object pkValue = adapter.getPkGenerator().generatePk(node, dbAttr);
                 snapshot.put(dbAttrName, pkValue);
                 autoPkDone = true;
             }
