@@ -25,6 +25,7 @@ CAY-1329 DI-based cayenne-project module
 CAY-1331 hessian upgrade stops rop
 CAY-1336 Oracle specific type support (oracle.sql.*), add handlers.
 CAY-1338 Move CayenneUserDir to the Modeler
+CAY-1339 Remove org.apache.cayenne.project package from runtime
 CAY-1340 Implement ConfigurationNode / ConfigurationNodeVisitor for the Cayenne project tree, including DataMap objects.
 CAY-1342 Remove wocompat package from Cayenne core
 CAY-1350 Implement memorized sorting of modeler columns
