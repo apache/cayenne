@@ -28,10 +28,15 @@ import org.apache.art.GeneratedColumnCompMaster;
 import org.apache.art.GeneratedColumnDep;
 import org.apache.art.GeneratedColumnTest2;
 import org.apache.art.GeneratedColumnTestEntity;
+import org.apache.art.GeneratedF1;
+import org.apache.art.GeneratedF2;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.TableHelper;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -86,10 +91,49 @@ public class IdentityColumnsTest extends CayenneCase {
 
         // make sure that id is the same as id in the DB
         context.invalidateObjects(Collections.singleton(idObject));
-        GeneratedColumnTestEntity object = Cayenne
-                .objectForPK(context, GeneratedColumnTestEntity.class, id);
+        GeneratedColumnTestEntity object = Cayenne.objectForPK(
+                context,
+                GeneratedColumnTestEntity.class,
+                id);
         assertNotNull(object);
         assertEquals(name, object.getName());
+    }
+
+    public void testGeneratedJoinInFlattenedRelationship() throws Exception {
+        String joinTableName = "GENERATED_JOIN";
+
+        TableHelper joinTable = new TableHelper(getDbHelper(), joinTableName);
+        joinTable.deleteAll();
+
+        DataContext context = createDataContext();
+
+        // before saving objects, let's manually access PKGenerator to get a base PK value
+        // for comparison
+        DbEntity joinTableEntity = context.getEntityResolver().getDbEntity(joinTableName);
+        DbAttribute pkAttribute = (DbAttribute) joinTableEntity.getAttribute("ID");
+        Number pk = (Number) getNode().getAdapter().getPkGenerator().generatePk(
+                getNode(),
+                pkAttribute);
+
+        GeneratedF1 f1 = context.newObject(GeneratedF1.class);
+        GeneratedF2 f2 = context.newObject(GeneratedF2.class);
+        f1.addToF2(f2);
+
+        context.commitChanges();
+
+        int id = joinTable.getInt("ID");
+        assertTrue(id > 0);
+
+        // this is a leap of faith that autoincrement-based IDs will not match
+        // PkGenertor provided ids... This sorta works though if pk generator has a 200
+        // base value
+        if (getNode().getAdapter().supportsGeneratedKeys()) {
+            assertFalse("Looks like auto-increment wasn't used for the join table. ID: "
+                    + id, id == pk.intValue() + 1);
+        }
+        else {
+            assertEquals(id, pk.intValue() + 1);
+        }
     }
 
     /**
@@ -97,13 +141,11 @@ public class IdentityColumnsTest extends CayenneCase {
      */
     public void testUnrelatedUpdate() throws Exception {
         DataContext context = createDataContext();
-        GeneratedColumnTestEntity m = context
-                .newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity m = context.newObject(GeneratedColumnTestEntity.class);
 
         m.setName("m");
 
-        GeneratedColumnDep d = context
-                .newObject(GeneratedColumnDep.class);
+        GeneratedColumnDep d = context.newObject(GeneratedColumnDep.class);
         d.setName("d");
         d.setToMaster(m);
         context.commitChanges();
@@ -130,8 +172,7 @@ public class IdentityColumnsTest extends CayenneCase {
                 .newObject(GeneratedColumnTestEntity.class);
         idObject1.setName("o1");
 
-        GeneratedColumnTest2 idObject2 = context
-                .newObject(GeneratedColumnTest2.class);
+        GeneratedColumnTest2 idObject2 = context.newObject(GeneratedColumnTest2.class);
         idObject2.setName("o2");
 
         context.commitChanges();
@@ -146,12 +187,9 @@ public class IdentityColumnsTest extends CayenneCase {
         };
 
         GeneratedColumnTestEntity[] idObjects = new GeneratedColumnTestEntity[] {
-                context
-                        .newObject(GeneratedColumnTestEntity.class),
-                context
-                        .newObject(GeneratedColumnTestEntity.class),
-                context
-                        .newObject(GeneratedColumnTestEntity.class)
+                context.newObject(GeneratedColumnTestEntity.class),
+                context.newObject(GeneratedColumnTestEntity.class),
+                context.newObject(GeneratedColumnTestEntity.class)
         };
 
         for (int i = 0; i < idObjects.length; i++) {
@@ -169,8 +207,10 @@ public class IdentityColumnsTest extends CayenneCase {
         context.invalidateObjects(Arrays.asList(idObjects));
 
         for (int i = 0; i < ids.length; i++) {
-            GeneratedColumnTestEntity object = Cayenne
-                    .objectForPK(context, GeneratedColumnTestEntity.class, ids[i]);
+            GeneratedColumnTestEntity object = Cayenne.objectForPK(
+                    context,
+                    GeneratedColumnTestEntity.class,
+                    ids[i]);
             assertNotNull(object);
             assertEquals(names[i], object.getName());
         }
@@ -190,13 +230,11 @@ public class IdentityColumnsTest extends CayenneCase {
                     .newObject(GeneratedColumnCompMaster.class);
             master.setName(masterName);
 
-            GeneratedColumnCompKey dep1 = context
-                    .newObject(GeneratedColumnCompKey.class);
+            GeneratedColumnCompKey dep1 = context.newObject(GeneratedColumnCompKey.class);
             dep1.setName(depName1);
             dep1.setToMaster(master);
 
-            GeneratedColumnCompKey dep2 = context
-                    .newObject(GeneratedColumnCompKey.class);
+            GeneratedColumnCompKey dep2 = context.newObject(GeneratedColumnCompKey.class);
             dep2.setName(depName2);
             dep2.setToMaster(master);
 
@@ -235,8 +273,7 @@ public class IdentityColumnsTest extends CayenneCase {
                 .newObject(GeneratedColumnTestEntity.class);
         master1.setName("aaa");
 
-        GeneratedColumnDep dependent = context
-                .newObject(GeneratedColumnDep.class);
+        GeneratedColumnDep dependent = context.newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");
         dependent.setToMaster(master1);
 
@@ -260,10 +297,7 @@ public class IdentityColumnsTest extends CayenneCase {
 
         context.invalidateObjects(Arrays.asList(master2, dependent));
 
-        assertNotNull(Cayenne.objectForPK(
-                context,
-                GeneratedColumnTestEntity.class,
-                id1));
+        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
     }
 
@@ -279,9 +313,8 @@ public class IdentityColumnsTest extends CayenneCase {
                 .newObject(GeneratedColumnTestEntity.class);
         idObject.setName("aaa");
 
-        GeneratedColumnDep dependent = idObject
-                .getObjectContext()
-                .newObject(GeneratedColumnDep.class);
+        GeneratedColumnDep dependent = idObject.getObjectContext().newObject(
+                GeneratedColumnDep.class);
         dependent.setName("aaa");
         dependent.setToMaster(idObject);
 
@@ -299,10 +332,7 @@ public class IdentityColumnsTest extends CayenneCase {
         // refetch from DB
         context.invalidateObjects(Arrays.asList(idObject, dependent));
 
-        assertNotNull(Cayenne.objectForPK(
-                context,
-                GeneratedColumnTestEntity.class,
-                id1));
+        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
     }
 }

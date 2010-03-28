@@ -171,6 +171,17 @@
 		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
+	<db-entity name="GENERATED_F1">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="GENERATED_F2">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="GENERATED_JOIN">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="ID1" type="INTEGER"/>
+		<db-attribute name="ID2" type="INTEGER"/>
+	</db-entity>
 	<db-entity name="LONG_ENTITY">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="LONG_FIELD" type="BIGINT"/>
@@ -401,6 +412,10 @@
 	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.art.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="GeneratedF1" className="org.apache.art.GeneratedF1" clientClassName="test.client.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	</obj-entity>
+	<obj-entity name="GeneratedF2" className="org.apache.art.GeneratedF2" clientClassName="test.client.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	</obj-entity>
 	<obj-entity name="LongEntity" className="org.apache.art.LongEntity" dbEntityName="LONG_ENTITY">
 		<obj-attribute name="longField" type="java.lang.Long" db-attribute-path="LONG_FIELD"/>
 	</obj-entity>
@@ -576,6 +591,18 @@
 	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
 	</db-relationship>
+	<db-relationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
+		<db-attribute-pair source="ID" target="ID1"/>
+	</db-relationship>
+	<db-relationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
+		<db-attribute-pair source="ID" target="ID2"/>
+	</db-relationship>
+	<db-relationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1" toMany="false">
+		<db-attribute-pair source="ID1" target="ID"/>
+	</db-relationship>
+	<db-relationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2" toMany="false">
+		<db-attribute-pair source="ID2" target="ID"/>
+	</db-relationship>
 	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" toMany="false">
 		<db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>
 	</db-relationship>
@@ -630,6 +657,8 @@
 	<obj-relationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" db-relationship-path="toDetail"/>
 	<obj-relationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" db-relationship-path="toMaster"/>
 	<obj-relationship name="toDep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" db-relationship-path="toDep"/>
+	<obj-relationship name="f2" source="GeneratedF1" target="GeneratedF2" deleteRule="Nullify" db-relationship-path="join.f2"/>
+	<obj-relationship name="f1" source="GeneratedF2" target="GeneratedF1" deleteRule="Nullify" db-relationship-path="join.f1"/>
 	<obj-relationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" db-relationship-path="toMeaningfulPK"/>
 	<obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" db-relationship-path="meaningfulPKDepArray"/>
 	<obj-relationship name="details" source="MixedPersistenceStrategy" target="MixedPersistenceStrategy2" db-relationship-path="details"/>

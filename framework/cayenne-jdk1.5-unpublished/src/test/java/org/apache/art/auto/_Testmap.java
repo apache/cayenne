@@ -16,6 +16,40 @@ import org.apache.cayenne.query.NamedQuery;
  */
 public class _Testmap {
 
+    public static final String EJBQL_QUERY_TEST_QUERYNAME = "EjbqlQueryTest";
+
+    public static final String NON_SELECTING_QUERY_QUERYNAME = "NonSelectingQuery";
+
+    public static final String OBJECT_QUERY_QUERYNAME = "ObjectQuery";
+
+    public static final String PARAMETERIZED_NON_SELECTING_QUERY_QUERYNAME = "ParameterizedNonSelectingQuery";
+
+    public static final String PARAMETERIZED_QUERY_WITH_LOCAL_CACHE_QUERYNAME = "ParameterizedQueryWithLocalCache";
+
+    public static final String PARAMETERIZED_QUERY_WITH_SHARED_CACHE_QUERYNAME = "ParameterizedQueryWithSharedCache";
+
+    public static final String PROCEDURE_QUERY_QUERYNAME = "ProcedureQuery";
+
+    public static final String QUERY_WITH_LOCAL_CACHE_QUERYNAME = "QueryWithLocalCache";
+
+    public static final String QUERY_WITH_ORDERING_QUERYNAME = "QueryWithOrdering";
+
+    public static final String QUERY_WITH_PREFETCH_QUERYNAME = "QueryWithPrefetch";
+
+    public static final String QUERY_WITH_QUALIFIER_QUERYNAME = "QueryWithQualifier";
+
+    public static final String QUERY_WITH_SHARED_CACHE_QUERYNAME = "QueryWithSharedCache";
+
+    public static final String SELECT_DATE_TEST_QUERYNAME = "SelectDateTest";
+
+    public static final String SELECT_RETURN_TYPES_MAP1_QUERYNAME = "SelectReturnTypesMap1";
+
+    public static final String SELECT_RETURN_TYPES_MAP2_QUERYNAME = "SelectReturnTypesMap2";
+
+    public static final String SELECT_TEST_LOWER_QUERYNAME = "SelectTestLower";
+
+    public static final String SELECT_TEST_UPPER_QUERYNAME = "SelectTestUpper";
+
     public List<Painting> performObjectQuery(ObjectContext context , Artist artist) {
         String[] parameters = {
             "artist",
