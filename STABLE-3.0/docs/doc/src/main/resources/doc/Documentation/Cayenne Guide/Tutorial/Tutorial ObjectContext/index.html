@@ -1,0 +1,156 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Tutorial ObjectContext</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Tutorial ObjectContext</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Setup/index.html">Tutorial Setup</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Starting Project/index.html">Tutorial Starting Project</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Object Relational Mapping/index.html">Tutorial Object Relational Mapping</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Java Classes/index.html">Tutorial Java Classes</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial ObjectContext/index.html">Tutorial ObjectContext</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Persistent Objects/index.html">Tutorial Persistent Objects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial SelectQuery/index.html">Tutorial SelectQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Delete/index.html">Tutorial Delete</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Webapp/index.html">Tutorial Webapp</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>In this section we'll write a simple main class to run our application, and get a brief introduction to Cayenne ObjectContext.</p>
+
+<h3><a name="TutorialObjectContext-CreatingtheMainClass"></a>Creating the Main Class</h3>
+
+<ul>
+	<li>In Eclipse create a new class called "Main" in the <tt>"org.example.cayenne"</tt> package.</li>
+	<li>Create a standard "main" method to make it a runnable class:</li>
+</ul>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">package</span> org.example.cayenne;
+
+<span class="code-keyword">public</span> class Main {
+
+	<span class="code-keyword">public</span> <span class="code-keyword">static</span> void main(<span class="code-object">String</span>[] args) {
+
+	}
+}</pre>
+</div></div>
+
+<ul>
+	<li>The first thing you need to be able to access the database is an instance of an <tt>ObjectContext</tt>. In this simple case of a standalone command-line application, it can be obtained by calling a static method on a <a href="../../../../Documentation/Cayenne Guide/DataContext/index.html" title="DataContext">DataContext</a> class (DataContext is the default implementor of the ObjectContext interface) :</li>
+</ul>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">package</span> org.example.cayenne;
+
+<span class="code-keyword">import</span> org.apache.cayenne.ObjectContext;
+<span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+
+<span class="code-keyword">public</span> class Main {
+
+	<span class="code-keyword">public</span> <span class="code-keyword">static</span> void main(<span class="code-object">String</span>[] args) {
+		ObjectContext context = DataContext.createDataContext();
+	}
+}</pre>
+</div></div>
+
+<p>ObjectContext is an isolated "session" in Cayenne that provides all needed API to work with data. ObjectContext has methods to execute queries and manage persistent objects. We'll discuss them in the following sections. When the first ObjectContext is created in the application, Cayenne loads XML mapping files and creates a shared access stack that is later reused by other ObjectContexts. </p>
+
+<h3><a name="TutorialObjectContext-RunningApplication"></a>Running Application</h3>
+
+<p>Let's check what happens when you run the application. But before we do that we need to add another dependency to the <tt>pom.xml</tt> - Apache Derby, our embedded database engine. The following piece of XML needs to be added to the <tt>&lt;dependencies&gt;...&lt;/dependencies&gt;</tt> section, where we already have Cayenne jars:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">&lt;dependency&gt;
+   &lt;groupId&gt;org.apache.derby&lt;/groupId&gt;
+   &lt;artifactId&gt;derby&lt;/artifactId&gt;
+   &lt;version&gt;10.5.3.0_1&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+</div></div>
+
+<p>Now we are ready to run. Right click the "Main" class in Eclipse and select <tt>"Run As &gt; Java Application"</tt>. In the console you'll see output similar to this, indicating that Cayenne stack has been started:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>INFO: started configuration loading.
+INFO: loaded domain: UntitledDomain
+INFO: loaded &lt;map name='UntitledDomainMap' location='UntitledDomainMap.map.xml'&gt;.
+INFO: loading &lt;node name='UntitledDomainNode' datasource='UntitledDomainNode.driver.xml' 
+factory='org.apache.cayenne.conf.DriverDataSourceFactory' 
+schema-update-strategy='org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy'&gt;.
+INFO: using factory: org.apache.cayenne.conf.DriverDataSourceFactory
+INFO: loading driver information from 'UntitledDomainNode.driver.xml'.
+INFO: loading driver org.apache.derby.jdbc.EmbeddedDriver
+INFO: loading user name and password.
+INFO: Created connection pool: jdbc:derby:memory:testdb;create=true 
+	Driver class: org.apache.derby.jdbc.EmbeddedDriver
+	Min. connections in the pool: 1
+	Max. connections in the pool: 1
+INFO: loaded datasource.
+INFO: no adapter set, using automatic adapter.
+INFO: loaded map-ref: UntitledDomainMap.
+INFO: finished configuration loading in 396 ms.</pre>
+</div></div>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>How to Configure Cayenne Logging</b><br />You can tweak more or less detailed output by following the instructions in the <a href="../../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html" title="Configuring Logging">logging chapter</a>.</td></tr></table></div>
+
+<p>Nothing much happened here, but we've been able to create a working Cayenne stack. In the following chapters we'll use the ObjectContext for more interesting things.</p>
+
+<hr />
+<p><b>Next Step: <a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Persistent Objects/index.html" title="Tutorial Persistent Objects">Tutorial Persistent Objects</a></b></p>
+<hr /></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

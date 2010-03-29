@@ -1,0 +1,166 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Cayenne Contract</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Cayenne Contract</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Cayenne Contract/index.html">Cayenne Contract</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Persistent Object Lifecycle/index.html">Persistent Object Lifecycle</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/index.html">Runtime Components</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Understanding Transactions/index.html">Understanding Transactions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Primary Key Generation/index.html">Primary Key Generation</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>There is an implied contract between persistent objects and Cayenne runtime. Cayenne expects persistent objects to follow certain conventions, while itself providing management of the various aspects of a persistent object graph.</p>
+
+<h2><a name="CayenneContract-PersistentObjectRequirements"></a>Persistent Object Requirements</h2>
+
+<h3><a name="CayenneContract-PersistentInterfaces"></a>Persistent Interfaces</h3>
+
+<p>Cayenne can persist Java objects that implement <tt>org.apache.cayenne.Persistent</tt> interface. The interface requires for an object to provide getters and setters for three bean properties: <tt>objectId</tt>, <a href="../../../../Documentation/Cayenne Guide/Design/Persistent Object Lifecycle/index.html" title="Persistent Object Lifecycle"><tt>persistenceState</tt></a> and <tt>objectContext</tt>:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeHeader panelHeader" style="border-bottom-width: 1px;"><b>Persistent.java</b></div><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">interface</span> Persistent <span class="code-keyword">extends</span> Serializable {
+    ObjectId getObjectId();
+
+    void setObjectId(ObjectId id);
+
+    <span class="code-object">int</span> getPersistenceState();
+
+    void setPersistenceState(<span class="code-object">int</span> state);
+
+    ObjectContext getObjectContext();
+
+    void setObjectContext(ObjectContext objectContext);
+}</pre>
+</div></div>
+
+<p>Furthermore the most commonly used implementation of <a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/ObjectContext/index.html" title="ObjectContext">ObjectContext</a> - <a href="../../../../Documentation/Cayenne Guide/DataContext/index.html" title="DataContext">DataContext</a> - requires a more complicated subinterface of Persistent - <tt>org.apache.cayenne.DataObject</tt>, that specifies generic methods for property access. The easiest way to satisfy these requirements is by using class generation mechanism provided by Cayenne (using <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html" title="cgen">cgen</a> Ant task or <a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/Generate Java Classes/index.html" title="Generate Java Classes">CayenneModeler UI</a>). </p>
+
+<p>It is worth noting that both requirements will likely become optional in the future releases, being substituted with reflection, bytecode enhancements and other such techniques. Still it is important to understand both benefits and shortcomings of the persistent interface requirement. </p>
+
+<p>The obvious (and only) shortcoming is that the users have to implement it, most often using a class generation template that relies on a framework superclass (such as <tt>org.apache.cayenne.CayenneDataObject</tt>). This may somewhat limit the flexibility of the application design.</p>
+
+<p>In returns users (and Cayenne framework internally) get extra capabilities:</p>
+
+<ul>
+	<li>Fast and consistent mechanism for the framework to inspect, cache, manipulate the objects.</li>
+	<li>Meaningless primary key doesn't have to be an object property.</li>
+	<li>An object always knows its context, and thus can access the database from its business logic methods without any external context.</li>
+	<li>An object always knows how its state compares to the state of the backing database row, and can implement logic based on that knowledge (e.g. objects that are modified, but not yet committed, can be shown in a different color in the user interface).</li>
+	<li>DataObject interface makes possible <a href="../../../../Documentation/Cayenne Guide/DataObjects/Generic Persistent Class/index.html" title="Generic Persistent Class">generic persistent objects</a>, i.e. the same generic class can map to more than one entity, and persistent behavior can be defined dynamically in runtime.</li>
+</ul>
+
+
+<h3><a name="CayenneContract-PropertyAccessors"></a>Property Accessors</h3>
+
+<p>Another convention, that is not required strictly speaking, but is almost always implemented by persistent objects is invoking a callback method on their enclosing context before reading or setting their properties. Intercepting property accessors enables lazy on-demand resolution of objects and their relationships and also automatic bidirectional relationships, as discussed below. As with Persistent interface, property interception code is usually created via class generation.</p>
+
+
+<h2><a name="CayenneContract-HandlingPersistentObjects"></a>Handling Persistent Objects</h2>
+
+<p>Cayenne part of the "persistence contract" is the services it provides, including persistence per se and persistence-related object graph management capabilities.</p>
+
+<h3><a name="CayenneContract-QueryCapabilities"></a>Query Capabilities</h3>
+
+<p>Queries can be executed, bringing back objects matching certain criteria. As a part of this procedure, persistent objects are created and inflated with database values.</p>
+
+<h3><a name="CayenneContract-SingleMethodCallCommitandRollback"></a>Single Method Call Commit and Rollback</h3>
+
+<p>Multiple persistent object changes can be committed with a single method call (and in a single transaction). Similarly, object graph changes made since last commit can be discarded with a single method call.</p>
+
+<h3><a name="CayenneContract-MultipleLevelsofCommitandRollbackNesting"></a>Multiple Levels of Commit and Rollback Nesting</h3>
+
+<p>Commit and rollback functionality can have <a href="../../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html" title="Nested Contexts">multiple levels of nesting</a> (i.e. a context can rollback its changes without affecting the parent context; or commit its changes to parent without committing them all the way to the database). </p>
+
+<h3><a name="CayenneContract-Relationships"></a>Relationships</h3>
+
+<p>Relationship support - objects related to the previously fetched objects can be accessed via a simple method call. Cayenne will do whatever is necessary to resolve related objects at the right moment behind the scenes. </p>
+
+<p>Unless the user <a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Prefetching/index.html" title="Prefetching">specifies otherwise</a> in the query that fetched the initial objects, relationships are not fetched together with the objects. When a user requests a related object (or collection of objects), Cayenne ensures that the actual database query to read it is deferred as much as possible, so hopefully there won't be a need to do it at all. E.g. a to-many relationship is resolved only when a list is queried for its size, or a user tries to access one of the elements.</p>
+
+<h3><a name="CayenneContract-AutomaticBidirectionalRelationshipManagemenet"></a>Automatic Bi-directional Relationship Managemenet</h3>
+
+<p>If entity A has a relationship to entity B and entity B has a relationshop back to entity A, Cayenne would maintain consistency of the reverse relationship automatically. Consider this example of a many-to-one relationship, written in a form of a unit test:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">A a1;
+B b1;
+B b2;
+
+a1.setB(b1);
+assertTrue(b1.getListOfA().contains(a1));
+
+a1.setB(b2);
+assertTrue(b2.getListOfA().contains(a1));
+assertFalse(b1.getListOfA().contains(a1));</pre>
+</div></div>
+
+<p>This significantly simplifies coding and reduces possibility of errors in managing complex object graphs.</p>
+
+<h3><a name="CayenneContract-ContextInjection"></a>Context Injection</h3>
+
+<p>Cayenne framework injects all three properties defined in <tt>Persistent</tt> interface - <tt>objectId</tt>, <tt>persistenceState</tt> and <tt>objectContext</tt> - at the right moments in the lifecycle. It automatically maintans persistence state changes when an object undergoes state transformations.</p>
+
+<h3><a name="CayenneContract-Uniquing"></a>Uniquing</h3>
+
+<p>Cayenne ensures that each <a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/ObjectContext/index.html" title="ObjectContext">ObjectContext</a> contains at most one instance of each <b>unique</b> persistent object. In other words if two separate independent queries fetched a row with the same primary key, the same object instance will be used in both results. This behavior (not supported by some other frameworks), is extremely important in maintaining consistency of the object graph.</p>
+
+<h3><a name="CayenneContract-LazyObjectResolution"></a>Lazy Object Resolution</h3>
+
+<p>One of the object states is HOLLOW, corresponding to unresolved objects that only have their PK known. Most often HOLLOW objects are returned from to-one relationships. Whenever such object is "touched" by the user (i.e. a  setter or a getter is invoked), Cayenne automatically infaltes it with the database values.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

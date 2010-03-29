@@ -1,0 +1,98 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Tutorial</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Tutorial</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a><ul>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Setup/index.html">Tutorial Setup</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Starting Project/index.html">Tutorial Starting Project</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Object Relational Mapping/index.html">Tutorial Object Relational Mapping</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Java Classes/index.html">Tutorial Java Classes</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial ObjectContext/index.html">Tutorial ObjectContext</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Persistent Objects/index.html">Tutorial Persistent Objects</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial SelectQuery/index.html">Tutorial SelectQuery</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Delete/index.html">Tutorial Delete</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Webapp/index.html">Tutorial Webapp</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="Tutorial-Tutorial"></a>Tutorial</h2>
+
+<p>This is a step-by-step tutorial showing how to write a database application with Cayenne. When you are done with it, you should have an understanding of the basics of object-relational mapping using CayenneModeler and how to use the Cayenne framework in standalone (command-line or otherwise) and web applications. The tutorial uses Maven, Eclipse IDE and Derby database, however it can be easily recreated with another combination of a database, an IDE and a build system. Full tutorial source code in a form of Eclipse project is distributed with Cayenne (see <tt>"tutorials/tutorial"</tt> folder).</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Note about Maven</b><br />The only potentially controversial choice here is Maven. Not everybody is familiar with Maven, and not everybody likes it. However we decided that the benefits of the setup simplicity outweigh any downsides. Note that the tutorial is using <tt>m2eclipse</tt> plugin and doesn't even require a command-line Maven installation. Moreover most of the useful Cayenne Maven hackery is presented in boxed inserts throughout the text, while a Maven-agnostic alternative is shown in the main text.</td></tr></table></div>
+
+<h3><a name="Tutorial-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Setup/index.html" title="Tutorial Setup">Setting up the environment...</a></li>
+	<li>Learning mapping basics
+	<ol>
+		<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Starting Project/index.html" title="Tutorial Starting Project">Starting a project...</a></li>
+		<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Object Relational Mapping/index.html" title="Tutorial Object Relational Mapping">Getting started with Object Relational Mapping (ORM)...</a></li>
+		<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Java Classes/index.html" title="Tutorial Java Classes">Creating Java classes...</a></li>
+	</ol>
+	</li>
+	<li>Learning Cayenne API
+	<ol>
+		<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial ObjectContext/index.html" title="Tutorial ObjectContext">Getting started with ObjectContext...</a></li>
+		<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Persistent Objects/index.html" title="Tutorial Persistent Objects">Getting started with persistent objects...</a></li>
+		<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial SelectQuery/index.html" title="Tutorial SelectQuery">Selecting objects...</a></li>
+		<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Delete/index.html" title="Tutorial Delete">Deleting objects...</a></li>
+	</ol>
+	</li>
+	<li><a href="../../../Documentation/Cayenne Guide/Tutorial/Tutorial Webapp/index.html" title="Tutorial Webapp">Converting to web application...</a></li>
+</ol>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

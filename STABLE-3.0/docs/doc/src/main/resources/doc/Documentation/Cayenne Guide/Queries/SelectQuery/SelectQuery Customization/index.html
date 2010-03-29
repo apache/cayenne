@@ -1,0 +1,95 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - SelectQuery Customization</title>
+    <style type="text/css">@import "../../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">SelectQuery Customization</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html">SelectQuery</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Parameterized Queries/index.html">Parameterized Queries</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Qualifier Expressions/index.html">Qualifier Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Using Orderings/index.html">Using Orderings</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/SelectQuery Customization/index.html">SelectQuery Customization</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/index.html">SQLTemplate Query</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html">EJBQLQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html">NamedQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html">ObjectIdQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html">QueryChain</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html">RelationshipQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Queries Stored in DataMap/index.html">Queries Stored in DataMap</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Caching Query Results/index.html">Caching Query Results</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Customizing Queries/index.html">Customizing Queries</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html" title="SelectQuery">SelectQueries</a> allow to fine tune the behavior of the fetch using the following API:</p>
+<ul>
+	<li>public void <b>setFetchLimit</b>(int fetchLimit)<br/>
+ If set to a value greater than zero, tells Cayenne that query should never retrieve more than X objects (X == fetchLimit) from the database. If a result set contains more rows, they are simply ignored and never read. This is a "safety" feature that can be used to prevent the application from crashing when an unexpectedly high number of records exists for a given query.</li>
+</ul>
+
+
+<ul>
+	<li>public void <b>setDistinct</b>(boolean distinct)<br/>
+ If set to true (default is false), tells Cayenne that query should fetch distinct rows.</li>
+	<li>public void <b>setFetchingDataRows</b>(boolean flag)<br/>
+ If set to true (default is false), tells Cayenne that instead of creating DataObjects, it should fetch "data rows" - dictionaries containing database values, using table column names for the keys. "Performance Tuning" chapter explains how data rows can improve performance and how and when to use them.</li>
+	<li>public void <b>setPageSize</b>(int pageSize)<br/>
+ If set to a value greater than zero, tells Cayenne that query should do a "lazy" fetch, breaking result into "pages". <a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/index.html" title="Performance Tuning">Performance Tuning</a> has a detailed discussion of paged queries.</li>
+</ul>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

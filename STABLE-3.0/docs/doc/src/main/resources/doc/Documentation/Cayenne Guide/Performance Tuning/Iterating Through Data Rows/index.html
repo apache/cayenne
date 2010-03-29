@@ -1,0 +1,122 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Iterating Through Data Rows</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Iterating Through Data Rows</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Prefetching/index.html">Prefetching</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Data Rows/index.html">Data Rows</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Iterating Through Data Rows/index.html">Iterating Through Data Rows</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Paginated Queries/index.html">Paginated Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Caching Lookup Tables/index.html">Caching Lookup Tables</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Turning off Context Synchronization/index.html">Turning off Context Synchronization</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>There are cases when the result sets are so large that even when fetching data rows, application can run out of memory. For instance, a user may be creating a report that requires in-memory processing of hundreds of thousands of database rows. In such cases normal Cayenne behavior of reading the whole java.sql.ResultSet in the memory before returning it to the user may result in an application exhausing all memory and crashing.</p>
+
+<p>Cayenne solves this by allowing to obtain results in the form of ResultIterator. ResultIterator is connected to an open java.sql.ResultSet, therefore its methods may throw checked exceptions. ResultIterator returns data rows (not DataObjects) one at a time, reading them on demand from the open ResultSet. Each data row can be converted to a DataObject or accessed directly. Open ResultIterator locks the database connection, therefore <b>ResultIterator always requires explicit closing in the user code</b>.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>In web applications, programmers must ensure that no open ResultIterators are kept between HTTP requests. Failure to do so may result in too many database connections being locked, thus quickly exhausting connection pool.</td></tr></table></div>
+
+<p>When working with open ResultIterator, users still can perform any other database operations: select queries, traversing object relationships, etc. Any parallel data operation will internally check out an unused connection from the connection pool as it would normally do, while ResultIterator still locks its own connection.</p>
+
+<p>ResultIterator annotated example:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> java.util.List;
+<span class="code-keyword">import</span> java.util.Map;
+<span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+<span class="code-keyword">import</span> org.apache.cayenne.access.ResultIterator;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
+<span class="code-keyword">import</span> org.apache.cayenne.CayenneException;
+<span class="code-keyword">import</span> org.apache.art.Artist;
+...
+DataContext context;
+
+<span class="code-comment">// create a usual query
+</span>SelectQuery q = <span class="code-keyword">new</span> SelectQuery(Artist.class);
+ResultIterator it = <span class="code-keyword">null</span>;
+
+<span class="code-comment">// ResultIterator operations all <span class="code-keyword">throw</span> checked CayenneException
+</span><span class="code-keyword">try</span> {
+   <span class="code-comment">// special <span class="code-quote">"performIteratedQuery"</span> method is used
+</span>   it = context.performIteratedQuery(q);
+
+   <span class="code-keyword">while</span>(it.hasNextRow()) {
+      <span class="code-comment">// ResultIterator always returns data rows 
+</span>      Map row = (Map) it.nextRow();
+      
+      <span class="code-comment">// <span class="code-keyword">do</span> something with the row...
+</span>      ...
+   }
+}
+<span class="code-keyword">catch</span>(CayenneException ex) {
+   ex.printStackTrace();
+}
+<span class="code-keyword">finally</span> {
+   <span class="code-keyword">try</span> {
+      <span class="code-comment">// explicit closing of the iterator is required !!!
+</span>      it.close();
+   }
+   <span class="code-keyword">catch</span>(CayenneException closeEx) {
+       closeEx.printStackTrace();
+   }
+}
+...
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

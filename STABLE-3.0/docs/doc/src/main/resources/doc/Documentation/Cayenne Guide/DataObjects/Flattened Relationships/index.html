@@ -1,0 +1,91 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Flattened Relationships</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Flattened Relationships</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Relationships/index.html">Relationships</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Accessing PK and FK Values/index.html">Accessing PK and FK Values</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Comparing DataObjects/index.html">Comparing DataObjects</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Flattened relationships are a fancy term for a relationship which involves three or more tables in the database. Lets say you have Artists and Exhibits. They are joined with a many-many join table called Artist_Exhibit, because many Artists could collaborate on one Exhibit and each Artist might be part of many Exhibits. Now you could map these as separate joins and end up with Java code which looks like this:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">artist.getArtistExhibits().getExhibits()
+</pre>
+</div></div>
+
+<p>but with a flattened join, it is even simpler:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">artist.getExhibits()
+</pre>
+</div></div>
+
+<p>From the application point of view there is no difference in working with flattened relationships compared to the "normal" ones. Cayenne internally figures out how to build the needed query joins to retrieve related objects. On adding or removing an object to/from a flattened relationship via a corresponding "addTo..." / "removeFrom..." method an appropriate join record is created or removed.</p>
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Flattened Relationships Limitations</b><br />Only many-to-many flattened relatationships with a single join table can be modified. All other types of flattened relationships can be used as "read-only". This is reflected in the DataObject code generated for such relationships - no set/addTo/RemoveFrom methods are created for read-only relationships.</td></tr></table></div>
+
+<p>See this documentation on how to <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/CayenneModeler Flattened Relationships/index.html" title="CayenneModeler Flattened Relationships">create flattened relationships in Cayenne Modeler</a></p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

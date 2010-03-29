@@ -1,0 +1,134 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - DataObject Validation</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">DataObject Validation</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Relationships/index.html">Relationships</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Accessing PK and FK Values/index.html">Accessing PK and FK Values</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Comparing DataObjects/index.html">Comparing DataObjects</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>DataObject implements a set of methods to validate its state. DataContext calls these methods before performing a commit. If validation fails, the commit is aborted with ValidationException. There are a few clear benefits of validating DataObjects at the application level before committing them to the database:</p>
+
+<ul>
+	<li>Cayenne can leverage ORM metadata (DataMap) to check for many standard error conditions.</li>
+	<li>Custom validation can be easily integrated into the business objects by overriding standard validation methods.</li>
+	<li>Validation failures can be tracked down to the individual objects and their properties, allowing creation of user-friendly, internationalized validation messages.</li>
+	<li>Relying on database validation for things like mandatory properties, etc., would result in errors that are meaningless or extremely hard to decode in the application context.</li>
+	<li>Application validation partially addresses shortcomings of databases that do not support real transactions (e.g. older MySQL). Validation would trap the whole class of errors that would otherwise result in failure halfway through the commit, leaving database in inconsistent state.</li>
+	<li>Automating of the business objects validation takes away some burden from the UI that now has fewer things to track.</li>
+</ul>
+
+
+
+<h2><a name="DataObjectValidation-ValidationAPI"></a>Validation API</h2>
+<p>Each DataObject participating in commit operation (i.e. those in state NEW, DELETED or MODIFIED , in other words "non-committed") will be validated by DataContext's ObjectStore during commit processing. Depending on the non-committed object state, ObjectStore calls one of the methods described below (description of method behavior is provided for CayenneDataObject implementation):</p>
+
+<ul>
+	<li>public void <b>validateForInsert</b>(ValidationResult validationResult)<br/>
+      public void <b>validateForUpdate</b>(ValidationResult validationResult)<br/>
+      Implementation internally calls <tt>validateForSave(..)</tt>. When overriding, in most cases developers should invoke "super".</li>
+	<li>public void <b>validateForDelete</b>(ValidationResult validationResult)<br/>
+      This method does nothing by default and exists merely for overriding.</li>
+	<li>protected void <b>validateForSave</b>(ValidationResult validationResult)<br/>
+      This method only exists in CayenneDataObject (and not in DataObject). It is invoked internally from <tt>validateForInsert(..)</tt> and <tt>validateForUpdate(..)</tt>, performing some generic validation based on the DataMap information. This includes checking for nulls and for values that exceed their database size limitations. When overriding this method to include custom validation, developers should call "super" in most cases.</li>
+</ul>
+
+
+<p>Custom validation method implementation would normally append any failures to the provided ValidationResult instance. After validating all non-committed objects, DataContext (or rather its ObjectStore) will check if the ValidationResult is not empty, and throw an exception if there is at least one failure. Typical custom validation method would look like that:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">public</span> class Painting <span class="code-keyword">extends</span> _Painting {
+   ...
+   <span class="code-keyword">protected</span> void validateForSave(ValidationResult validationResult) {
+      <span class="code-keyword">super</span>.validateForSave(validationResult);
+     
+      <span class="code-comment">// check business rules
+</span>      <span class="code-keyword">if</span>(getEstimatedPrice().doubleValue() &lt;= 0.0) {
+         validationResult.addFailure(
+                <span class="code-keyword">this</span>, <span class="code-comment">// source object of the failure
+</span>                Painting.ESTIMATED_PRICE_PROPERTY, <span class="code-comment">// failed property name
+</span>                <span class="code-quote">"Painting price must be greater than zero."</span>)); <span class="code-comment">// error message  
+</span>      }
+   }
+   ...
+}
+</pre>
+</div></div>
+
+<h2><a name="DataObjectValidation-ValidationMethodswithSideEffects"></a>Validation Methods with Side Effects</h2>
+
+<p>Often validation methods are implemented to modify an object being validated and/or other persistent objects. Cayenne supports such behavior, however a few things should be taken into consideration:</p>
+
+<ul>
+	<li>Since version 3.0 Cayenne supports <a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">lifecycle callbacks</a> that may be a better alternative.</li>
+	<li>If a previously "clean" object becomes "dirty" as a result of the user logic in the "validate" method, such object is not validated.</li>
+	<li>There is no guarantee of a specific order in which dirty objects are validated.</li>
+</ul>
+
+
+<h2><a name="DataObjectValidation-TurningValidationOn%2FOff"></a>Turning Validation On/Off</h2>
+<p>Whether DataContext performs validation at all depends on the value of its property <tt>validatingObjectsOnCommit</tt>. Calling <tt>isValidatingObjectsOnCommit()</tt> returns currently configured value. Default value (usually "true") is propagated from the parent DataDomain when DataContext is created. This default value can be configured using CayenneModeler as described in <a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/Configuring Object Validation/index.html" title="Configuring Object Validation">Configuring Object Validation</a> section.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

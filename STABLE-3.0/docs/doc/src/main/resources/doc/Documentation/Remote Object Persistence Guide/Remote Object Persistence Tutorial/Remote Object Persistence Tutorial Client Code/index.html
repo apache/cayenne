@@ -1,0 +1,226 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Remote Object Persistence Tutorial Client Code</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Remote Object Persistence Tutorial Client Code</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html">Remote Object Persistence Introduction</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Features/index.html">Remote Object Persistence Features</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Installation/index.html">Remote Object Persistence Installation</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/index.html">Remote Object Persistence Tutorial</a><ul>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/Remote Object Persistence Tutorial Prerequisites/index.html">Remote Object Persistence Tutorial Prerequisites</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/Remote Object Persistence Tutorial Client Project/index.html">Remote Object Persistence Tutorial Client Project</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/Remote Object Persistence Tutorial WebService/index.html">Remote Object Persistence Tutorial WebService</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/Remote Object Persistence Tutorial Client Code/index.html">Remote Object Persistence Tutorial Client Code</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/Remote Object Persistence Tutorial Authentication/index.html">Remote Object Persistence Tutorial Authentication</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/index.html">Remote Object Persistence Coding Server</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Client/index.html">Remote Object Persistence Coding Client</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html">Remote Object Persistence CWS Deployment</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Client Deployment/index.html">Remote Object Persistence Client Deployment</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Security/index.html">Remote Object Persistence Security</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html">Remote Object Persistence Customization</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Comparison/index.html">Remote Object Persistence Comparison</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Limitations/index.html">Remote Object Persistence Limitations</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="RemoteObjectPersistenceTutorialClientCode-StartingCommandLineClient"></a>Starting Command Line Client</h2>
+
+<p>One of the benefits of ROP is that the client code is no different from the server code - it uses the same ObjectContext interface for access, same query and commit API. So the code below will be similar to the code presented in the first <a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial ObjectContext/index.html" title="Tutorial ObjectContext">Cayenne tutorial</a>, although with a few ROP-specific parts required to bootstrap the ObjectContext.</p>
+
+<p>Let's start by creating an empty Main class with the standard main() method in the client project:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">package</span> org.example.cayenne.persistent.client;
+
+<span class="code-keyword">public</span> class Main {
+
+	<span class="code-keyword">public</span> <span class="code-keyword">static</span> void main(<span class="code-object">String</span>[] args) {
+
+	}
+}</pre>
+</div></div>
+
+<p>Now the part that is actually different from regular Cayenne - establishing the server connection and obtaining the ObjectContext:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(<span class="code-quote">"http:<span class="code-comment">//localhost:8080/tutorial/cayenne-service"</span>);
+</span>DataChannel channel = <span class="code-keyword">new</span> ClientChannel(connection);
+ObjectContext context = <span class="code-keyword">new</span> CayenneContext(channel);</pre>
+</div></div>
+
+<p>Note that the "channel" can be used to create as many peer ObjectContexts as needed over the same connection, while ObjectContext is a kind of isolated "persistence session", similar to the server-side context. A few more notes. Since we are using HTTP(S) to communicate with ROP server, there's no need to explicitly close the connection (or channel, or context).</p>
+
+<p>So now let's do the same persistent operaions that we did in the first tutorial "Main" class. Let's start by creating and saving some objects:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// creating <span class="code-keyword">new</span> Artist
+</span>Artist picasso = context.newObject(Artist.class);
+picasso.setName(<span class="code-quote">"Pablo Picasso"</span>);
+
+<span class="code-comment">// Creating other objects
+</span>Gallery metropolitan = context.newObject(Gallery.class);
+metropolitan.setName(<span class="code-quote">"Metropolitan Museum of Art"</span>);
+
+Painting girl = context.newObject(Painting.class);
+girl.setName(<span class="code-quote">"Girl Reading at a Table"</span>);
+
+Painting stein = context.newObject(Painting.class);
+stein.setName(<span class="code-quote">"Gertrude Stein"</span>);
+
+<span class="code-comment">// connecting objects together via relationships
+</span>picasso.addToPaintings(girl);
+picasso.addToPaintings(stein);
+
+girl.setGallery(metropolitan);
+stein.setGallery(metropolitan);
+
+<span class="code-comment">// saving all the changes above
+</span>context.commitChanges();</pre>
+</div></div>
+
+<p>Now let's select them back:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// SelectQuery examples
+</span>SelectQuery select1 = <span class="code-keyword">new</span> SelectQuery(Painting.class);
+List&lt;Painting&gt; paintings1 = context.performQuery(select1);
+
+Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
+		Painting.NAME_PROPERTY, <span class="code-quote">"gi%"</span>);
+SelectQuery select2 = <span class="code-keyword">new</span> SelectQuery(Painting.class, qualifier2);
+List&lt;Painting&gt; paintings2 = context.performQuery(select2);</pre>
+</div></div>
+
+<p>Now, delete:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
+				<span class="code-quote">"Pablo Picasso"</span>);
+SelectQuery selectToDelete = <span class="code-keyword">new</span> SelectQuery(Artist.class, qualifier);
+Artist picasso = (Artist) DataObjectUtils.objectForQuery(context,
+		selectToDelete);
+
+<span class="code-keyword">if</span> (picasso != <span class="code-keyword">null</span>) {
+	context.deleteObject(picasso);
+	context.commitChanges();
+}</pre>
+</div></div>
+
+<p>This code is exactly the same as in the first tutorial. So now let's try running the client and see what happens. In Eclipse open main class and select <tt>"Run &gt; Rus As &gt; Java Application"</tt> from the menu (assuming the ROP server started in the previous step is still running). You will some output in both server and client process consoles. Client:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>INFO: Connecting to [http://localhost:8080/tutorial/cayenne-service] - dedicated session.
+INFO: === Connected, session: org.apache.cayenne.remote.RemoteSession@9e09a4[sessionId=10qsakj1mj806] - took 219 ms.
+INFO: --- Message 0: Bootstrap
+INFO: === Message 0: Bootstrap done - took 71 ms.
+INFO: --- Message 1: flush-cascade-sync
+INFO: === Message 1: flush-cascade-sync done - took 1342 ms.
+INFO: --- Message 2: Query
+INFO: === Message 2: Query done - took 58 ms.
+INFO: --- Message 3: Query
+INFO: === Message 3: Query done - took 21 ms.
+INFO: --- Message 4: Query
+INFO: === Message 4: Query done - took 22 ms.
+INFO: --- Message 5: Query
+INFO: === Message 5: Query done - took 16 ms.
+INFO: --- Message 6: Query
+INFO: === Message 6: Query done - took 2 ms.
+INFO: --- Message 7: Query
+INFO: === Message 7: Query done - took 2 ms.
+INFO: --- Message 8: Query
+INFO: === Message 8: Query done - took 2 ms.
+INFO: --- Message 9: flush-cascade-sync
+INFO: === Message 9: flush-cascade-sync done - took 30 ms.</pre>
+</div></div>
+
+<p>As you see client prints no SQL statmenets, just a bunch of query and flush messages sent to the server. The server side is more verbose, showing the actual client queries executed against the database:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>...
+INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'GALLERY']
+INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'ARTIST']
+INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'PAINTING']
+INFO: --- will run 3 queries.
+INFO: INSERT INTO GALLERY (ID, NAME) VALUES (?, ?)
+INFO: [batch bind: 1-&gt;ID:200, 2-&gt;NAME:'Metropolitan Museum of Art']
+INFO: === updated 1 row.
+INFO: INSERT INTO ARTIST (DATE_OF_BIRTH, ID, NAME) VALUES (?, ?, ?)
+INFO: [batch bind: 1-&gt;DATE_OF_BIRTH:NULL, 2-&gt;ID:200, 3-&gt;NAME:'Pablo Picasso']
+INFO: === updated 1 row.
+INFO: INSERT INTO PAINTING (ARTIST_ID, GALLERY_ID, ID, NAME) VALUES (?, ?, ?, ?)
+INFO: [batch bind: 1-&gt;ARTIST_ID:200, 2-&gt;GALLERY_ID:200, 3-&gt;ID:200, 4-&gt;NAME:'Girl Reading at a Table']
+INFO: [batch bind: 1-&gt;ARTIST_ID:200, 2-&gt;GALLERY_ID:200, 3-&gt;ID:201, 4-&gt;NAME:'Gertrude Stein']
+INFO: === updated 2 rows.
+INFO: +++ transaction committed.
+INFO: --- will run 1 query.
+INFO: --- transaction started.
+INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0
+INFO: === returned 2 rows. - took 15 ms.
+INFO: +++ transaction committed.
+INFO: --- will run 1 query.
+INFO: --- transaction started.
+INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0 WHERE UPPER(t0.NAME) LIKE UPPER(?) [bind: 1-&gt;NAME:'gi%']
+INFO: === returned 1 row. - took 9 ms.
+INFO: +++ transaction committed.
+INFO: --- will run 1 query.
+INFO: --- transaction started.
+INFO: SELECT t0.DATE_OF_BIRTH, t0.ID, t0.NAME FROM ARTIST t0 WHERE t0.NAME = ? [bind: 1-&gt;NAME:'Pablo Picasso']
+INFO: === returned 1 row. - took 7 ms.
+INFO: +++ transaction committed.
+INFO: --- will run 2 queries.
+INFO: --- transaction started.
+INFO: DELETE FROM PAINTING WHERE ID = ?
+INFO: [batch bind: 1-&gt;ID:200]
+INFO: [batch bind: 1-&gt;ID:201]
+INFO: === updated 2 rows.
+INFO: DELETE FROM ARTIST WHERE ID = ?
+INFO: [batch bind: 1-&gt;ID:200]
+INFO: === updated 1 row.
+INFO: +++ transaction committed.</pre>
+</div></div>
+
+<p>You are done with the basic ROP client!</p>
+
+<hr />
+<p><b>Next Step: <a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/Remote Object Persistence Tutorial Authentication/index.html" title="Remote Object Persistence Tutorial Authentication">Remote Object Persistence Tutorial Authentication</a></b></p>
+<hr />
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

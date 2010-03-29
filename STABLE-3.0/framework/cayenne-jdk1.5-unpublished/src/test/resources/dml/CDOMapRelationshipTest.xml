@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">
+
+	<bean id="O1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.MapToMany</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO MAP_TO_MANY (ID)
+				VALUES (1)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="O2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.MapToMany</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO MAP_TO_MANY (ID)
+				VALUES (2)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="O1C1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.MapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID, NAME)
+				VALUES (1, 1, 'A')
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="O1C2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.MapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID, NAME)
+				VALUES (2, 1, 'B')
+			</value>
+		</constructor-arg>
+	</bean>
+
+	<bean id="O1C3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.MapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID, NAME)
+				VALUES (3, 1, 'C')
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="O2C1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.MapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID, NAME)
+				VALUES (4, 2, 'A')
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	
+	
+	
+	<bean id="OI1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.IdMapToMany</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO ID_MAP_TO_MANY (ID)
+				VALUES (1)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="OI2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.IdMapToMany</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO ID_MAP_TO_MANY (ID)
+				VALUES (2)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="OI1C1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.IdMapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO ID_MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID)
+				VALUES (1, 1)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="OI1C2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.IdMapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO ID_MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID)
+				VALUES (2, 1)
+			</value>
+		</constructor-arg>
+	</bean>
+
+	<bean id="OI1C3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.IdMapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO ID_MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID)
+				VALUES (3, 1)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="OI2C1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.cayenne.testdo.relationship.IdMapToManyTarget</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO ID_MAP_TO_MANY_TARGET (ID, MAP_TO_MANY_ID)
+				VALUES (4, 2)
+			</value>
+		</constructor-arg>
+	</bean>
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->
+
+	<bean id="prepare" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="O1" />
+				<ref bean="O2" />
+				<ref bean="O1C1" />
+				<ref bean="O1C2" />
+				<ref bean="O1C3" />
+				<ref bean="O2C1" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="prepare-id" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="OI1" />
+				<ref bean="OI2" />
+				<ref bean="OI1C1" />
+				<ref bean="OI1C2" />
+				<ref bean="OI1C3" />
+				<ref bean="OI2C1" />
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

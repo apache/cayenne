@@ -1,0 +1,104 @@
+Apache Cayenne Upgrade Information
+==================================
+UPGRADING FROM 3.0M6
+
+* Per CAY-1281 pre-persist callback was renamed to post-add (while pre-persist now has a different meaning).
+  To upgrade your project, open it in the Modeler and agree to perform an automated upgrade.
+
+UPGRADING FROM 3.0M5
+
+* Per CAY-1154, org.apache.cayenne.access.reveng package was renamed to org.apache.cayenne.map.naming. So, if you
+  use your own naming strategies, you should update as well.
+
+* Per CAY-1161, custom columns feature in SelectQuery was deprecated. Consider switching to EJBQL as an alternative.
+  Custom columns support will likely go away completely after 3.0M6.
+
+* Per CAY-1175, 'columnNameCapitalization' property of SQLTemplate now takes an enum, not a String. 
+  Calling code should be fixed.
+
+UPGRADING FROM 3.0M4
+
+* Per CAY-1127, query "name" property is no longer used as an internal cache key. This change should be transparent
+  to most users, as Cayenne generates a correct cache key internally when needed, however if a user code explicitly
+  depended on the value of the cache key, it should be updated to use something like this:
+    
+  String cacheKey = query.getQueryMetadata(entityResolver).getCacheKey();
+
+UPGRADING FROM 3.0M3
+
+* Per CAY-1049 API of the internal classes that participate in SelectQuery translation has changed in a way that
+  is not backwards compatible. This should not affect regular users, however if you implemented a custom DbAdapter,
+  check for classes that directly or indirectly inherit from QueryAssembler and QueryAssemblerHelper and fix them
+  if needed.
+
+UPGRADING FROM 3.0M2
+
+* Java 5 is now required as a minimum for Cayenne Modeler and the Cayenne libraries.
+
+* After the move to Java 5, generics have been implemented in many of the Cayenne APIs. If you don't use generics in your project this should not affect you, but if you do you will need to review any new compiler errors or warnings. The effect of generics is at compile time only, so their introduction will not change the runtime behaviour of your application once compiled.
+
+
+UPGRADING FROM 3.0M1
+
+* Lifecycle Callbacks require no setup:
+  Per CAY-843, lifecycle callback functionality is now built into DataContext and DataDomain, 
+  so all the custom code to set them up is no longer needed. Also as a result of this change
+  'org.apache.cayenne.intercept' package is removed from Cayenne.
+  Further information can be found here: http://cayenne.apache.org/doc/lifecycle-callbacks.html
+
+UPGRADING FROM 2.0 AND OTHER APACHE RELEASES
+
+* Jar files:
+  - all jar files now include version numbers in their names.
+  - "cayenne-nodeps.jar" is renamed to "cayenne-server-x.x.x.jar" 
+  - "fat" cayenne.jar file that included dependencies is no longer distributed. 
+    All dependencies that it contained are included as separate jars under 
+    "cayenne-x.x.x/lib/third-party/". The new "cayenne-server-x.x.x.jar" plus 
+    dependencies should be used in place of cayenne.jar.
+  - A new "cayenne-agent-x.x.x.jar" is included. It is used for class enhancement 
+    with POJO's and JPA. "Classic" Cayenne users can ignore this file.
+    
+* Ant class generator is using what was called "version 1.2" by default. This means that if you were
+  using custom Velocity templates in 1.1 mode, you should either change the templates or specify 'version="1.1"'
+  in the buildfile explicitly.
+
+* Cross-platform Modeler Startup is now done without a batch file or a shell script. 
+  A "fat" CayenneModeler.jar is included in the "cayenne-x.x.x/bin" directory
+  and can be run either by double-clicking the jar (on platforms that support that)
+  or by running "java -jar CayenneModeler.jar".
+  
+* Note that FireBird adapter is no longer distributed with Cayenne. The one we had was half-working
+  and we could not support it anymore.
+  
+* DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent all were deprecated
+  favor of callbacks. NOTE THAT THIS API WILL BE REMOVED IN THE FOLLOWING 3.0 MILESTONES.
+  
+* Long PK: Cayenne now supports "long" primary key generation (previously it only supported "int"). You may
+  have to change the existing PK lookup tables on some databases to take advantage of that (this is optional,
+  and is needed if you expect your PK to exceed maximum value of an "int" allowed in your database). E.g. on 
+  MySQL you may run the following SQL:
+  
+  ALTER TABLE AUTO_PK_SUPPORT CHANGE COLUMN NEXT_ID NEXT_ID BIGINT NOT NULL;
+  
+
+UPGRADING FROM 1.2 AND OTHER OBJECTSTYLE RELEASES
+
+Since 2.0, Cayenne is an Apache project, so all "org.objectstyle.*" java packages 
+where renamed to "org.apache.*" analogues. Since 1.2.x and 2.0.x release lines maintain
+full compatibility with each other, differing only in package names, upgrading to 2.0.x
+can be a first step in a safe upgrade to the latest version of Cayenne.
+
+* Upgrading mapping files:
+
+To upgrade the mapping files, open them in the new Modeler. You should see an upgrade 
+dialog. Once you confirm the upgrade 
+
+* Upgrading the code:
+
+Replace "org.objectstyle." with "org.apache." everywhere in imports and do a clean 
+recompile.
+
+* Upgrading logging configuration
+
+If you are using custom logging configuration file, make sure that all the 
+Cayenne loggers are changed from "org.objectstyle" to "org.apache".

@@ -1,0 +1,104 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Standalone Applications</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Standalone Applications</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Standalone Applications/index.html">Standalone Applications</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Web Applications/index.html">Web Applications</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Customizing Configuration/index.html">Customizing Configuration</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/DBCPDataSourceFactory/index.html">DBCPDataSourceFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Using JNDI/index.html">Using JNDI</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html">Configuring Logging</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h3><a name="StandaloneApplications-SharedConfigurationSingleton"></a>Shared Configuration Singleton</h3>
+
+<p>In a standalone Java application, DefaultConfiguration is used to locate and load configuration files. This approach does not require any additional setup. Shared configuration instance can simply be obtained by calling <tt>getSharedConfiguration()</tt>:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.Configuration;
+...           
+Configuration conf = Configuration.getSharedConfiguration();
+</pre>
+</div></div>
+
+<p>DefaultConfiguration will expect cayenne.xml file to be located in the CLASSPATH. The same is true for DataMaps referenced in cayenne.xml. Their location is resolved relative to CLASSPATH as well. To make these files available to Cayenne, you can simply include them in the root of your application jar file (read <a href="../../../../Documentation/Cayenne Guide/Deployment/Customizing Configuration/index.html" title="Customizing Configuration">Customizing Configuration</a> on how to change that).</p>
+
+<p>The location of the data source files referenced in cayenne.xml is interpreted by the factory that was assigned to each datasource in cayenne.xml. Default factory is DriverDataSourceFactory. It will rely on its parent configuration to find the data source file (i.e. locating data source files will be no different from the DataMap files). Depending on the application needs, programmers may implement custom factories that collect database information interactively by showing a login dialog, etc.</p>
+
+<h3><a name="StandaloneApplications-SharedConfigurationandDataContext"></a>Shared Configuration and DataContext</h3>
+
+<p>In a setup that relies on shared Configuration a DataContext can be created by calling <tt>DataContext.createDataContext()</tt> static method that internally uses shared configuration:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+DataContext context = DataContext.createDataContext();
+</pre>
+</div></div>
+
+<p>Later a DataContext can be passed around in the code explicitly, or it can be bound to an execution thread, making it accessible to all code being run within this thread (e.g. this can be a Swing event thread):</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+DataContext context = DataContext.createDataContext();
+DataContext.bindThreadDataContext(context);
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

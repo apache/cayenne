@@ -1,0 +1,82 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Overview</title>
+    <style type="text/css">@import "../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Overview</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../Documentation/Overview/Database Support/index.html">Database Support</a></li>
+<li><a href="../../Documentation/Overview/License/index.html">License</a></li>
+<li><a href="../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a></li>
+<li><a href="../../Documentation/Overview/Guide to 1.2 Features/index.html">Guide to 1.2 Features</a></li>
+<li><a href="../../Documentation/Overview/Guide to 1.1 Features/index.html">Guide to 1.1 Features</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="Overview-Introduction"></a>Introduction</h2>
+
+<p>Cayenne is a mature, powerful, full-featured open source Object/Relational Mapping (ORM) framework. Cayenne is written in Java and is intended for Java developers working with relational databases. Cayenne has been successfully used in production environment in a wide range of applications.</p>
+
+<p>Cayenne allows to reduce the development time in any database project by creating an object-oriented abstraction of the database schema. Development teams using Cayenne will be able to concentrate on the core business requirements and the data model instead of the SQL details.</p>
+
+<p>Cayenne features include management of persistent Java objects mapped to relational databases, single method call queries and updates (including atomic updates of all modified objects), seamless integration of multiple databases into a single virtual data source, remote object persistence, etc. Cayenne is distributed with CayenneModeler - a complete GUI mapping tool that supports reverse-engineering of RDBMS schema, editing database mappings and generation of Java source code for the persistent objects. Any SQL database which provides JDBC connectivity will work with Cayenne, although for better integration we provide adapters for the <a href="../../Documentation/Overview/Database Support/index.html" title="Database Support">following DB's</a>.</p>
+
+<p>Cayenne comes with a comprehensive set of HTML documentation and full source code, including source code for the GUI tools. Free support is provided via user mailing lists. Commercial support and consulting services are also available.</p>
+
+<h2><a name="Overview-FlavorsofCayenne"></a>Flavors of Cayenne</h2>
+
+<p>Cayenne framework provides two flavors of object persistence: Cayenne Persistence API and Remote Object Persistence (ROP). Both are dealing with object persistence, and are based on the same underlying Cayenne stack:</p>
+
+<ul>
+	<li><b><a href="../../Documentation/Cayenne Guide/index.html" title="Cayenne Guide"><b>Cayenne Persistence API</b></a></b> is a general purpose object-relational API and XML mapping format. CayenneModeler GUI tool is used to create the mapping. When we say "Cayenne" throughout the documentation, we usually mean Cayenne Persistence API flavor, unless ROP is explicitly mentioned.</li>
+</ul>
+
+
+<ul>
+	<li><b><a href="../../Documentation/Remote Object Persistence Guide/index.html" title="Remote Object Persistence Guide"><b>Remote Object Persistence (ROP)</b></a></b> is <b>not a standalone persistence API</b>. Rather this is a technology that enables the use of Cayenne Persistence API on remote client applications. This architecture is demonstrated <a href="../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html" title="Remote Object Persistence Introduction">here</a>. Often (but not always) ROP clients are SWT or Swing applications that can not (or should not) access the database directly, and/or benefit from separation of the server and client logic.</li>
+</ul>
+
+
+<h3><a name="Overview-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../Documentation/Overview/Database Support/index.html" title="Database Support">Database Support</a></li>
+	<li><a href="../../Documentation/Overview/License/index.html" title="License">License</a></li>
+	<li><a href="../../Documentation/Overview/Guide to 3.0 Features/index.html" title="Guide to 3.0 Features">Guide to 3.0 Features</a></li>
+	<li><a href="../../Documentation/Overview/Guide to 1.2 Features/index.html" title="Guide to 1.2 Features">Guide to 1.2 Features</a></li>
+	<li><a href="../../Documentation/Overview/Guide to 1.1 Features/index.html" title="Guide to 1.1 Features">Guide to 1.1 Features</a></li>
+</ol>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
+<web-app>
+    <display-name>Cayenne Regression Profiler</display-name>
+    
+    <filter>
+        <filter-name>CayenneFilter</filter-name>
+        <description>A filter that sets up Cayenne and intercepts requests that require a web session</description>
+        <filter-class>org.apache.cayenne.profile.servlet.ProfileFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CayenneFilter</filter-name>
+        <url-pattern>/profile/session/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- listener is used for debugging the profile engine and should normally be turned off -->
+    <!--
+    <listener>
+    	<listener-class>org.apache.cayenne.profile.servlet.SessionTracker</listener-class>
+    </listener>
+    -->
+    
+    <servlet>
+        <servlet-name>ProfileServlet</servlet-name>
+        <description>Main profiler servlet that dispatches request to individual tests.</description>
+        <servlet-class>org.apache.cayenne.profile.servlet.ProfileServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProfileServlet</servlet-name>
+        <url-pattern>/profile/*</url-pattern>
+    </servlet-mapping>
+</web-app>

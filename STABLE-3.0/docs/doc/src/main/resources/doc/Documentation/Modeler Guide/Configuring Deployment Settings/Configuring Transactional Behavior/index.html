@@ -1,0 +1,65 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Configuring Transactional Behavior</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Configuring Transactional Behavior</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/index.html">Introduction to CayenneModeler</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/ORM Case Study/index.html">ORM Case Study</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Cayenne Project Structure/index.html">Cayenne Project Structure</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/index.html">Common Modeling Tasks</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Database Layer/index.html">Modeling Database Layer</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/index.html">Modeling Object Layer</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Queries/index.html">Modeling Queries</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/index.html">Configuring Deployment Settings</a><ul>
+<li><a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/Configuring Object Validation/index.html">Configuring Object Validation</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/Configuring Transactional Behavior/index.html">Configuring Transactional Behavior</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/Configuring Caching Behavior/index.html">Configuring Caching Behavior</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Modeler Guide/Migrate Changes between Model and Database/index.html">Migrate Changes between Model and Database</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Preferences Panel/index.html">Preferences Panel</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Tips/index.html">Modeling Tips</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>Each DataDomain can be configured to explicitly commit/rollback its transactions or to rely on deployment container to do that. This is done by checking or unchecking "Container-Managed Transactions" checkbox. </p>
+
+<p>By default "Container-Managed Transactions" is unchecked, letting Cayenne to handle its transactions. Check this checkbox when using Cayenne under container-managed transactions control, i.e. within EJB environment.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

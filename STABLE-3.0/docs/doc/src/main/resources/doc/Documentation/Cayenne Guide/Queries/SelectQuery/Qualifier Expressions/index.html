@@ -1,0 +1,98 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Qualifier Expressions</title>
+    <style type="text/css">@import "../../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Qualifier Expressions</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html">SelectQuery</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Parameterized Queries/index.html">Parameterized Queries</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Qualifier Expressions/index.html">Qualifier Expressions</a><ul>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Using Orderings/index.html">Using Orderings</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/SelectQuery Customization/index.html">SelectQuery Customization</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/index.html">SQLTemplate Query</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html">EJBQLQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html">NamedQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html">ObjectIdQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html">QueryChain</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html">RelationshipQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Queries Stored in DataMap/index.html">Queries Stored in DataMap</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Caching Query Results/index.html">Caching Query Results</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Customizing Queries/index.html">Customizing Queries</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>This chapter is dedicated to the use of expressions as qualifiers in SelectQuery. Expressions in general are discussed <a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html" title="Expressions">here</a>.</p>
+
+<h3><a name="QualifierExpressions-BuildingQualifier"></a>Building Qualifier </h3>
+
+<p>The previous chapter showed how to build a query to fetch all data from a single table. In most situations though only a subset of data matching a certain criteria is needed. Cayenne provides an expressions package to control the filtering behavior of the queries. Expressions applied to queries are called "qualifiers".</p>
+
+<p>SelectQuery provides a few ways to initialize and modify the qualifier:</p>
+
+<ul>
+	<li><tt>public <b>SelectQuery</b>(Class&lt;?&gt; objectClass, Expression e)</tt> : Passing expression as a second argument in constructor.</li>
+	<li><tt>public void <b>setQualifier</b>(Expression qualifier)</tt> : Explicitly setting the qualifier expression.</li>
+	<li><tt>public void <b>andQualifier</b>(Expression e)</tt> : Chaining an expression with an already existing qualifier using logical AND.</li>
+	<li><tt>public void <b>orQualifier</b>(Expression e)</tt> : Chaining an expression with an already existing qualifier using logical OR.</li>
+</ul>
+
+
+<h3><a name="QualifierExpressions-SpecifyingJoinSemantics"></a>Specifying Join Semantics</h3>
+
+<p>Each <a href="../../../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">path expression</a> in a qualifier results in a SQL JOIN in a generated SQL. By default all joins are INNER joins. If LEFT OUTER joins are desirable, users can specify them with a plus sign ("&#43;") after each affected relationship segment in a path expression. E.g. a path like <tt>"paintingArray&#43;.name"</tt> would result in a LEFT OUTER JOIN for an Artist SelectQuery, ensuring that artists without joins are also included in the query result.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

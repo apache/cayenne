@@ -1,0 +1,92 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Moving Objects Between Contexts</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Moving Objects Between Contexts</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Running Queries/index.html">Running Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataObject State Management/index.html">DataObject State Management</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html">Moving Objects Between Contexts</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html">DataContextDelegate</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html">DataContextFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html">Nested Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html">ObjectContext Memory Management</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="MovingObjectsBetweenContexts-MovingObjectsBetweenContexts"></a>Moving Objects Between Contexts</h2>
+<p>Each instance of a DataObject belongs to only one DataContext for the duration of the object lifecycle. Sometimes there maybe a need to transfer a list of objects from one DataContext to another. The goal of this operation is to be able to use such objects in relationships with objects of the target DataContext. Most common use for this feature is the following. An application may have a "shared" DataContext that is used to fetch "static" read only lookup data. To avoid fetching the same data over and over again for each session, objects from the shared DataContext can be transferred to a session DataContext by calling <tt>DataContext.localObject()</tt>:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataContext sessionContext = DataContext.getThreadDataContext();
+
+HttpSession session; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
+</span>
+<span class="code-comment">// assume that ServletContext contains a list of UserType DataObjects
+</span><span class="code-comment">// fetched via some global DataContext
+</span>List sharedUserTypes = (List) session.getServletContext().getAttribute("userTypes);
+UserType sharedType = (UserType) sharedUserTypes.get(0);
+
+UserType localType = (UserType) sessionContext.localObject(sharedType.getObjectId(), sharedType);
+User user; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
+</span>
+<span class="code-comment">// now it is safe to use the UserType in relationships with other
+</span><span class="code-comment">// session objects
+</span>user.setUserType(localType);
+...</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - In-Memory Evaluation</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">In-Memory Evaluation</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html">Path Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/Building Expressions/index.html">Building Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html">Expression Factory Utilities</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/NULL Handling/index.html">NULL Handling</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/In-Memory Evaluation/index.html">In-Memory Evaluation</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/BNF for ExpressionParser/index.html">BNF for ExpressionParser</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>In additions to providing a database-independent WHERE clause for SQL queries, expressions support in-memory evaluation. An expressions can be evaluated with any type of objects that follow Java Beans method naming convention. Of course this includes DataObjects. The following API is used for expressions evaluation:</p>
+
+<ul>
+	<li>public Object <b>evaluate</b>(Object object)<br/>
+      Evaluates expression with object, returning the result.</li>
+	<li>public boolean <b>match</b>(Object object)<br/>
+      Returns true if an object "matches" expression criteria.</li>
+	<li>public java.util.List <b>filterObjects</b>(java.util.List objects)<br/>
+      Returns a list of objects from the original list that match expression criteria.</li>
+</ul>
+
+
+<div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Limitation of In-Memory Expressions</b><br />Current limitation of in-memory expressions is that no collections are permitted in the object property path. In case of DataObjects that means that path containing to-many relationships may not work for in-memory evaluation.</td></tr></table></div>
+
+<p>Here is an example of evaluating expression with a single object:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">public</span> class User <span class="code-keyword">extends</span> CayenneDataObject {
+     <span class="code-keyword">public</span> <span class="code-object">String</span> getName() {
+         ...
+     }
+}
+... 
+<span class="code-keyword">public</span> class NonPersistentUser <span class="code-keyword">extends</span> <span class="code-object">Object</span> {
+     <span class="code-keyword">protected</span> <span class="code-object">String</span> name;
+     <span class="code-keyword">public</span> <span class="code-object">String</span> getName() {
+         <span class="code-keyword">return</span> name;
+     }
+     ...
+}
+... 
+Expression exp = ExpressionFactory.inExp(<span class="code-quote">"name"</span>, <span class="code-keyword">new</span> <span class="code-object">Object</span>[] {<span class="code-quote">"John"</span>, <span class="code-quote">"Bob"</span>});  
+User persistentObject;
+NonPersistentUser nonPersistentBean;
+... 
+<span class="code-comment">// evaluate with DataObject
+</span><span class="code-keyword">if</span>(exp.match(persistentObject)) {
+    <span class="code-comment">// <span class="code-keyword">do</span> something
+</span>}
+
+<span class="code-keyword">if</span>(exp.match(nonPersistentBean)) {
+    <span class="code-comment">// <span class="code-keyword">do</span> something <span class="code-keyword">else</span>
+</span>}
+</pre>
+</div></div>
+
+<p>Another example - using expression to filter a list objects:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Expression exp = ExpressionFactory.likeExp(<span class="code-quote">"artistName"</span>, <span class="code-quote">"A%"</span>);  
+List startWithA = exp.filterObjects(artists);
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

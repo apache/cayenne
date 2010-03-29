@@ -1,0 +1,120 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Path Expressions</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Path Expressions</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html">Path Expressions</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/Building Expressions/index.html">Building Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html">Expression Factory Utilities</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/NULL Handling/index.html">NULL Handling</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/In-Memory Evaluation/index.html">In-Memory Evaluation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/BNF for ExpressionParser/index.html">BNF for ExpressionParser</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Before we start discussing how to build expressions, it is important to understand one group of expressions widely used in Cayenne: <em>path expressions</em>. There are two types of path expressions: object path used to navigate graphs of Java objects that follow Java Bean property naming conventions and database path used to navigate the database schema. General form of path expressions is the following:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>[db:]segment[+][.segment[+]...]</pre>
+</div></div>
+
+<ul>
+	<li>"db:" an optional prefix indicating the the following path is a DB path.</li>
+	<li>"segment" - a name of a relationship or an attribute in the path. Path must have at least one segment; segments are separated by dot (".").</li>
+	<li>"+" - OUTER JOIN indicator: a plus sign at the end of a segment name indicates that when a JOIN is created for the path, it must be an OUTER JOIN.</li>
+</ul>
+
+
+<h3><a name="PathExpressions-ObjectPathExpressions"></a>Object Path Expressions</h3>
+<p>An Object Path Expression is a property navigation path. Such path is represented by a String made of dot-separated names of properties of a Java Bean class. E.g. a path expression "toArtist.artistName" is a valid property path for a Painting class, pointing to the name of the Artist who created a given Painting. A few more examples:</p>
+
+<ul>
+	<li><tt>paintingTitle</tt> Can be used to navigate to the value of "paintingTitle" property of the Painting class.</li>
+	<li><tt>toArtist.exhibitArray.closingDate</tt> Can be used to navigate to a closing date of any of the exhibits of a Painting's Artist object.</li>
+	<li><tt>toArtist.exhibitArray+.closingDate</tt> Same with an OUTER JOIN on exhibits</li>
+</ul>
+
+
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>What Does 'navigation' Means</b><br />The term "navigation" in the description above could mean different things depending on the context. For instance, when evaluating an expression in memory, "navigating" an object path would simply return the value of a corresponding object property. When the same expression is used in a select query qualifier, it resolves to the name of a table column used in a WHERE clause of a generated SQL statement.</td></tr></table></div>
+
+<h3><a name="PathExpressions-DatabasePathExpressions"></a>Database Path Expressions</h3>
+<p>Database Path Expressions provide an easy way to navigate through DB table joins. Instead of complex join semantics such expressions utilize the names of DbRelationships defined in Cayenne DataMap. Translating the above object path examples into the DB realm, database path expressions might look like this:</p>
+
+<ul>
+	<li><tt>db:PAINTING_TITLE</tt> Can be used to match the value of "PAINTING_TITLE" column of a PAINTING table.</li>
+	<li><tt>db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE</tt> Can be used to match a closing date of any of the exhibits of a related artist record.</li>
+</ul>
+
+
+<p>Though database path expressions are widely used by Cayenne framework internally, they are rarely used in applications. Although there are a few cases when their explicit use is justified.</p>
+
+<h3><a name="PathExpressions-AliasesinPathExpressions"></a>Aliases in Path Expressions</h3>
+
+<p>Cayenne supports "aliases" in path Expressions. E.g. the same expression can be written using explicit path or an alias:</p>
+
+<ul>
+	<li>Full path: <tt>toArtist.exhibitArray.closingDate</tt></li>
+	<li>Using alias "e": <tt>e.closingDate</tt></li>
+</ul>
+
+
+<p>SelectQuery using the second form of the path expression must be made aware of the alias via <tt>"SelectQuery.aliasPathSplits(..)"</tt>, otherwise an Exception will be thrown. The main use of aliases is to allow users to control how SQL joins are generated if the same path is encountered more than once in any given Expression. Each alias for any given path would result in a separate join. Without aliases, a single join will be used for a group of matching paths.</p>
+
+<h3><a name="PathExpressions-MatchingPathExpressions"></a>Matching Path Expressions</h3>
+
+<p>As described in the following chapters a path expression is usually matched against some value (see for example <a href="../../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html" title="Expression Factory Utilities">ExpressionFactory API</a> - the first argument to each method is a path, and a second - an object value that is matched against the path). A type of such value must be compatible with the type of the property pointed to by the path. E.g. <tt>toArtist.artistName</tt> can only be matched against a <tt>String</tt>, and <tt>toArtist</tt> - against instances of <tt>Artist</tt>.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

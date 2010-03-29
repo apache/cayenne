@@ -1,0 +1,89 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - maven2-modeler</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">maven2-modeler</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html">maven2-cgen</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html">maven2-cdbgen</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbimport/index.html">maven2-cdbimport</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html">maven2-modeler</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p><tt>modeler</tt> is an Maven 2 mojo that runs the latest version of Cayenne Modeler.  It saves you from having to download the modeler and installing it manually, which is really nice if you're following the latest changes in the snapshot builds.</p>
+
+<p>There is no configuration of this plugin, but you do need to add to add the plugin to your POM:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
+    <span class="code-tag">&lt;plugins&gt;</span>
+        <span class="code-tag">&lt;plugin&gt;</span>
+            <span class="code-tag">&lt;groupId&gt;</span>org.apache.cayenne.plugins<span class="code-tag">&lt;/groupId&gt;</span>
+      	    <span class="code-tag">&lt;artifactId&gt;</span>maven-cayenne-modeler-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
+        <span class="code-tag">&lt;/plugin&gt;</span>
+    <span class="code-tag">&lt;/plugins&gt;</span>
+<span class="code-tag">&lt;/build&gt;</span>
+</pre>
+</div></div>
+
+<p>It can be started from the root of your project by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">$ mvn cayenne-modeler:run
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

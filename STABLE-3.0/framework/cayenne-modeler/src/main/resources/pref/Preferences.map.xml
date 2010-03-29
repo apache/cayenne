@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultLockType" value="optimistic"/>
+	<property name="defaultPackage" value="org.apache.cayenne.pref"/>
+	<db-entity name="domain">
+		<db-attribute name="description" type="VARCHAR"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="level" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" isMandatory="true"/>
+		<db-attribute name="parent_id" type="INTEGER"/>
+		<db-attribute name="version" type="VARCHAR"/>
+	</db-entity>
+	<db-entity name="domain_preference">
+		<db-attribute name="domain_id" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="key" type="VARCHAR" isMandatory="true"/>
+		<db-attribute name="key_value_pairs" type="LONGVARCHAR"/>
+	</db-entity>
+	<obj-entity name="Domain" className="org.apache.cayenne.pref.Domain" lock-type="optimistic" dbEntityName="domain">
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="level" type="java.lang.Integer" db-attribute-path="level"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+		<obj-attribute name="version" type="java.lang.String" db-attribute-path="version"/>
+	</obj-entity>
+	<obj-entity name="DomainPreference" className="org.apache.cayenne.pref.DomainPreference" lock-type="optimistic" dbEntityName="domain_preference">
+		<obj-attribute name="key" type="java.lang.String" db-attribute-path="key"/>
+		<obj-attribute name="keyValuePairs" type="java.lang.String" db-attribute-path="key_value_pairs"/>
+	</obj-entity>
+	<db-relationship name="parent_domain" source="domain" target="domain" toMany="false">
+		<db-attribute-pair source="parent_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="preferences" source="domain" target="domain_preference" toMany="true">
+		<db-attribute-pair source="id" target="domain_id"/>
+	</db-relationship>
+	<db-relationship name="subdomains" source="domain" target="domain" toMany="true">
+		<db-attribute-pair source="id" target="parent_id"/>
+	</db-relationship>
+	<db-relationship name="domain" source="domain_preference" target="domain" toMany="false">
+		<db-attribute-pair source="domain_id" target="id"/>
+	</db-relationship>
+	<obj-relationship name="parentDomain" source="Domain" target="Domain" deleteRule="Nullify" db-relationship-path="parent_domain"/>
+	<obj-relationship name="preferences" source="Domain" target="DomainPreference" deleteRule="Cascade" db-relationship-path="preferences"/>
+	<obj-relationship name="subdomains" source="Domain" target="Domain" deleteRule="Cascade" db-relationship-path="subdomains"/>
+	<obj-relationship name="domain" source="DomainPreference" target="Domain" deleteRule="Nullify" db-relationship-path="domain"/>
+	<query name="DomainPreferenceForKey" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="DomainPreference">
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="1"/>
+		<qualifier><![CDATA[(key = $key) and (domain = $domain)]]></qualifier>
+		<ordering descending="true"><![CDATA[domain.level]]></ordering>
+	</query>
+	<query name="TopLevelDomain" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Domain">
+		<qualifier><![CDATA[(name = $name) and (level = 0)]]></qualifier>
+	</query>
+</data-map>

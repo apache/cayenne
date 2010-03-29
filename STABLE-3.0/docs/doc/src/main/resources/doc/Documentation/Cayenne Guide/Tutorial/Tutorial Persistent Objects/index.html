@@ -1,0 +1,210 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Tutorial Persistent Objects</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Tutorial Persistent Objects</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Setup/index.html">Tutorial Setup</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Starting Project/index.html">Tutorial Starting Project</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Object Relational Mapping/index.html">Tutorial Object Relational Mapping</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Java Classes/index.html">Tutorial Java Classes</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial ObjectContext/index.html">Tutorial ObjectContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Persistent Objects/index.html">Tutorial Persistent Objects</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial SelectQuery/index.html">Tutorial SelectQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Delete/index.html">Tutorial Delete</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Webapp/index.html">Tutorial Webapp</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>In this section we'll learn about persistent objects, how to customize them and how to create and save them in DB.</p>
+
+<h3><a name="TutorialPersistentObjects-InspectingandCustomizingPersistentObjects"></a>Inspecting and Customizing Persistent Objects</h3>
+
+<p>Persistent classes in Cayenne implement a <a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html" title="DataObjects">DataObject interface</a>. If you inspect any of the classes <a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial Java Classes/index.html" title="Tutorial Java Classes">generated earlier</a> in this tutorial (e.g. <tt>org.example.cayenne.persistent.Artist</tt>), you'll see that it extends a class with the name that starts with underscore (<tt>org.example.cayenne.persistent.auto._Artist</tt>), which in turn extends from <tt>org.apache.cayenne.CayenneDataObject</tt>. Splitting each persistent class into user-customizable subclass (Xyz) and a generated superclass (_Xyz) is a useful technique to avoid overwriting the custom code when refreshing classes from the mapping model.</p>
+
+<p>Let's for instance add a utility method to the Artist class that sets Artist date of birth, taking a string argument for the date. It will be preserved even if the model changes later:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">package</span> org.example.cayenne.persistent;
+
+<span class="code-keyword">import</span> java.text.ParseException;
+<span class="code-keyword">import</span> java.text.SimpleDateFormat;
+<span class="code-keyword">import</span> java.util.Date;
+
+<span class="code-keyword">import</span> org.example.cayenne.persistent.auto._Artist;
+
+<span class="code-keyword">public</span> class Artist <span class="code-keyword">extends</span> _Artist {
+
+	<span class="code-keyword">static</span> <span class="code-keyword">final</span> <span class="code-object">String</span> DEFAULT_DATE_FORMAT = <span class="code-quote">"yyyyMMdd"</span>;
+
+	/**
+	 * Sets date of birth using a string in format yyyyMMdd.
+	 */
+	<span class="code-keyword">public</span> void setDateOfBirthString(<span class="code-object">String</span> yearMonthDay) {
+		<span class="code-keyword">if</span> (yearMonthDay == <span class="code-keyword">null</span>) {
+			setDateOfBirth(<span class="code-keyword">null</span>);
+		} <span class="code-keyword">else</span> {
+
+			Date date;
+			<span class="code-keyword">try</span> {
+				date = <span class="code-keyword">new</span> SimpleDateFormat(DEFAULT_DATE_FORMAT)
+						.parse(yearMonthDay);
+			} <span class="code-keyword">catch</span> (ParseException e) {
+				<span class="code-keyword">throw</span> <span class="code-keyword">new</span> IllegalArgumentException(
+				  <span class="code-quote">"A date argument must be in format '"</span>
+				+ DEFAULT_DATE_FORMAT + <span class="code-quote">"': "</span> + yearMonthDay);
+			}
+
+			setDateOfBirth(date);
+		}
+	}
+}</pre>
+</div></div>
+
+
+<h3><a name="TutorialPersistentObjects-CreateNewObjects"></a>Create New Objects</h3>
+
+<p>Now we'll create a bunch of objects and save them to the database. An object is created and registered with ObjectContext using "newObject" method. Objects <b>must</b> be registered with DataContext to be persisted and to allow setting relationships with other objects. Add this code to the "main" method of the Main class:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Artist picasso = context.newObject(Artist.class);
+picasso.setName(<span class="code-quote">"Pablo Picasso"</span>);
+picasso.setDateOfBirthString(<span class="code-quote">"18811025"</span>);</pre>
+</div></div>
+
+<p>Note that at this point "picasso" object is only stored in memory and is not saved in the database. Let's continue by adding a Metropolitan Museum "Gallery" object and a few Picasso "Paintings":</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Gallery metropolitan = context.newObject(Gallery.class);
+metropolitan.setName(<span class="code-quote">"Metropolitan Museum of Art"</span>); 
+
+Painting girl = context.newObject(Painting.class);
+girl.setName(<span class="code-quote">"Girl Reading at a Table"</span>);
+        
+Painting stein = context.newObject(Painting.class);
+stein.setName(<span class="code-quote">"Gertrude Stein"</span>);</pre>
+</div></div>
+
+<p>Now we can link the objects together, establishing relationships. Note that in each case below relationships are automatically estabslished in both directions (e.g. <tt>picasso.addToPaintings(girl)</tt> has exactly the same effect as <tt>girl.setToArtist(picasso)</tt>).</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">picasso.addToPaintings(girl);
+picasso.addToPaintings(stein);
+        
+girl.setGallery(metropolitan);
+stein.setGallery(metropolitan);</pre>
+</div></div>
+
+<p>Now lets save all five new objects, in a single method call:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">context.commitChanges();</pre>
+</div></div>
+
+<p>Now you can run the application again as described <a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial ObjectContext/index.html" title="Tutorial ObjectContext">in the previous section</a>. The new output will show a few actual DB operations:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>Dec 20, 2009 11:11:37 PM org.apache.cayenne.conf.RuntimeLoadDelegate startedLoading
+INFO: started configuration loading.
+... 
+INFO: Opening connection: jdbc:derby:memory:testdb;create=true 
+	Login: null
+	Password: *******
+INFO: +++ Connecting: SUCCESS.
+INFO: --- transaction started.
+INFO: Detected and installed adapter: org.apache.cayenne.dba.derby.DerbyAdapter
+INFO: --- will run 3 queries.
+INFO: No schema detected, will create mapped tables
+INFO: CREATE TABLE ARTIST (DATE_OF_BIRTH DATE, ID INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY, 
+ NAME VARCHAR (200), PRIMARY KEY (ID))
+INFO: CREATE TABLE GALLERY (ID INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY, NAME VARCHAR (200), 
+ PRIMARY KEY (ID))
+INFO: CREATE TABLE PAINTING (ARTIST_ID INTEGER, GALLERY_ID INTEGER, ID INTEGER NOT NULL 
+ GENERATED BY DEFAULT AS IDENTITY, NAME VARCHAR (200), PRIMARY KEY (ID))
+INFO: ALTER TABLE PAINTING ADD FOREIGN KEY (ARTIST_ID) REFERENCES ARTIST (ID)
+INFO: ALTER TABLE PAINTING ADD FOREIGN KEY (GALLERY_ID) REFERENCES GALLERY (ID)
+INFO: CREATE TABLE AUTO_PK_SUPPORT (  TABLE_NAME CHAR(100) NOT NULL,  NEXT_ID BIGINT NOT NULL,  
+PRIMARY KEY(TABLE_NAME))
+INFO: DELETE FROM AUTO_PK_SUPPORT WHERE TABLE_NAME IN ('ARTIST', 'GALLERY', 'PAINTING')
+INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('ARTIST', 200)
+INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('GALLERY', 200)
+INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('PAINTING', 200)
+INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'ARTIST']
+INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'GALLERY']
+INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'PAINTING']
+INFO: --- will run 3 queries.
+INFO: INSERT INTO ARTIST (DATE_OF_BIRTH, ID, NAME) VALUES (?, ?, ?)
+INFO: [batch bind: 1-&gt;DATE_OF_BIRTH:'1881-10-25 00:00:00.0', 2-&gt;ID:200, 
+3-&gt;NAME:'Pablo Picasso']
+INFO: === updated 1 row.
+INFO: INSERT INTO GALLERY (ID, NAME) VALUES (?, ?)
+INFO: [batch bind: 1-&gt;ID:200, 2-&gt;NAME:'Metropolitan Museum of Art']
+INFO: === updated 1 row.
+INFO: INSERT INTO PAINTING (ARTIST_ID, GALLERY_ID, ID, NAME) VALUES (?, ?, ?, ?)
+INFO: [batch bind: 1-&gt;ARTIST_ID:200, 2-&gt;GALLERY_ID:200, 3-&gt;ID:200, 
+4-&gt;NAME:'Girl Reading at a Table']
+INFO: [batch bind: 1-&gt;ARTIST_ID:200, 2-&gt;GALLERY_ID:200, 3-&gt;ID:201, 
+4-&gt;NAME:'Gertrude Stein']
+INFO: === updated 2 rows.
+INFO: +++ transaction committed.
+</pre>
+</div></div>
+
+<p>So first Cayenne creates the needed tables (remember, we used "CreateIfNoSchemaStrategy"). Then it runs a number of inserts, generating primary keys on the fly. Not bad for just a few lines of code.</p>
+
+<hr />
+<p><b>Next Step: <a href="../../../../Documentation/Cayenne Guide/Tutorial/Tutorial SelectQuery/index.html" title="Tutorial SelectQuery">Tutorial SelectQuery</a></b></p>
+<hr /></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

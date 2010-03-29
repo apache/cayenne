@@ -1,0 +1,5 @@
+<object type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">n1</name>
+<age type="int">5</age>
+<open type="boolean">true</open>
+</object>

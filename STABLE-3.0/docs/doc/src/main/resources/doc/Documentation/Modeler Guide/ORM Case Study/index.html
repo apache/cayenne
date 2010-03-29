@@ -1,0 +1,84 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - ORM Case Study</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">ORM Case Study</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Modeler Guide/Introduction to CayenneModeler/index.html">Introduction to CayenneModeler</a></li>
+<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/index.html">ORM Case Study</a><ul>
+<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/Java Interface to an Existing Database/index.html">Java Interface to an Existing Database</a></li>
+<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/New System/index.html">New System</a></li>
+<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/Converting an Existing Business Framework/index.html">Converting an Existing Business Framework</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/Modeler Guide/Cayenne Project Structure/index.html">Cayenne Project Structure</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Common Modeling Tasks/index.html">Common Modeling Tasks</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Modeling Database Layer/index.html">Modeling Database Layer</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Modeling Object Layer/index.html">Modeling Object Layer</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Modeling Queries/index.html">Modeling Queries</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Configuring Deployment Settings/index.html">Configuring Deployment Settings</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Migrate Changes between Model and Database/index.html">Migrate Changes between Model and Database</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Preferences Panel/index.html">Preferences Panel</a></li>
+<li><a href="../../../Documentation/Modeler Guide/Modeling Tips/index.html">Modeling Tips</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="ORMCaseStudy-ORMCaseStudy"></a>ORM Case Study</h2>
+
+<p>This chapter shows how ORM (Object Relational Modeling) approach should be chosen based on the project requirements and other factors. It contains links to technical aspects of modeling that are discussed elsewhere. A few scenarios are shown below that describe the most common cases that a development team may encounter on a typical O/R project. Lets assume an imaginary company called "Some Company" that sells services to consumers as its main business, but also sells consumer products, and works with business customers. There are a number of project teams working on a set of Object/Relational projects. </p>
+
+<h3><a name="ORMCaseStudy-Project1%3AJavaInterfacetoanExistingDatabase"></a>Project 1: Java Interface to an Existing Database</h3>
+
+<p>"Some Company" has a billing system that runs on Sybase database, that uses a set of UNIX C++ applications to perform nightly batch jobs and print the bills. The project goal is to create a Java client-server Object/Relational system that will be used by customer service representatives to provide customer support and correct billing errors. Such system must use the existing database schema without changing it, but both Swing frontend and Java business layer that performs the database access have to be created from scratch. </p>
+
+<h3><a name="ORMCaseStudy-Project2%3ANewSystem"></a>Project 2: New System</h3>
+
+<p>"Some Company" is planning a brand new e-commerce site for its web users. Both the database and Java business objects must be designed from scratch as a part of the same project.</p>
+
+<h3><a name="ORMCaseStudy-Project3%3AConvertinganExistingJavaBusinessFramework"></a>Project 3: Converting an Existing Java Business Framework</h3>
+
+<p>Before getting into O/R technology, "Some Company" created a set of Java applications for its sales and marketing teams working with business customers. These applications use a custom persistence framework. The goal of the project is to convert it to Cayenne-based project, preserving all business rules, and using the existing database.</p>
+
+<h3><a name="ORMCaseStudy-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/Java Interface to an Existing Database/index.html" title="Java Interface to an Existing Database">Java Interface to an Existing Database</a></li>
+	<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/New System/index.html" title="New System">New System</a></li>
+	<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/Converting an Existing Business Framework/index.html" title="Converting an Existing Business Framework">Converting an Existing Business Framework</a></li>
+</ol>
+
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

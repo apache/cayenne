@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultLockType" value="optimistic"/>
+	<property name="defaultPackage" value="org.apache.cayenne.modeler.pref"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.pref.PreferenceDetail"/>
+	<db-entity name="component_geometry">
+		<db-attribute name="height" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="width" type="INTEGER"/>
+		<db-attribute name="x" type="INTEGER"/>
+		<db-attribute name="y" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="data_map_defaults">
+		<db-attribute name="generate_pairs" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="output_path" type="VARCHAR"/>
+		<db-attribute name="subclass_template" type="VARCHAR"/>
+		<db-attribute name="superclass_package_suffix" type="VARCHAR"/>
+		<db-attribute name="superclass_template" type="VARCHAR"/>
+	</db-entity>
+	<db-entity name="data_node_defaults">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="local_data_source" type="VARCHAR"/>
+	</db-entity>
+	<db-entity name="db_connection_info">
+		<db-attribute name="db_adapter" type="VARCHAR"/>
+		<db-attribute name="domain_preference_id" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="jdbc_driver" type="VARCHAR"/>
+		<db-attribute name="password" type="VARCHAR"/>
+		<db-attribute name="url" type="VARCHAR"/>
+		<db-attribute name="user_name" type="VARCHAR"/>
+	</db-entity>
+	<db-entity name="db_generator_defaults">
+		<db-attribute name="create_fk" type="INTEGER"/>
+		<db-attribute name="create_pk" type="INTEGER"/>
+		<db-attribute name="create_tables" type="INTEGER"/>
+		<db-attribute name="drop_pk" type="INTEGER"/>
+		<db-attribute name="drop_tables" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="fs_path">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="path" type="VARCHAR"/>
+	</db-entity>
+	<obj-entity name="ComponentGeometry" className="org.apache.cayenne.modeler.pref.ComponentGeometry" dbEntityName="component_geometry" superClassName="org.apache.cayenne.pref.PreferenceDetail">
+		<obj-attribute name="height" type="java.lang.Integer" db-attribute-path="height"/>
+		<obj-attribute name="width" type="java.lang.Integer" db-attribute-path="width"/>
+		<obj-attribute name="x" type="java.lang.Integer" db-attribute-path="x"/>
+		<obj-attribute name="y" type="java.lang.Integer" db-attribute-path="y"/>
+	</obj-entity>
+	<obj-entity name="DBConnectionInfo" className="org.apache.cayenne.modeler.pref.DBConnectionInfo" dbEntityName="db_connection_info" superClassName="org.apache.cayenne.pref.PreferenceDetail">
+		<obj-attribute name="dbAdapter" type="java.lang.String" db-attribute-path="db_adapter"/>
+		<obj-attribute name="domainPreferenceId" type="java.lang.Integer" db-attribute-path="domain_preference_id"/>
+		<obj-attribute name="jdbcDriver" type="java.lang.String" db-attribute-path="jdbc_driver"/>
+		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
+		<obj-attribute name="url" type="java.lang.String" db-attribute-path="url"/>
+		<obj-attribute name="userName" type="java.lang.String" db-attribute-path="user_name"/>
+	</obj-entity>
+	<obj-entity name="DBGeneratorDefaults" className="org.apache.cayenne.modeler.pref.DBGeneratorDefaults" lock-type="optimistic" dbEntityName="db_generator_defaults" superClassName="org.apache.cayenne.pref.PreferenceDetail">
+		<obj-attribute name="createFK" type="java.lang.Boolean" db-attribute-path="create_fk"/>
+		<obj-attribute name="createPK" type="java.lang.Boolean" db-attribute-path="create_pk"/>
+		<obj-attribute name="createTables" type="java.lang.Boolean" db-attribute-path="create_tables"/>
+		<obj-attribute name="dropPK" type="java.lang.Boolean" db-attribute-path="drop_pk"/>
+		<obj-attribute name="dropTables" type="java.lang.Boolean" db-attribute-path="drop_tables"/>
+		<post-add method-name="prePersist"/>
+	</obj-entity>
+	<obj-entity name="DataMapDefaults" className="org.apache.cayenne.modeler.pref.DataMapDefaults" lock-type="optimistic" dbEntityName="data_map_defaults" superClassName="org.apache.cayenne.pref.PreferenceDetail">
+		<obj-attribute name="generatePairs" type="java.lang.Boolean" db-attribute-path="generate_pairs"/>
+		<obj-attribute name="outputPath" type="java.lang.String" db-attribute-path="output_path"/>
+		<obj-attribute name="subclassTemplate" type="java.lang.String" db-attribute-path="subclass_template"/>
+		<obj-attribute name="superclassPackage" type="java.lang.String" db-attribute-path="superclass_package_suffix"/>
+		<obj-attribute name="superclassTemplate" type="java.lang.String" db-attribute-path="superclass_template"/>
+		<post-add method-name="prePersist"/>
+	</obj-entity>
+	<obj-entity name="DataNodeDefaults" className="org.apache.cayenne.modeler.pref.DataNodeDefaults" lock-type="optimistic" dbEntityName="data_node_defaults" superClassName="org.apache.cayenne.pref.PreferenceDetail">
+		<obj-attribute name="localDataSource" type="java.lang.String" db-attribute-path="local_data_source"/>
+	</obj-entity>
+	<obj-entity name="FSPath" className="org.apache.cayenne.modeler.pref.FSPath" dbEntityName="fs_path" superClassName="org.apache.cayenne.pref.PreferenceDetail">
+		<obj-attribute name="path" type="java.lang.String" db-attribute-path="path"/>
+	</obj-entity>
+</data-map>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<db-entity name="EXHIBIT">
+		<db-attribute name="CLOSING_DATE" type="TIMESTAMP" isMandatory="true"/>
+		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="GALLERY_ID" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="OPENING_DATE" type="TIMESTAMP" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="GALLERY">
+		<db-attribute name="GALLERY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="GALLERY_NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<obj-entity name="Exhibit" className="org.objectstyle.art.Exhibit" dbEntityName="EXHIBIT">
+		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>
+		<obj-attribute name="openingDate" type="java.util.Date" db-attribute-path="OPENING_DATE"/>
+	</obj-entity>
+	<obj-entity name="Gallery" className="org.objectstyle.art.Gallery" dbEntityName="GALLERY">
+		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="GALLERY_NAME"/>
+	</obj-entity>
+</data-map>

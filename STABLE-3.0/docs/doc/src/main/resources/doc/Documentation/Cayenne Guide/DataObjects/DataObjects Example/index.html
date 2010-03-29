@@ -1,0 +1,133 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - DataObjects Example</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">DataObjects Example</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Relationships/index.html">Relationships</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Accessing PK and FK Values/index.html">Accessing PK and FK Values</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Comparing DataObjects/index.html">Comparing DataObjects</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>As discussed in <a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html" title="DataObjects">DataContext</a> chapter, any changes made to the DataObjects via "set*" methods are synchronized with the database by calling <tt>DataContext.commitChanges</tt>. Here is an example showing how the <tt>Painting</tt> object is fetched, modified and saved back. The following modifications are performed: the price of the first retrieved painting is doubled, a new painting is added that belongs to the same artist as the painting fetched before:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> java.math.BigDecimal;
+<span class="code-keyword">import</span> java.util.List;
+<span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
+<span class="code-keyword">import</span> org.apache.cayenne.exp.Expression;
+<span class="code-keyword">import</span> org.apache.cayenne.exp.ExpressionFactory;
+<span class="code-keyword">import</span> org.apache.art.Painting;
+<span class="code-keyword">import</span> org.apache.art.Artist;
+...
+
+<span class="code-comment">// assume <span class="code-keyword">this</span> exists and initialized
+</span>DataContext ctxt;
+...
+Expression e =
+  ExpressionFactory.greaterExp(<span class="code-quote">"estimatedPrice"</span>,
+                        <span class="code-keyword">new</span> BigDecimal(100000.0));
+SelectQuery q = <span class="code-keyword">new</span> SelectQuery(Painting.class, e);
+List realExpensiveArt = ctxt.performQuery(q);
+
+<span class="code-keyword">if</span>(realExpensiveArt.size() &gt; 0) {
+  Painting firstPainting = (Painting)realExpensiveArt.get(0);
+
+  <span class="code-comment">// <span class="code-object">double</span> the price
+</span>  <span class="code-object">double</span> oldPrice = firstPainting.getEstimatedPrice().doubleValue();
+  firstPainting.setEstimatedPrice(<span class="code-keyword">new</span> BigDecimal(oldPrice * 2.00));
+
+  <span class="code-comment">// create <span class="code-keyword">new</span> painting and register it with DataContext
+</span>  <span class="code-comment">// <span class="code-quote">"Painting"</span> string is a name of ObjEntity in the DataMap
+</span>  Painting newPainting = (Painting)ctxt.newObject(Painting.class);
+  newPainting.setPaintingTitle(<span class="code-quote">"Sunset as it is"</span>);
+
+  <span class="code-comment">// price it as unreasonable as other paintings
+</span>  newPainting.setEstimatedPrice(<span class="code-keyword">new</span> BigDecimal(5000000.0));
+
+  <span class="code-comment">// get artist via relationship
+</span>  Artist artist = firstPainting.getToArtist();
+
+  <span class="code-comment">// assign <span class="code-keyword">new</span> painting to an artist
+</span>  artist.addToPaintingArray(newPainting);
+
+  <span class="code-comment">// save all the changes we've made so far
+</span>  ctxt.commitChanges();
+}
+...
+</pre>
+</div></div>
+<p>If SQL tracing is turned on, and depending on the preexisting data in the database, the following SQL statements might be printed to console during the commit phase:</p>
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>[main 12-22 15:50:19] QueryLogger: --- will run 2 queries.
+[main 12-22 15:50:19] QueryLogger: INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE,
+ ARTIST_ID) VALUES (?, ?, ?, ?) [params: 200, 'Sunset as it is', 5000000, 10]
+[main 12-22 15:50:19] QueryLogger: === updated 1 row.
+[main 12-22 15:50:19] QueryLogger: UPDATE PAINTING SET ESTIMATED_PRICE = ? WHERE PAINTING_ID = ? 
+ [params: 2000000, 34]
+[main 12-22 15:50:19] QueryLogger: === updated 1 row.
+[main 12-22 15:50:19] QueryLogger: +++ transaction committed.
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

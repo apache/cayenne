@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.generic"/>
+	<db-entity name="GENERIC1">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="GENERIC2">
+		<db-attribute name="GENERIC1_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="Generic1" dbEntityName="GENERIC1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Generic2" dbEntityName="GENERIC2">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="generic2s" source="GENERIC1" target="GENERIC2" toMany="true">
+		<db-attribute-pair source="ID" target="GENERIC1_ID"/>
+	</db-relationship>
+	<db-relationship name="toGeneric1" source="GENERIC2" target="GENERIC1" toMany="false">
+		<db-attribute-pair source="GENERIC1_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="generic2s" source="Generic1" target="Generic2" deleteRule="Cascade" db-relationship-path="generic2s"/>
+	<obj-relationship name="toGeneric1" source="Generic2" target="Generic1" deleteRule="Nullify" db-relationship-path="toGeneric1"/>
+</data-map>

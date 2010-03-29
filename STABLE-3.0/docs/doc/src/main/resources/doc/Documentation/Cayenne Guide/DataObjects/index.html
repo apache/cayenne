@@ -1,0 +1,94 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - DataObjects</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">DataObjects</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Relationships/index.html">Relationships</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Accessing PK and FK Values/index.html">Accessing PK and FK Values</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Comparing DataObjects/index.html">Comparing DataObjects</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="DataObjects-DataObjects"></a>DataObjects</h2>
+<p>DataObjects (Cayenne persistent objects) are composed of attributes and relationships. Attributes are the simplest object properties (as in "java bean properties") that can be stored in the columns in the database. Those are usually string, numeric, binary or date values. Another type of properties is relationships. They represent related DataObjects (to-one relationships) or collections of DataObjects (to-many relationships). To read and modify attributes and relationships, application code would simply invoke corresponding get or set methods. In case of to-many relationships represented by collections there are also add and remove methods.</p>
+
+<p>Queries discussed in the previous chapter are used to obtain the initial sets of DataObjects. After that a graph of persistent objects is navigated and modified via relationship methods, thus hiding the underlying relational storage complexity and giving application a nice object view of the relevant subset of the database data.</p>
+
+<p>Examples of working with attributes and relationships are given later in this chapter.</p>
+
+<h3><a name="DataObjects-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Relationships/index.html" title="Relationships">Relationships</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Flattened Relationships/index.html" title="Flattened Relationships">Flattened Relationships</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/DataObjects Example/index.html" title="DataObjects Example">DataObjects Example</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Accessing PK and FK Values/index.html" title="Accessing PK and FK Values">Accessing PK and FK Values</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/DataObjectUtils/index.html" title="DataObjectUtils">DataObjectUtils</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/DataObject Validation/index.html" title="DataObject Validation">DataObject Validation</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Handling Inheritance/index.html" title="Handling Inheritance">Handling Inheritance</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Deleting Objects/index.html" title="Deleting Objects">Deleting Objects</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Generic Persistent Class/index.html" title="Generic Persistent Class">Generic Persistent Class</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataObjects/Comparing DataObjects/index.html" title="Comparing DataObjects">Comparing DataObjects</a></li>
+</ol>
+
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

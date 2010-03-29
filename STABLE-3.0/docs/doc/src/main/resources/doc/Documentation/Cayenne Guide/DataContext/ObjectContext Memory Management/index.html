@@ -1,0 +1,95 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - ObjectContext Memory Management</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">ObjectContext Memory Management</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Running Queries/index.html">Running Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataObject State Management/index.html">DataObject State Management</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html">Moving Objects Between Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html">DataContextDelegate</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html">DataContextFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html">Nested Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html">ObjectContext Memory Management</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="ObjectContextMemoryManagement-MemoryManagementStrategy"></a>Memory Management Strategy</h2>
+
+<p>Since Cayenne 3.0, by default DataContext uses weak references to store registered objects. So objects are allowed to be garbage collected by the VM if they are not referenced elsewhere in the application. "Elsewhere" usually means one of the following:</p>
+
+<ul>
+	<li>An object is directly or indirectly referenced by the application.</li>
+	<li>An object is a part of the cached query result stored by Cayenne.</li>
+	<li>An object is "dirty" (i.e. new, modified or deleted). In this case Cayenne ensures that such object is retained at least until commit or rollback.</li>
+</ul>
+
+
+<h2><a name="ObjectContextMemoryManagement-WhentoAvoidWeakReferences"></a>When to Avoid Weak References</h2>
+
+<p>In some cases automatic cleaning of registered objects may result in extra DB trips later on. Depending on a situation, this may or may not be critical, so users will need to weigh the choices of fewer queries vs. smaller memory footprint. In addition to the "dirty objects" scenario described above (and taken care by Cayenne behind the scenes), here are a few more scenarios where a user may choose a different strategy:</p>
+
+<ul>
+	<li>Nested DataContexts: When a child nested DataContext commits to parent, parent using weak references may have already deallocated some of the objects being committed and will have to refetch them.</li>
+	<li>ROP: When an ROP client commits to the server, parent server DataContext using weak references may have already deallocated some of the objects being committed and will have to refetch them.</li>
+</ul>
+
+
+<p>To ensure that weak references are not used, create a DataContext manually, passing a regular <tt>HashMap</tt> to the <tt>ObjectStore</tt> constructor.</p>
+
+<p><em>TODO: an example, and figure out how to make it a parameter in the Modeler</em></p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

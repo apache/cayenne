@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="3.0.0.1">
+<domain name="CayenneModelerPreferences">
+	<property name="cayenne.DataRowStore.snapshot.size" value="1000"/>
+
+	<map name="ModelerPreferences" location="ModelerPreferences.map.xml"/>
+	<map name="Preferences" location="Preferences.map.xml"/>
+
+	<node name="HSQLNode"
+		 datasource="HSQLNode.driver.xml"
+		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="Preferences"/>
+			<map-ref name="ModelerPreferences"/>
+	 </node>
+</domain>
+</domains>

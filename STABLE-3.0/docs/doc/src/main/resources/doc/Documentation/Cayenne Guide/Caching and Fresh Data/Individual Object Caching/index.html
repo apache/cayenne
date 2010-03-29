@@ -1,0 +1,114 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Individual Object Caching</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Individual Object Caching</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/Individual Object Caching/index.html">Individual Object Caching</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/Query Result Caching/index.html">Query Result Caching</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="IndividualObjectCaching-IndividualObjectCaching"></a>Individual Object Caching</h2>
+
+<p>Whenever an object is fetched from the database or created by the user and registered with Cayenne, it is automatically cached. Accessing this object later (e.g. when traversing a relationship from another object, or doing a lookup by primary key via DataObjectUtils) will not incur an overhead of extra database access. </p>
+
+<h3><a name="IndividualObjectCaching-SynchronizingObjectsonCommit"></a>Synchronizing Objects on Commit</h3>
+
+<p>Very often there's more than one ObjectContext working over the same Cayenne stack. E.g. in a web application each user session may have its own ObjectContext. If one of the contexts commits its changes, Cayenne automatically updates copies of each modified object across all contexts ("copies" mean context-specific instances of objects with the same ObjectId). So all committed object changes become immediately visible to all contexts. If there's more than one Cayenne stack running (e.g. if the application is clustered across multiple JVMs), there are ways to notify other stacks about the object changes. This can be set up in the Modeler. However full synchronization of every change often results in excessive network traffic and CPU consumption, and is usually avoided in favor of the query cache approach <a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/Query Result Caching/index.html" title="Query Result Caching">described elsewhere</a> in this chapter.</p>
+
+<h3><a name="IndividualObjectCaching-MemoryManagement"></a>Memory Management</h3>
+
+<p>Cayenne ensures that the memory allocated to caching does not grow indefinitely. A cache shared between ObjectContexts has a fixed upper limit. 10000 is the default maximum number of entries, which can be changed in the Modeler. A cache attached to each ObjectContext (also referred to as "local cache" elsewhere in this chapter), which only stores the objects that were accessed via this context, has no upper limit. However it uses weak references to the cached <b>committed</b> objects, so they are automatically purged from cache when the application runs low on memory.</p>
+
+<h3><a name="IndividualObjectCaching-Refreshing"></a>Refreshing</h3>
+
+<p>Object caching happens behind the scenes, so the only case when users need to worry about object cache is when an object gets stale and needs to get refreshed. Here are the strategies for refreshing a single stale object:</p>
+
+<ul>
+	<li><em>Perform a query to refetch one or more objects.</em> Any of the Cayenne selecting queries would refresh previously cached objects:
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Artist a = ...;
+<span class="code-comment">// <span class="code-quote">"a"</span> gets stale, we need to refresh it
+</span>SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class, ...);
+List&lt;Artist&gt; artists = context.performQuery(query);
+<span class="code-comment">// <span class="code-keyword">if</span> the query result includes <span class="code-quote">"a"</span>, object <span class="code-quote">"a"</span> is now refreshed</span>
+</pre>
+</div></div> </li>
+</ul>
+
+
+<ul>
+	<li><em>Use <a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Prefetching/index.html" title="Prefetching">prefetching</a> to refresh to-many relationships and related objects</em>. Cayenne selecting query would only refresh the "root" objects (objects of type "Artist" in the example above), including their "simple" properties and to-one relationships. To refresh to-many relationships, including to-many collection contents, and each of the related objects, a user must specify a prefetch on a given relationship. E.g.:
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// to refresh a list of paintings attached to the Artist, use a prefetch:
+</span>query.addPrefetch(Artist.PAINTINGS_PROPERTY);
+</pre>
+</div></div></li>
+</ul>
+
+
+<ul>
+	<li><em>Use <a href="../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html" title="ObjectIdQuery">ObjectIdQuery</a> to refresh a single object.</em> There is a special query that allows to refresh a single object - ObjectIdQuery. Specify "CACHE_REFRESH" caching strategy to ensure a DB fetch is performed. This requires manually creating an ObjectId:
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ObjectId id = <span class="code-keyword">new</span> ObjectId(<span class="code-quote">"Artist"</span>, Artist.ID_PK_COLUMN, 5);
+ObjectIdQuery query = <span class="code-keyword">new</span> ObjectIdQuery(id, <span class="code-keyword">false</span>, ObjectIdQuery.CACHE_REFRESH);
+Artist a = (Artist) DataObjectUtils.objectForQuery(query);
+</pre>
+</div></div></li>
+</ul>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

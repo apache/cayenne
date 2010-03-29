@@ -1,0 +1,87 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - DataContext</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">DataContext</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/Running Queries/index.html">Running Queries</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/DataObject State Management/index.html">DataObject State Management</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html">Moving Objects Between Contexts</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html">DataContextDelegate</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html">DataContextFactory</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html">Nested Contexts</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html">ObjectContext Memory Management</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="DataContext-DataContext"></a>DataContext</h2>
+<p>In most applications <tt>org.apache.cayenne.access.DataContext</tt> is the main user access point to all Cayenne functionality. It provides query execution facilities as well as object state management functions. Applications rarely directly deal with access or mapping objects beyond DataContext.</p>
+
+<p>One of the important features of DataContext is that it isolates changes made in a user session from other users. With this in mind, DataContext normally has a session scope. "Session" can have different meanings in different types of applications. Good example is an HttpSession in a web application. In fact a DataContext is often bound to HttpSession and is reused between requests for the same user.</p>
+
+<h3><a name="DataContext-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html" title="Obtaining DataContext">Obtaining DataContext</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/Running Queries/index.html" title="Running Queries">Running Queries</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/DataObject State Management/index.html" title="DataObject State Management">DataObject State Management</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html" title="Moving Objects Between Contexts">Moving Objects Between Contexts</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html" title="DataContextDelegate">DataContextDelegate</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html" title="DataContextFactory">DataContextFactory</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html" title="Nested Contexts">Nested Contexts</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html" title="ObjectContext Memory Management">ObjectContext Memory Management</a></li>
+</ol>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Web Applications</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Web Applications</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Standalone Applications/index.html">Standalone Applications</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Web Applications/index.html">Web Applications</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Customizing Configuration/index.html">Customizing Configuration</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/DBCPDataSourceFactory/index.html">DBCPDataSourceFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Using JNDI/index.html">Using JNDI</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html">Configuring Logging</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h3><a name="WebApplications-PuttingCayenneFilesinWebApplicationCLASSPATH"></a>Putting Cayenne Files in Web Application CLASSPATH</h3>
+
+<p>When deploying an application in a web container it is possible to follow the procedure for the standalone applications, i.e. put all XML files in the application CLASSPATH (e.g. in "mywebapp/WEB-INF/classes/", but DON'T put it in container shared locations!). Session DataContext can be obtained via ServletUtil:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">HttpSession session = ...;
+DataContext context = ServletUtil.getSessionContext(session);</pre>
+</div></div>
+
+<p>However you may consider a deployment procedure described below, as it provides more flexibility and a number of additional useful features.</p>
+
+<h3><a name="WebApplications-CayenneServletFilter"></a>Cayenne Servlet Filter</h3>
+
+<p>Adding the following filter to the <tt>web.xml</tt> would automate Cayenne setup in the web application:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>&lt;filter&gt;
+    &lt;filter-name&gt;CayenneFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.apache.cayenne.conf.WebApplicationContextFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;CayenneFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;
+</pre>
+</div></div>
+
+<p>The filter will ensure that for each matching request a ObjectContext (which is actually a DataContext instance) is bound to the request thread. Context itself is session-scoped. So you can retrieve it anywhere in the application, even if you don't have a reference to the web environment:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ObjectContext context = BaseContext.getThreadObjectContext();</pre>
+</div></div>
+
+<p>Filter can match a specific URL as shown above, or a specific servlet:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>&lt;servlet&gt;
+   &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+   &lt;servlet-class&gt;org.example.MyServlet&lt;/servlet-class&gt;
+   &lt;load-on-startup&gt;0&lt;/load-on-startup&gt;
+&lt;/servlet&gt;
+		
+&lt;filter&gt;
+    &lt;filter-name&gt;CayenneFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.apache.cayenne.conf.WebApplicationContextFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;CayenneFilter&lt;/filter-name&gt;
+    &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+&lt;/filter-mapping&gt;</pre>
+</div></div>
+
+<p>Additionally the filter supports putting files in <tt>myapp/WEB-INF/</tt> directory instead of the CLASSPATH, so a .war file may look like this:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>index.jsp
+WEB-INF/cayenne.xml
+WEB-INF/xyz.map.xml
+WEB-INF/lib/...</pre>
+</div></div>
+
+<p>Actually, Cayenne files can be stored in any subdirectory of <tt>myapp/WEB-INF/</tt>. To specify a subdirectory, you'll need to add <tt>&lt;context-param&gt;</tt> named <tt>cayenne.configuration.path</tt> to your application descriptor:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>&lt;context-param&gt;
+    &lt;param-name&gt;cayenne.configuration.path&lt;/param-name&gt;
+    &lt;param-value&gt;/WEB-INF/config/cayenne-files&lt;/param-value&gt;
+&lt;/context-param&gt;</pre>
+</div></div>
+
+<h3><a name="WebApplications-ObjectContextScope"></a>ObjectContext Scope</h3>
+
+<p>ServletUtil and WebApplicationContextFilter would both provide an ObjectContext shared between the requests in the same user session (session-scoped context). This is the default behavior. However, depending on the application needs, you may choose to use application-scoped context (usually for read-only parts of the application, and combined with caching), or per-request context (to avoid race conditions on long-running operations). In those cases you won't be able to use ServletUtil and WebApplicationContextFilter, but you can easily write your own correctly scoped replacements, or set it up via an IoC container, such as Spring.</p>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

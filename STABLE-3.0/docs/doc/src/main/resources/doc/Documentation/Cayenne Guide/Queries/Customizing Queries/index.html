@@ -1,0 +1,160 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Customizing Queries</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Customizing Queries</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html">SelectQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/index.html">SQLTemplate Query</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html">EJBQLQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html">NamedQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html">ObjectIdQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html">QueryChain</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html">RelationshipQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/Queries Stored in DataMap/index.html">Queries Stored in DataMap</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/Caching Query Results/index.html">Caching Query Results</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/Customizing Queries/index.html">Customizing Queries</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Any object that implements <tt>org.apache.cayenne.query.Query</tt> interface can be executed with a DataContext. </p>
+
+<h3><a name="CustomizingQueries-UnderstandingQueryInterface"></a>Understanding Query Interface</h3>
+
+<p>The interface defines the following methods (ommitting irrelevant deprecated ones):</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">interface</span> Query <span class="code-keyword">extends</span> Serializable {
+
+    <span class="code-object">String</span> getName();
+
+    QueryMetadata getMetaData(EntityResolver resolver);
+
+    void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery);
+
+    SQLAction createSQLAction(SQLActionVisitor visitor);
+}</pre>
+</div></div>
+
+<ul>
+	<li><tt>getName</tt> returns a symbolic name of the query. The name may be used as a key to find queries stored in the DataMap. Some query implementors reuse the name as a QueryMetadata cache key. Generally the name can be null.</li>
+</ul>
+
+
+<ul>
+	<li><tt>getMetaData</tt> is called at various stages of the execution by Cayenne access stack to retrieve query parameters. <tt>EntityResolver</tt> instance is passed to this method, meaning that the query doesn't need to store direct references to Cayenne mapping objects and can resolve them at runtime.</li>
+</ul>
+
+
+<ul>
+	<li><tt>route</tt> is invoked when Cayenne decides which DataNode (database) to use when running a query. Routing decision is made by the Query istelf by calling <tt>QueryRouter.route(..)</tt>. This is an important extension point. For instance all Cayenne "indirect" queries implement this method to create (or somehow resolve) one or more substitute queries and route them instead of self.</li>
+</ul>
+
+
+<ul>
+	<li><tt>createSQLAction</tt> allows to fully customize Query execution at the JDBC level. In the simplest case an implementor calls one of the methods on <tt>SQLActionVisitor</tt> to return a standard action for a specific type of query. However it can provide its own <tt>SQLAction</tt> that accesses the database in some special way.</li>
+</ul>
+
+
+<h3><a name="CustomizingQueries-IndirectQueries"></a>Indirect Queries</h3>
+
+<p>One customization strategy is an "indirect" query that encapsulates some user-defined operation and in runtime resolves to one or more standard Cayenne queries. Indirect queries can be created from scratch or by extending <tt>org.apache.cayenne.query.IndirectQuery</tt>. As an example lets implement a "CountQuery" query that returns a number of rows in a given table:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">public</span> class CountQuery <span class="code-keyword">extends</span> IndirectQuery {
+	<span class="code-keyword">protected</span> <span class="code-object">Class</span> objectClass;
+
+	<span class="code-keyword">public</span> CountQuery(<span class="code-object">Class</span> objectClass) {
+		<span class="code-keyword">this</span>.objectClass = objectClass;
+	}
+
+	<span class="code-keyword">protected</span> Query createReplacementQuery(EntityResolver resolver) {
+		DbEntity entity = resolver.lookupDbEntity(objectClass);
+
+		<span class="code-keyword">if</span> (entity == <span class="code-keyword">null</span>) {
+			<span class="code-keyword">throw</span> <span class="code-keyword">new</span> CayenneRuntimeException(
+					<span class="code-quote">"No entity is mapped <span class="code-keyword">for</span> java class: "</span>
+							+ objectClass.getName());
+		}
+
+		<span class="code-object">String</span> sql = <span class="code-quote">"SELECT #result('count(*)' '<span class="code-object">int</span>' 'C') FROM "</span>
+				+ entity.getName();
+		SQLTemplate replacement = <span class="code-keyword">new</span> SQLTemplate(entity, sql);
+		replacement.setFetchingDataRows(<span class="code-keyword">true</span>);
+		<span class="code-keyword">return</span> replacement;
+	}
+}</pre>
+</div></div>
+
+<p>Now you can run the query like that:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">CountQuery query = <span class="code-keyword">new</span> CountQuery(Artist.class);
+DataContext context = DataContext.createDataContext();
+
+Map row = (Map) context.performQuery(query).get(0);
+<span class="code-object">System</span>.out.println(<span class="code-quote">"Count: "</span> + row.get(<span class="code-quote">"C"</span>));</pre>
+</div></div>
+
+
+<p>For other real-life examples of indirect queries take a look at the source code of the following Cayenne queries: <a href="../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html" title="QueryChain">QueryChain</a>, <a href="../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html" title="ObjectIdQuery">ObjectIdQuery</a>, <a href="../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html" title="RelationshipQuery">RelationshipQuery</a>, <a href="../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html" title="NamedQuery">NamedQuery</a>. </p>
+
+
+<h3><a name="CustomizingQueries-SubclassingStandardQueries"></a>Subclassing Standard Queries</h3>
+
+<p>All standard queries can be subclassed, overriding some of their methods. For instance overriding <tt>route</tt> and/or <tt>createSQLAction</tt> would allow to implement custom callbacks at different points of query lifecycle.</p>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

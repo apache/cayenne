@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.mt"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.mt"/>
+	<db-entity name="MT_DELETE_CASCADE">
+		<db-attribute name="DELETE_CASCADE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_DELETE_DENY">
+		<db-attribute name="DELETE_DENY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_DELETE_NULLIFY">
+		<db-attribute name="DELETE_NULLIFY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_DELETE_RULE">
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_JOIN45">
+		<db-attribute name="TABLE4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TABLE5_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_MAP_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_MAP_TO_MANY_TARGET">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="MT_MEANINGFUL_PK">
+		<db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="MT_REFLEXIVE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
+		<db-attribute name="PARENT_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="MT_TABLE1">
+		<db-attribute name="GLOBAL_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<db-attribute name="SERVER_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<db-attribute name="SUBCLASS_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<db-attribute name="TABLE1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TABLE2">
+		<db-attribute name="GLOBAL_ATTRIBUTE" type="VARCHAR" length="100"/>
+		<db-attribute name="TABLE1_ID" type="INTEGER"/>
+		<db-attribute name="TABLE2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TABLE3_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="MT_TABLE3">
+		<db-attribute name="BINARY_COLUMN" type="VARBINARY" length="100"/>
+		<db-attribute name="CHAR_COLUMN" type="VARCHAR" length="100"/>
+		<db-attribute name="INT_COLUMN" type="INTEGER"/>
+		<db-attribute name="TABLE3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TABLE4">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TABLE5">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TABLE_BOOL">
+		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NUMERIC_COLUMN" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="MT_TOONE_DEP">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TOONE_MASTER">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="MtDeleteCascade" className="org.apache.cayenne.testdo.mt.MtDeleteCascade" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteCascade" dbEntityName="MT_DELETE_CASCADE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtDeleteDeny" className="org.apache.cayenne.testdo.mt.MtDeleteDeny" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteDeny" dbEntityName="MT_DELETE_DENY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtDeleteNullify" className="org.apache.cayenne.testdo.mt.MtDeleteNullify" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteNullify" dbEntityName="MT_DELETE_NULLIFY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtDeleteRule" className="org.apache.cayenne.testdo.mt.MtDeleteRule" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteRule" dbEntityName="MT_DELETE_RULE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtMapToMany" className="org.apache.cayenne.testdo.mt.MtMapToMany" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMapToMany" dbEntityName="MT_MAP_TO_MANY">
+	</obj-entity>
+	<obj-entity name="MtMapToManyTarget" className="org.apache.cayenne.testdo.mt.MtMapToManyTarget" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget" dbEntityName="MT_MAP_TO_MANY_TARGET">
+	</obj-entity>
+	<obj-entity name="MtMeaningfulPk" className="org.apache.cayenne.testdo.mt.MtMeaningfulPk" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMeaningfulPk" dbEntityName="MT_MEANINGFUL_PK">
+		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
+	</obj-entity>
+	<obj-entity name="MtReflexive" className="org.apache.cayenne.testdo.mt.MtReflexive" clientClassName="org.apache.cayenne.testdo.mt.ClientMtReflexive" dbEntityName="MT_REFLEXIVE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1" dbEntityName="MT_TABLE1">
+		<obj-attribute name="globalAttribute1" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE1"/>
+		<obj-attribute name="serverAttribute1" type="java.lang.String" db-attribute-path="SERVER_ATTRIBUTE1"/>
+	</obj-entity>
+	<obj-entity name="MtTable1Subclass" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1Subclass">
+		<qualifier><![CDATA[globalAttribute1 = "sub1"]]></qualifier>
+		<obj-attribute name="subclassAttribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
+	</obj-entity>
+	<obj-entity name="MtTable2" className="org.apache.cayenne.testdo.mt.MtTable2" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable2" dbEntityName="MT_TABLE2">
+		<obj-attribute name="globalAttribute" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE"/>
+	</obj-entity>
+	<obj-entity name="MtTable3" className="org.apache.cayenne.testdo.mt.MtTable3" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable3" dbEntityName="MT_TABLE3">
+		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
+		<obj-attribute name="charColumn" type="java.lang.String" db-attribute-path="CHAR_COLUMN"/>
+		<obj-attribute name="intColumn" type="java.lang.Integer" db-attribute-path="INT_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable4" dbEntityName="MT_TABLE4">
+	</obj-entity>
+	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable5" dbEntityName="MT_TABLE5">
+	</obj-entity>
+	<obj-entity name="MtTableBool" className="org.apache.cayenne.testdo.mt.MtTableBool" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTableBool" dbEntityName="MT_TABLE_BOOL">
+		<obj-attribute name="blablacheck" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
+		<obj-attribute name="number" type="int" db-attribute-path="NUMERIC_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="MtTooneDep" className="org.apache.cayenne.testdo.mt.MtTooneDep" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTooneDep" dbEntityName="MT_TOONE_DEP">
+	</obj-entity>
+	<obj-entity name="MtTooneMaster" className="org.apache.cayenne.testdo.mt.MtTooneMaster" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTooneMaster" dbEntityName="MT_TOONE_MASTER">
+	</obj-entity>
+	<db-relationship name="cascade" source="MT_DELETE_CASCADE" target="MT_DELETE_RULE" toMany="false">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="deny" source="MT_DELETE_DENY" target="MT_DELETE_RULE" toMany="false">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="nullify" source="MT_DELETE_NULLIFY" target="MT_DELETE_RULE" toMany="false">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromCascade" source="MT_DELETE_RULE" target="MT_DELETE_CASCADE" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromDeny" source="MT_DELETE_RULE" target="MT_DELETE_DENY" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromNullify" source="MT_DELETE_RULE" target="MT_DELETE_NULLIFY" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4" toMany="false">
+		<db-attribute-pair source="TABLE4_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5" toMany="false">
+		<db-attribute-pair source="TABLE5_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="targets" source="MT_MAP_TO_MANY" target="MT_MAP_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="mapToMany" source="MT_MAP_TO_MANY_TARGET" target="MT_MAP_TO_MANY" toMany="false">
+		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="children" source="MT_REFLEXIVE" target="MT_REFLEXIVE" toMany="true">
+		<db-attribute-pair source="ID" target="PARENT_ID"/>
+	</db-relationship>
+	<db-relationship name="toParent" source="MT_REFLEXIVE" target="MT_REFLEXIVE" toMany="false">
+		<db-attribute-pair source="PARENT_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
+		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
+	</db-relationship>
+	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1" toMany="false">
+		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
+	</db-relationship>
+	<db-relationship name="table3" source="MT_TABLE2" target="MT_TABLE3" toMany="false">
+		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
+	</db-relationship>
+	<db-relationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
+		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
+	</db-relationship>
+	<db-relationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="TABLE4_ID"/>
+	</db-relationship>
+	<db-relationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">
+		<db-attribute-pair source="ID" target="TABLE5_ID"/>
+	</db-relationship>
+	<db-relationship name="toMaster" source="MT_TOONE_DEP" target="MT_TOONE_MASTER" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toDependent" source="MT_TOONE_MASTER" target="MT_TOONE_DEP" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="cascade" source="MtDeleteCascade" target="MtDeleteRule" deleteRule="Cascade" db-relationship-path="cascade"/>
+	<obj-relationship name="deny" source="MtDeleteDeny" target="MtDeleteRule" deleteRule="Deny" db-relationship-path="deny"/>
+	<obj-relationship name="nullify" source="MtDeleteNullify" target="MtDeleteRule" deleteRule="Nullify" db-relationship-path="nullify"/>
+	<obj-relationship name="fromCascade" source="MtDeleteRule" target="MtDeleteCascade" db-relationship-path="fromCascade"/>
+	<obj-relationship name="fromDeny" source="MtDeleteRule" target="MtDeleteDeny" db-relationship-path="fromDeny"/>
+	<obj-relationship name="fromNullify" source="MtDeleteRule" target="MtDeleteNullify" db-relationship-path="fromNullify"/>
+	<obj-relationship name="targets" source="MtMapToMany" target="MtMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>
+	<obj-relationship name="mapToMany" source="MtMapToManyTarget" target="MtMapToMany" db-relationship-path="mapToMany"/>
+	<obj-relationship name="children" source="MtReflexive" target="MtReflexive" db-relationship-path="children"/>
+	<obj-relationship name="toParent" source="MtReflexive" target="MtReflexive" db-relationship-path="toParent"/>
+	<obj-relationship name="table2Array" source="MtTable1" target="MtTable2" db-relationship-path="table2Array"/>
+	<obj-relationship name="table1" source="MtTable2" target="MtTable1" db-relationship-path="table1"/>
+	<obj-relationship name="table3" source="MtTable2" target="MtTable3" deleteRule="Nullify" db-relationship-path="table3"/>
+	<obj-relationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="Deny" db-relationship-path="table2Array"/>
+	<obj-relationship name="table5s" source="MtTable4" target="MtTable5" db-relationship-path="joins.toTable5"/>
+	<obj-relationship name="table4s" source="MtTable5" target="MtTable4" db-relationship-path="joins.toTable4"/>
+	<obj-relationship name="toMaster" source="MtTooneDep" target="MtTooneMaster" deleteRule="Nullify" db-relationship-path="toMaster"/>
+	<obj-relationship name="toDependent" source="MtTooneMaster" target="MtTooneDep" deleteRule="Cascade" db-relationship-path="toDependent"/>
+	<query name="AllMtTable1" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+	</query>
+	<query name="MtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
+	</query>
+	<query name="ParameterizedMtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
+		<qualifier><![CDATA[globalAttribute1 = $g]]></qualifier>
+	</query>
+</data-map>

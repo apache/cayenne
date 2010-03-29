@@ -1,0 +1,196 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - DataObject State Management</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">DataObject State Management</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Running Queries/index.html">Running Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataObject State Management/index.html">DataObject State Management</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html">Moving Objects Between Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html">DataContextDelegate</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html">DataContextFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html">Nested Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html">ObjectContext Memory Management</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Arguably the second most important function of DataContext (first is performing queries) is keeping track of changes made to the registered DataObjects. "Registered" is a keyword here - registering an object with DataContext is what gives this object its persistent qualities.</p>
+
+<h3><a name="DataObjectStateManagement-HowtoRegisteraDataObject"></a>How to Register a DataObject</h3>
+
+<p>Behind the scenes "registering an object" results in storing this object in a map using its ObjectId as a key, setting "dataContext" property of a DataObject to the current DataContext, and taking a snapshot of all persistent properties to be able to track later modifications. Objects can become "registered" in two ways:</p>
+
+<ul>
+	<li>automatically when they are fetched via query API</li>
+	<li>explicitly for the newly created objects</li>
+</ul>
+
+
+<p>Whenever a selecting query is executed by a DataContext, all fetched objects are automatically registered with this DataContext. On the other hand, newly created objects must be registered explicitly:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+DataContext context; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
+</span>
+Artist artist = <span class="code-keyword">new</span> Artist();
+context.registerNewObject(artist);
+
+<span class="code-comment">// after the line above is executed, artist object acquired <span class="code-quote">"persistent"</span> behavior
+</span><span class="code-comment">// and is said to be <span class="code-quote">"managed"</span> by DataContext</span></pre>
+</div></div>
+
+<p>This code can be simplified - object creation and registrations steps can be combined in one method call:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+DataContext context; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
+</span>
+Artist artist = (Artist) context.newObject(Artist.class);</pre>
+</div></div>
+
+<p>This method relies on the presence of a no-argument constructor in the DataObject class.</p>
+
+<h3><a name="DataObjectStateManagement-CheckingtheStateofRegisteredDataObjects"></a>Checking the State of Registered DataObjects</h3>
+
+<p>State transitions of DataObjects from persistence point of view are discussed in the "Design" chapter. State of each individual object is described by an integer constant obtained via a call to DataObject.getPeristenceState(). Allowed states are defined as static variables in PersistenceState class.</p>
+
+<p>When a new object is inserted to the DataContext as described above, it becomes "NEW":</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+DataContext context; <span class="code-comment">// assume <span class="code-keyword">this</span> exists
+</span>
+<span class="code-comment">// artist will become PersistenceState.NEW
+</span>Artist artist = (Artist) context.newObject(Artist.class);</pre>
+</div></div>
+
+<p>When a DataContext is committed, such object becomes "COMMITTED":</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// artist will become PersistenceState.COMMITTED
+</span>context.commitChanges();</pre>
+</div></div>
+
+<p>When any of the attributes or relationships of the fetched or committed object are changed, such an object becomes MODIFIED:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// <span class="code-keyword">this</span> will change the object state to PersistenceState.MODIFIED
+</span>artist.setName(<span class="code-quote">"NewName"</span>);</pre>
+</div></div>
+
+<p>When a fetched or committed object is explicitly deleted from the DataContext, object becomes DELETED:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// <span class="code-keyword">this</span> will change the object state to PersistenceState.DELETED
+</span>context.deleteObject(artist);</pre>
+</div></div>
+
+<p>DataContext is said to have changes if it has one or more registered objects in a state PersistenceState.MODIFIED, PersistenceState.NEW or PersistenceState.DELETED. DataContext provides the following method to check if it has any changed objects:</p>
+
+<ul>
+	<li><tt>public boolean hasChanges()</tt></li>
+</ul>
+
+
+<p>There is also a way to obtain a list of changed objects in each one of the above states:</p>
+
+<ul>
+	<li><tt>public java.util.Collection newObjects()</tt></li>
+	<li><tt>public java.util.Collection deletedObjects()</tt></li>
+	<li><tt>public java.util.Collection modifiedObjects()</tt></li>
+</ul>
+
+
+<h3><a name="DataObjectStateManagement-SavingAllUncommittedDataObjects"></a>Saving All Uncommitted DataObjects</h3>
+
+<p>All of the uncommitted objects ("uncommitted" means "new", "modified" or "deleted") are saved ("committed") to the database with a single method call on the DataContext:</p>
+
+<ul>
+	<li><tt>public void commitChanges()</tt></li>
+</ul>
+
+
+<p>Method commitChanges takes care of building correct SQL statements, generating primary keys and transactional behaviour. It roughly follows this scenario:</p>
+
+<ul>
+	<li>Checks if there are any changed objects (also detecting "phantom" modifications, e.g. if an object property was "updated" with the equivalent value).</li>
+	<li>Validates "dirty" objects (for more information on validation see <a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObject Validation/index.html" title="DataObject Validation">this page</a>).</li>
+	<li>Generates primary keys for any NEW objects that require autogenerated key.</li>
+	<li>Builds any needed INSERT, UPDATE, DELETE queries.</li>
+	<li>Starts the database transaction.</li>
+	<li>Runs the queries.</li>
+	<li>Commits transaction.</li>
+	<li>Changes all committed objects state to PersistenceState.COMMITTED.</li>
+	<li>Updates internally stored snapshots of the recently saved objects.</li>
+</ul>
+
+
+
+<h3><a name="DataObjectStateManagement-UndoingAllUncommittedChanges"></a>Undoing All Uncommitted Changes</h3>
+
+<p>There is a way for the DataContext to undo all uncommitted changes:</p>
+
+<ul>
+	<li><tt>public void rollbackChanges()</tt></li>
+</ul>
+
+
+<p>This will restore the persistence state and the values of all registered objects to the values that objects had when they were fetched or the last commitChanges was executed. This effectively restores previously committed state of the object graph. Note that any NEW objects are unregistered from the context.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

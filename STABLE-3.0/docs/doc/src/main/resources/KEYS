@@ -1,0 +1,89 @@
+This file contains the PGP&GPG keys of various Apache developers.
+Please don't use them for email unless you have to. Their main
+purpose is code signing.
+
+Apache users: pgp < KEYS
+Apache developers: 
+        (pgpk -ll <your name> && pgpk -xa <your name>) >> this file.
+      or
+        (gpg --fingerprint --list-sigs <your name>
+             && gpg --armor --export <your name>) >> this file.
+
+Apache developers: please ensure that your key is also available via the
+PGP keyservers (such as pgpkeys.mit.edu).
+
+pub   1024D/B8AF90BF 2006-09-23
+uid                  Andrus Adamchik (andrus) <andrus@objectstyle.org>
+sig 3        B8AF90BF 2006-09-23  Andrus Adamchik (andrus) <andrus@objectstyle.org>
+sub   2048g/A6C30C00 2006-09-23
+sig          B8AF90BF 2006-09-23  Andrus Adamchik (andrus) <andrus@objectstyle.org>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1.4.3 (Darwin)
+
+mQGiBEUVncgRBADiguZch//Lz2FZLy+NZxZQ5fAAya/5i6mPcJ/FUppY02x3HWmY
+RGAVI/ZURIqCqHxyhgguX7zcrKfyE0bu45OayhhyfaydU4yTUPZF1UwtS8ULvLjl
+szu5G7OeO7Blmaajj0pFaYnb1cXhxG7I9Wz2mFnRAtVo2VoL+s5KWNdRUwCg6Z7M
+KGHkj7LWBoKEBODs4UTvEjkEAJRDFV20q7wpho7fMvJJgUpy7AlUgzplt/hVjv7X
+zgDLb0G5huqH28zLf3ZT3XIn6llIkjRjKX0RWAaebgnAoc2vhG3vglqmyphjH5zP
+mGaP+heY6Pz26sAYyKC1VOTndUdk2j0FQ+JJ91oUNhNerBxwUEHOBt8oVXOO/N+d
+dSb0A/9kbLklVVnNP2ztmvHwhKpSwJBWvZXOjX4AN1KB/b1RiwIZUSV85NFITqKj
+VCCaG4cyRvHkvfMATBpDcPUVWZaPoiKAXTKa3ZHK4W+ZbuDN++PwTfurxfwg2o4b
+sljRJVvR0oNWXXV2w3ZrywfAq9bejgiW1zgQoin+FzD+pflW5LQxQW5kcnVzIEFk
+YW1jaGlrIChhbmRydXMpIDxhbmRydXNAb2JqZWN0c3R5bGUub3JnPohgBBMRAgAg
+BQJFFZ3IAhsDBgsJCAcDAgQVAggDBBYCAwECHgECF4AACgkQKmKWXbivkL+/YwCg
+1vJJidCeMN3IYzTWsdGFB7lKjXoAoKLBkzAyTJj8mu/Rj1y+Ro+rusZguQINBEUV
+ngwQCAClmw1DRilFKQAPdagJ4j4dvxUAdYv5ZJY0Umt44Vvs6hXFzCwyKD3W3aDG
+jaqIKGYj1q1/FHCPlXTfAjm4AQwcLrgOCMcbMkqJsDLD27cD4+O2hbBrJW3hwFFf
+sCFatvW3EBEXyWI4k9uos0nUrIDqGoA+DqLRgyrCFh+874Fr6eO5oJmKw1O8LkOP
+O4K3N5AXY4AFT9VZfOVEdhkHxht0IwVuqmHGyvPLEMkyp2bUhMd/9VHBgvEMnSlA
+4JmNB6EU+GdlPvei9C9ZzzmeYvwicAO1HHo4uQxfmE6V13K3/mH+hE/NlxLZ9syQ
+Zhe77mjaOQILt3g4CRRQ5Y5S2vyvAAMFB/wJ/OgwXrJImZhG0JxYTDl/pHVU7Whn
+anSaSrn2kI+8oGxJi4mrTFKZHgfOeFhhSsyMvydnscXAHS/ehUpEjcpxRS8ZVvyA
+sAJyBBkm1MhkQK2FFlSBIYCOXl+8mRGJqiem0NP8OgnNJAjTzOVukZpoz7UiAzbX
+zu7+DbFFJzq5G0xXDsNIdIObAFrCFgBkNg5V4T7iVMA3hN6Gp5UXBT4bRif36uDm
+SwKET84KQZrIWyMZNfNLNlxUCVaI44TsOuaUj4OPO4OIwHGSFZNV8b596+EB7VCB
+wDdE2uePbWP5Lc1vEkFCkNz/BUf60oiNnU0uGZ0pNlKo+Nk+HKnJP0V9iEkEGBEC
+AAkFAkUVngwCGwwACgkQKmKWXbivkL+03wCdFt9ms0gcaF0xAYRSh37N2eVwPGwA
+n0fr1EHLyn3mbwHqwllfwX9QE1EV
+=KVMq
+-----END PGP PUBLIC KEY BLOCK-----
+
+
+pub   1024D/DBAC3830 2007-10-28
+      Key fingerprint = C972 6F98 0956 F70E AAEC  735C F421 EF4E DBAC 3830
+uid                  Kevin Menard (CODE SIGNING KEY) <kmenard@apache.org>
+sig 3        DBAC3830 2007-10-28  Kevin Menard (CODE SIGNING KEY) <kmenard@apache.org>
+sub   2048g/BDA83969 2007-10-28
+sig          DBAC3830 2007-10-28  Kevin Menard (CODE SIGNING KEY) <kmenard@apache.org>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1.4.7 (Darwin)
+
+mQGiBEckmuERBADw1lkZ1Us5eTV6p3mvc+Cot7lOQNa3rATEIouH38cL3SYc16S3
+P7Izo4C8QlZiNsLhUWrJFbBwKHPmyAjuNaJnvFvL53P4aUDdsx531D3p8pTMRx/w
+TcI3mFzOBpiZp08dJQviiIZ9HgpxHQCt+dyPPjBVajfRx1Ib/0LcG6s83wCg4wwz
+aHsw6KF+K5AQYro17FhpPm0D/1LSvydJjn3Uo8ZsDOPG8HqUOWrxk5He/G98ERT6
+uLL9WbyL+/mmw6FuWOmadZgjz0oK5r2AmluaE6L5OehiG3SH7tj7auq9SiR9l3vK
+cVGIvsUVMtdoDCzIvVSyZSLWahC6XijL6kTGh/rQ7yq1QIzHjA78ZLwzhLT6ORtL
+bELhBACqP0mH4Md0LcAbu9mVgom3Y/Jsrwb01HtkbvqOVTcH2TY6Lqubn9/2Hsff
+OVdoMmY65ZaGHnikh058jnz4JRTWcJ2gvK5Vo17G5M+nA8iIDg7DVY9tptfWv1Xn
+ZwlX2fZt0y0p56LO5Rkx6D0DNXiI/buXra6DIPkrV30RcRZtp7Q0S2V2aW4gTWVu
+YXJkIChDT0RFIFNJR05JTkcgS0VZKSA8a21lbmFyZEBhcGFjaGUub3JnPohgBBMR
+AgAgBQJHJJrhAhsDBgsJCAcDAgQVAggDBBYCAwECHgECF4AACgkQ9CHvTtusODAX
+6QCgsrp3HSVffN3TEP8o8gl8LBpZGKgAniFLZXM3k3IFDIbEunp5VVfCwa56uQIN
+BEckmuEQCAD88944PNdpAJWBaAZUNEUlLfeUVB1CkykN76PjDtpsrcf/wnJtuQGS
++EXcEZetCAoRdGVTM3cUHU3BVCNnDtmu/DE4f7AH3AWOl/WFGjQK49+KyyKbc2tm
+eocu9JSsxEn+fwBJOWSoJC4hTeleQ3U0r8CVW6Q2jgawXtpmBFgVQHE4lLBnSyLW
+RXdrTaFiO6KYaL2QvB7zdleRUPl3tFz6miUBF6stXvbuIGi2r57J+ZCMfnrbbtk/
+yI1MGUnY4+q7gyHiPZnghm/6hz9kszxg84ANVK6YryS7QTX9KGWPdnAtsNYVDwaS
+KGfg/fjL9wNZaLE2IK/WcktEe0aA/6Y3AAMHB/9HCbwSB3m5/DLZ/ARZtATuUNRE
+CeDyom6IKMzuhNEVnIWLlFrlmdCG3qdpSPHDhQR+OyIvzh8h7WErQYm/WjY/ouQ5
+ShBGy2FFuQFfqKnh8QK+OudIdnnGf0E+hjpIMg8jzvxy0Jrox2mpT3etMreXH29t
+m8IpDcuQcS4V5XfZAy/xTxnXN2VKek1tbEL66Pt6UyUDdCOvX42u/thQLaaUSfHM
+O3KVDIU87zl9QEuBVSC13pi3zXNXbNBrQqVLXzHbw7/dibjXcCPEYnR0ubU5mN75
+pxzmrm8EUNqLWUhLh3fscoRqTYkaoQlYkrCGw6udnN9V3h1WmZUFPbE6e7HxiEkE
+GBECAAkFAkckmuECGwwACgkQ9CHvTtusODD0lwCgibSRJsN1DO8NrigKNplynOfc
+qXoAoN/9XbpoW58ve7O/6lh9kLXGa/fv
+=JWKS
+-----END PGP PUBLIC KEY BLOCK-----

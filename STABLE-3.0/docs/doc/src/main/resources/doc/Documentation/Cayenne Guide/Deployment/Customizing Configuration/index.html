@@ -1,0 +1,125 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Customizing Configuration</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Customizing Configuration</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Standalone Applications/index.html">Standalone Applications</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Web Applications/index.html">Web Applications</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Customizing Configuration/index.html">Customizing Configuration</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/DBCPDataSourceFactory/index.html">DBCPDataSourceFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Using JNDI/index.html">Using JNDI</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html">Configuring Logging</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>A user can create her own subclass of Configuration and use it instead of the classes provided by Cayenne. Custom subclasses are usually created to load configuration files from non-standard locations, to automatically configure Cayenne during certain events that happen in deployment containers, etc. Cayenne provides a few implementations of Configuration discussed later in this chapter.</p>
+
+<p>To ensure that Cayenne uses the correct Configuration class, it must be initialized properly before any calls to Configuration are made:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.Configuration
+...
+<span class="code-object">Class</span> myConfigSubclass = my.<span class="code-keyword">package</span>.ConfigSubclass.class;
+Configuration.initializeSharedConfiguration(myConfigSubclass);
+</pre>
+</div></div>
+<p>After this code is executed, any subsequent calls to <tt>Configuration.getSharedConfiguration()</tt> will return an instance of the custom class instead of <tt>DefaultConfiguration</tt>.</p>
+
+<p>Another useful feature is the customization of the resource lookup strategy implemented by the existing classes. Currently, both <tt>DefaultConfiguration</tt> and <tt>FileConfiguration</tt> offer the possibility to add additional paths which will be searched for resources.</p>
+
+<h3><a name="CustomizingConfiguration-DefaultConfiguration"></a>DefaultConfiguration</h3>
+
+<p><tt>DefaultConfiguration</tt> uses the application's class path for locating configuration files; this works for both "expanded" class paths and JAR files. "Out of the box" only resources on the top level of the class path are found; very often it is convenient to have a subdirectory ('package') with configuration files. There are two ways to make Configuration find these files:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.DefaultConfiguration;
+...
+DefaultConfiguration conf = <span class="code-keyword">new</span> DefaultConfiguration();			
+conf.addClassPath(<span class="code-quote">"my/<span class="code-keyword">package</span>/conf"</span>);
+Configuration.initializeSharedConfiguration(conf);
+</pre>
+</div></div>
+<p>Alternatively you can place an empty subclass of DefaultConfiguration into your package and use that class directly:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> my.<span class="code-keyword">package</span>.conf.MyPackageConfiguration;
+...
+Configuration.initializeSharedConfiguration(<span class="code-keyword">new</span> MyPackageConfiguration());
+</pre>
+</div></div>
+
+<h3><a name="CustomizingConfiguration-FileConfiguration"></a>FileConfiguration</h3>
+
+<p><tt>FileConfiguration</tt> uses the regular file system to load its files, and works very silimar to <tt>DefaultConfiguration</tt>:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.FileConfiguration;
+...
+<span class="code-object">String</span> fileName = <span class="code-quote">"/some/path/to/my-cayenne.xml"</span>;
+FileConfiguration conf = <span class="code-keyword">new</span> FileConfiguration(<span class="code-keyword">new</span> File(fileName));
+Configuration.initializeSharedConfiguration(conf);
+</pre>
+</div></div>
+<p>The fileName argument can be absolute or relative to the application's working directory, and is checked for accessibility. A more flexible lookup can be done by using the name without any path and adding search paths:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.FileConfiguration;
+...
+FileConfiguration conf = <span class="code-keyword">new</span> FileConfiguration(<span class="code-quote">"my-cayenne.xml"</span>);
+conf.addFilesystemPath(<span class="code-quote">"a/relative/path"</span>);
+conf.addFilesystemPath(<span class="code-quote">"/another/absolute/path"</span>);
+conf.addFilesystemPath(<span class="code-keyword">new</span> File(<span class="code-quote">"/some/path/that/must/exist/"</span>));
+Configuration.initializeSharedConfiguration(conf);
+</pre>
+</div></div>
+<p>The difference between the String and File arguments is that the latter are checked for existence. Both variants can be absolute or relative, and are evaluated in the order in which they are added to the Configuration.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

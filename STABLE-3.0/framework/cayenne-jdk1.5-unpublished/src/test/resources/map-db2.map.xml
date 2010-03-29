@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.db2"/>
+	<db-entity name="CROSSDB_M2E1">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="CROSSDB_M2E2">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="M1E1_ID" type="INTEGER"/>
+		<db-attribute name="M2E1_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="CrossdbM2E1" className="org.apache.cayenne.testdo.db2.CrossdbM2E1" dbEntityName="CROSSDB_M2E1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CrossdbM2E2" className="org.apache.cayenne.testdo.db2.CrossdbM2E2" dbEntityName="CROSSDB_M2E2">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="listOfM2E2" source="CROSSDB_M2E1" target="CROSSDB_M2E2" toMany="true">
+		<db-attribute-pair source="ID" target="M2E1_ID"/>
+	</db-relationship>
+	<db-relationship name="toM1E1" source="CROSSDB_M2E2" target="CROSSDB_M1E1" toMany="false">
+		<db-attribute-pair source="M1E1_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toM2E1" source="CROSSDB_M2E2" target="CROSSDB_M2E1" toMany="false">
+		<db-attribute-pair source="M2E1_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="listOfM2E2" source="CrossdbM2E1" target="CrossdbM2E2" db-relationship-path="listOfM2E2"/>
+	<obj-relationship name="toM1E1" source="CrossdbM2E2" target="CrossdbM1E1" db-relationship-path="toM1E1"/>
+	<obj-relationship name="toM2E1" source="CrossdbM2E2" target="CrossdbM2E1" db-relationship-path="toM2E1"/>
+</data-map>

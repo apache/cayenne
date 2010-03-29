@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- DbAdapters -->
+	<!-- ======================================= -->
+	<bean id="OracleAdapter" class="org.apache.cayenne.dba.oracle.OracleAdapter"/>
+	<bean id="Oracle8Adapter" class="org.apache.cayenne.dba.oracle.Oracle8Adapter"/>
+	<bean id="SybaseAdapter" class="org.apache.cayenne.dba.sybase.SybaseAdapter"/>
+	<bean id="MySQLAdapter" class="org.apache.cayenne.dba.mysql.MySQLAdapter"/>
+	<bean id="PostgresAdapter" class="org.apache.cayenne.dba.postgres.PostgresAdapter"/>
+	<bean id="OpenBaseAdapter" class="org.apache.cayenne.dba.openbase.OpenBaseAdapter"/>
+	<bean id="SQLServerAdapter" class="org.apache.cayenne.dba.sqlserver.SQLServerAdapter"/>
+	<bean id="DB2Adapter" class="org.apache.cayenne.dba.db2.DB2Adapter"/>
+	<bean id="HSQLDBAdapter" class="org.apache.cayenne.dba.hsqldb.HSQLDBAdapter"/>
+	<bean id="H2Adapter" class="org.apache.cayenne.dba.h2.H2Adapter"/>
+	<bean id="DerbyAdapter" class="org.apache.cayenne.dba.derby.DerbyAdapter"/>
+	<bean id="FrontBaseAdapter" class="org.apache.cayenne.dba.frontbase.FrontBaseAdapter"/>
+	<bean id="IngresAdapter" class="org.apache.cayenne.dba.ingres.IngresAdapter"/>
+	<bean id="SQLiteAdapter" class="org.apache.cayenne.dba.sqlite.SQLiteAdapter"/>
+
+	<!-- ======================================= -->
+	<!-- Access Stack Adapters -->
+	<!-- ======================================= -->
+	<bean id="OracleStackAdapter" class="org.apache.cayenne.unit.OracleStackAdapter">
+		<constructor-arg><ref bean="OracleAdapter"/></constructor-arg>
+	</bean>
+	<bean id="Oracle8StackAdapter" class="org.apache.cayenne.unit.OracleStackAdapter">
+		<constructor-arg><ref bean="Oracle8Adapter"/></constructor-arg>
+	</bean>
+	<bean id="SybaseStackAdapter" class="org.apache.cayenne.unit.SybaseStackAdapter">
+		<constructor-arg><ref bean="SybaseAdapter"/></constructor-arg>
+	</bean>
+	<bean id="MySQLStackAdapter" class="org.apache.cayenne.unit.MySQLStackAdapter">
+		<constructor-arg><ref bean="MySQLAdapter"/></constructor-arg>
+	</bean>
+	<bean id="PostgresStackAdapter" class="org.apache.cayenne.unit.PostgresStackAdapter">
+		<constructor-arg><ref bean="PostgresAdapter"/></constructor-arg>
+	</bean>
+	<bean id="OpenBaseStackAdapter" class="org.apache.cayenne.unit.OpenBaseStackAdapter">
+		<constructor-arg><ref bean="OpenBaseAdapter"/></constructor-arg>
+	</bean>
+	<bean id="SQLServerStackAdapter" class="org.apache.cayenne.unit.SQLServerStackAdapter">
+		<constructor-arg><ref bean="SQLServerAdapter"/></constructor-arg>
+	</bean>
+	<bean id="DB2StackAdapter" class="org.apache.cayenne.unit.DB2StackAdapter">
+		<constructor-arg><ref bean="DB2Adapter"/></constructor-arg>
+	</bean>
+	<bean id="HSQLDBStackAdapter" class="org.apache.cayenne.unit.HSQLDBStackAdapter">
+		<constructor-arg><ref bean="HSQLDBAdapter"/></constructor-arg>
+	</bean>
+	<bean id="H2StackAdapter" class="org.apache.cayenne.unit.H2StackAdapter">
+		<constructor-arg><ref bean="H2Adapter"/></constructor-arg>
+	</bean>
+	<bean id="DerbyStackAdapter" class="org.apache.cayenne.unit.DerbyStackAdapter">
+		<constructor-arg><ref bean="DerbyAdapter"/></constructor-arg>
+	</bean>
+	<bean id="FrontBaseStackAdapter" class="org.apache.cayenne.unit.FrontBaseStackAdapter">
+		<constructor-arg><ref bean="FrontBaseAdapter"/></constructor-arg>
+	</bean>
+	<bean id="IngresStackAdapter" class="org.apache.cayenne.unit.IngresStackAdapter">
+		<constructor-arg><ref bean="IngresAdapter"/></constructor-arg>
+	</bean>
+	<bean id="SQLiteStackAdapter" class="org.apache.cayenne.unit.SQLiteStackAdapter">
+		<constructor-arg><ref bean="SQLiteAdapter"/></constructor-arg>
+	</bean>
+	
+	
+	<!-- ======================================= -->
+	<!-- DataMaps -->
+	<!-- ======================================= -->
+	<bean id="TestMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>testmap.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="PeopleMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>people.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="LockingMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>locking.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="RelationshipMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>relationships.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="OneWayMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>one-way-map.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="DB1Map" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>map-db1.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="DB2Map" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>map-db2.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="MultiTierMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>multi-tier.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="GenericMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>generic.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="EmbeddingMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>embeddable.map.xml</value></constructor-arg>
+	</bean>
+	<bean id="QualifiedMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>qualified.map.xml</value></constructor-arg>
+	</bean>
+    <bean id="InheritanceMap" class="org.apache.cayenne.unit.DataMapFactory">
+        <constructor-arg><value>inheritance.map.xml</value></constructor-arg>
+    </bean>
+    <bean id="QuoteMap" class="org.apache.cayenne.unit.DataMapFactory">
+        <constructor-arg><value>quotemap.map.xml</value></constructor-arg>
+    </bean>
+    <bean id="InheritanceFlatMap" class="org.apache.cayenne.unit.DataMapFactory">
+        <constructor-arg><value>inheritance-flat.map.xml</value></constructor-arg>
+    </bean>
+    
+	
+	<!-- ======================================= -->
+	<!-- DataSetFactory -->
+	<!-- ======================================= -->
+	<bean id="DataSetFactory" class="org.apache.cayenne.unit.XMLDataSetFactory">
+		<property name="location"><value>dml</value></property>
+	</bean>
+	
+	<!-- ======================================= -->
+	<!-- Access Stacks -->
+	<!-- ======================================= -->
+	<bean id="TestStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="TestMap"/></list></constructor-arg>
+	</bean>
+	<bean id="PeopleStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="PeopleMap"/></list></constructor-arg>
+	</bean>
+	<bean id="EmbeddingStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="EmbeddingMap"/></list></constructor-arg>
+	</bean>
+	<bean id="LockingStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="LockingMap"/></list></constructor-arg>
+	</bean>
+	<bean id="RelationshipStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="RelationshipMap"/></list></constructor-arg>
+	</bean>
+	<bean id="OneWayStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="OneWayMap"/></list></constructor-arg>
+	</bean>
+	<bean id="MultiNodeStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg>
+			<list><ref bean="DB1Map"/><ref bean="DB2Map"/></list>
+		</constructor-arg>
+	</bean>
+	<bean id="MultiTierStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="MultiTierMap"/></list></constructor-arg>
+	</bean>
+	<bean id="GenericStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="GenericMap"/></list></constructor-arg>
+	</bean>
+	<bean id="QualifiedStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="QualifiedMap"/></list></constructor-arg>
+	</bean>
+    <bean id="InheritanceStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+        <constructor-arg><ref bean="TestResources"/></constructor-arg>
+        <constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+        <constructor-arg><list><ref bean="InheritanceMap"/></list></constructor-arg>
+    </bean>
+    <bean id="QuoteMapStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+        <constructor-arg><ref bean="TestResources"/></constructor-arg>
+        <constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+        <constructor-arg><list><ref bean="QuoteMap"/></list></constructor-arg>
+    </bean>
+	<bean id="InheritanceFlatStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="InheritanceFlatMap"/></list></constructor-arg>
+	</bean>
+	<!-- Used to create DB schema to avoid conflicts when schema for individual stacks is generated. -->
+	<bean id="SchemaSetupStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg>
+			<list>
+				<ref bean="TestMap"/>
+				<ref bean="PeopleMap"/>
+				<ref bean="LockingMap"/>
+				<ref bean="RelationshipMap"/>
+				<ref bean="MultiTierMap"/>
+				<ref bean="GenericMap"/>
+				<ref bean="DB1Map"/>
+				<ref bean="DB2Map"/>
+				<ref bean="EmbeddingMap"/>
+				<ref bean="QualifiedMap"/>
+                <ref bean="InheritanceMap"/>
+                <ref bean="QuoteMap"/>
+				<ref bean="InheritanceFlatMap"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	
+	<!-- ======================================= -->
+	<!-- Test Resources Container -->
+	<!-- ======================================= -->
+	<bean id="TestResources" class="org.apache.cayenne.unit.CayenneResources">
+		<constructor-arg>
+			<map>
+				<entry key="org.apache.cayenne.dba.oracle.OracleAdapter"><ref bean="OracleStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.oracle.Oracle8Adapter"><ref bean="Oracle8StackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.sybase.SybaseAdapter"><ref bean="SybaseStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.mysql.MySQLAdapter"><ref bean="MySQLStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.postgres.PostgresAdapter"><ref bean="PostgresStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.openbase.OpenBaseAdapter"><ref bean="OpenBaseStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.sqlserver.SQLServerAdapter"><ref bean="SQLServerStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.db2.DB2Adapter"><ref bean="DB2StackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.hsqldb.HSQLDBAdapter"><ref bean="HSQLDBStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.h2.H2Adapter"><ref bean="H2StackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.derby.DerbyAdapter"><ref bean="DerbyStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.frontbase.FrontBaseAdapter"><ref bean="FrontBaseStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.ingres.IngresAdapter"><ref bean="IngresStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.sqlite.SQLiteAdapter"><ref bean="SQLiteStackAdapter"/></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<!-- ======================================= -->
+	<!-- SQLTemplate Customizer (external reference) -->
+	<!-- ======================================= -->
+	<bean id="SQLTemplateCustomizer" class="org.apache.cayenne.unit.SpringResourceFactory">
+		<constructor-arg><value>dml/unit.util.SQLTemplateCustomizer.xml</value>
+		</constructor-arg>
+	</bean>
+</beans>

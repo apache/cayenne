@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!--
+Cayenne DataMap DTD, v 3.0
+
+Defines format of Cayenne DataMap XML files (*.map.xml).  DataMap files contain
+the metadata needed for Cayenne object-relational features. Multiple DataMaps
+are usually combined in one shared namespace, so the elements of the DataMap
+may reference objects from other DataMaps. 
+-->
+
+<!--
+A generic property used by other configuration objects.
+-->
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+	name CDATA #REQUIRED
+	value CDATA #REQUIRED
+>
+
+<!--
+Root element.
+-->
+<!ELEMENT data-map (property*, db-entity*, obj-entity*, db-relationship*, obj-relationship*, procedure*, query*)>
+<!ATTLIST data-map
+	project-version CDATA #REQUIRED
+>
+
+<!--
+A descriptor of a DB table or view.
+-->
+<!ELEMENT db-entity (db-attribute+, db-key-generator?)>
+<!ATTLIST db-entity
+	name CDATA #REQUIRED
+	schema CDATA #IMPLIED
+	catalog CDATA #IMPLIED
+>
+
+<!--
+A descriptor of a DB table column.
+-->
+<!ELEMENT db-attribute EMPTY>
+<!ATTLIST db-attribute
+	name CDATA #REQUIRED
+	isPrimaryKey (true | false) "false"
+	isMandatory (true | false) "false"
+	isGenerated (true|false) "false"
+	type CDATA #REQUIRED
+	length CDATA #IMPLIED
+	precision CDATA #IMPLIED
+>
+
+<!--
+Defines an ObjEntity - a metadata element describing a persistent Java 
+class. Since 1.1 allows "superEntityName" to specify a parent in the inheritance
+hierarchy.
+-->
+<!ELEMENT obj-entity (qualifier?, obj-attribute+)>
+<!ATTLIST obj-entity
+	name CDATA #REQUIRED
+	className CDATA #REQUIRED
+	dbEntityName CDATA #REQUIRED
+	superEntityName CDATA #IMPLIED
+	superClassName CDATA #IMPLIED
+	clientClassName CDATA #IMPLIED
+	clientSuperClassName CDATA #IMPLIED
+	readOnly (true | false) "false"
+	lock-type (optimistic | none) "none"
+>
+
+<!ELEMENT obj-attribute EMPTY>
+<!ATTLIST obj-attribute
+	name CDATA #REQUIRED
+	db-attribute-path CDATA #REQUIRED
+	type CDATA #REQUIRED
+	lock (true | false) "false"
+>
+
+<!ELEMENT obj-relationship EMPTY>
+<!ATTLIST obj-relationship
+	name CDATA #REQUIRED
+	source CDATA #REQUIRED
+	target CDATA #REQUIRED
+	toMany (true | false) "false"
+	collection-type (java.util.List | java.util.Collection | java.util.Set | java.util.Map ) "java.util.List"
+	map-key CDATA #IMPLIED
+	lock (true | false) "false"
+	db-relationship-path CDATA #IMPLIED
+>
+
+<!ELEMENT db-relationship (db-attribute-pair+)>
+<!ATTLIST db-relationship
+	source CDATA #REQUIRED
+	target CDATA #REQUIRED
+	toMany (true | false) "false"
+	toDependentPK (true | false) "false"
+	name CDATA #REQUIRED
+>
+
+<!ELEMENT db-attribute-pair EMPTY>
+<!ATTLIST db-attribute-pair
+	source CDATA #REQUIRED
+	target CDATA #REQUIRED
+>
+
+<!ELEMENT procedure (procedure-parameter*)>
+<!ATTLIST procedure
+	name CDATA #REQUIRED
+	schema CDATA #IMPLIED
+	catalog CDATA #IMPLIED
+	returningValue (true | false) "false"
+>
+
+<!ELEMENT procedure-parameter EMPTY>
+<!ATTLIST procedure-parameter
+	name CDATA #REQUIRED
+	direction (in | in_out | out | void) "void"
+	type CDATA #REQUIRED
+	length CDATA #IMPLIED
+	precision CDATA #IMPLIED
+>
+
+<!--
+Defines a Cayenne Query that can be either at the DataMap
+level, or linked to an entity or procedure.
+-->
+<!ELEMENT query (property*, (sql* | (qualifier?, ordering*, prefetch*)?)) >
+<!ATTLIST query
+        name CDATA #REQUIRED
+        factory CDATA #REQUIRED
+		root (db-entity | obj-entity | procedure | data-map | java-class) "data-map"
+        root-name CDATA #IMPLIED
+        result-entity CDATA #IMPLIED
+>
+
+
+
+<!--
+Defines a query qualifier, normally an encoded expression
+wrapped in CDATA, like "abc.name != $param2 and salary > 
+$param2".
+-->
+<!ELEMENT qualifier (#PCDATA)>
+
+<!--
+Defines a query ordering.
+-->
+<!ELEMENT ordering (#PCDATA)>
+<!ATTLIST ordering
+	descending  (true | false) "false"
+	ignore-case  (true | false) "false"
+>
+
+<!--
+Defines a query relationship prefetching.
+-->
+<!ELEMENT prefetch (#PCDATA)>
+
+<!--
+Defines arbitrary SQL statement, normally wrapped in 
+CDATA section. Note that SQL statement can be customized
+for different SQL dialects per DbAdapter class. If no
+adapter-specific statement is found, the one with no
+adapter label is used by default
+-->
+<!ELEMENT sql (#PCDATA)>
+<!ATTLIST sql
+        adapter-class CDATA #IMPLIED
+>
+
+
+<!--
+"db-key-generator"  optional tag is used to install the 
+Automatic Sequence/Key Generation facility for db-entity.
+
+Example:
+  <db-key-generator>
+    <db-generator-type>ORACLE</db-generator-type>
+    <db-generator-name>test_sequence</db-generator-name>
+    <db-key-cache-size>10</db-key-cache-size>
+  </db-key-generator>
+
+Notes: This feature is intended for use with Simple (non-Compound)
+       Integral Primary Keys.
+-->
+<!ELEMENT db-key-generator (
+    db-generator-type,
+    db-generator-name?,
+    db-key-cache-size?
+)>
+
+<!--
+Specifies the Key Generation Method that will be employed
+  'ORACLE'               - use Oracle's SEQUENCE
+  'NAMED_SEQUENCE_TABLE' - use USER designated SEQUENCE TABLE
+                               User specifies the name of a DBMS Table
+                               with the schema (sequence INT)
+                               which will be used to hold sequence values
+                               (not supported yet)
+-->
+<!ELEMENT db-generator-type (#PCDATA)>
+
+<!--
+If this is DBMS Key Generation,
+Then this may be used to specify the Name of the Generator,
+  e.g. for <db-generator-type>ORACLE
+           <db-generator-name> would be the name of the ORACLE SEQUENCE to use.
+                             the SEQUENCE is assumed to already exist in the Database.
+
+If this is <db-generator-type>NAMED_SEQUENCE_TABLE Key Generation,
+Then this would be used to specify the name of the SEQUENCE TABLE to use.
+ the NAMED_SEQUENCE_TABLE is assumed to already exist in the Database
+ with 1 row.
+-->
+<!ELEMENT db-generator-name (#PCDATA)>
+
+<!--
+Optional size of key cache.
+For <db-generator-type>ORACLE , this value MUST match the
+  Oracle SEQUENCE  INCREMENT value.  If there is a mismatch
+  between this value and the Oracle SEQUENCE INCREMENT value,
+  then there will likely be duplicate key problems.
+
+For <db-generator-type>NAMED_SEQUENCE_TABLE , this tells how many keys
+  the Container will fetch in a single DBMS call
+-->
+<!ELEMENT db-key-cache-size (#PCDATA)>

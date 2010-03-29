@@ -1,0 +1,65 @@
+{
+    attributes = (
+        {
+            columnName = "HELPER_ENTITY_ID"; 
+            externalType = int; 
+            internalInfo = {"_nameInObjectStore" = PK; }; 
+            name = helperEntityID; 
+            serverTimeZone = "America/New_York"; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = NAME; 
+            externalType = char; 
+            name = name; 
+            serverTimeZone = "America/New_York"; 
+            valueClassName = NSString; 
+            width = 200; 
+        }, 
+        {
+            columnName = PK; 
+            externalType = int; 
+            name = pk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (pk, helperEntityID); 
+    className = SingeTableConcreteEntityOneClass; 
+    classProperties = (toHelper, toHelper1, name); 
+    externalName = "SINGLE_TABLE"; 
+    fetchSpecificationDictionary = {}; 
+    name = SingleTableConcreteEntityOne; 
+    parent = XSingleTableAbstractEntity; 
+    primaryKeyAttributes = (pk); 
+    relationships = (
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = SingleTableJoin; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = singleTablePk; sourceAttribute = pk; }); 
+            name = singleTableJoins; 
+            ownsDestination = Y; 
+            propagatesPrimaryKey = Y; 
+        }, 
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = HelperEntity; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = helperEntityID; }); 
+            name = toHelper; 
+        }, 
+        {
+            destination = HelperEntity; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = helperEntityID; }); 
+            name = toHelper1; 
+        }
+    ); 
+    restrictingQualifier = "(pk > 20)"; 
+}

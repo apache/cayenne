@@ -1,0 +1,146 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Obtaining DataContext</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Obtaining DataContext</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Running Queries/index.html">Running Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataObject State Management/index.html">DataObject State Management</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html">Moving Objects Between Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html">DataContextDelegate</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html">DataContextFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html">Nested Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html">ObjectContext Memory Management</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Depending on deployment environment and application needs, Cayenne can be configured in a few different ways to make DataContext instances available. This is discussed in detail in deployment chapter. In this chapter we assume a properly deployed application and will concentrate on how to obtain a DataContext for the database access. The following are the most common ways to achieve that:</p>
+
+<h3><a name="ObtainingDataContext-CreatingDataContextontheSpot"></a>Creating DataContext on the Spot</h3>
+
+<p>A new DataContext instance normally can be created using the following code:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+DataContext context = DataContext.createDataContext();</pre>
+</div></div>
+
+<p>This approach may be used in standalone applications, where the notion of a "session" is user-defined. In web applications the correct instance of DataContext is usually bound to a session or a request thread externally, and all that is needed is to retrieve it, as discussed below. Creating a new DataContext for each request is not a recommended practice.</p>
+
+<h3><a name="ObtainingDataContext-RetrievingSessionBoundDataContextinWebApplications"></a>Retrieving Session-Bound DataContext in Web Applications</h3>
+
+<p>A web application can be configured to automatically create a new instance of DataContext for each new HttpSession, and set it as a session attribute. Retrieving it from a session is done with the following code:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.ServletUtil;
+<span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+
+<span class="code-comment">// assume <span class="code-keyword">this</span> exists
+</span>HttpSession session;
+DataContext context = ServletUtil.getSessionContext(session);</pre>
+</div></div>
+
+
+<h3><a name="ObtainingDataContext-RetrievingThreadBoundDataContext."></a>Retrieving Thread-Bound DataContext.</h3>
+
+<p>An application can bind a DataContext to a current execution thread. Later on the code that needs DB access can retrieve this DataContext without making any assumptions about the environment. This approach is universal and works in all types of applications (web, standalone, etc.). Previously bound DataContext can be retrieved by calling <tt>DataContext.getThreadDataContext()</tt> static method. If no DataContext was bound to the current thread, this method throws IllegalStateException:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+<span class="code-comment">// we are positive there is DataContext in the current thread, and <span class="code-keyword">do</span> not want
+</span><span class="code-comment">// to handle possible exception...
+</span>DataContext context = DataContext.getThreadDataContext();
+</pre>
+</div></div>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+<span class="code-comment">// we want to handle the condition of no thread context...
+</span><span class="code-keyword">try</span> {
+    DataContext context = DataContext.getThreadDataContext();
+}
+<span class="code-keyword">catch</span>(IllegalStateException ex) {
+    <span class="code-comment">// handle failure
+</span>    ....
+}</pre>
+</div></div>
+
+
+<h3><a name="ObtainingDataContext-MultipleDataDomains%28Advanced%29"></a>Multiple DataDomains (Advanced)</h3>
+
+<p>Cayenne can be configured to support mass database hosting. This is a so-called Application Service Provider (ASP) scenario. Basic architecture of such setup is a single application supporting multiple databases (or more generally - data sources), each one with same or similar schema. Each data source corresponds to an individual ASP "customer" using the system. Each customer has a number of users that will log in to the system and are only allowed to view data from their data source.</p>
+
+<p>This approach, though not required for most normal applications, could be quiet common and powerful in some enterprise systems. To implement it, each DataContext must be limited to access only a relevant subset of datasources.</p>
+
+<p>Considering that behind the scenes a source of DataContext instances is an object called DataDomain, Cayenne allows creation of multiple DataDomains per project. Each DataDomain would support a single "customer". Creation of DataContext in this case is done using DataDomain name as a parameter:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.access.DataContext;
+...
+
+<span class="code-comment">// domain name string is initialized depending on
+</span><span class="code-comment">// the application logic. For instance it can be based
+</span><span class="code-comment">// on the logged in user's company, etc.
+</span><span class="code-object">String</span> domainName = ...;
+DataContext context = DataContext.createDataContext(domainName);</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

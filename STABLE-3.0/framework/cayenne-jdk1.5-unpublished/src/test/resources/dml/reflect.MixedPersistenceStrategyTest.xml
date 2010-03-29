@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<bean id="M11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.MixedPersistenceStrategy</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MIXED_PERSISTENCE_STRATEGY (ID, DESCRIPTION, NAME) values (1, 'd1', 'n1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="M21" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.MixedPersistenceStrategy2</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MIXED_PERSISTENCE_STRATEGY2 (ID, MASTER_ID, NAME) values (1, 1, 'dn1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="M22" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.MixedPersistenceStrategy2</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MIXED_PERSISTENCE_STRATEGY2 (ID, MASTER_ID, NAME) values (2, 1, 'dn2')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testConflictingField" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="M11"/>
+				<ref bean="M21"/>
+				<ref bean="M22"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

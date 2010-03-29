@@ -1,0 +1,142 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Using Orderings</title>
+    <style type="text/css">@import "../../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Using Orderings</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html">SelectQuery</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Parameterized Queries/index.html">Parameterized Queries</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Qualifier Expressions/index.html">Qualifier Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Using Orderings/index.html">Using Orderings</a><ul>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/SelectQuery Customization/index.html">SelectQuery Customization</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/index.html">SQLTemplate Query</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html">EJBQLQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html">NamedQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html">ObjectIdQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html">QueryChain</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html">RelationshipQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Queries Stored in DataMap/index.html">Queries Stored in DataMap</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Caching Query Results/index.html">Caching Query Results</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Customizing Queries/index.html">Customizing Queries</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>To sort SelectQuery results, Orderings are used. Orderings use path expressions discussed in the previous section to identify the attributes that must be used in sorting.  Orderings also use a SortOrder to identify how the ordering should be performed.</p>
+
+<p>There are 4 SortOrder options:</p>
+
+<ul>
+	<li>ASCENDING (ascending order, case &#8211; or database &#8211; sensitive)</li>
+	<li>ASCENDING_INSENSITIVE (ascending order, case-insensitive)</li>
+	<li>DESCENDING (descending order, case &#8211; or database &#8211; sensitive)</li>
+	<li>DESCENDING_INSENSITIVE (descending order, case-insensitive)</li>
+</ul>
+
+
+<p>To order results by artist name, the following code can be used:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SortOrder;
+...
+SelectQuery query = <span class="code-keyword">new</span> SelectQuery(<span class="code-quote">"Artist"</span>);
+
+<span class="code-comment">// add ordering by Artist name:
+</span>query.addOrdering(<span class="code-quote">"artistName"</span>, SortOrder.ASCENDING);
+</pre>
+</div></div>
+
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Legacy Information</b><br />In Cayenne versions prior to 3.0, the addOrdering() call in the above example would appear as <tt>query.addOrdering("artistName", true)</tt>. A boolean parameter of true meant to order ascending (false descending).</td></tr></table></div>
+
+<p>Orderings also support in-memory sorting of lists of Java Beans (all DataObjects are normally Java Beans, since they has set/get method pairs for all the properties). For instance to sort with a single ordering, the following code might be used:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.Ordering;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SortOrder;
+...
+<span class="code-comment">// assume <span class="code-keyword">this</span> is a properly initialized list of Artists
+</span>List list = ...; 
+
+<span class="code-comment">// creates asending ordering by Artist name
+</span>Ordering ordering = <span class="code-keyword">new</span> Ordering(<span class="code-quote">"artistName"</span>, SortOrder.ASCENDING);
+
+<span class="code-comment">// orders a list
+</span>ordering.orderList(list);
+</pre>
+</div></div>
+
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Legacy Information</b><br />In Cayenne versions prior to 3.0, the Ordering() constructor in the above example would appear as: <tt>new Ordering("artistName", true)</tt>. A boolean parameter of true meant to order ascending (false descending).</td></tr></table></div>
+
+<p>If there is a need to sort on more than one object property, multiple Orderings can be passed as a List to a static method <tt>orderList(List, List)</tt>. The cost of adding new Orderings decreases, as the list of objects ends up being sorted by the first Ordering, then, if any two objects are equal for first Ordering, by the second, and so on.</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.Ordering;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SortOrder;
+...
+<span class="code-comment">// assume <span class="code-keyword">this</span> is a properly initialized list of Paintings
+</span>List list = ...; 
+
+List orderings = <span class="code-keyword">new</span> ArrayList();
+orderings.add(<span class="code-keyword">new</span> Ordering(<span class="code-quote">"paintingTitle"</span>, SortOrder.ASCENDING));
+orderings.add(<span class="code-keyword">new</span> Ordering(<span class="code-quote">"estimatedPrice"</span>, SortOrder.DESCENDING));
+
+<span class="code-comment">// orders a list aplying multiple orderings
+</span>Ordering.orderList(list, orderings);
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

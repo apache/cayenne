@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="3.0.0.1">
+<domain name="default">
+	<map name="embeddable" location="embeddable.map.xml"/>
+	<map name="generic" location="generic.map.xml"/>
+	<map name="inheritance" location="inheritance.map.xml"/>
+	<map name="inheritance-flat" location="inheritance-flat.map.xml"/>
+	<map name="locking" location="locking.map.xml"/>
+	<map name="map-db1" location="map-db1.map.xml"/>
+	<map name="map-db2" location="map-db2.map.xml"/>
+	<map name="multi-tier" location="multi-tier.map.xml"/>
+	<map name="people" location="people.map.xml"/>
+	<map name="qualified" location="qualified.map.xml"/>
+	<map name="quotemap" location="quotemap.map.xml"/>
+	<map name="relationships" location="relationships.map.xml"/>
+	<map name="sus-map" location="sus-map.map.xml"/>
+	<map name="testmap" location="testmap.map.xml"/>
+</domain>
+</domains>

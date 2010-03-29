@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<bean id="NPK_DELETE" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.NoPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		delete from NO_PK_TEST
+		</value></constructor-arg>
+	</bean>
+	<bean id="NPK1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.NoPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into NO_PK_TEST (ATTRIBUTE1) values (1)
+		</value></constructor-arg>
+	</bean>
+	<bean id="NPK2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.NoPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into NO_PK_TEST (ATTRIBUTE1) values (2)
+		</value></constructor-arg>
+	</bean>
+
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="prepare" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="NPK_DELETE"/>
+				<ref bean="NPK1"/>
+				<ref bean="NPK2"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

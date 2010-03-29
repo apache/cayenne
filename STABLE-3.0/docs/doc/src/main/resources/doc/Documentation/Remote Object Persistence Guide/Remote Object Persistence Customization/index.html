@@ -1,0 +1,89 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Remote Object Persistence Customization</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Remote Object Persistence Customization</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html">Remote Object Persistence Introduction</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Features/index.html">Remote Object Persistence Features</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Installation/index.html">Remote Object Persistence Installation</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/index.html">Remote Object Persistence Tutorial</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/index.html">Remote Object Persistence Coding Server</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Client/index.html">Remote Object Persistence Coding Client</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html">Remote Object Persistence CWS Deployment</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Client Deployment/index.html">Remote Object Persistence Client Deployment</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Security/index.html">Remote Object Persistence Security</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html">Remote Object Persistence Customization</a><ul>
+</ul>
+</li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Comparison/index.html">Remote Object Persistence Comparison</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Limitations/index.html">Remote Object Persistence Limitations</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="RemoteObjectPersistenceCustomization-WorkingwithCustomPropertyTypes"></a>Working with Custom Property Types</h2>
+
+<p>In addition to configuring <a href="../../../Documentation/Cayenne Guide/Customization/Extended Types/index.html" title="Extended Types">Extended Types</a> as described in Cayenne Guide, users must pay attention to serialization of the custom property types. A custom class must be serializable so that it can be passed between the client and the server. Cayenne uses a library called Hessian to perform the serialization of objects. Mostly it will just work with custom extended types, but there are some important requirements:</p>
+
+<ul>
+	<li>when Hessian deseralizes the stream back into an object it will construct that object by looking for a bean constructor with no parameters. If that isn't found, then the next shortest constructor is called with all parameters set to null. Your extended type class needs to support this. If your extended type subclasses BigDecimal for example, by default this will result in an exception (null is not allowed), so you'll need to add another constructor.</li>
+</ul>
+
+
+<ul>
+	<li>Hessian will then set the values for all fields in your custom extended type, except those set as transient. These fields therefore need to be serializable in themselves.</li>
+</ul>
+
+
+<ul>
+	<li>You can optionally define some additional helper functions within your extended type which Hessian will use.
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">private</span> <span class="code-object">Object</span> writeReplace() <span class="code-keyword">throws</span> ObjectStreamException {
+	<span class="code-comment">// <span class="code-keyword">return</span> some object which Hessian will serialize instead of your extended type
+</span>}
+
+<span class="code-keyword">private</span> <span class="code-object">Object</span> readResolve() <span class="code-keyword">throws</span> ObjectStreamException {
+	<span class="code-comment">// <span class="code-keyword">return</span> the <span class="code-keyword">final</span> object in its deserialised form
+</span>}
+</pre>
+</div></div>
+<p>Note that the functions are private - that is fine and encouraged since these functions should not normally be available to a subclass.</p></li>
+</ul>
+
+
+
+<p>Instead of all the above you may be able to register an additional SerializerFactory to handle your extended type by using <tt>com.caucho.hessian.io.SerializerFactory.addFactory((AbstractSerializerFactory factory)</tt>. This will give you complete control over the process.</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Layouts</key>
+	<dict>
+		<key>Default</key>
+		<dict>
+			<key>EntityOption</key>
+			<string>All</string>
+			<key>RelationshipOption</key>
+			<string>None</string>
+			<key>ViewPositions</key>
+			<dict>
+				<key>Artist</key>
+				<array>
+					<string>199.000000</string>
+					<string>350.000000</string>
+					<string>165.000000</string>
+					<string>132.000000</string>
+				</array>
+				<key>ArtistExhibit</key>
+				<array>
+					<string>199.000000</string>
+					<string>500.000000</string>
+					<string>121.000000</string>
+					<string>96.000000</string>
+				</array>
+				<key>Exhibit</key>
+				<array>
+					<string>0.000000</string>
+					<string>425.000000</string>
+					<string>165.000000</string>
+					<string>132.000000</string>
+				</array>
+				<key>Gallery</key>
+				<array>
+					<string>0.000000</string>
+					<string>325.000000</string>
+					<string>145.000000</string>
+					<string>96.000000</string>
+				</array>
+				<key>Painting</key>
+				<array>
+					<string>199.000000</string>
+					<string>175.000000</string>
+					<string>154.000000</string>
+					<string>168.000000</string>
+				</array>
+				<key>PaintingInfo</key>
+				<array>
+					<string>199.000000</string>
+					<string>75.000000</string>
+					<string>133.000000</string>
+					<string>96.000000</string>
+				</array>
+			</dict>
+			<key>orthoLines</key>
+			<string>Y</string>
+		</dict>
+	</dict>
+	<key>Version</key>
+	<string>1</string>
+</dict>
+</plist>

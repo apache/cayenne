@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- A mapping from orm_1_0.xsd to Cayenne JPA mapping objects used by Cayenne XML coding classes. -->
+<model>
+	
+	<!-- ROOT Element - must be listed first in the mapping per mapping descriptor spec. -->
+	<entity name="org.apache.cayenne.jpa.map.JpaEntityMap" xmlTag="entity-mappings">
+	
+		<property name="description" xmlTag="description"/>
+		<property name="persistenceUnitMetadata" xmlTag="persistence-unit-metadata"/>
+		<property name="packageName" xmlTag="package"/>
+		<property name="schema" xmlTag="schema"/>
+		<property name="catalog" xmlTag="catalog"/>
+		<property name="access" xmlTag="access"/>
+		<property name="sequenceGenerators" xmlTag="sequence-generator"/>
+		<property name="tableGenerators" xmlTag="table-generator"/>
+		<property name="namedQueries" xmlTag="named-query"/>
+		<property name="namedNativeQueries" xmlTag="named-native-query"/>
+		<property name="sqlResultSetMappings" xmlTag="sql-result-set-mapping"/>
+		<property name="mappedSuperclasses" xmlTag="mapped-superclass"/>
+		<property name="entities" xmlTag="entity"/>
+		<property name="embeddables" xmlTag="embeddable"/>
+		
+		<property name="version" xmlTag="version" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaCascade" xmlTag="cascade">
+		<property name="cascadeAll" xmlTag="cascade-all"/>
+		<property name="cascadePersist" xmlTag="cascade-persist"/>
+		<property name="cascadeMerge" xmlTag="cascade-merge"/>
+		<property name="cascadeRemove" xmlTag="cascade-remove"/>
+		<property name="cascadeRefresh" xmlTag="cascade-refresh"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaAttributeOverride" xmlTag="attribute-override">
+		<property name="column" xmlTag="column"/>
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaAttributes" xmlTag="attributes">
+		<property name="ids" xmlTag="id"/>
+		<property name="embeddedId" xmlTag="embedded-id"/>
+		<property name="basicAttributes" xmlTag="basic"/>
+		<property name="versionAttributes" xmlTag="version"/>
+		<property name="manyToOneRelationships" xmlTag="many-to-one"/>
+		<property name="oneToManyRelationships" xmlTag="one-to-many"/>
+		<property name="oneToOneRelationships" xmlTag="one-to-one"/>
+		<property name="manyToManyRelationships" xmlTag="many-to-many"/>
+		<property name="embeddedAttributes" xmlTag="embedded"/>
+		<property name="transientAttributes" xmlTag="transient"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaAssociationOverride" xmlTag="association-override">
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="joinColumns" xmlTag="join-column"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaBasic" xmlTag="basic">
+		<property name="column" xmlTag="column"/>
+		<property name="lobTrue" xmlTag="lob"/>
+		<property name="temporal" xmlTag="temporal"/>
+		<property name="enumerated" xmlTag="enumerated"/>
+	
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="fetch" xmlTag="fetch" attribute="YES"/>
+		<property name="optional" xmlTag="optional" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaColumn" xmlTag="column">
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="unique" xmlTag="unique" attribute="YES"/>
+		<property name="nullable" xmlTag="nullable" attribute="YES"/>
+		<property name="insertable" xmlTag="insertable" attribute="YES"/>
+		<property name="updatable" xmlTag="updatable" attribute="YES"/>
+		<property name="columnDefinition" xmlTag="column-definition" attribute="YES"/>
+		<property name="table" xmlTag="table" attribute="YES"/>
+		<property name="length" xmlTag="length" attribute="YES"/>
+		<property name="precision" xmlTag="precision" attribute="YES"/>
+		<property name="scale" xmlTag="scale" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaColumnResult" xmlTag="column-result">
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaDiscriminatorColumn" xmlTag="discriminator-column">
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="discriminatorType" xmlTag="discriminator-type" attribute="YES"/>
+		<property name="columnDefinition" xmlTag="column-definition" attribute="YES"/>
+		<property name="length" xmlTag="length" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaEmbedded" xmlTag="embedded">
+		<property name="attributeOverrides" xmlTag="attribute-override"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaEmbeddedId" xmlTag="embedded-id">
+		<property name="attributeOverrides" xmlTag="attribute-override"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaEmbeddable" xmlTag="embeddable">
+		<property name="description" xmlTag="description"/>
+		<property name="className" xmlTag="class" attribute="YES"/>
+		<property name="access" xmlTag="access" attribute="YES"/>
+		<property name="metadataComplete" xmlTag="metadata-complete" attribute="YES"/>
+		
+		<property name="attributes" xmlTag="attributes"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaEntity" xmlTag="entity">
+		<property name="description" xmlTag="description"/>
+		<property name="table" xmlTag="table"/>
+		<property name="secondaryTables" xmlTag="secondary-table"/>
+		<property name="primaryKeyJoinColumns" xmlTag="primary-key-join-column"/>
+		<property name="idClass" xmlTag="id-class"/>
+		<property name="inheritance" xmlTag="inheritance"/>
+		<property name="discriminatorValue" xmlTag="discriminator-value"/>
+		<property name="discriminatorColumn" xmlTag="discriminator-column"/>
+		<property name="sequenceGenerator" xmlTag="sequence-generator"/>
+		<property name="tableGenerator" xmlTag="table-generator"/>
+		<property name="namedQueries" xmlTag="named-query"/>
+		<property name="namedNativeQueries" xmlTag="named-native-query"/>
+		<property name="sqlResultSetMappings" xmlTag="sql-result-set-mapping"/>
+		<property name="excludeDefaultListenersTrue" xmlTag="exclude-default-listeners"/>
+		<property name="excludeSuperclassListenersTrue" xmlTag="exclude-superclass-listeners"/>
+		<property name="entityListeners" xmlTag="entity-listeners"/>
+		<property name="prePersist" xmlTag="pre-persist"/>
+		<property name="postPersist" xmlTag="post-persist"/>
+		<property name="preRemove" xmlTag="pre-remove"/>
+		<property name="postRemove" xmlTag="post-remove"/>
+		<property name="preUpdate" xmlTag="pre-update"/>
+		<property name="postUpdate" xmlTag="post-update"/>
+		<property name="postLoad" xmlTag="post-load"/>
+		<property name="associationOverrides" xmlTag="association-override"/>
+		<property name="attributeOverrides" xmlTag="attribute-override"/>
+		<property name="attributes" xmlTag="attributes"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="className" xmlTag="class" attribute="YES"/>
+		<property name="access" xmlTag="access" attribute="YES"/>
+		<property name="metadataComplete" xmlTag="metadata-complete" attribute="YES"/>
+	</entity>
+
+	<entity name="org.apache.cayenne.jpa.map.JpaEntityListener" xmlTag="entity-listener">
+		<property name="prePersist" xmlTag="pre-persist"/>
+		<property name="postPersist" xmlTag="post-persist"/>
+		<property name="preRemove" xmlTag="pre-remove"/>
+		<property name="postRemove" xmlTag="post-remove"/>
+		<property name="preUpdate" xmlTag="pre-update"/>
+		<property name="postUpdate" xmlTag="post-update"/>
+		<property name="postLoad" xmlTag="post-load"/>
+		
+		<property name="className" xmlTag="class" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaEntityListeners" xmlTag="entity-listeners">
+		<property name="entityListeners" xmlTag="entity-listener"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaEntityResult" xmlTag="entity-result">
+		<property name="fieldResults" xmlTag="field-result"/>
+		
+		<property name="entityClassName" xmlTag="entity-class" attribute="YES"/>
+		<property name="discriminatorColumn" xmlTag="discriminator-column" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaFieldResult" xmlTag="field-result">
+		<property name="column" xmlTag="column" attribute="YES"/>
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaGeneratedValue" xmlTag="generated-value">
+		<property name="strategy" xmlTag="strategy" attribute="YES"/>
+		<property name="generator" xmlTag="generator" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaIdClass" xmlTag="id-class">
+		<property name="className" xmlTag="class" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaId" xmlTag="id">
+		<property name="column" xmlTag="column"/>
+		<property name="generatedValue" xmlTag="generated-value"/>
+		<property name="temporal" xmlTag="temporal"/>
+		<property name="table-Generator" xmlTag="table-generator"/>
+		<property name="sequenceGenerator" xmlTag="sequence-generator"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaInheritance" xmlTag="inheritance">
+		<property name="strategy" xmlTag="strategy" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaJoinColumn" xmlTag="join-column">
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="referencedColumnName" xmlTag="referenced-column-name" attribute="YES"/>
+		<property name="unique" xmlTag="unique" attribute="YES"/>
+		<property name="nullable" xmlTag="nullable" attribute="YES"/>
+		<property name="insertable" xmlTag="insertable" attribute="YES"/>
+		<property name="updatable" xmlTag="updatable" attribute="YES"/>
+		<property name="columnDefinition" xmlTag="column-definition" attribute="YES"/>
+		<property name="table" xmlTag="table" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaJoinTable" xmlTag="join-table">
+		<property name="joinColumns" xmlTag="join-column"/>
+		<property name="inverseJoinColumns" xmlTag="inverse-join-column"/>
+		<property name="uniqueConstraints" xmlTag="unique-constraint"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="catalog" xmlTag="catalog" attribute="YES"/>
+		<property name="schema" xmlTag="schema" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaLifecycleCallback" xmlTag="pre-persist">
+		<property name="methodName" xmlTag="method-name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaLifecycleCallback" xmlTag="post-persist">
+		<property name="methodName" xmlTag="method-name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaLifecycleCallback" xmlTag="pre-remove">
+		<property name="methodName" xmlTag="method-name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaLifecycleCallback" xmlTag="post-remove">
+		<property name="methodName" xmlTag="method-name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaLifecycleCallback" xmlTag="pre-update">
+		<property name="methodName" xmlTag="method-name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaLifecycleCallback" xmlTag="post-update">
+		<property name="methodName" xmlTag="method-name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaLifecycleCallback" xmlTag="post-load">
+		<property name="methodName" xmlTag="method-name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaManyToMany" xmlTag="many-to-many">
+		<property name="orderBy" xmlTag="order-by"/>
+		<property name="mapKey" xmlTag="map-key"/>
+		<property name="joinTable" xmlTag="joinTable"/>
+		<property name="cascade" xmlTag="cascade"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="targetEntityName" xmlTag="target-entity" attribute="YES"/>
+		<property name="fetch" xmlTag="fetch" attribute="YES"/>
+		<property name="mappedBy" xmlTag="mapped-by" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaManyToOne" xmlTag="many-to-one">
+		<property name="cascade" xmlTag="cascade"/>
+		<property name="joinColumns" xmlTag="join-column"/>
+		<property name="joinTable" xmlTag="joinTable"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="targetEntityName" xmlTag="target-entity" attribute="YES"/>
+		<property name="fetch" xmlTag="fetch" attribute="YES"/>
+		<property name="optional" xmlTag="optional" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaMappedSuperclass" xmlTag="mapped-superclass">
+		<property name="description" xmlTag="description"/>
+		<property name="idClass" xmlTag="id-class"/>
+		<property name="excludeDefaultListenersTrue" xmlTag="exclude-default-listeners"/>
+		<property name="excludeSuperclassListenersTrue" xmlTag="exclude-superclass-listeners"/>
+		<property name="entityListeners" xmlTag="entity-listeners"/>
+		<property name="prePersist" xmlTag="pre-persist"/>
+		<property name="postPersist" xmlTag="post-persist"/>
+		<property name="preRemove" xmlTag="pre-remove"/>
+		<property name="postRemove" xmlTag="post-remove"/>
+		<property name="preUpdate" xmlTag="pre-update"/>
+		<property name="postUpdate" xmlTag="post-update"/>
+		<property name="postLoad" xmlTag="post-load"/>
+		<property name="attributes" xmlTag="attributes"/>
+		
+		<property name="className" xmlTag="class" attribute="YES"/>
+		<property name="access" xmlTag="access" attribute="YES"/>
+		<property name="metadataComplete" xmlTag="metadata-complete" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaNamedNativeQuery" xmlTag="named-native-query">
+		<property name="query" xmlTag="query"/>
+		<property name="hints" xmlTag="hint"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="resultClassName" xmlTag="result-class" attribute="YES"/>
+		<property name="resultSetMapping" xmlTag="result-set-mapping" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaNamedQuery" xmlTag="named-query">
+		<property name="hints" xmlTag="hint"/>
+		<property name="query" xmlTag="query"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaOneToMany" xmlTag="one-to-many">
+		<property name="orderBy" xmlTag="order-by"/>
+		<property name="mapKey" xmlTag="map-key"/>
+		<property name="joinTable" xmlTag="joinTable"/>
+		<property name="joinColumns" xmlTag="join-column"/>
+		<property name="cascade" xmlTag="cascade"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="targetEntityName" xmlTag="target-entity" attribute="YES"/>
+		<property name="fetch" xmlTag="fetch" attribute="YES"/>
+		<property name="mappedBy" xmlTag="mapped-by" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaOneToOne" xmlTag="one-to-one">
+		<property name="primaryKeyJoinColumns" xmlTag="primary-key-join-column"/>
+		<property name="joinColumns" xmlTag="join-column"/>
+		<property name="joinTable" xmlTag="joinTable"/>
+		<property name="cascade" xmlTag="cascade"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="targetEntityName" xmlTag="target-entity" attribute="YES"/>
+		<property name="fetch" xmlTag="fetch" attribute="YES"/>
+		<property name="optional" xmlTag="optional" attribute="YES"/>
+		<property name="mappedBy" xmlTag="mapped-by" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaPersistenceUnitDefaults" xmlTag="persistence-unit-defaults">
+	    <property name="schema" xmlTag="schema"/>
+		<property name="catalog" xmlTag="catalog"/>
+		<property name="access" xmlTag="access"/>
+		<property name="cascadePersist" xmlTag="cascade-persist"/>
+		<property name="entityListeners" xmlTag="entity-listeners"/>
+	</entity>
+	
+		<entity name="org.apache.cayenne.jpa.map.JpaPersistenceUnitMetadata" xmlTag="persistence-unit-metadata">
+		<property name="xmlMappingMetadataComplete" xmlTag="xml-mapping-metadata-complete"/>
+		
+		<property name="persistenceUnitDefaults" xmlTag="persistence-unit-defaults"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaPrimaryKeyJoinColumn" xmlTag="primary-key-join-column">
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="referencedColumnName" xmlTag="referenced-column-name" attribute="YES"/>
+		<property name="columnDefinition" xmlTag="column-definition" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaQueryHint" xmlTag="hint">
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="value" xmlTag="value" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaSecondaryTable" xmlTag="secondary-table">
+		<property name="primaryKeyJoinColumns" xmlTag="primary-key-join-column"/>
+		<property name="uniqueConstraints" xmlTag="unique-constraint"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="catalog" xmlTag="catalog" attribute="YES"/>
+		<property name="schema" xmlTag="schema" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaSequenceGenerator" xmlTag="sequence-generator">
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="sequenceName" xmlTag="sequence-name" attribute="YES"/>
+		<property name="initialValue" xmlTag="initial-value" attribute="YES"/>
+		<property name="allocationSize" xmlTag="allocation-size" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaSqlResultSetMapping" xmlTag="sql-result-set-mapping">
+		<property name="entityResults" xmlTag="entity-result"/>
+		<property name="columnResults" xmlTag="column-result"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaTable" xmlTag="table">
+		<property name="uniqueConstraints" xmlTag="unique-constraint"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="catalog" xmlTag="catalog" attribute="YES"/>
+		<property name="schema" xmlTag="schema" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaTableGenerator" xmlTag="table-generator">
+		<property name="uniqueConstraints" xmlTag="unique-constraint"/>
+		
+		<property name="name" xmlTag="name" attribute="YES"/>
+		<property name="table" xmlTag="table" attribute="YES"/>
+		<property name="catalog" xmlTag="catalog" attribute="YES"/>
+		<property name="schema" xmlTag="schema" attribute="YES"/>
+		<property name="pkColumnName" xmlTag="pk-column-name" attribute="YES"/>
+		<property name="valueColumnName" xmlTag="value-column-name" attribute="YES"/>
+		<property name="pkColumnValue" xmlTag="pk-column-value" attribute="YES"/>
+		<property name="initialValue" xmlTag="initial-value" attribute="YES"/>
+		<property name="allocationSize" xmlTag="allocation-size" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaTransient" xmlTag="transient">
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaVersion" xmlTag="version">
+		<property name="column" xmlTag="column"/>
+		<property name="temporal" xmlTag="temporal"/>
+
+		<property name="name" xmlTag="name" attribute="YES"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.jpa.map.JpaUniqueConstraint" xmlTag="unique-constraint">
+		<property name="columnNames" xmlTag="column-name"/>
+	</entity>
+</model>

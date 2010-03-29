@@ -1,0 +1,121 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Remote Object Persistence Coding Client</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Remote Object Persistence Coding Client</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html">Remote Object Persistence Introduction</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Features/index.html">Remote Object Persistence Features</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Installation/index.html">Remote Object Persistence Installation</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/index.html">Remote Object Persistence Tutorial</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/index.html">Remote Object Persistence Coding Server</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Client/index.html">Remote Object Persistence Coding Client</a><ul>
+</ul>
+</li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html">Remote Object Persistence CWS Deployment</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Client Deployment/index.html">Remote Object Persistence Client Deployment</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Security/index.html">Remote Object Persistence Security</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html">Remote Object Persistence Customization</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Comparison/index.html">Remote Object Persistence Comparison</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Limitations/index.html">Remote Object Persistence Limitations</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<h3><a name="RemoteObjectPersistenceCodingClient-ConnectingtotheService"></a>Connecting to the Service</h3>
+
+<p>Creating connection with a dedicated server-side context peer and no authentication:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(<span class="code-quote">"http:<span class="code-comment">//localhost:8080/myapp/myservice"</span>);</span></pre>
+</div></div>
+
+<p>HessianConnection also supports HTTP basic authentication:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(
+          <span class="code-quote">"https:<span class="code-comment">//localhost:8080/myapp/mysecureservice"</span>, 
+</span>          <span class="code-quote">"username"</span>,
+          <span class="code-quote">"secret_password"</span>,
+          <span class="code-keyword">null</span>);</pre>
+</div></div>
+
+<p>Finally a "shared" or "chat" session can be created when multiple client contexts share the same server-side context:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-object">String</span> myChatRoom = <span class="code-quote">"xyz"</span>;
+ClientConnection connection = <span class="code-keyword">new</span> HessianConnection(
+          <span class="code-quote">"https:<span class="code-comment">//localhost:8080/myapp/mysecureservice"</span>, 
+</span>          <span class="code-quote">"username"</span>,
+          <span class="code-quote">"secret_password"</span>,
+          myChatRoom);</pre>
+</div></div>
+
+<h3><a name="RemoteObjectPersistenceCodingClient-ObtainingObjectContext"></a>Obtaining ObjectContext</h3>
+
+
+<p>Once a <tt>ClientConnection</tt> is created, an ObjectContext instance can be obtained like this: </p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataChannel channel = <span class="code-keyword">new</span> ClientChannel(connection);
+ObjectContext context = <span class="code-keyword">new</span> CayenneContext(channel);</pre>
+</div></div>
+
+<p>Note that the channel can be reused by multiple peer CayenneContexts.</p>
+
+
+<h3><a name="RemoteObjectPersistenceCodingClient-RunningClientWithoutCWS"></a>Running Client Without CWS</h3>
+
+<p>Cayenne ORM Tier and CWS Client Tier can be deployed together in the same virtual machine. This may be needed to speed up development, but also to achieve consistency and reuse of CWS client objects between thin clients and web applications. The solution is to use ClientServerChannel on top of a regular Cayenne stack:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataDomain defaultDomain = Configuration.getSharedConfiguration().getDomain();
+DataChannel serverChannel = <span class="code-keyword">new</span> ClientServerChannel(defaultDomain);
+ObjectContext context = <span class="code-keyword">new</span> CayenneContext(serverChannel);
+
+<span class="code-comment">// use ObjectContext...</span></pre>
+</div></div>
+
+<p>To fully emulate CWS behavior, we can add serialization to the picture:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataDomain defaultDomain = Configuration.getSharedConfiguration().getDomain();
+DataChannel serverChannel = <span class="code-keyword">new</span> ClientServerChannel(defaultDomain);
+ClientConnection connector = <span class="code-keyword">new</span> LocalConnection(
+                serverChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+
+DataChannel clientChannel = <span class="code-keyword">new</span> ClientChannel(connector);
+ObjectContext context = <span class="code-keyword">new</span> CayenneContext(clientChannel);</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

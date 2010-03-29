@@ -1,0 +1,127 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Executing a Stored Procedure</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Executing a Stored Procedure</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/Selecting Objects/index.html">Selecting Objects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/Executing a Stored Procedure/index.html">Executing a Stored Procedure</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/Stored Procedures and Transactions/index.html">Stored Procedures and Transactions</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<h3><a name="ExecutingaStoredProcedure-UsingQueryResponsetoProcessComplexResults"></a>Using QueryResponse to Process Complex Results</h3>
+
+<p>Previous chapter showed how to select a single set of data rows using a ProcedureQuery. In a more general case stored procedures can return multiple sets of data, either as ResultSets or via OUT parameters, execute update/delete/insert queries, etc. To collect the results of execution of such stored procedure, you need to run a query using context's <tt>"performGenericQuery"</tt> method and inspect returned QueryResponse.</p>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataContext ctxt;
+
+<span class="code-comment">// <span class="code-quote">"my_procedure"</span> is a name of a stored procedure,
+</span><span class="code-comment">// that must exist in the DataMap
+</span>ProcedureQuery query = <span class="code-keyword">new</span> ProcedureQuery(<span class="code-quote">"my_procedure"</span>);
+
+<span class="code-comment">// Set <span class="code-quote">"IN"</span> parameter values
+</span>query.addParam(<span class="code-quote">"parameter1"</span>, <span class="code-quote">"abc"</span>);
+query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-keyword">new</span> <span class="code-object">Integer</span>(3000));
+
+<span class="code-comment">// run query
+</span>QueryResponse result = ctxt.performGenericQuery(query);
+
+<span class="code-comment">// check the results
+</span>Iterator it = rowSets.iterator();
+<span class="code-keyword">while</span>(result.next()) {
+     <span class="code-keyword">if</span> (result.isList()) {
+          List list = result.currentList();
+          <span class="code-comment">// ...
+</span>     }
+     <span class="code-keyword">else</span> {
+          <span class="code-object">int</span>[] updateCounts = result.currentUpdateCount();
+          <span class="code-comment">// ...
+</span>     }
+}
+</pre>
+</div></div>
+
+<h3><a name="ExecutingaStoredProcedure-UsingQueryResponsetoReadOUTParameters"></a>Using QueryResponse to Read OUT Parameters</h3>
+
+<p>Stored Procedure can return data back to the application as ResultSets or via OUT parameters. To simplify the processing of the query output, QueryResponse treats OUT parameters as if it was a separate ResultSet. If a stored procedure declares any OUT or INOUT parameters, QueryResponse will contain their returned values in the very first result list:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataContext ctxt;
+
+<span class="code-comment">// <span class="code-quote">"my_procedure"</span> is a name of a stored procedure,
+</span><span class="code-comment">// that must exist in the DataMap
+</span>ProcedureQuery query = <span class="code-keyword">new</span> ProcedureQuery(<span class="code-quote">"my_procedure"</span>);
+
+<span class="code-comment">// Set <span class="code-quote">"IN"</span> parameter values
+</span>query.addParam(<span class="code-quote">"paramter1"</span>, <span class="code-quote">"abc"</span>);
+query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-keyword">new</span> <span class="code-object">Integer</span>(3000));
+
+<span class="code-comment">// run query
+</span>QueryResponse result = ctxt.performGenericQuery(query);
+
+<span class="code-comment">// read OUT parameters
+</span>List outList = result.firstList();
+
+<span class="code-keyword">if</span>(outList.size() &gt;  0) {
+    Map outParameterValues = (Map) outList.get(0);
+}
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

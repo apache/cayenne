@@ -1,0 +1,113 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Deleting Objects</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Deleting Objects</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Relationships/index.html">Relationships</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Accessing PK and FK Values/index.html">Accessing PK and FK Values</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/Comparing DataObjects/index.html">Comparing DataObjects</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>As discussed before, an object must be deleted in the DataContext to trigger a removal of the corresponding row from the database on commit. There are few simple ways to delete individual objects and collections of objects. Quite naturally, a delete operation changes the object state to PersistenceState.DELETED. However there maybe other consequences of such operation for the overall object graph. Such consequences are controlled via <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Delete Rules/index.html" title="Delete Rules">Delete Rules</a> configured for object relationships. Properly configuring delete rules will simplify the application code, as you no longer need to track related objects and do the right thing with them. Other delete rule effects are discussed for each DataContext deletion method individually.</p>
+
+<h5><a name="DeletingObjects-Deletingasingleobject"></a>Deleting a single object</h5>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataContext context = ...;
+Artist artist = ....;
+
+<span class="code-comment">// <span class="code-keyword">this</span> will trigger delete rules <span class="code-keyword">for</span> artist, <span class="code-keyword">if</span> any
+</span>context.deleteObject(artist);
+</pre>
+</div></div>
+<h5><a name="DeletingObjects-Deletingacollectionofobjects"></a>Deleting a collection of objects</h5>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataContext context = ...;
+Artist artist = ....;
+
+context.deleteObjects(artist.getPaintings());
+</pre>
+</div></div>
+<h5><a name="DeletingObjects-DeletinginanIterator"></a>Deleting in an Iterator</h5>
+<p>This case can be complicated if an iteration is performed over a relationship list and an object being deleted has a nullify delete rule. Such combination may result in ConcurrencyModificationExceptions as collection underlying the iterator is being modified. If ALL objects in the collection have to be deleted, use "deleteObjects()" method shown above - it will do the right thing. If only a subset of collection objects has to be deleted, you can use the following technique:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">DataContext context = ...;
+Artist artist = ....;
+
+Iterator it = artist.getPaintings().iterator();
+<span class="code-keyword">while</span>(it.hasNext()) {
+   DataObject object = it.next();
+   
+   <span class="code-keyword">if</span>(some_condition) {
+      <span class="code-comment">// jump ahead of the delete rule and unset the relationship
+</span>      it.remove();
+   
+      <span class="code-comment">// now <span class="code-keyword">do</span> the actual delete
+</span>      context.deleteObject(object); 
+   }
+}
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

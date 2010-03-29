@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.quotemap"/>
+	<property name="quoteSqlIdentifiers" value="true"/>
+	<db-entity name="QUOTE_ADRESS">
+		<db-attribute name="ADRES ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="City" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="quote Person">
+		<db-attribute name="DAte" type="DATE"/>
+		<db-attribute name="FULL name" type="VARCHAR" length="300"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="salary" type="INTEGER"/>
+	</db-entity>
+	<obj-entity name="QuoteAdress" className="org.apache.cayenne.testdo.quotemap.QuoteAdress" dbEntityName="QUOTE_ADRESS">
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="City"/>
+	</obj-entity>
+	<obj-entity name="Quote_Person" className="org.apache.cayenne.testdo.quotemap.Quote_Person" dbEntityName="quote Person">
+		<obj-attribute name="dAte" type="java.util.Date" db-attribute-path="DAte"/>
+		<obj-attribute name="fULL_name" type="java.lang.String" db-attribute-path="FULL name"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<obj-attribute name="salary" type="java.lang.Integer" db-attribute-path="salary"/>
+	</obj-entity>
+</data-map>

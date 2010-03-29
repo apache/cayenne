@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultPackage" value="org.apache.cayenne.tutorial.persistent"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.tutorial.persistent.client"/>
+	<db-entity name="ARTIST">
+		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="GALLERY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="PAINTING">
+		<db-attribute name="ARTIST_ID" type="INTEGER"/>
+		<db-attribute name="GALLERY_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="Artist" className="org.apache.cayenne.tutorial.persistent.Artist" clientClassName="org.apache.cayenne.tutorial.persistent.client.Artist" dbEntityName="ARTIST">
+		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Gallery" className="org.apache.cayenne.tutorial.persistent.Gallery" clientClassName="org.apache.cayenne.tutorial.persistent.client.Gallery" dbEntityName="GALLERY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Painting" className="org.apache.cayenne.tutorial.persistent.Painting" clientClassName="org.apache.cayenne.tutorial.persistent.client.Painting" dbEntityName="PAINTING">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="paintings" source="ARTIST" target="PAINTING" toMany="true">
+		<db-attribute-pair source="ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="paintings" source="GALLERY" target="PAINTING" toMany="true">
+		<db-attribute-pair source="ID" target="GALLERY_ID"/>
+	</db-relationship>
+	<db-relationship name="artist" source="PAINTING" target="ARTIST" toMany="false">
+		<db-attribute-pair source="ARTIST_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="gallery" source="PAINTING" target="GALLERY" toMany="false">
+		<db-attribute-pair source="GALLERY_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="paintings" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintings"/>
+	<obj-relationship name="paintings" source="Gallery" target="Painting" deleteRule="Nullify" db-relationship-path="paintings"/>
+	<obj-relationship name="artist" source="Painting" target="Artist" deleteRule="Nullify" db-relationship-path="artist"/>
+	<obj-relationship name="gallery" source="Painting" target="Gallery" deleteRule="Nullify" db-relationship-path="gallery"/>
+</data-map>

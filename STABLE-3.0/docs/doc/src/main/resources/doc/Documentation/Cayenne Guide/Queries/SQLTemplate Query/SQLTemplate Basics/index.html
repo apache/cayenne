@@ -1,0 +1,137 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - SQLTemplate Basics</title>
+    <style type="text/css">@import "../../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">SQLTemplate Basics</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html">SelectQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/index.html">SQLTemplate Query</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/SQLTemplate Basics/index.html">SQLTemplate Basics</a><ul>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Scripting SQLTemplate/index.html">Scripting SQLTemplate</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/SQLTemplate Result Mapping/index.html">SQLTemplate Result Mapping</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Advanced SQLTemplate/index.html">Advanced SQLTemplate</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html">EJBQLQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html">NamedQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html">ObjectIdQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html">QueryChain</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html">RelationshipQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Queries Stored in DataMap/index.html">Queries Stored in DataMap</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Caching Query Results/index.html">Caching Query Results</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Customizing Queries/index.html">Customizing Queries</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h3><a name="SQLTemplateBasics-CreatingSQLTemplate"></a>Creating SQLTemplate</h3>
+
+<p>SQLTemplates can be built using CayenneModeler. Here we demonstrate how to do the same thing via API. SQLTemplate consists of root and dynamic template string. Dynamic behavior of the template is discussed in subsequent chapters, for now it is sufficient to know that the template string is simply a valid SQL statement in the target database SQL dialect.</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.SQLTemplate;
+...
+<span class="code-comment">// create selecting SQLTemplate
+</span>SQLTemplate selectQuery = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"select * from ARTIST"</span>);
+...
+<span class="code-comment">// create updating SQLTemplate
+</span>SQLTemplate updateQuery = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"delete from ARTIST"</span>);
+</pre>
+</div></div>
+
+<h3><a name="SQLTemplateBasics-SelectingObjectswithSQLTemplate"></a>Selecting Objects with SQLTemplate</h3>
+
+<p>Selecting SQLTemplate is very similar to SelectQuery in many respects. It can be executed via <tt>DataContext.performQuery(..)</tt> and supports the same configuration parameters, such as fetch limit, pagination, etc. It can be configured to return DataObjects (default) or data rows.</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.SQLTemplate;
+...
+<span class="code-comment">// fetch all artists, but no more than 1000 objects...
+</span>SQLTemplate rawSelect = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"select * from ARTIST"</span>);
+rawSelect.setFetchLimit(1000);
+
+List artists = dataContext.performQuery(rawSelect);
+</pre>
+</div></div>
+
+<h3><a name="SQLTemplateBasics-ModifyingDatawithSQLTemplate"></a>Modifying Data with SQLTemplate</h3>
+
+<p>Non-selecting SQLTemplate allows to execute arbitrary SQL that modifies the database, but does not return the results. <tt>DataContext.performNonSelectingQuery(..)</tt> is used for this task.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>When changing or deleting data via SQLTemplate you must realize that such changes are done directly to the database, bypassing the context, and therefore may potentially leave object graph in an inconsistent state.</td></tr></table></div>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.query.SQLTemplate;
+...
+<span class="code-comment">// fetch all artists, but no more than 1000 objects...
+</span>SQLTemplate rawDelete = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"delete from ARTIST"</span>);
+<span class="code-object">int</span>[] deleteCounts = dataContext.performNonSelectingQuery(rawDelete);
+</pre>
+</div></div>
+
+<h3><a name="SQLTemplateBasics-CustomizingSQLDialects"></a>Customizing SQL Dialects</h3>
+
+<p>Even though SQL is an industry standard, different DB vendors still have their own dialects and extensions. Two versions of the same query written for Oracle and PostgreSQL may look quiet different.</p>
+
+<p>Each SQLTemplate query has a default template, usually set in constructor. Internally it also keeps a map of alternative templates. This map normally uses a fully-qualified class name of the target DbAdapter as a key. This way Cayenne can determine which one of the SQL strings to use during the execution. Alternative SQL strings are configured using <tt>SQLTemplate.setTemplate(...)</tt>:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// build template with <span class="code-keyword">default</span> SQL
+</span>SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(Artist.class, <span class="code-quote">"select * from ARTIST"</span>);
+
+<span class="code-comment">// <span class="code-keyword">for</span> Postgres it would be nice to trim the CHAR ARTIST_NAME column
+</span><span class="code-comment">// or otherwise it will be returned padded with spaces
+</span><span class="code-object">String</span> pgTemplate = <span class="code-quote">"SELECT ARTIST_ID, RTRIM(ARTIST_NAME), DATE_OF_BIRTH FROM ARTIST"</span>;
+query.setTemplate(PostgresAdapter.class.getName(), pgTemplate);
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

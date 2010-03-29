@@ -1,0 +1,93 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Extended Types</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Extended Types</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom DbAdapter/index.html">Custom DbAdapter</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Extended Types/index.html">Extended Types</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom Query Cache Provider/index.html">Custom Query Cache Provider</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom BatchQueryBuilder Factory/index.html">Custom BatchQueryBuilder Factory</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>JDBC specification defines a set of "standard" database column types (defined in java.sql.Types class) and a very specific mapping of these types to Java Object Types, such as java.lang.String, java.math.BigDecimal, etc. Sometimes there is a need to use a custom Java type not known to JDBC driver. CayenneModeler allows to configure an arbitrary Java class as an <tt>org.apache.cayenne.map.ObjAttribute</tt> type by simply entering a fully-qualified name such class in the type column of an ObjAttribute. However there is more to it than just that. Cayenne needs to know how to instantiate this type from a database "primitive" value, and conversly, how to transform an object of the custom type to a JDBC-compatible object.</p>
+
+<h3><a name="ExtendedTypes-SupportingNonStandardTypes"></a>Supporting Non-Standard Types</h3>
+
+<p><tt>org.apache.cayenne.access.types.ExtendedType</tt> interface serves to integrate a custom attribute type to Cayenne. An implementation must provide <tt>ExtendedType.getClassName()</tt> method that returns a fully qualified Java class name for the supported custom type, and a number of methods that convert data between JDBC and custom type. Installing an ExtendedType currently has to be done in the code, some time during Cayenne startup (modeler support will be added in the future). The following code sample demonstrates this procedure:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// create custom ExtendedType instance
+</span>ExtendedType customType = <span class="code-keyword">new</span> MyCustomType();
+
+<span class="code-comment">// Find DataNode
+</span>DataDomain domain = Configuration.getSharedConfiguration().getDomain();
+<span class="code-comment">// replace 'node_name' with the name of the DataNode you've entered in the Modeler.
+</span>DataNode node = domain.getNode(<span class="code-quote">"node_name"</span>);
+
+<span class="code-comment">// install ExtendedType
+</span>node.getAdapter().getExtendedTypes().registerType(customType);
+</pre>
+</div></div>
+
+<h3><a name="ExtendedTypes-DbAdaptersandExtendedTypes"></a>DbAdapters and Extended Types</h3>
+
+<p>As shown in the example above, ExtendedTypes are stored by <a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/DbAdapter/index.html" title="DbAdapter">DbAdapter</a>. In fact DbAdapters often install their own extended types to address incompatibilities, incompletness and differences between JDBC drivers in handling "standard" JDBC types. For instance some drivers support reading large character columns (CLOB) as java.sql.Clob, but some other - as "character stream", etc. Adapters provided with Cayenne override <tt>configureExtendedTypes()</tt> method to install their own types, possibly substituting Cayenne defaults. Custom DbAdapters can use the same technique.</p>
+
+<h3><a name="ExtendedTypes-Threetierconsiderations"></a>Three tier considerations</h3>
+
+<p>If you are using Cayenne in a three tier (ROP) environment, serialization of the extended type becomes important. More information can be found <a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html" title="Remote Object Persistence Customization">here.</a></p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

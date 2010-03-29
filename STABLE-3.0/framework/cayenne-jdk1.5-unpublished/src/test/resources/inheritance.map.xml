@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.horizontalinherit"/>
+	<db-entity name="INHERITANCE_SUB_ENTITY1">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SUBENTITY_STRING_DB_ATTR" type="VARCHAR" length="255"/>
+		<db-attribute name="SUPER_INT_DB_ATTR" type="INTEGER"/>
+		<db-attribute name="SUPER_STRING_DB_ATTR" type="VARCHAR" length="255"/>
+	</db-entity>
+	<db-entity name="INHERITANCE_SUB_ENTITY2">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="OVERRIDDEN_STRING_DB_ATTR" type="VARCHAR" length="255"/>
+		<db-attribute name="SUBENTITY_INT_DB_ATTR" type="INTEGER"/>
+		<db-attribute name="SUPER_INT_DB_ATTR" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="INHERITANCE_SUB_ENTITY3">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="OVERRIDDEN_INT_DB_ATTR" type="INTEGER"/>
+		<db-attribute name="OVERRIDDEN_STRING_DB_ATTR" type="VARCHAR" length="255"/>
+		<db-attribute name="SUBENTITY_BOOL_ATTR" type="BIT"/>
+	</db-entity>
+	<obj-entity name="AbstractSuperEntity" abstract="true" className="org.apache.cayenne.testdo.horizontalinherit.AbstractSuperEntity">
+		<obj-attribute name="superIntAttr" type="int" db-attribute-path="SUPER_INT_DB_ATTR"/>
+		<obj-attribute name="superStringAttr" type="java.lang.String" db-attribute-path="SUPER_STRING_DB_ATTR"/>
+	</obj-entity>
+	<obj-entity name="SubEntity1" superEntityName="AbstractSuperEntity" className="org.apache.cayenne.testdo.horizontalinherit.SubEntity1" dbEntityName="INHERITANCE_SUB_ENTITY1">
+		<obj-attribute name="subEntityStringAttr" type="java.lang.String" db-attribute-path="SUBENTITY_STRING_DB_ATTR"/>
+	</obj-entity>
+	<obj-entity name="SubEntity2" superEntityName="AbstractSuperEntity" className="org.apache.cayenne.testdo.horizontalinherit.SubEntity2" dbEntityName="INHERITANCE_SUB_ENTITY2">
+		<obj-attribute name="subEntityIntAttr" type="int" db-attribute-path="SUBENTITY_INT_DB_ATTR"/>
+		<attribute-override name="superStringAttr" db-attribute-path="OVERRIDDEN_STRING_DB_ATTR"/>
+	</obj-entity>
+	<obj-entity name="SubEntity3" superEntityName="AbstractSuperEntity" className="org.apache.cayenne.testdo.horizontalinherit.SubEntity3" dbEntityName="INHERITANCE_SUB_ENTITY3">
+		<obj-attribute name="subBooleanAttr" type="boolean" db-attribute-path="SUBENTITY_BOOL_ATTR"/>
+		<attribute-override name="superIntAttr" db-attribute-path="OVERRIDDEN_INT_DB_ATTR"/>
+		<attribute-override name="superStringAttr" db-attribute-path="OVERRIDDEN_STRING_DB_ATTR"/>
+	</obj-entity>
+</data-map>

@@ -1,0 +1,57 @@
+{
+    attributes = (
+        {columnName = CANCELED; name = canceled; prototypeName = boolPrototype; }, 
+        {columnName = COMMENT; name = comment; prototypeName = varcharPrototype; }, 
+        {
+            allowsNull = N; 
+            columnName = CREATED; 
+            name = created; 
+            prototypeName = timestampPrototype; 
+        }, 
+        {columnName = "DOCUMENT_ID"; name = documentID; prototypeName = idPrototype; }, 
+        {
+            allowsNull = N; 
+            columnName = "DOCUMENT_TYPE"; 
+            name = documentType; 
+            prototypeName = varcharPrototype; 
+            width = 100; 
+        }, 
+        {
+            allowsNull = N; 
+            columnName = "DOCUMENT_NUMBER"; 
+            name = estimateNumber; 
+            prototypeName = varcharPrototype; 
+            width = 40; 
+        }, 
+        {columnName = "JOB_ID"; name = jobID; prototypeName = idPrototype; }, 
+        {
+            allowsNull = N; 
+            columnName = "LAST_UPDATED"; 
+            name = lastUpdated; 
+            prototypeName = timestampPrototype; 
+        }, 
+        {
+            columnName = "TEST_NUMERIC"; 
+            name = testNumeric; 
+            prototypeName = intPrototype; 
+        }
+    ); 
+    attributesUsedForLocking = (documentID, jobID); 
+    className = "xyz.Estimate"; 
+    classProperties = (
+        created, 
+        lastUpdated, 
+        canceled, 
+        documentType, 
+        estimateNumber, 
+        comment, 
+        testNumeric
+    ); 
+    externalName = DOCUMENT; 
+    fetchSpecificationDictionary = {}; 
+    isAbstractEntity = Y; 
+    name = Estimate; 
+    parent = Document; 
+    primaryKeyAttributes = (documentID); 
+    restrictingQualifier = "(documentType = 'Estimate')"; 
+}

@@ -1,0 +1,138 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Running Queries</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Running Queries</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Running Queries/index.html">Running Queries</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataObject State Management/index.html">DataObject State Management</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Moving Objects Between Contexts/index.html">Moving Objects Between Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextDelegate/index.html">DataContextDelegate</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/DataContextFactory/index.html">DataContextFactory</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/Nested Contexts/index.html">Nested Contexts</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html">ObjectContext Memory Management</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>Cayenne Query API is discussed in the following chapters. This chapter concentrates on how to execute an existing query via a DataContext. Still we'd like to point to a few aspects of the query API here, as they are important for the query execution discussion:</p>
+
+<ul>
+	<li>There are selecting and non-selecting queries. Selecting queries return objects back to the caller, while non-selecting just perform some DB operation (such as INSERT, DELETE, UPDATE, etc.) without returning anything back.</li>
+	<li>Queries can be created in two ways - either by instantiating and configuring a Query object directly, or by mapping a query in CayenneModeler, and then referring to it by name. Mapped named queries are generally easier to create and maintain.</li>
+</ul>
+
+
+<p>Being an instance of QueryEngine, DataContext has generic API to execute any type of queries, however it is rarely used directly. Instead DataContext provides a number of overriden convenience methods to run the types of queries mentioned above.</p>
+
+<h3><a name="RunningQueries-RunningQueryInstances"></a>Running Query Instances</h3>
+
+<p>The following methods are used for running selecting and non-selecting Query objects built in the code:</p>
+
+<ul>
+	<li><tt>public java.util.List performQuery(Query query)</tt><br/>
+This is the most commonly used method for any selecting query.</li>
+</ul>
+
+
+<ul>
+	<li><tt>public ResultIterator performIteratedQuery(Query query) throws CayenneException</tt><br/>
+Performs a selecting query, returning an iterator over the result backed by an open JDBC ResultSet. Benefits and shortcomings of using result iterators are discussed in "Performance Tuning" chapter. This is the only query method that throws checked exceptions. Also returned ResultIterator requires explicit cleanup via calling close().</li>
+</ul>
+
+
+<ul>
+	<li><tt>public int[] performNonSelectingQuery(Query query)</tt><br/>
+Executes a non-selecting query, returning update counts.</li>
+</ul>
+
+
+<ul>
+	<li><tt>public QueryResponse performGenericQuery(Query query)</tt><br/>
+A generic query execution method. Used for queries with complex results. For example queries based on stored procedures can have more than one result set, do multiple updates, and return values as OUT parameters.</li>
+</ul>
+
+
+
+<h3><a name="RunningQueries-RunningMappedQueries"></a>Running Mapped Queries</h3>
+
+<p>The following methods are used to run named selecting and non-selecting queries mapped using CayenneModeler and stored in the DataMap XML file:</p>
+
+<ul>
+	<li><tt>public java.util.List performQuery(String name, boolean expireCachedLists)</tt><br/>
+Runs a named selecting query stored in the DataMap.</li>
+</ul>
+
+
+<ul>
+	<li><tt>public java.util.List performQuery(String name, Map parameters, boolean expireCachedLists)</tt><br/>
+Runs a named selecting query stored in the DataMap, using a map of named parameters.</li>
+</ul>
+
+
+<ul>
+	<li><tt>public int[] performNonSelectingQuery(String name)</tt><br/>
+Runs a named non-selecting query stored in the DataMap.</li>
+</ul>
+
+
+<ul>
+	<li><tt>public int[] performNonSelectingQuery(String name, Map parameters)</tt><br/>
+Runs a named non-selecting query stored in the DataMap, using a map of named parameters.</li>
+</ul>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

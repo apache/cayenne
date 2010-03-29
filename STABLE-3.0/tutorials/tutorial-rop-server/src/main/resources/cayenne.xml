@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="3.0.0.1">
+<domain name="UntitledDomain">
+	<map name="UntitledDomainMap" location="UntitledDomainMap.map.xml"/>
+
+	<node name="UntitledDomainNode"
+		 datasource="UntitledDomainNode.driver.xml"
+		 factory="org.apache.cayenne.conf.DriverDataSourceFactory"
+		 schema-update-strategy="org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy">
+			<map-ref name="UntitledDomainMap"/>
+	 </node>
+</domain>
+</domains>

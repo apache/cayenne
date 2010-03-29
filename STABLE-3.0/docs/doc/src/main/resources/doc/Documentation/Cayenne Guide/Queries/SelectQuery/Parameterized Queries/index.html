@@ -1,0 +1,156 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Parameterized Queries</title>
+    <style type="text/css">@import "../../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Parameterized Queries</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html">SelectQuery</a><ul>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Parameterized Queries/index.html">Parameterized Queries</a><ul>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Qualifier Expressions/index.html">Qualifier Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/Using Orderings/index.html">Using Orderings</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SelectQuery/SelectQuery Customization/index.html">SelectQuery Customization</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/index.html">SQLTemplate Query</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html">EJBQLQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html">NamedQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html">ObjectIdQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html">QueryChain</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html">RelationshipQuery</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Queries Stored in DataMap/index.html">Queries Stored in DataMap</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Caching Query Results/index.html">Caching Query Results</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Queries/Customizing Queries/index.html">Customizing Queries</a></li>
+</ul>
+</li>
+<li><a href="../../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>SelectQuery objects can be rather complex. They may contain long qualifiers and lots of tuning parameters. Parameterized Queries feature addresses reusability of complex queries. With this feature, for each group of queries that differ only in the values used in the qualifier, a developer may create a single shared "prototype" or "template" query, and use it later as a factory for other queries. All settings configured in the prototype object will be passed to the final queries. Qualifier of the prototype query may use named parameters that are substituted for real values when a final query is created from the prototype.</p>
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>"Prototype" queries are normally created in CayenneModeler and stored in the DataMap XML file. "Queries Stored in DataMap" chapter describes how to use such templates. This chapter shows how to create them on the spot using the API calls.</td></tr></table></div>
+
+<p>Building a prototype query using <tt>Expression.fromString(..)</tt>:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.exp.Expression;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
+...
+<span class="code-comment">// create a qualifier with two named parameters: <span class="code-quote">"pname"</span> and <span class="code-quote">"aname"</span>
+</span>Expression qual = Expression.fromString(<span class="code-quote">"paintingTitle = $pname or toArtist.artistName = $aname"</span>);
+
+<span class="code-comment">// build a query prototype of a query - simply another select query
+</span>SelectQuery proto = <span class="code-keyword">new</span> SelectQuery(Painting.class, qual);
+proto.setDistinct(<span class="code-keyword">true</span>);
+</pre>
+</div></div>
+
+<p>Same example but using ExpressionFactory:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> java.util.*;
+<span class="code-keyword">import</span> org.apache.cayenne.exp.Expression;
+<span class="code-keyword">import</span> org.apache.cayenne.exp.ExpressionFactory;
+<span class="code-keyword">import</span> org.apache.cayenne.exp.ExpressionParameter;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
+...
+<span class="code-comment">// create a qualifier with two named parameters: 
+</span><span class="code-comment">//  <span class="code-quote">"pname"</span> and <span class="code-quote">"aname"</span>
+</span>List list = <span class="code-keyword">new</span> ArrayList();
+list.add(ExpressionFactory.matchExp(<span class="code-quote">"paintingTitle"</span>, 
+         <span class="code-keyword">new</span> ExpressionParameter(<span class="code-quote">"pname"</span>)));
+list.add(ExpressionFactory.matchExp(<span class="code-quote">"toArtist.artistName"</span>, 
+         <span class="code-keyword">new</span> ExpressionParameter(<span class="code-quote">"aname"</span>)));
+Expression qual = ExpressionFactory.joinExp(Expression.OR, list);
+
+<span class="code-comment">// build a query prototype of a query - simply another select query
+</span>SelectQuery proto = <span class="code-keyword">new</span> SelectQuery(Painting.class, qual);
+proto.setDistinct(<span class="code-keyword">true</span>);
+</pre>
+</div></div>
+<p>Prototype built in the example above can be used to create other queries. Relevalnt API is:</p>
+
+<ul>
+	<li>public SelectQuery <b>SelectQuery.queryWithParameters</b>(Map parameters, boolean pruneMissing)<br/>
+      Creates and returns a new SelectQuery using current query as a prototype. Map of parameters is used to substitute named parameters in the qualifier with the real values. Returned query is a separate instance and can be further customized without affecting the prototype. If <tt>pruneMissing</tt> is true and some of the named parameters are missing from the parameters map, Cayenne would prune expressions that can not be resolved. If pruneMissing is set to false, the method would throw an exception unless all the named parameters can be resolved.</li>
+	<li>public SelectQuery <b>SelectQuery.queryWithParameters</b>(Map parameters)<br/>
+      A shortcut for <tt>public SelectQuery queryWithParameters(Map parameters, true)</tt>.</li>
+</ul>
+
+
+<p>Example of using queryWithParameters is shown below:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-keyword">import</span> java.util.Map;
+<span class="code-keyword">import</span> java.util.HashMap;
+<span class="code-keyword">import</span> org.apache.cayenne.query.SelectQuery;
+...
+SelectQuery proto = ... <span class="code-comment">// <span class="code-keyword">this</span> was built in the example above
+</span>
+<span class="code-comment">// create a query
+</span>Map params1 = <span class="code-keyword">new</span> HashMap();
+params1.put(<span class="code-quote">"aname"</span>, <span class="code-quote">"Dali"</span>);
+SelectQuery query1 = proto.queryWithParameters(params1);
+
+<span class="code-comment">// further customize returned query 
+</span><span class="code-comment">// without affecting the prototype
+</span>query1.setFetchLimit(100);
+... 
+<span class="code-comment">// create another query with a different set of parameters
+</span>Map params2 = <span class="code-keyword">new</span> HashMap();
+params2.put(<span class="code-quote">"aname"</span>, <span class="code-quote">"Monet"</span>);
+params2.put(<span class="code-quote">"pname"</span>, <span class="code-quote">"The Beach at Trouville"</span>);
+SelectQuery query2 = proto.queryWithParameters(params2);
+... 
+</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>

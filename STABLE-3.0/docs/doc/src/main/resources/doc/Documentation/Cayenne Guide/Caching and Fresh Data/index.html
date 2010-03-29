@@ -1,0 +1,89 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Caching and Fresh Data</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Caching and Fresh Data</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a><ul>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/Individual Object Caching/index.html">Individual Object Caching</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/Query Result Caching/index.html">Query Result Caching</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="CachingandFreshData-CachingandFreshData"></a>Caching and Fresh Data</h2>
+
+<p>Caching is used by Cayenne to reduce database access and improve performance of your application. Sometimes caching automatically happens behind the scenes, and in other places the user must declare an intent to cache data. Configuring caching parameters beyond the provided reasonable defaults is an art of balancing performance with the need to see the fresh data.</p>
+
+<p>The are two types of cache in Cayenne:</p>
+
+<h3><a name="CachingandFreshData-QueryCache"></a>Query Cache</h3>
+
+<p>This cache retains the results of a query in memory. When this cache is utilised by the second and successive queries, no further SELECT is performed on the database to determine which records match your query parameters. </p>
+
+<h3><a name="CachingandFreshData-ObjectCache"></a>Object Cache</h3>
+
+<p>This cache stores the actual objects and not only eliminates the time required to fetch data from the database, but also the time required to instantiate that data into Java objects.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>As of Cayenne 3.0, two types of caches (individual object and query results) are separate from each other. Query cache can be extended and managed, while individual object cache has fewer configuration options - just max size and synchronization strategy. There are plans to reconcile both caches in the following releases.</td></tr></table></div>
+
+<h3><a name="CachingandFreshData-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/Individual Object Caching/index.html" title="Individual Object Caching">Individual object caching</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/Query Result Caching/index.html" title="Query Result Caching">Query result caching</a></li>
+</ol>
+
+
+
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>
