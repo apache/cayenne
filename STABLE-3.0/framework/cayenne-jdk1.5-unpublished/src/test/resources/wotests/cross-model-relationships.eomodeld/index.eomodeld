@@ -1,5 +1,0 @@
-{
-    EOModelVersion = "2.1"; 
-    adaptorName = None; 
-    entities = ({className = EOGenericRecord; name = CrossModelRelTest; }); 
-}

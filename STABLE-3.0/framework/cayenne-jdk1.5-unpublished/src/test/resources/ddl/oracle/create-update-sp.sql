@@ -1,8 +1,0 @@
- CREATE OR REPLACE PROCEDURE cayenne_tst_upd_proc
- (painting_price IN NUMBER) AS
- BEGIN
-        SET TRANSACTION READ WRITE;
-        UPDATE PAINTING SET ESTIMATED_PRICE = ESTIMATED_PRICE * 2
-        WHERE ESTIMATED_PRICE < painting_price;
-        COMMIT;
- END;
