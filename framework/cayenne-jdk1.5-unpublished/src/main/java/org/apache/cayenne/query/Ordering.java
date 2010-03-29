@@ -350,4 +350,12 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
         buffer.flush();
         return buffer.toString();
     }
+    
+    /**
+     * Returns sort order for this ordering
+     * @since 3.1
+     */
+    public SortOrder getSortOrder() {
+        return sortOrder;
+    }
 }
