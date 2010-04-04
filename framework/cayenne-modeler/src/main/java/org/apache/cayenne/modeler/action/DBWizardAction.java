@@ -21,9 +21,9 @@ package org.apache.cayenne.modeler.action;
 
 import java.util.Collection;
 
-import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -49,9 +49,11 @@ public abstract class DBWizardAction extends CayenneAction {
         if (node == null) {
             DataMap map = projectController.getCurrentDataMap();
             if (map != null) {
-                Collection<DataNodeDescriptor> nodes = ((DataChannelDescriptor)projectController.getProject().getRootNode()).getNodeDescriptors();
-                for(DataNodeDescriptor n:nodes){
-                    if(n.getDataMapNames().contains(map.getName())){
+                Collection<DataNodeDescriptor> nodes = ((DataChannelDescriptor) projectController
+                        .getProject()
+                        .getRootNode()).getNodeDescriptors();
+                for (DataNodeDescriptor n : nodes) {
+                    if (n.getDataMapNames().contains(map.getName())) {
                         node = n;
                         break;
                     }
@@ -67,7 +69,7 @@ public abstract class DBWizardAction extends CayenneAction {
 
             // only driver nodes have meaningful connection info set
             DataNodeDescriptor node = getPreferredNode();
-            return (node != null && DriverDataSourceFactory.class.getName().equals(
+            return (node != null && XMLPoolingDataSourceFactory.class.getName().equals(
                     node.getDataSourceFactoryType())) ? "DataNode Connection Info" : null;
         }
 
@@ -88,7 +90,8 @@ public abstract class DBWizardAction extends CayenneAction {
         // if node has local DS set, use it
         DataNodeDefaults nodeDefaults = (DataNodeDefaults) getApplication()
                 .getCayenneProjectPreferences()
-                .getProjectDetailObject(DataNodeDefaults.class,
+                .getProjectDetailObject(
+                        DataNodeDefaults.class,
                         getProjectController().getPreferenceForDataDomain().node(
                                 "DataNode").node(node.getName()));
 
@@ -105,7 +108,8 @@ public abstract class DBWizardAction extends CayenneAction {
         }
 
         // extract data from the node
-        if (!DriverDataSourceFactory.class.getName().equals(node.getDataSourceFactoryType())) {
+        if (!XMLPoolingDataSourceFactory.class.getName().equals(
+                node.getDataSourceFactoryType())) {
             return null;
         }
 
