@@ -40,7 +40,10 @@ public class DataMapErrorMsg extends ValidationDisplayHandler {
 
         Object object = result.getSource();
         map = (DataMap) object;
-        domain = (DataChannelDescriptor) Application.getProject().getRootNode();
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {

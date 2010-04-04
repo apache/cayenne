@@ -36,7 +36,6 @@ import javax.swing.event.ChangeListener;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -105,19 +104,24 @@ public class DBGeneratorOptions extends CayenneController {
         sqlBinding = builder.bindToTextArea(view.getSql(), "textForSQL");
 
         optionBindings = new ObjectBinding[5];
-        optionBindings[0] = builder.bindToStateChangeAndAction(view.getCreateFK(),
+        optionBindings[0] = builder.bindToStateChangeAndAction(
+                view.getCreateFK(),
                 "generatorDefaults.createFK",
                 "refreshSQLAction()");
-        optionBindings[1] = builder.bindToStateChangeAndAction(view.getCreatePK(),
+        optionBindings[1] = builder.bindToStateChangeAndAction(
+                view.getCreatePK(),
                 "generatorDefaults.createPK",
                 "refreshSQLAction()");
-        optionBindings[2] = builder.bindToStateChangeAndAction(view.getCreateTables(),
+        optionBindings[2] = builder.bindToStateChangeAndAction(
+                view.getCreateTables(),
                 "generatorDefaults.createTables",
                 "refreshSQLAction()");
-        optionBindings[3] = builder.bindToStateChangeAndAction(view.getDropPK(),
+        optionBindings[3] = builder.bindToStateChangeAndAction(
+                view.getDropPK(),
                 "generatorDefaults.dropPK",
                 "refreshSQLAction()");
-        optionBindings[4] = builder.bindToStateChangeAndAction(view.getDropTables(),
+        optionBindings[4] = builder.bindToStateChangeAndAction(
+                view.getDropTables(),
                 "generatorDefaults.dropTables",
                 "refreshSQLAction()");
 
@@ -182,7 +186,7 @@ public class DBGeneratorOptions extends CayenneController {
     }
 
     // ===============
-    //    Actions
+    // Actions
     // ===============
 
     /**
@@ -236,7 +240,8 @@ public class DBGeneratorOptions extends CayenneController {
             }
             else {
                 new ValidationResultBrowser(this)
-                        .startupAction("Schema Generation Complete",
+                        .startupAction(
+                                "Schema Generation Complete",
                                 "Schema generation finished. The following problem(s) were ignored.",
                                 failures);
             }
@@ -254,7 +259,11 @@ public class DBGeneratorOptions extends CayenneController {
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle("Save SQL Script");
 
-        File projectDir = new File(Application.getProject().getConfigurationResource().getURL().getPath());
+        File projectDir = new File(getApplication()
+                .getProject()
+                .getConfigurationResource()
+                .getURL()
+                .getPath());
 
         if (projectDir != null) {
             fc.setCurrentDirectory(projectDir);

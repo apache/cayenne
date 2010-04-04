@@ -38,7 +38,10 @@ public class CreateNodeUndoableEdit extends CayenneUndoableEdit {
     private DataChannelDescriptor domain;
 
     public CreateNodeUndoableEdit(Application application, DataNodeDescriptor node) {
-        this.domain = (DataChannelDescriptor) Application.getProject().getRootNode();
+        this.domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
         this.node = node;
     }
 

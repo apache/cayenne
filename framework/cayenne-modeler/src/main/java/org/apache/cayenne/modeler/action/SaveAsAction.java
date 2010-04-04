@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.pref.Preference;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.ProjectSaver;
@@ -104,7 +103,7 @@ public class SaveAsAction extends CayenneAction {
         URL url = projectDir.toURL();
 
         URLResource res = new URLResource(url);
-        // /!!!!!!!!!!!!!!!!!!! SAVE AS!!!!!!!!!!!!!!
+
         ProjectSaver saver = getApplication().getInjector().getInstance(
                 ProjectSaver.class);
 
@@ -134,18 +133,17 @@ public class SaveAsAction extends CayenneAction {
         }
         else if (isNewProject) {
             if (tempOldPref != null
-                    && tempOldPref.absolutePath().contains(getApplication().getId())) {
+                    && tempOldPref.absolutePath().contains(Application.getId())) {
 
                 String projPath = tempOldPref.absolutePath().replace(
-                        "/" + getApplication().getId(),
+                        "/" + Application.getId(),
                         "");
                 String newName = p.getConfigurationResource().getURL().getPath().replace(
                         ".xml",
                         "");
 
-                Preferences newPref = getApplication()
-                        .getMainPreferenceForProject()
-                        .node(projPath + newName);
+                Preferences newPref = getApplication().getMainPreferenceForProject().node(
+                        projPath + newName);
 
                 RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
                 tempOldPref.removeNode();

@@ -34,6 +34,9 @@ import java.util.prefs.Preferences;
 import javax.swing.event.EventListenerList;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
@@ -46,9 +49,6 @@ import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.configuration.event.ProcedureParameterListener;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.event.QueryListener;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -121,21 +121,12 @@ import org.apache.cayenne.project2.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A controller that works with the project tree, tracking selection and dispatching
  * project events.
- * <p>
- * TODO: Refactor the event model, so that events are generic and contain "path" to a
- * project node in question. After this is done, EventController should no longer maintain
- * the selection model (currentXYZ ivars), rather it should update internal model.
- * </p>
  */
 public class ProjectController extends CayenneController {
-
-    private static final Log logObj = LogFactory.getLog(ProjectController.class);
 
     /*
      * A snapshot of the current state of the project controller. This was added so that
@@ -1841,8 +1832,9 @@ public class ProjectController extends CayenneController {
             Object[] paths = getCurrentPaths();
             List<Object> result = new Vector<Object>();
 
-            ConfigurationNodeParentGetter parentGetter = getApplication().getInjector().getInstance(
-                    ConfigurationNodeParentGetter.class);
+            ConfigurationNodeParentGetter parentGetter = getApplication()
+                    .getInjector()
+                    .getInstance(ConfigurationNodeParentGetter.class);
             Object parent = parentGetter.getParent((ConfigurationNode) paths[0]);
 
             for (Object path : paths) {

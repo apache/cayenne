@@ -115,7 +115,7 @@ public class DataMapView extends JPanel {
                 setDefaultSchema(text);
             }
         };
-        
+
         quoteSQLIdentifiers = new JCheckBox();
 
         updateDefaultPackage = new JButton("Update...");
@@ -211,8 +211,8 @@ public class DataMapView extends JPanel {
                 setDataNode();
             }
         });
-        
-        quoteSQLIdentifiers.addActionListener(new ActionListener(){
+
+        quoteSQLIdentifiers.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected());
@@ -289,8 +289,10 @@ public class DataMapView extends JPanel {
 
         quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
         // rebuild data node list
-        
-        Object nodes[] = ((DataChannelDescriptor) eventController.getProject().getRootNode()).getNodeDescriptors().toArray();
+
+        Object nodes[] = ((DataChannelDescriptor) eventController
+                .getProject()
+                .getRootNode()).getNodeDescriptors().toArray();
 
         // add an empty item to the front
         Object[] objects = new Object[nodes.length + 1];
@@ -367,7 +369,7 @@ public class DataMapView extends JPanel {
             eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
         }
     }
-    
+
     void setQuoteSQLIdentifiers(boolean flag) {
         DataMap dataMap = eventController.getCurrentDataMap();
 
@@ -377,7 +379,7 @@ public class DataMapView extends JPanel {
 
         if (dataMap.isQuotingSQLIdentifiers() != flag) {
             dataMap.setQuotingSQLIdentifiers(flag);
-            
+
             eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
         }
     }
@@ -504,7 +506,10 @@ public class DataMapView extends JPanel {
 
         // search for matching map name across domains, as currently they have to be
         // unique globally
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)Application.getProject().getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
 
         DataMap matchingMap = dataChannelDescriptor.getDataMap(newName);
 
@@ -522,7 +527,9 @@ public class DataMapView extends JPanel {
         // completely new name, set new name for domain
         DataMapDefaults pref = eventController.getDataMapPreferences("");
         DataMapEvent e = new DataMapEvent(this, map, map.getName());
-        ProjectUtil.setDataMapName((DataChannelDescriptor)eventController.getProject().getRootNode(), map, newName);
+        ProjectUtil.setDataMapName((DataChannelDescriptor) eventController
+                .getProject()
+                .getRootNode(), map, newName);
         pref.copyPreferences(newName);
         eventController.fireDataMapEvent(e);
     }
@@ -536,11 +543,11 @@ public class DataMapView extends JPanel {
             return;
         }
 
-        boolean hasChanges = false;
-
         // unlink map from any nodes
 
-        for (DataNodeDescriptor nextNode : ((DataChannelDescriptor)eventController.getProject().getRootNode()).getNodeDescriptors()) {
+        for (DataNodeDescriptor nextNode : ((DataChannelDescriptor) eventController
+                .getProject()
+                .getRootNode()).getNodeDescriptors()) {
 
             // Theoretically only one node may contain a datamap at each given time.
             // Being paranoid, we will still scan through all.
@@ -549,15 +556,12 @@ public class DataMapView extends JPanel {
 
                 // announce DataNode change
                 eventController.fireDataNodeEvent(new DataNodeEvent(this, nextNode));
-
-                hasChanges = true;
             }
         }
 
         // link to a selected node
         if (node != null) {
             node.getDataMapNames().add(map.getName());
-            hasChanges = true;
 
             // announce DataNode change
             eventController.fireDataNodeEvent(new DataNodeEvent(this, node));

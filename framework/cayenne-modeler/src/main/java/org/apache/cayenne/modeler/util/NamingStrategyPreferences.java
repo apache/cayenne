@@ -22,10 +22,7 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
-
-import org.apache.cayenne.pref.CayennePreference;
 
 /**
  * Helper class to store/read information about naming strategies have been used
@@ -50,7 +47,7 @@ public class NamingStrategyPreferences {
     }
 
     Preferences getPreference() {
-        return Application.getMainPreferenceForProject();
+        return Application.getInstance().getMainPreferenceForProject();
     }
 
     /**

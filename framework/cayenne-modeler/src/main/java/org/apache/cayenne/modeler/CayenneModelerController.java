@@ -52,7 +52,6 @@ import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * Controller of the main application frame.
- * 
  */
 public class CayenneModelerController extends CayenneController {
 

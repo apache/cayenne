@@ -32,16 +32,15 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
-import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
-import org.apache.cayenne.conf.DBCPDataSourceFactory;
-import org.apache.cayenne.conf.DriverDataSourceFactory;
-import org.apache.cayenne.conf.JNDIDataSourceFactory;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
+import org.apache.cayenne.configuration.DBCPDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.configuration.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
@@ -64,7 +63,7 @@ public class MainDataNodeEditor extends CayenneController {
     protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
 
     final static String[] standardDataSourceFactories = new String[] {
-            DriverDataSourceFactory.class.getName(),
+            XMLPoolingDataSourceFactory.class.getName(),
             JNDIDataSourceFactory.class.getName(), DBCPDataSourceFactory.class.getName()
     };
 
@@ -159,9 +158,12 @@ public class MainDataNodeEditor extends CayenneController {
 
         ProjectController parent = (ProjectController) getParent();
         DataNodeDefaults oldPref = parent.getDataNodePreferences();
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor)Application.getProject().getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getApplication()
+                .getProject()
+                .getRootNode();
 
-        Collection<DataNodeDescriptor> matchingNode = dataChannelDescriptor.getNodeDescriptors();
+        Collection<DataNodeDescriptor> matchingNode = dataChannelDescriptor
+                .getNodeDescriptors();
 
         Iterator<DataNodeDescriptor> it = matchingNode.iterator();
         while (it.hasNext()) {
@@ -171,20 +173,19 @@ public class MainDataNodeEditor extends CayenneController {
                 throw new ValidationException("There is another DataNode named '"
                         + newName
                         + "'. Use a different name.");
-            } 
+            }
         }
-        
+
         // passed validation, set value...
 
         // TODO: fixme....there is a slight chance that domain is different than the one
         // cached node belongs to
-        ProjectUtil.setDataNodeName((DataChannelDescriptor)parent.getProject().getRootNode(), node, newName);
-        
-    
+        ProjectUtil.setDataNodeName((DataChannelDescriptor) parent
+                .getProject()
+                .getRootNode(), node, newName);
+
         oldPref.copyPreferences(newName);
     }
-
-    // ======== other stuff
 
     protected void initController() {
         view.getDataSourceDetail().add(defaultSubeditor.getView(), "default");
@@ -249,7 +250,7 @@ public class MainDataNodeEditor extends CayenneController {
 
     protected void refreshLocalDataSources() {
         localDataSources.clear();
-        
+
         Map sources = getApplication().getCayenneProjectPreferences().getDetailObject(
                 DBConnectionInfo.class).getChildrenPreferences();
 
@@ -258,13 +259,13 @@ public class MainDataNodeEditor extends CayenneController {
 
         // a slight chance that a real datasource is called NO_LOCAL_DATA_SOURCE...
         keys[0] = NO_LOCAL_DATA_SOURCE;
-        
+
         Object[] dataSources = sources.keySet().toArray();
         localDataSources.add(dataSources);
-        for(int i=0; i<dataSources.length;i++){
-            keys[i+1] = dataSources[i];
+        for (int i = 0; i < dataSources.length; i++) {
+            keys[i + 1] = dataSources[i];
         }
-        
+
         view.getLocalDataSources().setModel(new DefaultComboBoxModel(keys));
         localDataSourceBinding.updateView();
     }
@@ -298,7 +299,7 @@ public class MainDataNodeEditor extends CayenneController {
         // create subview dynamically...
         if (c == null) {
 
-            if (DriverDataSourceFactory.class.getName().equals(factoryName)) {
+            if (XMLPoolingDataSourceFactory.class.getName().equals(factoryName)) {
                 c = new JDBCDataSourceEditor(
                         (ProjectController) getParent(),
                         nodeChangeProcessor);

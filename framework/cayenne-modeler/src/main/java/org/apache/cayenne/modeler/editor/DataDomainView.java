@@ -351,6 +351,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         }
 
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
+                .getInstance()
                 .getProject()
                 .getRootNode();
         Preferences prefs = projectController.getPreferenceForDataDomain();
@@ -361,10 +362,10 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
                 dataChannelDescriptor.getName());
         ProjectUtil.setDataDomainName(dataChannelDescriptor, newName);
 
-        // copy all old preference to new preferences 
+        // copy all old preference to new preferences
         Preferences oldPref = prefs;
         RenamedPreferences.copyPreferences(newName, oldPref);
-        
+
         projectController.fireDomainEvent(e);
     }
 

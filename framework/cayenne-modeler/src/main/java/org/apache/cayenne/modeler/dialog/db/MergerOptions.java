@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
@@ -52,7 +53,6 @@ import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.ModelMergeDelegate;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
@@ -165,8 +165,11 @@ public class MergerOptions extends CayenneController {
                     .getClassLoadingService());
             tokens.setMergerFactory(adapter.mergerFactory());
             merger = new DbMerger();
-            List<MergerToken> mergerTokens = merger.createMergeTokens(adapter, connectionInfo
-                    .makeDataSource(getApplication().getClassLoadingService()), dataMap);
+            List<MergerToken> mergerTokens = merger.createMergeTokens(
+                    adapter,
+                    connectionInfo.makeDataSource(getApplication()
+                            .getClassLoadingService()),
+                    dataMap);
             tokens.setTokens(mergerTokens);
         }
         catch (Exception ex) {
@@ -187,7 +190,7 @@ public class MergerOptions extends CayenneController {
         final String lineEnd = (batchTerminator != null) ? "\n"
                 + batchTerminator
                 + "\n\n" : "\n\n";
-        
+
         while (it.hasNext()) {
             MergerToken token = it.next();
 
@@ -256,97 +259,156 @@ public class MergerOptions extends CayenneController {
             JOptionPane.showMessageDialog(getView(), "Nothing to migrate.");
             return;
         }
-        
+
         final ProjectController c = getProjectController();
-        
+
         final Object src = this;
-        final DataChannelDescriptor domain = (DataChannelDescriptor)getProjectController().getProject().getRootNode();
+        final DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
+                .getProject()
+                .getRootNode();
         final DataNodeDescriptor node = getProjectController().getCurrentDataNode();
 
-        final ModelMergeDelegate delegate = new ModelMergeDelegate (){
+        final ModelMergeDelegate delegate = new ModelMergeDelegate() {
 
             public void dbAttributeAdded(DbAttribute att) {
                 if (c.getCurrentDbEntity() == att.getEntity()) {
-                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
+                            .getEntity(), dataMap, domain));
                 }
             }
 
             public void dbAttributeModified(DbAttribute att) {
                 if (c.getCurrentDbEntity() == att.getEntity()) {
-                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
+                            .getEntity(), dataMap, domain));
                 }
             }
 
             public void dbAttributeRemoved(DbAttribute att) {
                 if (c.getCurrentDbEntity() == att.getEntity()) {
-                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
+                            .getEntity(), dataMap, domain));
                 }
             }
 
             public void dbEntityAdded(DbEntity ent) {
                 c.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
-                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(
+                        src,
+                        ent,
+                        dataMap,
+                        node,
+                        domain));
             }
 
             public void dbEntityRemoved(DbEntity ent) {
                 c.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
-                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(
+                        src,
+                        ent,
+                        dataMap,
+                        node,
+                        domain));
             }
 
             public void dbRelationshipAdded(DbRelationship rel) {
                 if (c.getCurrentDbEntity() == rel.getSourceEntity()) {
-                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                            src,
+                            rel,
+                            rel.getSourceEntity(),
+                            dataMap,
+                            domain));
                 }
             }
 
             public void dbRelationshipRemoved(DbRelationship rel) {
                 if (c.getCurrentDbEntity() == rel.getSourceEntity()) {
-                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                            src,
+                            rel,
+                            rel.getSourceEntity(),
+                            dataMap,
+                            domain));
                 }
             }
 
             public void objAttributeAdded(ObjAttribute att) {
                 if (c.getCurrentObjEntity() == att.getEntity()) {
-                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+                            src,
+                            att,
+                            att.getEntity(),
+                            dataMap,
+                            domain));
                 }
             }
 
             public void objAttributeModified(ObjAttribute att) {
                 if (c.getCurrentObjEntity() == att.getEntity()) {
-                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+                            src,
+                            att,
+                            att.getEntity(),
+                            dataMap,
+                            domain));
                 }
             }
 
             public void objAttributeRemoved(ObjAttribute att) {
                 if (c.getCurrentObjEntity() == att.getEntity()) {
-                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att.getEntity(), dataMap, domain));
+                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+                            src,
+                            att,
+                            att.getEntity(),
+                            dataMap,
+                            domain));
                 }
             }
 
             public void objEntityAdded(ObjEntity ent) {
                 c.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
-                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+                        src,
+                        ent,
+                        dataMap,
+                        node,
+                        domain));
             }
 
             public void objEntityRemoved(ObjEntity ent) {
                 c.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
-                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(src, ent, dataMap, node, domain));
+                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+                        src,
+                        ent,
+                        dataMap,
+                        node,
+                        domain));
             }
 
             public void objRelationshipAdded(ObjRelationship rel) {
                 if (c.getCurrentObjEntity() == rel.getSourceEntity()) {
-                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                            src,
+                            rel,
+                            rel.getSourceEntity(),
+                            dataMap,
+                            domain));
                 }
             }
 
             public void objRelationshipRemoved(ObjRelationship rel) {
                 if (c.getCurrentObjEntity() == rel.getSourceEntity()) {
-                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(src, rel, rel.getSourceEntity(), dataMap, domain));
+                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                            src,
+                            rel,
+                            rel.getSourceEntity(),
+                            dataMap,
+                            domain));
                 }
             }
-            
-        };
 
+        };
 
         try {
             DataSource dataSource = connectionInfo.makeDataSource(getApplication()
@@ -356,7 +418,8 @@ public class MergerOptions extends CayenneController {
             MergerContext mergerContext = new ExecutingMergerContext(
                     dataMap,
                     dataSource,
-                    adapter, delegate);
+                    adapter,
+                    delegate);
             boolean modelChanged = false;
             for (MergerToken tok : tokensToMigrate) {
                 int numOfFailuresBefore = mergerContext
@@ -376,19 +439,18 @@ public class MergerOptions extends CayenneController {
                     tokens.removeToken(tok);
                 }
             }
-            
+
             if (modelChanged) {
                 // mark the model as unsaved
-                Project project = Application.getProject();
+                Project project = getApplication().getProject();
                 project.setModified(true);
 
-                ProjectController projectController = Application
-                        .getInstance()
+                ProjectController projectController = getApplication()
                         .getFrameController()
                         .getProjectController();
                 projectController.setDirty(true);
             }
-            
+
             ValidationResult failures = mergerContext.getValidationResult();
 
             if (failures == null || !failures.hasFailures()) {
@@ -413,11 +475,11 @@ public class MergerOptions extends CayenneController {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle("Save SQL Script");
-        
-        Resource projectDir = Application.getProject().getConfigurationResource();
+
+        Resource projectDir = getApplication().getProject().getConfigurationResource();
 
         if (projectDir != null) {
-            fc.setCurrentDirectory(new File(projectDir.getURL().getPath()));//projectDir);
+            fc.setCurrentDirectory(new File(projectDir.getURL().getPath()));
         }
 
         if (fc.showSaveDialog(getView()) == JFileChooser.APPROVE_OPTION) {
@@ -436,7 +498,7 @@ public class MergerOptions extends CayenneController {
             }
         }
     }
-    
+
     private ProjectController getProjectController() {
         return getApplication().getFrameController().getProjectController();
     }

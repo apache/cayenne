@@ -33,30 +33,31 @@ import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
- * Action that displays one of the objects in main tree, 
- * and then fires another action (if specified)
+ * Action that displays one of the objects in main tree, and then fires another action (if
+ * specified)
  */
 public class EntityDisplayAction extends CayenneAction {
+
     /**
      * Action that will be performed after selection
      */
     CayenneAction delegate;
-    
+
     GraphBuilder builder;
-    
+
     public EntityDisplayAction(GraphBuilder builder) {
         super("Show", Application.getInstance());
         this.builder = builder;
         init();
     }
-    
+
     public EntityDisplayAction(GraphBuilder builder, CayenneAction delegate) {
         super((String) delegate.getValue(Action.NAME), Application.getInstance());
         this.delegate = delegate;
         this.builder = builder;
         init();
     }
-    
+
     private void init() {
         setEnabled(true);
 
@@ -77,20 +78,22 @@ public class EntityDisplayAction extends CayenneAction {
             }
         }
     }
-    
+
     boolean display() {
         Entity entity = builder.getSelectedEntity();
         if (entity == null) {
             return false;
         }
-        
+
         ProjectController mediator = getProjectController();
-        
-        //we're always in same domain
-        FindDialog.jumpToResult(new Object[] { 
-                Application.getProject(), (DataChannelDescriptor)mediator.getProject().getRootNode(), entity.getDataMap(), entity
+
+        // we're always in same domain
+        FindDialog.jumpToResult(new Object[] {
+                getApplication().getProject(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode(),
+                entity.getDataMap(), entity
         });
-        
+
         return true;
     }
 

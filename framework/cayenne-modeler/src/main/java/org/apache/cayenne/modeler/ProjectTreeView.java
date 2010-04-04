@@ -36,6 +36,9 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
@@ -46,9 +49,6 @@ import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.configuration.event.ProcedureListener;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.event.QueryListener;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -112,10 +112,6 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     protected ProjectController mediator;
     protected TreeSelectionListener treeSelectionListener;
-
-    /**
-     * Popup menu containing basic functions
-     */
     protected JPopupMenu popup;
 
     public ProjectTreeView(ProjectController mediator) {
@@ -124,7 +120,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         initView();
         initController();
-        initFromModel(Application.getProject());
+        initFromModel(Application.getInstance().getProject());
     }
 
     private void initView() {
@@ -594,6 +590,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     public void dataMapRemoved(DataMapEvent e) {
         DataMap map = e.getDataMap();
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
+                .getInstance()
                 .getProject()
                 .getRootNode();
         removeNode(new Object[] {
