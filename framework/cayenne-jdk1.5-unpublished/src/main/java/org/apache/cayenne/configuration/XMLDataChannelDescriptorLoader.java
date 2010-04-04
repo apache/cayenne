@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.conf.PasswordEncoding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;

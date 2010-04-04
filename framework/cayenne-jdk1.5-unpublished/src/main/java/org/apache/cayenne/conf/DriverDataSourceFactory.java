@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.configuration.PasswordEncoding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.resource.ResourceLocator;

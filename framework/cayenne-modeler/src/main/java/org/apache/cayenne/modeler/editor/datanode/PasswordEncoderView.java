@@ -31,7 +31,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.conf.PasswordEncoding;
+import org.apache.cayenne.configuration.PasswordEncoding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 

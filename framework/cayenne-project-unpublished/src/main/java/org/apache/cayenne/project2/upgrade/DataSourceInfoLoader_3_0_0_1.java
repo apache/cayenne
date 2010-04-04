@@ -26,7 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.conf.PasswordEncoding;
+import org.apache.cayenne.configuration.PasswordEncoding;
 import org.apache.cayenne.configuration.SAXNestedTagHandler;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.resource.Resource;

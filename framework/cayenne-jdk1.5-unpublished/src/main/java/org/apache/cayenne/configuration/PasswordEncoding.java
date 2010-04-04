@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.conf;
+package org.apache.cayenne.configuration;
 
 /**
  * Password encoders are used to translate the text of the database password, on loading

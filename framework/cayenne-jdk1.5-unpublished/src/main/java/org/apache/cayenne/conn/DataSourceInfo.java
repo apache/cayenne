@@ -21,8 +21,8 @@ package org.apache.cayenne.conn;
 
 import java.io.Serializable;
 
-import org.apache.cayenne.conf.PasswordEncoding;
-import org.apache.cayenne.conf.PlainTextPasswordEncoder;
+import org.apache.cayenne.configuration.PasswordEncoding;
+import org.apache.cayenne.configuration.PlainTextPasswordEncoder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;

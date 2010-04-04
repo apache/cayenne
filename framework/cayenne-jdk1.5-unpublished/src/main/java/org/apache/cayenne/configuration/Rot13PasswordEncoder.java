@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.conf;
+package org.apache.cayenne.configuration;
 
 /**
  * The ROT-13 password encoder passes the text of the database password through a simple

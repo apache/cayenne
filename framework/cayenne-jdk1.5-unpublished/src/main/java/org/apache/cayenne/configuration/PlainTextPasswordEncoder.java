@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.conf;
+package org.apache.cayenne.configuration;
 
 /**
  * The plain text password encoder passes the text of the database password
