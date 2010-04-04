@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +25,8 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.commons.dbcp.BasicDataSource;
 

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;

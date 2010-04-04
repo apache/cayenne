@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * 
  * @since 1.2
  * @deprecated since 3.1 in favor of
- *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured via
+ *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured via
  *             dependency injection.
  */
 public interface DbAdapterFactory {

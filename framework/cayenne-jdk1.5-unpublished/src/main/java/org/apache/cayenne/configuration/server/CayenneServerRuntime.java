@@ -16,10 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.CayenneServerModule;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Module;
 
 /**

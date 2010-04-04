@@ -25,7 +25,7 @@ import javax.sql.DataSource;
  * A pluggable factory for {@link DataSource} instances used by Cayenne runtime.
  * 
  * @deprecated since 3.1, replaced by
- *             {@link org.apache.cayenne.configuration.DataSourceFactory}
+ *             {@link org.apache.cayenne.configuration.server.DataSourceFactory}
  */
 public interface DataSourceFactory {
 

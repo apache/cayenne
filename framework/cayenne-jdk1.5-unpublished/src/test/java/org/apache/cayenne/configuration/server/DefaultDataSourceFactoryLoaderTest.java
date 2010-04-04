@@ -16,14 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.AdhocObjectFactory;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory1;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DefaultDataSourceFactoryLoader;
+import org.apache.cayenne.configuration.server.PropertyDataSourceFactory;
+import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;

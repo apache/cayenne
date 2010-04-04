@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.sqlserver;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-import org.apache.cayenne.configuration.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
 

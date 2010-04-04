@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration.server;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,14 +38,13 @@ import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.DataSourceFactoryLoader;
-import org.apache.cayenne.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactoryLoader;
+import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.MockDbAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;

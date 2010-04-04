@@ -35,10 +35,10 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.JNDIDataSourceFactory;
-import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;

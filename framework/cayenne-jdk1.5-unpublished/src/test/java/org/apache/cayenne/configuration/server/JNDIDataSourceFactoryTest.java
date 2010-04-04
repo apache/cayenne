@@ -16,13 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.unit.JNDISetup;
 
 import com.mockrunner.mock.jdbc.MockDataSource;

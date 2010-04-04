@@ -49,7 +49,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * Creates DataSource objects from XML configuration files that describe a JDBC driver.
  * Wraps JDBC driver in a generic DataSource implementation.
  * 
- * @deprecated since 3.1 {@link org.apache.cayenne.configuration.XMLPoolingDataSourceFactory}
+ * @deprecated since 3.1 {@link org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory}
  *             replaces this class.
  */
 public class DriverDataSourceFactory implements DataSourceFactory {

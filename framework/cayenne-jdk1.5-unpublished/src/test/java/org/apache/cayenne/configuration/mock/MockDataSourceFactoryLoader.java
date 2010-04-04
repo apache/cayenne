@@ -19,8 +19,8 @@
 package org.apache.cayenne.configuration.mock;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.DataSourceFactory;
-import org.apache.cayenne.configuration.DataSourceFactoryLoader;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DataSourceFactoryLoader;
 
 public class MockDataSourceFactoryLoader implements DataSourceFactoryLoader {
 

@@ -16,13 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.PoolManager;
 
 /**

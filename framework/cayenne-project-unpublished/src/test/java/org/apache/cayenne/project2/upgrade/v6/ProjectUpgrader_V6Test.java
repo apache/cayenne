@@ -28,10 +28,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.DBCPDataSourceFactory;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.JNDIDataSourceFactory;
-import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
+import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;

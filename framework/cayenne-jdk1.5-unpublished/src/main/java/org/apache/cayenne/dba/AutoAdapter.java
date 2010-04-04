@@ -70,7 +70,7 @@ public class AutoAdapter implements DbAdapter {
 
     /**
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
      *             via dependency injection.
      */
     static final List<DbAdapterFactory> defaultFactories;
@@ -101,7 +101,7 @@ public class AutoAdapter implements DbAdapter {
      * 
      * @since 3.0
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
      *             via dependency injection.
      */
     public static void addFactory(DbAdapterFactory factory) {
@@ -113,7 +113,7 @@ public class AutoAdapter implements DbAdapter {
      * by Cayenne.
      * 
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
      *             via dependency injection.
      */
     public static DbAdapterFactory getDefaultFactory() {
@@ -131,7 +131,7 @@ public class AutoAdapter implements DbAdapter {
     /**
      * Creates an AutoAdapter that can detect adapters known to Cayenne.
      * 
-     * @deprecated since 3.1 as {@link org.apache.cayenne.configuration.DbAdapterFactory}
+     * @deprecated since 3.1 as {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
      *             parameter is required.
      */
     public AutoAdapter(DataSource dataSource) {
@@ -143,7 +143,7 @@ public class AutoAdapter implements DbAdapter {
      * adapterFactory is null, default factory is used.
      * 
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
      *             via dependency injection.
      */
     public AutoAdapter(DbAdapterFactory adapterFactory, final DataSource dataSource) {
@@ -217,7 +217,7 @@ public class AutoAdapter implements DbAdapter {
      * the object creator.
      * 
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.DbAdapterFactory} configured
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
      *             via dependency injection.
      */
     protected DbAdapterFactory createDefaultFactory() {

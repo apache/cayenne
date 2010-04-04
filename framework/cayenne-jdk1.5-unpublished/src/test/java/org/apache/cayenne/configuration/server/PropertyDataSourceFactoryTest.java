@@ -16,10 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.cayenne.configuration.server.PropertyDataSourceFactory;
 
 import junit.framework.TestCase;
 

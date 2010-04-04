@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -25,6 +25,11 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.AdhocObjectFactory;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
+import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.MockDbAdapter;

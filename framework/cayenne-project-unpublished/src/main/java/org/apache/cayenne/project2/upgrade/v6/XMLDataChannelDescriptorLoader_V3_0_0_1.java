@@ -28,12 +28,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.configuration.DBCPDataSourceFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.SAXNestedTagHandler;
-import org.apache.cayenne.configuration.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
+import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;

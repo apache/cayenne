@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  * list of supported properties.
  * 
  * @since 1.2
- * @deprecated since 3.1 replaced with {@link org.apache.cayenne.configuration.DBCPDataSourceFactory}
+ * @deprecated since 3.1 replaced with {@link org.apache.cayenne.configuration.server.DBCPDataSourceFactory}
  */
 public class DBCPDataSourceFactory implements DataSourceFactory {
 

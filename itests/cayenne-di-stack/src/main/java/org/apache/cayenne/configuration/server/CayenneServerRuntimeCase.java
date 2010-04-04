@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration.server;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.configuration.server.CayenneServerRuntime;
 import org.apache.cayenne.test.DBHelper;
 import org.apache.cayenne.test.TableHelper;
 

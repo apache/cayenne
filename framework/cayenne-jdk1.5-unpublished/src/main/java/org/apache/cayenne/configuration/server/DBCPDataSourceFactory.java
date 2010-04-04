@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;

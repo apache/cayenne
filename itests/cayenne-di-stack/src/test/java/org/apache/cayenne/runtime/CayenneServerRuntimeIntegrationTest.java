@@ -21,6 +21,8 @@ package org.apache.cayenne.runtime;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.server.CayenneServerRuntimeCase;
+import org.apache.cayenne.configuration.server.RuntimeName;
 import org.apache.cayenne.itest.di_stack.Table1;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.DBHelper;

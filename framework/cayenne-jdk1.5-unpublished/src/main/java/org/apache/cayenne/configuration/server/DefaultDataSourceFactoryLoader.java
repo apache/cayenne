@@ -16,9 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.AdhocObjectFactory;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

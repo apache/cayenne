@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  * Looks up DataSource objects via JNDI.
  * 
  * @deprecated since 3.1, replaced by
- *             {@link org.apache.cayenne.configuration.JNDIDataSourceFactory}.
+ *             {@link org.apache.cayenne.configuration.server.JNDIDataSourceFactory}.
  */
 public class JNDIDataSourceFactory implements DataSourceFactory {
 

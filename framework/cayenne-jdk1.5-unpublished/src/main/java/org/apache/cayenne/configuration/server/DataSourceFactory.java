@@ -16,9 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration.server;
 
-public enum RuntimeName {
+import javax.sql.DataSource;
 
-	DEFAULT
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+
+/**
+ * @since 3.1
+ */
+public interface DataSourceFactory {
+
+    /**
+     * Returns DataSource object based on the configuration provided in the
+     * "nodeDescriptor".
+     */
+    DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception;
 }

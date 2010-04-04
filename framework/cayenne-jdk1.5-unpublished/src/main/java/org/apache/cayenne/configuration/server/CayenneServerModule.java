@@ -16,13 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.configuration.AdhocObjectFactory;
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
@@ -41,9 +52,6 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Scopes;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.runtime.DataContextProvider;
-import org.apache.cayenne.runtime.DataDomainProvider;
 
 /**
  * A DI module containing all Cayenne server runtime configurations. To customize Cayenne

@@ -16,21 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.server;
 
-import javax.sql.DataSource;
-
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
 /**
+ * This is a default implementation of a DataChannel provider that simply returns a
+ * DataDomain for a given runtime.
+ * 
  * @since 3.1
  */
-public interface DbAdapterFactory {
+public class DomainDataChannelProvider implements Provider<DataChannel> {
 
-    /**
-     * Returns an instance of DbAdapter if the factory detects that it knows how to handle
-     * the database.
-     */
-    DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource)
-            throws Exception;
+    @Inject
+    protected DataDomain dataDomain;
+
+    public DataChannel get() {
+        return dataDomain;
+    }
 }

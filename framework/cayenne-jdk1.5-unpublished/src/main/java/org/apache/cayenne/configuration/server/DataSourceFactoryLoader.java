@@ -16,25 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration.server;
 
-import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
+ * Provides instances of {@link DataSourceFactory} for DataNodes.
+ * 
  * @since 3.1
  */
-public class DataContextProvider implements Provider<DataContext> {
+public interface DataSourceFactoryLoader {
 
-    @Inject
-    protected DataDomain dataDomain;
-
-    public DataContext get() throws ConfigurationException {
-        // TODO: andrus 12.5.2009 - deprecate 'createDataContext' in DataDomain and move
-        // it to this provider instead
-        return dataDomain.createDataContext();
-    }
+    /**
+     * Returns a DataSourceFactory for a given {@link DataNodeDescriptor} configuration
+     * object. The factory should be specified in the node descriptor explicitly by the
+     * user. Cayenne will inject dependencies in all user-provided factories.
+     */
+    DataSourceFactory getDataSourceFactory(DataNodeDescriptor nodeDescriptor);
 }
