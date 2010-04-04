@@ -66,19 +66,12 @@ import org.scopemvc.view.swing.SwingView;
  * <li>cayenne.modeler.pref.version - a version of the preferences DB schema. Default is
  * "1.1".</li>
  * </ul>
- * 
  */
 public class Application {
 
-    public static final String PREFERENCES_VERSION = "1.2";
-    public static final String PREFERENCES_DB_SUBDIRECTORY = "prefs";
-    public static final String PREFERENCES_MAP_PACKAGE = "pref";
     public static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
-    public static final String PREFERENCES_VERSION_PROPERTY = "cayenne.modeler.pref.version";
-
     public static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
 
-    // TODO: implement cleaner IoC approach to avoid using this singleton...
     protected static Application instance;
 
     protected FileClassLoadingService modelerClassLoader;
