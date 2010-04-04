@@ -124,6 +124,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
     /**
      * @since 3.0
      */
+    @Override
     public Map<String, String> getPathSplitAliases() {
         return pathSplitAliases != null ? pathSplitAliases : Collections
                 .<String, String> emptyMap();

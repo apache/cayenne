@@ -65,13 +65,10 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class AutoAdapter implements DbAdapter {
 
-    final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START = "\"";
-    final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END = "\"";
-
     /**
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
-     *             via dependency injection.
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
+     *             configured via dependency injection.
      */
     static final List<DbAdapterFactory> defaultFactories;
 
@@ -101,8 +98,8 @@ public class AutoAdapter implements DbAdapter {
      * 
      * @since 3.0
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
-     *             via dependency injection.
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
+     *             configured via dependency injection.
      */
     public static void addFactory(DbAdapterFactory factory) {
         defaultFactories.add(factory);
@@ -113,8 +110,8 @@ public class AutoAdapter implements DbAdapter {
      * by Cayenne.
      * 
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
-     *             via dependency injection.
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
+     *             configured via dependency injection.
      */
     public static DbAdapterFactory getDefaultFactory() {
         return new DbAdapterFactoryChain(defaultFactories);
@@ -131,7 +128,8 @@ public class AutoAdapter implements DbAdapter {
     /**
      * Creates an AutoAdapter that can detect adapters known to Cayenne.
      * 
-     * @deprecated since 3.1 as {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
+     * @deprecated since 3.1 as
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
      *             parameter is required.
      */
     public AutoAdapter(DataSource dataSource) {
@@ -143,8 +141,8 @@ public class AutoAdapter implements DbAdapter {
      * adapterFactory is null, default factory is used.
      * 
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
-     *             via dependency injection.
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
+     *             configured via dependency injection.
      */
     public AutoAdapter(DbAdapterFactory adapterFactory, final DataSource dataSource) {
         // sanity check
@@ -217,8 +215,8 @@ public class AutoAdapter implements DbAdapter {
      * the object creator.
      * 
      * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured
-     *             via dependency injection.
+     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
+     *             configured via dependency injection.
      */
     protected DbAdapterFactory createDefaultFactory() {
         return getDefaultFactory();
@@ -351,14 +349,6 @@ public class AutoAdapter implements DbAdapter {
 
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         getAdapter().createTableAppendColumn(sqlBuffer, column);
-    }
-
-    public String getIdentifiersStartQuote() {
-        return DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START;
-    }
-
-    public String getIdentifiersEndQuote() {
-        return DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END;
     }
 
     public QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) {

@@ -241,7 +241,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
             rootType = MapLoader.PROCEDURE_ROOT;
             rootString = ((Procedure) root).getName();
         }
-        else if (root instanceof Class) {
+        else if (root instanceof Class<?>) {
             rootType = MapLoader.JAVA_CLASS_ROOT;
             rootString = ((Class<?>) root).getName();
         }

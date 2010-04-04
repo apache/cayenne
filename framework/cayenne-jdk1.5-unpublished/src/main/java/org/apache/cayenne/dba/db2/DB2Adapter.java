@@ -58,6 +58,7 @@ public class DB2Adapter extends JdbcAdapter {
     /**
      * Creates a DB2 specific PK Generator.
      */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new DB2PkGenerator(this);
     }

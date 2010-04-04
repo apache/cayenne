@@ -129,7 +129,7 @@ public class ClientChannel implements DataChannel {
                 while (response.next()) {
                     if (response.isList()) {
 
-                        List objects = response.currentList();
+                        List<?> objects = response.currentList();
 
                         if (!objects.isEmpty()) {
 

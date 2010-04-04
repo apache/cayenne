@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
@@ -99,7 +99,7 @@ public class Main {
 		Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
 				"Pablo Picasso");
 		SelectQuery selectToDelete = new SelectQuery(Artist.class, qualifier);
-		Artist picasso = (Artist) DataObjectUtils.objectForQuery(context,
+		Artist picasso = (Artist) Cayenne.objectForQuery(context,
 				selectToDelete);
 
 		if (picasso != null) {

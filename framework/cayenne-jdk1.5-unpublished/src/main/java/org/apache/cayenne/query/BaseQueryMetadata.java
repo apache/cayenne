@@ -99,7 +99,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             ObjEntity entity = null;
 
             if (root != null) {
-                if (root instanceof Class) {
+                if (root instanceof Class<?>) {
                     entity = resolver.lookupObjEntity((Class<?>) root);
                     if (entity == null) { // entity not found, try to resolve it with
                                           // client resolver

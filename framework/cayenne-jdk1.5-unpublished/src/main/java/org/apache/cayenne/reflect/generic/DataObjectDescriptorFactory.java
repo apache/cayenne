@@ -48,7 +48,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
     }
 
     @Override
-    protected ClassDescriptor getDescriptor(ObjEntity entity, Class entityClass) {
+    protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
         if (!DataObject.class.isAssignableFrom(entityClass)) {
             return null;
         }
@@ -137,7 +137,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
     protected Accessor createAccessor(
             PersistentDescriptor descriptor,
             String propertyName,
-            Class propertyType) throws PropertyException {
+            Class<?> propertyType) throws PropertyException {
         return new DataObjectAccessor(propertyName);
     }
 }

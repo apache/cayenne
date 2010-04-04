@@ -30,7 +30,6 @@ import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A common superclass of Cayenne queries.
- * 
  */
 public abstract class AbstractQuery implements Query {
 
@@ -41,7 +40,6 @@ public abstract class AbstractQuery implements Query {
     protected Object root;
     protected String name;
     protected DataMap dataMap;
-    
 
     /**
      * @since 3.1
@@ -56,8 +54,7 @@ public abstract class AbstractQuery implements Query {
     public DataMap getDataMap() {
         return dataMap;
     }
-    
-    
+
     /**
      * @since 3.1
      */

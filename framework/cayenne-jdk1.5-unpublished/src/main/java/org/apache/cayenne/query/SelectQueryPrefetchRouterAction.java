@@ -27,6 +27,7 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Preprocessor and router of SelectQuery prefetches.
@@ -70,7 +71,7 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
         String prefetchPath = node.getPath();
 
         // find last relationship
-        Iterator it = entity.resolvePathComponents(prefetchPath);
+        Iterator<CayenneMapEntry> it = entity.resolvePathComponents(prefetchPath);
 
         ObjRelationship relationship = null;
         while (it.hasNext()) {

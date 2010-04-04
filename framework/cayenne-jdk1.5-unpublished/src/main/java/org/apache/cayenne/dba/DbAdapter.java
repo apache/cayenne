@@ -34,13 +34,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * Defines API needed to handle differences between various databases accessed via JDBC.
- * Implementing classed are intended to be pluggable database-specific adapters.
- * DbAdapter-based architecture is introduced to solve the following problems:
- * <ul>
- * <li>Make Cayenne code independent from SQL syntax differences between different RDBMS.
- * <li>Allow for vendor-specific tuning of JDBC access.
- * </ul>
+ * A Cayenne extension point that abstracts the differences between specifics of JDBC
+ * interfaces to various databases. Cayenne already ships with a number of built-in
+ * adapters for most common databases and users can provide their own custom adapters.
  */
 public interface DbAdapter {
 
@@ -186,5 +182,5 @@ public interface DbAdapter {
     /**
      * @since 3.0
      */
-    public QuotingStrategy getQuotingStrategy(boolean needQuotes);
+    QuotingStrategy getQuotingStrategy(boolean needQuotes);
 }

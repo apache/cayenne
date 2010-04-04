@@ -70,7 +70,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
             int type,
             int precision) throws Exception {
 
-        if (value instanceof Enum) {
+        if (value instanceof Enum<?>) {
 
             Enum<?> e = (Enum<?>) value;
 
