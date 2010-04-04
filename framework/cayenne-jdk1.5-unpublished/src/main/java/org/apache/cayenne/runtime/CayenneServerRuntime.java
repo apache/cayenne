@@ -31,10 +31,22 @@ import org.apache.cayenne.di.Module;
  */
 public class CayenneServerRuntime extends CayenneRuntime {
 
+    /**
+     * Creates a server runtime object based on XML configuration file called
+     * "cayenne-<name>.xml" and configured the runtime with a standard set of services
+     * contained in {@link CayenneServerModule}.
+     */
     public CayenneServerRuntime(String name) {
         super(name, new CayenneServerModule(name));
     }
 
+    /**
+     * Creates a server runtime object based on a set of custom DI modules. When
+     * implementing custom modules, refer to {@link CayenneServerModule} for the minimal
+     * set of services required by Cayenne. The easiest way to do it is to pass
+     * {@link CayenneServerModule} or its subclass as one of the modules to this
+     * constructor.
+     */
     public CayenneServerRuntime(String name, Module... modules) {
         super(name, modules);
     }

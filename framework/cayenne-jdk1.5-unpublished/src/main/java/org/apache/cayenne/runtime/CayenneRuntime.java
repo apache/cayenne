@@ -38,7 +38,7 @@ public abstract class CayenneRuntime {
     protected Module[] modules;
 
     /**
-     * Initializes Cayenne runtime with an array of DI modules.
+     * Creates a CayenneRuntime with configuration based on supplied array of DI modules.
      */
     public CayenneRuntime(String name, Module... modules) {
 
@@ -56,9 +56,8 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Returns runtime name. By default a configuration file name contains a runtime name
-     * in it, to allow multiple runtimes in a single JVM. E.g. a typical config file name
-     * has the form of "cayenne-<name>.xml".
+     * Returns runtime name. By default a name of Cayenne project XML file contains a
+     * runtime name in it in the form "cayenne-<name>.xml".
      */
     public String getName() {
         return name;
