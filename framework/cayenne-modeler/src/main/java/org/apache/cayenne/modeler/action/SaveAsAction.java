@@ -132,21 +132,28 @@ public class SaveAsAction extends CayenneAction {
                     .getPreferenceForProject(), false);
         }
         else if (isNewProject) {
-            if (tempOldPref != null
-                    && tempOldPref.absolutePath().contains(Application.getId())) {
+            if (tempOldPref != null) {
 
-                String projPath = tempOldPref.absolutePath().replace(
-                        "/" + Application.getId(),
-                        "");
-                String newName = p.getConfigurationResource().getURL().getPath().replace(
-                        ".xml",
-                        "");
+                String newProjectName = getApplication().getNewProjectTemporaryName();
 
-                Preferences newPref = getApplication().getMainPreferenceForProject().node(
-                        projPath + newName);
+                if (tempOldPref.absolutePath().contains(newProjectName)) {
 
-                RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
-                tempOldPref.removeNode();
+                    String projPath = tempOldPref.absolutePath().replace(
+                            "/" + newProjectName,
+                            "");
+                    String newName = p
+                            .getConfigurationResource()
+                            .getURL()
+                            .getPath()
+                            .replace(".xml", "");
+
+                    Preferences newPref = getApplication()
+                            .getMainPreferenceForProject()
+                            .node(projPath + newName);
+
+                    RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
+                    tempOldPref.removeNode();
+                }
             }
         }
 

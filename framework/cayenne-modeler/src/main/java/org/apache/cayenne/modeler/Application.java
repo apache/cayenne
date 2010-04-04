@@ -95,23 +95,29 @@ public class Application {
 
     protected Injector injector;
 
-    private static String id;
+    private String newProjectTemporaryName;
 
     public static Application getInstance() {
         return instance;
     }
 
-    public static String getId() {
-        if (id == null) {
-            byte[] byteId = IDUtil.pseudoUniqueByteSequence(16);
-            id = "new_project_" + byteId.toString();
-        }
-        return id;
-    }
-
     // static methods that should probably go away eventually...
     public static CayenneModelerFrame getFrame() {
         return (CayenneModelerFrame) getInstance().getFrameController().getView();
+    }
+
+    public String getNewProjectTemporaryName() {
+
+        // TODO: andrus 4/4/2010 - should that be reset every time a new project is opened
+        if (newProjectTemporaryName == null) {
+            StringBuffer buffer = new StringBuffer("new_project_");
+            for (byte aKey : IDUtil.pseudoUniqueByteSequence(16)) {
+                IDUtil.appendFormattedByte(buffer, aKey);
+            }
+            newProjectTemporaryName = buffer.toString();
+        }
+
+        return newProjectTemporaryName;
     }
 
     public Application(File initialProject) {
@@ -236,7 +242,9 @@ public class Application {
 
         // if new project
         if (descriptor.getConfigurationSource() == null) {
-            return getPreferencesNode(getProject().getClass(), getId());
+            return getPreferencesNode(
+                    getProject().getClass(),
+                    getNewProjectTemporaryName());
         }
 
         String path = CayennePreference.filePathToPrefereceNodePath(descriptor

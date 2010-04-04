@@ -105,15 +105,12 @@ public abstract class CayenneController implements BoundComponent {
      * Returns preference for this component view.
      */
     protected Preferences getViewPreferences() {
-        Preferences pref;
-        if (getApplication().getProject() == null
-                || ((DataChannelDescriptor) getApplication().getProject().getRootNode())
-                        .getConfigurationSource() == null) {
-            pref = getApplication().getPreferencesNode(getView().getClass(), "");
-            return pref;
+
+        if (getApplication().getProject() == null) {
+            return getApplication().getPreferencesNode(getView().getClass(), "");
         }
 
-        pref = getApplication().getMainPreferenceForProject();
+        Preferences pref = getApplication().getMainPreferenceForProject();
         String pathToProject = pref.absolutePath();
         String path = pathToProject
                 + "/"
