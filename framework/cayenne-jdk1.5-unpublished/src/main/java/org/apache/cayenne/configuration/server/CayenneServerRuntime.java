@@ -33,7 +33,7 @@ public class CayenneServerRuntime extends CayenneRuntime {
 
     /**
      * Creates a server runtime object based on XML configuration file called
-     * "cayenne-<name>.xml" and configured the runtime with a standard set of services
+     * "cayenne-<name>.xml" and configures the runtime with a standard set of services
      * contained in {@link CayenneServerModule}.
      */
     public CayenneServerRuntime(String name) {
