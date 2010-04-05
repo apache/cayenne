@@ -30,6 +30,7 @@ CAY-1339 Remove org.apache.cayenne.project package from runtime
 CAY-1340 Implement ConfigurationNode / ConfigurationNodeVisitor for the Cayenne project tree, including DataMap objects.
 CAY-1342 Remove wocompat package from Cayenne core
 CAY-1350 Implement memorized sorting of modeler columns
+CAY-1354 Wrong Types mapping for selected values in Row Queries
 CAY-1374 Add parent dataMap property to Query interface
 CAY-1380 Support for Escaped LIKE Clauses in Expressions
 CAY-1393 Update velocity to 1.6.3
