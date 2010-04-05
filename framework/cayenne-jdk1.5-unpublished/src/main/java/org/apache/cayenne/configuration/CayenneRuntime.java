@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import java.util.Collection;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.DIBootstrap;
@@ -56,6 +58,27 @@ public abstract class CayenneRuntime {
     }
 
     /**
+     * Creates a CayenneRuntime with configuration based on supplied array of DI modules.
+     */
+    public CayenneRuntime(String name, Collection<Module> modules) {
+
+        if (name == null) {
+            throw new NullPointerException("Null runtime name");
+        }
+
+        this.name = name;
+
+        if (modules == null) {
+            this.modules = new Module[0];
+        }
+        else {
+            this.modules = modules.toArray(new Module[modules.size()]);
+        }
+
+        this.injector = DIBootstrap.createInjector(this.modules);
+    }
+
+    /**
      * Returns runtime name. By default a name of Cayenne project XML file contains a
      * runtime name in it in the form "cayenne-<name>.xml".
      */
@@ -68,6 +91,13 @@ public abstract class CayenneRuntime {
      */
     public Module[] getModules() {
         return modules;
+    }
+
+    /**
+     * Returns DI injector used by this runtime.
+     */
+    public Injector getInjector() {
+        return injector;
     }
 
     /**

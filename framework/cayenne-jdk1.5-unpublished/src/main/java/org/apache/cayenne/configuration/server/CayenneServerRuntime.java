@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.util.Collection;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Module;
@@ -41,13 +43,24 @@ public class CayenneServerRuntime extends CayenneRuntime {
     }
 
     /**
-     * Creates a server runtime object based on a set of custom DI modules. When
+     * Creates a server runtime object based on an array of custom DI modules. When
      * implementing custom modules, refer to {@link CayenneServerModule} for the minimal
      * set of services required by Cayenne. The easiest way to do it is to pass
      * {@link CayenneServerModule} or its subclass as one of the modules to this
      * constructor.
      */
     public CayenneServerRuntime(String name, Module... modules) {
+        super(name, modules);
+    }
+
+    /**
+     * Creates a server runtime object based on a collection of DI modules. When
+     * implementing custom modules, refer to {@link CayenneServerModule} for the minimal
+     * set of services required by Cayenne. The easiest way to do it is to pass
+     * {@link CayenneServerModule} or its subclass as one of the modules to this
+     * constructor.
+     */
+    public CayenneServerRuntime(String name, Collection<Module> modules) {
         super(name, modules);
     }
 
