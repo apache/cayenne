@@ -67,7 +67,7 @@ public class ColumnDescriptor implements Serializable {
         this.name = columnName;
         this.dataRowKey = columnName;
         this.jdbcType = jdbcType;
-        this.javaClass = javaClass;
+        this.javaClass = TypesMapping.getJavaBySqlType(jdbcType);
     }
 
     /**
