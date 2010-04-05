@@ -24,6 +24,7 @@ CAY-1259 Wrong Mapping for NUMERIC Type
 CAY-1279 Passing null values in query parameters
 CAY-1306 Binding Collection in Parameters for SQLTemplate is not working
 CAY-1323 oracle.sql.TIMESTAMP in Result of query (only part of solution to fix explicit type mapping)
+CAY-1354 Wrong Types mapping for selected values in Row Queries
 CAY-1388 Can't bind java.util.Date value in SQL Template
 
 ----------------------------------
