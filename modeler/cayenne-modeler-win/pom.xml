@@ -26,7 +26,7 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>3.0RC3</version>
+		<version>3.0</version>
 	</parent>
 
 	<artifactId>cayenne-modeler-win</artifactId>

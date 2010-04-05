@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>3.0RC3</version>
+		<version>3.0</version>
 	</parent>
 
 	<groupId>org.apache.cayenne.build-tools</groupId>

@@ -26,7 +26,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.itests</groupId>
 		<artifactId>cayenne-itests-parent</artifactId>
-		<version>3.0RC3</version>
+		<version>3.0</version>
 	</parent>
 
 	<description>Integration Tests - JPA Chapter 5</description>
