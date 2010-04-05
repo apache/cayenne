@@ -364,8 +364,9 @@ public class ProjectController extends CayenneController {
                                     + key.replace(".xml", ""));
                 }
                 else {
-                    projectControllerPreferences = projectControllerPreferences
-                            .node(projectControllerPreferences.absolutePath());
+                    projectControllerPreferences = projectControllerPreferences.node(
+                            projectControllerPreferences.absolutePath()).node(
+                            getApplication().getNewProjectTemporaryName());
                 }
             }
         }
