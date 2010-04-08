@@ -15,6 +15,7 @@ Date:
 Bug Fixes Since 3.0-final:
 
 CAY-1354 Wrong Types mapping for selected values in Row Queries
+CAY-1416 ExpressionFactory.noMatchExp.toEJBQL() produces incorrect output
 CAY-1417 EJBQL doesn't support null numeric parameters
 
 ----------------------------------
