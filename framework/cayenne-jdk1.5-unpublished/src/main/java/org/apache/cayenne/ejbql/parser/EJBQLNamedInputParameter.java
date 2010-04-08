@@ -34,7 +34,11 @@ public class EJBQLNamedInputParameter extends SimpleNode {
         return visitor.visitNamedInputParameter(this);
     }
    
-    public EJBQLEquals getParent() {
+    /**
+     * @deprecated since 3.0.1 this method is no longer used
+     */
+    @Deprecated
+	public EJBQLEquals getParent() {
         return (EJBQLEquals) parent;
     }
 }
