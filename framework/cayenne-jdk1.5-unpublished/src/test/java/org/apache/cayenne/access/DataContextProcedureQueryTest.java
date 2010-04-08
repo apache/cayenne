@@ -357,7 +357,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         ColumnDescriptor[] columns = new ColumnDescriptor[3];
 
         // read ID as Long, and everything else as default types
-        columns[0] = new ColumnDescriptor("ARTIST_ID", Types.INTEGER, Long.class
+        columns[0] = new ColumnDescriptor("ARTIST_ID", Types.BIGINT, Long.class
                 .getName());
         columns[1] = new ColumnDescriptor("ARTIST_NAME", Types.CHAR, String.class
                 .getName());
