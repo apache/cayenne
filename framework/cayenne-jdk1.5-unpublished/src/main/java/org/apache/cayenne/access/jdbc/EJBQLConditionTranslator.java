@@ -43,6 +43,7 @@ import org.apache.cayenne.ejbql.parser.EJBQLSubselect;
 import org.apache.cayenne.ejbql.parser.EJBQLTrimBoth;
 import org.apache.cayenne.ejbql.parser.EJBQLTrimSpecification;
 import org.apache.cayenne.ejbql.parser.Node;
+import org.apache.cayenne.ejbql.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -383,26 +384,46 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         visitConditional((AggregateConditionNode) expression, " OR", finishedChildIndex);
         return true;
     }
+    
+    /**
+     * Checks expression for containing null imput parameter.
+     * For that, we'll append IS NULL or IS NOT NULL instead of =null or <>null
+     * @return whether replacement was done and there's no need for normal expression processing
+     */
+    boolean checkNullParameter(EJBQLExpression expression, String toAppend) {
+        if (expression.getChildrenCount() == 2) {
+            // We rewrite expression "parameter = :x" where x=null
+            // as "parameter IS NULL"
+            // BUT in such as ":x = parameter" (where x=null) we don't do anything
+            // as a result it can be unsupported in some DB
+            if (expression.getChild(1) instanceof EJBQLNamedInputParameter) {
+                EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression
+                        .getChild(1);
+                if (context.namedParameters.containsKey(par.getText())
+                        && context.namedParameters.get(par.getText()) == null) {
+                    context.append(toAppend);
+                    return true;
+                }
+            }
+            else if (expression.getChild(1) instanceof EJBQLPositionalInputParameter) {
+                EJBQLPositionalInputParameter par = (EJBQLPositionalInputParameter) expression
+                        .getChild(1);
+                if (context.positionalParameters.containsKey(par.getPosition())
+                        && context.positionalParameters.get(par.getPosition()) == null) {
+                    context.append(toAppend);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public boolean visitEquals(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
             case 0:
-                if (expression.getChildrenCount() == 2) {
-
-                    // We rewrite expression "parameter = :x" where x=null
-                    // as "parameter IS NULL"
-                    // BUT in such as ":x = parameter" (where x=null) we don't do anything
-                    // as a result it can be unsupported in some DB
-                    if (expression.getChild(1) instanceof EJBQLNamedInputParameter) {
-                        EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression
-                                .getChild(1);
-                        if (context.namedParameters.containsKey(par.getText())
-                                && context.namedParameters.get(par.getText()) == null) {
-                            context.append(" IS NULL");
-                            return false;
-                        }
-                    }
+                if (checkNullParameter(expression, " IS NULL")) {
+                    return false;
                 }
                 context.append(" =");
                 break;
@@ -461,6 +482,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitNotEquals(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
             case 0:
+                if (checkNullParameter(expression, " IS NOT NULL")) {
+                    return false;
+                }
                 context.append(" <>");
                 break;
             case 1:
@@ -818,7 +842,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         else {
 
             String type = null;
-            EJBQLEquals parent = ((EJBQLNamedInputParameter) expression).getParent();
+            Node parent = ((SimpleNode) expression).jjtGetParent();
 
             context.pushMarker("@processParameter", true);
 
