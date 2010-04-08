@@ -23,10 +23,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 
+import junit.framework.TestCase;
+
 import org.apache.art.Artist;
 import org.apache.cayenne.ObjectId;
-
-import junit.framework.TestCase;
 
 /**
  */
@@ -124,5 +124,19 @@ public class ExpressionTest extends TestCase {
         String ejbql = buffer.toString();
 
         assertEquals("x.artist = 1", ejbql);
+    }
+    
+    public void testEncodeAsEJBQLNotEquals() {
+
+        Expression e = Expression.fromString("artistName != 'bla'");
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e.encodeAsEJBQL(pw, "x");
+        pw.close();
+        buffer.flush();
+        String ejbql = buffer.toString();
+
+        assertEquals("x.artistName <> 'bla'", ejbql);
     }
 }

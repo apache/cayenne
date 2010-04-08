@@ -76,7 +76,7 @@ public class ASTNotEqual extends ConditionNode {
             //for ejbql, we need "is not null" instead of "!= null"
             return "is not";
         }
-        return getExpressionOperator(index);
+        return "<>";
     }
 
     @Override
