@@ -15,10 +15,11 @@ Date:
 Bug Fixes Since 3.0-final:
 
 CAY-1354 Wrong Types mapping for selected values in Row Queries
+CAY-1417 EJBQL doesn't support null numeric parameters
 
 ----------------------------------
 Release: 3.0 RC 3
-Date: 
+Date: 5 April 2010
 ----------------------------------
 
 Bug Fixes Since 3.0RC2:
