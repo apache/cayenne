@@ -30,12 +30,10 @@ CAY-1339 Remove org.apache.cayenne.project package from runtime
 CAY-1340 Implement ConfigurationNode / ConfigurationNodeVisitor for the Cayenne project tree, including DataMap objects.
 CAY-1342 Remove wocompat package from Cayenne core
 CAY-1350 Implement memorized sorting of modeler columns
-CAY-1354 Wrong Types mapping for selected values in Row Queries
 CAY-1374 Add parent dataMap property to Query interface
 CAY-1380 Support for Escaped LIKE Clauses in Expressions
 CAY-1393 Update velocity to 1.6.3
 CAY-1394 DI-based replacement for JNDI hack
-CAY-1402 Ability to use Terminating @size in Nested Properties Against Collections
 
 Bug Fixes Since 3.0:
 
@@ -48,9 +46,12 @@ Release: 3.0.1
 Date: 
 ----------------------------------
 
-Bug Fixes Since 3.0RC3:
+Bug Fixes Since 3.0-final:
+
+CAY-1354 Wrong Types mapping for selected values in Row Queries
+CAY-1402 Ability to use Terminating "@size" in Nested Properties Against Collections
 CAY-1416 ExpressionFactory.noMatchExp.toEJBQL() produces incorrect output
-CAY-1417 EJBQL doesn't support null numeric parameters
+CAY-1417 EJBQL doesn't support null numeric parameters 
 
 ----------------------------------
 Release: 3.0 RC 3
