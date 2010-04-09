@@ -57,6 +57,15 @@ import org.apache.cayenne.xml.XMLSerializable;
  */
 public class CayenneDataObject extends PersistentObject implements DataObject, Validating, XMLSerializable {
 
+    /**
+     * A special property denoting a size of the to-many collection, when encountered at
+     * the end of the path.  This will not be replicated in 3.1 as it has been added to
+     * the Cayenne utilities class.
+     * 
+     * @since 3.0.1
+     */
+    final static String PROPERTY_COLLECTION_SIZE = "@size";
+    
     protected long snapshotVersion = DEFAULT_VERSION;
 
     protected Map<String, Object> values = new HashMap<String, Object>();
@@ -126,6 +135,20 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
                 tokenIndex);
         }
         else if (property instanceof Collection) {
+        
+        	// CAY-1402
+        	// This is back-ported from 3.1's trunk and from the Cayenne utility
+        	// object.  This will allow people to put @size at the end of a property
+        	// path and be able to find out the size of a relationship.
+        
+            Collection<?> collection = (Collection) property;
+            
+            if (tokenIndex < tokenizedPath.length - 1) {
+                if (tokenizedPath[tokenIndex + 1].equals(PROPERTY_COLLECTION_SIZE)) {
+                    return collection.size();
+                }
+            }
+        
             /**
              * Support for collection property in the middle of the path
              */
