@@ -37,8 +37,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-// TODO CAY-1380
-// import org.apache.cayenne.test.TableHelper;
 
 public class SelectQueryTest extends SelectQueryBase {
 
@@ -69,7 +67,7 @@ public class SelectQueryTest extends SelectQueryBase {
         assertEquals(totalRows - 5, results.size());
         assertEquals("artist6", results.get(0).getArtistName());
     }
-    
+
     public void testDbEntityRoot() {
         ObjectContext context = createDataContext();
 
@@ -212,24 +210,24 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(1, objects.size());
     }
-    
-    // TODO CAY-1380
-    /*
+
     public void testSelectLikeSingleWildcardMatchAndEscape() throws Exception {
 
-        TableHelper artistHelper = new TableHelper(getDbHelper(), "ARTIST");
-        artistHelper.deleteAll();
-        artistHelper.setColumns("ARTIST_ID", "ARTIST_NAME");
-        artistHelper.insert(1, "_X");
-        artistHelper.insert(2, "Y_");
+        deleteTestData();
+        createDataContext().performGenericQuery(
+                new SQLTemplate(
+                        Artist.class,
+                        "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, '_X')"));
+        createDataContext().performGenericQuery(
+                new SQLTemplate(
+                        Artist.class,
+                        "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'Y_')"));
 
         SelectQuery query = new SelectQuery(Artist.class);
         query.andQualifier(ExpressionFactory.likeExp("artistName", "=_%", '='));
- 
         List objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
     }
-    */
 
     public void testSelectLikeMultipleWildcardMatch() throws Exception {
         query.setRoot(Artist.class);
@@ -255,7 +253,7 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(_artistCount, objects.size());
     }
-    
+
     /** Test how "like ignore case" works when using lowercase parameter. */
     public void testSelectLikeIgnoreCaseObjects2() throws Exception {
         query.setRoot(Artist.class);
@@ -268,11 +266,10 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(_artistCount, objects.size());
     }
-    
+
     /** Test how "like ignore case" works when using uppercase parameter. */
     public void testSelectLikeIgnoreCaseClob() throws Exception {
-        
-        
+
         query.setRoot(ClobTestEntity.class);
         Expression qual = ExpressionFactory.likeIgnoreCaseExp("clobCol", "clob%");
         query.setQualifier(qual);
@@ -283,7 +280,6 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(_clobCount, objects.size());
     }
-
 
     public void testSelectIn() throws Exception {
         query.setRoot(Artist.class);
@@ -535,14 +531,13 @@ public class SelectQueryTest extends SelectQueryBase {
         finally {
             conn.close();
         }
-        
+
         String insertClob = "INSERT INTO CLOB_TEST (CLOB_TEST_ID, CLOB_COL) VALUES (?,?)";
         Connection connection = getConnection();
 
         try {
             connection.setAutoCommit(false);
 
-          
             PreparedStatement stmt = connection.prepareStatement(insertClob);
             long dateBase = System.currentTimeMillis();
 
@@ -559,17 +554,19 @@ public class SelectQueryTest extends SelectQueryBase {
             connection.close();
         }
     }
-    
+
     public void testLeftJoinAndPrefetchToMany() {
-        SelectQuery query = new SelectQuery(Artist.class, 
-            ExpressionFactory.matchExp("paintingArray+.toGallery", null));
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
+                "paintingArray+.toGallery",
+                null));
         query.addPrefetch("artistExhibitArray");
         createDataContext().performQuery(query);
     }
-    
+
     public void testLeftJoinAndPrefetchToOne() {
-        SelectQuery query = new SelectQuery(Painting.class, 
-            ExpressionFactory.matchExp("toArtist+.artistName", null));
+        SelectQuery query = new SelectQuery(Painting.class, ExpressionFactory.matchExp(
+                "toArtist+.artistName",
+                null));
         query.addPrefetch("toGallery");
         createDataContext().performQuery(query);
     }
