@@ -42,6 +42,13 @@ public class ASTNotLikeIgnoreCase extends IgnoreCaseNode {
         jjtAddChild(new ASTScalar(value), 1);
         connectChildren();
     }
+    
+    public ASTNotLikeIgnoreCase(ASTPath path, Object value, char escapeChar) {
+        super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true, escapeChar);
+        jjtAddChild(path, 0);
+        jjtAddChild(new ASTScalar(value), 1);
+        connectChildren();
+    }
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {

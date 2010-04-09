@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -102,6 +103,33 @@ public abstract class QueryAssemblerHelper {
      */
     protected abstract void doAppendPart() throws IOException;
 
+    /**
+     * Outputs the standard JDBC (database agnostic) expression for supplying the escape
+     * character to the database server when supplying a LIKE clause. This has been
+     * factored-out because some database adaptors handle LIKE differently and they need
+     * access to this common method in order not to repeat this code. </p>
+     * <p>
+     * If there is no escape character defined then this method will not output anything.
+     * An escape character of 0 will mean no escape character.
+     * 
+     * @since 3.0.1
+     */
+    protected void appendLikeEscapeCharacter(PatternMatchNode patternMatchNode)
+            throws IOException {
+        char escapeChar = patternMatchNode.getEscapeChar();
+
+        if ('?' == escapeChar) {
+            throw new CayenneRuntimeException(
+                    "the escape character of '?' is illegal for LIKE clauses.");
+        }
+
+        if (0 != escapeChar) {
+            out.append(" {escape '");
+            out.append(escapeChar);
+            out.append("'}");
+        }
+    }
+    
     /**
      * Processes parts of the OBJ_PATH expression.
      */

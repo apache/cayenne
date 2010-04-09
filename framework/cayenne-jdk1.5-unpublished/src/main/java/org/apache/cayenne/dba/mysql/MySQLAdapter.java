@@ -33,6 +33,8 @@ import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.trans.QualifierTranslator;
+import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -86,6 +88,11 @@ public class MySQLAdapter extends JdbcAdapter {
     public void initIdentifiersQuotes() {
         this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
         this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
+    }
+    
+    @Override
+    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+        return new MySQLQualifierTranslator(queryAssembler);
     }
 
     /**

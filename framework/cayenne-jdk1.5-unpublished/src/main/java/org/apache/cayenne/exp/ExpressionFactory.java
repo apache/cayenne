@@ -576,6 +576,20 @@ public class ExpressionFactory {
     }
 
     /**
+     * <p>A convenience shortcut for building LIKE expression.</p>
+     * 
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */
+    public static Expression likeExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTLike(new ASTObjPath(pathSpec), value, escapeChar);
+    }
+    
+    /**
      * A convenience shortcut for building LIKE DB_PATH expression.
      * 
      * @since 3.0
@@ -585,10 +599,38 @@ public class ExpressionFactory {
     }
 
     /**
+     * <p>A convenience shortcut for building LIKE DB_PATH expression.</p>
+     * 
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */
+    public static Expression likeDbExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTLike(new ASTDbPath(pathSpec), value,escapeChar);
+    }
+    
+    /**
      * A convenience shortcut for building NOT_LIKE expression.
      */
     public static Expression notLikeExp(String pathSpec, Object value) {
         return new ASTNotLike(new ASTObjPath(pathSpec), value);
+    }
+    
+    /**
+     * <p>A convenience shortcut for building NOT_LIKE expression.</p>
+     * 
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */
+    public static Expression notLikeExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTNotLike(new ASTObjPath(pathSpec), value, escapeChar);
     }
 
     /**
@@ -599,14 +641,43 @@ public class ExpressionFactory {
     public static Expression notLikeDbExp(String pathSpec, Object value) {
         return new ASTNotLike(new ASTDbPath(pathSpec), value);
     }
+    
+    /**
+     * <p>A convenience shortcut for building NOT_LIKE expression.</p>
+     *
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */
+    public static Expression notLikeDbExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTNotLike(new ASTDbPath(pathSpec), value, escapeChar);
+    }
 
     /**
      * A convenience shortcut for building LIKE_IGNORE_CASE expression.
      */
+    
     public static Expression likeIgnoreCaseExp(String pathSpec, Object value) {
         return new ASTLikeIgnoreCase(new ASTObjPath(pathSpec), value);
     }
 
+    /**
+     * <p>A convenience shortcut for building LIKE_IGNORE_CASE expression.</p>
+     *
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */
+    public static Expression likeIgnoreCaseExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTLikeIgnoreCase(new ASTObjPath(pathSpec), value, escapeChar);
+    }
+    
     /**
      * A convenience shortcut for building LIKE_IGNORE_CASE expression.
      * 
@@ -614,6 +685,20 @@ public class ExpressionFactory {
      */
     public static Expression likeIgnoreCaseDbExp(String pathSpec, Object value) {
         return new ASTLikeIgnoreCase(new ASTDbPath(pathSpec), value);
+    }
+    
+    /**
+     * <p>A convenience shortcut for building LIKE_IGNORE_CASE expression.</p>
+     * 
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */
+    public static Expression likeIgnoreCaseDbExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTLikeIgnoreCase(new ASTDbPath(pathSpec), value, escapeChar);
     }
 
     /**
@@ -624,6 +709,20 @@ public class ExpressionFactory {
     }
 
     /**
+     * <p>A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.</p>
+     * 
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */ 
+    public static Expression notLikeIgnoreCaseExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTNotLikeIgnoreCase(new ASTObjPath(pathSpec), value, escapeChar);
+    }
+    
+    /**
      * A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.
      * 
      * @since 3.0
@@ -632,6 +731,20 @@ public class ExpressionFactory {
         return new ASTNotLikeIgnoreCase(new ASTDbPath(pathSpec), value);
     }
 
+    /**
+     * <p>A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.</p>
+     * 
+     * <p>The escape character allows for escaping meta-characters
+     * in the LIKE clause.  Note that the escape character cannot
+     * be '?'.  To specify no escape character, supply 0 as the
+     * escape character.</p>
+     * 
+     * @since 3.0.1
+     */
+    public static Expression notLikeIgnoreCaseDbExp(String pathSpec, Object value, char escapeChar) {
+        return new ASTNotLikeIgnoreCase(new ASTDbPath(pathSpec), value, escapeChar);
+    }
+    
     /**
      * A convenience shortcut for boolean true expression.
      * 

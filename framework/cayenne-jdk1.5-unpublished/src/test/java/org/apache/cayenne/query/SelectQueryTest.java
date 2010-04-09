@@ -37,6 +37,8 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+// TODO CAY-1380
+// import org.apache.cayenne.test.TableHelper;
 
 public class SelectQueryTest extends SelectQueryBase {
 
@@ -210,6 +212,24 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(1, objects.size());
     }
+    
+    // TODO CAY-1380
+    /*
+    public void testSelectLikeSingleWildcardMatchAndEscape() throws Exception {
+
+        TableHelper artistHelper = new TableHelper(getDbHelper(), "ARTIST");
+        artistHelper.deleteAll();
+        artistHelper.setColumns("ARTIST_ID", "ARTIST_NAME");
+        artistHelper.insert(1, "_X");
+        artistHelper.insert(2, "Y_");
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.andQualifier(ExpressionFactory.likeExp("artistName", "=_%", '='));
+ 
+        List objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+    }
+    */
 
     public void testSelectLikeMultipleWildcardMatch() throws Exception {
         query.setRoot(Artist.class);

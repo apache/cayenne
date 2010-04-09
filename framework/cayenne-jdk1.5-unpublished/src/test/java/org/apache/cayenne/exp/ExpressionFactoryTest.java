@@ -30,6 +30,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.exp.parser.ASTLike;
+import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
 
 public class ExpressionFactoryTest extends CayenneCase {
 
@@ -188,11 +190,33 @@ public class ExpressionFactoryTest extends CayenneCase {
         Expression path = (Expression) exp.getOperand(0);
         assertEquals(Expression.DB_PATH, path.getType());
     }
+    
+    public void testLikeExpEscape() throws Exception {
+        String v = "abc";
+        Expression exp = ExpressionFactory.likeExp("=abc", v, '=');
+        assertEquals(Expression.LIKE, exp.getType());
+        
+        assertEquals('=', ((ASTLike) exp).getEscapeChar());
+
+        Expression path = (Expression) exp.getOperand(0);
+        assertEquals(Expression.OBJ_PATH, path.getType());
+    }
 
     public void testLikeIgnoreCaseExp() throws Exception {
         String v = "abc";
         Expression exp = ExpressionFactory.likeIgnoreCaseExp("abc", v);
         assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
+        assertEquals(0, ((ASTLikeIgnoreCase) exp).getEscapeChar());
+
+	    Expression path = (Expression) exp.getOperand(0);
+		assertEquals(Expression.OBJ_PATH, path.getType());
+	}
+
+	public void testLikeIgnoreCaseExpEscape() throws Exception {
+	    String v = "abc";
+		Expression exp = ExpressionFactory.likeIgnoreCaseExp("=abc", v, '=');
+		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
+		assertEquals('=', ((ASTLikeIgnoreCase) exp).getEscapeChar());
 
         Expression path = (Expression) exp.getOperand(0);
         assertEquals(Expression.OBJ_PATH, path.getType());

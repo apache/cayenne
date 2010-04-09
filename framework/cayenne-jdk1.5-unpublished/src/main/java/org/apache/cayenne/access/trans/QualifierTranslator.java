@@ -40,6 +40,7 @@ import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
+import org.apache.cayenne.exp.parser.PatternMatchNode;
 
 /**
  * Translates query qualifier to SQL. Used as a helper class by query translators.
@@ -345,14 +346,23 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 appendObjectMatch();
             }
 
-            if (parenthesisNeeded(node, parentNode)) {
-                out.append(')');
-            }
+            boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
+            boolean likeIgnoreCase = (node.getType() == Expression.LIKE_IGNORE_CASE || node
+                    .getType() == Expression.NOT_LIKE_IGNORE_CASE);
+            boolean isPatternMatchNode = PatternMatchNode.class.isAssignableFrom(node
+                    .getClass());
 
-            if (node.getType() == Expression.LIKE_IGNORE_CASE
-                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
+            if (isPatternMatchNode && !likeIgnoreCase)
+                appendLikeEscapeCharacter((PatternMatchNode) node);
+
+            if (parenthesisNeeded)
                 out.append(')');
-            }
+
+            if (isPatternMatchNode && likeIgnoreCase)
+                appendLikeEscapeCharacter((PatternMatchNode) node);
+
+            if (likeIgnoreCase)
+                out.append(')');
         }
         catch (IOException ioex) {
             throw new CayenneRuntimeException("Error appending content", ioex);
