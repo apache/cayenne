@@ -29,7 +29,7 @@ public class CayenneWebModuleTest extends TestCase {
 
         Injector injector = new DefaultInjector(new CayenneWebModule());
         RequestHandler handler = injector.getInstance(RequestHandler.class);
-        assertTrue(handler instanceof DefaultRequestHandler);
+        assertTrue(handler instanceof SessionContextRequestHandler);
 
         RequestHandler handler1 = injector.getInstance(RequestHandler.class);
         assertNotSame("Incorrect singleton scope for request handler", handler, handler1);

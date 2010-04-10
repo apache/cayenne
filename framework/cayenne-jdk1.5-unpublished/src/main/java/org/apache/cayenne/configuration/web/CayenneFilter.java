@@ -26,10 +26,12 @@ import java.util.StringTokenizer;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.CayenneServerModule;
 import org.apache.cayenne.configuration.server.CayenneServerRuntime;
 import org.apache.cayenne.di.Module;
@@ -50,6 +52,10 @@ import org.apache.cayenne.util.Util;
  * after the two standard ones that allow users to override any Cayenne runtime aspects,
  * e.g. {@link RequestHandler}. Each custom module must have a no-arg constructor.
  * </ul>
+ * <p>
+ * CayenneFilter is a great utility to quickly start a Cayenne application. More advanced
+ * apps most likely will not use it, relying on their own configuration mechanism (such as
+ * Guice, Spring, etc.)
  * 
  * @since 3.1
  */
@@ -58,7 +64,11 @@ public class CayenneFilter implements Filter {
     static final String RUNTIME_NAME_PARAMETER = "runtime-name";
     static final String EXTRA_MODULES_PARAMETER = "extra-modules";
 
+    protected ServletContext servletContext;
+
     public void init(FilterConfig config) throws ServletException {
+
+        this.servletContext = config.getServletContext();
 
         String runtimeName = config.getInitParameter(RUNTIME_NAME_PARAMETER);
         if (runtimeName == null) {
@@ -113,5 +123,16 @@ public class CayenneFilter implements Filter {
             ServletRequest request,
             ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
+        RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
+
+        handler.requestStart(request, response);
+        try {
+            chain.doFilter(request, response);
+        }
+        finally {
+            handler.requestEnd(request, response);
+        }
     }
 }

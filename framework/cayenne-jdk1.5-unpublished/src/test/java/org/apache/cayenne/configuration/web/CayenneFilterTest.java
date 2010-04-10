@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.CayenneServerModule;
 
+import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockFilterConfig;
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockServletContext;
-
-import junit.framework.TestCase;
 
 public class CayenneFilterTest extends TestCase {
 
@@ -87,7 +90,7 @@ public class CayenneFilterTest extends TestCase {
         assertTrue(runtime.getModules()[1] instanceof CayenneWebModule);
 
         RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
-        assertTrue(handler instanceof DefaultRequestHandler);
+        assertTrue(handler instanceof SessionContextRequestHandler);
     }
 
     public void testInitWithExtraModules() throws Exception {
@@ -117,5 +120,41 @@ public class CayenneFilterTest extends TestCase {
 
         RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
         assertTrue(handler instanceof MockRequestHandler);
+    }
+
+    public void testDoFilter() throws Exception {
+        MockFilterConfig config = new MockFilterConfig();
+        config.setFilterName("abc");
+        config.setInitParameter(
+                CayenneFilter.EXTRA_MODULES_PARAMETER,
+                CayenneFilter_DispatchModule.class.getName());
+
+        MockServletContext context = new MockServletContext();
+        config.setupServletContext(context);
+
+        CayenneFilter filter = new CayenneFilter();
+        filter.init(config);
+
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneFilter_DispatchRequestHandler handler = (CayenneFilter_DispatchRequestHandler) runtime
+                .getInjector()
+                .getInstance(RequestHandler.class);
+
+        assertEquals(0, handler.getStarted());
+        assertEquals(0, handler.getEnded());
+
+        filter.doFilter(
+                new MockHttpServletRequest(),
+                new MockHttpServletResponse(),
+                new MockFilterChain());
+        assertEquals(1, handler.getStarted());
+        assertEquals(1, handler.getEnded());
+
+        filter.doFilter(
+                new MockHttpServletRequest(),
+                new MockHttpServletResponse(),
+                new MockFilterChain());
+        assertEquals(2, handler.getStarted());
+        assertEquals(2, handler.getEnded());
     }
 }

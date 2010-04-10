@@ -21,16 +21,25 @@ package org.apache.cayenne.configuration.web;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-/**
- * Default implementation of the {@link RequestHandler}.
- * 
- * @since 3.1
- */
-public class DefaultRequestHandler implements RequestHandler {
+public class CayenneFilter_DispatchRequestHandler implements RequestHandler {
+
+    private int started;
+    private int ended;
 
     public void requestEnd(ServletRequest request, ServletResponse response) {
+        ended++;
     }
 
     public void requestStart(ServletRequest request, ServletResponse response) {
+        started++;
     }
+
+    public int getStarted() {
+        return started;
+    }
+
+    public int getEnded() {
+        return ended;
+    }
+
 }

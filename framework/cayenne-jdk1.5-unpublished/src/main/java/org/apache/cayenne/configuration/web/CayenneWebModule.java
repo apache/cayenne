@@ -27,6 +27,6 @@ import org.apache.cayenne.di.Module;
 public class CayenneWebModule implements Module {
 
     public void configure(Binder binder) {
-        binder.bind(RequestHandler.class).to(DefaultRequestHandler.class);
+        binder.bind(RequestHandler.class).to(SessionContextRequestHandler.class);
     }
 }

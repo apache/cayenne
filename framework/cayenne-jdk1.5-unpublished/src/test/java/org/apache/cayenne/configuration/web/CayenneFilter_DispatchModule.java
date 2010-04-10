@@ -16,32 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.configuration.web;
 
-package org.apache.cayenne.conf;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.Scopes;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
+public class CayenneFilter_DispatchModule implements Module {
 
-import org.apache.cayenne.configuration.web.CayenneFilter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-/**
- * This is a legacy version of the filter
- * 
- * @since 1.2
- * @deprecated since 3.0 see {@link CayenneFilter}
- */
-public class WebApplicationContextFilter extends CayenneFilter {
-
-    private Log logger;
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        logger = LogFactory.getLog(WebApplicationContextFilter.class);
-        logger
-                .warn("**** WebApplicationContextFilter is deprecated. Use CayenneFilter instead");
-
-        super.init(filterConfig);
+    public void configure(Binder binder) {
+        binder
+                .bind(RequestHandler.class)
+                .to(CayenneFilter_DispatchRequestHandler.class)
+                .in(Scopes.SINGLETON);
     }
 }
