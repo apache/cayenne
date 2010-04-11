@@ -40,7 +40,9 @@ public class CayenneProjectModule implements Module {
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(Scopes.SINGLETON);
         binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V6.class).in(
                 Scopes.SINGLETON);
-        binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class).in(Scopes.SINGLETON);
-        binder.bind(ConfigurationNodeParentGetter.class).to(DefaultConfigurationNodeParentGetter.class).in(Scopes.SINGLETON);
+        binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class).in(
+                Scopes.SINGLETON);
+        binder.bind(ConfigurationNodeParentGetter.class).to(
+                DefaultConfigurationNodeParentGetter.class).in(Scopes.SINGLETON);
     }
 }

@@ -20,6 +20,11 @@ package org.apache.cayenne.project2;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 
+/**
+ * A service to retrieve parents of configuration nodes.
+ * 
+ * @since 3.1
+ */
 public interface ConfigurationNodeParentGetter {
 
     ConfigurationNode getParent(ConfigurationNode node);
