@@ -47,9 +47,10 @@ public abstract class CayenneServerRuntimeCase extends TestCase {
 		RuntimeName name = getRuntimeName();
 		assertNotNull(name);
 
-		runtime = runtimeCache.get(name);
+		String location = "cayenne-" + name + ".xml";
+		runtime = runtimeCache.get(location);
 		if (runtime == null) {
-			runtime = new CayenneServerRuntime(name.name());
+			runtime = new CayenneServerRuntime(location);
 			runtimeCache.put(name, runtime);
 
 			// setup schema

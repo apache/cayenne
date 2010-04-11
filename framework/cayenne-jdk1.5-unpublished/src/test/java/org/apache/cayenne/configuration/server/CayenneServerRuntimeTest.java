@@ -37,7 +37,7 @@ public class CayenneServerRuntimeTest extends TestCase {
     public void testDefaultConstructor() {
         CayenneServerRuntime runtime = new CayenneServerRuntime("xxxx");
 
-        assertEquals("xxxx", runtime.getName());
+        assertEquals("xxxx", runtime.getConfigurationLocation());
 
         assertEquals(1, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof CayenneServerModule);
@@ -63,7 +63,7 @@ public class CayenneServerRuntimeTest extends TestCase {
 
         CayenneServerRuntime runtime = new CayenneServerRuntime("yyyy", m1, m2);
 
-        assertEquals("yyyy", runtime.getName());
+        assertEquals("yyyy", runtime.getConfigurationLocation());
         assertEquals(2, runtime.getModules().length);
 
         for (int i = 0; i < configured.length; i++) {

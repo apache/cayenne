@@ -43,10 +43,10 @@ import org.apache.cayenne.util.Util;
  * custom modules are loaded after the two standard ones to allow custom service
  * overrides. Filter initialization parameters:
  * <ul>
- * <li>runtime-name - (optional) a name of Cayenne runtime. When looking for a Cayenne
- * configuration XML file in the classpath, Cayenne derives the name of the file from the
- * value of this parameter. If "runtime-name" is "foo", configuration file name is assumed
- * to be "cayenne-foo.xml". By default filter name is used as runtime name.
+ * <li>configuration-location - (optional) a name of Cayenne configuration XML file that
+ * will be used to load Cayenne stack. If missing, the filter name will be used to derive
+ * the location using the following naming convention: if filter name is "foo",
+ * configuration file name is name is "cayenne-foo.xml".
  * <li>extra-modules - (optional) a comma or space-separated list of class names, with
  * each class implementing {@link Module} interface. These are the custom modules loaded
  * after the two standard ones that allow users to override any Cayenne runtime aspects,
@@ -61,7 +61,7 @@ import org.apache.cayenne.util.Util;
  */
 public class CayenneFilter implements Filter {
 
-    static final String RUNTIME_NAME_PARAMETER = "runtime-name";
+    static final String CONFIGURATION_LOCATION_PARAMETER = "configuration-location";
     static final String EXTRA_MODULES_PARAMETER = "extra-modules";
 
     protected ServletContext servletContext;
@@ -70,20 +70,21 @@ public class CayenneFilter implements Filter {
 
         this.servletContext = config.getServletContext();
 
-        String runtimeName = config.getInitParameter(RUNTIME_NAME_PARAMETER);
-        if (runtimeName == null) {
-            runtimeName = config.getFilterName();
+        String configurationLocation = config
+                .getInitParameter(CONFIGURATION_LOCATION_PARAMETER);
+        if (configurationLocation == null) {
+            configurationLocation = "cayenne-" + config.getFilterName() + ".xml";
         }
 
-        if (runtimeName == null) {
+        if (configurationLocation == null) {
             throw new ServletException(
                     "Can't initialize Cayenne runtime. CayenneFilter has no name and no '"
-                            + RUNTIME_NAME_PARAMETER
+                            + CONFIGURATION_LOCATION_PARAMETER
                             + "' parameter");
         }
 
         Collection<Module> modules = new ArrayList<Module>(5);
-        modules.add(new CayenneServerModule(runtimeName));
+        modules.add(new CayenneServerModule(configurationLocation));
         modules.add(new CayenneWebModule());
 
         String extraModules = config.getInitParameter(EXTRA_MODULES_PARAMETER);
@@ -111,7 +112,9 @@ public class CayenneFilter implements Filter {
             }
         }
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(runtimeName, modules);
+        CayenneServerRuntime runtime = new CayenneServerRuntime(
+                configurationLocation,
+                modules);
         WebUtil.setCayenneRuntime(config.getServletContext(), runtime);
     }
 

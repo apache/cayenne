@@ -47,14 +47,14 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("abc", runtime.getName());
+        assertEquals("cayenne-abc.xml", runtime.getConfigurationLocation());
     }
 
     public void testInitWithRuntimeName() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
-        config.setInitParameter(CayenneFilter.RUNTIME_NAME_PARAMETER, "xyz");
+        config.setInitParameter(CayenneFilter.CONFIGURATION_LOCATION_PARAMETER, "xyz");
 
         MockServletContext context = new MockServletContext();
         config.setupServletContext(context);
@@ -65,10 +65,10 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("xyz", runtime.getName());
+        assertEquals("xyz", runtime.getConfigurationLocation());
     }
 
-    public void testInitWithStarndardModules() throws Exception {
+    public void testInitWithStandardModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
@@ -84,7 +84,7 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("abc", runtime.getName());
+        assertEquals("cayenne-abc.xml", runtime.getConfigurationLocation());
         assertEquals(2, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof CayenneServerModule);
         assertTrue(runtime.getModules()[1] instanceof CayenneWebModule);

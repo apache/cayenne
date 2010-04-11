@@ -47,7 +47,7 @@ public class CreateNodeAction extends CayenneAction {
     /**
      * Constructor for CreateNodeAction.
      * 
-     * @param name
+     * @param location
      */
     public CreateNodeAction(Application application) {
         super(getActionName(), application);

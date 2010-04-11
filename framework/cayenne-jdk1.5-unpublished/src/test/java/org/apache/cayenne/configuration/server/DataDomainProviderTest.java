@@ -91,7 +91,7 @@ public class DataDomainProviderTest extends TestCase {
         final ResourceLocator locator = new ResourceLocator() {
 
             public Collection<Resource> findResources(String name) {
-                assertEquals("cayenne-" + testConfigName + ".xml", name);
+                assertEquals(testConfigName, name);
                 return Collections.<Resource> singleton(new MockResource());
             }
         };
@@ -106,7 +106,7 @@ public class DataDomainProviderTest extends TestCase {
 
         final DefaultRuntimeProperties testProperties = new DefaultRuntimeProperties(
                 Collections.singletonMap(
-                        RuntimeProperties.CAYENNE_RUNTIME_NAME,
+                        RuntimeProperties.CONFIGURATION_LOCATION,
                         testConfigName));
 
         Module testModule = new Module() {

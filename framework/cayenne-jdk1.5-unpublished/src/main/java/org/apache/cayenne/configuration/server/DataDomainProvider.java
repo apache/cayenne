@@ -28,7 +28,6 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
@@ -73,9 +72,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected AdhocObjectFactory objectFactory;
 
-    @Inject
-    protected ConfigurationNameMapper nameMapper;
-
     protected volatile DataDomain dataDomain;
 
     public DataDomain get() throws ConfigurationException {
@@ -104,23 +100,29 @@ public class DataDomainProvider implements Provider<DataDomain> {
     }
 
     protected void createDataChannel() throws Exception {
-        String runtimeName = configurationProperties
-                .get(RuntimeProperties.CAYENNE_RUNTIME_NAME);
+        String configurationLocation = configurationProperties
+                .get(RuntimeProperties.CONFIGURATION_LOCATION);
+
+        if (configurationLocation == null) {
+            throw new DataDomainLoadException(
+                    "No configuration location available. "
+                            + "You can specify when creating Cayenne runtime "
+                            + "or via a system property '%s'",
+                    RuntimeProperties.CONFIGURATION_LOCATION);
+        }
 
         long t0 = System.currentTimeMillis();
         if (logger.isDebugEnabled()) {
-            logger.debug("starting configuration loading: " + runtimeName);
+            logger.debug("starting configuration loading: " + configurationLocation);
         }
 
-        String resourceName = nameMapper.configurationLocation(
-                DataChannelDescriptor.class,
-                runtimeName);
-        Collection<Resource> configurations = resourceLocator.findResources(resourceName);
+        Collection<Resource> configurations = resourceLocator
+                .findResources(configurationLocation);
 
         if (configurations.isEmpty()) {
             throw new DataDomainLoadException(
                     "Configuration file \"%s\" is not found.",
-                    resourceName);
+                    configurationLocation);
         }
 
         Resource configurationResource = configurations.iterator().next();
@@ -144,7 +146,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         if (logger.isDebugEnabled()) {
             logger.debug("finished configuration loading: "
-                    + runtimeName
+                    + configurationLocation
                     + " in "
                     + (t1 - t0)
                     + " ms.");

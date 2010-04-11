@@ -25,6 +25,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.resource.ResourceLocator;
 
 /**
  * A superclass of possible Cayenne runtime objects. A CayenneRuntime is the main access
@@ -35,24 +36,24 @@ import org.apache.cayenne.di.Module;
  */
 public abstract class CayenneRuntime {
 
-    protected String name;
+    protected String configurationLocation;
     protected Injector injector;
     protected Module[] modules;
 
     /**
      * Creates a CayenneRuntime with configuration based on supplied array of DI modules.
      */
-    public CayenneRuntime(String name, Module... modules) {
+    public CayenneRuntime(String configurationLocation, Module... modules) {
 
-        if (name == null) {
-            throw new NullPointerException("Null runtime name");
+        if (configurationLocation == null) {
+            throw new NullPointerException("Null runtime configurationLocation");
         }
 
         if (modules == null) {
             modules = new Module[0];
         }
 
-        this.name = name;
+        this.configurationLocation = configurationLocation;
         this.modules = modules;
         this.injector = DIBootstrap.createInjector(modules);
     }
@@ -60,13 +61,13 @@ public abstract class CayenneRuntime {
     /**
      * Creates a CayenneRuntime with configuration based on supplied array of DI modules.
      */
-    public CayenneRuntime(String name, Collection<Module> modules) {
+    public CayenneRuntime(String configurationLocation, Collection<Module> modules) {
 
-        if (name == null) {
-            throw new NullPointerException("Null runtime name");
+        if (configurationLocation == null) {
+            throw new NullPointerException("Null runtime configurationLocation");
         }
 
-        this.name = name;
+        this.configurationLocation = configurationLocation;
 
         if (modules == null) {
             this.modules = new Module[0];
@@ -79,11 +80,11 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Returns runtime name. By default a name of Cayenne project XML file contains a
-     * runtime name in it in the form "cayenne-<name>.xml".
+     * Returns location of the runtime configuration resource. E.g. "cayenne-xyz.xml".
+     * Configuration URL is passing this location to {@link ResourceLocator}.
      */
-    public String getName() {
-        return name;
+    public String getConfigurationLocation() {
+        return configurationLocation;
     }
 
     /**

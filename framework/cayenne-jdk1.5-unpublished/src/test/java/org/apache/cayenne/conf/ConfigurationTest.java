@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.conf;
 
-import java.io.File;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.unit.CayenneCase;
@@ -41,26 +39,6 @@ public class ConfigurationTest extends CayenneCase {
     public void testDefaultConfigurationConstructorWithNullName() {
         try {
             new DefaultConfiguration(null);
-            fail("expected ConfigurationException!");
-        }
-        catch (ConfigurationException ex) {
-            // OK
-        }
-    }
-
-    public void testFileConfigurationConstructorWithNullFile() {
-        try {
-            new FileConfiguration((File) null);
-            fail("expected ConfigurationException!");
-        }
-        catch (ConfigurationException ex) {
-            // OK
-        }
-    }
-
-    public void testFileConfigurationConstructorWithNullName() {
-        try {
-            new FileConfiguration((String) null);
             fail("expected ConfigurationException!");
         }
         catch (ConfigurationException ex) {

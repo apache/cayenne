@@ -34,12 +34,12 @@ import org.apache.cayenne.di.Module;
 public class CayenneServerRuntime extends CayenneRuntime {
 
     /**
-     * Creates a server runtime object based on XML configuration file called
-     * "cayenne-<name>.xml" and configures the runtime with a standard set of services
-     * contained in {@link CayenneServerModule}.
+     * Creates a server runtime object based on XML configuration file specified via
+     * 'configurationLocation' parameter. Configures the runtime with a standard set of
+     * services contained in {@link CayenneServerModule}.
      */
-    public CayenneServerRuntime(String name) {
-        super(name, new CayenneServerModule(name));
+    public CayenneServerRuntime(String configurationLocation) {
+        super(configurationLocation, new CayenneServerModule(configurationLocation));
     }
 
     /**
@@ -49,8 +49,8 @@ public class CayenneServerRuntime extends CayenneRuntime {
      * {@link CayenneServerModule} or its subclass as one of the modules to this
      * constructor.
      */
-    public CayenneServerRuntime(String name, Module... modules) {
-        super(name, modules);
+    public CayenneServerRuntime(String configurationLocation, Module... modules) {
+        super(configurationLocation, modules);
     }
 
     /**
@@ -60,8 +60,8 @@ public class CayenneServerRuntime extends CayenneRuntime {
      * {@link CayenneServerModule} or its subclass as one of the modules to this
      * constructor.
      */
-    public CayenneServerRuntime(String name, Collection<Module> modules) {
-        super(name, modules);
+    public CayenneServerRuntime(String configurationLocation, Collection<Module> modules) {
+        super(configurationLocation, modules);
     }
 
     /**

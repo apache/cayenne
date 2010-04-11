@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-
 /**
  * Represents a properties map for a given {@link CayenneRuntime}.
  * 
@@ -29,7 +28,7 @@ public interface RuntimeProperties {
     /**
      * A property defining the name of the current runtime.
      */
-    public static final String CAYENNE_RUNTIME_NAME = "cayenne.runtime.name";
+    public static final String CONFIGURATION_LOCATION = "cayenne.config.location";
 
     /**
      * Returns property value for a given key.

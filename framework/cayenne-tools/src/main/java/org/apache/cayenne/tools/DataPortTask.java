@@ -26,10 +26,14 @@ import java.util.HashSet;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DataPort;
-import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.conf.FileConfiguration;
+import org.apache.cayenne.configuration.server.CayenneServerModule;
+import org.apache.cayenne.configuration.server.CayenneServerRuntime;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.resource.FilesystemResourceLocator;
+import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -59,30 +63,50 @@ public class DataPortTask extends CayenneTask {
     public void execute() throws BuildException {
         validateParameters();
 
-        FileConfiguration configuration = new FileConfiguration(projectFile);
+        String projectFileLocation = projectFile.getName();
+        Module module = new CayenneServerModule(projectFileLocation) {
 
-        ClassLoader threadContextClassLoader = Thread.currentThread().getContextClassLoader();
+            @Override
+            public void configure(Binder binder) {
+                super.configure(binder);
+
+                binder.bind(ResourceLocator.class).toInstance(
+                        new FilesystemResourceLocator(projectFile));
+            }
+        };
+
+        CayenneServerRuntime runtime = new CayenneServerRuntime(
+                projectFileLocation,
+                module);
+        DataDomain domain;
+
+        ClassLoader threadContextClassLoader = Thread
+                .currentThread()
+                .getContextClassLoader();
         try {
             // need to set context class loader so that cayenne can find jdbc driver and
             // PasswordEncoder
+            // TODO: andrus 04/11/2010 is this still relevant in 3.1?
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            configuration.initialize();
+
+            domain = runtime.getDataDomain();
         }
         catch (Exception ex) {
             throw new BuildException("Error loading Cayenne configuration from "
                     + projectFile, ex);
-        } finally {
+        }
+        finally {
             // set back to original ClassLoader
             Thread.currentThread().setContextClassLoader(threadContextClassLoader);
         }
 
         // perform project validation
-        DataNode source = findNode(configuration, srcNode);
+        DataNode source = domain.getNode(srcNode);
         if (source == null) {
             throw new BuildException("srcNode not found in the project: " + srcNode);
         }
 
-        DataNode destination = findNode(configuration, destNode);
+        DataNode destination = domain.getNode(destNode);
         if (destination == null) {
             throw new BuildException("destNode not found in the project: " + destNode);
         }
@@ -109,17 +133,6 @@ public class DataPortTask extends CayenneTask {
                     "Error porting data: " + topOfStack.getMessage(),
                     topOfStack);
         }
-    }
-
-    protected DataNode findNode(Configuration configuration, String name) {
-        for (DataDomain domain : configuration.getDomains()) {
-            DataNode node = domain.getNode(name);
-            if (node != null) {
-                return node;
-            }
-        }
-
-        return null;
     }
 
     protected Collection<DbEntity> getAllEntities(DataNode source, DataNode target) {

@@ -62,18 +62,18 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class CayenneServerModule implements Module {
 
-    protected String runtimeName;
+    protected String configurationLocation;
 
-    public CayenneServerModule(String runtimeName) {
-        this.runtimeName = runtimeName;
+    public CayenneServerModule(String configurationLocation) {
+        this.configurationLocation = configurationLocation;
     }
 
     public void configure(Binder binder) {
 
         // configure global stack properties
         binder.bindMap(RuntimeProperties.class).put(
-                RuntimeProperties.CAYENNE_RUNTIME_NAME,
-                runtimeName);
+                RuntimeProperties.CONFIGURATION_LOCATION,
+                configurationLocation);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically
