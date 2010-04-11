@@ -30,7 +30,7 @@ import org.apache.cayenne.cache.MockQueryCache;
 import org.apache.cayenne.cache.MockQueryCacheFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
-import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
@@ -344,7 +344,7 @@ public class DataDomainTest extends CayenneCase {
         DataRowStore cache = new DataRowStore(
                 "Y",
                 Collections.EMPTY_MAP,
-                new EventManager()) {
+                new DefaultEventManager()) {
 
             @Override
             public void shutdown() {

@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -37,7 +37,7 @@ public class DataRowStoreTest extends CayenneCase {
         DataRowStore cache = new DataRowStore(
                 "cacheXYZ",
                 Collections.EMPTY_MAP,
-                new EventManager());
+                new DefaultEventManager());
         assertEquals("cacheXYZ", cache.getName());
         assertNotNull(cache.getSnapshotEventSubject());
         assertTrue(cache.getSnapshotEventSubject().getSubjectName().contains("cacheXYZ"));
@@ -51,7 +51,10 @@ public class DataRowStoreTest extends CayenneCase {
         props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String
                 .valueOf(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
 
-        DataRowStore cache = new DataRowStore("cacheXYZ", props, new EventManager());
+        DataRowStore cache = new DataRowStore(
+                "cacheXYZ",
+                props,
+                new DefaultEventManager());
         assertEquals("cacheXYZ", cache.getName());
         assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
                 .isNotifyingRemoteListeners());
@@ -61,7 +64,7 @@ public class DataRowStoreTest extends CayenneCase {
         DataRowStore cache = new DataRowStore(
                 "cacheXYZ",
                 Collections.EMPTY_MAP,
-                new EventManager());
+                new DefaultEventManager());
 
         assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
                 .isNotifyingRemoteListeners());
@@ -78,7 +81,10 @@ public class DataRowStoreTest extends CayenneCase {
         Map props = new HashMap();
         props.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));
 
-        DataRowStore cache = new DataRowStore("cacheXYZ", props, new EventManager());
+        DataRowStore cache = new DataRowStore(
+                "cacheXYZ",
+                props,
+                new DefaultEventManager());
         assertEquals(2, cache.maximumSize());
         assertEquals(0, cache.size());
 

@@ -29,6 +29,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
@@ -69,7 +70,7 @@ public class ClientChannel implements DataChannel {
     }
 
     public ClientChannel(ClientConnection connection, boolean channelEventsEnabled) {
-        this(connection, channelEventsEnabled, new EventManager(2));
+        this(connection, channelEventsEnabled, new DefaultEventManager(2));
     }
 
     public ClientChannel(ClientConnection connection, boolean channelEventsEnabled,

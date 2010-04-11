@@ -27,28 +27,28 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
-public class EventManagerTest extends TestCase implements EventListener {
+public class DefaultEventManagerTest extends TestCase implements EventListener {
 
     // used for counting received events on the class
-    public static int _numberOfReceivedEventsForClass;
+    public static int numberOfReceivedEventsForClass;
 
     // used for counting received events per listener instance
-    public int _numberOfReceivedEvents;
+    public int numberOfReceivedEvents;
 
     // the event manager used for testing
-    private EventManager _eventManager;
+    private EventManager eventManager;
 
     @Override
     public void setUp() {
-        _eventManager = new EventManager();
-        _numberOfReceivedEvents = 0;
-        _numberOfReceivedEventsForClass = 0;
+        eventManager = new DefaultEventManager();
+        numberOfReceivedEvents = 0;
+        numberOfReceivedEventsForClass = 0;
     }
 
     public void testSubjectListenerWouldRegisterListener() {
 
-        MockListener listener = new MockListener(_eventManager);
-        _eventManager.addListener(
+        MockListener listener = new MockListener(eventManager);
+        eventManager.addListener(
                 listener,
                 "processEvent",
                 EventObject.class,
@@ -60,19 +60,19 @@ public class EventManagerTest extends TestCase implements EventListener {
         // add more than one listener to see that dispatch can proceed after one of the
         // listeners recats to event
 
-        _eventManager.addListener(
-                new MockListener(_eventManager),
+        eventManager.addListener(
+                new MockListener(eventManager),
                 "processEvent",
                 EventObject.class,
                 MockListener.mockSubject);
 
-        _eventManager.postEvent(new EventObject(this), MockListener.mockSubject);
+        eventManager.postEvent(new EventObject(this), MockListener.mockSubject);
     }
 
     public void testObjectListenerWouldRegisterListener() {
 
-        MockListener listener = new MockListener(_eventManager, this);
-        _eventManager.addListener(
+        MockListener listener = new MockListener(eventManager, this);
+        eventManager.addListener(
                 listener,
                 "processEvent",
                 EventObject.class,
@@ -85,20 +85,20 @@ public class EventManagerTest extends TestCase implements EventListener {
         // add more than one listener to see that dispatch can proceed after one of the
         // listeners recats to event
 
-        _eventManager.addListener(
-                new MockListener(_eventManager, this),
+        eventManager.addListener(
+                new MockListener(eventManager, this),
                 "processEvent",
                 EventObject.class,
                 MockListener.mockSubject,
                 this);
 
-        _eventManager.postEvent(new EventObject(this), MockListener.mockSubject);
+        eventManager.postEvent(new EventObject(this), MockListener.mockSubject);
     }
 
     public void testNullListener() {
         try {
             EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
-            _eventManager.addListener(null, null, null, subject);
+            eventManager.addListener(null, null, null, subject);
             Assert.fail();
         }
 
@@ -110,7 +110,7 @@ public class EventManagerTest extends TestCase implements EventListener {
     public void testNullNotification() {
         // null notification
         try {
-            _eventManager.addListener(this, "testNullObserver", CayenneEvent.class, null);
+            eventManager.addListener(this, "testNullObserver", CayenneEvent.class, null);
             Assert.fail();
         }
 
@@ -121,7 +121,7 @@ public class EventManagerTest extends TestCase implements EventListener {
         // invalid event class
         try {
             EventSubject subject = EventSubject.getSubject(this.getClass(), "");
-            _eventManager.addListener(this, "testNullObserver", null, subject);
+            eventManager.addListener(this, "testNullObserver", null, subject);
             Assert.fail();
         }
 
@@ -132,7 +132,7 @@ public class EventManagerTest extends TestCase implements EventListener {
         // empty string notification
         try {
             EventSubject subject = EventSubject.getSubject(this.getClass(), "");
-            _eventManager.addListener(
+            eventManager.addListener(
                     this,
                     "testNullObserver",
                     CayenneEvent.class,
@@ -148,7 +148,7 @@ public class EventManagerTest extends TestCase implements EventListener {
     public void testNonexistingMethod() {
         try {
             EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
-            _eventManager.addListener(
+            eventManager.addListener(
                     this,
                     "thisMethodDoesNotExist",
                     CayenneEvent.class,
@@ -164,7 +164,7 @@ public class EventManagerTest extends TestCase implements EventListener {
     public void testInvalidArgumentTypes() {
         try {
             EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
-            _eventManager.addListener(
+            eventManager.addListener(
                     this,
                     "seeTheWrongMethod",
                     CayenneEvent.class,
@@ -179,8 +179,8 @@ public class EventManagerTest extends TestCase implements EventListener {
 
     public void testNonretainedListener() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
-                new EventManagerTest(),
+        eventManager.addListener(
+                new DefaultEventManagerTest(),
                 "seeNotification",
                 CayenneEvent.class,
                 subject);
@@ -189,14 +189,14 @@ public class EventManagerTest extends TestCase implements EventListener {
         System.gc();
         System.gc();
 
-        _eventManager.postEvent(new CayenneEvent(this), subject);
-        Assert.assertEquals(0, _numberOfReceivedEventsForClass);
+        eventManager.postEvent(new CayenneEvent(this), subject);
+        Assert.assertEquals(0, numberOfReceivedEventsForClass);
     }
 
     public void testValidSubclassOfRegisteredEventClass() throws Exception {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
-        _eventManager.postEvent(new MyCayenneEvent(this), subject);
+        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.postEvent(new MyCayenneEvent(this), subject);
 
         assertReceivedEvents(1, this);
     }
@@ -205,31 +205,31 @@ public class EventManagerTest extends TestCase implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
 
         // we register a method that takes a CayenneEvent or subclass thereof..
-        _eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
 
         // ..but post a subclass of EventObject that is not compatible with CayenneEvent
-        _eventManager.postEvent(new EventObject(this), subject);
+        eventManager.postEvent(new EventObject(this), subject);
 
         assertReceivedEvents(0, this);
     }
 
     public void testSuccessfulNotificationDefaultSender() throws Exception {
-        EventManagerTest listener1 = this;
-        EventManagerTest listener2 = new EventManagerTest();
+        DefaultEventManagerTest listener1 = this;
+        DefaultEventManagerTest listener2 = new DefaultEventManagerTest();
 
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
+        eventManager.addListener(
                 listener1,
                 "seeNotification",
                 CayenneEvent.class,
                 subject);
-        _eventManager.addListener(
+        eventManager.addListener(
                 listener2,
                 "seeNotification",
                 CayenneEvent.class,
                 subject);
 
-        _eventManager.postEvent(new CayenneEvent(this), subject);
+        eventManager.postEvent(new CayenneEvent(this), subject);
 
         assertReceivedEvents(1, listener1);
         assertReceivedEvents(1, listener2);
@@ -238,13 +238,13 @@ public class EventManagerTest extends TestCase implements EventListener {
 
     public void testSuccessfulNotificationIndividualSender() throws Exception {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
+        eventManager.addListener(
                 this,
                 "seeNotification",
                 CayenneEvent.class,
                 subject,
                 this);
-        _eventManager.postEvent(new CayenneEvent(this), subject);
+        eventManager.postEvent(new CayenneEvent(this), subject);
 
         assertReceivedEvents(1, this);
         assertReceivedEventsForClass(1);
@@ -252,14 +252,14 @@ public class EventManagerTest extends TestCase implements EventListener {
 
     public void testSuccessfulNotificationIndividualSenderTwice() throws Exception {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
-        _eventManager.addListener(
+        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(
                 this,
                 "seeNotification",
                 CayenneEvent.class,
                 subject,
                 this);
-        _eventManager.postEvent(new CayenneEvent(this), subject);
+        eventManager.postEvent(new CayenneEvent(this), subject);
 
         assertReceivedEvents(2, this);
         assertReceivedEventsForClass(2);
@@ -267,23 +267,23 @@ public class EventManagerTest extends TestCase implements EventListener {
 
     public void testSuccessfulNotificationBothDefaultAndIndividualSender()
             throws Exception {
-        EventManagerTest listener1 = this;
-        EventManagerTest listener2 = new EventManagerTest();
+        DefaultEventManagerTest listener1 = this;
+        DefaultEventManagerTest listener2 = new DefaultEventManagerTest();
 
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
+        eventManager.addListener(
                 listener1,
                 "seeNotification",
                 CayenneEvent.class,
                 subject,
                 listener1);
-        _eventManager.addListener(
+        eventManager.addListener(
                 listener2,
                 "seeNotification",
                 CayenneEvent.class,
                 subject);
 
-        _eventManager.postEvent(new CayenneEvent(this), subject);
+        eventManager.postEvent(new CayenneEvent(this), subject);
 
         assertReceivedEvents(1, listener1);
         assertReceivedEvents(1, listener2);
@@ -292,116 +292,116 @@ public class EventManagerTest extends TestCase implements EventListener {
 
     public void testRemoveOnEmptyList() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        Assert.assertFalse(_eventManager.removeListener(this, subject));
+        Assert.assertFalse(eventManager.removeListener(this, subject));
     }
 
     public void testRemoveOnNullSubject() {
-        Assert.assertFalse(_eventManager.removeListener(this, null));
+        Assert.assertFalse(eventManager.removeListener(this, null));
     }
 
     public void testRemoveFromDefaultQueue() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
-        Assert.assertTrue(_eventManager.removeListener(this, subject));
-        Assert.assertFalse(_eventManager.removeListener(this));
+        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        Assert.assertTrue(eventManager.removeListener(this, subject));
+        Assert.assertFalse(eventManager.removeListener(this));
     }
 
     public void testRemoveSpecificQueue() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
+        eventManager.addListener(
                 this,
                 "seeNotification",
                 CayenneEvent.class,
                 subject,
                 this);
-        Assert.assertTrue(_eventManager.removeListener(this, subject));
-        Assert.assertFalse(_eventManager.removeListener(this));
+        Assert.assertTrue(eventManager.removeListener(this, subject));
+        Assert.assertFalse(eventManager.removeListener(this));
     }
 
     public void testRemoveSpecificSender() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
+        eventManager.addListener(
                 this,
                 "seeNotification",
                 CayenneEvent.class,
                 subject,
                 this);
-        Assert.assertTrue(_eventManager.removeListener(this, subject, this));
-        Assert.assertFalse(_eventManager.removeListener(this));
+        Assert.assertTrue(eventManager.removeListener(this, subject, this));
+        Assert.assertFalse(eventManager.removeListener(this));
     }
 
     public void testRemoveNullSender() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
+        eventManager.addListener(
                 this,
                 "seeNotification",
                 CayenneEvent.class,
                 subject,
                 this);
-        Assert.assertTrue(_eventManager.removeListener(this, subject, null));
-        Assert.assertFalse(_eventManager.removeListener(this));
+        Assert.assertTrue(eventManager.removeListener(this, subject, null));
+        Assert.assertFalse(eventManager.removeListener(this));
     }
 
     public void testRemoveNonexistingSender() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(
+        eventManager.addListener(
                 this,
                 "seeNotification",
                 CayenneEvent.class,
                 subject,
                 this);
-        Assert.assertFalse(_eventManager.removeListener(this, subject, "foo"));
-        Assert.assertTrue(_eventManager.removeListener(this));
+        Assert.assertFalse(eventManager.removeListener(this, subject, "foo"));
+        Assert.assertTrue(eventManager.removeListener(this));
     }
 
     public void testRemoveAll() {
         EventSubject subject1 = EventSubject.getSubject(this.getClass(), "XXX1");
         EventSubject subject2 = EventSubject.getSubject(this.getClass(), "XXX2");
         EventSubject subject3 = EventSubject.getSubject(this.getClass(), "XXX3");
-        _eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject1);
-        _eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject2);
-        _eventManager.addListener(
+        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject1);
+        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject2);
+        eventManager.addListener(
                 this,
                 "seeNotification",
                 CayenneEvent.class,
                 subject3,
                 this);
 
-        Assert.assertTrue(_eventManager.removeListener(this));
-        Assert.assertFalse(_eventManager.removeListener(this));
-        Assert.assertFalse(_eventManager.removeListener(this, subject1));
-        Assert.assertFalse(_eventManager.removeListener(this, subject2));
-        Assert.assertFalse(_eventManager.removeListener(this, subject3));
+        Assert.assertTrue(eventManager.removeListener(this));
+        Assert.assertFalse(eventManager.removeListener(this));
+        Assert.assertFalse(eventManager.removeListener(this, subject1));
+        Assert.assertFalse(eventManager.removeListener(this, subject2));
+        Assert.assertFalse(eventManager.removeListener(this, subject3));
     }
 
     public void testSubjectGarbageCollection() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        _eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
 
         // let go of the subject & (hopefully) release queue
         subject = null;
         System.gc();
         System.gc();
 
-        Assert.assertFalse(_eventManager.removeListener(this));
+        Assert.assertFalse(eventManager.removeListener(this));
     }
 
     // notification method
     public void seeNotification(CayenneEvent event) {
-        _numberOfReceivedEvents++;
-        _numberOfReceivedEventsForClass++;
+        numberOfReceivedEvents++;
+        numberOfReceivedEventsForClass++;
     }
 
     // allows just enough time for the event threads to run
     private static void assertReceivedEvents(
             final int expected,
-            final EventManagerTest listener) throws Exception {
+            final DefaultEventManagerTest listener) throws Exception {
 
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
             @Override
             protected void assertResult() throws Exception {
-                assertEquals(expected, listener._numberOfReceivedEvents);
+                assertEquals(expected, listener.numberOfReceivedEvents);
             }
         };
         helper.assertWithTimeout(5000);
@@ -413,7 +413,7 @@ public class EventManagerTest extends TestCase implements EventListener {
 
             @Override
             protected void assertResult() throws Exception {
-                assertEquals(expected, _numberOfReceivedEventsForClass);
+                assertEquals(expected, numberOfReceivedEventsForClass);
             }
         };
         helper.assertWithTimeout(5000);

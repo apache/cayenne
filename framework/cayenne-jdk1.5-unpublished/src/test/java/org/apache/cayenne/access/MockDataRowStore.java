@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.MockEventManager;
 
 /**
  * A "lightweight" DataRowStore.
@@ -40,7 +40,7 @@ public class MockDataRowStore extends DataRowStore {
     }
 
     public MockDataRowStore() {
-        super("mock DataRowStore", TEST_DEFAULTS, new EventManager());
+        super("mock DataRowStore", TEST_DEFAULTS, new MockEventManager());
     }
 
     /**

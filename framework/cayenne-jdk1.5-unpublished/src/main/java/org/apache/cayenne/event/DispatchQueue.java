@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.cayenne.event.EventManager.Dispatch;
+import org.apache.cayenne.event.DefaultEventManager.Dispatch;
 import org.apache.cayenne.util.Invocation;
 
 /**

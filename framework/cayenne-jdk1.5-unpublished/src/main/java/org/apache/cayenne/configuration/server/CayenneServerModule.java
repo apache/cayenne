@@ -50,6 +50,7 @@ import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Scopes;
+import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 
@@ -97,6 +98,9 @@ public class CayenneServerModule implements Module {
                 Scopes.SINGLETON);
         binder.bind(ConfigurationNameMapper.class).to(
                 DefaultConfigurationNameMapper.class).in(Scopes.SINGLETON);
+
+        binder.bind(EventManager.class).toProvider(EventManagerProvider.class).in(
+                Scopes.SINGLETON);
 
         // a service to provide the main stack DataDomain
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class).in(

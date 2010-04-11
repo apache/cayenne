@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -48,7 +48,7 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
                 Collections.EMPTY_MAP,
-                new EventManager());
+                new DefaultEventManager());
 
         c1 = new DataContext(getDomain(), new ObjectStore(cache));
         c2 = new DataContext(getDomain(), new ObjectStore(cache));

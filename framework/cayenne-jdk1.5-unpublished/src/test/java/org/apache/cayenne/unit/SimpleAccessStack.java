@@ -26,14 +26,13 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Query;
 
 /**
  * Default implementation of the AccessStack that has a single DataNode per DataMap.
- * 
  */
 public class SimpleAccessStack extends AbstractAccessStack implements AccessStack {
 
@@ -46,7 +45,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         this.dataSetFactory = dataSetFactory;
         this.resources = resources;
         this.domain = new UnitTestDomain("domain");
-        domain.setEventManager(new EventManager(2));
+        domain.setEventManager(new DefaultEventManager(2));
         for (DataMap map : maps) {
             initNode(map);
         }

@@ -31,7 +31,8 @@ import org.apache.cayenne.unit.util.ThreadedTestHelper;
 public class EventBridgeTest extends TestCase {
 
     public void testConstructor() throws Exception {
-        EventSubject local = EventSubject.getSubject(EventBridgeTest.class, "testInstall");
+        EventSubject local = EventSubject
+                .getSubject(EventBridgeTest.class, "testInstall");
         String external = "externalSubject";
         TestBridge bridge = new TestBridge(local, external);
 
@@ -42,11 +43,12 @@ public class EventBridgeTest extends TestCase {
     }
 
     public void testStartup() throws Exception {
-        EventSubject local = EventSubject.getSubject(EventBridgeTest.class, "testInstall");
+        EventSubject local = EventSubject
+                .getSubject(EventBridgeTest.class, "testInstall");
         String external = "externalSubject";
         TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new EventManager();
+        EventManager manager = new DefaultEventManager();
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         assertSame(manager, bridge.eventManager);
@@ -54,7 +56,7 @@ public class EventBridgeTest extends TestCase {
         assertEquals(0, bridge.shutdownCalls);
 
         // try startup again
-        EventManager newManager = new EventManager();
+        EventManager newManager = new DefaultEventManager();
         bridge.startup(newManager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         assertSame(newManager, bridge.eventManager);
@@ -63,11 +65,12 @@ public class EventBridgeTest extends TestCase {
     }
 
     public void testShutdown() throws Exception {
-        EventSubject local = EventSubject.getSubject(EventBridgeTest.class, "testInstall");
+        EventSubject local = EventSubject
+                .getSubject(EventBridgeTest.class, "testInstall");
         String external = "externalSubject";
         TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new EventManager();
+        EventManager manager = new DefaultEventManager();
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
         bridge.shutdown();
 
@@ -84,7 +87,7 @@ public class EventBridgeTest extends TestCase {
         String external = "externalSubject";
         final TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new EventManager(2);
+        EventManager manager = new DefaultEventManager(2);
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         final SnapshotEvent eventWithNoSubject = new SnapshotEvent(

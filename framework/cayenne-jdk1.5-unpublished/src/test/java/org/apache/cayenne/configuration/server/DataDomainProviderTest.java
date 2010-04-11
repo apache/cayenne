@@ -52,6 +52,8 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -108,10 +110,13 @@ public class DataDomainProviderTest extends TestCase {
                 Collections.singletonMap(
                         RuntimeProperties.CONFIGURATION_LOCATION,
                         testConfigName));
+        
+        final EventManager eventManager = new MockEventManager();
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(RuntimeProperties.class).toInstance(testProperties);
                 binder.bind(ConfigurationNameMapper.class).to(
@@ -157,6 +162,7 @@ public class DataDomainProviderTest extends TestCase {
                 provider.get());
 
         DataDomain domain = (DataDomain) channel;
+        assertSame(eventManager, domain.getEventManager());
         assertEquals(2, domain.getDataMaps().size());
         assertTrue(domain.getDataMaps().contains(map1));
         assertTrue(domain.getDataMaps().contains(map2));

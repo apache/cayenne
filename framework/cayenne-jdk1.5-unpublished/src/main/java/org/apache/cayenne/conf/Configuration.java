@@ -33,6 +33,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -180,7 +181,7 @@ public abstract class Configuration {
         // set domain configuration name
         this.setDomainConfigurationName(domainConfigurationName);
 
-        this.eventManager = new EventManager();
+        this.eventManager = new DefaultEventManager();
     }
 
     /**

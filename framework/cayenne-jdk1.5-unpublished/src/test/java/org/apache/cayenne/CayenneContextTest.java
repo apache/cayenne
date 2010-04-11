@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -34,8 +35,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.remote.MockClientConnection;
 import org.apache.cayenne.remote.ClientChannel;
+import org.apache.cayenne.remote.MockClientConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.AccessStack;
@@ -159,7 +160,7 @@ public class CayenneContextTest extends CayenneCase {
     public void testCommitChangesNew() {
         final CompoundDiff diff = new CompoundDiff();
         final Object newObjectId = new ObjectId("test", "key", "generated");
-        final EventManager eventManager = new EventManager(0);
+        final EventManager eventManager = new DefaultEventManager(0);
 
         // test that ids that are passed back are actually propagated to the right
         // objects...
@@ -326,7 +327,7 @@ public class CayenneContextTest extends CayenneCase {
                 .getGlobalAttribute1Direct());
         assertEquals(PersistenceState.COMMITTED, hollow.getPersistenceState());
     }
-    
+
     public void testBeforeHollowDeleteShouldChangeStateToCommited() {
 
         ObjectId gid = new ObjectId("MtTable1", "a", "b");
