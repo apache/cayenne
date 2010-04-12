@@ -20,7 +20,6 @@
 package org.apache.cayenne.remote.hessian.service;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
@@ -30,7 +29,6 @@ import com.caucho.hessian.io.AbstractSerializer;
 
 /**
  * A server-side DataRow Hessian serializer.
- * 
  */
 class ServerDataRowSerializer extends AbstractSerializer {
 
@@ -55,5 +53,4 @@ class ServerDataRowSerializer extends AbstractSerializer {
 
         out.writeMapEnd();
     }
-
 }
