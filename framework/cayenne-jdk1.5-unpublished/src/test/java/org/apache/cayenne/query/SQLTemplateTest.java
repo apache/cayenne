@@ -22,18 +22,49 @@ package org.apache.cayenne.query;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 
 /**
  */
-public class SQLTemplateTest extends TestCase {
-    
+public class SQLTemplateTest extends CayenneCase {
+
+    protected DataContext context;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        deleteTestData();
+        context = createDataContext();
+    }
+
+    public void testSQLTemplateForDataMap() {
+        DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+        SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST");
+        List<DataRow> result = context.performQuery(q1);
+        assertEquals(0, result.size());
+    }
+
+    public void testSQLTemplateForDataMapWithInsert() {
+        DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+        String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
+        SQLTemplate q1 = new SQLTemplate(testDataMap, sql);
+        context.performNonSelectingQuery(q1);
+
+        SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST");
+        List<DataRow> result = context.performQuery(q2);
+        assertEquals(1, result.size());
+    }
+
     public void testColumnNameCapitalization() {
         SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
         assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());

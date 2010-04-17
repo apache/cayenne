@@ -105,6 +105,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     public SQLTemplate(DataMap rootMap, String defaultTemplate) {
         setDefaultTemplate(defaultTemplate);
         setRoot(rootMap);
+        setFetchingDataRows(true); // ObjEntity not passed, so it's DataRow query
     }
 
     /**
@@ -565,6 +566,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @since 3.0
      */
     public void setResult(SQLResult resultSet) {
+        setFetchingDataRows(false); // turn off mapping to DataRows, use explicit
         this.result = resultSet;
     }
 
