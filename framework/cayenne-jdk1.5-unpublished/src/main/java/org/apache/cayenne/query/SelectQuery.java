@@ -521,9 +521,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Returns <code>pageSize</code> property. Page size is a hint telling Cayenne
-     * QueryEngine that query result should use paging instead of reading the whole result
-     * in the memory.
+     * Returns <code>pageSize</code> property. See setPageSize for more details.
      */
     public int getPageSize() {
         return metaData.getPageSize();
@@ -531,6 +529,14 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Sets <code>pageSize</code> property.
+     * 
+     * By setting a page size, the Collection returned by performing a query will return
+     * <i>hollow</i> DataObjects. This is considerably faster and uses a tiny fraction of the memory
+     * compared to a non-paged query when large numbers of objects are returned in the result.
+     * When a hollow DataObject is accessed all DataObjects on the same page will be faulted into
+     * memory. There will be a small delay when faulting objects while the data is fetched
+     * from the data source, but otherwise you do not need to do anything special to access data
+     * in hollow objects. The first page is always faulted into memory immediately.
      * 
      * @param pageSize The pageSize to set
      */
