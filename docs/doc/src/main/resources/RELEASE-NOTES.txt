@@ -8,8 +8,15 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
-Release: 3.0 RC 3
+Release: 3.0 (final) 
 Date: 
+----------------------------------
+
+(no changes since 3.0RC3)
+
+----------------------------------
+Release: 3.0 RC 3
+Date: 5 April 2010
 ----------------------------------
 
 Bug Fixes Since 3.0RC2:
