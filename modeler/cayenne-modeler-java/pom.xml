@@ -101,9 +101,9 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>webobjects.mdimension.com/plugin/releases</id>
-			<name>mdimension maven 2 releases repo</name>
-			<url>http://webobjects.mdimension.com/maven2/releases</url>
+			<id>wocommunity.org/plugin/releases</id>
+			<name>WOCommunity maven releases repo</name>
+			<url>http://maven.wocommunity.org/content/repositories/releases</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
