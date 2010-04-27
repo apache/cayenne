@@ -273,7 +273,7 @@ public class SelectTranslator extends QueryAssembler {
         return (SelectQuery) getQuery();
     }
 
-    List<ColumnDescriptor> buildResultColumns() {
+    protected List<ColumnDescriptor> buildResultColumns() {
 
         this.defaultAttributesByColumn = new HashMap<ColumnDescriptor, ObjAttribute>();
 
