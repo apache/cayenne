@@ -27,10 +27,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This is a legacy version of the filter
+ * This is a legacy Cayenne bootstrapping filter kept for backwards compatibility of
+ * web.xml files. It should be replaced with {@link CayenneFilter} instead.
  * 
  * @since 1.2
- * @deprecated since 3.0 see {@link CayenneFilter}
+ * @deprecated since 3.0 {@link CayenneFilter} should be used.
  */
 public class WebApplicationContextFilter extends CayenneFilter {
 
