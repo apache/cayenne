@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.BindingBuilder;
 import org.apache.cayenne.di.Key;
@@ -43,12 +46,18 @@ class DefaultBinder implements Binder {
         return new DefaultBindingBuilder<T>(key, injector);
     }
 
-    public <T> ListBuilder<T> bindList(Class<T> implementationType) {
-        return new DefaultListBuilder<T>(implementationType, injector);
+    public <T> ListBuilder<T> bindList(String bindingName) {
+        Class<?> listClass = List.class;
+        return new DefaultListBuilder<T>(
+                Key.get((Class<List<?>>) listClass, bindingName),
+                injector);
     }
 
-    public <T> MapBuilder<T> bindMap(Class<T> implementationType) {
-        return new DefaultMapBuilder<T>(implementationType, injector);
+    public <T> MapBuilder<T> bindMap(String bindingName) {
+        Class<?> mapClass = Map.class;
+        return new DefaultMapBuilder<T>(Key.get(
+                (Class<Map<String, ?>>) mapClass,
+                bindingName), injector);
     }
 
 }

@@ -23,12 +23,14 @@ import org.apache.cayenne.ConfigurationException;
 /**
  * A binding builder for list configurations.
  * 
- * @param <T> A type of the service for which the configuration is created.
+ * @param <T> A type of list values.
  * @since 3.1
  */
 public interface ListBuilder<T> {
 
-    <E> ListBuilder<T> add(Class<? extends E> interfaceType) throws ConfigurationException;
+    ListBuilder<T> add(Class<? extends T> interfaceType) throws ConfigurationException;
 
-    <E> ListBuilder<T> add(E value) throws ConfigurationException;
+    ListBuilder<T> add(T value) throws ConfigurationException;
+
+    void in(Scope scope);
 }

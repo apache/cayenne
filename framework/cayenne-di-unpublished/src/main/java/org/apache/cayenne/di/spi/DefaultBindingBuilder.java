@@ -23,16 +23,14 @@ import org.apache.cayenne.di.BindingBuilder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
-import org.apache.cayenne.di.Scopes;
 
 /**
  * @since 3.1
  */
 class DefaultBindingBuilder<T> implements BindingBuilder<T> {
 
-    private DefaultInjector injector;
-    private Scope scope;
-    private Key<T> bindingKey;
+    protected DefaultInjector injector;
+    protected Key<T> bindingKey;
 
     DefaultBindingBuilder(Key<T> bindingKey, DefaultInjector injector) {
         this.injector = injector;
@@ -43,14 +41,15 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
             throws ConfigurationException {
 
         Provider<T> provider0 = new ConstructorInjectingProvider<T>(
-                bindingKey.getType(),
                 implementation,
                 injector);
         Provider<T> provider1 = new FieldInjectingProvider<T>(
                 provider0,
                 injector,
                 bindingKey);
-        return bindInScope(provider1);
+
+        injector.putBinding(bindingKey, provider1);
+        return this;
     }
 
     public BindingBuilder<T> toInstance(T instance) throws ConfigurationException {
@@ -59,7 +58,8 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
                 provider0,
                 injector,
                 bindingKey);
-        return bindInScope(provider1);
+        injector.putBinding(bindingKey, provider1);
+        return this;
     };
 
     public BindingBuilder<T> toProvider(
@@ -78,7 +78,8 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
                 injector,
                 bindingKey);
 
-        return bindInScope(provider3);
+        injector.putBinding(bindingKey, provider3);
+        return this;
     }
 
     public BindingBuilder<T> toProviderInstance(Provider<? extends T> provider) {
@@ -96,33 +97,11 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
                 injector,
                 bindingKey);
 
-        return bindInScope(provider3);
+        injector.putBinding(bindingKey, provider3);
+        return this;
     }
 
     public void in(Scope scope) {
-
-        if (this.scope != scope) {
-
-            if (this.scope != null) {
-                throw new IllegalStateException(
-                        "Can't change binding scope. It is already set to " + this.scope);
-            }
-
-            this.scope = scope;
-
-            if (bindingKey != null) {
-                Provider<?> provider = injector.getBindings().get(bindingKey);
-                injector.getBindings().put(bindingKey, scope.scope(provider));
-            }
-        }
-    }
-
-    private BindingBuilder<T> bindInScope(Provider<T> provider) {
-
-        Scope scope = this.scope != null ? this.scope : Scopes.NO_SCOPE;
-
-        // TODO: andrus 11/15/2009 - report overriding existing binding??
-        injector.getBindings().put(bindingKey, scope.scope(provider));
-        return this;
+        injector.changeBindingScope(bindingKey, scope);
     }
 }

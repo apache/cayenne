@@ -18,50 +18,62 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.util.List;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.Scope;
 
 /**
  * @since 3.1
  */
 class DefaultListBuilder<T> implements ListBuilder<T> {
 
-    private DefaultInjector injector;
-    private Key<T> implementationTypeKey;
+    protected DefaultInjector injector;
+    protected Key<List<?>> bindingKey;
 
-    DefaultListBuilder(Class<T> implementationType, DefaultInjector injector) {
+    DefaultListBuilder(Key<List<?>> bindingKey, DefaultInjector injector) {
         this.injector = injector;
-        this.implementationTypeKey = Key.get(implementationType);
+        this.bindingKey = bindingKey;
     }
 
-    public <E> ListBuilder<T> add(Class<? extends E> interfaceType)
+    public ListBuilder<T> add(Class<? extends T> interfaceType)
             throws ConfigurationException {
-
-        ListProvider listProvider = injector.getListConfigurations().get(
-                implementationTypeKey);
-        if (listProvider == null) {
-            listProvider = new ListProvider();
-            injector.getListConfigurations().put(implementationTypeKey, listProvider);
-        }
-
-        listProvider.add(injector.getProvider(interfaceType));
+        getListProvider().add(injector.getProvider(interfaceType));
         return this;
     }
 
-    public <E> ListBuilder<T> add(E value) throws ConfigurationException {
+    public ListBuilder<T> add(T value) throws ConfigurationException {
 
-        InstanceProvider<E> provider = new InstanceProvider<E>(value);
+        Provider<T> provider0 = new InstanceProvider<T>(value);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(
+                provider0,
+                injector,
+                bindingKey);
 
-        ListProvider listProvider = injector.getListConfigurations().get(
-                implementationTypeKey);
-        if (listProvider == null) {
-            listProvider = new ListProvider();
-            injector.getListConfigurations().put(implementationTypeKey, listProvider);
-        }
-
-        listProvider.add(provider);
+        getListProvider().add(provider1);
         return this;
     }
 
+    private ListProvider getListProvider() {
+
+        ListProvider provider = null;
+
+        Binding<List<?>> binding = injector.getBinding(bindingKey);
+        if (binding == null) {
+            provider = new ListProvider();
+            injector.putBinding(bindingKey, provider);
+        }
+        else {
+            provider = (ListProvider) binding.getUnscoped();
+        }
+
+        return provider;
+    }
+
+    public void in(Scope scope) {
+        injector.changeBindingScope(bindingKey, scope);
+    }
 }

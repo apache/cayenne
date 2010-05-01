@@ -21,8 +21,6 @@ package org.apache.cayenne.di.spi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Inject;
@@ -34,13 +32,12 @@ import org.apache.cayenne.di.Provider;
  */
 class ConstructorInjectingProvider<T> implements Provider<T> {
 
-    private Class<T> interfaceType;
     private Constructor<? extends T> constructor;
     private DefaultInjector injector;
     private String[] bindingNames;
 
-    ConstructorInjectingProvider(Class<T> interfaceType,
-            Class<? extends T> implementation, DefaultInjector injector) {
+    ConstructorInjectingProvider(Class<? extends T> implementation,
+            DefaultInjector injector) {
 
         initConstructor(implementation);
 
@@ -52,7 +49,6 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
 
         this.constructor.setAccessible(true);
         this.injector = injector;
-        this.interfaceType = interfaceType;
     }
 
     private void initConstructor(Class<? extends T> implementation) {
@@ -135,19 +131,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
 
             Class<?> parameter = constructorParameters[i];
 
-            // parameter must be declared as "java.util.Map". Use of specific map
-            // implementations in the declaration will make the injection much more
-            // complicated
-            if (Map.class.equals(parameter)) {
-                args[i] = injector.getMapConfiguration(interfaceType);
-            }
-            // parameter must be declared as "java.util.List". Use of specific list
-            // implementations in the declaration will make the injection much more
-            // complicated
-            else if (List.class.equals(parameter)) {
-                args[i] = injector.getListConfiguration(interfaceType);
-            }
-            else if (Provider.class.equals(parameter)) {
+            if (Provider.class.equals(parameter)) {
 
                 Class<?> objectClass = DIUtil.parameterClass(genericTypes[i]);
 

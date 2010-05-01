@@ -30,10 +30,18 @@ public class Key<T> {
     protected String typeName;
     protected String bindingName;
 
+    /**
+     * Creates a key for a nameless binding of a given type.
+     */
     public static <T> Key<T> get(Class<T> type) {
         return new Key<T>(type, null);
     }
 
+    /**
+     * Creates a key for a named binding of a given type. 'bindingName' that is an empty
+     * String is treated the same way as a null 'bindingName'. In both cases a nameless
+     * binding key is created.
+     */
     public static <T> Key<T> get(Class<T> type, String bindingName) {
         return new Key<T>(type, bindingName);
     }
@@ -57,6 +65,14 @@ public class Key<T> {
 
     public Class<T> getType() {
         return type;
+    }
+
+    /**
+     * Returns an optional name of the binding used to distinguish multiple bindings of
+     * the same object type.
+     */
+    public String getBindingName() {
+        return bindingName;
     }
 
     @Override

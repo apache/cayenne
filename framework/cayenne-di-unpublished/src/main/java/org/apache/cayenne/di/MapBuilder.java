@@ -21,15 +21,18 @@ package org.apache.cayenne.di;
 import org.apache.cayenne.ConfigurationException;
 
 /**
- * A binding builder for map configurations.
+ * A binding builder for map configurations. Creates a parameterized map of type <String,
+ * T>.
  * 
- * @param <T> A type of the service for which the configuration is created.
+ * @param <T> A type of the map values.
  * @since 3.1
  */
 public interface MapBuilder<T> {
 
-    <E> MapBuilder<T> put(String key, Class<? extends E> interfaceType)
+    MapBuilder<T> put(String key, Class<? extends T> interfaceType)
             throws ConfigurationException;
 
-    <E> MapBuilder<T> put(String key, E value) throws ConfigurationException;
+    MapBuilder<T> put(String key, T value) throws ConfigurationException;
+    
+    void in(Scope scope);
 }

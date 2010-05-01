@@ -43,11 +43,14 @@ import org.apache.cayenne.di.Provider;
  */
 public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
+    public static final String DETECTORS_LIST = "org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors";
+
     @Inject
     protected AdhocObjectFactory objectFactory;
     protected List<DbAdapterDetector> detectors;
 
-    public DefaultDbAdapterFactory(@Inject List<DbAdapterDetector> detectors) {
+    public DefaultDbAdapterFactory(
+            @Inject(DETECTORS_LIST) List<DbAdapterDetector> detectors) {
         if (detectors == null) {
             throw new NullPointerException("Null detectors list");
         }

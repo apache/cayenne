@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ConfigurationException;
 
 /**
@@ -47,10 +44,6 @@ public interface Injector {
     <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException;
 
     <T> Provider<T> getProvider(Key<T> key) throws ConfigurationException;
-
-    <T> Map<String, ?> getMapConfiguration(Class<T> type) throws ConfigurationException;
-
-    <T> List<?> getListConfiguration(Class<T> type) throws ConfigurationException;
 
     /**
      * Performs field injection on a given object, ignoring constructor injection. Since

@@ -19,7 +19,6 @@
 package org.apache.cayenne.di.spi;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ConfigurationException;
@@ -27,6 +26,8 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.Scope;
+import org.apache.cayenne.di.Scopes;
 
 /**
  * A default Cayenne implementations of a DI injector.
@@ -35,16 +36,12 @@ import org.apache.cayenne.di.Provider;
  */
 public class DefaultInjector implements Injector {
 
-    private Map<Key<?>, Provider<?>> bindings;
-    private Map<Key<?>, MapProvider> mapConfigurations;
-    private Map<Key<?>, ListProvider> listConfigurations;
+    private Map<Key<?>, Binding<?>> bindings;
     private InjectionStack injectionStack;
 
     public DefaultInjector(Module... modules) throws ConfigurationException {
 
-        this.bindings = new HashMap<Key<?>, Provider<?>>();
-        this.mapConfigurations = new HashMap<Key<?>, MapProvider>();
-        this.listConfigurations = new HashMap<Key<?>, ListProvider>();
+        this.bindings = new HashMap<Key<?>, Binding<?>>();
         this.injectionStack = new InjectionStack();
 
         DefaultBinder binder = new DefaultBinder(this);
@@ -65,16 +62,32 @@ public class DefaultInjector implements Injector {
         return injectionStack;
     }
 
-    Map<Key<?>, Provider<?>> getBindings() {
-        return bindings;
+    <T> Binding<T> getBinding(Key<T> key) throws ConfigurationException {
+
+        if (key == null) {
+            throw new NullPointerException("Null key");
+        }
+
+        // may return null - this is intentionally allowed in this non-public method
+        return (Binding<T>) bindings.get(key);
     }
 
-    Map<Key<?>, MapProvider> getMapConfigurations() {
-        return mapConfigurations;
+    <T> void putBinding(Key<T> bindingKey, Provider<T> provider) {
+        // TODO: andrus 11/15/2009 - report overriding existing binding??
+        bindings.put(bindingKey, new Binding<T>(provider));
     }
 
-    Map<Key<?>, ListProvider> getListConfigurations() {
-        return listConfigurations;
+    <T> void changeBindingScope(Key<T> bindingKey, Scope scope) {
+        if (scope == null) {
+            scope = Scopes.NO_SCOPE;
+        }
+
+        Binding<?> binding = bindings.get(bindingKey);
+        if (binding == null) {
+            throw new ConfigurationException("No existing binding for key " + bindingKey);
+        }
+
+        binding.changeScope(scope);
     }
 
     public <T> T getInstance(Class<T> type) throws ConfigurationException {
@@ -83,42 +96,6 @@ public class DefaultInjector implements Injector {
 
     public <T> T getInstance(Key<T> key) throws ConfigurationException {
         return getProvider(key).get();
-    }
-
-    public <T> List<?> getListConfiguration(Class<T> type) {
-        if (type == null) {
-            throw new NullPointerException("Null type");
-        }
-
-        ListProvider provider = listConfigurations.get(Key.get(type));
-
-        if (provider == null) {
-            throw new ConfigurationException(
-                    "Type '%s' has no bound list configuration in the DI container."
-                            + " Injection stack: %s",
-                    type.getName(),
-                    injectionStack);
-        }
-
-        return provider.get();
-    }
-
-    public <T> Map<String, ?> getMapConfiguration(Class<T> type) {
-        if (type == null) {
-            throw new NullPointerException("Null type");
-        }
-
-        MapProvider provider = mapConfigurations.get(Key.get(type));
-
-        if (provider == null) {
-            throw new ConfigurationException(
-                    "Type '%s' has no bound map configuration in the DI container."
-                            + " Injection stack: %s",
-                    type.getName(),
-                    injectionStack);
-        }
-
-        return provider.get();
     }
 
     public <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException {
@@ -131,15 +108,15 @@ public class DefaultInjector implements Injector {
             throw new NullPointerException("Null key");
         }
 
-        Provider<T> provider = (Provider<T>) bindings.get(key);
+        Binding<T> binding = (Binding<T>) bindings.get(key);
 
-        if (provider == null) {
+        if (binding == null) {
             throw new ConfigurationException(
                     "DI container has no binding for key %s",
                     key);
         }
 
-        return provider;
+        return binding.getScoped();
     }
 
     public void injectMembers(Object object) {
@@ -150,5 +127,4 @@ public class DefaultInjector implements Injector {
                 Key.get(object.getClass()));
         provider1.get();
     }
-
 }

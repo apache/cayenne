@@ -163,11 +163,9 @@ public class DefaultInjectorInjectionTest extends TestCase {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_MapConfiguration.class);
 
-                binder
-                        .bindMap(MockInterface1.class)
-                        .put("x", "xvalue")
-                        .put("y", "yvalue")
-                        .put("x", "xvalue1");
+                binder.bindMap("xyz").put("x", "xvalue").put("y", "yvalue").put(
+                        "x",
+                        "xvalue1");
             }
         };
 
@@ -185,7 +183,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                binder.bindList(MockInterface1.class).add("xvalue").add("yvalue");
+                binder.bindList("xyz").add("xvalue").add("yvalue");
             }
         };
 
@@ -205,8 +203,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                binder.bindList(MockInterface1.class).add(MockInterface5.class).add(
-                        "yvalue");
+                binder.bindList("xyz").add(MockInterface5.class).add("yvalue");
             }
         };
 

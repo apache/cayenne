@@ -41,18 +41,18 @@ public interface Binder {
     <T> BindingBuilder<T> bind(Key<T> key);
 
     /**
-     * Starts a binding of a map "configuration" that will be injected into an
-     * implementation class for the specified "interfaceType" parameter. Configurations
-     * can only be injected via a constructor. An object can take at most one
-     * configuration object via a constructor.
+     * Starts a binding of a java.util.Map<String, ?> distinguished by its binding name.
+     * Map binding should continue using returned MapBuilder. This is somewhat equivalent
+     * of using "bind(Map.class, bindingName)", however returned MapBuilder provides extra
+     * DI capabilities.
      */
-    <T> MapBuilder<T> bindMap(Class<T> interfaceType);
+    <T> MapBuilder<T> bindMap(String bindingName);
 
     /**
-     * Starts a binding of a list "configuration" that will be injected into an
-     * implementation class for the specified "interfaceType" parameter. Configurations
-     * can only be injected via a constructor. An object can take at most one
-     * configuration object via a constructor.
+     * Starts a binding of a java.util.List<?> distinguished by its binding name. List
+     * binding should continue using returned ListBuilder. This is somewhat equivalent of
+     * using "bind(List.class, bindingName)", however returned ListBuilder provides extra
+     * DI capabilities.
      */
-    <T> ListBuilder<T> bindList(Class<T> interfaceType);
+    <T> ListBuilder<T> bindList(String bindingName);
 }

@@ -72,14 +72,14 @@ public class CayenneServerModule implements Module {
     public void configure(Binder binder) {
 
         // configure global stack properties
-        binder.bindMap(RuntimeProperties.class).put(
+        binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP).put(
                 RuntimeProperties.CONFIGURATION_LOCATION,
                 configurationLocation);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically
         binder
-                .bindList(DbAdapterFactory.class)
+                .bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
                 .add(new OpenBaseSniffer())
                 .add(new FrontBaseSniffer())
                 .add(new IngresSniffer())

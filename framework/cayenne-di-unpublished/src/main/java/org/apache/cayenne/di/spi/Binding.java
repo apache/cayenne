@@ -16,35 +16,41 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di.mock;
+package org.apache.cayenne.di.spi;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.Scope;
+import org.apache.cayenne.di.Scopes;
 
-import org.apache.cayenne.di.Inject;
+/**
+ * A binding encapsulates DI provider scoping settings and allows to change them as many
+ * times as needed.
+ * 
+ * @since 3.1
+ */
+class Binding<T> {
 
-public class MockImplementation1_MapConfiguration implements MockInterface1 {
+    private Provider<T> unscoped;
+    private Provider<T> scoped;
 
-    private Map<String, Object> configuration;
-
-    public MockImplementation1_MapConfiguration(
-            @Inject("xyz") Map<String, Object> configuration) {
-        this.configuration = configuration;
+    Binding(Provider<T> provider) {
+        this.unscoped = provider;
+        this.scoped = provider;
     }
 
-    public String getName() {
-
-        StringBuilder buffer = new StringBuilder();
-
-        List<String> keys = new ArrayList<String>(configuration.keySet());
-        Collections.sort(keys);
-
-        for (String key : keys) {
-            buffer.append(";").append(key).append("=").append(configuration.get(key));
+    void changeScope(Scope scope) {
+        if (scope == null) {
+            scope = Scopes.NO_SCOPE;
         }
 
-        return buffer.toString();
+        scoped = scope.scope(unscoped);
+    }
+
+    Provider<T> getUnscoped() {
+        return unscoped;
+    }
+
+    Provider<T> getScoped() {
+        return scoped;
     }
 }

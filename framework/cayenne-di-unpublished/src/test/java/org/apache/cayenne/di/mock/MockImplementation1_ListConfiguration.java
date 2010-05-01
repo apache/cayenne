@@ -26,7 +26,7 @@ public class MockImplementation1_ListConfiguration implements MockInterface1 {
 
     private List<Object> configuration;
 
-    public MockImplementation1_ListConfiguration(@Inject List<Object> configuration) {
+    public MockImplementation1_ListConfiguration(@Inject("xyz") List<Object> configuration) {
         this.configuration = configuration;
     }
 

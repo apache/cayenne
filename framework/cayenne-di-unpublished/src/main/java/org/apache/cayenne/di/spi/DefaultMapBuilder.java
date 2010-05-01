@@ -18,9 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.util.Map;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.MapBuilder;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.Scope;
 
 /**
  * @since 3.1
@@ -28,41 +32,50 @@ import org.apache.cayenne.di.MapBuilder;
 class DefaultMapBuilder<T> implements MapBuilder<T> {
 
     private DefaultInjector injector;
-    private Key<T> implementationTypeKey;
+    private Key<Map<String, ?>> bindingKey;
 
-    DefaultMapBuilder(Class<T> implementationType, DefaultInjector injector) {
+    DefaultMapBuilder(Key<Map<String, ?>> bindingKey, DefaultInjector injector) {
         this.injector = injector;
-        implementationTypeKey = Key.get(implementationType);
+        this.bindingKey = bindingKey;
     }
 
-    public <E> MapBuilder<T> put(String key, Class<? extends E> interfaceType)
+    public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
             throws ConfigurationException {
 
-        MapProvider mapProvider = injector.getMapConfigurations().get(
-                implementationTypeKey);
-        if (mapProvider == null) {
-            mapProvider = new MapProvider();
-            injector.getMapConfigurations().put(implementationTypeKey, mapProvider);
-        }
-
         // TODO: andrus 11/15/2009 - report overriding the key??
-        mapProvider.put(key, injector.getProvider(interfaceType));
+        getMapProvider().put(key, injector.getProvider(interfaceType));
         return this;
     }
 
-    public <E> MapBuilder<T> put(String key, E value) throws ConfigurationException {
+    public MapBuilder<T> put(String key, T value) throws ConfigurationException {
 
-        InstanceProvider<E> provider = new InstanceProvider<E>(value);
-
-        MapProvider mapProvider = injector.getMapConfigurations().get(
-                implementationTypeKey);
-        if (mapProvider == null) {
-            mapProvider = new MapProvider();
-            injector.getMapConfigurations().put(implementationTypeKey, mapProvider);
-        }
+        Provider<T> provider0 = new InstanceProvider<T>(value);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(
+                provider0,
+                injector,
+                bindingKey);
 
         // TODO: andrus 11/15/2009 - report overriding the key??
-        mapProvider.put(key, provider);
+        getMapProvider().put(key, provider1);
         return this;
+    }
+
+    private MapProvider getMapProvider() {
+        MapProvider provider = null;
+
+        Binding<Map<String, ?>> binding = injector.getBinding(bindingKey);
+        if (binding == null) {
+            provider = new MapProvider();
+            injector.putBinding(bindingKey, provider);
+        }
+        else {
+            provider = (MapProvider) binding.getUnscoped();
+        }
+
+        return provider;
+    }
+
+    public void in(Scope scope) {
+        injector.changeBindingScope(bindingKey, scope);
     }
 }
