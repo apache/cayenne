@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.Key;
 
 /**
  * A helper object that tracks the injection stack to prevent circular dependencies.
@@ -30,23 +31,23 @@ import org.apache.cayenne.ConfigurationException;
  */
 class InjectionStack {
 
-    private ThreadLocal<LinkedList<String>> stack;
+    private ThreadLocal<LinkedList<Key<?>>> stack;
 
     InjectionStack() {
-        this.stack = new ThreadLocal<LinkedList<String>>();
+        this.stack = new ThreadLocal<LinkedList<Key<?>>>();
     }
 
     void reset() {
-        List<String> localStack = stack.get();
+        List<Key<?>> localStack = stack.get();
         if (localStack != null) {
             localStack.clear();
         }
     }
 
-    void push(String bindingKey) throws ConfigurationException {
-        LinkedList<String> localStack = stack.get();
+    void push(Key<?> bindingKey) throws ConfigurationException {
+        LinkedList<Key<?>> localStack = stack.get();
         if (localStack == null) {
-            localStack = new LinkedList<String>();
+            localStack = new LinkedList<Key<?>>();
             stack.set(localStack);
         }
 
@@ -62,7 +63,7 @@ class InjectionStack {
     }
 
     void pop() {
-        LinkedList<String> localStack = stack.get();
+        LinkedList<Key<?>> localStack = stack.get();
         if (localStack != null) {
             localStack.removeLast();
         }
@@ -70,10 +71,10 @@ class InjectionStack {
             throw new IndexOutOfBoundsException("0");
         }
     }
-    
+
     @Override
     public String toString() {
-        List<String> localStack = stack.get();
+        List<Key<?>> localStack = stack.get();
         if (localStack != null) {
             return String.valueOf(localStack);
         }

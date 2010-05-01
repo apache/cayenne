@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -36,6 +37,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
     private Class<T> interfaceType;
     private Constructor<? extends T> constructor;
     private DefaultInjector injector;
+    private String[] bindingNames;
 
     ConstructorInjectingProvider(Class<T> interfaceType,
             Class<? extends T> implementation, DefaultInjector injector) {
@@ -98,9 +100,28 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
             }
         }
 
+        if (lastMatch == null) {
+            throw new IllegalStateException(
+                    "No applicable constructor is found for constructor injection");
+        }
+
         // the cast is lame, but Class.getDeclaredConstructors() is not using
         // generics in Java 5 and using <?> in Java 6, creating compilation problems.
         this.constructor = (Constructor<? extends T>) lastMatch;
+
+        Annotation[][] annotations = lastMatch.getParameterAnnotations();
+        this.bindingNames = new String[annotations.length];
+        for (Annotation[] parameterAnnotations : annotations) {
+
+            for (int i = 0; i < parameterAnnotations.length; i++) {
+                Annotation annotation = parameterAnnotations[i];
+                if (annotation.annotationType().equals(Inject.class)) {
+                    Inject inject = (Inject) annotation;
+                    bindingNames[i] = inject.value();
+                    break;
+                }
+            }
+        }
     }
 
     public T get() {
@@ -137,13 +158,15 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
                             parameter.getName());
                 }
 
-                args[i] = injector.getProvider(objectClass);
+                args[i] = injector.getProvider(Key.get(objectClass, bindingNames[i]));
             }
             else {
 
-                stack.push(DIUtil.toKey(parameter));
+                Key<?> key = Key.get(parameter, bindingNames[i]);
+
+                stack.push(key);
                 try {
-                    args[i] = injector.getInstance(parameter);
+                    args[i] = injector.getInstance(key);
                 }
                 finally {
                     stack.pop();
@@ -161,4 +184,5 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
                     constructor.getDeclaringClass().getName());
         }
     }
+
 }

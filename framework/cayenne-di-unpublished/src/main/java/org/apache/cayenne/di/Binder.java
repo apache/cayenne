@@ -27,10 +27,18 @@ package org.apache.cayenne.di;
 public interface Binder {
 
     /**
-     * Starts a binding of a specific interface. Binding should continue using returned
-     * BindingBuilder.
+     * Starts an unnamed binding of a specific interface. Binding should continue using
+     * returned BindingBuilder.
      */
     <T> BindingBuilder<T> bind(Class<T> interfaceType);
+
+    /**
+     * Starts a binding of a specific interface based on a provided binding key. This
+     * method is more generic than {@link #bind(Class)} and allows to create named
+     * bindings in addition to default ones. Binding should continue using returned
+     * BindingBuilder.
+     */
+    <T> BindingBuilder<T> bind(Key<T> key);
 
     /**
      * Starts a binding of a map "configuration" that will be injected into an

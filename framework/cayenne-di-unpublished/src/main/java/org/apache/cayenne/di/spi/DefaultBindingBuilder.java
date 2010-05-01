@@ -20,6 +20,7 @@ package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.BindingBuilder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 import org.apache.cayenne.di.Scopes;
@@ -29,31 +30,35 @@ import org.apache.cayenne.di.Scopes;
  */
 class DefaultBindingBuilder<T> implements BindingBuilder<T> {
 
-    private Class<T> interfaceType;
     private DefaultInjector injector;
     private Scope scope;
-    private String key;
+    private Key<T> bindingKey;
 
-    DefaultBindingBuilder(Class<T> interfaceType, DefaultInjector injector) {
-        this.interfaceType = interfaceType;
+    DefaultBindingBuilder(Key<T> bindingKey, DefaultInjector injector) {
         this.injector = injector;
-        this.key = DIUtil.toKey(interfaceType);
+        this.bindingKey = bindingKey;
     }
 
     public BindingBuilder<T> to(Class<? extends T> implementation)
             throws ConfigurationException {
 
         Provider<T> provider0 = new ConstructorInjectingProvider<T>(
-                interfaceType,
+                bindingKey.getType(),
                 implementation,
                 injector);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector, key);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(
+                provider0,
+                injector,
+                bindingKey);
         return bindInScope(provider1);
     }
 
     public BindingBuilder<T> toInstance(T instance) throws ConfigurationException {
         Provider<T> provider0 = new InstanceProvider<T>(instance);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector, key);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(
+                provider0,
+                injector,
+                bindingKey);
         return bindInScope(provider1);
     };
 
@@ -65,10 +70,13 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(
                 provider0,
                 injector,
-                key);
+                bindingKey);
 
         Provider<T> provider2 = new CustomProvidersProvider<T>(provider1);
-        Provider<T> provider3 = new FieldInjectingProvider<T>(provider2, injector, key);
+        Provider<T> provider3 = new FieldInjectingProvider<T>(
+                provider2,
+                injector,
+                bindingKey);
 
         return bindInScope(provider3);
     }
@@ -80,10 +88,13 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(
                 provider0,
                 injector,
-                key);
+                bindingKey);
 
         Provider<T> provider2 = new CustomProvidersProvider<T>(provider1);
-        Provider<T> provider3 = new FieldInjectingProvider<T>(provider2, injector, key);
+        Provider<T> provider3 = new FieldInjectingProvider<T>(
+                provider2,
+                injector,
+                bindingKey);
 
         return bindInScope(provider3);
     }
@@ -99,9 +110,9 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
 
             this.scope = scope;
 
-            if (key != null) {
-                Provider<?> provider = injector.getBindings().get(key);
-                injector.getBindings().put(key, scope.scope(provider));
+            if (bindingKey != null) {
+                Provider<?> provider = injector.getBindings().get(bindingKey);
+                injector.getBindings().put(bindingKey, scope.scope(provider));
             }
         }
     }
@@ -111,7 +122,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         Scope scope = this.scope != null ? this.scope : Scopes.NO_SCOPE;
 
         // TODO: andrus 11/15/2009 - report overriding existing binding??
-        injector.getBindings().put(key, scope.scope(provider));
+        injector.getBindings().put(bindingKey, scope.scope(provider));
         return this;
     }
 }

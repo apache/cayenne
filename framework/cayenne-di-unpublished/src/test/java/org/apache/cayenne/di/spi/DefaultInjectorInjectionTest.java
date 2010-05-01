@@ -21,16 +21,21 @@ package org.apache.cayenne.di.spi;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
+import org.apache.cayenne.di.mock.MockImplementation1Alt;
+import org.apache.cayenne.di.mock.MockImplementation1Alt2;
 import org.apache.cayenne.di.mock.MockImplementation1_ListConfiguration;
 import org.apache.cayenne.di.mock.MockImplementation1_MapConfiguration;
 import org.apache.cayenne.di.mock.MockImplementation1_WithInjector;
 import org.apache.cayenne.di.mock.MockImplementation2;
 import org.apache.cayenne.di.mock.MockImplementation2Sub1;
 import org.apache.cayenne.di.mock.MockImplementation2_ConstructorProvider;
+import org.apache.cayenne.di.mock.MockImplementation2_Named;
 import org.apache.cayenne.di.mock.MockImplementation3;
 import org.apache.cayenne.di.mock.MockImplementation4;
+import org.apache.cayenne.di.mock.MockImplementation4Alt;
 import org.apache.cayenne.di.mock.MockImplementation5;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface2;
@@ -55,6 +60,27 @@ public class DefaultInjectorInjectionTest extends TestCase {
         MockInterface2 service = injector.getInstance(MockInterface2.class);
         assertNotNull(service);
         assertEquals("altered_MyName", service.getAlteredName());
+    }
+
+    public void testFieldInjection_Named() {
+
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(MockImplementation1.class);
+                binder.bind(Key.get(MockInterface1.class, "one")).to(
+                        MockImplementation1Alt.class);
+                binder.bind(Key.get(MockInterface1.class, "two")).to(
+                        MockImplementation1Alt2.class);
+                binder.bind(MockInterface2.class).to(MockImplementation2_Named.class);
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface2 service = injector.getInstance(MockInterface2.class);
+        assertNotNull(service);
+        assertEquals("altered_alt", service.getAlteredName());
     }
 
     public void testFieldInjectionSuperclass() {
@@ -90,6 +116,27 @@ public class DefaultInjectorInjectionTest extends TestCase {
         MockInterface4 service = injector.getInstance(MockInterface4.class);
         assertNotNull(service);
         assertEquals("constructor_MyName", service.getName());
+    }
+
+    public void testConstructorInjection_Named() {
+
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(MockImplementation1.class);
+                binder.bind(Key.get(MockInterface1.class, "one")).to(
+                        MockImplementation1Alt.class);
+                binder.bind(Key.get(MockInterface1.class, "two")).to(
+                        MockImplementation1Alt2.class);
+                binder.bind(MockInterface4.class).to(MockImplementation4Alt.class);
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface4 service = injector.getInstance(MockInterface4.class);
+        assertNotNull(service);
+        assertEquals("constructor_alt2", service.getName());
     }
 
     public void testProviderInjection_Constructor() {

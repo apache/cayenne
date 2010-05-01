@@ -19,6 +19,7 @@
 package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.MapBuilder;
 
 /**
@@ -27,11 +28,11 @@ import org.apache.cayenne.di.MapBuilder;
 class DefaultMapBuilder<T> implements MapBuilder<T> {
 
     private DefaultInjector injector;
-    private String implementationTypeKey;
+    private Key<T> implementationTypeKey;
 
     DefaultMapBuilder(Class<T> implementationType, DefaultInjector injector) {
         this.injector = injector;
-        implementationTypeKey = DIUtil.toKey(implementationType);
+        implementationTypeKey = Key.get(implementationType);
     }
 
     public <E> MapBuilder<T> put(String key, Class<? extends E> interfaceType)

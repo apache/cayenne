@@ -19,11 +19,10 @@
 package org.apache.cayenne.di.spi;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -31,93 +30,84 @@ import org.apache.cayenne.di.Provider;
  */
 class FieldInjectingProvider<T> implements Provider<T> {
 
-    private String bindingKey;
+    private Key<?> bindingKey;
     private DefaultInjector injector;
     private Provider<T> delegate;
 
     FieldInjectingProvider(Provider<T> delegate, DefaultInjector injector,
-            String bindingKey) {
+            Key<?> bindingKey) {
         this.delegate = delegate;
         this.injector = injector;
         this.bindingKey = bindingKey;
     }
 
-    private Collection<Field> initInjectionPoints(
-            Class<?> type,
-            Collection<Field> injectableFields) {
+    public T get() throws ConfigurationException {
+        T object = delegate.get();
+        injectMembers(object, object.getClass());
+        return object;
+    }
 
+    private void injectMembers(T object, Class<?> type) {
+
+        // bail on recursion stop condition
         if (type == null) {
-            return injectableFields;
+            return;
         }
 
         for (Field field : type.getDeclaredFields()) {
 
             Inject inject = field.getAnnotation(Inject.class);
             if (inject != null) {
-                field.setAccessible(true);
-                injectableFields.add(field);
+                injectMember(object, field, inject.value());
             }
         }
 
-        return initInjectionPoints(type.getSuperclass(), injectableFields);
+        injectMembers(object, type.getSuperclass());
     }
 
-    public T get() throws ConfigurationException {
-        T object = delegate.get();
-        injectMembers(object);
-        return object;
-    }
-
-    private void injectMembers(T object) {
-
-        Collection<Field> injectableFields = initInjectionPoints(
-                object.getClass(),
-                new ArrayList<Field>());
+    private void injectMember(Object object, Field field, String bindingName) {
 
         InjectionStack stack = injector.getInjectionStack();
 
-        for (Field field : injectableFields) {
-            Object value;
-            Class<?> fieldType = field.getType();
+        Object value;
+        Class<?> fieldType = field.getType();
 
-            if (Provider.class.equals(fieldType)) {
+        if (Provider.class.equals(fieldType)) {
 
-                Class<?> objectClass = DIUtil.parameterClass(field.getGenericType());
+            Class<?> objectClass = DIUtil.parameterClass(field.getGenericType());
 
-                if (objectClass == null) {
-                    throw new ConfigurationException(
-                            "Provider field %s.%s of type %s must be "
-                                    + "parameterized to be usable for injection",
-                            field.getDeclaringClass().getName(),
-                            field.getName(),
-                            fieldType.getName());
-                }
-
-                value = injector.getProvider(objectClass);
-            }
-            else {
-                stack.push(bindingKey);
-                try {
-                    value = injector.getInstance(fieldType);
-                }
-                finally {
-                    stack.pop();
-                }
-            }
-
-            try {
-                field.set(object, value);
-            }
-            catch (Exception e) {
-                String message = String.format(
-                        "Error injecting into field %s.%s of type %s",
+            if (objectClass == null) {
+                throw new ConfigurationException(
+                        "Provider field %s.%s of type %s must be "
+                                + "parameterized to be usable for injection",
                         field.getDeclaringClass().getName(),
                         field.getName(),
                         fieldType.getName());
-                throw new ConfigurationException(message, e);
+            }
+
+            value = injector.getProvider(Key.get(objectClass, bindingName));
+        }
+        else {
+            stack.push(bindingKey);
+            try {
+                value = injector.getInstance(Key.get(fieldType, bindingName));
+            }
+            finally {
+                stack.pop();
             }
         }
 
+        field.setAccessible(true);
+        try {
+            field.set(object, value);
+        }
+        catch (Exception e) {
+            String message = String.format(
+                    "Error injecting into field %s.%s of type %s",
+                    field.getDeclaringClass().getName(),
+                    field.getName(),
+                    fieldType.getName());
+            throw new ConfigurationException(message, e);
+        }
     }
-
 }

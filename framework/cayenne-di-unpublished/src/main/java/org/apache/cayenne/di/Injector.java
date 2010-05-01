@@ -37,7 +37,16 @@ public interface Injector {
      */
     <T> T getInstance(Class<T> type) throws ConfigurationException;
 
+    /**
+     * Returns a service instance bound in the container for a specific binding key.
+     * Throws {@link DIException} if the key is not bound, or an instance can not be
+     * created.
+     */
+    <T> T getInstance(Key<T> key) throws ConfigurationException;
+
     <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException;
+
+    <T> Provider<T> getProvider(Key<T> key) throws ConfigurationException;
 
     <T> Map<String, ?> getMapConfiguration(Class<T> type) throws ConfigurationException;
 
@@ -46,8 +55,8 @@ public interface Injector {
     /**
      * Performs field injection on a given object, ignoring constructor injection. Since
      * Cayenne DI injector returns fully injected objects, this method is rarely used
-     * directly. One possible use is in unit tests to test a specific object that requires
-     * field injection.
+     * directly. One possible use is in custom DI providers, another is in unit tests to
+     * initialize tested objects that are relying on field injecton.
      */
     void injectMembers(Object object);
 }

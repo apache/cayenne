@@ -16,27 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.di.mock;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.apache.cayenne.di.Inject;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+public class MockImplementation2_Named implements MockInterface2 {
 
-/**
- * @since 3.1
- */
-@Retention(RUNTIME)
-@Target( {
-        FIELD, PARAMETER
-})
-public @interface Inject {
+    @Inject("one")
+    private MockInterface1 service;
 
-    /**
-     * An optional name of the dependency for injecting dependency types that have
-     * multiple bindings in the container.
-     */
-    String value() default "";
+    public String getAlteredName() {
+        return "altered_" + service.getName();
+    }
+
+    public String getName() {
+        return "MockImplementation2_NamedName";
+    }
 }

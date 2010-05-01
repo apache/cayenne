@@ -16,27 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.di.mock;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.apache.cayenne.di.Inject;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+public class MockImplementation4Alt implements MockInterface4 {
 
-/**
- * @since 3.1
- */
-@Retention(RUNTIME)
-@Target( {
-        FIELD, PARAMETER
-})
-public @interface Inject {
+    private MockInterface1 service;
 
-    /**
-     * An optional name of the dependency for injecting dependency types that have
-     * multiple bindings in the container.
-     */
-    String value() default "";
+    public MockImplementation4Alt(@Inject("two") MockInterface1 service) {
+        this.service = service;
+    }
+
+    public String getName() {
+        return "constructor_" + service.getName();
+    }
+
 }

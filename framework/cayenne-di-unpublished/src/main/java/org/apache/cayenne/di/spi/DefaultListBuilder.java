@@ -19,6 +19,7 @@
 package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 
 /**
@@ -27,11 +28,11 @@ import org.apache.cayenne.di.ListBuilder;
 class DefaultListBuilder<T> implements ListBuilder<T> {
 
     private DefaultInjector injector;
-    private String implementationTypeKey;
+    private Key<T> implementationTypeKey;
 
     DefaultListBuilder(Class<T> implementationType, DefaultInjector injector) {
         this.injector = injector;
-        implementationTypeKey = DIUtil.toKey(implementationType);
+        this.implementationTypeKey = Key.get(implementationType);
     }
 
     public <E> ListBuilder<T> add(Class<? extends E> interfaceType)

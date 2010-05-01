@@ -22,13 +22,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
+ * A helper class used by Cayenne DI implementation.
+ * 
  * @since 3.1
  */
 class DIUtil {
-
-    static String toKey(Class<?> type) {
-        return "class:" + type.getName();
-    }
 
     static Class<?> parameterClass(Type type) {
 

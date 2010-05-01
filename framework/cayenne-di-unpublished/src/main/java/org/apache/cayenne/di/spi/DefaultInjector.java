@@ -24,24 +24,27 @@ import java.util.Map;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 
 /**
+ * A default Cayenne implementations of a DI injector.
+ * 
  * @since 3.1
  */
 public class DefaultInjector implements Injector {
 
-    private Map<String, Provider<?>> bindings;
-    private Map<String, MapProvider> mapConfigurations;
-    private Map<String, ListProvider> listConfigurations;
+    private Map<Key<?>, Provider<?>> bindings;
+    private Map<Key<?>, MapProvider> mapConfigurations;
+    private Map<Key<?>, ListProvider> listConfigurations;
     private InjectionStack injectionStack;
 
     public DefaultInjector(Module... modules) throws ConfigurationException {
 
-        this.bindings = new HashMap<String, Provider<?>>();
-        this.mapConfigurations = new HashMap<String, MapProvider>();
-        this.listConfigurations = new HashMap<String, ListProvider>();
+        this.bindings = new HashMap<Key<?>, Provider<?>>();
+        this.mapConfigurations = new HashMap<Key<?>, MapProvider>();
+        this.listConfigurations = new HashMap<Key<?>, ListProvider>();
         this.injectionStack = new InjectionStack();
 
         DefaultBinder binder = new DefaultBinder(this);
@@ -62,15 +65,15 @@ public class DefaultInjector implements Injector {
         return injectionStack;
     }
 
-    Map<String, Provider<?>> getBindings() {
+    Map<Key<?>, Provider<?>> getBindings() {
         return bindings;
     }
 
-    Map<String, MapProvider> getMapConfigurations() {
+    Map<Key<?>, MapProvider> getMapConfigurations() {
         return mapConfigurations;
     }
 
-    Map<String, ListProvider> getListConfigurations() {
+    Map<Key<?>, ListProvider> getListConfigurations() {
         return listConfigurations;
     }
 
@@ -78,13 +81,16 @@ public class DefaultInjector implements Injector {
         return getProvider(type).get();
     }
 
+    public <T> T getInstance(Key<T> key) throws ConfigurationException {
+        return getProvider(key).get();
+    }
+
     public <T> List<?> getListConfiguration(Class<T> type) {
         if (type == null) {
             throw new NullPointerException("Null type");
         }
 
-        String key = DIUtil.toKey(type);
-        ListProvider provider = listConfigurations.get(key);
+        ListProvider provider = listConfigurations.get(Key.get(type));
 
         if (provider == null) {
             throw new ConfigurationException(
@@ -102,8 +108,7 @@ public class DefaultInjector implements Injector {
             throw new NullPointerException("Null type");
         }
 
-        String key = DIUtil.toKey(type);
-        MapProvider provider = mapConfigurations.get(key);
+        MapProvider provider = mapConfigurations.get(Key.get(type));
 
         if (provider == null) {
             throw new ConfigurationException(
@@ -117,17 +122,21 @@ public class DefaultInjector implements Injector {
     }
 
     public <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException {
-        if (type == null) {
-            throw new NullPointerException("Null type");
+        return getProvider(Key.get(type));
+    }
+
+    public <T> Provider<T> getProvider(Key<T> key) throws ConfigurationException {
+
+        if (key == null) {
+            throw new NullPointerException("Null key");
         }
 
-        String key = DIUtil.toKey(type);
         Provider<T> provider = (Provider<T>) bindings.get(key);
 
         if (provider == null) {
             throw new ConfigurationException(
-                    "Type '%s' is not bound in the DI container.",
-                    type.getName());
+                    "DI container has no binding for key %s",
+                    key);
         }
 
         return provider;
@@ -138,7 +147,7 @@ public class DefaultInjector implements Injector {
         Provider<Object> provider1 = new FieldInjectingProvider<Object>(
                 provider0,
                 this,
-                DIUtil.toKey(object.getClass()));
+                Key.get(object.getClass()));
         provider1.get();
     }
 

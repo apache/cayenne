@@ -20,6 +20,7 @@ package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.BindingBuilder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 
@@ -34,8 +35,12 @@ class DefaultBinder implements Binder {
         this.injector = injector;
     }
 
-    public <T> BindingBuilder<T> bind(Class<T> type) {
-        return new DefaultBindingBuilder<T>(type, injector);
+    public <T> BindingBuilder<T> bind(Class<T> interfaceType) {
+        return new DefaultBindingBuilder<T>(Key.get(interfaceType), injector);
+    }
+
+    public <T> BindingBuilder<T> bind(Key<T> key) {
+        return new DefaultBindingBuilder<T>(key, injector);
     }
 
     public <T> ListBuilder<T> bindList(Class<T> implementationType) {
