@@ -176,6 +176,28 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals(";x=xvalue1;y=yvalue", service.getName());
     }
 
+    public void testMapInjection_Resumed() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_MapConfiguration.class);
+
+                // bind 1
+                binder.bindMap("xyz").put("x", "xvalue").put("y", "yvalue");
+
+                // second binding attempt to the same map...
+                binder.bindMap("xyz").put("z", "zvalue").put("x", "xvalue1");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals(";x=xvalue1;y=yvalue;z=zvalue", service.getName());
+    }
+
     public void testListInjection_addValue() {
         Module module = new Module() {
 
@@ -212,6 +234,25 @@ public class DefaultInjectorInjectionTest extends TestCase {
         MockInterface1 service = injector.getInstance(MockInterface1.class);
         assertNotNull(service);
         assertEquals(";xyz;yvalue", service.getName());
+    }
+
+    public void testListInjection_resumed() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_ListConfiguration.class);
+
+                binder.bindList("xyz").add("xvalue").add("yvalue");
+                binder.bindList("xyz").add("avalue");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals(";xvalue;yvalue;avalue", service.getName());
     }
 
     public void testInjectorInjection() {
