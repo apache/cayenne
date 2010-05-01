@@ -25,7 +25,8 @@ import org.apache.cayenne.di.Inject;
 /**
  * An implementation of {@link RuntimeProperties} that returns properties that were
  * injected via a map in constructor. Each property can be overridden via -D command line
- * option.
+ * option (i.e. in this implementation JVM system properties take precedence over any
+ * other property configuration mechanism).
  * 
  * @since 3.1
  */
