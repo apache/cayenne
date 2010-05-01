@@ -38,5 +38,10 @@ public interface BindingBuilder<T> {
     BindingBuilder<T> toProviderInstance(Provider<? extends T> provider)
             throws ConfigurationException;
 
+    /**
+     * Sets the scope of a bound instance. This method is used to change the default scope
+     * (which is normally {@link Scopes#SINGLETON}) to something else, e.g.
+     * {@link Scopes#NO_SCOPE}.
+     */
     void in(Scope scope);
 }

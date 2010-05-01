@@ -25,6 +25,7 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.Scopes;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -39,7 +40,8 @@ public class ServletContextHandlerTest extends TestCase {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(ObjectContext.class).to(MockObjectContext.class);
+                binder.bind(ObjectContext.class).to(MockObjectContext.class).in(
+                        Scopes.NO_SCOPE);
             }
         };
         Injector injector = DIBootstrap.createInjector(module);

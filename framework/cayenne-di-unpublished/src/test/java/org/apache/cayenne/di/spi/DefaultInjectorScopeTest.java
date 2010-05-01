@@ -28,7 +28,7 @@ import org.apache.cayenne.di.mock.MockInterface1;
 
 public class DefaultInjectorScopeTest extends TestCase {
 
-    public void testNoScope() {
+    public void testDefaultScope() {
 
         Module module = new Module() {
 
@@ -47,12 +47,11 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertNotNull(instance2);
         assertNotNull(instance3);
 
-        assertNotSame(instance1, instance2);
-        assertNotSame(instance2, instance3);
-        assertNotSame(instance3, instance1);
+        assertSame(instance1, instance2);
+        assertSame(instance2, instance3);
     }
 
-    public void testNoScope_Explicit() {
+    public void testNoScope() {
 
         Module module = new Module() {
 

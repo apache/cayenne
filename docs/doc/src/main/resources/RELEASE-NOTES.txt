@@ -36,6 +36,7 @@ CAY-1394 DI-based replacement for JNDI hack
 CAY-1415 Replace WebApplicationContextFilter with a DI-enabled filter
 CAY-1419 File-based ResourceLocator to replace legacy FileConfiguration
 CAY-1422 Convert EventManager to an interface, make it injectable
+CAY-1424 DI: support for named service injection and flexible map/list binding
 
 Bug Fixes Since 3.0:
 

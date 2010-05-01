@@ -94,47 +94,41 @@ public class CayenneServerModule implements Module {
                 .add(new PostgresSniffer())
                 .add(new MySQLSniffer());
 
-        binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class).in(
-                Scopes.SINGLETON);
+        binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ConfigurationNameMapper.class).to(
-                DefaultConfigurationNameMapper.class).in(Scopes.SINGLETON);
+                DefaultConfigurationNameMapper.class);
 
-        binder.bind(EventManager.class).toProvider(EventManagerProvider.class).in(
-                Scopes.SINGLETON);
+        binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
 
         // a service to provide the main stack DataDomain
-        binder.bind(DataDomain.class).toProvider(DataDomainProvider.class).in(
-                Scopes.SINGLETON);
+        binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
 
         // will return DataDomain for request for a DataChannel
-        binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class).in(
-                Scopes.SINGLETON);
+        binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
 
-        binder.bind(ObjectContext.class).toProvider(DataContextProvider.class);
+        binder.bind(ObjectContext.class).toProvider(DataContextProvider.class).in(
+                Scopes.NO_SCOPE);
 
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(
-                XMLDataChannelDescriptorLoader.class).in(Scopes.SINGLETON);
+                XMLDataChannelDescriptorLoader.class);
 
         // a service to load DataMap XML descriptors
-        binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class).in(Scopes.SINGLETON);
+        binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
 
         // a locator of resources, such as XML descriptors
-        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class).in(
-                Scopes.SINGLETON);
+        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
 
         // a global properties object
-        binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class).in(
-                Scopes.SINGLETON);
+        binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 
         // a service to load DataSourceFactories
         binder.bind(DataSourceFactoryLoader.class).to(
-                DefaultDataSourceFactoryLoader.class).in(Scopes.SINGLETON);
+                DefaultDataSourceFactoryLoader.class);
 
         // a default SchemaUpdateStrategy (used when no explicit strategy is specified in
         // XML)
-        binder.bind(SchemaUpdateStrategy.class).to(SkipSchemaUpdateStrategy.class).in(
-                Scopes.SINGLETON);
+        binder.bind(SchemaUpdateStrategy.class).to(SkipSchemaUpdateStrategy.class);
 
         // a default DBAdapterFactory used to load custom and automatic DbAdapters
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);

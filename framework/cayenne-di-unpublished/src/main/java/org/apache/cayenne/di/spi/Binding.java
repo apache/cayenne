@@ -33,9 +33,9 @@ class Binding<T> {
     private Provider<T> unscoped;
     private Provider<T> scoped;
 
-    Binding(Provider<T> provider) {
+    Binding(Provider<T> provider, Scope initialScope) {
         this.unscoped = provider;
-        this.scoped = provider;
+        this.scoped = initialScope != null ? initialScope.scope(provider) : provider;
     }
 
     void changeScope(Scope scope) {

@@ -38,8 +38,12 @@ public class DefaultInjector implements Injector {
 
     private Map<Key<?>, Binding<?>> bindings;
     private InjectionStack injectionStack;
+    private Scope defaultScope;
 
     public DefaultInjector(Module... modules) throws ConfigurationException {
+
+        // this is intentionally hardcoded and is not configurable
+        this.defaultScope = Scopes.SINGLETON;
 
         this.bindings = new HashMap<Key<?>, Binding<?>>();
         this.injectionStack = new InjectionStack();
@@ -74,7 +78,7 @@ public class DefaultInjector implements Injector {
 
     <T> void putBinding(Key<T> bindingKey, Provider<T> provider) {
         // TODO: andrus 11/15/2009 - report overriding existing binding??
-        bindings.put(bindingKey, new Binding<T>(provider));
+        bindings.put(bindingKey, new Binding<T>(provider, defaultScope));
     }
 
     <T> void changeBindingScope(Key<T> bindingKey, Scope scope) {

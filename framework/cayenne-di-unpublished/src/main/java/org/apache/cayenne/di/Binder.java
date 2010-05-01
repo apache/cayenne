@@ -20,7 +20,10 @@ package org.apache.cayenne.di;
 
 /**
  * An object passed to a {@link Module} by the DI container during initialization, that
- * provides the API for the module to bind its services to the container.
+ * provides the API for the module to bind its services to the container. Note that the
+ * default {@link Scope} of the bound objects is normally "singleton" and can be changed
+ * to "no scope" or a custom scope via a corresponding method of a binding builder. E.g.
+ * see {@link BindingBuilder#in(Scope)}.
  * 
  * @since 3.1
  */

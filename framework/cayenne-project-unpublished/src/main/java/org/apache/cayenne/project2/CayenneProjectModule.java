@@ -20,7 +20,6 @@ package org.apache.cayenne.project2;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
 import org.apache.cayenne.project2.upgrade.ProjectUpgrader;
 import org.apache.cayenne.project2.upgrade.v6.ProjectUpgrader_V6;
 import org.apache.cayenne.project2.validation.DefaultProjectValidator;
@@ -35,14 +34,11 @@ import org.apache.cayenne.project2.validation.ProjectValidator;
 public class CayenneProjectModule implements Module {
 
     public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class).in(Scopes.SINGLETON);
-        binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V6.class).in(
-                Scopes.SINGLETON);
-        binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class).in(
-                Scopes.SINGLETON);
+        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class);
+        binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
+        binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V6.class);
+        binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class);
         binder.bind(ConfigurationNodeParentGetter.class).to(
-                DefaultConfigurationNodeParentGetter.class).in(Scopes.SINGLETON);
+                DefaultConfigurationNodeParentGetter.class);
     }
 }
