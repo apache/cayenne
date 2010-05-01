@@ -62,7 +62,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
                 + "ORDER BY t0.ARTIST_ID";
 
         DataMap map = getDomain().getMap("testmap");
-        SQLTemplate query = new SQLTemplate(map, sql);
+        SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         EntityResult artistResult = new EntityResult(Artist.class);
@@ -102,7 +102,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String sql = "SELECT count(1) AS X FROM ARTIST";
 
         DataMap map = getDomain().getMap("testmap");
-        SQLTemplate query = new SQLTemplate(map, sql);
+        SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
@@ -129,7 +129,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String sql = "SELECT count(1) AS X, 77 AS Y FROM ARTIST";
 
         DataMap map = getDomain().getMap("testmap");
-        SQLTemplate query = new SQLTemplate(map, sql);
+        SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY Y");

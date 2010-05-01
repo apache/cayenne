@@ -57,6 +57,11 @@ class ObjectResolver {
     ObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh) {
 
         // sanity check
+        if (descriptor == null || descriptor.getEntity() == null) {
+            throw new CayenneRuntimeException(
+                    "Set up Object entity or use rowFetchingQuery");
+        }
+
         DbEntity dbEntity = descriptor.getEntity().getDbEntity();
         if (dbEntity == null) {
             throw new CayenneRuntimeException("ObjEntity '"

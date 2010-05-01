@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DataMap;
@@ -49,7 +50,7 @@ public class SQLTemplateTest extends CayenneCase {
 
     public void testSQLTemplateForDataMap() {
         DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-        SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST");
+        SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
         List<DataRow> result = context.performQuery(q1);
         assertEquals(0, result.size());
     }
@@ -57,12 +58,31 @@ public class SQLTemplateTest extends CayenneCase {
     public void testSQLTemplateForDataMapWithInsert() {
         DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
         String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-        SQLTemplate q1 = new SQLTemplate(testDataMap, sql);
+        SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
         context.performNonSelectingQuery(q1);
 
-        SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST");
+        SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
         List<DataRow> result = context.performQuery(q2);
         assertEquals(1, result.size());
+    }
+
+    public void testSQLTemplateForDataMapWithInsertException() {
+        DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+        String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
+        SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
+        context.performNonSelectingQuery(q1);
+
+        SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
+        boolean gotRuntimeException = false;
+        try {
+            context.performQuery(q2);
+        }
+        catch (CayenneRuntimeException e) {
+            gotRuntimeException = true;
+        }
+        assertTrue(
+                "If fetchingDataRows is false and ObjectEntity not set, shoulb be thrown exception",
+                gotRuntimeException);
     }
 
     public void testColumnNameCapitalization() {

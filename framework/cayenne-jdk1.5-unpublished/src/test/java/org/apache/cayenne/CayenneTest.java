@@ -80,7 +80,7 @@ public class CayenneTest extends CayenneCase {
         String sql = "SELECT count(1) AS X FROM ARTIST";
 
         DataMap map = getDomain().getMap("testmap");
-        SQLTemplate query = new SQLTemplate(map, sql);
+        SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
