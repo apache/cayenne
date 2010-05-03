@@ -42,8 +42,8 @@ import org.apache.cayenne.di.Module;
  * <ul>
  * <li>configuration-location - (optional) a name of Cayenne configuration XML file that
  * will be used to load Cayenne stack. If missing, the filter name will be used to derive
- * the location using the following naming convention: if filter name is "foo",
- * configuration file name is name is "cayenne-foo.xml".
+ * the location. ".xml" extension will be appended to the filter name to get the location,
+ * so a filter named "cayenne-foo" will result in location "cayenne-foo.xml".
  * <li>extra-modules - (optional) a comma or space-separated list of class names, with
  * each class implementing {@link Module} interface. These are the custom modules loaded
  * after the two standard ones that allow users to override any Cayenne runtime aspects,
@@ -66,7 +66,7 @@ public class CayenneFilter implements Filter {
 
         WebConfiguration configAdapter = new WebConfiguration(config);
 
-        String configurationLocation = configAdapter.getCayenneConfigurationLocation();
+        String configurationLocation = configAdapter.getConfigurationLocation();
 
         Collection<Module> modules = configAdapter.createModules(new CayenneServerModule(
                 configurationLocation), new CayenneWebModule());

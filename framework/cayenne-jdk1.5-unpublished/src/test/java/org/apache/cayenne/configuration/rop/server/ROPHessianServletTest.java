@@ -38,7 +38,8 @@ public class ROPHessianServletTest extends TestCase {
     public void testInitWithServletName() throws Exception {
 
         MockServletConfig config = new MockServletConfig();
-        config.setServletName("org.apache.cayenne.configuration.rop.server.test-config");
+        config
+                .setServletName("cayenne-org.apache.cayenne.configuration.rop.server.test-config");
 
         MockServletContext context = new MockServletContext();
         config.setServletContext(context);
@@ -81,7 +82,7 @@ public class ROPHessianServletTest extends TestCase {
 
     public void testInitWithStandardModules() throws Exception {
 
-        String name = "org.apache.cayenne.configuration.rop.server.test-config";
+        String name = "cayenne-org.apache.cayenne.configuration.rop.server.test-config";
 
         MockServletConfig config = new MockServletConfig();
         config.setServletName(name);
@@ -95,7 +96,7 @@ public class ROPHessianServletTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("cayenne-" + name + ".xml", runtime.getInjector().getInstance(
+        assertEquals(name + ".xml", runtime.getInjector().getInstance(
                 RuntimeProperties.class).get(RuntimeProperties.CONFIGURATION_LOCATION));
         assertEquals(2, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof CayenneServerModule);
@@ -106,7 +107,7 @@ public class ROPHessianServletTest extends TestCase {
 
     public void testInitWithExtraModules() throws Exception {
 
-        String name = "org.apache.cayenne.configuration.rop.server.test-config";
+        String name = "cayenne-org.apache.cayenne.configuration.rop.server.test-config";
 
         MockServletConfig config = new MockServletConfig();
         config.setServletName(name);

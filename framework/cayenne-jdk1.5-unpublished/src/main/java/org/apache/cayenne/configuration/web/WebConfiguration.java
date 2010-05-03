@@ -38,7 +38,7 @@ import org.apache.cayenne.util.Util;
 
 /**
  * A class that provides access to common Cayenne web configuration parameters retrieved
- * either from a filter or servlet configuration.
+ * either from a FilterConfig or a ServletConfig configuration.
  * 
  * @since 3.1
  */
@@ -76,15 +76,28 @@ public class WebConfiguration {
     }
 
     /**
-     * Returns a non-null location of a Cayenne configuration, extracted from the filter
-     * or servlet configuration parameters.
+     * Returns a non-null location of an XML Cayenne configuration, extracted from the
+     * filter or servlet configuration parameters.
      */
-    public String getCayenneConfigurationLocation() {
+    public String getConfigurationLocation() {
         String configurationLocation = configuration
                 .getInitParameter(CONFIGURATION_LOCATION_PARAMETER);
-        return configurationLocation == null ? configurationLocation = "cayenne-"
-                + configuration.getFilterName()
-                + ".xml" : configurationLocation;
+
+        if (configurationLocation != null) {
+            return configurationLocation;
+        }
+
+        String name = configuration.getFilterName();
+
+        if (name == null) {
+            return null;
+        }
+
+        if (!name.endsWith(".xml")) {
+            name = name + ".xml";
+        }
+
+        return name;
     }
 
     /**
@@ -141,10 +154,10 @@ public class WebConfiguration {
     }
 
     /**
-     * Returns a map of parameters from the underlying FilterConfig or ServletConfig
-     * object.
+     * Returns a map of all init parameters from the underlying FilterConfig or
+     * ServletConfig object.
      */
-    public Map<String, String> getInitializationParameters() {
+    public Map<String, String> getParameters() {
         Enumeration<?> en = configuration.getInitParameterNames();
 
         if (!en.hasMoreElements()) {
@@ -161,13 +174,13 @@ public class WebConfiguration {
     }
 
     /**
-     * Returns servlet or filter configuration parameters, excluding those recognized by
+     * Returns servlet or filter init parameters, excluding those recognized by
      * WebConfiguration. Namely 'configuration-location' and 'extra-modules' parameters
-     * are removed.
+     * are removed from the returned map.
      */
-    public Map<String, String> getOtherInitializationParameters() {
+    public Map<String, String> getOtherParameters() {
 
-        Map<String, String> parameters = getInitializationParameters();
+        Map<String, String> parameters = getParameters();
 
         if (!parameters.isEmpty()) {
             parameters.remove(CONFIGURATION_LOCATION_PARAMETER);

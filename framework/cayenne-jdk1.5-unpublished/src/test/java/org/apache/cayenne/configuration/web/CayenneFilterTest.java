@@ -48,8 +48,10 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("cayenne-abc.xml", runtime.getInjector().getInstance(
-                RuntimeProperties.class).get(RuntimeProperties.CONFIGURATION_LOCATION));
+        assertEquals("abc.xml", runtime
+                .getInjector()
+                .getInstance(RuntimeProperties.class)
+                .get(RuntimeProperties.CONFIGURATION_LOCATION));
     }
 
     public void testInitWithLocation() throws Exception {
@@ -76,7 +78,7 @@ public class CayenneFilterTest extends TestCase {
     public void testInitWithStandardModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
-        config.setFilterName("abc");
+        config.setFilterName("cayenne-abc");
 
         MockServletContext context = new MockServletContext();
         config.setupServletContext(context);
