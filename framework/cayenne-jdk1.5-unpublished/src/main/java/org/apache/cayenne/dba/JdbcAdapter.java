@@ -35,7 +35,6 @@ import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.conf.ClasspathResourceFinder;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -43,6 +42,9 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.resource.ClassLoaderResourceLocator;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -65,6 +67,8 @@ public class JdbcAdapter implements DbAdapter {
     protected String identifiersStartQuote;
     protected String identifiersEndQuote;
 
+    protected ResourceLocator resourceLocator;
+
     /**
      * @since 3.0
      */
@@ -86,6 +90,9 @@ public class JdbcAdapter implements DbAdapter {
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
+
+        // TODO: andrus 05.02.2010 - ideally this should be injected
+        this.resourceLocator = new ClassLoaderResourceLocator();
 
         this.pkGenerator = createPkGenerator();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
@@ -122,9 +129,10 @@ public class JdbcAdapter implements DbAdapter {
         while (adapterClass != null && JdbcAdapter.class.isAssignableFrom(adapterClass)) {
 
             String path = Util.getPackagePath(adapterClass.getName()) + name;
-            URL url = new ClasspathResourceFinder().getResource(path);
-            if (url != null) {
-                return url;
+            Collection<Resource> resources = resourceLocator.findResources(path);
+
+            if (!resources.isEmpty()) {
+                return resources.iterator().next().getURL();
             }
 
             adapterClass = adapterClass.getSuperclass();
@@ -322,12 +330,11 @@ public class JdbcAdapter implements DbAdapter {
         // append size and precision (if applicable)s
         if (TypesMapping.supportsLength(column.getType())) {
             int len = column.getMaxLength();
-            
-            int scale = (TypesMapping.isDecimal(column.getType()) 
-                    && column.getType() != Types.FLOAT
-                    ) 
-                    ? column.getScale() : -1;
-            
+
+            int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT)
+                    ? column.getScale()
+                    : -1;
+
             // sanity check
             if (scale > len) {
                 scale = -1;

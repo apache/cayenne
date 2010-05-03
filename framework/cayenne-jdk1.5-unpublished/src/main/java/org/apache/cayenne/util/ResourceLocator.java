@@ -35,7 +35,11 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Utility class to find resources (files, etc.), using a preconfigured strategy.
+ * 
+ * @deprecated since 3.1 deprecated in favor of injectable
+ *             org.apache.cayenne.resource.ResourceLocator.
  */
+@Deprecated
 public class ResourceLocator implements ResourceFinder {
 
     private static Log logObj = LogFactory.getLog(ResourceLocator.class);

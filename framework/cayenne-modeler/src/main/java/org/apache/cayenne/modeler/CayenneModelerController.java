@@ -36,8 +36,8 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
 
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
@@ -45,6 +45,7 @@ import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project2.Project;
 import org.apache.cayenne.project2.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -128,8 +129,10 @@ public class CayenneModelerController extends CayenneController {
         File transferFile = (File) fileList.get(0);
 
         if (transferFile.isFile()) {
+            
+            FileFilter filter = FileFilters.getApplicationFilter();
 
-            if (Configuration.DEFAULT_DOMAIN_FILE.equals(transferFile.getName())) {
+            if (filter.accept(transferFile)) {
                 ActionEvent e = new ActionEvent(
                         transferFile,
                         ActionEvent.ACTION_PERFORMED,

@@ -208,7 +208,7 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Returns a DataNode that should hanlde queries for all DataMap components.
+     * Returns a DataNode that should handle queries for all DataMap components.
      * 
      * @since 1.1
      */

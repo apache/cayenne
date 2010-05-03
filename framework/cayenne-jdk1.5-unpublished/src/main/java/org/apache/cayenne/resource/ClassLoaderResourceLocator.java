@@ -58,6 +58,21 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
     }
 
     protected ClassLoader getClassLoader() {
-        return Thread.currentThread().getContextClassLoader();
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+        if (loader == null) {
+            loader = getClass().getClassLoader();
+        }
+
+        if (loader == null) {
+            loader = ClassLoader.getSystemClassLoader();
+        }
+
+        if (loader == null) {
+            throw new IllegalStateException(
+                    "Can't detect ClassLoader to use for resouyrce location");
+        }
+
+        return loader;
     }
 }

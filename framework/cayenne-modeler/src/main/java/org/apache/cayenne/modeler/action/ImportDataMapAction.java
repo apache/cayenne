@@ -69,6 +69,7 @@ public class ImportDataMapAction extends CayenneAction {
             // configure resource locator to take absolute path
             MapLoader mapLoader = new MapLoader() {
 
+                @Deprecated
                 protected ResourceLocator configLocator() {
                     ResourceLocator locator = new ResourceLocator();
                     locator.setSkipAbsolutePath(false);

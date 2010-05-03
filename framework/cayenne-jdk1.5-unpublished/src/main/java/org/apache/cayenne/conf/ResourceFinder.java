@@ -25,7 +25,10 @@ import java.util.Collection;
  * An object that defines a strategy for locating stream resources.
  * 
  * @since 3.0
+ * @deprecated since 3.1 deprecated in favor of injectable
+ *             org.apache.cayenne.resource.ResourceLocator.
  */
+@Deprecated
 public interface ResourceFinder {
 
     /**

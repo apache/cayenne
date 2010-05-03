@@ -28,11 +28,11 @@
 		DataContext
 	-->
 	<filter>
-		<filter-name>CayenneFilter</filter-name>
-		<filter-class>org.apache.cayenne.conf.WebApplicationContextFilter</filter-class>
+		<filter-name>cayenne-UntiltledDomain</filter-name>
+		<filter-class>org.apache.cayenne.configuration.web.CayenneFilter</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>CayenneFilter</filter-name>
+		<filter-name>cayenne-UntiltledDomain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<welcome-file-list>

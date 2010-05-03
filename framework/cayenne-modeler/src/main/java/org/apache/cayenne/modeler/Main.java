@@ -29,11 +29,10 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.util.CayenneUserDir;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -70,9 +69,6 @@ public class Main {
     protected static File projectFileFromArgs(String[] args) {
         if (args.length == 1) {
             File f = new File(args[0]);
-            if (f.isDirectory()) {
-                f = new File(f, Configuration.DEFAULT_DOMAIN_FILE);
-            }
 
             if (f.isFile()
                     && f.getName().startsWith("cayenne")

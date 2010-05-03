@@ -765,7 +765,9 @@ public class MapLoader extends DefaultHandler {
      * Loads DataMap from file specified by <code>uri</code> parameter.
      * 
      * @throws CayenneRuntimeException if source URI does not resolve to a valid map files
+     * @deprecated since 3.1 {@link #loadDataMap(InputSource)} should be used.
      */
+    @Deprecated
     public DataMap loadDataMap(String uri) throws CayenneRuntimeException {
         // configure resource locator
         ResourceFinder locator = createResourceFinder();
@@ -825,7 +827,10 @@ public class MapLoader extends DefaultHandler {
      * Creates, configures and returns a default ResourceFinder.
      * 
      * @since 3.0
+     * @deprecated since 3.1 as MapLoader should not bother itself with looking up
+     *             resources.
      */
+    @Deprecated
     protected ResourceFinder createResourceFinder() {
         ResourceLocator locator = new ResourceLocator();
 

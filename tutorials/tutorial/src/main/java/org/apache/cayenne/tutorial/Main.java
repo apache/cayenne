@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.CayenneServerRuntime;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
@@ -37,8 +37,12 @@ public class Main {
 
 	public static void main(String[] args) {
 
+		// starting Cayenne
+		CayenneServerRuntime cayenneRuntime = new CayenneServerRuntime(
+				"cayenne-UntitledDomain.xml");
+
 		// getting a hold of ObjectContext
-		ObjectContext context = DataContext.createDataContext();
+		ObjectContext context = cayenneRuntime.getContext();
 
 		newObjectsTutorial(context);
 		selectTutorial(context);

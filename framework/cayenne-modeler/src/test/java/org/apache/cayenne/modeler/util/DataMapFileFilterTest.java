@@ -25,11 +25,10 @@ import javax.swing.filechooser.FileFilter;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.conf.Configuration;
-
 /**
  */
 public class DataMapFileFilterTest extends TestCase {
+
     protected FileFilter filter;
 
     public void setUp() throws Exception {
@@ -41,7 +40,7 @@ public class DataMapFileFilterTest extends TestCase {
     }
 
     public void testRejectCayenneXml() throws Exception {
-        assertFalse(filter.accept(new File(Configuration.DEFAULT_DOMAIN_FILE)));
+        assertFalse(filter.accept(new File("cayenne.xml")));
     }
 
     public void testRejectOther() throws Exception {

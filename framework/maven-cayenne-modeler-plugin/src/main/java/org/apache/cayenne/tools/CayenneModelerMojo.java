@@ -20,18 +20,12 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.util.List;
-import java.util.Properties;
 
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.Main;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.model.Resource;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.apache.maven.project.MavenProject;
 
 /**
  * Maven mojo to start up the Cayenne modeler from the command-line.
@@ -43,76 +37,43 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  */
 public class CayenneModelerMojo extends AbstractMojo {
 
-    /**
-     * Name of the model file to open.  
-     *
-     * @parameter expression="${modeler.modelFile} 
-     */
-    private File modelFile;
+	/**
+	 * Name of the model file to open.
+	 * 
+	 * @parameter expression="${modeler.modelFile}
+	 */
+	private File modelFile;
 
-    /**
-     * Project instance.
-     * @parameter default-value="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+	/**
+	 * Project instance.
+	 * 
+	 * @parameter default-value="${project}"
+	 * @required
+	 * @readonly
+	 */
+	private MavenProject project;
 
-    private File lookupModelFile() {
-        if (modelFile != null) {
-            if (modelFile.isDirectory()) {
-                return new File(modelFile,Configuration.DEFAULT_DOMAIN_FILE);
-            } else {
-                return modelFile;
-            }
-        }
-        
-        //try to locate cayenne.xml at top level of a resource directory.
-        for(Object o : project.getResources()) {
-            Resource r = (Resource) o;
-            File f = new File(r.getDirectory(),Configuration.DEFAULT_DOMAIN_FILE);
-            if (f.exists()) {
-                return f;
-            }
-        }
-        
-        //failing that, try for WEB-INF/DEFAULT_DOMAIN_FILE 
-        //but only if we're using the war plugin
-        for(Object o : project.getBuildPlugins()) {
-            Plugin plugin = (Plugin) o;
-            //means we're using the war plugin.
-            if (plugin.getKey().equals("org.apache.maven.plugins:maven-war-plugin")) {
-                //check to see if the default loc. is overridden.
-                Xpp3Dom conf = (Xpp3Dom)plugin.getConfiguration();
-                String path;
+	private File lookupModelFile() {
+		if (modelFile != null && modelFile.isFile()) {
+			return modelFile;
+		}
 
-                if (conf != null && (conf = conf.getChild("warSourceDirectory")) != null) {
-                    path = conf.getValue().trim();
-                } else {
-                   path = "src" + File.separator + "main" + File.separator + "webapp"; 
-                }
-
-                return new File(project.getBasedir().getAbsolutePath(),
-                                    path + File.separator + 
-                                    "WEB-INF" + File.separator + 
-                                    Configuration.DEFAULT_DOMAIN_FILE);
-            }
-        }
-
-        return null;
-    }
+		return null;
+	}
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
-        //setup the system property to tell the modeler where to generate the java source files.
-        System.setProperty("cayenne.cgen.destdir",project.getBuild().getSourceDirectory());
+		// setup the system property to tell the modeler where to generate the
+		// java source files.
+		System.setProperty("cayenne.cgen.destdir", project.getBuild()
+				.getSourceDirectory());
 
-        //start the modeler with the provided model file, if it exists.
-        File f = lookupModelFile();
-        if (f != null && f.exists() && !f.isDirectory()) {
-            Main.main(new String[] {f.getAbsolutePath()});
-        } else {
-            Main.main(new String[] {});
-        }
+		// start the modeler with the provided model file, if it exists.
+		File f = lookupModelFile();
+		if (f != null && f.exists() && !f.isDirectory()) {
+			Main.main(new String[] { f.getAbsolutePath() });
+		} else {
+			Main.main(new String[] {});
+		}
 
 		// Block until the modeler finishes executing.
 		try {
