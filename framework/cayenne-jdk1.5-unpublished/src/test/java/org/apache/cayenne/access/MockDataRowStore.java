@@ -28,7 +28,6 @@ import org.apache.cayenne.event.MockEventManager;
 
 /**
  * A "lightweight" DataRowStore.
- * 
  */
 public class MockDataRowStore extends DataRowStore {
 

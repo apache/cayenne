@@ -34,8 +34,11 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * Utility class to perform zip/unzip operations on files and directories.
- *  
+ * 
+ * @deprecated since 3.1. This class is unused and will be removed in the future
+ *             versions..
  */
+@Deprecated
 public class ZipUtil {
 
     /**
@@ -46,12 +49,12 @@ public class ZipUtil {
     }
 
     /**
-      * Unpacks a zip file to the target directory.
-      *
-      * @param zipFile
-      * @param destDir
-      * @throws IOException
-      */
+     * Unpacks a zip file to the target directory.
+     * 
+     * @param zipFile
+     * @param destDir
+     * @throws IOException
+     */
     public static void unzip(File zipFile, File destDir) throws IOException {
         ZipFile zip = new ZipFile(zipFile);
 
@@ -61,73 +64,68 @@ public class ZipUtil {
 
             while (en.hasMoreElements()) {
                 ZipEntry entry = en.nextElement();
-                File file =
-                    (destDir != null)
+                File file = (destDir != null)
                         ? new File(destDir, entry.getName())
                         : new File(entry.getName());
 
                 if (entry.isDirectory()) {
                     if (!file.mkdirs()) {
-                        throw new IOException(
-                            "Error creating directory: " + file);
+                        throw new IOException("Error creating directory: " + file);
                     }
-                } else {
+                }
+                else {
                     File parent = file.getParentFile();
                     if (parent != null && !parent.exists()) {
                         if (!parent.mkdirs()) {
-                            throw new IOException(
-                                "Error creating directory: " + parent);
+                            throw new IOException("Error creating directory: " + parent);
                         }
                     }
 
                     InputStream in = zip.getInputStream(entry);
                     try {
-                        OutputStream out =
-                            new BufferedOutputStream(
-                                new FileOutputStream(file),
-                                bufSize);
+                        OutputStream out = new BufferedOutputStream(new FileOutputStream(
+                                file), bufSize);
 
                         try {
                             Util.copyPipe(in, out, bufSize);
-                        } finally {
+                        }
+                        finally {
                             out.close();
                         }
 
-                    } finally {
+                    }
+                    finally {
                         in.close();
                     }
                 }
             }
-        } finally {
+        }
+        finally {
             zip.close();
         }
     }
 
     /**
-      * Recursively zips a set of root entries into a zipfile, compressing the
-      * contents.
-      *
-      * @param zipFile target zip file.
-      * @param parentDir a directory containing source files to zip.
-      * @param sources an array of files and/or directories to zip.
-      * @param pathSeparator path separator for zip entries.
-      * 
-      * @throws IOException
-      */
+     * Recursively zips a set of root entries into a zipfile, compressing the contents.
+     * 
+     * @param zipFile target zip file.
+     * @param parentDir a directory containing source files to zip.
+     * @param sources an array of files and/or directories to zip.
+     * @param pathSeparator path separator for zip entries.
+     * @throws IOException
+     */
     public static void zip(
-        File zipFile,
-        File parentDir,
-        File[] sources,
-        char pathSeparator)
-        throws IOException {
-            
+            File zipFile,
+            File parentDir,
+            File[] sources,
+            char pathSeparator) throws IOException {
+
         String stripPath = (parentDir != null) ? parentDir.getPath() : "";
         if (stripPath.length() > 0 && !stripPath.endsWith(File.separator)) {
             stripPath += File.separator;
         }
 
-        ZipOutputStream out =
-            new ZipOutputStream(new FileOutputStream(zipFile));
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
         out.setMethod(ZipOutputStream.DEFLATED);
 
         try {
@@ -145,21 +143,20 @@ public class ZipUtil {
                     zipFile(out, stripPath, source, pathSeparator);
                 }
             }
-        } finally {
+        }
+        finally {
             out.close();
         }
     }
 
     /**
-     * Uses code fragments from Jakarta-Ant, Copyright: Apache Software
-     * Foundation.
+     * Uses code fragments from Jakarta-Ant, Copyright: Apache Software Foundation.
      */
     private static void zipDirectory(
-        ZipOutputStream out,
-        String stripPath,
-        File dir,
-        char pathSeparator)
-        throws IOException {
+            ZipOutputStream out,
+            String stripPath,
+            File dir,
+            char pathSeparator) throws IOException {
 
         String[] entries = dir.list();
 
@@ -180,23 +177,21 @@ public class ZipUtil {
     }
 
     /**
-     * Uses code fragments from Jakarta-Ant, Copyright: Apache Software
-     * Foundation.
+     * Uses code fragments from Jakarta-Ant, Copyright: Apache Software Foundation.
      */
     private static void zipFile(
-        ZipOutputStream out,
-        String stripPath,
-        File file,
-        char pathSeparator)
-        throws IOException {
-        ZipEntry ze =
-            new ZipEntry(processPath(file.getPath(), stripPath, pathSeparator));
+            ZipOutputStream out,
+            String stripPath,
+            File file,
+            char pathSeparator) throws IOException {
+        ZipEntry ze = new ZipEntry(processPath(file.getPath(), stripPath, pathSeparator));
         ze.setTime(file.lastModified());
         out.putNextEntry(ze);
 
         byte[] buffer = new byte[8 * 1024];
-        BufferedInputStream in =
-            new BufferedInputStream(new FileInputStream(file), buffer.length);
+        BufferedInputStream in = new BufferedInputStream(
+                new FileInputStream(file),
+                buffer.length);
 
         try {
             int count = 0;
@@ -205,25 +200,22 @@ public class ZipUtil {
                     out.write(buffer, 0, count);
                 }
             }
-        } finally {
+        }
+        finally {
             in.close();
         }
     }
 
-    private static String processPath(
-        String path,
-        String stripPath,
-        char pathSeparator) {
+    private static String processPath(String path, String stripPath, char pathSeparator) {
         if (!path.startsWith(stripPath)) {
-            throw new IllegalArgumentException(
-                "Invalid entry: "
+            throw new IllegalArgumentException("Invalid entry: "
                     + path
                     + "; expected to start with "
                     + stripPath);
         }
 
         return path.substring(stripPath.length()).replace(
-            File.separatorChar,
-            pathSeparator);
+                File.separatorChar,
+                pathSeparator);
     }
 }

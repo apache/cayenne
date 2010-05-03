@@ -19,21 +19,20 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import junit.framework.TestCase;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.ResourceManager;
-import org.apache.cayenne.unit.BasicCase;
 
-/**
- */
-public class SQLTemplateResourceManagerTest extends BasicCase {
+public class SQLTemplateResourceManagerTest extends TestCase {
+
     public void testFetResource() throws Exception {
         SQLTemplateResourceManager rm = new SQLTemplateResourceManager();
         rm.initialize(new MockupRuntimeServices());
 
-        Resource resource =
-            rm.getResource(
+        Resource resource = rm.getResource(
                 "abc",
                 ResourceManager.RESOURCE_TEMPLATE,
                 RuntimeConstants.ENCODING_DEFAULT);
@@ -41,26 +40,20 @@ public class SQLTemplateResourceManagerTest extends BasicCase {
         assertTrue(resource instanceof Template);
 
         // must be cached...
-        assertSame(
-            resource,
-            rm.getResource(
+        assertSame(resource, rm.getResource(
                 "abc",
                 ResourceManager.RESOURCE_TEMPLATE,
                 RuntimeConstants.ENCODING_DEFAULT));
 
         // new resource must be different
-        assertNotSame(
-            resource,
-            rm.getResource(
+        assertNotSame(resource, rm.getResource(
                 "xyz",
                 ResourceManager.RESOURCE_TEMPLATE,
                 RuntimeConstants.ENCODING_DEFAULT));
 
         // after clearing cache, resource must be refreshed
         rm.clearCache();
-        assertNotSame(
-            resource,
-            rm.getResource(
+        assertNotSame(resource, rm.getResource(
                 "abc",
                 ResourceManager.RESOURCE_TEMPLATE,
                 RuntimeConstants.ENCODING_DEFAULT));

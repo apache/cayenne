@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.map;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.unit.BasicCase;
 
 /**
  */
-public class QueryLoaderTest extends BasicCase {
+public class QueryLoaderTest extends TestCase {
 
     protected QueryLoader builder;
 

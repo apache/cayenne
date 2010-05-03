@@ -26,7 +26,6 @@ import org.apache.cayenne.access.UnitTestDomain;
 
 /**
  * DataDomain wrapper used for testing a specific Cayenne stack configuration.
- * 
  */
 public interface AccessStack {
 
@@ -34,7 +33,8 @@ public interface AccessStack {
 
     UnitTestDomain getDataDomain();
 
-    void createTestData(Class<?> testCase, String testName, Map parameters) throws Exception;
+    void createTestData(Class<?> testCase, String testName, Map parameters)
+            throws Exception;
 
     void deleteTestData() throws Exception;
 

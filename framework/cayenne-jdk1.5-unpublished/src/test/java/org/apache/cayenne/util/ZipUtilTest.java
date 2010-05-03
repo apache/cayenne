@@ -17,26 +17,31 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.util;
 
 import java.io.File;
 import java.net.URL;
 
-import org.apache.cayenne.unit.BasicCase;
+import junit.framework.TestCase;
+
+import org.apache.cayenne.unit.CayenneResources;
 
 /**
+ * @deprecated since 3.1
  */
-public class ZipUtilTest extends BasicCase {
+@Deprecated
+public class ZipUtilTest extends TestCase {
 
     public void testUnzip() throws Exception {
 
         URL jarResource = Thread.currentThread().getContextClassLoader().getResource(
                 "jar-test.jar");
-        File jarCopy = new File(getTestDir(), "jar-test.jar");
+        File jarCopy = new File(
+                CayenneResources.getResources().getTestDir(),
+                "jar-test.jar");
         Util.copy(jarResource, jarCopy);
 
-        File unjarDir = getTestDir();
+        File unjarDir = CayenneResources.getResources().getTestDir();
         File unjarRootDir = new File(unjarDir, "jar-test");
         File manifest = new File(unjarRootDir.getParentFile(), "META-INF"
                 + File.separator
@@ -62,10 +67,12 @@ public class ZipUtilTest extends BasicCase {
     public void testZip() throws Exception {
         URL jarResource = Thread.currentThread().getContextClassLoader().getResource(
                 "jar-test.jar");
-        File jarCopy = new File(getTestDir(), "jar-test.jar");
+        File jarCopy = new File(
+                CayenneResources.getResources().getTestDir(),
+                "jar-test.jar");
         Util.copy(jarResource, jarCopy);
 
-        File unjarDir = getTestDir();
+        File unjarDir = CayenneResources.getResources().getTestDir();
         File unjarRootDir = new File(unjarDir, "jar-test");
         File newJarFile = new File(unjarDir, "new-jar.jar");
 

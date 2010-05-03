@@ -25,14 +25,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.unit.BasicCase;
 
 /**
  */
-public class SQLTemplateProcessorTest extends BasicCase {
+public class SQLTemplateProcessorTest extends TestCase {
 
     public void testProcessTemplateUnchanged1() throws Exception {
         String sqlTemplate = "SELECT * FROM ME";

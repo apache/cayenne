@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.unit.BasicCase;
+import junit.framework.TestCase;
 
 /**
  */
-public class SQLStatementTest extends BasicCase {
+public class SQLStatementTest extends TestCase {
     public void testConstructor() throws Exception {
         ParameterBinding[] bindings = new ParameterBinding[0];
         SQLStatement statement = new SQLStatement("abc", bindings);

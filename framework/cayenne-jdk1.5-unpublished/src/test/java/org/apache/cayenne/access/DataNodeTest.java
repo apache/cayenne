@@ -19,11 +19,12 @@
 
 package org.apache.cayenne.access;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.unit.BasicCase;
 
-public class DataNodeTest extends BasicCase {
+public class DataNodeTest extends TestCase {
 
     public void testName() throws Exception {
         String tstName = "tst_name";

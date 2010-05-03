@@ -21,11 +21,9 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.Collections;
 
-import org.apache.cayenne.unit.BasicCase;
+import junit.framework.TestCase;
 
-/**
- */
-public class SQLTemplateProcessorSelectTest extends BasicCase {
+public class SQLTemplateProcessorSelectTest extends TestCase {
 
     public void testProcessTemplateUnchanged() throws Exception {
         String sqlTemplate = "SELECT * FROM ME";

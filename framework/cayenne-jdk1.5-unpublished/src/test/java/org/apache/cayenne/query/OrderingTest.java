@@ -23,11 +23,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.apache.art.Painting;
-import org.apache.cayenne.unit.BasicCase;
 import org.apache.cayenne.unit.util.TestBean;
 
-public class OrderingTest extends BasicCase {
+public class OrderingTest extends TestCase {
 
     public void testPathSpec1() throws Exception {
         String pathSpec = "a.b.c";

@@ -23,6 +23,8 @@ import java.sql.Connection;
 import java.util.Collections;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
@@ -40,7 +42,7 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
  * Superclass of Cayenne test cases. Provides access to shared connection resources.
  * 
  */
-public abstract class CayenneCase extends BasicCase {
+public abstract class CayenneCase extends TestCase {
 
     public static final String TEST_ACCESS_STACK = "TestStack";
     public static final String MULTI_TIER_ACCESS_STACK = "MultiTierStack";

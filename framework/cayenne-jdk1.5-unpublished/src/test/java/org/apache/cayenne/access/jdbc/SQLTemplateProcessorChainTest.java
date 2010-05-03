@@ -23,38 +23,32 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.unit.BasicCase;
+import junit.framework.TestCase;
 
-/**
- */
-public class SQLTemplateProcessorChainTest extends BasicCase {
+public class SQLTemplateProcessorChainTest extends TestCase {
 
     public void testProcessTemplateNoChunks() throws Exception {
         // whatever is inside the chain, it should render as empty if there
         // is no chunks...
 
-        SQLStatement compiled =
-            new SQLTemplateProcessor().processTemplate(
+        SQLStatement compiled = new SQLTemplateProcessor().processTemplate(
                 "#chain(' AND ') #end",
                 Collections.EMPTY_MAP);
 
         assertEquals("", compiled.getSql());
 
-        compiled =
-            new SQLTemplateProcessor().processTemplate(
+        compiled = new SQLTemplateProcessor().processTemplate(
                 "#chain(' AND ') garbage #end",
                 Collections.EMPTY_MAP);
 
         assertEquals("", compiled.getSql());
 
-        compiled =
-            new SQLTemplateProcessor().processTemplate(
+        compiled = new SQLTemplateProcessor().processTemplate(
                 "#chain(' AND ' 'PREFIX') #end",
                 Collections.EMPTY_MAP);
 
         assertEquals("", compiled.getSql());
-        compiled =
-            new SQLTemplateProcessor().processTemplate(
+        compiled = new SQLTemplateProcessor().processTemplate(
                 "#chain(' AND ' 'PREFIX') garbage #end",
                 Collections.EMPTY_MAP);
 
@@ -62,8 +56,7 @@ public class SQLTemplateProcessorChainTest extends BasicCase {
     }
 
     public void testProcessTemplateFullChain() throws Exception {
-        String template =
-            "#chain(' OR ')"
+        String template = "#chain(' OR ')"
                 + "#chunk($a)$a#end"
                 + "#chunk($b)$b#end"
                 + "#chunk($c)$c#end"
@@ -79,8 +72,7 @@ public class SQLTemplateProcessorChainTest extends BasicCase {
     }
 
     public void testProcessTemplateFullChainAndPrefix() throws Exception {
-        String template =
-            "#chain(' OR ' 'WHERE ')"
+        String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
                 + "#chunk($b)$b#end"
                 + "#chunk($c)$c#end"
@@ -96,8 +88,7 @@ public class SQLTemplateProcessorChainTest extends BasicCase {
     }
 
     public void testProcessTemplatePartialChainMiddle() throws Exception {
-        String template =
-            "#chain(' OR ' 'WHERE ')"
+        String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
                 + "#chunk($b)$b#end"
                 + "#chunk($c)$c#end"
@@ -112,8 +103,7 @@ public class SQLTemplateProcessorChainTest extends BasicCase {
     }
 
     public void testProcessTemplatePartialChainStart() throws Exception {
-        String template =
-            "#chain(' OR ' 'WHERE ')"
+        String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
                 + "#chunk($b)$b#end"
                 + "#chunk($c)$c#end"
@@ -128,8 +118,7 @@ public class SQLTemplateProcessorChainTest extends BasicCase {
     }
 
     public void testProcessTemplatePartialChainEnd() throws Exception {
-        String template =
-            "#chain(' OR ' 'WHERE ')"
+        String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
                 + "#chunk($b)$b#end"
                 + "#chunk($c)$c#end"
@@ -144,8 +133,7 @@ public class SQLTemplateProcessorChainTest extends BasicCase {
     }
 
     public void testProcessTemplateChainWithGarbage() throws Exception {
-        String template =
-            "#chain(' OR ' 'WHERE ')"
+        String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
                 + " some other stuff"
                 + "#chunk($c)$c#end"
@@ -160,28 +148,28 @@ public class SQLTemplateProcessorChainTest extends BasicCase {
     }
 
     public void testProcessTemplateChainUnconditionalChunks() throws Exception {
-        String template =
-            "#chain(' OR ' 'WHERE ')"
+        String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk()C1#end"
                 + "#chunk()C2#end"
                 + "#chunk()C3#end"
                 + "#end";
 
-        SQLStatement compiled =
-            new SQLTemplateProcessor().processTemplate(template, Collections.EMPTY_MAP);
+        SQLStatement compiled = new SQLTemplateProcessor().processTemplate(
+                template,
+                Collections.EMPTY_MAP);
         assertEquals("WHERE C1 OR C2 OR C3", compiled.getSql());
     }
 
     public void testProcessTemplateEmptyChain() throws Exception {
-        String template =
-            "#chain(' OR ' 'WHERE ')"
+        String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
                 + "#chunk($b)$b#end"
                 + "#chunk($c)$c#end"
                 + "#end";
 
-        SQLStatement compiled =
-            new SQLTemplateProcessor().processTemplate(template, Collections.EMPTY_MAP);
+        SQLStatement compiled = new SQLTemplateProcessor().processTemplate(
+                template,
+                Collections.EMPTY_MAP);
         assertEquals("", compiled.getSql());
     }
 

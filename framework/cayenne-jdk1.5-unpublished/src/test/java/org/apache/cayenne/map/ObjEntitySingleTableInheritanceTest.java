@@ -21,11 +21,11 @@ package org.apache.cayenne.map;
 
 import java.sql.Types;
 
-import org.apache.cayenne.unit.BasicCase;
+import junit.framework.TestCase;
 
 /**
  */
-public class ObjEntitySingleTableInheritanceTest extends BasicCase {
+public class ObjEntitySingleTableInheritanceTest extends TestCase {
 
     protected DataMap map;
 

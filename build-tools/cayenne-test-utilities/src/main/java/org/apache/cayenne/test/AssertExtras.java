@@ -16,17 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.test;
 
-package org.apache.cayenne.conf;
+import java.math.BigDecimal;
 
-import javax.sql.DataSource;
+import junit.framework.Assert;
 
-public class MockDataSourceFactory1 implements DataSourceFactory {
+public class AssertExtras {
 
-    public void initializeWithParentConfiguration(Configuration conf) {
-    }
-
-    public DataSource getDataSource(String location) throws Exception {
-        return null;
+    public static void assertEquals(BigDecimal d1, Object d2, double delta) {
+        Assert.assertNotNull(d2);
+        Assert.assertTrue("d2: " + d2.getClass().getName(), d2 instanceof BigDecimal);
+        BigDecimal d3 = d1.subtract((BigDecimal) d2);
+        Assert.assertTrue(Math.abs(d3.doubleValue()) < delta);
     }
 }

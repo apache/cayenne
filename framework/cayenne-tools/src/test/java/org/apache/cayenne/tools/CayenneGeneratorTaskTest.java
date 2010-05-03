@@ -25,7 +25,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import org.apache.cayenne.unit.BasicCase;
+import junit.framework.TestCase;
+
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
@@ -33,7 +34,7 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 
-public class CayenneGeneratorTaskTest extends BasicCase {
+public class CayenneGeneratorTaskTest extends TestCase {
 
     private static final Perl5Util regexUtil = new Perl5Util();
     private static final Project project = new Project();

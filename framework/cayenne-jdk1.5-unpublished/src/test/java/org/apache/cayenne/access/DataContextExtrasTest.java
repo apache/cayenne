@@ -40,11 +40,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
-/**
- * "Lightweight" test cases for DataContext. These tests do not require any additional
- * database setup.
- *
- */
 public class DataContextExtrasTest extends CayenneCase {
 
     public void testManualIdProcessingOnCommit() throws Exception {
@@ -175,10 +170,11 @@ public class DataContextExtrasTest extends CayenneCase {
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception
         PkGenerator newGenerator = new JdbcPkGenerator(new JdbcAdapter()) {
-          @Override
+
+            @Override
             public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
                 throw new CayenneRuntimeException("Intentional");
-            }  
+            }
         };
 
         PkGenerator oldGenerator = getNode().getAdapter().getPkGenerator();
@@ -317,10 +313,7 @@ public class DataContextExtrasTest extends CayenneCase {
         Painting p1 = (Painting) objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = Cayenne.objectForPK(
-                context,
-                Artist.class,
-                33002);
+        Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);
 
         assertNotSame(oldArtist, newArtist);
 
@@ -346,10 +339,7 @@ public class DataContextExtrasTest extends CayenneCase {
         Painting p1 = (Painting) objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = Cayenne.objectForPK(
-                context,
-                Artist.class,
-                33002);
+        Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);
 
         assertNotSame(oldArtist, newArtist);
 
