@@ -18,19 +18,59 @@
  ****************************************************************/
 package org.apache.cayenne.remote.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.event.MockEventBridgeFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.remote.QueryMessage;
 import org.apache.cayenne.remote.RemoteSession;
+import org.apache.cayenne.remote.hessian.service.HessianService;
 import org.apache.cayenne.util.Util;
 
 public class BaseRemoteServiceTest extends TestCase {
 
+    public void testConstructor() throws Exception {
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(
+                HessianService.EVENT_BRIDGE_FACTORY_PROPERTY,
+                MockEventBridgeFactory.class.getName());
+
+        DataDomain domain = new DataDomain("test");
+        BaseRemoteService service = new BaseRemoteService(domain, map) {
+
+            @Override
+            protected ServerSession createServerSession() {
+                return null;
+            }
+
+            @Override
+            protected ServerSession createServerSession(String name) {
+                return null;
+            }
+
+            @Override
+            protected ServerSession getServerSession() {
+                return null;
+            }
+        };
+        assertEquals(MockEventBridgeFactory.class.getName(), service
+                .getEventBridgeFactoryName());
+        assertSame(domain, service.domain);
+
+    }
+
     public void testProcessMessageExceptionSerializability() throws Throwable {
 
-        BaseRemoteService handler = new BaseRemoteService() {
+        Map<String, String> map = new HashMap<String, String>();
+        DataDomain domain = new DataDomain("test");
+
+        BaseRemoteService service = new BaseRemoteService(domain, map) {
 
             @Override
             protected ServerSession createServerSession() {
@@ -49,7 +89,7 @@ public class BaseRemoteServiceTest extends TestCase {
         };
 
         try {
-            handler.processMessage(new QueryMessage(null) {
+            service.processMessage(new QueryMessage(null) {
 
                 @Override
                 public Query getQuery() {
@@ -65,7 +105,7 @@ public class BaseRemoteServiceTest extends TestCase {
         }
 
         try {
-            handler.processMessage(new QueryMessage(null) {
+            service.processMessage(new QueryMessage(null) {
 
                 @Override
                 public Query getQuery() {

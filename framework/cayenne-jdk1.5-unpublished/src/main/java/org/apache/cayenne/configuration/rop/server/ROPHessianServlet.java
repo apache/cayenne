@@ -1,0 +1,103 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.configuration.rop.server;
+
+import java.util.Collection;
+import java.util.Map;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.configuration.server.CayenneServerModule;
+import org.apache.cayenne.configuration.server.CayenneServerRuntime;
+import org.apache.cayenne.configuration.web.RequestHandler;
+import org.apache.cayenne.configuration.web.WebConfiguration;
+import org.apache.cayenne.configuration.web.WebUtil;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.remote.hessian.HessianConfig;
+import org.apache.cayenne.remote.hessian.service.HessianService;
+
+import com.caucho.hessian.io.SerializerFactory;
+import com.caucho.hessian.server.HessianServlet;
+
+/**
+ * A servlet that bootstraps a Hessian-based ROP server. Servlet initialization
+ * parameters:
+ * <ul>
+ * <li>configuration-location (optional) - a name of Cayenne configuration XML file that
+ * will be used to load Cayenne stack. If missing, the servlet name will be used to derive
+ * the location using the following naming convention: if servlet name is "foo",
+ * configuration file name is name is "cayenne-foo.xml".
+ * <li>extra-modules (optional) - a comma or space-separated list of class names, with
+ * each class implementing {@link Module} interface. These are the custom modules loaded
+ * after the two standard ones that allow users to override any Cayenne runtime aspects,
+ * e.g. {@link RequestHandler}. Each custom module must have a no-arg constructor.
+ * </ul>
+ * <p>
+ * 
+ * @since 3.1
+ */
+public class ROPHessianServlet extends HessianServlet {
+
+    /**
+     * Installs {@link HessianService} to respond to {@link RemoteService} requests.
+     */
+    @Override
+    public void init(ServletConfig configuration) throws ServletException {
+
+        WebConfiguration configAdapter = new WebConfiguration(configuration);
+
+        String configurationLocation = configAdapter.getCayenneConfigurationLocation();
+        Map<String, String> eventBridgeParameters = configAdapter
+                .getOtherInitializationParameters();
+
+        Collection<Module> modules = configAdapter
+                .createModules(
+                        new CayenneServerModule(configurationLocation),
+                        new CayenneROPServerModule(eventBridgeParameters));
+
+        CayenneServerRuntime runtime = new CayenneServerRuntime(
+                configurationLocation,
+                modules);
+
+        DataChannel channel = runtime.getDataChannel();
+
+        RemoteService service = runtime.getInjector().getInstance(RemoteService.class);
+
+        SerializerFactory serializerFactory = HessianConfig.createFactory(
+                HessianService.SERVER_SERIALIZER_FACTORIES,
+                channel.getEntityResolver());
+
+        setAPIClass(RemoteService.class);
+        setSerializerFactory(serializerFactory);
+        setService(service);
+
+        // Even though runtime instance is not accessed by Hessian service directly (it
+        // uses DataChannel injection instead), expose it in a manner consistent with
+        // CayenneFilter. Servlets other than ROP may decide to use it...
+
+        // TODO: andrus 04/14/2010: if CayenneFilter and ROPHessianServlet are used
+        // together in the same webapp, maybe a good idea to ensure they are using the
+        // same stack...Merging CayenneRuntime's modules might be tough though.
+        WebUtil.setCayenneRuntime(configuration.getServletContext(), runtime);
+        super.init(configuration);
+    }
+}

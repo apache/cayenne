@@ -19,57 +19,36 @@
 
 package org.apache.cayenne.remote.hessian.service;
 
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.cayenne.remote.hessian.HessianConfig;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.remote.service.HttpRemoteService;
 
-import com.caucho.hessian.io.SerializerFactory;
-import com.caucho.services.server.Service;
 import com.caucho.services.server.ServiceContext;
 
 /**
- * An implementation of RemoteService using binary Hessian protocol. For more info on
- * Hessian see http://www.caucho.com/resin-3.0/protocols/hessian.xtp.
+ * An implementation of RemoteService for work within Caucho Hessian environment.
  * 
- * @see org.apache.cayenne.remote.hessian.service.HessianServlet
- * @see org.apache.cayenne.remote.RemoteService
- * @since 1.2
+ * @since 3.1 the service API is reworked to initialize via Cayenne DI.
  */
-public class HessianService extends HttpRemoteService implements Service {
+public class HessianService extends HttpRemoteService {
+
+    public static final String EVENT_BRIDGE_PROPERTIES_MAP = "org.apache.cayenne.remote.hessian.service.HessianService.properties";
 
     public static final String[] SERVER_SERIALIZER_FACTORIES = new String[] {
-            ServerSerializerFactory.class.getName()
+        ServerSerializerFactory.class.getName()
     };
 
     /**
-     * Extracts parameters from ServletConfig and initializes the service.
+     * @since 3.1
      */
-    public void init(ServletConfig config) throws ServletException {
-        Map properties = new HashMap();
-
-        Enumeration en = config.getInitParameterNames();
-        while (en.hasMoreElements()) {
-            String name = (String) en.nextElement();
-            properties.put(name, config.getInitParameter(name));
-        }
-
-        initService(properties);
-    }
-
-    /**
-     * Creates a Hessian SerializerFactory with Cayenne extensions.
-     */
-    SerializerFactory createSerializerFactory() {
-        return HessianConfig.createFactory(SERVER_SERIALIZER_FACTORIES, getRootChannel()
-                .getEntityResolver());
+    public HessianService(@Inject DataDomain domain,
+            @Inject(EVENT_BRIDGE_PROPERTIES_MAP) Map<String, String> eventBridgeProperties) {
+        super(domain, eventBridgeProperties);
     }
 
     @Override
@@ -82,9 +61,5 @@ public class HessianService extends HttpRemoteService implements Service {
         }
 
         return request.getSession(create);
-    }
-
-    public void destroy() {
-        destroyService();
     }
 }

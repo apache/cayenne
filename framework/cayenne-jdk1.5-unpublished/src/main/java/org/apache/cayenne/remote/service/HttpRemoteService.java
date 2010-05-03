@@ -26,24 +26,29 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.remote.RemoteSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
- * A {@link org.apache.cayenne.remote.RemoteService} implementation that stores
- * server context information in HTTP sessions.
+ * A {@link org.apache.cayenne.remote.RemoteService} implementation that stores server
+ * context information in HTTP sessions.
  * 
  * @since 1.2
  */
 public abstract class HttpRemoteService extends BaseRemoteService {
 
-    static final String SESSION_ATTRIBUTE = "HttpRemoteService.ServerSession";
+    static final String SESSION_ATTRIBUTE = HttpRemoteService.class.getName()
+            + ".ServerSession";
 
-    // keep logger non-static so that it could be garbage collected with this instance..
-    private final Log logObj = LogFactory.getLog(HttpRemoteService.class);
+    private Map<String, WeakReference<DataChannel>> sharedChannels;
 
-    private Map<String, WeakReference<DataChannel>> sharedChannels = new HashMap<String, WeakReference<DataChannel>>();
+    /**
+     * @since 3.1
+     */
+    public HttpRemoteService(DataDomain domain, Map<String, String> eventBridgeProperties) {
+        super(domain, eventBridgeProperties);
+        this.sharedChannels = new HashMap<String, WeakReference<DataChannel>>();
+    }
 
     /**
      * Returns an HttpSession associated with the current request in progress.
@@ -101,10 +106,10 @@ public abstract class HttpRemoteService extends BaseRemoteService {
             if (channel == null) {
                 channel = createChannel();
                 saveSharedChannel(name, channel);
-                logObj.debug("Starting a new shared channel: " + name);
+                logger.debug("Starting a new shared channel: " + name);
             }
             else {
-                logObj.debug("Joining existing shared channel: " + name);
+                logger.debug("Joining existing shared channel: " + name);
             }
         }
 

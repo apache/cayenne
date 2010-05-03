@@ -19,42 +19,46 @@
 
 package org.apache.cayenne.remote.hessian.service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.event.MockEventBridgeFactory;
-import org.apache.cayenne.remote.hessian.service.HessianService;
 
+import com.caucho.services.server.ServiceContext;
+import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletConfig;
+
+import junit.framework.TestCase;
 
 public class HessianServiceTest extends TestCase {
 
-    public void testInit() throws Exception {
-        MockServletConfig config = new MockServletConfig();
-        config.setInitParameter(
+    public void testGetSession() throws Exception {
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(
                 HessianService.EVENT_BRIDGE_FACTORY_PROPERTY,
                 MockEventBridgeFactory.class.getName());
 
-        HessianService handler = new HessianService() {
+        DataDomain domain = new DataDomain("test");
 
-            @Override
-            protected void initCayenneStack(Map properties) {
-                this.domain = new DataDomain("test");
-            }
-            
-            @Override
-            protected HttpSession getSession(boolean create) {
-                return new MockHttpSession();
-            }
-        };
+        HessianService service = new HessianService(domain, map);
 
-        handler.init(config);
-        assertEquals(MockEventBridgeFactory.class.getName(), handler
-                .getEventBridgeFactoryName());
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        HttpSession session = new MockHttpSession();
+        request.setSession(session);
+
+        // for some eason need to call this to get session activated in the mock request
+        request.getSession();
+
+        try {
+            ServiceContext.begin(request, null, null);
+            assertSame(session, service.getSession(false));
+        }
+        finally {
+            ServiceContext.end();
+        }
     }
 }

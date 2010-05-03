@@ -50,11 +50,13 @@ public class CayenneFilterTest extends TestCase {
         assertEquals("cayenne-abc.xml", runtime.getConfigurationLocation());
     }
 
-    public void testInitWithRuntimeName() throws Exception {
+    public void testInitWithLocation() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
-        config.setInitParameter(CayenneFilter.CONFIGURATION_LOCATION_PARAMETER, "xyz");
+        config.setInitParameter(
+                WebConfiguration.CONFIGURATION_LOCATION_PARAMETER,
+                "xyz");
 
         MockServletContext context = new MockServletContext();
         config.setupServletContext(context);
@@ -97,10 +99,9 @@ public class CayenneFilterTest extends TestCase {
 
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
-        config.setInitParameter(CayenneFilter.EXTRA_MODULES_PARAMETER, MockModule1.class
-                .getName()
-                + ","
-                + MockModule2.class.getName());
+        config.setInitParameter(
+                WebConfiguration.EXTRA_MODULES_PARAMETER,
+                MockModule1.class.getName() + "," + MockModule2.class.getName());
 
         MockServletContext context = new MockServletContext();
         config.setupServletContext(context);
@@ -126,7 +127,7 @@ public class CayenneFilterTest extends TestCase {
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
         config.setInitParameter(
-                CayenneFilter.EXTRA_MODULES_PARAMETER,
+                WebConfiguration.EXTRA_MODULES_PARAMETER,
                 CayenneFilter_DispatchModule.class.getName());
 
         MockServletContext context = new MockServletContext();

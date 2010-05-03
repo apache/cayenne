@@ -27,8 +27,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.conf.DefaultConfiguration;
 import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
@@ -37,8 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A generic implementation of an RemoteService. Subclasses can be customized to work with
- * different remoting mechanisms, such as Hessian or JAXRPC.
+ * A generic implementation of an RemoteService. Can be subclassed to work with different
+ * remoting mechanisms, such as Hessian or JAXRPC.
  * 
  * @since 1.2
  */
@@ -46,48 +44,42 @@ public abstract class BaseRemoteService implements RemoteService {
 
     public static final String EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.RemoteService.EventBridge.factory";
 
-    // keep logger non-static so that it could be garbage collected with this instance..
-    private final Log logObj = LogFactory.getLog(BaseRemoteService.class);
+    // keep logger non-static so that it could be garbage collected with this instance.
+    protected final Log logger;
 
     protected DataDomain domain;
-
     protected String eventBridgeFactoryName;
-    protected Map eventBridgeParameters;
+    protected Map<String, String> eventBridgeParameters;
+
+    /**
+     * @since 3.1
+     */
+    public BaseRemoteService(DataDomain domain, Map<String, String> eventBridgeProperties) {
+
+        logger = LogFactory.getLog(getClass());
+
+        // start Cayenne service
+        logger.debug("ROP service is starting");
+
+        this.domain = domain;
+        initEventBridgeParameters(eventBridgeProperties);
+
+        logger.debug(getClass().getName() + " started");
+    }
 
     public String getEventBridgeFactoryName() {
         return eventBridgeFactoryName;
     }
 
-    public Map getEventBridgeParameters() {
+    public Map<String, String> getEventBridgeParameters() {
         return eventBridgeParameters != null ? Collections
                 .unmodifiableMap(eventBridgeParameters) : Collections.EMPTY_MAP;
     }
 
     /**
-     * A method that sets up a service, initializing Cayenne stack. Should be invoked by
-     * subclasses from their appropriate service lifecycle methods.
-     */
-    protected void initService(Map properties) throws CayenneRuntimeException {
-
-        // start Cayenne service
-        logObj.debug(this.getClass().getName() + " is starting");
-
-        initCayenneStack(properties);
-        initEventBridgeParameters(properties);
-
-        logObj.debug(getClass().getName() + " started");
-    }
-
-    /**
-     * Shuts down this service. Should be invoked by subclasses from their appropriate
-     * service lifecycle methods.
-     */
-    protected void destroyService() {
-        logObj.debug(getClass().getName() + " destroyed");
-    }
-
-    /**
      * Returns a DataChannel that is a parent of all session DataChannels.
+     * 
+     * @deprecated unused since 3.1
      */
     public DataChannel getRootChannel() {
         return domain;
@@ -113,16 +105,16 @@ public abstract class BaseRemoteService implements RemoteService {
     protected abstract ServerSession getServerSession();
 
     public RemoteSession establishSession() {
-        logObj.debug("Session requested by client");
+        logger.debug("Session requested by client");
 
         RemoteSession session = createServerSession().getSession();
 
-        logObj.debug("Established client session: " + session);
+        logger.debug("Established client session: " + session);
         return session;
     }
 
     public RemoteSession establishSharedSession(String name) {
-        logObj.debug("Shared session requested by client. Group name: " + name);
+        logger.debug("Shared session requested by client. Group name: " + name);
 
         if (name == null) {
             throw new CayenneRuntimeException("Invalid null shared session name");
@@ -143,7 +135,7 @@ public abstract class BaseRemoteService implements RemoteService {
             throw new MissingSessionException("No session associated with request.");
         }
 
-        logObj.debug("processMessage, sessionId: " + handler.getSession().getSessionId());
+        logger.debug("processMessage, sessionId: " + handler.getSession().getSessionId());
 
         // intercept and log exceptions
         try {
@@ -156,7 +148,7 @@ public abstract class BaseRemoteService implements RemoteService {
                     message.getClass().getName()).append(" of type ").append(message);
 
             String wrapperMessageString = wrapperMessage.toString();
-            logObj.info(wrapperMessageString, th);
+            logger.info(wrapperMessageString, th);
 
             // This exception will probably be propagated to the client.
             // Recast the exception to a serializable form.
@@ -184,44 +176,28 @@ public abstract class BaseRemoteService implements RemoteService {
     /**
      * Creates a server-side channel that will handle all client requests. For shared
      * sessions the same channel instance is reused for the entire group of clients. For
-     * dedicated sessions, one channel per client is created. <p/> This implementation
-     * returns {@link ClientServerChannel} instance wrapping a DataContext. Subclasses may
-     * override the method to customize channel creation. For instance they may wrap
-     * channel in the custom interceptors to handle transactions or security.
+     * dedicated sessions, one channel per client is created.
+     * <p/>
+     * This implementation returns {@link ClientServerChannel} instance wrapping a
+     * DataContext. Subclasses may override the method to customize channel creation. For
+     * instance they may wrap channel in the custom interceptors to handle transactions or
+     * security.
      */
     protected DataChannel createChannel() {
         return new ClientServerChannel(domain);
     }
 
     /**
-     * Sets up Cayenne stack.
-     */
-    protected void initCayenneStack(Map properties) {
-        Configuration cayenneConfig = new DefaultConfiguration(
-                Configuration.DEFAULT_DOMAIN_FILE);
-
-        try {
-            cayenneConfig.initialize();
-        }
-        catch (Exception ex) {
-            throw new CayenneRuntimeException("Error starting Cayenne", ex);
-        }
-
-        // TODO (Andrus 10/15/2005) this assumes that mapping has a single domain...
-        // do something about multiple domains
-        this.domain = cayenneConfig.getDomain();
-    }
-
-    /**
      * Initializes EventBridge parameters for remote clients peer-to-peer communications.
      */
-    protected void initEventBridgeParameters(Map properties) {
-        String eventBridgeFactoryName = (String) properties
+    protected void initEventBridgeParameters(Map<String, String> properties) {
+        String eventBridgeFactoryName = properties
                 .get(BaseRemoteService.EVENT_BRIDGE_FACTORY_PROPERTY);
 
         if (eventBridgeFactoryName != null) {
 
-            Map eventBridgeParameters = new HashMap(properties);
+            Map<String, String> eventBridgeParameters = new HashMap<String, String>(
+                    properties);
             eventBridgeParameters.remove(BaseRemoteService.EVENT_BRIDGE_FACTORY_PROPERTY);
 
             this.eventBridgeFactoryName = eventBridgeFactoryName;

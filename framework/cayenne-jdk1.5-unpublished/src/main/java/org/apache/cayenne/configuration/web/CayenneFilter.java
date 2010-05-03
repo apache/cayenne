@@ -19,9 +19,7 @@
 package org.apache.cayenne.configuration.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.StringTokenizer;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -35,7 +33,6 @@ import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.CayenneServerModule;
 import org.apache.cayenne.configuration.server.CayenneServerRuntime;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.util.Util;
 
 /**
  * A filter that creates a Cayenne server runtime, possibly including custom modules. By
@@ -61,56 +58,18 @@ import org.apache.cayenne.util.Util;
  */
 public class CayenneFilter implements Filter {
 
-    static final String CONFIGURATION_LOCATION_PARAMETER = "configuration-location";
-    static final String EXTRA_MODULES_PARAMETER = "extra-modules";
-
     protected ServletContext servletContext;
 
     public void init(FilterConfig config) throws ServletException {
 
         this.servletContext = config.getServletContext();
 
-        String configurationLocation = config
-                .getInitParameter(CONFIGURATION_LOCATION_PARAMETER);
-        if (configurationLocation == null) {
-            configurationLocation = "cayenne-" + config.getFilterName() + ".xml";
-        }
+        WebConfiguration configAdapter = new WebConfiguration(config);
 
-        if (configurationLocation == null) {
-            throw new ServletException(
-                    "Can't initialize Cayenne runtime. CayenneFilter has no name and no '"
-                            + CONFIGURATION_LOCATION_PARAMETER
-                            + "' parameter");
-        }
+        String configurationLocation = configAdapter.getCayenneConfigurationLocation();
 
-        Collection<Module> modules = new ArrayList<Module>(5);
-        modules.add(new CayenneServerModule(configurationLocation));
-        modules.add(new CayenneWebModule());
-
-        String extraModules = config.getInitParameter(EXTRA_MODULES_PARAMETER);
-        if (extraModules != null) {
-
-            StringTokenizer toks = new StringTokenizer(extraModules, ", \n\r");
-
-            while (toks.hasMoreTokens()) {
-                String moduleName = toks.nextToken();
-                Module module;
-                try {
-                    module = (Module) Util.getJavaClass(moduleName).newInstance();
-                }
-                catch (Exception e) {
-                    String message = String
-                            .format(
-                                    "Error instantiating custom DI module '%s' by filter '%s': %s",
-                                    moduleName,
-                                    getClass().getName(),
-                                    e.getMessage());
-                    throw new ServletException(message, e);
-                }
-
-                modules.add(module);
-            }
-        }
+        Collection<Module> modules = configAdapter.createModules(new CayenneServerModule(
+                configurationLocation), new CayenneWebModule());
 
         CayenneServerRuntime runtime = new CayenneServerRuntime(
                 configurationLocation,
