@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.resource.ResourceLocator;
 
 /**
  * A superclass of possible Cayenne runtime objects. A CayenneRuntime is the main access
@@ -36,38 +35,28 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public abstract class CayenneRuntime {
 
-    protected String configurationLocation;
     protected Injector injector;
     protected Module[] modules;
 
     /**
-     * Creates a CayenneRuntime with configuration based on supplied array of DI modules.
+     * Creates a CayenneRuntime with configuration based on the supplied array of DI
+     * modules.
      */
-    public CayenneRuntime(String configurationLocation, Module... modules) {
-
-        if (configurationLocation == null) {
-            throw new NullPointerException("Null runtime configurationLocation");
-        }
+    public CayenneRuntime(Module... modules) {
 
         if (modules == null) {
             modules = new Module[0];
         }
 
-        this.configurationLocation = configurationLocation;
         this.modules = modules;
         this.injector = DIBootstrap.createInjector(modules);
     }
 
     /**
-     * Creates a CayenneRuntime with configuration based on supplied array of DI modules.
+     * Creates a CayenneRuntime with configuration based on the supplied collection of DI
+     * modules.
      */
-    public CayenneRuntime(String configurationLocation, Collection<Module> modules) {
-
-        if (configurationLocation == null) {
-            throw new NullPointerException("Null runtime configurationLocation");
-        }
-
-        this.configurationLocation = configurationLocation;
+    public CayenneRuntime(Collection<Module> modules) {
 
         if (modules == null) {
             this.modules = new Module[0];
@@ -77,14 +66,6 @@ public abstract class CayenneRuntime {
         }
 
         this.injector = DIBootstrap.createInjector(this.modules);
-    }
-
-    /**
-     * Returns location of the runtime configuration resource. E.g. "cayenne-xyz.xml".
-     * Configuration URL is passing this location to {@link ResourceLocator}.
-     */
-    public String getConfigurationLocation() {
-        return configurationLocation;
     }
 
     /**
@@ -109,9 +90,11 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Creates and returns an ObjectContext based on the runtime DataChannel.
+     * Returns an ObjectContext based on the runtime DataChannel. Default configuration
+     * will return a new instance of the ObjectContext on every call, as the corresponding
+     * factory is bound using NO_SCOPE scope. Custom modules may change this behavior.
      */
-    public ObjectContext newContext() {
+    public ObjectContext getContext() {
         return injector.getInstance(ObjectContext.class);
     }
 }

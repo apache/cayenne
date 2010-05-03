@@ -39,29 +39,29 @@ public class CayenneServerRuntime extends CayenneRuntime {
      * services contained in {@link CayenneServerModule}.
      */
     public CayenneServerRuntime(String configurationLocation) {
-        super(configurationLocation, new CayenneServerModule(configurationLocation));
+        super(new CayenneServerModule(configurationLocation));
     }
 
     /**
      * Creates a server runtime object based on an array of custom DI modules. When
      * implementing custom modules, refer to {@link CayenneServerModule} for the minimal
-     * set of services required by Cayenne. The easiest way to do it is to pass
+     * set of services expected by Cayenne. The easiest way to do it is to pass
      * {@link CayenneServerModule} or its subclass as one of the modules to this
      * constructor.
      */
-    public CayenneServerRuntime(String configurationLocation, Module... modules) {
-        super(configurationLocation, modules);
+    public CayenneServerRuntime(Module... modules) {
+        super(modules);
     }
 
     /**
      * Creates a server runtime object based on a collection of DI modules. When
      * implementing custom modules, refer to {@link CayenneServerModule} for the minimal
-     * set of services required by Cayenne. The easiest way to do it is to pass
+     * set of services expected by Cayenne. The easiest way to do it is to pass
      * {@link CayenneServerModule} or its subclass as one of the modules to this
      * constructor.
      */
-    public CayenneServerRuntime(String configurationLocation, Collection<Module> modules) {
-        super(configurationLocation, modules);
+    public CayenneServerRuntime(Collection<Module> modules) {
+        super(modules);
     }
 
     /**

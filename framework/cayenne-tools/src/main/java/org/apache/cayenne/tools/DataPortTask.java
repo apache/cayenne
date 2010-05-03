@@ -75,9 +75,7 @@ public class DataPortTask extends CayenneTask {
             }
         };
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(
-                projectFileLocation,
-                module);
+        CayenneServerRuntime runtime = new CayenneServerRuntime(module);
         DataDomain domain;
 
         ClassLoader threadContextClassLoader = Thread

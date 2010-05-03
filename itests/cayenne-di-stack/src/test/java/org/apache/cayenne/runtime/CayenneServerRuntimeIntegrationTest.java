@@ -48,10 +48,10 @@ public class CayenneServerRuntimeIntegrationTest extends
 
 	public void testNewContext_notSingleton() {
 
-		ObjectContext context1 = runtime.newContext();
+		ObjectContext context1 = runtime.getContext();
 		assertNotNull(context1);
 
-		ObjectContext context2 = runtime.newContext();
+		ObjectContext context2 = runtime.getContext();
 		assertNotNull(context2);
 
 		assertNotSame(context1, context2);
@@ -65,8 +65,8 @@ public class CayenneServerRuntimeIntegrationTest extends
 
 		SelectQuery query = new SelectQuery(Table1.class);
 
-		ObjectContext context1 = runtime.newContext();
-		ObjectContext context2 = runtime.newContext();
+		ObjectContext context1 = runtime.getContext();
+		ObjectContext context2 = runtime.getContext();
 
 		Table1 o1 = (Table1) Cayenne.objectForQuery(context1, query);
 		Table1 o2 = (Table1) Cayenne.objectForQuery(context2, query);

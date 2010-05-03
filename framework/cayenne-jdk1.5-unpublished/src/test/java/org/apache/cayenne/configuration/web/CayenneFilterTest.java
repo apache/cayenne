@@ -21,6 +21,7 @@ package org.apache.cayenne.configuration.web;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.CayenneServerModule;
 
 import com.mockrunner.mock.web.MockFilterChain;
@@ -47,16 +48,15 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("cayenne-abc.xml", runtime.getConfigurationLocation());
+        assertEquals("cayenne-abc.xml", runtime.getInjector().getInstance(
+                RuntimeProperties.class).get(RuntimeProperties.CONFIGURATION_LOCATION));
     }
 
     public void testInitWithLocation() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
-        config.setInitParameter(
-                WebConfiguration.CONFIGURATION_LOCATION_PARAMETER,
-                "xyz");
+        config.setInitParameter(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER, "xyz");
 
         MockServletContext context = new MockServletContext();
         config.setupServletContext(context);
@@ -67,7 +67,10 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("xyz", runtime.getConfigurationLocation());
+        assertEquals("xyz", runtime
+                .getInjector()
+                .getInstance(RuntimeProperties.class)
+                .get(RuntimeProperties.CONFIGURATION_LOCATION));
     }
 
     public void testInitWithStandardModules() throws Exception {
@@ -86,7 +89,8 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("cayenne-abc.xml", runtime.getConfigurationLocation());
+        assertEquals("cayenne-abc.xml", runtime.getInjector().getInstance(
+                RuntimeProperties.class).get(RuntimeProperties.CONFIGURATION_LOCATION));
         assertEquals(2, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof CayenneServerModule);
         assertTrue(runtime.getModules()[1] instanceof CayenneWebModule);

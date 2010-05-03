@@ -71,9 +71,7 @@ public class CayenneFilter implements Filter {
         Collection<Module> modules = configAdapter.createModules(new CayenneServerModule(
                 configurationLocation), new CayenneWebModule());
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(
-                configurationLocation,
-                modules);
+        CayenneServerRuntime runtime = new CayenneServerRuntime(modules);
         WebUtil.setCayenneRuntime(config.getServletContext(), runtime);
     }
 

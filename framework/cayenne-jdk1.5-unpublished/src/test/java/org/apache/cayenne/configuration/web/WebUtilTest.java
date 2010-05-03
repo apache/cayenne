@@ -31,13 +31,13 @@ public class WebUtilTest extends TestCase {
 
         assertNull(WebUtil.getCayenneRuntime(context));
 
-        CayenneRuntime runtime = new CayenneRuntime("xx") {
+        CayenneRuntime runtime = new CayenneRuntime() {
         };
 
         WebUtil.setCayenneRuntime(context, runtime);
         assertSame(runtime, WebUtil.getCayenneRuntime(context));
 
-        CayenneRuntime runtime1 = new CayenneRuntime("yy") {
+        CayenneRuntime runtime1 = new CayenneRuntime() {
         };
 
         WebUtil.setCayenneRuntime(context, runtime1);

@@ -21,6 +21,7 @@ package org.apache.cayenne.configuration.rop.server;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.CayenneServerModule;
 import org.apache.cayenne.configuration.web.MockModule1;
 import org.apache.cayenne.configuration.web.MockModule2;
@@ -52,7 +53,8 @@ public class ROPHessianServletTest extends TestCase {
 
         assertEquals(
                 "cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml",
-                runtime.getConfigurationLocation());
+                runtime.getInjector().getInstance(RuntimeProperties.class).get(
+                        RuntimeProperties.CONFIGURATION_LOCATION));
     }
 
     public void testInitWithLocation() throws Exception {
@@ -71,7 +73,10 @@ public class ROPHessianServletTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals(location, runtime.getConfigurationLocation());
+        assertEquals(location, runtime
+                .getInjector()
+                .getInstance(RuntimeProperties.class)
+                .get(RuntimeProperties.CONFIGURATION_LOCATION));
     }
 
     public void testInitWithStandardModules() throws Exception {
@@ -90,7 +95,8 @@ public class ROPHessianServletTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("cayenne-" + name + ".xml", runtime.getConfigurationLocation());
+        assertEquals("cayenne-" + name + ".xml", runtime.getInjector().getInstance(
+                RuntimeProperties.class).get(RuntimeProperties.CONFIGURATION_LOCATION));
         assertEquals(2, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof CayenneServerModule);
         assertTrue(runtime.getModules()[1] instanceof CayenneROPServerModule);

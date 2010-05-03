@@ -74,9 +74,7 @@ public class ROPHessianServlet extends HessianServlet {
                         new CayenneServerModule(configurationLocation),
                         new CayenneROPServerModule(eventBridgeParameters));
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(
-                configurationLocation,
-                modules);
+        CayenneServerRuntime runtime = new CayenneServerRuntime(modules);
 
         DataChannel channel = runtime.getDataChannel();
 
