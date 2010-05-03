@@ -16,25 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.di.mock;
 
-import java.util.Collection;
+import org.apache.cayenne.di.Inject;
 
-import org.apache.cayenne.ConfigurationException;
+public class MockImplementation4Alt2 implements MockInterface4 {
 
-/**
- * A binding builder for list configurations.
- * 
- * @param <T> A type of list values.
- * @since 3.1
- */
-public interface ListBuilder<T> {
+    private MockInterface1 service1;
+    private MockInterface3 service3;
 
-    ListBuilder<T> add(Class<? extends T> interfaceType) throws ConfigurationException;
+    public MockImplementation4Alt2(@Inject("two") MockInterface1 service1,
+            @Inject MockInterface3 service3) {
+        this.service1 = service1;
+        this.service3 = service3;
+    }
 
-    ListBuilder<T> add(T value) throws ConfigurationException;
-    
-    ListBuilder<T> addAll(Collection<T> values) throws ConfigurationException;
+    public String getName() {
+        return "constructor_" + service1.getName() + "_" + service3.getName();
+    }
 
-    void in(Scope scope);
 }

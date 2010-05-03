@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import java.util.Map;
+
 import org.apache.cayenne.ConfigurationException;
 
 /**
@@ -33,6 +35,8 @@ public interface MapBuilder<T> {
             throws ConfigurationException;
 
     MapBuilder<T> put(String key, T value) throws ConfigurationException;
-    
+
+    MapBuilder<T> putAll(Map<String, T> map) throws ConfigurationException;
+
     void in(Scope scope);
 }

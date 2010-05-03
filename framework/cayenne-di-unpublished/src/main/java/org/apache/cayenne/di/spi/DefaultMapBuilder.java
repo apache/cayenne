@@ -19,6 +19,7 @@
 package org.apache.cayenne.di.spi;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Key;
@@ -37,6 +38,10 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     DefaultMapBuilder(Key<Map<String, ?>> bindingKey, DefaultInjector injector) {
         this.injector = injector;
         this.bindingKey = bindingKey;
+
+        // trigger initialization of the MapProvider right away, as we need to bind an
+        // empty map even if the user never calls 'put'
+        getMapProvider();
     }
 
     public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
@@ -57,6 +62,23 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
 
         // TODO: andrus 11/15/2009 - report overriding the key??
         getMapProvider().put(key, provider1);
+        return this;
+    }
+
+    public MapBuilder<T> putAll(Map<String, T> map) throws ConfigurationException {
+
+        MapProvider provider = getMapProvider();
+
+        for (Entry<String, T> entry : map.entrySet()) {
+
+            Provider<T> provider0 = new InstanceProvider<T>(entry.getValue());
+            Provider<T> provider1 = new FieldInjectingProvider<T>(
+                    provider0,
+                    injector,
+                    bindingKey);
+            provider.put(entry.getKey(), provider1);
+        }
+
         return this;
     }
 

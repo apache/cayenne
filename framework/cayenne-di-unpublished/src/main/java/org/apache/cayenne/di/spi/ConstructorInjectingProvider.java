@@ -107,10 +107,11 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
 
         Annotation[][] annotations = lastMatch.getParameterAnnotations();
         this.bindingNames = new String[annotations.length];
-        for (Annotation[] parameterAnnotations : annotations) {
+        for (int i = 0; i < annotations.length; i++) {
 
-            for (int i = 0; i < parameterAnnotations.length; i++) {
-                Annotation annotation = parameterAnnotations[i];
+            Annotation[] parameterAnnotations = annotations[i];
+            for (int j = 0; j < parameterAnnotations.length; j++) {
+                Annotation annotation = parameterAnnotations[j];
                 if (annotation.annotationType().equals(Inject.class)) {
                     Inject inject = (Inject) annotation;
                     bindingNames[i] = inject.value();

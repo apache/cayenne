@@ -36,6 +36,7 @@ import org.apache.cayenne.di.mock.MockImplementation2_Named;
 import org.apache.cayenne.di.mock.MockImplementation3;
 import org.apache.cayenne.di.mock.MockImplementation4;
 import org.apache.cayenne.di.mock.MockImplementation4Alt;
+import org.apache.cayenne.di.mock.MockImplementation4Alt2;
 import org.apache.cayenne.di.mock.MockImplementation5;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface2;
@@ -139,6 +140,28 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("constructor_alt2", service.getName());
     }
 
+    public void testConstructorInjection_Named_Mixed() {
+
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(MockImplementation1.class);
+                binder.bind(Key.get(MockInterface1.class, "one")).to(
+                        MockImplementation1Alt.class);
+                binder.bind(Key.get(MockInterface1.class, "two")).to(
+                        MockImplementation1Alt2.class);
+                binder.bind(MockInterface3.class).to(MockImplementation3.class);
+                binder.bind(MockInterface4.class).to(MockImplementation4Alt2.class);
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface4 service = injector.getInstance(MockInterface4.class);
+        assertNotNull(service);
+        assertEquals("constructor_alt2_XName", service.getName());
+    }
+
     public void testProviderInjection_Constructor() {
 
         Module module = new Module() {
@@ -154,6 +177,25 @@ public class DefaultInjectorInjectionTest extends TestCase {
 
         MockInterface2 service = injector.getInstance(MockInterface2.class);
         assertEquals("altered_MyName", service.getAlteredName());
+    }
+
+    public void testMapInjection_Empty() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_MapConfiguration.class);
+
+                // empty map must be still bound
+                binder.bindMap("xyz");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals("", service.getName());
     }
 
     public void testMapInjection() {
@@ -234,6 +276,23 @@ public class DefaultInjectorInjectionTest extends TestCase {
         MockInterface1 service = injector.getInstance(MockInterface1.class);
         assertNotNull(service);
         assertEquals(";xyz;yvalue", service.getName());
+    }
+
+    public void testListInjection_empty() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_ListConfiguration.class);
+                binder.bindList("xyz");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals("", service.getName());
     }
 
     public void testListInjection_resumed() {

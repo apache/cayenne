@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.ConfigurationException;
@@ -37,6 +38,10 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     DefaultListBuilder(Key<List<?>> bindingKey, DefaultInjector injector) {
         this.injector = injector;
         this.bindingKey = bindingKey;
+
+        // trigger initialization of the ListProvider right away, as we need to bind an
+        // empty list even if the user never calls 'put'
+        getListProvider();
     }
 
     public ListBuilder<T> add(Class<? extends T> interfaceType)
@@ -54,6 +59,23 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
                 bindingKey);
 
         getListProvider().add(provider1);
+        return this;
+    }
+
+    public ListBuilder<T> addAll(Collection<T> values) throws ConfigurationException {
+
+        ListProvider listProvider = getListProvider();
+
+        for (T value : values) {
+            Provider<T> provider0 = new InstanceProvider<T>(value);
+            Provider<T> provider1 = new FieldInjectingProvider<T>(
+                    provider0,
+                    injector,
+                    bindingKey);
+
+            listProvider.add(provider1);
+        }
+
         return this;
     }
 
