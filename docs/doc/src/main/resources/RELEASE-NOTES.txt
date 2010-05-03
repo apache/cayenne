@@ -35,8 +35,10 @@ CAY-1393 Update velocity to 1.6.3
 CAY-1394 DI-based replacement for JNDI hack
 CAY-1415 Replace WebApplicationContextFilter with a DI-enabled filter
 CAY-1419 File-based ResourceLocator to replace legacy FileConfiguration
+CAY-1420 Migrate ROP server-side components to DI-based stack
 CAY-1422 Convert EventManager to an interface, make it injectable
 CAY-1424 DI: support for named service injection and flexible map/list binding
+CAY-1425 Remove Configuration sharedConfiguration singleton affecting DataContext deserialization, CayenneDataObject XML deserialization, DataContext static factory method. 
 
 Bug Fixes Since 3.0:
 

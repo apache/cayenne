@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -634,14 +633,13 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
 
     public void decodeFromXML(XMLDecoder decoder) {
 
-        // TODO: (andrus, long time ago) relying on singleton Configuration and a single
-        // DataDomain is a very bad idea... Decoder itself can optionally store a
-        // DataContext or an EntityResolver to provide the context appropriate for a given
-        // environment
-        EntityResolver resolver = Configuration
-                .getSharedConfiguration()
-                .getDomain()
-                .getEntityResolver();
+        DataChannel channel = BaseContext.getThreadDeserializationChannel();
+        if (channel == null) {
+            throw new IllegalStateException(
+                    "Can't perform deserialization - no DataChannel bound to the current thread.");
+        }
+
+        EntityResolver resolver = channel.getEntityResolver();
         ObjEntity objectEntity = resolver.lookupObjEntity(getClass());
 
         for (final ObjAttribute att : objectEntity.getDeclaredAttributes()) {

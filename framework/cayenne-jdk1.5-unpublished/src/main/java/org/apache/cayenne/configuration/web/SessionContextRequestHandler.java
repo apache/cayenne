@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.cayenne.BaseContext;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -50,6 +51,10 @@ public class SessionContextRequestHandler implements RequestHandler {
     private Injector injector;
 
     public void requestStart(ServletRequest request, ServletResponse response) {
+
+        BaseContext.bindThreadDeserializationChannel(injector
+                .getInstance(DataChannel.class));
+
         if (request instanceof HttpServletRequest) {
 
             // this forces session creation if it does not exist yet
@@ -70,6 +75,7 @@ public class SessionContextRequestHandler implements RequestHandler {
     }
 
     public void requestEnd(ServletRequest request, ServletResponse response) {
+        BaseContext.bindThreadDeserializationChannel(null);
         BaseContext.bindThreadObjectContext(null);
     }
 

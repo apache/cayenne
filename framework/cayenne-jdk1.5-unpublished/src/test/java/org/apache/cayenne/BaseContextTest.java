@@ -20,16 +20,32 @@ package org.apache.cayenne;
 
 import java.util.Map;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class BaseContextTest extends CayenneCase {
+
     public void testUserPropertiesLazyInit() {
-        DataContext context = createDataContext();
+        BaseContext context = new MockBaseContext();
         assertNull(context.userProperties);
 
-        Map properties = context.getUserProperties();
+        Map<String, Object> properties = context.getUserProperties();
         assertNotNull(properties);
         assertSame(properties, context.getUserProperties());
+    }
+
+    public void testBindThreadDeserializationChannel() {
+
+        assertNull(BaseContext.getThreadDeserializationChannel());
+
+        try {
+            DataChannel channel = new MockDataChannel();
+            BaseContext.bindThreadDeserializationChannel(channel);
+            assertSame(channel, BaseContext.getThreadDeserializationChannel());
+        }
+        finally {
+            BaseContext.bindThreadDeserializationChannel(null);
+        }
+
+        assertNull(BaseContext.getThreadDeserializationChannel());
     }
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.web.CayenneFilter;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -61,13 +62,20 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<ObjectContext>();
 
     /**
+     * A holder of a DataChannel bound to the current thread. Used mainly for proper
+     * contexts and objects deserialization.
+     * 
+     * @since 3.1
+     */
+    protected static final ThreadLocal<DataChannel> threadDeserializationChannel = new ThreadLocal<DataChannel>();
+
+    /**
      * Returns the ObjectContext bound to the current thread.
      * 
      * @since 3.0
      * @return the ObjectContext associated with caller thread.
      * @throws IllegalStateException if there is no ObjectContext bound to the current
      *             thread.
-     * @see org.apache.cayenne.conf.WebApplicationContextFilter
      */
     public static ObjectContext getThreadObjectContext() throws IllegalStateException {
         ObjectContext context = threadObjectContext.get();
@@ -89,13 +97,41 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         threadObjectContext.set(context);
     }
 
+    /**
+     * Binds a DataChannel to the current thread that should be used for deserializing of
+     * ObjectContexts. An ObjectContext implementation may call
+     * {@link #getThreadDeserializationChannel()} from its deserialization method to
+     * attach to the currently active channel.
+     * <p>
+     * {@link CayenneFilter} will automatically bind the right channel to each request
+     * thread. If you are not using CayenneFilter, your application is responsible for
+     * calling this method at appropriate points of the lifecycle.
+     * 
+     * @since 3.1
+     */
+    public static void bindThreadDeserializationChannel(DataChannel dataChannel) {
+        threadDeserializationChannel.set(dataChannel);
+    }
+
+    /**
+     * Returns the DataChannel bound to the current thread. May return null if none is
+     * bound (unlike {@link #getThreadObjectContext()} that throws if a context is not
+     * bound).
+     * 
+     * @since 3.1
+     */
+    public static DataChannel getThreadDeserializationChannel() {
+        return threadDeserializationChannel.get();
+    }
+
     // if we are to pass the context around, channel should be left alone and
     // reinjected later if needed
     protected transient DataChannel channel;
     protected QueryCache queryCache;
-    
+
     /**
      * Graph action that handles property changes
+     * 
      * @since 3.1
      */
     protected ObjectContextGraphAction graphAction;
@@ -106,7 +142,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @since 3.0
      */
     protected Map<String, Object> userProperties;
-    
+
     protected BaseContext() {
         graphAction = new ObjectContextGraphAction(this);
     }
@@ -392,47 +428,47 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     public void setUserProperty(String key, Object value) {
         getUserProperties().put(key, value);
     }
-    
+
     /**
-     * If ObjEntity qualifier is set, asks it to inject initial value to an object.
-     * Also performs all Persistent initialization operations
+     * If ObjEntity qualifier is set, asks it to inject initial value to an object. Also
+     * performs all Persistent initialization operations
      */
     protected void injectInitialValue(Object obj) {
         // must follow this exact order of property initialization per CAY-653, i.e. have
         // the id and the context in place BEFORE setPersistence is called
-        
+
         Persistent object = (Persistent) obj;
-        
+
         object.setObjectContext(this);
         object.setPersistenceState(PersistenceState.NEW);
-        
+
         GraphManager graphManager = getGraphManager();
         synchronized (graphManager) {
             graphManager.registerNode(object.getObjectId(), object);
             graphManager.nodeCreated(object.getObjectId());
         }
-        
+
         ObjEntity entity;
         try {
             entity = getEntityResolver().lookupObjEntity(object.getClass());
         }
         catch (CayenneRuntimeException ex) {
-            //ObjEntity cannot be fetched, ignored
+            // ObjEntity cannot be fetched, ignored
             entity = null;
         }
-        
+
         if (entity != null) {
             if (entity.getDeclaredQualifier() instanceof ValueInjector) {
                 ((ValueInjector) entity.getDeclaredQualifier()).injectValue(object);
             }
         }
-        
+
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
                 LifecycleEvent.POST_ADD,
                 object);
     }
-    
+
     /**
      * Schedules an object for deletion on the next commit of this context. Object's
      * persistence state is changed to PersistenceState.DELETED; objects related to this
@@ -447,7 +483,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     public void deleteObject(Object object) {
         new ObjectContextDeleteAction(this).performDelete((Persistent) object);
     }
-    
+
     public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
         if (objects.isEmpty())
             return;

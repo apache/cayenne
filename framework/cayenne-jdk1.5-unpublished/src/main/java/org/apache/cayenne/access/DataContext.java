@@ -44,7 +44,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -76,9 +75,7 @@ import org.apache.cayenne.util.Util;
  */
 public class DataContext extends BaseContext implements DataChannel {
 
-    // Set of DataContextDelegates to be notified.
     private DataContextDelegate delegate;
-
     protected boolean usingSharedSnaphsotCache;
     protected boolean validatingObjectsOnCommit;
     protected ObjectStore objectStore;
@@ -88,68 +85,6 @@ public class DataContext extends BaseContext implements DataChannel {
     protected transient EntityResolver entityResolver;
 
     protected transient DataContextMergeHandler mergeHandler;
-
-    /**
-     * Stores the name of parent DataDomain. Used to defer initialization of the parent
-     * QueryEngine after deserialization. This helps avoid an issue with certain servlet
-     * engines (e.g. Tomcat) where HttpSessions with DataContext's are deserialized at
-     * startup before Cayenne stack is fully initialized.
-     */
-    protected transient String lazyInitParentDomainName;
-
-    /**
-     * Factory method that creates and returns a new instance of DataContext based on
-     * default domain. If more than one domain exists in the current configuration,
-     * {@link DataContext#createDataContext(String)} must be used instead. ObjectStore
-     * associated with created DataContext will have a cache stack configured using parent
-     * domain settings.
-     */
-    public static DataContext createDataContext() {
-        return Configuration.getSharedConfiguration().getDomain().createDataContext();
-    }
-
-    /**
-     * Factory method that creates and returns a new instance of DataContext based on
-     * default domain. If more than one domain exists in the current configuration,
-     * {@link DataContext#createDataContext(String, boolean)} must be used instead.
-     * ObjectStore associated with newly created DataContext will have a cache stack
-     * configured according to the specified policy, overriding a parent domain setting.
-     * 
-     * @since 1.1
-     */
-    public static DataContext createDataContext(boolean useSharedCache) {
-        return Configuration.getSharedConfiguration().getDomain().createDataContext(
-                useSharedCache);
-    }
-
-    /**
-     * Factory method that creates and returns a new instance of DataContext using named
-     * domain as its parent. If there is no domain matching the name argument, an
-     * exception is thrown.
-     */
-    public static DataContext createDataContext(String domainName) {
-        DataDomain domain = Configuration.getSharedConfiguration().getDomain(domainName);
-        if (domain == null) {
-            throw new IllegalArgumentException("Non-existent domain: " + domainName);
-        }
-        return domain.createDataContext();
-    }
-
-    /**
-     * Creates and returns new DataContext that will use a named DataDomain as its parent.
-     * ObjectStore associated with newly created DataContext will have a cache stack
-     * configured according to the specified policy, overriding a parent domain setting.
-     * 
-     * @since 1.1
-     */
-    public static DataContext createDataContext(String domainName, boolean useSharedCache) {
-
-        DataDomain domain = Configuration.getSharedConfiguration().getDomain(domainName);
-        if (domain == null) {
-            throw new IllegalArgumentException("Non-existent domain: " + domainName);
-        }
-        return domain.createDataContext(useSharedCache);
-    }
 
     /**
      * Creates a new DataContext that is not attached to the Cayenne stack.
@@ -530,7 +465,6 @@ public class DataContext extends BaseContext implements DataChannel {
                 .synchronizedObjectsFromDataRows(dataRows);
     }
 
-
     /**
      * Creates a DataObject from DataRow.
      * 
@@ -622,7 +556,7 @@ public class DataContext extends BaseContext implements DataChannel {
         // note that the order of initialization of persistence artifacts below is
         // important - do not change it lightly
         object.setObjectId(id);
-        
+
         injectInitialValue(object);
 
         return object;
@@ -668,13 +602,13 @@ public class DataContext extends BaseContext implements DataChannel {
         else {
             persistent.setObjectId(new ObjectId(entity.getName()));
         }
-        
+
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 entity.getName());
         if (descriptor == null) {
             throw new IllegalArgumentException("Invalid entity name: " + entity.getName());
         }
-        
+
         injectInitialValue(object);
 
         // now we need to find all arc changes, inject missing value holders and pull in
@@ -1165,23 +1099,6 @@ public class DataContext extends BaseContext implements DataChannel {
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
 
-        // If the "parent" of this datacontext is a DataDomain, then just write the
-        // name of it. Then when deserialization happens, we can get back the DataDomain
-        // by name, from the shared configuration (which will either load it if need be,
-        // or return an existing one.
-
-        if (this.channel == null && this.lazyInitParentDomainName != null) {
-            out.writeObject(lazyInitParentDomainName);
-        }
-        else if (this.channel instanceof DataDomain) {
-            DataDomain domain = (DataDomain) this.channel;
-            out.writeObject(domain.getName());
-        }
-        else {
-            // Hope that whatever this.parent is, that it is Serializable
-            out.writeObject(this.channel);
-        }
-
         // Serialize local snapshots cache
         if (!isUsingSharedSnapshotCache()) {
             out.writeObject(objectStore.getDataRowCache());
@@ -1195,25 +1112,7 @@ public class DataContext extends BaseContext implements DataChannel {
         // 1. read non-transient properties
         in.defaultReadObject();
 
-        // 2. read parent or its name
-        Object value = in.readObject();
-        if (value instanceof DataChannel) {
-            // A real QueryEngine object - use it
-            // call a setter to initialize EntityResolver 
-            setChannel((DataChannel) value);
-        }
-        else if (value instanceof String) {
-            // The name of a DataDomain - use it
-            this.lazyInitParentDomainName = (String) value;
-        }
-        else {
-            throw new CayenneRuntimeException(
-                    "Parent attribute of DataContext was neither a QueryEngine nor "
-                            + "the name of a valid DataDomain:"
-                            + value);
-        }
-
-        // 3. Deserialize local snapshots cache
+        // 2. Deserialize local snapshots cache
         if (!isUsingSharedSnapshotCache()) {
             DataRowStore cache = (DataRowStore) in.readObject();
             objectStore.setDataRowCache(cache);
@@ -1235,18 +1134,14 @@ public class DataContext extends BaseContext implements DataChannel {
         }
     }
 
-    // Re-attaches itself to the parent domain with previously stored name.
-    //
-    // TODO: Andrus 11/7/2005 - this is one of the places where Cayenne
-    // serialization relies on shared config... This is bad. We need some
-    // sort of thread-local solution that would allow to use an alternative configuration.
-    //
+    /**
+     * Re-attaches itself to a DataChannel attached to the current thread. The DataChannel
+     * is taken from {@link BaseContext#getThreadDeserializationChannel()}.
+     */
     private final void awakeFromDeserialization() {
-        if (channel == null && lazyInitParentDomainName != null) {
-
-            // call a setter to ensure EntityResolver is extracted from channel
-            setChannel(Configuration.getSharedConfiguration().getDomain(
-                    lazyInitParentDomainName));
+        if (channel == null) {
+            // call a channel setter to ensure EntityResolver is extracted from channel
+            setChannel(BaseContext.getThreadDeserializationChannel());
         }
     }
 

@@ -18,7 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.BaseContext;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.MockDataChannel;
 import org.apache.cayenne.MockObjectContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Binder;
@@ -31,8 +35,6 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
 
-import junit.framework.TestCase;
-
 public class ServletContextHandlerTest extends TestCase {
 
     public void testRequestStart_bindContext() {
@@ -42,6 +44,7 @@ public class ServletContextHandlerTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(ObjectContext.class).to(MockObjectContext.class).in(
                         Scopes.NO_SCOPE);
+                binder.bind(DataChannel.class).to(MockDataChannel.class);
             }
         };
         Injector injector = DIBootstrap.createInjector(module);

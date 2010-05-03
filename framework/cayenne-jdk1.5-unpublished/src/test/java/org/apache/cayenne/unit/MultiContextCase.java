@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.unit;
 
+import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -35,18 +35,6 @@ public abstract class MultiContextCase extends CayenneCase {
         deleteTestData();
     }
 
-    protected void fixSharedConfiguration() {
-        // for context to deserialize properly,
-        // Configuration singleton must have the right default domain
-        Configuration config = Configuration.getSharedConfiguration();
-        if (getDomain() != config.getDomain()) {
-            if (config.getDomain() != null) {
-                config.removeDomain(config.getDomain().getName());
-            }
-            config.addDomain(getDomain());
-        }
-    }
-
     /**
      * Helper method to create a new DataContext with the ObjectStore state being the
      * mirror of the given context. This is done by serializing/deserializing the
@@ -57,9 +45,18 @@ public abstract class MultiContextCase extends CayenneCase {
      *             get object clones.
      */
     protected DataContext mirrorDataContext(DataContext context) throws Exception {
-        fixSharedConfiguration();
 
-        DataContext mirror = (DataContext) Util.cloneViaSerialization(context);
+        DataContext mirror;
+        BaseContext.bindThreadDeserializationChannel(getDomain());
+        try {
+            mirror = (DataContext) Util.cloneViaSerialization(context);
+
+            // this reattaches the context to the DataDomain
+            mirror.getChannel();
+        }
+        finally {
+            BaseContext.bindThreadDeserializationChannel(null);
+        }
 
         assertNotSame(context, mirror);
         assertNotSame(context.getObjectStore(), mirror.getObjectStore());

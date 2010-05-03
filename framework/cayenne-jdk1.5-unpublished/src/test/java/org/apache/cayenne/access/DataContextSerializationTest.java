@@ -22,33 +22,25 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 
-/**
- */
 public class DataContextSerializationTest extends CayenneCase {
 
     @Override
     protected void setUp() throws Exception {
-        fixSharedConfiguration();
+        BaseContext.bindThreadDeserializationChannel(getDomain());
         deleteTestData();
     }
 
-    protected void fixSharedConfiguration() {
-        // for context to deserialize properly,
-        // Configuration singleton must have the right default domain
-        Configuration config = Configuration.getSharedConfiguration();
-        if (getDomain() != config.getDomain()) {
-            if (config.getDomain() != null) {
-                config.removeDomain(config.getDomain().getName());
-            }
-            config.addDomain(getDomain());
-        }
+    @Override
+    protected void tearDown() throws Exception {
+        BaseContext.bindThreadDeserializationChannel(null);
+        super.tearDown();
     }
 
     public void testSerializeResolver() throws Exception {
@@ -72,19 +64,20 @@ public class DataContextSerializationTest extends CayenneCase {
         assertNotNull(deserializedContext.getChannel());
         assertSame(context.getChannel(), deserializedContext.getChannel());
     }
-    
+
     public void testSerializeNestedChannel() throws Exception {
         DataContext context = createDataContextWithSharedCache();
         ObjectContext child = context.createChildContext();
 
-        ObjectContext deserializedContext = (ObjectContext) Util.cloneViaSerialization(child);
+        ObjectContext deserializedContext = (ObjectContext) Util
+                .cloneViaSerialization(child);
 
         assertNotNull(deserializedContext.getChannel());
         assertNotNull(deserializedContext.getEntityResolver());
     }
 
     public void testSerializeWithSharedCache() throws Exception {
-        
+
         createTestData("prepare");
 
         DataContext context = createDataContextWithSharedCache();
@@ -105,7 +98,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
         assertNotNull(deserializedContext.getEntityResolver());
         assertSame(context.getEntityResolver(), deserializedContext.getEntityResolver());
-        
+
         Artist a = Cayenne.objectForPK(deserializedContext, Artist.class, 33001);
         assertNotNull(a);
         a.setArtistName(a.getArtistName() + "___");
@@ -113,7 +106,7 @@ public class DataContextSerializationTest extends CayenneCase {
     }
 
     public void testSerializeWithLocalCache() throws Exception {
-        
+
         createTestData("prepare");
 
         DataContext context = createDataContextWithDedicatedCache();
@@ -136,11 +129,11 @@ public class DataContextSerializationTest extends CayenneCase {
         assertNotSame(
                 deserializedContext.getParentDataDomain().getSharedSnapshotCache(),
                 deserializedContext.getObjectStore().getDataRowCache());
-        
+
         Artist a = Cayenne.objectForPK(deserializedContext, Artist.class, 33001);
         assertNotNull(a);
         a.setArtistName(a.getArtistName() + "___");
-        
+
         // this blows per CAY-796
         deserializedContext.commitChanges();
     }

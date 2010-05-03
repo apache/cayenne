@@ -48,7 +48,6 @@ import org.apache.commons.logging.LogFactory;
  * and initialize a Configuration singleton instance of the specified class. By default
  * {@link DefaultConfiguration}is instantiated.
  * </p>
- * 
  */
 public abstract class Configuration {
 
@@ -56,8 +55,6 @@ public abstract class Configuration {
 
     public static final String DEFAULT_DOMAIN_FILE = "cayenne.xml";
     public static final Class<DefaultConfiguration> DEFAULT_CONFIGURATION_CLASS = DefaultConfiguration.class;
-
-    protected static Configuration sharedConfiguration;
 
     /**
      * Lookup map that stores DataDomains with names as keys.
@@ -80,21 +77,6 @@ public abstract class Configuration {
     protected EventManager eventManager;
 
     /**
-     * Use this method as an entry point to all Cayenne access objects.
-     * <p>
-     * Note that if you want to provide a custom Configuration, make sure you call one of
-     * the {@link #initializeSharedConfiguration}methods before your application code has
-     * a chance to call this method.
-     */
-    public synchronized static Configuration getSharedConfiguration() {
-        if (Configuration.sharedConfiguration == null) {
-            Configuration.initializeSharedConfiguration();
-        }
-
-        return Configuration.sharedConfiguration;
-    }
-
-    /**
      * Returns EventManager used by this configuration.
      * 
      * @since 1.2
@@ -110,56 +92,6 @@ public abstract class Configuration {
      */
     public void setEventManager(EventManager eventManager) {
         this.eventManager = eventManager;
-    }
-
-    /**
-     * Creates and initializes shared Configuration object. By default
-     * {@link DefaultConfiguration}will be instantiated and assigned to a singleton
-     * instance of Configuration.
-     */
-    public static void initializeSharedConfiguration() {
-        Configuration.initializeSharedConfiguration(DEFAULT_CONFIGURATION_CLASS);
-    }
-
-    /**
-     * Creates and initializes a shared Configuration object of a custom Configuration
-     * subclass.
-     */
-    public static void initializeSharedConfiguration(
-            Class<? extends Configuration> configurationClass) {
-        Configuration conf = null;
-
-        try {
-            conf = configurationClass.newInstance();
-        }
-        catch (Exception ex) {
-            logObj.error("Error creating shared Configuration: ", ex);
-            throw new ConfigurationException("Error creating shared Configuration."
-                    + ex.getMessage(), ex);
-        }
-
-        Configuration.initializeSharedConfiguration(conf);
-    }
-
-    /**
-     * Sets the shared Configuration object to a new Configuration object. First calls
-     * {@link #canInitialize}and - if permitted -{@link #initialize}followed by
-     * {@link #didInitialize}.
-     */
-    public static void initializeSharedConfiguration(Configuration conf) {
- 
-        try {
-            // initialize configuration
-            conf.initialize();
-
-            // set the initialized Configuration only after success
-            Configuration.sharedConfiguration = conf;
-        }
-        catch (Exception ex) {
-            throw new ConfigurationException(
-                    "Error during Configuration initialization. " + ex.getMessage(),
-                    ex);
-        }
     }
 
     /**
@@ -254,12 +186,10 @@ public abstract class Configuration {
         return overrideFactory;
     }
 
-    
     public SchemaUpdateStrategy getSchemaUpdateStrategy() {
         return overrideStrategy;
     }
 
-    
     public void setSchemaUpdateStrategy(SchemaUpdateStrategy overrideStrategy) {
         this.overrideStrategy = overrideStrategy;
     }

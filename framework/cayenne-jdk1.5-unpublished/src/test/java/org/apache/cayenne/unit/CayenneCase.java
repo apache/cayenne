@@ -29,8 +29,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
-import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.conf.DefaultConfiguration;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -40,7 +38,6 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
 /**
  * Superclass of Cayenne test cases. Provides access to shared connection resources.
- * 
  */
 public abstract class CayenneCase extends TestCase {
 
@@ -48,19 +45,6 @@ public abstract class CayenneCase extends TestCase {
     public static final String MULTI_TIER_ACCESS_STACK = "MultiTierStack";
     public static final String QUALIFIED_ACCESS_STACK = "QualifiedStack";
     public static final String QUOTEMAP_ACCESS_STACK = "QuoteMapStack";
-
-    static {
-        // create dummy shared config
-        Configuration config = new DefaultConfiguration() {
-
-            @Override
-            public void initialize() {
-            }
-        };
-
-        Configuration.initializeSharedConfiguration(config);
-
-    }
 
     protected AccessStack accessStack;
 
@@ -95,7 +79,7 @@ public abstract class CayenneCase extends TestCase {
     protected DataSourceInfo getConnectionInfo() throws Exception {
         return CayenneResources.getResources().getConnectionInfo();
     }
-    
+
     protected DBHelper getDbHelper() {
         return new DBHelper(getNode().getDataSource());
     }

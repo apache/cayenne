@@ -47,7 +47,7 @@ import org.springframework.core.io.InputStreamResource;
  */
 public class CayenneResources implements BeanFactoryAware {
 
-    private static Log logObj = LogFactory.getLog(CayenneResources.class);
+    private static Log logger = LogFactory.getLog(CayenneResources.class);
 
     public static final String TEST_RESOURCES_DESCRIPTOR = "spring-test-resources.xml";
 
@@ -70,7 +70,7 @@ public class CayenneResources implements BeanFactoryAware {
                 .getResourceAsStream(TEST_RESOURCES_DESCRIPTOR);
 
         if (in == null) {
-            logObj.error("Can't locate resource: " + TEST_RESOURCES_DESCRIPTOR);
+            logger.error("Can't locate resource: " + TEST_RESOURCES_DESCRIPTOR);
             throw new RuntimeException(
                     "Can't locate resource descriptor in the ClassLoader: "
                             + TEST_RESOURCES_DESCRIPTOR);
@@ -108,7 +108,7 @@ public class CayenneResources implements BeanFactoryAware {
                 resources.rebuildSchema();
             }
             catch (Exception ex) {
-                logObj.error("Error generating schema...", ex);
+                logger.error("Error generating schema...", ex);
                 throw new RuntimeException("Error generating schema");
             }
         }
@@ -176,7 +176,7 @@ public class CayenneResources implements BeanFactoryAware {
     void rebuildSchema() throws Exception {
 
         if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
-            logObj.info("skipping schema generation... ");
+            logger.info("skipping schema generation... ");
             return;
         }
 
@@ -201,7 +201,7 @@ public class CayenneResources implements BeanFactoryAware {
         // attempt default if invalid key is specified
         if (connectionInfo == null) {
 
-            logObj.info("Invalid connection key '"
+            logger.info("Invalid connection key '"
                     + connectionKey
                     + "', trying default: "
                     + DEFAULT_CONNECTION_KEY);
@@ -214,7 +214,7 @@ public class CayenneResources implements BeanFactoryAware {
             throw new RuntimeException("Null connection info for key: " + connectionKey);
         }
 
-        logObj.info("test connection info: " + connectionInfo);
+        logger.info("test connection info: " + connectionInfo);
         this.dataSource = createDataSource();
     }
 
@@ -304,7 +304,7 @@ public class CayenneResources implements BeanFactoryAware {
                     connectionInfo.getPassword());
         }
         catch (Exception ex) {
-            logObj.error("Can not create shared data source.", ex);
+            logger.error("Can not create shared data source.", ex);
             throw new RuntimeException("Can not create shared data source.", ex);
         }
     }
@@ -315,7 +315,7 @@ public class CayenneResources implements BeanFactoryAware {
         if (testDirName == null) {
             testDirName = DEFAULT_TEST_DIR;
 
-            logObj.info("No property '"
+            logger.info("No property '"
                     + TEST_DIR_KEY
                     + "' set. Using default directory: '"
                     + testDirName
