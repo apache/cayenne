@@ -173,4 +173,34 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("", compiled.getSql());
     }
 
+    public void testProcessTemplateWithFalseOrZero1() throws Exception {
+        String template = "#chain(' OR ' 'WHERE ')"
+                + "#chunk($a)[A]#end"
+                + "#chunk($b)[B]#end"
+                + "#chunk($c)$c#end"
+                + "#end";
+
+        Map map = new HashMap();
+        map.put("a", false);
+        map.put("b", 0);
+
+        SQLStatement compiled = new SQLTemplateProcessor().processTemplate(template, map);
+        assertEquals("WHERE [A] OR [B]", compiled.getSql());
+    }
+
+    public void testProcessTemplateWithFalseOrZero2() throws Exception {
+        String template = "#chain(' OR ' 'WHERE ')"
+                + "#chunk($a)$a#end"
+                + "#chunk($b)$b#end"
+                + "#chunk($c)$c#end"
+                + "#end";
+
+        Map map = new HashMap();
+        map.put("a", false);
+        map.put("b", 0);
+
+        SQLStatement compiled = new SQLTemplateProcessor().processTemplate(template, map);
+        assertEquals("WHERE false OR 0", compiled.getSql());
+    }
+
 }

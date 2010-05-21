@@ -88,7 +88,7 @@ public class ChainDirective extends Directive {
                 && "chunk".equals(((ASTDirective) child).getDirectiveName())) {
 
                 if (child.jjtGetNumChildren() < 2
-                    || child.jjtGetChild(0).evaluate(context)) {
+                    || child.jjtGetChild(0).value(context) != null) {
 
                     if (includedChunks > 0) {
                         childWriter.write(join);

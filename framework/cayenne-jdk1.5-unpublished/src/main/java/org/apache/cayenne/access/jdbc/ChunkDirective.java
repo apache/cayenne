@@ -35,12 +35,12 @@ import org.apache.velocity.runtime.parser.node.Node;
  * 
  * <pre>
  * #chunk()...#end - e.g. #chunk()A = 5#end
- * #chunk(condition)...#end - e.g. #chunk($a)A = $a#end</pre>
- * 
- * <p>If condition is evaluated to false, chunk is not included in the chain,
- * if it is true, chunk is included, and if it is not the first chunk, it is
- * prefixed with chain join.
- * 
+ * #chunk($paramKey)...#end - e.g. #chunk($a)A = $a#end
+ * </pre>
+ * <p>
+ * If context contains paramKey and it's value isn't null, chunk is included in the
+ * chain, and if it is not the first chunk, it is prefixed with chain join (OR/AND).
+ * If context doesn't contain paramKey or it's value is null, chunk is skipped.
  * @since 1.1
  */
 public class ChunkDirective extends Directive {
@@ -57,15 +57,12 @@ public class ChunkDirective extends Directive {
 
     @Override
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
-        throws
-            IOException,
-            ResourceNotFoundException,
-            ParseErrorException,
+            throws IOException, ResourceNotFoundException, ParseErrorException,
             MethodInvocationException {
 
         // first child is an expression, second is BLOCK
-        if (node.jjtGetNumChildren() > 1 && !node.jjtGetChild(0).evaluate(context)) {
-            // return value is really meaningless in Velocity...whatever
+        if (node.jjtGetNumChildren() > 1 && node.jjtGetChild(0).value(context) == null) {
+            // skip this chunk
             return false;
         }
 
