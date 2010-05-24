@@ -714,8 +714,7 @@ public class ReturnTypesMappingTest extends CayenneCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertTrue(Byte.class.equals(columnValue.getClass())
-                || Short.class.equals(columnValue.getClass()));
+        assertTrue(Short.class.equals(columnValue.getClass()));
         assertEquals(tinyintValue.intValue(), ((Number)columnValue).intValue());
     }
 

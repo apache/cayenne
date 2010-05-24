@@ -183,7 +183,7 @@ public class TypesMapping {
         sqlEnumJava.put(Integer.valueOf(Types.NUMERIC), JAVA_BIGDECIMAL);
         sqlEnumJava.put(Integer.valueOf(Types.REAL), JAVA_FLOAT);
         sqlEnumJava.put(Integer.valueOf(Types.SMALLINT), JAVA_SHORT);
-        sqlEnumJava.put(Integer.valueOf(Types.TINYINT), JAVA_BYTE);
+        sqlEnumJava.put(Integer.valueOf(Types.TINYINT), JAVA_SHORT);
         sqlEnumJava.put(Integer.valueOf(Types.TIME), JAVA_UTILDATE);
         sqlEnumJava.put(Integer.valueOf(Types.TIMESTAMP), JAVA_UTILDATE);
         sqlEnumJava.put(Integer.valueOf(Types.VARBINARY), JAVA_BYTES);
@@ -201,7 +201,7 @@ public class TypesMapping {
         javaSqlEnum.put(JAVA_FLOAT, Integer.valueOf(Types.FLOAT));
         javaSqlEnum.put(JAVA_INTEGER, Integer.valueOf(Types.INTEGER));
         javaSqlEnum.put(JAVA_SHORT, Integer.valueOf(Types.SMALLINT));
-        javaSqlEnum.put(JAVA_BYTE, Integer.valueOf(Types.TINYINT));
+        javaSqlEnum.put(JAVA_BYTE, Integer.valueOf(Types.SMALLINT));
         javaSqlEnum.put(JAVA_TIME, Integer.valueOf(Types.TIME));
         javaSqlEnum.put(JAVA_TIMESTAMP, Integer.valueOf(Types.TIMESTAMP));
 
