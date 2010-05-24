@@ -48,6 +48,7 @@ CAY-1304 Fix some failures in tests on SQLite
 CAY-1328 SQLTemplate for DataMap is not working
 CAY-1363 Postgress don't support notations float(a, b)
 CAY-1364 SQL server don't support notations float(a, b)
+CAY-1430 Problems with TINYINT type mapping
 
 ----------------------------------
 Release: 3.0.1
@@ -91,7 +92,6 @@ CAY-1401 Cache group removed from modeler query
 CAY-1404 ClassCastException during ObjectDetachOperation
 CAY-1405 Exception when attempting to "Infer Relationships"
 CAY-1409 Pkgenerator is accessed needlessly for join tables with own database generated PK
-CAY-1430 Problems with TINYINT type mapping
 
 ----------------------------------
 Release: 3.0 RC 2
