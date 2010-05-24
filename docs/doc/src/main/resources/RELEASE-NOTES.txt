@@ -91,6 +91,7 @@ CAY-1401 Cache group removed from modeler query
 CAY-1404 ClassCastException during ObjectDetachOperation
 CAY-1405 Exception when attempting to "Infer Relationships"
 CAY-1409 Pkgenerator is accessed needlessly for join tables with own database generated PK
+CAY-1430 Problems with TINYINT type mapping
 
 ----------------------------------
 Release: 3.0 RC 2
