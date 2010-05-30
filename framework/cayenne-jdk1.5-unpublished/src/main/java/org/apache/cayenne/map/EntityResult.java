@@ -60,9 +60,10 @@ public class EntityResult {
         Map<String, String> dbFields = new HashMap<String, String>();
 
         for (FieldResult field : fields) {
-            if(field.isDbAttribute()||field.getAttributeName().startsWith("fetch.")){
+            if (field.isDbAttribute() || field.getAttributeName().startsWith("fetch.")) {
                 dbFields.put(field.getAttributeName(), field.getColumn());
-            } else {
+            }
+            else {
                 ObjEntity entity = field.getEntityName() != null ? resolver
                         .getObjEntity(field.getEntityName()) : getRootEntity(resolver);
 

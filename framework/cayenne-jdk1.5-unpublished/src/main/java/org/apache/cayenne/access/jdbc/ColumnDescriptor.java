@@ -62,7 +62,7 @@ public class ColumnDescriptor implements Serializable {
      * Creates a column descriptor with user-specified parameters.
      * 
      * @since 1.2
-     * @deprecated use ColumnDescriptor(String columnName, int jdbcType) instead
+     * @deprecated since 3.1 use ColumnDescriptor(String columnName, int jdbcType) instead
      */
     @Deprecated
     public ColumnDescriptor(String columnName, int jdbcType, String javaClass) {
@@ -219,9 +219,10 @@ public class ColumnDescriptor implements Serializable {
     }
 
     public String getQualifiedColumnNameWithQuoteSqlIdentifiers(QuotingStrategy strategy) {
-        String nameWithQuoteSqlIdentifiers = strategy.quoteString( name );
-        return (namePrefix != null) ? strategy.quoteString( namePrefix ) + '.' +
-                nameWithQuoteSqlIdentifiers: nameWithQuoteSqlIdentifiers;
+        String nameWithQuoteSqlIdentifiers = strategy.quoteString(name);
+        return (namePrefix != null) ? strategy.quoteString(namePrefix)
+                + '.'
+                + nameWithQuoteSqlIdentifiers : nameWithQuoteSqlIdentifiers;
     }
 
     public int getJdbcType() {

@@ -92,19 +92,6 @@ public class DefaultEventManager implements EventManager {
     }
 
     /**
-     * Returns a list of currently queued events. Queue is returned by copy. This method
-     * is useful for inspecting the state of the event queue at any particular moment, but
-     * doesn't allow callers to alter the queue state.
-     * 
-     * @since 1.1
-     */
-    public List<Dispatch> getEventQueue() {
-        synchronized (eventQueue) {
-            return new ArrayList<Dispatch>(eventQueue);
-        }
-    }
-
-    /**
      * Stops event threads. After the EventManager is stopped, it can not be restarted and
      * should be discarded.
      * 

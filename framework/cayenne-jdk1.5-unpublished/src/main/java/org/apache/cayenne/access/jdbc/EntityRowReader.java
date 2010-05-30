@@ -49,7 +49,7 @@ class EntityRowReader implements RowReader<DataRow> {
         if (classDescriptor != null) {
             this.entityName = classDescriptor.getEntity().getName();
         }
-        
+
         int segmentWidth = segmentMetadata.getFields().size();
         this.startIndex = segmentMetadata.getColumnOffset();
         this.converters = new ExtendedType[segmentWidth];
@@ -65,11 +65,14 @@ class EntityRowReader implements RowReader<DataRow> {
             // query translator may change the order of fields compare to the entity
             // result, so figure out DataRow labels by doing reverse lookup of
             // RowDescriptor labels...
-            if(columns[startIndex + i].getDataRowKey().contains(".")){
-                // if the dataRowKey contains ".", it is prefetched column and we can use it instead of search the name by alias
-                labels[i]=columns[startIndex + i].getDataRowKey();
-            }else{
-                labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].getDataRowKey());
+            if (columns[startIndex + i].getDataRowKey().contains(".")) {
+                // if the dataRowKey contains ".", it is prefetched column and we can use
+                // it instead of search the name by alias
+                labels[i] = columns[startIndex + i].getDataRowKey();
+            }
+            else {
+                labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i]
+                        .getDataRowKey());
             }
         }
     }

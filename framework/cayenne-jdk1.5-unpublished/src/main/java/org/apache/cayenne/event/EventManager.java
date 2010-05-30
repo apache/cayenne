@@ -20,9 +20,6 @@
 package org.apache.cayenne.event;
 
 import java.util.EventObject;
-import java.util.List;
-
-import org.apache.cayenne.event.DefaultEventManager.Dispatch;
 
 /**
  * This class acts as bridge between an Object that wants to inform others about its
@@ -41,15 +38,6 @@ public interface EventManager {
      * @since 1.2
      */
     boolean isSingleThreaded();
-
-    /**
-     * Returns a list of currently queued events. Queue is returned by copy. This method
-     * is useful for inspecting the state of the event queue at any particular moment, but
-     * doesn't allow callers to alter the queue state.
-     * 
-     * @since 1.1
-     */
-    List<Dispatch> getEventQueue();
 
     /**
      * Stops event threads. After the EventManager is stopped, it can not be restarted and
