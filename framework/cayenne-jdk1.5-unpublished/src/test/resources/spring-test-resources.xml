@@ -112,6 +112,9 @@
     <bean id="InheritanceFlatMap" class="org.apache.cayenne.unit.DataMapFactory">
         <constructor-arg><value>inheritance-flat.map.xml</value></constructor-arg>
     </bean>
+    <bean id="InheritanceVerticalMap" class="org.apache.cayenne.unit.DataMapFactory">
+        <constructor-arg><value>inheritance-vertical.map.xml</value></constructor-arg>
+    </bean>
     
 	
 	<!-- ======================================= -->
@@ -191,6 +194,11 @@
 		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
 		<constructor-arg><list><ref bean="InheritanceFlatMap"/></list></constructor-arg>
 	</bean>
+	<bean id="InheritanceVerticalStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="InheritanceVerticalMap"/></list></constructor-arg>
+	</bean>
 	<!-- Used to create DB schema to avoid conflicts when schema for individual stacks is generated. -->
 	<bean id="SchemaSetupStack" class="org.apache.cayenne.unit.SimpleAccessStack">
 		<constructor-arg><ref bean="TestResources"/></constructor-arg>
@@ -210,6 +218,7 @@
                 <ref bean="InheritanceMap"/>
                 <ref bean="QuoteMap"/>
 				<ref bean="InheritanceFlatMap"/>
+				<ref bean="InheritanceVerticalMap"/>
 			</list>
 		</constructor-arg>
 	</bean>

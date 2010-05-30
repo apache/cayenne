@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+	 project-version="6">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance.vertical"/>
+	<db-entity name="IV_ROOT">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="IV_SUB1">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SUB1_NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="IV_SUB1_SUB1">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SUB1_SUB1_NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="IV_SUB2">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="SUB2_NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<obj-entity name="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvRoot" dbEntityName="IV_ROOT">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="IvSub1" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub1" dbEntityName="IV_SUB1">
+		<obj-attribute name="sub1Name" type="java.lang.String" db-attribute-path="SUB1_NAME"/>
+	</obj-entity>
+	<obj-entity name="IvSub1Sub1" superEntityName="IvSub1" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1" dbEntityName="IV_SUB1_SUB1">
+		<obj-attribute name="sub1Sub1Name" type="java.lang.String" db-attribute-path="SUB1_SUB1_NAME"/>
+	</obj-entity>
+	<obj-entity name="IvSub2" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub2" dbEntityName="IV_SUB2">
+		<obj-attribute name="sub2Name" type="java.lang.String" db-attribute-path="SUB2_NAME"/>
+	</obj-entity>
+	<db-relationship name="sub1" source="IV_ROOT" target="IV_SUB1" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="sub2" source="IV_ROOT" target="IV_SUB2" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="master" source="IV_SUB1" target="IV_ROOT" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="master" source="IV_SUB2" target="IV_ROOT" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+</data-map>
