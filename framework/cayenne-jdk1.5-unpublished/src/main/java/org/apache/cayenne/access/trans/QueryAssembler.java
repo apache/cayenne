@@ -30,7 +30,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
@@ -57,7 +56,7 @@ public abstract class QueryAssembler {
      * PreparedStatement attributes matching entries in <code>values</code> list.
      */
     protected List<DbAttribute> attributes = new ArrayList<DbAttribute>();
-    
+
     /**
      * The index parameter will be inserted at in parameter list
      */
@@ -78,15 +77,6 @@ public abstract class QueryAssembler {
 
     public DbAdapter getAdapter() {
         return adapter;
-    }
-
-    /**
-     * Returns an EntityInheritanceTree for the root entity.
-     * 
-     * @since 1.1
-     */
-    public EntityInheritanceTree getRootInheritanceTree() {
-        return getEntityResolver().lookupInheritanceTree(getRootEntity());
     }
 
     /**
@@ -223,7 +213,7 @@ public abstract class QueryAssembler {
                 }
             }
         }
-        
+
         if (queryMetadata.getStatementFetchSize() != 0) {
             stmt.setFetchSize(queryMetadata.getStatementFetchSize());
         }

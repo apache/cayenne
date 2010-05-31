@@ -58,6 +58,13 @@ public interface ClassDescriptor {
     EntityInheritanceTree getEntityInheritanceTree();
 
     /**
+     * Returns whether this class has persistent subclasses.
+     * 
+     * @since 3.1
+     */
+    boolean hasSubclasses();
+
+    /**
      * Returns a class mapped by this descriptor.
      */
     Class<?> getObjectClass();

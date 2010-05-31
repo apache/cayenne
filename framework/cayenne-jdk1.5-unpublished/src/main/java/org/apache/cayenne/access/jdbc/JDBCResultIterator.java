@@ -140,7 +140,7 @@ public class JDBCResultIterator implements ResultIterator {
             return new IdRowReader(descriptor, queryMetadata);
         }
         else if (resultMetadata.getClassDescriptor() != null
-                && resultMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {
+                && resultMetadata.getClassDescriptor().hasSubclasses()) {
             return new InheritanceAwareEntityRowReader(descriptor, resultMetadata);
         }
         else {
@@ -156,7 +156,7 @@ public class JDBCResultIterator implements ResultIterator {
             return new IdRowReader(descriptor, queryMetadata);
         }
         else if (queryMetadata.getClassDescriptor() != null
-                && queryMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {
+                && queryMetadata.getClassDescriptor().hasSubclasses()) {
             return new InheritanceAwareRowReader(descriptor, queryMetadata);
         }
         else {

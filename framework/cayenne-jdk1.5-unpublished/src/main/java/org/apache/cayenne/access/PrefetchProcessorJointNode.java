@@ -37,7 +37,6 @@ import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -142,25 +141,11 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         // since JDBC row reader won't inject JOINED entity name, we have to
         // detect it here...
 
-        ObjEntity entity = null;
         ClassDescriptor descriptor = resolver.getDescriptor();
-        EntityInheritanceTree entityInheritanceTree = descriptor
-                .getEntityInheritanceTree();
-
-        if (entityInheritanceTree != null) {
-            entity = entityInheritanceTree.entityMatchingRow(row);
-        }
-
-        if (entity == null) {
-            entity = descriptor.getEntity();
-        }
-
+        ObjEntity entity = descriptor.getEntityInheritanceTree().entityMatchingRow(row);
         row.setEntityName(entity.getName());
         return row;
     }
-
-    // ***** private methods *****
-    // ========================================================
 
     /**
      * Configures row columns mapping for this node entity.

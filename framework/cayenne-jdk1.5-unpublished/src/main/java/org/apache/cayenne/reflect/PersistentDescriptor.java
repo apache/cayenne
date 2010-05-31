@@ -415,4 +415,9 @@ public class PersistentDescriptor implements ClassDescriptor {
     public void setEntityInheritanceTree(EntityInheritanceTree entityInheritanceTree) {
         this.entityInheritanceTree = entityInheritanceTree;
     }
+
+    public boolean hasSubclasses() {
+        return entityInheritanceTree != null
+                && !entityInheritanceTree.getChildren().isEmpty();
+    }
 }

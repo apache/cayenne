@@ -192,11 +192,11 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
         if (target == null) {
             return null;
         }
-        
+
         Entity source = getSourceEntity();
 
         for (ObjRelationship relationship : target.getRelationships()) {
- 
+
             if (relationship.getTargetEntity() != source) {
                 continue;
             }
@@ -338,8 +338,15 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      * @since 3.0
      */
     public boolean isSourceDefiningTargetPrecenseAndType(EntityResolver entityResolver) {
-        return !isOptional()
-                && entityResolver.lookupInheritanceTree(getTargetEntityName()) == null;
+
+        if (isOptional()) {
+            return false;
+        }
+
+        EntityInheritanceTree inheritanceTree = entityResolver
+                .lookupInheritanceTree(getTargetEntityName());
+
+        return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
     }
 
     /**

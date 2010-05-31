@@ -93,6 +93,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         checkDescriptorInitialized();
         return descriptor.getEntityInheritanceTree();
     }
+    
+    public boolean hasSubclasses() {
+        checkDescriptorInitialized();
+        return descriptor.hasSubclasses();
+    }
 
     public Class<?> getObjectClass() {
 

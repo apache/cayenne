@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
@@ -60,10 +61,24 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
 
     @Override
     protected boolean isIsolated(DataChannelDescriptor domain, Entity entity) {
-        EntityResolver entRes = new EntityResolver(((DataChannelDescriptor)mediator.getProject().getRootNode()).getDataMaps());
-        return super.isIsolated(domain, entity)
-                && ((ObjEntity) entity).getSuperEntity() == null
-                && entRes.lookupInheritanceTree(entity.getName()) == null;
+
+        if (!super.isIsolated(domain, entity)) {
+            return false;
+        }
+
+        if (((ObjEntity) entity).getSuperEntity() != null) {
+            return false;
+        }
+
+        // TODO: andrus 05/30/2010 - reindexing all DataMaps every time may be VERY slow
+        // on large projects
+        EntityResolver resolver = new EntityResolver(((DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode()).getDataMaps());
+
+        EntityInheritanceTree inheritanceTree = resolver.lookupInheritanceTree(entity
+                .getName());
+        return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
     }
 
     @Override

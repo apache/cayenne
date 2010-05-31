@@ -135,6 +135,9 @@ public class EntityInheritanceTree {
     }
 
     /**
+     * Returns a collection containing this inheritance tree node entity and all its
+     * subentities.
+     * 
      * @since 3.0
      */
     public Collection<ObjEntity> allSubEntities() {

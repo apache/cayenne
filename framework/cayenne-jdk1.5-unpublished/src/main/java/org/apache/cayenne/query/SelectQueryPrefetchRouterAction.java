@@ -23,10 +23,9 @@ import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -39,8 +38,7 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
     SelectQuery query;
     QueryRouter router;
     EntityResolver resolver;
-    ObjEntity entity;
-    EntityInheritanceTree inheritanceTree;
+    ClassDescriptor classDescriptor;
 
     /**
      * Routes query prefetches, but not the query itself.
@@ -51,8 +49,7 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
             this.query = query;
             this.router = router;
             this.resolver = resolver;
-            this.entity = query.getMetaData(resolver).getObjEntity();
-            this.inheritanceTree = resolver.lookupInheritanceTree(entity);
+            this.classDescriptor = query.getMetaData(resolver).getClassDescriptor();
 
             query.getPrefetchTree().traverse(this);
         }
@@ -71,7 +68,8 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
         String prefetchPath = node.getPath();
 
         // find last relationship
-        Iterator<CayenneMapEntry> it = entity.resolvePathComponents(prefetchPath);
+        Iterator<CayenneMapEntry> it = classDescriptor.getEntity().resolvePathComponents(
+                prefetchPath);
 
         ObjRelationship relationship = null;
         while (it.hasNext()) {
@@ -79,17 +77,18 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
         }
 
         if (relationship == null) {
-            throw new CayenneRuntimeException("Invalid prefetch '"
-                    + prefetchPath
-                    + "' for entity: "
-                    + entity.getName());
+            throw new CayenneRuntimeException(
+                    "Invalid prefetch '%s' for entity '%s'",
+                    prefetchPath,
+                    classDescriptor.getEntity().getName());
         }
 
         // chain query and entity qualifiers
         Expression queryQualifier = query.getQualifier();
 
-        Expression entityQualifier = (inheritanceTree != null) ? inheritanceTree
-                .qualifierForEntityAndSubclasses() : entity.getDeclaredQualifier();
+        Expression entityQualifier = classDescriptor
+                .getEntityInheritanceTree()
+                .qualifierForEntityAndSubclasses();
 
         if (entityQualifier != null) {
             queryQualifier = (queryQualifier != null) ? queryQualifier
@@ -102,7 +101,7 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
                 prefetchPath,
                 relationship);
 
-        prefetchQuery.setQualifier(entity.translateToRelatedEntity(
+        prefetchQuery.setQualifier(classDescriptor.getEntity().translateToRelatedEntity(
                 queryQualifier,
                 prefetchPath));
 

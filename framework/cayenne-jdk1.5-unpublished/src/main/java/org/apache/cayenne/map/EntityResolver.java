@@ -565,7 +565,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             for (Procedure proc : map.getProcedures()) {
                 procedureCache.put(proc.getName(), proc);
             }
-            
+
             // index embeddables
             embeddableCache.putAll(map.getEmbeddableMap());
 
@@ -587,8 +587,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             // index ObjEntity inheritance
             for (ObjEntity oe : map.getObjEntities()) {
 
-                // build inheritance tree... include nodes that
-                // have no children to avoid unneeded cache rebuilding on lookup...
+                // build inheritance tree
                 EntityInheritanceTree node = entityInheritanceCache.get(oe.getName());
                 if (node == null) {
                     node = new EntityInheritanceTree(oe);
@@ -654,8 +653,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     /**
      * Returns EntityInheritanceTree representing inheritance hierarchy that starts with a
-     * given ObjEntity as root, and includes all its subentities. If ObjEntity has no
-     * known subentities, null is returned.
+     * given ObjEntity as root, and includes all its subentities.
+     * 
+     * @deprecated since 3.1 use {@link #lookupInheritanceTree(String)}.
      */
     public EntityInheritanceTree lookupInheritanceTree(ObjEntity entity) {
         return lookupInheritanceTree(entity.getName());
@@ -663,8 +663,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     /**
      * Returns EntityInheritanceTree representing inheritance hierarchy that starts with a
-     * given ObjEntity as root, and includes all its subentities. If ObjEntity has no
-     * known subentities, null is returned.
+     * given ObjEntity as root, and includes all its subentities. Returns non-null object
+     * for all existing entities, even those that don't have super or subclasses.
      * 
      * @since 3.0
      */
@@ -682,8 +682,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             tree = entityInheritanceCache.get(entityName);
         }
 
-        // don't return "trivial" trees
-        return (tree == null || tree.getChildrenCount() == 0) ? null : tree;
+        return tree;
     }
 
     /**

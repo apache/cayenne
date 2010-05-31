@@ -34,11 +34,11 @@ import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
 
@@ -86,11 +86,13 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         ObjEntity entity = getObjEntity();
 
         if (entity != null) {
-            EntityInheritanceTree tree = queryAssembler
+
+            ClassDescriptor descriptor = queryAssembler
                     .getEntityResolver()
-                    .lookupInheritanceTree(entity);
-            Expression entityQualifier = (tree != null) ? tree
-                    .qualifierForEntityAndSubclasses() : entity.getDeclaredQualifier();
+                    .getClassDescriptor(entity.getName());
+            Expression entityQualifier = descriptor
+                    .getEntityInheritanceTree()
+                    .qualifierForEntityAndSubclasses();
             if (entityQualifier != null) {
                 qualifier = (qualifier != null)
                         ? qualifier.andExp(entityQualifier)

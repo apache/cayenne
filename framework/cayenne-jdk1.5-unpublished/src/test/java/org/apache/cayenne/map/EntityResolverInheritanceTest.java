@@ -24,44 +24,33 @@ import org.apache.cayenne.unit.PeopleCase;
 /**
  */
 public class EntityResolverInheritanceTest extends PeopleCase {
+
     protected EntityResolver resolver;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
         resolver = new EntityResolver(getDomain().getDataMaps());
     }
 
-    private ObjEntity getAbstractPerson() {
-        return getObjEntity("AbstractPerson");
-    }
-
-    private ObjEntity getEmployee() {
-        return getObjEntity("Employee");
-    }
-
-    private ObjEntity getManager() {
-        return getObjEntity("Manager");
-    }
-
     public void testLookupAbstractPersonTree() throws Exception {
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree(getAbstractPerson());
+        EntityInheritanceTree tree = resolver.lookupInheritanceTree("AbstractPerson");
         assertNotNull(tree);
         assertEquals(2, tree.getChildrenCount());
-        assertSame(getAbstractPerson(), tree.getEntity());
+        assertSame(getObjEntity("AbstractPerson"), tree.getEntity());
     }
 
     public void testLookupEmployeeTree() throws Exception {
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree(getEmployee());
+        EntityInheritanceTree tree = resolver.lookupInheritanceTree("Employee");
         assertNotNull(tree);
         assertEquals(1, tree.getChildrenCount());
-        assertSame(getEmployee(), tree.getEntity());
+        assertSame(getObjEntity("Employee"), tree.getEntity());
     }
 
     public void testLookupManagerTree() throws Exception {
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree(getManager());
-        assertNull(tree);
+        EntityInheritanceTree tree = resolver.lookupInheritanceTree("Manager");
+        assertNotNull(tree);
+        assertEquals(0, tree.getChildrenCount());
     }
 
     public void testLookupTreeRefresh() throws Exception {
@@ -82,10 +71,10 @@ public class EntityResolverInheritanceTest extends PeopleCase {
         map.addObjEntity(sub1);
         map.addObjEntity(sub2);
 
-        assertNull(resolver.lookupInheritanceTree(super1));
+        assertNull(resolver.lookupInheritanceTree("super1"));
 
         resolver.addDataMap(map);
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree(super1);
+        EntityInheritanceTree tree = resolver.lookupInheritanceTree("super1");
         assertNotNull(tree);
         assertEquals(2, tree.getChildrenCount());
         assertSame(super1, tree.getEntity());

@@ -34,6 +34,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Deals with DataRow type conversion in inheritance situations.
@@ -55,7 +56,8 @@ class DataRowPostProcessor {
 
         ColumnDescriptor[] columns = translator.getResultColumns();
 
-        Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
+        Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(
+                2);
 
         Iterator it = attributeOverrides.entrySet().iterator();
         while (it.hasNext()) {
@@ -102,15 +104,22 @@ class DataRowPostProcessor {
         }
 
         // inject null post-processor
-        return columnOverrides.isEmpty() ? null : new DataRowPostProcessor(translator
-                .getRootInheritanceTree(), columnOverrides);
+        if (columnOverrides.isEmpty()) {
+            return null;
+        }
+
+        ClassDescriptor rootDescriptor = translator
+                .getQueryMetadata()
+                .getClassDescriptor();
+
+        return new DataRowPostProcessor(rootDescriptor, columnOverrides);
     }
 
-    private DataRowPostProcessor(EntityInheritanceTree inheritanceTree,
+    private DataRowPostProcessor(ClassDescriptor classDescriptor,
             Map<String, Collection<ColumnOverride>> columnOverrides) {
 
-        if (inheritanceTree != null && inheritanceTree.getChildren().size() > 0) {
-            this.inheritanceTree = inheritanceTree;
+        if (classDescriptor != null && classDescriptor.hasSubclasses()) {
+            this.inheritanceTree = classDescriptor.getEntityInheritanceTree();
             this.columnOverrides = columnOverrides;
         }
         else {
@@ -145,9 +154,7 @@ class DataRowPostProcessor {
         }
         else {
             ObjEntity entity = inheritanceTree.entityMatchingRow(row);
-            return entity != null
-                    ? columnOverrides.get(entity.getName())
-                    : null;
+            return entity != null ? columnOverrides.get(entity.getName()) : null;
         }
     }
 

@@ -19,12 +19,10 @@
 package org.apache.cayenne.access;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.ObjEntity;
@@ -54,12 +52,7 @@ class JoinedIdParentAttachementStrategy implements ParentAttachmentStrategy {
                 .getReverseDbRelationshipPath()
                 + ".";
 
-        if (parentDescriptor.getEntityInheritanceTree() == null) {
-            sourceEntities = Collections.singletonList(parentDescriptor.getEntity());
-        }
-        else {
-            sourceEntities = parentDescriptor.getEntityInheritanceTree().allSubEntities();
-        }
+        sourceEntities = parentDescriptor.getEntityInheritanceTree().allSubEntities();
 
         this.node = node;
         this.graphManager = graphManager;

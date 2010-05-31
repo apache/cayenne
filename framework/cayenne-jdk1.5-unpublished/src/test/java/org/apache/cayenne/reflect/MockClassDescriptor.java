@@ -111,6 +111,10 @@ public class MockClassDescriptor implements ClassDescriptor {
     public boolean visitProperties(PropertyVisitor visitor) {
         return true;
     }
+    
+    public boolean hasSubclasses() {
+        return false;
+    }
 
     public boolean visitAllProperties(PropertyVisitor visitor) {
         return true;

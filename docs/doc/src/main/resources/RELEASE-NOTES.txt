@@ -41,6 +41,7 @@ CAY-1422 Convert EventManager to an interface, make it injectable
 CAY-1424 DI: support for named service injection and flexible map/list binding
 CAY-1425 Remove Configuration sharedConfiguration singleton affecting DataContext deserialization, CayenneDataObject XML deserialization, DataContext static factory method. 
 CAY-1433 Change #chunk behaviour to skipe only null arguments (don't skip 0 or false)
+CAY-1438 refactoring EntityInheritanceTree lookups
 
 Bug Fixes Since 3.0:
 
