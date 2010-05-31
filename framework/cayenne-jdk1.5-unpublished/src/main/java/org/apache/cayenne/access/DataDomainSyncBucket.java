@@ -40,7 +40,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.commons.collections.Factory;
@@ -187,10 +186,8 @@ abstract class DataDomainSyncBucket {
                     if (id.isReplacementIdAttached()) {
 
                         Map<String, Object> replacement = id.getReplacementIdMap();
-                        Iterator<Property> idProperties = descriptor.getIdProperties();
-                        while (idProperties.hasNext()) {
-                            AttributeProperty property = (AttributeProperty) idProperties
-                                    .next();
+                        for (AttributeProperty property : descriptor.getIdProperties()) {
+
                             Object value = replacement.get(property
                                     .getAttribute()
                                     .getDbAttributeName());
@@ -235,10 +232,7 @@ abstract class DataDomainSyncBucket {
                     modifiedSnapshots.put(finalId, dataRow);
 
                     // update Map reverse relationships
-                    Iterator<ArcProperty> mapArcProperties = descriptor
-                            .getMapArcProperties();
-                    while (mapArcProperties.hasNext()) {
-                        ArcProperty arc = mapArcProperties.next();
+                    for (ArcProperty arc : descriptor.getMapArcProperties()) {
                         ToManyMapProperty reverseArc = (ToManyMapProperty) arc
                                 .getComplimentaryReverseArc();
 

@@ -19,7 +19,6 @@
 package org.apache.cayenne.reflect;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
@@ -93,7 +92,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         checkDescriptorInitialized();
         return descriptor.getEntityInheritanceTree();
     }
-    
+
     public boolean hasSubclasses() {
         checkDescriptorInitialized();
         return descriptor.hasSubclasses();
@@ -115,12 +114,12 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getObjectClass();
     }
 
-    public Iterator<Property> getIdProperties() {
+    public Collection<AttributeProperty> getIdProperties() {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();
     }
 
-    public Iterator<ObjAttribute> getDiscriminatorColumns() {
+    public Collection<ObjAttribute> getDiscriminatorColumns() {
         checkDescriptorInitialized();
         return descriptor.getDiscriminatorColumns();
     }
@@ -130,7 +129,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getEntityQualifier();
     }
 
-    public Iterator<ArcProperty> getMapArcProperties() {
+    public Collection<ArcProperty> getMapArcProperties() {
         checkDescriptorInitialized();
         return descriptor.getMapArcProperties();
     }

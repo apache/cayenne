@@ -227,10 +227,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         // append inheritance discriminator columns...
-        Iterator<ObjAttribute> discriminatorColumns = descriptor
-                .getDiscriminatorColumns();
-        while (discriminatorColumns.hasNext()) {
-            ObjAttribute column = discriminatorColumns.next();
+        for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
             String target = column.getDbAttributePath();
             appendColumn(targetSource, target, prefix + target);
         }

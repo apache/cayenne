@@ -21,7 +21,6 @@ package org.apache.cayenne.reflect;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
@@ -58,15 +57,15 @@ public class MockClassDescriptor implements ClassDescriptor {
         return null;
     }
 
-    public Iterator<Property> getIdProperties() {
+    public Collection<AttributeProperty> getIdProperties() {
         return null;
     }
 
-    public Iterator<ObjAttribute> getDiscriminatorColumns() {
+    public Collection<ObjAttribute> getDiscriminatorColumns() {
         return null;
     }
 
-    public Iterator<ArcProperty> getMapArcProperties() {
+    public Collection<ArcProperty> getMapArcProperties() {
         return null;
     }
 

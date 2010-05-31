@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +70,7 @@ class Compiler {
     private EJBQLExpressionVisitor rootDescriptorVisitor;
     private List<Object> resultComponents;
     private PrefetchTreeNode prefetchTree = null;
-    
+
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
         this.descriptorsById = new HashMap<String, ClassDescriptor>();
@@ -87,7 +86,7 @@ class Compiler {
         parsed.visit(new CompilationVisitor());
 
         Map<EJBQLPath, Integer> pathsInSelect = new HashMap<EJBQLPath, Integer>();
-       
+
         if (parsed != null) {
             for (int i = 0; i < parsed.getChildrenCount(); i++) {
                 if (parsed.getChild(i) instanceof EJBQLSelectClause) {
@@ -156,24 +155,23 @@ class Compiler {
                         incoming = ((ArcProperty) property).getRelationship();
                         descriptor = ((ArcProperty) property).getTargetDescriptor();
                         pathRelationshipString = buffer.substring(0, buffer.length());
-                        
+
                         descriptorsById.put(pathRelationshipString, descriptor);
                         incomingById.put(pathRelationshipString, incoming);
-                        
+
                     }
                 }
 
-                
                 if (pathsInSelect.size() > 0
                         && incoming != null
                         && pathRelationshipString.length() > 0
                         && pathRelationshipString.equals(buffer.toString())) {
-                    
+
                     EJBQLIdentifier ident = new EJBQLIdentifier(0);
                     ident.text = pathRelationshipString;
-                    
+
                     Integer integer = pathsInSelect.get(path);
-                    if(integer!=null){
+                    if (integer != null) {
                         resultComponents.remove(integer.intValue());
                         resultComponents.add(pathsInSelect.get(path).intValue(), ident);
                         rootId = pathRelationshipString;
@@ -181,9 +179,7 @@ class Compiler {
                 }
             }
         }
-       
-        
-        
+
         CompiledExpression compiled = new CompiledExpression();
         compiled.setExpression(parsed);
         compiled.setSource(source);
@@ -192,7 +188,7 @@ class Compiler {
         compiled.setDescriptorsById(descriptorsById);
         compiled.setIncomingById(incomingById);
         compiled.setPrefetchTree(prefetchTree);
-        
+
         if (resultComponents != null) {
             SQLResult mapping = new SQLResult();
 
@@ -222,26 +218,29 @@ class Compiler {
                         }
                     }
                     mapping.addEntityResult(compileEntityResult);
-                    
+
                 }
             }
 
             compiled.setResult(mapping);
-            
+
         }
 
         return compiled;
     }
 
-    private EntityResult compileEntityResultWithPrefetch(EntityResult compiledResult, EJBQLExpression prefetchExpression){
+    private EntityResult compileEntityResultWithPrefetch(
+            EntityResult compiledResult,
+            EJBQLExpression prefetchExpression) {
         final EntityResult result = compiledResult;
         String id = prefetchExpression.getText().toLowerCase();
         ClassDescriptor descriptor = descriptorsById.get(id);
         if (descriptor == null) {
             descriptor = descriptorsById.get(prefetchExpression.getText());
         }
-        final String prefix = prefetchExpression.getText().substring(prefetchExpression.getText().indexOf(".")+1);
-      
+        final String prefix = prefetchExpression.getText().substring(
+                prefetchExpression.getText().indexOf(".") + 1);
+
         final Set<String> visited = new HashSet<String>();
 
         PropertyVisitor visitor = new PropertyVisitor() {
@@ -249,10 +248,10 @@ class Compiler {
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
                 if (visited.add(oa.getDbAttributePath())) {
-                    result.addObjectField(
-                            oa.getEntity().getName(),
-                            "fetch."+prefix+"."+oa.getName(),
-                            prefix +"."+ oa.getDbAttributeName());
+                    result.addObjectField(oa.getEntity().getName(), "fetch."
+                            + prefix
+                            + "."
+                            + oa.getName(), prefix + "." + oa.getDbAttributeName());
                 }
                 return true;
             }
@@ -268,7 +267,9 @@ class Compiler {
                 for (DbJoin join : dbRel.getJoins()) {
                     DbAttribute src = join.getSource();
                     if (src.isForeignKey() && visited.add(src.getName())) {
-                        result.addDbField("fetch."+prefix+"."+src.getName(), prefix +"."+ src.getName());
+                        result.addDbField("fetch." + prefix + "." + src.getName(), prefix
+                                + "."
+                                + src.getName());
                     }
                 }
 
@@ -281,24 +282,26 @@ class Compiler {
         // append id columns ... (some may have been appended already via relationships)
         for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
             if (visited.add(pkName)) {
-                result.addDbField("fetch."+prefix+"."+pkName, prefix +"."+ pkName);
+                result
+                        .addDbField("fetch." + prefix + "." + pkName, prefix
+                                + "."
+                                + pkName);
             }
         }
 
         // append inheritance discriminator columns...
-        Iterator<ObjAttribute> discriminatorColumns = descriptor
-                .getDiscriminatorColumns();
-        while (discriminatorColumns.hasNext()) {
-            ObjAttribute column = discriminatorColumns.next();
+        for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
 
             if (visited.add(column.getName())) {
-                result.addDbField("fetch."+prefix+"."+column.getDbAttributePath(), prefix +"."+ column.getDbAttributePath());
+                result.addDbField(
+                        "fetch." + prefix + "." + column.getDbAttributePath(),
+                        prefix + "." + column.getDbAttributePath());
             }
         }
 
         return result;
     }
-    
+
     private EntityResult compileEntityResult(EJBQLExpression expression, int position) {
         String id = expression.getText().toLowerCase();
         ClassDescriptor descriptor = descriptorsById.get(id);
@@ -355,10 +358,7 @@ class Compiler {
         }
 
         // append inheritance discriminator columns...
-        Iterator<ObjAttribute> discriminatorColumns = descriptor
-                .getDiscriminatorColumns();
-        while (discriminatorColumns.hasNext()) {
-            ObjAttribute column = discriminatorColumns.next();
+        for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
 
             if (visited.add(column.getName())) {
                 entityResult.addDbField(column.getDbAttributePath(), prefix + index[0]++);
@@ -458,7 +458,7 @@ class Compiler {
         public boolean visitSubselect(EJBQLExpression expression) {
             return super.visitSubselect(expression);
         }
-        
+
         private void prepareFetchJoin(EJBQLJoin join) {
             if (prefetchTree == null) {
                 prefetchTree = new PrefetchTreeNode();
@@ -609,7 +609,7 @@ class Compiler {
             expression.getChild(0).getChild(0).visit(pathVisitor);
             return false;
         }
-        
+
         @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             addPath((EJBQLPath) expression);

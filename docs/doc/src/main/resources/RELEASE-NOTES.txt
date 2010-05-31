@@ -42,6 +42,7 @@ CAY-1424 DI: support for named service injection and flexible map/list binding
 CAY-1425 Remove Configuration sharedConfiguration singleton affecting DataContext deserialization, CayenneDataObject XML deserialization, DataContext static factory method. 
 CAY-1433 Change #chunk behaviour to skipe only null arguments (don't skip 0 or false)
 CAY-1438 refactoring EntityInheritanceTree lookups
+CAY-1439 ClassDescriptor refactoring - replacing returned iterators with collections
 
 Bug Fixes Since 3.0:
 

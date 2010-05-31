@@ -160,16 +160,14 @@ final class CayenneContextGraphManager extends GraphMap {
 
         while (it.hasNext()) {
             ObjectId id = (ObjectId) it.next();
-            ClassDescriptor descriptor = resolver.getClassDescriptor(id
-                    .getEntityName());
+            ClassDescriptor descriptor = resolver.getClassDescriptor(id.getEntityName());
 
-            Iterator<ArcProperty> mapArcProperties = descriptor.getMapArcProperties();
-            if (mapArcProperties.hasNext()) {
+            Collection<ArcProperty> mapArcProperties = descriptor.getMapArcProperties();
+            if (!mapArcProperties.isEmpty()) {
 
                 Object object = getNode(id);
 
-                while (mapArcProperties.hasNext()) {
-                    ArcProperty arc = mapArcProperties.next();
+                for (ArcProperty arc : mapArcProperties) {
                     ToManyMapProperty reverseArc = (ToManyMapProperty) arc
                             .getComplimentaryReverseArc();
 
@@ -206,15 +204,15 @@ final class CayenneContextGraphManager extends GraphMap {
         while (it.hasNext()) {
             Map.Entry<?, ?> e = (Map.Entry<?, ?>) it.next();
             if (e.getValue() == target) {
-                //this remove does not trigger event in PersistentObjectMap
+                // this remove does not trigger event in PersistentObjectMap
                 it.remove();
                 break;
             }
         }
 
-        //TODO: (andrey, 25/11/09 - this is a hack to prevent event triggering 
+        // TODO: (andrey, 25/11/09 - this is a hack to prevent event triggering
         // (and concurrent exceptions)
-        //should find a way to get rid of type casting
+        // should find a way to get rid of type casting
         ((PersistentObjectMap) map).putDirectly(newKey, target);
     }
 

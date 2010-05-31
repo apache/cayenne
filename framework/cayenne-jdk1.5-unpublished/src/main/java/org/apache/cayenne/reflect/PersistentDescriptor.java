@@ -20,9 +20,9 @@ package org.apache.cayenne.reflect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -33,7 +33,6 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.commons.collections.IteratorUtils;
 
 /**
  * A default ClassDescriptor implementation for persistent objects.
@@ -60,7 +59,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     protected EntityInheritanceTree entityInheritanceTree;
 
     // combines declared and super properties
-    protected Collection<Property> idProperties;
+    protected Collection<AttributeProperty> idProperties;
 
     // combines declared and super properties
     protected Collection<ArcProperty> mapArcProperties;
@@ -116,14 +115,16 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     void indexAddedProperty(Property property) {
         if (property instanceof AttributeProperty) {
-            ObjAttribute attribute = ((AttributeProperty) property).getAttribute();
+
+            AttributeProperty attributeProperty = (AttributeProperty) property;
+            ObjAttribute attribute = attributeProperty.getAttribute();
             if (attribute.isPrimaryKey()) {
 
                 if (idProperties == null) {
-                    idProperties = new ArrayList<Property>(2);
+                    idProperties = new ArrayList<AttributeProperty>(2);
                 }
 
-                idProperties.add(property);
+                idProperties.add(attributeProperty);
             }
         }
         else if (property instanceof ArcProperty) {
@@ -222,28 +223,27 @@ public class PersistentDescriptor implements ClassDescriptor {
         return subclassDescriptor != null ? subclassDescriptor : this;
     }
 
-    public Iterator<ObjAttribute> getDiscriminatorColumns() {
-        return allDiscriminatorColumns != null
-                ? allDiscriminatorColumns.iterator()
-                : IteratorUtils.EMPTY_ITERATOR;
+    public Collection<ObjAttribute> getDiscriminatorColumns() {
+        return allDiscriminatorColumns != null ? allDiscriminatorColumns : Collections
+                .<ObjAttribute> emptyList();
     }
 
-    public Iterator<Property> getIdProperties() {
+    public Collection<AttributeProperty> getIdProperties() {
 
         if (idProperties != null) {
-            return idProperties.iterator();
+            return idProperties;
         }
 
-        return IteratorUtils.EMPTY_ITERATOR;
+        return Collections.emptyList();
     }
 
-    public Iterator<ArcProperty> getMapArcProperties() {
+    public Collection<ArcProperty> getMapArcProperties() {
 
         if (mapArcProperties != null) {
-            return mapArcProperties.iterator();
+            return mapArcProperties;
         }
 
-        return IteratorUtils.EMPTY_ITERATOR;
+        return Collections.EMPTY_LIST;
     }
 
     /**

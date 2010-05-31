@@ -148,15 +148,12 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         }
 
         // append inheritance discriminator columns...
-        Iterator<ObjAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
-        while (discriminatorColumns.hasNext()) {
-            
-            ObjAttribute attribute = discriminatorColumns.next();
-            appendColumn(idVar, attribute, attribute.getDbAttribute(), fields);
+        for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
+            appendColumn(idVar, column, column.getDbAttribute(), fields);
         }
 
         addPrefetchedColumnsIfAny(idVar);
-        
+
         return false;
     }
 
@@ -223,12 +220,13 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             String javaType) {
         String columnLabel = "";
         if (context.isAppendingResultColumns()) {
-               columnLabel = fields.get(property != null ? property
-                        .getDbAttributePath() : column.getName());
+            columnLabel = fields.get(property != null
+                    ? property.getDbAttributePath()
+                    : column.getName());
         }
         appendColumn(identifier, column, columnLabel, columnLabel, javaType);
     }
-    
+
     public void appendColumn(
             String identifier,
             DbAttribute column,

@@ -20,7 +20,6 @@
 package org.apache.cayenne.reflect;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
@@ -119,11 +118,11 @@ public interface ClassDescriptor {
     Property getDeclaredProperty(String propertyName);
 
     /**
-     * Returns an iterator over the properties mapped to id columns.
+     * Returns a collection of the properties mapped to id columns.
      * 
-     * @since 3.0
+     * @since 3.1
      */
-    Iterator<Property> getIdProperties();
+    Collection<AttributeProperty> getIdProperties();
 
     /**
      * Returns a collection of ObjAttribute for the described class, its superclasses and
@@ -131,9 +130,9 @@ public interface ClassDescriptor {
      * expression specifies a DbAttribute instead of an ObjAttribute, a synthetic
      * ObjAttribute is created and returned.
      * 
-     * @since 3.0
+     * @since 3.1
      */
-    Iterator<ObjAttribute> getDiscriminatorColumns();
+    Collection<ObjAttribute> getDiscriminatorColumns();
 
     /**
      * Returns entity qualifier as a Cayenne expression that includes qualifiers for this
@@ -144,16 +143,16 @@ public interface ClassDescriptor {
     Expression getEntityQualifier();
 
     /**
-     * Returns an iterator over the arc properties whose reverse arcs are to-many maps.
-     * I.e. for each ArcProperty in the iterator, the following is true:
+     * Returns a collection over the arc properties whose reverse arcs are to-many maps.
+     * I.e. for each ArcProperty in returned collection, the following is true:
      * 
      * <pre>
      * arc.getComplimentaryReverseArc() instanceof ToManyMapProperty
      * </pre>
      * 
-     * @since 3.0
+     * @since 3.1
      */
-    Iterator<ArcProperty> getMapArcProperties();
+    Collection<ArcProperty> getMapArcProperties();
 
     /**
      * Passes the visitor to the properties "visit" method for all properties declared in
