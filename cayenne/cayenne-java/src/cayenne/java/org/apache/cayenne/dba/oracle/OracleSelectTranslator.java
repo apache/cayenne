@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.dba.oracle;
 
 import java.lang.reflect.Method;
@@ -84,6 +83,7 @@ public class OracleSelectTranslator extends SelectTranslator {
                 Integer.TYPE
             };
             statementSetRowPrefetch = st.getClass().getMethod("setRowPrefetch", args2);
+            statementSetRowPrefetch.setAccessible(true);
 
             useOptimizations = true;
         }
