@@ -26,6 +26,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.DBHelper;
 import org.apache.cayenne.test.TableHelper;
+import org.apache.cayenne.testdo.inheritance.vertical.Iv1Root;
+import org.apache.cayenne.testdo.inheritance.vertical.Iv1Sub1;
 import org.apache.cayenne.testdo.inheritance.vertical.IvRoot;
 import org.apache.cayenne.testdo.inheritance.vertical.IvSub1;
 import org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1;
@@ -45,6 +47,9 @@ public class VerticalInheritanceTest extends CayenneCase {
         dbHelper.deleteAll("IV_SUB1");
         dbHelper.deleteAll("IV_SUB2");
         dbHelper.deleteAll("IV_ROOT");
+        
+        dbHelper.deleteAll("IV1_SUB1");
+        dbHelper.deleteAll("IV1_ROOT");
     }
 
     @Override
@@ -383,6 +388,45 @@ public class VerticalInheritanceTest extends CayenneCase {
 
         results = context.performQuery(query);
         assertEquals(2, results.size());
+    }
+
+    public void testSelectQuery_AttributeOverrides() throws Exception {
+        DBHelper dbHelper = getDbHelper();
+
+        TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");
+        iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper iv1Sub1Table = new TableHelper(dbHelper, "IV1_SUB1");
+        iv1Sub1Table.setColumns("ID", "SUB1_NAME");
+
+        // insert
+        iv1RootTable.insert(1, "xROOT", null);
+        iv1RootTable.insert(2, "xSUB1_ROOT", "Iv1Sub1");
+        iv1Sub1Table.insert(2, "xSUB1");
+
+        SelectQuery query = new SelectQuery(Iv1Root.class);
+        List<Iv1Root> results = createDataContext().performQuery(query);
+
+        assertEquals(2, results.size());
+
+        // since we don't have ordering, need to analyze results in an order agnostic
+        // fashion
+        Map<String, Iv1Root> resultTypes = new HashMap<String, Iv1Root>();
+
+        for (Iv1Root result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(2, resultTypes.size());
+
+        Iv1Root root = resultTypes.get(Iv1Root.class.getName());
+        assertNotNull(root);
+        assertEquals("xROOT", root.getName());
+        assertNull(root.getDiscriminator());
+
+        Iv1Sub1 sub1 = (Iv1Sub1) resultTypes.get(Iv1Sub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1", sub1.getName());
     }
 
 }
