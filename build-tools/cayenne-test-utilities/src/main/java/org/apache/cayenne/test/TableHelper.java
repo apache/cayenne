@@ -47,6 +47,9 @@ public class TableHelper {
         return this;
     }
 
+    /**
+     * Sets columns that will be implicitly used in subsequent inserts and selects.
+     */
     public TableHelper setColumns(String... columns) {
         this.columns = columns;
         return this;
@@ -64,6 +67,13 @@ public class TableHelper {
 
         dbHelper.insert(tableName, columns, values);
         return this;
+    }
+
+    /**
+     * Selects a single row from the mapped table.
+     */
+    public Object[] select() throws SQLException {
+        return dbHelper.select(tableName, columns);
     }
 
     public int getRowCount() throws SQLException {

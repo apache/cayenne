@@ -42,6 +42,37 @@ public class DBHelper {
     }
 
     /**
+     * Selects a single row.
+     */
+    public Object[] select(String table, final String[] columns) throws SQLException {
+
+        if (columns.length == 0) {
+            throw new IllegalArgumentException("No columns");
+        }
+
+        StringBuilder sql = new StringBuilder("select ");
+        sql.append(columns[0]);
+        for (int i = 1; i < columns.length; i++) {
+            sql.append(", ").append(columns[i]);
+        }
+        sql.append(" from ").append(table);
+
+        return new RowTemplate<Object[]>(this) {
+
+            @Override
+            Object[] readRow(ResultSet rs, String sql) throws SQLException {
+
+                Object[] result = new Object[columns.length];
+                for (int i = 1; i <= result.length; i++) {
+                    result[i - 1] = rs.getObject(i);
+                }
+
+                return result;
+            }
+        }.execute(sql.toString());
+    }
+
+    /**
      * Inserts a single row.
      */
     public void insert(String table, String[] columns, Object[] values)
