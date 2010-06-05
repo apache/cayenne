@@ -405,12 +405,14 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
                     return rel;
                 }
             }
+            
+            String entityName = (currentEnt != null) ? currentEnt.getName() : "(?)";
 
             // build error message
             StringBuilder buf = new StringBuilder();
             buf
                     .append("Can't resolve path component: [")
-                    .append(currentEnt.getName())
+                    .append(entityName)
                     .append('.')
                     .append(pathComp)
                     .append("].");

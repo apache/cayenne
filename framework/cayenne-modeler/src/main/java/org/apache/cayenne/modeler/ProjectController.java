@@ -290,16 +290,14 @@ public class ProjectController extends CayenneController {
     }
 
     public void setProject(Project currentProject) {
-        if (this.project != currentProject) // strange enough, this method is called twice
-        // during project opening. Not to disturb
-        // watchdog extra time, adding this check
-        {
+        if (this.project != currentProject) {
 
             this.project = currentProject;
             this.projectControllerPreferences = null;
 
-            if (project == null) // null project -> no files to watch
-            {
+            if (project == null) {
+                this.entityResolver = null;
+
                 if (watchdog != null) {
                     watchdog.interrupt();
                     watchdog = null;
@@ -313,17 +311,11 @@ public class ProjectController extends CayenneController {
 
                 watchdog.reconfigure();
 
-                if (entityResolver == null) {
-                    entityResolver = new EntityResolver(
-                            ((DataChannelDescriptor) currentProject.getRootNode())
-                                    .getDataMaps());
-                }
+                entityResolver = new EntityResolver(
+                        ((DataChannelDescriptor) currentProject.getRootNode())
+                                .getDataMaps());
 
-                Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
-                while (it.hasNext()) {
-                    DataMap map = it.next();
-                    map.setNamespace(entityResolver);
-                }
+                updateEntityResolver();
 
                 // addDomainListener(((ModelerProjectConfiguration) project
                 // .getConfiguration()).getGraphRegistry());
@@ -333,14 +325,13 @@ public class ProjectController extends CayenneController {
 
     public void updateEntityResolver() {
 
-        entityResolver.clearCache();
-        entityResolver.setDataMaps(((DataChannelDescriptor) project.getRootNode())
-                .getDataMaps());
+        Collection<DataMap> dataMaps = ((DataChannelDescriptor) project.getRootNode())
+                .getDataMaps();
 
-        Iterator<DataMap> it = entityResolver.getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap map = it.next();
-            map.setNamespace(entityResolver);
+        entityResolver.setDataMaps(dataMaps);
+
+        for (DataMap dataMap : dataMaps) {
+            dataMap.setNamespace(entityResolver);
         }
     }
 
