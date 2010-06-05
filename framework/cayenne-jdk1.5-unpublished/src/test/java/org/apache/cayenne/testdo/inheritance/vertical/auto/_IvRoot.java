@@ -10,9 +10,17 @@ import org.apache.cayenne.CayenneDataObject;
  */
 public abstract class _IvRoot extends CayenneDataObject {
 
+    public static final String DISCRIMINATOR_PROPERTY = "discriminator";
     public static final String NAME_PROPERTY = "name";
 
     public static final String ID_PK_COLUMN = "ID";
+
+    public void setDiscriminator(String discriminator) {
+        writeProperty("discriminator", discriminator);
+    }
+    public String getDiscriminator() {
+        return (String)readProperty("discriminator");
+    }
 
     public void setName(String name) {
         writeProperty("name", name);

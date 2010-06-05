@@ -5,6 +5,7 @@
 	 project-version="6">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance.vertical"/>
 	<db-entity name="IV_ROOT">
+		<db-attribute name="DISCRIMINATOR" type="VARCHAR" length="10"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
@@ -22,16 +23,23 @@
 		<db-attribute name="SUB2_NAME" type="VARCHAR" length="100"/>
 	</db-entity>
 	<obj-entity name="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvRoot" dbEntityName="IV_ROOT">
+		<obj-attribute name="discriminator" type="java.lang.String" db-attribute-path="DISCRIMINATOR"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="IvSub1" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub1" dbEntityName="IV_SUB1">
-		<obj-attribute name="sub1Name" type="java.lang.String" db-attribute-path="SUB1_NAME"/>
+	<obj-entity name="IvSub1" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub1" dbEntityName="IV_ROOT">
+		<qualifier><![CDATA[discriminator = "IvSub1"]]></qualifier>
+		<obj-attribute name="sub1Name" type="java.lang.String" db-attribute-path="sub1.SUB1_NAME"/>
+		<attribute-override name="discrimiantor" db-attribute-path="DISCRIMINATOR"/>
+		<attribute-override name="discriminator" db-attribute-path="DISCRIMINATOR"/>
+		<attribute-override name="name" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="IvSub1Sub1" superEntityName="IvSub1" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1" dbEntityName="IV_SUB1_SUB1">
-		<obj-attribute name="sub1Sub1Name" type="java.lang.String" db-attribute-path="SUB1_SUB1_NAME"/>
+	<obj-entity name="IvSub1Sub1" superEntityName="IvSub1" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1" dbEntityName="IV_ROOT">
+		<qualifier><![CDATA[discriminator = "IvSub1Sub1"]]></qualifier>
+		<obj-attribute name="sub1Sub1Name" type="java.lang.String" db-attribute-path="sub1.sub1Sub1.SUB1_SUB1_NAME"/>
 	</obj-entity>
-	<obj-entity name="IvSub2" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub2" dbEntityName="IV_SUB2">
-		<obj-attribute name="sub2Name" type="java.lang.String" db-attribute-path="SUB2_NAME"/>
+	<obj-entity name="IvSub2" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub2" dbEntityName="IV_ROOT">
+		<qualifier><![CDATA[discriminator = "IvSub2"]]></qualifier>
+		<obj-attribute name="sub2Name" type="java.lang.String" db-attribute-path="sub2.SUB2_NAME"/>
 	</obj-entity>
 	<db-relationship name="sub1" source="IV_ROOT" target="IV_SUB1" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>

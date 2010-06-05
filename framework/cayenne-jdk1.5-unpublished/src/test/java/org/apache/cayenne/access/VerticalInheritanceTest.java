@@ -18,10 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.DBHelper;
 import org.apache.cayenne.test.TableHelper;
 import org.apache.cayenne.testdo.inheritance.vertical.IvRoot;
+import org.apache.cayenne.testdo.inheritance.vertical.IvSub1;
+import org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1;
+import org.apache.cayenne.testdo.inheritance.vertical.IvSub2;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
@@ -33,11 +41,130 @@ public class VerticalInheritanceTest extends CayenneCase {
         return CayenneResources.getResources().getAccessStack("InheritanceVerticalStack");
     }
 
-    public void testSelectQuery() throws Exception {
+    public void testInsert_Root() throws Exception {
         DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
-        ivRootTable.setColumns("ID", "NAME");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+        ivRootTable.deleteAll();
+
+        assertEquals(0, ivRootTable.getRowCount());
+
+        IvRoot root = createDataContext().newObject(IvRoot.class);
+        root.setName("XyZ");
+        root.getObjectContext().commitChanges();
+
+        assertEquals(1, ivRootTable.getRowCount());
+
+        Object[] rootData = ivRootTable.select();
+        assertEquals(3, rootData.length);
+        assertTrue(rootData[0] instanceof Number);
+        assertTrue(((Number) rootData[0]).intValue() > 0);
+        assertEquals("XyZ", rootData[1]);
+        assertNull(rootData[2]);
+    }
+
+    public void testInsert_Sub1() throws Exception {
+        DBHelper dbHelper = getDbHelper();
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        ivSub1Table.deleteAll();
+        ivRootTable.deleteAll();
+
+        IvSub1 sub1 = createDataContext().newObject(IvSub1.class);
+        sub1.setName("XyZX");
+        sub1.getObjectContext().commitChanges();
+
+        assertEquals(1, ivRootTable.getRowCount());
+        assertEquals(1, ivSub1Table.getRowCount());
+
+        Object[] data = ivRootTable.select();
+        assertEquals(3, data.length);
+        assertTrue(data[0] instanceof Number);
+        assertTrue(((Number) data[0]).intValue() > 0);
+        assertEquals("XyZX", data[1]);
+        assertEquals("IvSub1", data[2]);
+
+        Object[] subdata = ivSub1Table.select();
+        assertEquals(2, subdata.length);
+        assertEquals(data[0], subdata[0]);
+        assertNull(subdata[1]);
+
+        ivSub1Table.deleteAll();
+        ivRootTable.deleteAll();
+
+        IvSub1 sub11 = createDataContext().newObject(IvSub1.class);
+        sub11.setName("XyZXY");
+        sub11.setSub1Name("BdE2");
+        sub11.getObjectContext().commitChanges();
+
+        data = ivRootTable.select();
+        assertEquals(3, data.length);
+        assertTrue(data[0] instanceof Number);
+        assertTrue(((Number) data[0]).intValue() > 0);
+        assertEquals("XyZXY", data[1]);
+        assertEquals("IvSub1", data[2]);
+
+        subdata = ivSub1Table.select();
+        assertEquals(2, subdata.length);
+        assertEquals(data[0], subdata[0]);
+        assertEquals("BdE2", subdata[1]);
+    }
+
+    public void testInsert_Sub1Sub1() throws Exception {
+        DBHelper dbHelper = getDbHelper();
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+        ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+
+        ivSub1Sub1Table.deleteAll();
+        ivSub1Table.deleteAll();
+        ivRootTable.deleteAll();
+
+        IvSub1Sub1 sub1Sub1 = createDataContext().newObject(IvSub1Sub1.class);
+        sub1Sub1.setName("XyZN");
+        sub1Sub1.setSub1Name("mDA");
+        sub1Sub1.setSub1Sub1Name("3DQa");
+        sub1Sub1.getObjectContext().commitChanges();
+
+        assertEquals(1, ivRootTable.getRowCount());
+        assertEquals(1, ivSub1Table.getRowCount());
+        assertEquals(1, ivSub1Sub1Table.getRowCount());
+
+        Object[] data = ivRootTable.select();
+        assertEquals(3, data.length);
+        assertTrue(data[0] instanceof Number);
+        assertTrue(((Number) data[0]).intValue() > 0);
+        assertEquals("XyZN", data[1]);
+        assertEquals("IvSub1Sub1", data[2]);
+
+        Object[] subdata = ivSub1Table.select();
+        assertEquals(2, subdata.length);
+        assertEquals(data[0], subdata[0]);
+        assertEquals("mDA", subdata[1]);
+
+        Object[] subsubdata = ivSub1Sub1Table.select();
+        assertEquals(2, subsubdata.length);
+        assertEquals(data[0], subsubdata[0]);
+        assertEquals("3DQa", subsubdata[1]);
+    }
+
+    public void testSelectQuery_SuperSub() throws Exception {
+        DBHelper dbHelper = getDbHelper();
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
 
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
@@ -47,13 +174,234 @@ public class VerticalInheritanceTest extends CayenneCase {
         ivRootTable.deleteAll();
 
         // insert
-        ivRootTable.insert(1, "xROOT");
-        ivRootTable.insert(2, "xSUB1_ROOT");
+        ivRootTable.insert(1, "xROOT", null);
+        ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
         ivSub1Table.insert(2, "xSUB1");
 
         SelectQuery query = new SelectQuery(IvRoot.class);
-        // List<IvRoot> results = createDataContext().performQuery(query);
+        List<IvRoot> results = createDataContext().performQuery(query);
 
-        // assertEquals(2, results.size());
+        assertEquals(2, results.size());
+
+        // since we don't have ordering, need to analyze results in an order agnostic
+        // fashion
+        Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+
+        for (IvRoot result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(2, resultTypes.size());
+
+        IvRoot root = resultTypes.get(IvRoot.class.getName());
+        assertNotNull(root);
+        assertEquals("xROOT", root.getName());
+        assertNull(root.getDiscriminator());
+
+        IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1_ROOT", sub1.getName());
+        assertEquals("IvSub1", sub1.getDiscriminator());
     }
+
+    public void testSelectQuery_DeepAndWide() throws Exception {
+        DBHelper dbHelper = getDbHelper();
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        TableHelper ivSub2Table = new TableHelper(dbHelper, "IV_SUB2");
+        ivSub2Table.setColumns("ID", "SUB2_NAME");
+
+        TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+        ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+
+        // delete
+        ivSub1Sub1Table.deleteAll();
+        ivSub2Table.deleteAll();
+        ivSub1Table.deleteAll();
+        ivRootTable.deleteAll();
+
+        // insert
+        ivRootTable.insert(1, "xROOT", null);
+
+        ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
+        ivSub1Table.insert(2, "xSUB1");
+
+        ivRootTable.insert(3, "xSUB1_SUB1_ROOT", "IvSub1Sub1");
+        ivSub1Table.insert(3, "xSUB1_SUB1_SUBROOT");
+        ivSub1Sub1Table.insert(3, "xSUB1_SUB1");
+
+        ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
+        ivSub2Table.insert(4, "xSUB2");
+
+        SelectQuery query = new SelectQuery(IvRoot.class);
+        List<IvRoot> results = createDataContext().performQuery(query);
+
+        assertEquals(4, results.size());
+
+        // since we don't have ordering, need to analyze results in an order agnostic
+        // fashion
+        Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+
+        for (IvRoot result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(4, resultTypes.size());
+
+        IvRoot root = resultTypes.get(IvRoot.class.getName());
+        assertNotNull(root);
+        assertEquals("xROOT", root.getName());
+        assertNull(root.getDiscriminator());
+
+        IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1_ROOT", sub1.getName());
+        assertEquals("IvSub1", sub1.getDiscriminator());
+
+        IvSub1Sub1 sub1Sub1 = (IvSub1Sub1) resultTypes.get(IvSub1Sub1.class.getName());
+        assertNotNull(sub1Sub1);
+        assertEquals("xSUB1_SUB1_ROOT", sub1Sub1.getName());
+        assertEquals("IvSub1Sub1", sub1Sub1.getDiscriminator());
+        assertEquals("xSUB1_SUB1_SUBROOT", sub1Sub1.getSub1Name());
+        assertEquals("xSUB1_SUB1", sub1Sub1.getSub1Sub1Name());
+
+        IvSub2 sub2 = (IvSub2) resultTypes.get(IvSub2.class.getName());
+        assertNotNull(sub2);
+        assertEquals("xROOT_SUB2", sub2.getName());
+        assertEquals("IvSub2", sub2.getDiscriminator());
+        assertEquals("xSUB2", sub2.getSub2Name());
+    }
+
+    public void testSelectQuery_MiddleLeaf() throws Exception {
+        DBHelper dbHelper = getDbHelper();
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        TableHelper ivSub2Table = new TableHelper(dbHelper, "IV_SUB2");
+        ivSub2Table.setColumns("ID", "SUB2_NAME");
+
+        TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+        ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+
+        // delete
+        ivSub1Sub1Table.deleteAll();
+        ivSub2Table.deleteAll();
+        ivSub1Table.deleteAll();
+        ivRootTable.deleteAll();
+
+        // insert
+        ivRootTable.insert(1, "xROOT", null);
+
+        ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
+        ivSub1Table.insert(2, "xSUB1");
+
+        ivRootTable.insert(3, "xSUB1_SUB1_ROOT", "IvSub1Sub1");
+        ivSub1Table.insert(3, "xSUB1_SUB1_SUBROOT");
+        ivSub1Sub1Table.insert(3, "xSUB1_SUB1");
+
+        ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
+        ivSub2Table.insert(4, "xSUB2");
+
+        SelectQuery query = new SelectQuery(IvSub1.class);
+        List<IvRoot> results = createDataContext().performQuery(query);
+
+        assertEquals(2, results.size());
+
+        // since we don't have ordering, need to analyze results in an order agnostic
+        // fashion
+        Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+
+        for (IvRoot result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(2, resultTypes.size());
+
+        IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1_ROOT", sub1.getName());
+        assertEquals("IvSub1", sub1.getDiscriminator());
+
+        IvSub1Sub1 sub1Sub1 = (IvSub1Sub1) resultTypes.get(IvSub1Sub1.class.getName());
+        assertNotNull(sub1Sub1);
+        assertEquals("xSUB1_SUB1_ROOT", sub1Sub1.getName());
+        assertEquals("IvSub1Sub1", sub1Sub1.getDiscriminator());
+        assertEquals("xSUB1_SUB1_SUBROOT", sub1Sub1.getSub1Name());
+        assertEquals("xSUB1_SUB1", sub1Sub1.getSub1Sub1Name());
+    }
+
+    public void testDelete_Mix() throws Exception {
+        DBHelper dbHelper = getDbHelper();
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        TableHelper ivSub2Table = new TableHelper(dbHelper, "IV_SUB2");
+        ivSub2Table.setColumns("ID", "SUB2_NAME");
+
+        TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+        ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+
+        // delete
+        ivSub1Sub1Table.deleteAll();
+        ivSub2Table.deleteAll();
+        ivSub1Table.deleteAll();
+        ivRootTable.deleteAll();
+
+        // insert
+        ivRootTable.insert(1, "xROOT", null);
+
+        ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
+        ivSub1Table.insert(2, "xSUB1");
+
+        ivRootTable.insert(3, "xSUB1_SUB1_ROOT", "IvSub1Sub1");
+        ivSub1Table.insert(3, "xSUB1_SUB1_SUBROOT");
+        ivSub1Sub1Table.insert(3, "xSUB1_SUB1");
+
+        ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
+        ivSub2Table.insert(4, "xSUB2");
+
+        SelectQuery query = new SelectQuery(IvRoot.class);
+
+        ObjectContext context = createDataContext();
+        List<IvRoot> results = context.performQuery(query);
+
+        assertEquals(4, results.size());
+        Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+
+        for (IvRoot result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(4, resultTypes.size());
+
+        IvRoot root = resultTypes.get(IvRoot.class.getName());
+        context.deleteObject(root);
+
+        IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
+        context.deleteObject(sub1);
+
+        context.commitChanges();
+
+        assertEquals(2, ivRootTable.getRowCount());
+        assertEquals(1, ivSub1Table.getRowCount());
+        assertEquals(1, ivSub1Sub1Table.getRowCount());
+        assertEquals(1, ivSub2Table.getRowCount());
+
+        results = context.performQuery(query);
+        assertEquals(2, results.size());
+    }
+
 }
