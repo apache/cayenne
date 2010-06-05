@@ -37,6 +37,17 @@ import org.apache.cayenne.unit.CayenneResources;
 public class VerticalInheritanceTest extends CayenneCase {
 
     @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        DBHelper dbHelper = getDbHelper();
+        dbHelper.deleteAll("IV_SUB1_SUB1");
+        dbHelper.deleteAll("IV_SUB1");
+        dbHelper.deleteAll("IV_SUB2");
+        dbHelper.deleteAll("IV_ROOT");
+    }
+
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack("InheritanceVerticalStack");
     }
@@ -46,7 +57,6 @@ public class VerticalInheritanceTest extends CayenneCase {
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
-        ivRootTable.deleteAll();
 
         assertEquals(0, ivRootTable.getRowCount());
 
@@ -72,9 +82,6 @@ public class VerticalInheritanceTest extends CayenneCase {
 
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
-
-        ivSub1Table.deleteAll();
-        ivRootTable.deleteAll();
 
         IvSub1 sub1 = createDataContext().newObject(IvSub1.class);
         sub1.setName("XyZX");
@@ -128,10 +135,6 @@ public class VerticalInheritanceTest extends CayenneCase {
         TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
         ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
 
-        ivSub1Sub1Table.deleteAll();
-        ivSub1Table.deleteAll();
-        ivRootTable.deleteAll();
-
         IvSub1Sub1 sub1Sub1 = createDataContext().newObject(IvSub1Sub1.class);
         sub1Sub1.setName("XyZN");
         sub1Sub1.setSub1Name("mDA");
@@ -168,10 +171,6 @@ public class VerticalInheritanceTest extends CayenneCase {
 
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
-
-        // delete
-        ivSub1Table.deleteAll();
-        ivRootTable.deleteAll();
 
         // insert
         ivRootTable.insert(1, "xROOT", null);
@@ -218,12 +217,6 @@ public class VerticalInheritanceTest extends CayenneCase {
 
         TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
         ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
-
-        // delete
-        ivSub1Sub1Table.deleteAll();
-        ivSub2Table.deleteAll();
-        ivSub1Table.deleteAll();
-        ivRootTable.deleteAll();
 
         // insert
         ivRootTable.insert(1, "xROOT", null);
@@ -292,12 +285,6 @@ public class VerticalInheritanceTest extends CayenneCase {
         TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
         ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
 
-        // delete
-        ivSub1Sub1Table.deleteAll();
-        ivSub2Table.deleteAll();
-        ivSub1Table.deleteAll();
-        ivRootTable.deleteAll();
-
         // insert
         ivRootTable.insert(1, "xROOT", null);
 
@@ -353,12 +340,6 @@ public class VerticalInheritanceTest extends CayenneCase {
 
         TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
         ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
-
-        // delete
-        ivSub1Sub1Table.deleteAll();
-        ivSub2Table.deleteAll();
-        ivSub1Table.deleteAll();
-        ivRootTable.deleteAll();
 
         // insert
         ivRootTable.insert(1, "xROOT", null);
