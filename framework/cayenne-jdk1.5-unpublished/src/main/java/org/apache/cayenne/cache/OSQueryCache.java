@@ -258,8 +258,8 @@ public class OSQueryCache implements QueryCache {
 
     /**
      * Returns a non-null cached value. If it is not present in the cache, it is obtained
-     * by calling {@link QueryCacheEntryFactory#createObject()}. Whether the cache provider
-     * will block on the entry update or not is controlled by "cache.blocking"
+     * by calling {@link QueryCacheEntryFactory#createObject()}. Whether the cache
+     * provider will block on the entry update or not is controlled by "cache.blocking"
      * configuration property and is "false" by default.
      */
     @SuppressWarnings("unchecked")
@@ -309,7 +309,7 @@ public class OSQueryCache implements QueryCache {
             }
         }
     }
-    
+
     /**
      * Returns non-null RefreshSpecification for the QueryMetadata.
      */
@@ -384,6 +384,7 @@ public class OSQueryCache implements QueryCache {
     }
 
     final static class OSCacheAdministrator extends GeneralCacheAdministrator {
+
         OSCacheAdministrator() {
         }
 
