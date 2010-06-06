@@ -65,8 +65,9 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
     public BindingBuilder<T> toProvider(
             Class<? extends Provider<? extends T>> providerType) {
 
-        Provider<Provider<? extends T>> provider0 = new ConstructorInjectingProvidersProvider<T>(
-                providerType);
+        Provider<Provider<? extends T>> provider0 = new ConstructorInjectingProvider<Provider<? extends T>>(
+                providerType,
+                injector);
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(
                 provider0,
                 injector,
