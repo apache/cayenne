@@ -22,6 +22,9 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.OnScopeEnd;
+import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
+import org.apache.cayenne.di.mock.MockInterface1;
 
 public class DefaultInjectorTest extends TestCase {
 
@@ -65,6 +68,34 @@ public class DefaultInjectorTest extends TestCase {
         new DefaultInjector(module1, module2);
         assertTrue(configureCalled[0]);
         assertTrue(configureCalled[1]);
+    }
+    
+    public void testShutdown() {
+
+        MockImplementation1_EventAnnotations.reset();
+
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_EventAnnotations.class).inSingletonScope();
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 instance1 = injector.getInstance(MockInterface1.class);
+        assertEquals("XuI", instance1.getName());
+
+        assertFalse(MockImplementation1_EventAnnotations.shutdown1);
+        assertFalse(MockImplementation1_EventAnnotations.shutdown2);
+        assertFalse(MockImplementation1_EventAnnotations.shutdown3);
+
+        injector.shutdown();
+
+        assertTrue(MockImplementation1_EventAnnotations.shutdown1);
+        assertTrue(MockImplementation1_EventAnnotations.shutdown2);
+        assertTrue(MockImplementation1_EventAnnotations.shutdown3);
     }
 
 }

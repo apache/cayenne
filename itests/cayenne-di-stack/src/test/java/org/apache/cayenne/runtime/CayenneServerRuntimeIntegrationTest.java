@@ -23,6 +23,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.server.CayenneServerRuntimeCase;
 import org.apache.cayenne.configuration.server.RuntimeName;
+import org.apache.cayenne.event.DefaultEventManager;
+import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.itest.di_stack.Table1;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.DBHelper;
@@ -77,5 +79,26 @@ public class CayenneServerRuntimeIntegrationTest extends
 		assertNotSame(o1, o2);
 		assertEquals(o1.getObjectId(), o2.getObjectId());
 
+	}
+
+	public void testShutdown() throws Exception {
+
+		// create a context and save some objects to warm up the stack...
+		ObjectContext context1 = runtime.getContext();
+
+		Table1 t1 = context1.newObject(Table1.class);
+		t1.setName("XmKK");
+		context1.commitChanges();
+
+		// ensure that some of the services that require shutdown are
+		// instantiated and check their state before and after
+		EventManager em = runtime.getInjector().getInstance(EventManager.class);
+		assertNotNull(em);
+		assertTrue(em instanceof DefaultEventManager);
+		assertFalse(((DefaultEventManager) em).isStopped());
+
+		runtime.getInjector().shutdown();
+
+		assertTrue(((DefaultEventManager) em).isStopped());
 	}
 }

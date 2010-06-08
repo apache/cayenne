@@ -82,6 +82,15 @@ public class DefaultEventManager implements EventManager {
     }
 
     /**
+     * Returns true if the EventManager was stopped via {@link #shutdown()} method.
+     * 
+     * @since 3.1
+     */
+    public boolean isStopped() {
+        return stopped;
+    }
+
+    /**
      * Returns true if this EventManager is single-threaded. If so it will throw an
      * exception on any attempt to register an unblocking listener or dispatch a
      * non-blocking event.
@@ -100,10 +109,15 @@ public class DefaultEventManager implements EventManager {
      */
     @OnScopeEnd
     public void shutdown() {
-        this.stopped = true;
 
-        for (DispatchThread thread : dispatchThreads) {
-            thread.interrupt();
+        if (!stopped) {
+
+            for (DispatchThread thread : dispatchThreads) {
+                thread.interrupt();
+            }
+
+            dispatchThreads.clear();
+            this.stopped = true;
         }
     }
 

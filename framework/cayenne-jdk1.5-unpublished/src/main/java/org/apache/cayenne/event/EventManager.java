@@ -40,14 +40,6 @@ public interface EventManager {
     boolean isSingleThreaded();
 
     /**
-     * Stops event threads. After the EventManager is stopped, it can not be restarted and
-     * should be discarded.
-     * 
-     * @since 3.0
-     */
-    void shutdown();
-
-    /**
      * Register an <code>EventListener</code> for events sent by any sender.
      * 
      * @throws RuntimeException if <code>methodName</code> is not found.

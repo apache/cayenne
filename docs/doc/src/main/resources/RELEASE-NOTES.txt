@@ -37,6 +37,7 @@ CAY-1414 Remove org.apache.cayenne.conf package
 CAY-1415 Replace WebApplicationContextFilter with a DI-enabled filter
 CAY-1419 File-based ResourceLocator to replace legacy FileConfiguration
 CAY-1420 Migrate ROP server-side components to DI-based stack
+CAY-1421 CayenneRuntime shutdown functionality
 CAY-1422 Convert EventManager to an interface, make it injectable
 CAY-1424 DI: support for named service injection and flexible map/list binding
 CAY-1425 Remove Configuration sharedConfiguration singleton affecting DataContext deserialization, CayenneDataObject XML deserialization, DataContext static factory method. 
