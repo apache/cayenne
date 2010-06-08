@@ -16,22 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di.spi;
+package org.apache.cayenne.di.mock;
 
 import org.apache.cayenne.di.OnScopeEnd;
-import org.apache.cayenne.di.Provider;
 
-/**
- * @since 3.1
- */
-class SingletonScope extends EventfulScope {
+public class MockImplementation1_EventAnnotationsBase {
 
-    SingletonScope() {
-        addEventAnnotation(OnScopeEnd.class);
+    public static boolean shutdown1;
+    public static boolean shutdown2;
+    public static boolean shutdown3;
+
+    public static void reset() {
+        shutdown1 = false;
+        shutdown2 = false;
+        shutdown3 = false;
     }
 
-    @Override
-    public <T> Provider<T> scope(Provider<T> unscoped) {
-        return new SingletonProvider<T>(this, unscoped);
+    @OnScopeEnd
+    public void onShutdown3() {
+        shutdown3 = true;
     }
 }

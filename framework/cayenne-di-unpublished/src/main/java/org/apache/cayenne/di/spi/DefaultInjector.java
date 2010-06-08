@@ -35,7 +35,7 @@ import org.apache.cayenne.di.Scope;
  */
 public class DefaultInjector implements Injector {
 
-    private Scope singletonScope;
+    private SingletonScope singletonScope;
     private Scope noScope;
 
     private Map<Key<?>, Binding<?>> bindings;
@@ -137,11 +137,12 @@ public class DefaultInjector implements Injector {
         provider1.get();
     }
 
-    Scope getSingletonScope() {
+    SingletonScope getSingletonScope() {
         return singletonScope;
     }
 
     Scope getNoScope() {
         return noScope;
     }
+
 }

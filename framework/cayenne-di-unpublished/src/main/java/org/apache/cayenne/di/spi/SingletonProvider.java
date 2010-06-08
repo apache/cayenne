@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -26,11 +27,13 @@ import org.apache.cayenne.di.Provider;
 class SingletonProvider<T> implements Provider<T> {
 
     private Provider<T> delegate;
+    private SingletonScope scope;
 
     // presumably "volatile" works in Java 5 and newer to prevent double-checked locking
     private volatile T instance;
 
-    public SingletonProvider(Provider<T> delegate) {
+    public SingletonProvider(SingletonScope scope, Provider<T> delegate) {
+        this.scope = scope;
         this.delegate = delegate;
     }
 
@@ -40,6 +43,14 @@ class SingletonProvider<T> implements Provider<T> {
             synchronized (this) {
                 if (instance == null) {
                     instance = delegate.get();
+
+                    if (instance == null) {
+                        throw new ConfigurationException(
+                                "Underlying provider (%s) returned NULL instance",
+                                delegate.getClass().getName());
+                    }
+
+                    scope.addScopeEventListener(instance);
                 }
             }
         }

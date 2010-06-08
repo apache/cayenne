@@ -19,8 +19,13 @@
 package org.apache.cayenne.di;
 
 /**
- * Defines the scope of the instances created by the DI container. The default scope of a
- * binding results in creation of a new object instance on every call to the Injector.
+ * Defines the scope of the instances created by the DI container. I.e. whether instances
+ * are shared between the callers, and for how longs or whether they are created anew.
+ * Scope object is also used to tie DI-produced instances to the Injector events, such as
+ * shutdown.
+ * <p>
+ * Cayenne defines a few standard scopes in {@link Scopes} class. The default scope of a
+ * binding in Cayenne is {@link Scopes#SINGLETON}.
  * 
  * @since 3.1
  */
