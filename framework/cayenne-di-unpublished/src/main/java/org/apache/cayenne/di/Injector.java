@@ -52,4 +52,11 @@ public interface Injector {
      * initialize tested objects that are relying on field injecton.
      */
     void injectMembers(Object object);
+
+    /**
+     * A lifecycle method that let's the injector's services to clean up their state and
+     * release resources. This method would normally generate a scope end event for the
+     * injector's one and only singleton scope.
+     */
+    void shutdown();
 }

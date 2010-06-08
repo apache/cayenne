@@ -76,7 +76,11 @@ public class CayenneFilter implements Filter {
     }
 
     public void destroy() {
-        // noop for now...
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
+
+        if (runtime != null) {
+            runtime.getInjector().shutdown();
+        }
     }
 
     public void doFilter(

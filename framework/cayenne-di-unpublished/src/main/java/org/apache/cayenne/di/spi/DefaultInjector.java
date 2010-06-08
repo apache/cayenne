@@ -25,6 +25,7 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.OnScopeEnd;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
@@ -136,6 +137,10 @@ public class DefaultInjector implements Injector {
                 Key.get(object.getClass()));
         provider1.get();
     }
+
+    public void shutdown() {
+        singletonScope.postScopeEvent(OnScopeEnd.class);
+    };
 
     SingletonScope getSingletonScope() {
         return singletonScope;

@@ -22,9 +22,11 @@ import java.util.Collection;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.CayenneServerModule;
 import org.apache.cayenne.configuration.server.CayenneServerRuntime;
 import org.apache.cayenne.configuration.web.RequestHandler;
@@ -59,17 +61,20 @@ import com.caucho.hessian.server.HessianServlet;
  */
 public class ROPHessianServlet extends HessianServlet {
 
+    protected ServletContext servletContext;
+
     /**
      * Installs {@link HessianService} to respond to {@link RemoteService} requests.
      */
     @Override
     public void init(ServletConfig configuration) throws ServletException {
 
+        this.servletContext = configuration.getServletContext();
+
         WebConfiguration configAdapter = new WebConfiguration(configuration);
 
         String configurationLocation = configAdapter.getConfigurationLocation();
-        Map<String, String> eventBridgeParameters = configAdapter
-                .getOtherParameters();
+        Map<String, String> eventBridgeParameters = configAdapter.getOtherParameters();
 
         Collection<Module> modules = configAdapter
                 .createModules(
@@ -97,7 +102,18 @@ public class ROPHessianServlet extends HessianServlet {
         // TODO: andrus 04/14/2010: if CayenneFilter and ROPHessianServlet are used
         // together in the same webapp, maybe a good idea to ensure they are using the
         // same stack...Merging CayenneRuntime's modules might be tough though.
-        WebUtil.setCayenneRuntime(configuration.getServletContext(), runtime);
+
+        WebUtil.setCayenneRuntime(servletContext, runtime);
         super.init(configuration);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
+        if (runtime != null) {
+            runtime.getInjector().shutdown();
+        }
     }
 }
