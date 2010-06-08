@@ -105,4 +105,12 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
     public void in(Scope scope) {
         injector.changeBindingScope(bindingKey, scope);
     }
+
+    public void withoutScope() {
+        in(injector.getNoScope());
+    }
+
+    public void inSingletonScope() {
+        in(injector.getSingletonScope());
+    }
 }

@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration.web;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
 
 /**
  * @since 3.1
@@ -28,7 +27,9 @@ import org.apache.cayenne.di.Scopes;
 public class CayenneWebModule implements Module {
 
     public void configure(Binder binder) {
-        binder.bind(RequestHandler.class).to(SessionContextRequestHandler.class).in(
-                Scopes.NO_SCOPE);
+        binder
+                .bind(RequestHandler.class)
+                .to(SessionContextRequestHandler.class)
+                .withoutScope();
     }
 }

@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
 import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockInterface1;
 
@@ -56,8 +55,10 @@ public class DefaultInjectorScopeTest extends TestCase {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class).in(
-                        Scopes.NO_SCOPE);
+                binder
+                        .bind(MockInterface1.class)
+                        .to(MockImplementation1.class)
+                        .withoutScope();
             }
         };
 
@@ -81,8 +82,10 @@ public class DefaultInjectorScopeTest extends TestCase {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class).in(
-                        Scopes.SINGLETON);
+                binder
+                        .bind(MockInterface1.class)
+                        .to(MockImplementation1.class)
+                        .inSingletonScope();
             }
         };
 

@@ -22,34 +22,13 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
 /**
- * A binding encapsulates DI provider scoping settings and allows to change them as many
- * times as needed.
- * 
  * @since 3.1
  */
-class Binding<T> {
+final class NoScope implements Scope {
 
-    private Provider<T> unscoped;
-    private Provider<T> scoped;
+    static final Scope SINGLETON = new NoScope();
 
-    Binding(Provider<T> provider, Scope initialScope) {
-        this.unscoped = provider;
-        this.scoped = initialScope != null ? initialScope.scope(provider) : provider;
-    }
-
-    void changeScope(Scope scope) {
-        if (scope == null) {
-            scope = NoScope.SINGLETON;
-        }
-
-        scoped = scope.scope(unscoped);
-    }
-
-    Provider<T> getUnscoped() {
+    public <T> Provider<T> scope(Provider<T> unscoped) {
         return unscoped;
-    }
-
-    Provider<T> getScoped() {
-        return scoped;
     }
 }

@@ -20,14 +20,10 @@ package org.apache.cayenne.configuration.web;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
 
 public class CayenneFilter_DispatchModule implements Module {
 
     public void configure(Binder binder) {
-        binder
-                .bind(RequestHandler.class)
-                .to(CayenneFilter_DispatchRequestHandler.class)
-                .in(Scopes.SINGLETON);
+        binder.bind(RequestHandler.class).to(CayenneFilter_DispatchRequestHandler.class);
     }
 }

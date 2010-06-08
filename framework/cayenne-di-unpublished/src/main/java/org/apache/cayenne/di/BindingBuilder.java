@@ -40,8 +40,19 @@ public interface BindingBuilder<T> {
 
     /**
      * Sets the scope of a bound instance. This method is used to change the default scope
-     * (which is normally {@link Scopes#SINGLETON}) to something else, e.g.
-     * {@link Scopes#NO_SCOPE}.
+     * which is usually a singleton to a custom scope.
      */
     void in(Scope scope);
+
+    /**
+     * Sets the scope of a bound instance to singleton. Singleton is normally the default,
+     * so calling this method explicitly is rarely needed.
+     */
+    void inSingletonScope();
+
+    /**
+     * Sets the scope of a bound instance to "no scope". This means that a new instance of
+     * an object will be created on every call to {@link Injector#getInstance(Class)}.
+     */
+    void withoutScope();
 }

@@ -49,7 +49,6 @@ import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Scopes;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -106,8 +105,10 @@ public class CayenneServerModule implements Module {
         // will return DataDomain for request for a DataChannel
         binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
 
-        binder.bind(ObjectContext.class).toProvider(DataContextProvider.class).in(
-                Scopes.NO_SCOPE);
+        binder
+                .bind(ObjectContext.class)
+                .toProvider(DataContextProvider.class)
+                .withoutScope();
 
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(

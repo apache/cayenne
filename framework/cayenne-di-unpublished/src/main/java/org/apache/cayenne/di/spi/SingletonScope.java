@@ -16,33 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.di.spi;
+
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.Scope;
 
 /**
  * @since 3.1
  */
-class SingletonProvider<T> implements Provider<T> {
+class SingletonScope implements Scope {
 
-    private Provider<T> delegate;
-
-    // presumably "volatile" works in Java 5 and newer to prevent double-checked locking
-    private volatile T instance;
-
-    public SingletonProvider(Provider<T> delegate) {
-        this.delegate = delegate;
+    public <T> Provider<T> scope(Provider<T> unscoped) {
+        return new SingletonProvider<T>(unscoped);
     }
-
-    public T get() {
-
-        if (instance == null) {
-            synchronized (this) {
-                if (instance == null) {
-                    instance = delegate.get();
-                }
-            }
-        }
-
-        return instance;
-    }
-
 }

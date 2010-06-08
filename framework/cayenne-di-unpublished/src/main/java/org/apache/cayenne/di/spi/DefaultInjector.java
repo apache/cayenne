@@ -27,7 +27,6 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
-import org.apache.cayenne.di.Scopes;
 
 /**
  * A default Cayenne implementations of a DI injector.
@@ -36,14 +35,20 @@ import org.apache.cayenne.di.Scopes;
  */
 public class DefaultInjector implements Injector {
 
+    private Scope singletonScope;
+    private Scope noScope;
+
     private Map<Key<?>, Binding<?>> bindings;
     private InjectionStack injectionStack;
     private Scope defaultScope;
 
     public DefaultInjector(Module... modules) throws ConfigurationException {
 
+        this.singletonScope = new SingletonScope();
+        this.noScope = NoScope.SINGLETON;
+
         // this is intentionally hardcoded and is not configurable
-        this.defaultScope = Scopes.SINGLETON;
+        this.defaultScope = singletonScope;
 
         this.bindings = new HashMap<Key<?>, Binding<?>>();
         this.injectionStack = new InjectionStack();
@@ -83,7 +88,7 @@ public class DefaultInjector implements Injector {
 
     <T> void changeBindingScope(Key<T> bindingKey, Scope scope) {
         if (scope == null) {
-            scope = Scopes.NO_SCOPE;
+            scope = noScope;
         }
 
         Binding<?> binding = bindings.get(bindingKey);
@@ -130,5 +135,13 @@ public class DefaultInjector implements Injector {
                 this,
                 Key.get(object.getClass()));
         provider1.get();
+    }
+
+    Scope getSingletonScope() {
+        return singletonScope;
+    }
+
+    Scope getNoScope() {
+        return noScope;
     }
 }
