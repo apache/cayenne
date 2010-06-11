@@ -76,34 +76,21 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected Injector injector;
 
-    protected volatile DataDomain dataDomain;
-
     public DataDomain get() throws ConfigurationException {
 
-        if (dataDomain == null) {
-            synchronized (this) {
-                if (dataDomain == null) {
-
-                    try {
-                        createDataChannel();
-                    }
-                    catch (ConfigurationException e) {
-                        throw e;
-                    }
-                    catch (Exception e) {
-                        throw new DataDomainLoadException(
-                                "Error loading DataChannel: '%s'",
-                                e,
-                                e.getMessage());
-                    }
-                }
-            }
+        try {
+            return createDataDomain();
         }
-
-        return dataDomain;
+        catch (ConfigurationException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e
+                    .getMessage());
+        }
     }
 
-    protected void createDataChannel() throws Exception {
+    protected DataDomain createDataDomain() throws Exception {
         String configurationLocation = configurationProperties
                 .get(RuntimeProperties.CONFIGURATION_LOCATION);
 
@@ -208,6 +195,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
             dataDomain.addNode(dataNode);
         }
 
-        this.dataDomain = dataDomain;
+        return dataDomain;
     }
 }

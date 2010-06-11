@@ -110,7 +110,7 @@ public class DataDomainProviderTest extends TestCase {
                 Collections.singletonMap(
                         RuntimeProperties.CONFIGURATION_LOCATION,
                         testConfigName));
-        
+
         final EventManager eventManager = new MockEventManager();
 
         Module testModule = new Module() {
@@ -155,11 +155,6 @@ public class DataDomainProviderTest extends TestCase {
         assertNotNull(channel);
 
         assertTrue(channel instanceof DataDomain);
-
-        assertSame(
-                "DataDomainProvider must return the same instance of DataChannel on subsequent calls",
-                channel,
-                provider.get());
 
         DataDomain domain = (DataDomain) channel;
         assertSame(eventManager, domain.getEventManager());

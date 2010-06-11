@@ -25,11 +25,12 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.OnScopeEnd;
 import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
+import org.apache.cayenne.di.mock.MockImplementation1_Provider;
 import org.apache.cayenne.di.mock.MockInterface1;
 
 public class DefaultInjectorScopeTest extends TestCase {
 
-    public void testDefaultScope() {
+    public void testDefaultScope_IsSingleton() {
 
         Module module = new Module() {
 
@@ -131,6 +132,53 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertTrue(MockImplementation1_EventAnnotations.shutdown1);
         assertTrue(MockImplementation1_EventAnnotations.shutdown2);
         assertTrue(MockImplementation1_EventAnnotations.shutdown3);
+    }
 
+    public void testSingletonScope_WithProvider() {
+
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).toProvider(
+                        MockImplementation1_Provider.class).inSingletonScope();
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 instance1 = injector.getInstance(MockInterface1.class);
+        MockInterface1 instance2 = injector.getInstance(MockInterface1.class);
+        MockInterface1 instance3 = injector.getInstance(MockInterface1.class);
+
+        assertNotNull(instance1);
+        assertNotNull(instance2);
+        assertNotNull(instance3);
+
+        assertSame(instance1, instance2);
+        assertSame(instance2, instance3);
+    }
+
+    public void testNoScope_WithProvider() {
+
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).toProvider(
+                        MockImplementation1_Provider.class).withoutScope();
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 instance1 = injector.getInstance(MockInterface1.class);
+        MockInterface1 instance2 = injector.getInstance(MockInterface1.class);
+        MockInterface1 instance3 = injector.getInstance(MockInterface1.class);
+
+        assertNotNull(instance1);
+        assertNotNull(instance2);
+        assertNotNull(instance3);
+
+        assertNotSame(instance1, instance2);
+        assertNotSame(instance2, instance3);
     }
 }
