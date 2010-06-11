@@ -88,9 +88,12 @@ class FieldInjectingProvider<T> implements Provider<T> {
             value = injector.getProvider(Key.get(objectClass, bindingName));
         }
         else {
-            stack.push(bindingKey);
+            
+            Key<?> key = Key.get(fieldType, bindingName);
+            
+            stack.push(key);
             try {
-                value = injector.getInstance(Key.get(fieldType, bindingName));
+                value = injector.getInstance(key);
             }
             finally {
                 stack.pop();
