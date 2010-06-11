@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.remote.service.HttpRemoteService;
 
@@ -46,9 +46,9 @@ public class HessianService extends HttpRemoteService {
     /**
      * @since 3.1
      */
-    public HessianService(@Inject DataDomain domain,
+    public HessianService(@Inject ObjectContextFactory contextFactory,
             @Inject(EVENT_BRIDGE_PROPERTIES_MAP) Map<String, String> eventBridgeProperties) {
-        super(domain, eventBridgeProperties);
+        super(contextFactory, eventBridgeProperties);
     }
 
     @Override

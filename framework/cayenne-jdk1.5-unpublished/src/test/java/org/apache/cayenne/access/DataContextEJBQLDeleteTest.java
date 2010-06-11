@@ -34,7 +34,7 @@ public class DataContextEJBQLDeleteTest extends CayenneCase {
     @Override
     protected void setUp() throws Exception {
         deleteTestData();
-        context = getDomain().createDataContext();
+        context = createDataContext();
     }
     
     public void testDeleteNoIdVar() throws Exception {

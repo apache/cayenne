@@ -16,14 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.access;
+package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.ObjectContext;
 
-public class MockDataContextFactory implements DataContextFactory {
+/**
+ * A factory for regular and nested contexts.
+ * 
+ * @since 3.1
+ */
+public interface ObjectContextFactory {
 
-    public DataContext createDataContext(DataChannel parent, ObjectStore objectStore) {
-        return null;
-    }
+    /**
+     * Creates an ObjectContext attached to a default DataChannel.
+     */
+    ObjectContext createContext();
+
+    /**
+     * Creates an ObjectContext attached to a provided channel. This is often used for
+     * nested context creation.
+     */
+    ObjectContext createContext(DataChannel parent);
 }

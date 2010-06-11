@@ -19,7 +19,6 @@
 package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
@@ -31,6 +30,7 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
@@ -105,10 +105,7 @@ public class CayenneServerModule implements Module {
         // will return DataDomain for request for a DataChannel
         binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
 
-        binder
-                .bind(ObjectContext.class)
-                .toProvider(DataContextProvider.class)
-                .withoutScope();
+        binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
 
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(

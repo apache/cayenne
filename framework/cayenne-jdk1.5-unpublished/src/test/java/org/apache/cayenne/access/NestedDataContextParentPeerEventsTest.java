@@ -34,7 +34,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         a.setArtistName("X");
         context.commitChanges();
 
-        DataContext parentPeer = context.getParentDataDomain().createDataContext();
+        DataContext parentPeer = createDataContextWithSharedCache(false);
         Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
 
         final ObjectContext peer2 = context.createChildContext();
@@ -70,7 +70,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         altA.setArtistName("Y");
         context.commitChanges();
 
-        DataContext parentPeer = context.getParentDataDomain().createDataContext();
+        DataContext parentPeer = createDataContextWithSharedCache(false);
         Painting p1 = (Painting) parentPeer.localObject(p.getObjectId(), p);
         Artist altA1 = (Artist) parentPeer.localObject(altA.getObjectId(), altA);
 
@@ -111,7 +111,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
 
         context.commitChanges();
 
-        DataContext parentPeer = context.getParentDataDomain().createDataContext();
+        DataContext parentPeer = createDataContextWithSharedCache(false);
         Painting py1 = (Painting) parentPeer.localObject(py.getObjectId(), py);
         Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
 

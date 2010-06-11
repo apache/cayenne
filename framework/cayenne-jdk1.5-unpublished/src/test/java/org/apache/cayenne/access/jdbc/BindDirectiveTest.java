@@ -117,7 +117,7 @@ public class BindDirectiveTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(Artist.class, sql);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
-        List<DataRow> result = getDomain().createDataContext().performQuery(query);
+        List<DataRow> result = createDataContext().performQuery(query);
         assertEquals(2, result.size());
     }
 

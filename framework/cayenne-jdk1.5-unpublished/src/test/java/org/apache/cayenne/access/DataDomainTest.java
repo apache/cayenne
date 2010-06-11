@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.MockQueryCache;
 import org.apache.cayenne.cache.MockQueryCacheFactory;
@@ -37,7 +35,6 @@ import org.apache.cayenne.unit.CayenneCase;
 
 /**
  * DataDomain unit tests.
- * 
  */
 public class DataDomainTest extends CayenneCase {
 
@@ -46,48 +43,6 @@ public class DataDomainTest extends CayenneCase {
         assertEquals("some name", domain.getName());
         domain.setName("tst_name");
         assertEquals("tst_name", domain.getName());
-    }
-
-    public void testDataContextFactory() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
-        DataContextFactory dataContextFactory = new DataContextFactory() {
-
-            public DataContext createDataContext(
-                    DataChannel parent,
-                    ObjectStore objectStore) {
-                return null;
-            }
-        };
-        domain.setDataContextFactory(null);
-        assertNull(domain.getDataContextFactory());
-        domain.setDataContextFactory(dataContextFactory);
-        assertSame(dataContextFactory, domain.getDataContextFactory());
-    }
-
-    public void testCreateDataContextWithDefaultDataContextFactory() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
-        assertNotNull(domain.createDataContext());
-    }
-
-    public void testCreateDataContextWithNullDataContextFactory() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
-        domain.setDataContextFactory(null);
-        assertNotNull(domain.createDataContext());
-    }
-
-    public void testCreateDataContextWithCustomDataContextFactory() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
-        final DataContext dataContext = new DataContext();
-        DataContextFactory dataContextFactory = new DataContextFactory() {
-
-            public DataContext createDataContext(
-                    DataChannel parent,
-                    ObjectStore objectStore) {
-                return dataContext;
-            }
-        };
-        domain.setDataContextFactory(dataContextFactory);
-        assertEquals(dataContext, domain.createDataContext());
     }
 
     public void testNodes() throws java.lang.Exception {
@@ -159,79 +114,39 @@ public class DataDomainTest extends CayenneCase {
         assertNotNull(domain.getEntityResolver());
     }
 
-    public void testCreateDataContextWithSharedCache() throws Exception {
+    public void testInitDataDomainWithSharedCache() throws Exception {
         Map properties = new HashMap();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isSharedCacheEnabled());
-
-        DataContext c1 = domain.createDataContext();
-        assertSame(c1.getObjectStore().getDataRowCache(), domain.getSharedSnapshotCache());
-
-        DataContext c2 = domain.createDataContext(true);
-        assertSame(c2.getObjectStore().getDataRowCache(), domain.getSharedSnapshotCache());
-
-        DataContext c3 = domain.createDataContext(false);
-        assertNotSame(c3.getObjectStore().getDataRowCache(), domain
-                .getSharedSnapshotCache());
     }
 
-    public void testCreateDataContextWithDedicatedCache() throws Exception {
+    public void testInitDataDomainWithDedicatedCache() throws Exception {
         Map properties = new HashMap();
         properties
                 .put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isSharedCacheEnabled());
-        assertNull(domain.getSharedSnapshotCache());
-
-        DataContext c3 = domain.createDataContext(false);
-        assertNotNull(c3.getObjectStore().getDataRowCache());
-        assertNull(domain.getSharedSnapshotCache());
-        assertNotSame(c3.getObjectStore().getDataRowCache(), domain
-                .getSharedSnapshotCache());
-
-        DataContext c1 = domain.createDataContext();
-        assertNotNull(c1.getObjectStore().getDataRowCache());
-        assertNull(domain.getSharedSnapshotCache());
-        assertNotSame(c1.getObjectStore().getDataRowCache(), domain
-                .getSharedSnapshotCache());
-
-        // this should trigger shared cache creation
-        DataContext c2 = domain.createDataContext(true);
-        assertNotNull(c2.getObjectStore().getDataRowCache());
-        assertNotNull(domain.getSharedSnapshotCache());
-        assertSame(c2.getObjectStore().getDataRowCache(), domain.getSharedSnapshotCache());
-
-        DataContext c4 = domain.createDataContext();
-        assertNotSame(c4.getObjectStore().getDataRowCache(), c1
-                .getObjectStore()
-                .getDataRowCache());
     }
 
-    public void testCreateDataContextValidation() throws Exception {
+    public void testInitDataDomainValidation() throws Exception {
         Map properties = new HashMap();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE
                 .toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isValidatingObjectsOnCommit());
-
-        DataContext c1 = domain.createDataContext(true);
-        assertTrue(c1.isValidatingObjectsOnCommit());
     }
 
-    public void testCreateDataContextNoValidation() throws Exception {
+    public void testInitDataDomainNoValidation() throws Exception {
         Map properties = new HashMap();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE
                 .toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isValidatingObjectsOnCommit());
-
-        DataContext c1 = domain.createDataContext(true);
-        assertFalse(c1.isValidatingObjectsOnCommit());
     }
 
     public void testDataDomainInternalTransactions() throws Exception {
@@ -256,33 +171,6 @@ public class DataDomainTest extends CayenneCase {
 
         Transaction transaction = domain.createTransaction();
         assertTrue(transaction instanceof ExternalTransaction);
-    }
-
-    public void testDataDomainDataContextFactory() {
-
-        // null
-        DataDomain d1 = new DataDomain("d1", new HashMap());
-        assertNull(d1.getDataContextFactory());
-
-        // not null
-        DataDomain d2 = new DataDomain("d2", Collections.singletonMap(
-                DataDomain.DATA_CONTEXT_FACTORY_PROPERTY,
-                MockDataContextFactory.class.getName()));
-
-        assertNotNull(d2.getDataContextFactory());
-        assertTrue(d2.getDataContextFactory() instanceof MockDataContextFactory);
-
-        // invalid
-
-        try {
-            new DataDomain("d2", Collections.singletonMap(
-                    DataDomain.DATA_CONTEXT_FACTORY_PROPERTY,
-                    Object.class.getName()));
-            fail("Bogus DataContextFactrory went through unnoticed...");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
-        }
     }
 
     public void testQueryCache() {

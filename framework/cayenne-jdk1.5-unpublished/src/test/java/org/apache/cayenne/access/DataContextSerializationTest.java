@@ -45,7 +45,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeResolver() throws Exception {
 
-        DataContext context = createDataContextWithSharedCache();
+        DataContext context = createDataContextWithSharedCache(true);
 
         DataContext deserializedContext = (DataContext) Util
                 .cloneViaSerialization(context);
@@ -56,7 +56,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeChannel() throws Exception {
 
-        DataContext context = createDataContextWithSharedCache();
+        DataContext context = createDataContextWithSharedCache(true);
 
         DataContext deserializedContext = (DataContext) Util
                 .cloneViaSerialization(context);
@@ -66,7 +66,7 @@ public class DataContextSerializationTest extends CayenneCase {
     }
 
     public void testSerializeNestedChannel() throws Exception {
-        DataContext context = createDataContextWithSharedCache();
+        DataContext context = createDataContextWithSharedCache(true);
         ObjectContext child = context.createChildContext();
 
         ObjectContext deserializedContext = (ObjectContext) Util
@@ -80,7 +80,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
         createTestData("prepare");
 
-        DataContext context = createDataContextWithSharedCache();
+        DataContext context = createDataContextWithSharedCache(true);
 
         DataContext deserializedContext = (DataContext) Util
                 .cloneViaSerialization(context);
@@ -140,7 +140,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeNew() throws Exception {
 
-        DataContext context = createDataContextWithSharedCache();
+        DataContext context = createDataContextWithSharedCache(true);
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
@@ -166,7 +166,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeCommitted() throws Exception {
 
-        DataContext context = createDataContextWithSharedCache();
+        DataContext context = createDataContextWithSharedCache(true);
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
@@ -201,7 +201,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeModified() throws Exception {
 
-        DataContext context = createDataContextWithSharedCache();
+        DataContext context = createDataContextWithSharedCache(true);
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");

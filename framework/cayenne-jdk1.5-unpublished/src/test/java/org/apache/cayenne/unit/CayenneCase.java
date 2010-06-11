@@ -119,21 +119,23 @@ public abstract class CayenneCase extends TestCase {
     }
 
     protected DataContext createDataContext() {
-        return createDataContextWithSharedCache();
+        return createDataContextWithSharedCache(true);
     }
 
     /**
      * Creates a DataContext that uses shared snapshot cache and is based on default test
      * domain.
      */
-    protected DataContext createDataContextWithSharedCache() {
+    protected DataContext createDataContextWithSharedCache(boolean clearCache) {
         // remove listeners for snapshot events
-        getDomain().getEventManager().removeAllListeners(
-                getDomain().getSharedSnapshotCache().getSnapshotEventSubject());
+        if (clearCache) {
+            getDomain().getEventManager().removeAllListeners(
+                    getDomain().getSharedSnapshotCache().getSnapshotEventSubject());
 
-        // clear cache...
-        getDomain().getSharedSnapshotCache().clear();
-        getDomain().getQueryCache().clear();
+            // clear cache...
+            getDomain().getSharedSnapshotCache().clear();
+            getDomain().getQueryCache().clear();
+        }
         DataContext context = getDomain().createDataContext(true);
 
         assertSame(getDomain().getSharedSnapshotCache(), context

@@ -34,8 +34,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -72,9 +72,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     @Inject
     protected AdhocObjectFactory objectFactory;
-    
+
     @Inject
-    protected EventManager eventManager;
+    protected Injector injector;
 
     protected volatile DataDomain dataDomain;
 
@@ -158,7 +158,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         DataChannelDescriptor descriptor = tree.getRootNode();
         DataDomain dataDomain = new DataDomain(descriptor.getName());
-        dataDomain.setEventManager(eventManager);
+        injector.injectMembers(dataDomain);
+
         dataDomain.initWithProperties(descriptor.getProperties());
 
         for (DataMap dataMap : descriptor.getDataMaps()) {

@@ -268,7 +268,7 @@ public class InheritanceTest extends PeopleCase {
 
         // CAY-592 - make sure modification of the address in a parallel context
         // doesn't mess up the Manager
-        DataContext c2 = context.getParentDataDomain().createDataContext();
+        DataContext c2 = createDataContext();
         e = (Employee) Cayenne.objectForPK(c2, e.getObjectId());
         address = e.getAddresses().get(0);
 

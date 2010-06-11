@@ -210,7 +210,7 @@ public class CayenneDataObjectRelTest extends CayenneDOTestBase {
     }
 
     public void testCrossContextRelationshipException() {
-        DataContext otherContext = getDomain().createDataContext();
+        DataContext otherContext = createDataContext();
         // Create this object in one context...
         Artist artist = (Artist) ctxt.newObject("Artist");
         // ...and this object in another context

@@ -36,7 +36,7 @@ public class SelectActionTest extends CayenneCase {
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
-        context = getDomain().createDataContext();
+        context = createDataContext();
     }
 
     public void testFetchLimit_DistinctResultIterator() throws Exception {

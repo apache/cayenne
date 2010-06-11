@@ -35,6 +35,8 @@ import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
+import org.apache.cayenne.configuration.ObjectContextFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -45,7 +47,6 @@ import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.Transformer;
 
 /**
@@ -66,13 +67,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     public static final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
 
     /**
-     * Defines a property name for storing an optional DataContextFactory.
-     * 
-     * @since 1.2
-     */
-    public static final String DATA_CONTEXT_FACTORY_PROPERTY = "cayenne.DataDomain.dataContextFactory";
-
-    /**
      * Defines a property name for storing optional {@link QueryCacheFactory}.
      * 
      * @since 3.0
@@ -89,12 +83,12 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Properties configured for DataDomain. These include properties of the DataRowStore
      * and remote notifications.
      */
-    protected Map<String, String> properties = Collections.synchronizedMap(new TreeMap<String, String>());
+    protected Map<String, String> properties = Collections
+            .synchronizedMap(new TreeMap<String, String>());
 
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
     protected TransactionDelegate transactionDelegate;
-    protected DataContextFactory dataContextFactory;
     protected QueryCacheFactory queryCacheFactory;
     protected String name;
 
@@ -106,6 +100,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * @since 1.2
      */
+    @Inject
     protected EventManager eventManager;
 
     /**
@@ -119,9 +114,9 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected QueryCache queryCache;
 
     protected boolean stopped;
-    
+
     /**
-     * Factory for creating QueryBuilders. Might be null, then default one will be used. 
+     * Factory for creating QueryBuilders. Might be null, then default one will be used.
      * Server-only.
      */
     private BatchQueryBuilderFactory queryBuilderFactory;
@@ -207,7 +202,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
         validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
         usingExternalTransactions = USING_EXTERNAL_TRANSACTIONS_DEFAULT;
-        dataContextFactory = null;
     }
 
     /**
@@ -230,7 +224,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         String usingExternalTransactions = localMap
                 .get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
 
-        String dataContextFactory = localMap.get(DATA_CONTEXT_FACTORY_PROPERTY);
         String queryCacheFactoryName = localMap.get(QUERY_CACHE_FACTORY_PROPERTY);
 
         // init ivars from properties
@@ -243,18 +236,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                 ? "true".equalsIgnoreCase(usingExternalTransactions)
                 : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
 
-        if (dataContextFactory != null && !Util.isEmptyString(dataContextFactory)) {
-            this.dataContextFactory = createInstance(
-                    dataContextFactory,
-                    DataContextFactory.class);
-        }
-        else {
-            this.dataContextFactory = null;
-        }
-
-        if (queryCacheFactoryName != null
-                && dataContextFactory != null
-                && !Util.isEmptyString(dataContextFactory)) {
+        if (queryCacheFactoryName != null) {
             queryCacheFactory = createInstance(
                     queryCacheFactoryName,
                     QueryCacheFactory.class);
@@ -456,14 +438,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
     }
 
-    public DataContextFactory getDataContextFactory() {
-        return dataContextFactory;
-    }
-
-    public void setDataContextFactory(DataContextFactory dataContextFactory) {
-        this.dataContextFactory = dataContextFactory;
-    }
-
     /** Registers new DataMap with this domain. */
     public void addMap(DataMap map) {
         getEntityResolver().addDataMap(map);
@@ -576,7 +550,11 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Creates and returns a new DataContext. If this DataDomain is configured to use
      * shared cache, returned DataContext will use shared cache as well. Otherwise a new
      * instance of DataRowStore will be used as its local cache.
+     * 
+     * @deprecated since 3.1 as context creation is done via {@link ObjectContextFactory}
+     *             and injection.
      */
+    @Deprecated
     public DataContext createDataContext() {
         return createDataContext(isSharedCacheEnabled());
     }
@@ -588,7 +566,10 @@ public class DataDomain implements QueryEngine, DataChannel {
      *            vs. local cache. This setting overrides default behavior configured for
      *            this DataDomain via {@link #SHARED_CACHE_ENABLED_PROPERTY}.
      * @since 1.1
+     * @deprecated since 3.1 as context creation is done via {@link ObjectContextFactory}
+     *             and injection.
      */
+    @Deprecated
     public DataContext createDataContext(boolean useSharedCache) {
         // for new dataRowStores use the same name for all stores
         // it makes it easier to track the event subject
@@ -596,14 +577,8 @@ public class DataDomain implements QueryEngine, DataChannel {
                 ? nonNullSharedSnapshotCache()
                 : new DataRowStore(name, properties, eventManager);
 
-        DataContext context;
-        if (null == dataContextFactory) {
-            context = new DataContext(this, new ObjectStore(snapshotCache));
-        }
-        else {
-            context = dataContextFactory.createDataContext(this, new ObjectStore(
-                    snapshotCache));
-        }
+        DataContext context = new DataContext(this, new ObjectStore(snapshotCache));
+
         context.setValidatingObjectsOnCommit(isValidatingObjectsOnCommit());
         return context;
     }
@@ -923,14 +898,14 @@ public class DataDomain implements QueryEngine, DataChannel {
     QueryCache getQueryCacheInternal() {
         return queryCache;
     }
-    
+
     /**
      * Sets factory for creating QueryBuilders
      */
     public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {
         this.queryBuilderFactory = queryBuilderFactory;
     }
-    
+
     /**
      * @return factory for creating QueryBuilders. Might be null
      */

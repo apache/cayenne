@@ -39,7 +39,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        context = createDataContextWithSharedCache();
+        context = createDataContextWithSharedCache(true);
 
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");

@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.remote.RemoteSession;
 
 /**
@@ -45,8 +45,9 @@ public abstract class HttpRemoteService extends BaseRemoteService {
     /**
      * @since 3.1
      */
-    public HttpRemoteService(DataDomain domain, Map<String, String> eventBridgeProperties) {
-        super(domain, eventBridgeProperties);
+    public HttpRemoteService(ObjectContextFactory contextFactory,
+            Map<String, String> eventBridgeProperties) {
+        super(contextFactory, eventBridgeProperties);
         this.sharedChannels = new HashMap<String, WeakReference<DataChannel>>();
     }
 

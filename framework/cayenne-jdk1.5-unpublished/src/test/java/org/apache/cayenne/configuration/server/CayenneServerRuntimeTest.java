@@ -24,6 +24,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.CayenneServerRuntime;
 import org.apache.cayenne.di.Binder;
@@ -112,11 +113,21 @@ public class CayenneServerRuntimeTest extends TestCase {
 
     public void testGetObjectContext() {
         final ObjectContext context = new DataContext();
+        final ObjectContextFactory factory = new ObjectContextFactory() {
+            
+            public ObjectContext createContext(DataChannel parent) {
+                return context;
+            }
+            
+            public ObjectContext createContext() {
+                return context;
+            }
+        };
 
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(ObjectContext.class).toInstance(context);
+                binder.bind(ObjectContextFactory.class).toInstance(factory);
             }
         };
 

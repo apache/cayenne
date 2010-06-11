@@ -38,6 +38,10 @@ public class ClientServerChannel implements DataChannel {
 
     protected DataContext serverContext;
 
+    /**
+     * @deprecated since 3.1 as context creation is now factory based.
+     */
+    @Deprecated
     public ClientServerChannel(DataDomain domain) {
         this(domain.createDataContext());
     }

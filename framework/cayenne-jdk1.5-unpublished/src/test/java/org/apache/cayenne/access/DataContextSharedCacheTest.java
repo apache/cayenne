@@ -52,7 +52,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        context = createDataContextWithSharedCache();
+        context = createDataContextWithSharedCache(true);
 
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");
@@ -70,8 +70,8 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         final String newName = "version2";
 
         // create alternative context making sure that no cache is flushed
-        DataContext altContext = context.getParentDataDomain().createDataContext(true);
-
+        DataContext altContext = createDataContextWithSharedCache(false);
+        
         // update artist using raw SQL
         SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
                 Artist.class,
@@ -345,7 +345,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
         // create independent context and fetch artist in it
-        DataContext context3 = getDomain().createDataContext(false);
+        DataContext context3 = createDataContextWithDedicatedCache();
         List artists = context3.performQuery(new ObjectIdQuery(id));
         assertEquals(1, artists.size());
         Artist artist3 = (Artist) artists.get(0);

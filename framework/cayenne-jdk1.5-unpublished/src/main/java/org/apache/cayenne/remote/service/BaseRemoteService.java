@@ -26,7 +26,8 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
@@ -47,21 +48,22 @@ public abstract class BaseRemoteService implements RemoteService {
     // keep logger non-static so that it could be garbage collected with this instance.
     protected final Log logger;
 
-    protected DataDomain domain;
+    protected ObjectContextFactory contextFactory;
     protected String eventBridgeFactoryName;
     protected Map<String, String> eventBridgeParameters;
 
     /**
      * @since 3.1
      */
-    public BaseRemoteService(DataDomain domain, Map<String, String> eventBridgeProperties) {
+    public BaseRemoteService(ObjectContextFactory contextFactory,
+            Map<String, String> eventBridgeProperties) {
 
         logger = LogFactory.getLog(getClass());
 
         // start Cayenne service
         logger.debug("ROP service is starting");
 
-        this.domain = domain;
+        this.contextFactory = contextFactory;
         initEventBridgeParameters(eventBridgeProperties);
 
         logger.debug(getClass().getName() + " started");
@@ -74,15 +76,6 @@ public abstract class BaseRemoteService implements RemoteService {
     public Map<String, String> getEventBridgeParameters() {
         return eventBridgeParameters != null ? Collections
                 .unmodifiableMap(eventBridgeParameters) : Collections.EMPTY_MAP;
-    }
-
-    /**
-     * Returns a DataChannel that is a parent of all session DataChannels.
-     * 
-     * @deprecated unused since 3.1
-     */
-    public DataChannel getRootChannel() {
-        return domain;
     }
 
     /**
@@ -184,7 +177,7 @@ public abstract class BaseRemoteService implements RemoteService {
      * security.
      */
     protected DataChannel createChannel() {
-        return new ClientServerChannel(domain);
+        return new ClientServerChannel((DataContext) contextFactory.createContext());
     }
 
     /**

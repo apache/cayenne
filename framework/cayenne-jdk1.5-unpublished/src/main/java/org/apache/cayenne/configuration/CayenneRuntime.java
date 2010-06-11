@@ -92,9 +92,19 @@ public abstract class CayenneRuntime {
     /**
      * Returns an ObjectContext based on the runtime DataChannel. Default configuration
      * will return a new instance of the ObjectContext on every call, as the corresponding
-     * factory is bound using NO_SCOPE scope. Custom modules may change this behavior.
+     * factory is bound using "no scope" scope. Custom modules may change this behavior.
      */
     public ObjectContext getContext() {
-        return injector.getInstance(ObjectContext.class);
+        return injector.getInstance(ObjectContextFactory.class).createContext();
+    }
+
+    /**
+     * Returns an ObjectContext based on the runtime DataChannel. Default configuration
+     * will return a new instance of the ObjectContext on every call, as the corresponding
+     * factory is bound using "no scope" scope. Custom modules may change this behavior.
+     */
+    public ObjectContext getContext(DataChannel parentChannel) {
+        return injector.getInstance(ObjectContextFactory.class).createContext(
+                parentChannel);
     }
 }

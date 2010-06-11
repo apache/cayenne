@@ -44,7 +44,7 @@ public class DataContextDelegateTest extends CayenneCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        context = createDataContextWithSharedCache();
+        context = createDataContextWithSharedCache(true);
 
         // prepare a single gallery record
         gallery = (Gallery) context.newObject("Gallery");

@@ -41,7 +41,7 @@ public class DataContextEntityWithMeaningfulPKTest extends CayenneCase {
         super.setUp();
 
         deleteTestData();
-        context = getDomain().createDataContext();
+        context = createDataContext();
     }
 
     public void testInsertWithMeaningfulPK() throws Exception {

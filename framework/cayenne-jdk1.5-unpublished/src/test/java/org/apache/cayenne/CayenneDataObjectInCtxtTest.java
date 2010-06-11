@@ -256,7 +256,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         getDomain().getEventManager().removeAllListeners(
                 getDomain().getSharedSnapshotCache().getSnapshotEventSubject());
         getDomain().getSharedSnapshotCache().clear();
-        context = getDomain().createDataContext();
+        context = createDataContext();
 
         List artists = context.performQuery(new SelectQuery(Artist.class));
         Artist artist = (Artist) artists.get(0);

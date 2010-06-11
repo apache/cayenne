@@ -30,8 +30,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
 public class DataContextQueryCachingTest extends CayenneCase {
 
     protected DataContext context;
@@ -40,11 +38,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        context = createDataContextWithSharedCache();
-    }
-
-    protected DataContext createDataContextNoCacheClear() {
-        return getDomain().createDataContext();
+        context = createDataContextWithSharedCache(true);
     }
 
     public void testLocalCacheDataRowsRefresh() throws Exception {

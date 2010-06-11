@@ -36,8 +36,8 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.OSQueryCacheFactory;
-import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.datadomain.CacheSyncConfigController;
@@ -69,7 +69,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     protected TextAdapter cacheSize;
     protected JCheckBox objectValidation;
     protected JCheckBox externalTransactions;
-    protected TextAdapter dataContextFactory;
     protected JComboBox queryCacheFactory;
     protected JCheckBox sharedCache;
     protected JCheckBox remoteUpdates;
@@ -102,13 +101,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             }
         };
 
-        this.dataContextFactory = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDomainProperty(DataDomain.DATA_CONTEXT_FACTORY_PROPERTY, text, null);
-            }
-        };
-
         this.objectValidation = new JCheckBox();
         this.externalTransactions = new JCheckBox();
 
@@ -123,7 +115,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, fill:50dlu, 3dlu, fill:47dlu, 3dlu, fill:100",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
@@ -132,28 +124,25 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         builder.addLabel("DataDomain Name:", cc.xy(1, 3));
         builder.add(name.getComponent(), cc.xywh(3, 3, 5, 1));
 
-        builder.addLabel("DataContext Factory:", cc.xy(1, 5));
-        builder.add(dataContextFactory.getComponent(), cc.xywh(3, 5, 5, 1));
+        builder.addLabel("Object Validation:", cc.xy(1, 5));
+        builder.add(objectValidation, cc.xy(3, 5));
 
-        builder.addLabel("Object Validation:", cc.xy(1, 7));
-        builder.add(objectValidation, cc.xy(3, 7));
+        builder.addLabel("Container-Managed Transactions:", cc.xy(1, 7));
+        builder.add(externalTransactions, cc.xy(3, 7));
 
-        builder.addLabel("Container-Managed Transactions:", cc.xy(1, 9));
-        builder.add(externalTransactions, cc.xy(3, 9));
+        builder.addSeparator("Cache Configuration", cc.xywh(1, 9, 7, 1));
+        builder.addLabel("Query Cache Factory:", cc.xy(1, 11));
+        builder.add(queryCacheFactory, cc.xywh(3, 11, 5, 1));
 
-        builder.addSeparator("Cache Configuration", cc.xywh(1, 11, 7, 1));
-        builder.addLabel("Query Cache Factory:", cc.xy(1, 13));
-        builder.add(queryCacheFactory, cc.xywh(3, 13, 5, 1));
+        builder.addLabel("Size of Object Cache:", cc.xy(1, 13));
+        builder.add(cacheSize.getComponent(), cc.xy(3, 13));
 
-        builder.addLabel("Size of Object Cache:", cc.xy(1, 15));
-        builder.add(cacheSize.getComponent(), cc.xy(3, 15));
+        builder.addLabel("Use Shared Cache:", cc.xy(1, 15));
+        builder.add(sharedCache, cc.xy(3, 15));
 
-        builder.addLabel("Use Shared Cache:", cc.xy(1, 17));
-        builder.add(sharedCache, cc.xy(3, 17));
-
-        builder.addLabel("Remote Change Notifications:", cc.xy(1, 19));
-        builder.add(remoteUpdates, cc.xy(3, 19));
-        builder.add(configRemoteUpdates, cc.xy(7, 19));
+        builder.addLabel("Remote Change Notifications:", cc.xy(1, 17));
+        builder.add(remoteUpdates, cc.xy(3, 17));
+        builder.add(configRemoteUpdates, cc.xy(7, 17));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -325,9 +314,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         externalTransactions.setSelected(getDomainBooleanProperty(
                 DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY,
                 Boolean.toString(DataDomain.USING_EXTERNAL_TRANSACTIONS_DEFAULT)));
-        dataContextFactory.setText(getDomainProperty(
-                DataDomain.DATA_CONTEXT_FACTORY_PROPERTY,
-                null));
 
         sharedCache.setSelected(getDomainBooleanProperty(
                 DataDomain.SHARED_CACHE_ENABLED_PROPERTY,

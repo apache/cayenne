@@ -24,7 +24,9 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.event.MockEventBridgeFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.remote.QueryMessage;
@@ -41,8 +43,17 @@ public class BaseRemoteServiceTest extends TestCase {
                 HessianService.EVENT_BRIDGE_FACTORY_PROPERTY,
                 MockEventBridgeFactory.class.getName());
 
-        DataDomain domain = new DataDomain("test");
-        BaseRemoteService service = new BaseRemoteService(domain, map) {
+        ObjectContextFactory factory = new ObjectContextFactory() {
+
+            public ObjectContext createContext(DataChannel parent) {
+                return null;
+            }
+
+            public ObjectContext createContext() {
+                return null;
+            }
+        };
+        BaseRemoteService service = new BaseRemoteService(factory, map) {
 
             @Override
             protected ServerSession createServerSession() {
@@ -61,16 +72,24 @@ public class BaseRemoteServiceTest extends TestCase {
         };
         assertEquals(MockEventBridgeFactory.class.getName(), service
                 .getEventBridgeFactoryName());
-        assertSame(domain, service.domain);
+        assertSame(factory, service.contextFactory);
 
     }
 
     public void testProcessMessageExceptionSerializability() throws Throwable {
 
         Map<String, String> map = new HashMap<String, String>();
-        DataDomain domain = new DataDomain("test");
+        ObjectContextFactory factory = new ObjectContextFactory() {
 
-        BaseRemoteService service = new BaseRemoteService(domain, map) {
+            public ObjectContext createContext(DataChannel parent) {
+                return null;
+            }
+
+            public ObjectContext createContext() {
+                return null;
+            }
+        };
+        BaseRemoteService service = new BaseRemoteService(factory, map) {
 
             @Override
             protected ServerSession createServerSession() {

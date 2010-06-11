@@ -44,7 +44,7 @@ public class DataContextDeleteRulesTest extends CayenneCase {
         super.setUp();
 
         deleteTestData();
-        context = getDomain().createDataContext();
+        context = createDataContext();
     }
 
     public void testNullifyToOne() {

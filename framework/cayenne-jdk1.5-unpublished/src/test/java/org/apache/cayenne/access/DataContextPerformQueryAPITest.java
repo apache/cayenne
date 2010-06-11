@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
@@ -63,7 +62,7 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
                 33018), null);
         Map parameters = Collections.singletonMap("artist", a);
 
-        List paintings = createDataContext()
+        List paintings = createDataContextWithSharedCache(false)
                 .performQuery("ObjectQuery", parameters, true);
         assertNotNull(paintings);
         assertEquals(1, paintings.size());
@@ -190,10 +189,9 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
         blockQueries();
 
         try {
-            List artists1 = context
-                    .getParentDataDomain()
-                    .createDataContext()
-                    .performQuery("QueryWithSharedCache", false);
+            List artists1 = createDataContextWithSharedCache(false).performQuery(
+                    "QueryWithSharedCache",
+                    false);
             assertEquals(25, artists1.size());
         }
         finally {

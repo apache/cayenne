@@ -101,7 +101,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        DataContext peer = context.getParentDataDomain().createDataContext();
+        DataContext peer = createDataContextWithSharedCache(false);
         Artist a1 = (Artist) peer.localObject(a.getObjectId(), a);
 
         a1.setArtistName("Y");

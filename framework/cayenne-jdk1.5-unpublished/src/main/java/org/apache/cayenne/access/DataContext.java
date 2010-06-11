@@ -142,15 +142,12 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 3.0
      */
     public ObjectContext createChildContext() {
-        DataContextFactory factory = getParentDataDomain().getDataContextFactory();
 
         // child ObjectStore should not have direct access to snapshot cache, so do not
         // pass it in constructor.
         ObjectStore objectStore = new ObjectStore();
 
-        DataContext child = factory != null
-                ? factory.createDataContext(this, objectStore)
-                : new DataContext(this, objectStore);
+        DataContext child = new DataContext(this, objectStore);
 
         child.setValidatingObjectsOnCommit(isValidatingObjectsOnCommit());
         child.usingSharedSnaphsotCache = isUsingSharedSnapshotCache();
@@ -1070,6 +1067,13 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     public boolean isUsingSharedSnapshotCache() {
         return usingSharedSnaphsotCache;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public void setUsingSharedSnapshotCache(boolean flag) {
+        this.usingSharedSnaphsotCache = flag;
     }
 
     /**

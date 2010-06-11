@@ -24,14 +24,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.cayenne.access.DataDomain;
+import junit.framework.TestCase;
+
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.event.MockEventBridgeFactory;
 
 import com.caucho.services.server.ServiceContext;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
-
-import junit.framework.TestCase;
 
 public class HessianServiceTest extends TestCase {
 
@@ -42,9 +44,17 @@ public class HessianServiceTest extends TestCase {
                 HessianService.EVENT_BRIDGE_FACTORY_PROPERTY,
                 MockEventBridgeFactory.class.getName());
 
-        DataDomain domain = new DataDomain("test");
+        ObjectContextFactory factory = new ObjectContextFactory() {
 
-        HessianService service = new HessianService(domain, map);
+            public ObjectContext createContext(DataChannel parent) {
+                return null;
+            }
+
+            public ObjectContext createContext() {
+                return null;
+            }
+        };
+        HessianService service = new HessianService(factory, map);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         HttpSession session = new MockHttpSession();
