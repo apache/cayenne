@@ -45,6 +45,7 @@ CAY-1433 Change #chunk behaviour to skipe only null arguments (don't skip 0 or f
 CAY-1438 refactoring EntityInheritanceTree lookups
 CAY-1439 ClassDescriptor refactoring - replacing returned iterators with collections
 CAY-1446 Remove DataContextFactory, replace it with DI-enabled ObjectContextFactory
+CAY-1447 Switch ROP client to dependency injection
 
 Bug Fixes Since 3.0:
 
