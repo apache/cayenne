@@ -33,7 +33,7 @@ import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.server.CayenneServerModule;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -124,7 +124,7 @@ public class Application {
         this.initialProject = initialProject;
 
         Module projectModule = new CayenneProjectModule();
-        Module serverModule = new CayenneServerModule("CayenneModeler");
+        Module serverModule = new ServerModule("CayenneModeler");
 
         this.injector = DIBootstrap.createInjector(projectModule, serverModule);
 

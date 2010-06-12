@@ -27,19 +27,19 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.configuration.server.CayenneServerRuntime;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.test.DBHelper;
 import org.apache.cayenne.test.TableHelper;
 
-public abstract class CayenneServerRuntimeCase extends TestCase {
+public abstract class ServerRuntimeCase extends TestCase {
 
-	static final Map<RuntimeName, CayenneServerRuntime> runtimeCache;
+	static final Map<RuntimeName, ServerRuntime> runtimeCache;
 
 	static {
-		runtimeCache = new HashMap<RuntimeName, CayenneServerRuntime>();
+		runtimeCache = new HashMap<RuntimeName, ServerRuntime>();
 	}
 
-	protected CayenneServerRuntime runtime;
+	protected ServerRuntime runtime;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -50,7 +50,7 @@ public abstract class CayenneServerRuntimeCase extends TestCase {
 		String location = "cayenne-" + name + ".xml";
 		runtime = runtimeCache.get(location);
 		if (runtime == null) {
-			runtime = new CayenneServerRuntime(location);
+			runtime = new ServerRuntime(location);
 			runtimeCache.put(name, runtime);
 
 			// setup schema

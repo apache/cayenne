@@ -26,8 +26,7 @@ import java.util.HashSet;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DataPort;
-import org.apache.cayenne.configuration.server.CayenneServerModule;
-import org.apache.cayenne.configuration.server.CayenneServerRuntime;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
@@ -64,18 +63,17 @@ public class DataPortTask extends CayenneTask {
         validateParameters();
 
         String projectFileLocation = projectFile.getName();
-        Module module = new CayenneServerModule(projectFileLocation) {
+        Module dataPortModule = new Module() {
 
-            @Override
             public void configure(Binder binder) {
-                super.configure(binder);
-
                 binder.bind(ResourceLocator.class).toInstance(
                         new FilesystemResourceLocator(projectFile));
             }
         };
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(module);
+        ServerRuntime runtime = new ServerRuntime(
+                projectFileLocation,
+                dataPortModule);
         DataDomain domain;
 
         ClassLoader threadContextClassLoader = Thread

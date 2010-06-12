@@ -64,15 +64,26 @@ public class ClientChannel implements DataChannel {
      * Creates a new channel accessing remote server via provided connection. Channel
      * created using this constructor will post no events of its own and provide its users
      * with a multithreaded EventManager.
+     * 
+     * @deprecated since 3.1 use
+     *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
      */
     public ClientChannel(ClientConnection connection) {
         this(connection, false);
     }
 
+    /**
+     * @deprecated since 3.1 use
+     *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
+     */
     public ClientChannel(ClientConnection connection, boolean channelEventsEnabled) {
         this(connection, channelEventsEnabled, new DefaultEventManager(2));
     }
 
+    /**
+     * @deprecated since 3.1 use
+     *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
+     */
     public ClientChannel(ClientConnection connection, boolean channelEventsEnabled,
             EventManager eventManager) throws CayenneRuntimeException {
         this(connection, channelEventsEnabled, eventManager, false);
@@ -103,6 +114,20 @@ public class ClientChannel implements DataChannel {
 
             }
         }
+    }
+
+    /**
+     * @since 3.1
+     */
+    public ClientConnection getConnection() {
+        return connection;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public boolean isChannelEventsEnabled() {
+        return channelEventsEnabled;
     }
 
     public EventManager getEventManager() {
@@ -171,13 +196,13 @@ public class ClientChannel implements DataChannel {
             ObjectContext originatingContext,
             GraphDiff changes,
             int syncType) {
-        
+
         DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
-            .getCallbackAction(
-                getEntityResolver().getCallbackRegistry(),
-                originatingContext.getGraphManager(),
-                changes,
-                syncType);
+                .getCallbackAction(
+                        getEntityResolver().getCallbackRegistry(),
+                        originatingContext.getGraphManager(),
+                        changes,
+                        syncType);
         callbackAction.applyPreCommit();
 
         changes = diffCompressor.compress(changes);

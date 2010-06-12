@@ -16,21 +16,42 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.configuration.rop.client;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.remote.ClientChannel;
+import org.apache.cayenne.remote.ClientConnection;
 
-/**
- * Creates an EventManager.
- * 
- * @since 3.1
- */
-public class EventManagerProvider implements Provider<EventManager> {
+public class ClientChannelProvider implements Provider<DataChannel> {
 
-    public EventManager get() throws ConfigurationException {
-        return new DefaultEventManager();
+    @Inject
+    protected ClientConnection connection;
+
+    @Inject
+    protected EventManager eventManager;
+
+    @Inject
+    protected RuntimeProperties properties;
+
+    public DataChannel get() throws ConfigurationException {
+
+        boolean channelEvents = properties.getBoolean(
+                ClientModule.CHANNEL_EVENTS,
+                false);
+
+        boolean remoteEventsOptional = properties.getBoolean(
+                ClientModule.CHANNEL_REMOTE_EVENTS_OPTIONAL,
+                false);
+
+        return new ClientChannel(
+                connection,
+                channelEvents,
+                eventManager,
+                remoteEventsOptional);
     }
 }

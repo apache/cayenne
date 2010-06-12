@@ -16,12 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.server.CayenneServerRuntimeCase;
+import org.apache.cayenne.configuration.server.ServerRuntimeCase;
 import org.apache.cayenne.configuration.server.RuntimeName;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
@@ -29,8 +29,7 @@ import org.apache.cayenne.itest.di_stack.Table1;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.DBHelper;
 
-public class CayenneServerRuntimeIntegrationTest extends
-		CayenneServerRuntimeCase {
+public class ServerRuntimeIntegrationTest extends ServerRuntimeCase {
 
 	@Override
 	protected RuntimeName getRuntimeName() {

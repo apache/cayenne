@@ -26,9 +26,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.server.CayenneServerModule;
-import org.apache.cayenne.configuration.server.CayenneServerRuntime;
+import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.web.RequestHandler;
 import org.apache.cayenne.configuration.web.WebConfiguration;
 import org.apache.cayenne.configuration.web.WebUtil;
@@ -76,14 +75,12 @@ public class ROPHessianServlet extends HessianServlet {
         String configurationLocation = configAdapter.getConfigurationLocation();
         Map<String, String> eventBridgeParameters = configAdapter.getOtherParameters();
 
-        Collection<Module> modules = configAdapter
-                .createModules(
-                        new CayenneServerModule(configurationLocation),
-                        new CayenneROPServerModule(eventBridgeParameters));
+        Collection<Module> modules = configAdapter.createModules(new ROPServerModule(
+                eventBridgeParameters));
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(modules);
+        ServerRuntime runtime = new ServerRuntime(configurationLocation, modules);
 
-        DataChannel channel = runtime.getDataChannel();
+        DataChannel channel = runtime.getChannel();
 
         RemoteService service = runtime.getInjector().getInstance(RemoteService.class);
 
@@ -111,9 +108,9 @@ public class ROPHessianServlet extends HessianServlet {
     public void destroy() {
         super.destroy();
 
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
+        Runtime runtime = WebUtil.getCayenneRuntime(servletContext);
         if (runtime != null) {
-            runtime.getInjector().shutdown();
+            runtime.shutdown();
         }
     }
 }

@@ -29,14 +29,14 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.server.CayenneServerModule;
-import org.apache.cayenne.configuration.server.CayenneServerRuntime;
+import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Module;
 
 /**
  * A filter that creates a Cayenne server runtime, possibly including custom modules. By
- * default runtime includes {@link CayenneServerModule} and {@link CayenneWebModule}. Any
+ * default runtime includes {@link ServerModule} and {@link CayenneWebModule}. Any
  * custom modules are loaded after the two standard ones to allow custom service
  * overrides. Filter initialization parameters:
  * <ul>
@@ -67,19 +67,19 @@ public class CayenneFilter implements Filter {
         WebConfiguration configAdapter = new WebConfiguration(config);
 
         String configurationLocation = configAdapter.getConfigurationLocation();
+        Collection<Module> modules = configAdapter.createModules(new CayenneWebModule());
 
-        Collection<Module> modules = configAdapter.createModules(new CayenneServerModule(
-                configurationLocation), new CayenneWebModule());
-
-        CayenneServerRuntime runtime = new CayenneServerRuntime(modules);
+        ServerRuntime runtime = new ServerRuntime(
+                configurationLocation,
+                modules);
         WebUtil.setCayenneRuntime(config.getServletContext(), runtime);
     }
 
     public void destroy() {
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
+        Runtime runtime = WebUtil.getCayenneRuntime(servletContext);
 
         if (runtime != null) {
-            runtime.getInjector().shutdown();
+            runtime.shutdown();
         }
     }
 
@@ -88,7 +88,7 @@ public class CayenneFilter implements Filter {
             ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
+        Runtime runtime = WebUtil.getCayenneRuntime(servletContext);
         RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 
         handler.requestStart(request, response);

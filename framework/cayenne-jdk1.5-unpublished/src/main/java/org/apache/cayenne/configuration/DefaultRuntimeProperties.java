@@ -32,6 +32,9 @@ import org.apache.cayenne.di.Inject;
  */
 public class DefaultRuntimeProperties implements RuntimeProperties {
 
+    /**
+     * A name of the map created via DI and used to initialize this service.
+     */
     public static final String PROPERTIES_MAP = "org.apache.cayenne.configuration.DefaultRuntimeProperties.properties";
 
     protected Map<String, String> properties;
@@ -49,5 +52,10 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
         }
 
         return properties.get(key);
+    }
+
+    public boolean getBoolean(String key, boolean defaultValue) {
+        String string = get(key);
+        return string != null ? "true".equalsIgnoreCase(string) : defaultValue;
     }
 }

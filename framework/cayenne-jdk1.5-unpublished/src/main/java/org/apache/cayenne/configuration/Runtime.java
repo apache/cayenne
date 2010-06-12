@@ -27,22 +27,59 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 
 /**
- * A superclass of possible Cayenne runtime objects. A CayenneRuntime is the main access
- * point to a given Cayenne stack. It provides a default Cayenne configuration as well as
- * a way to customize this configuration via a built in dependency injection container.
+ * A superclass of various Cayenne runtime stacks. A Runtime is the main access point to
+ * Cayenne for a user application. It provides a default Cayenne configuration as well as
+ * a way to customize this configuration via a built-in dependency injection container.
  * 
  * @since 3.1
  */
-public abstract class CayenneRuntime {
+public abstract class Runtime {
 
     protected Injector injector;
     protected Module[] modules;
 
     /**
+     * Internal helper method to add special extra modules in subclass constructors.
+     */
+    protected static Module[] mergeModules(Module mainModule, Module... extraModules) {
+
+        if (extraModules == null || extraModules.length == 0) {
+            return new Module[] {
+                mainModule
+            };
+        }
+
+        Module[] allModules = new Module[extraModules.length + 1];
+        allModules[0] = mainModule;
+        System.arraycopy(extraModules, 0, allModules, 1, extraModules.length);
+
+        return allModules;
+    }
+
+    /**
+     * Internal helper method to add special extra modules in subclass constructors.
+     */
+    protected static Module[] mergeModules(
+            Module mainModule,
+            Collection<Module> extraModules) {
+
+        if (extraModules == null || extraModules.isEmpty()) {
+            return new Module[] {
+                mainModule
+            };
+        }
+
+        Module[] allModules = new Module[extraModules.size() + 1];
+        allModules[0] = mainModule;
+        System.arraycopy(extraModules.toArray(), 0, allModules, 1, extraModules.size());
+        return allModules;
+    }
+
+    /**
      * Creates a CayenneRuntime with configuration based on the supplied array of DI
      * modules.
      */
-    public CayenneRuntime(Module... modules) {
+    public Runtime(Module... modules) {
 
         if (modules == null) {
             modules = new Module[0];
@@ -56,7 +93,7 @@ public abstract class CayenneRuntime {
      * Creates a CayenneRuntime with configuration based on the supplied collection of DI
      * modules.
      */
-    public CayenneRuntime(Collection<Module> modules) {
+    public Runtime(Collection<Module> modules) {
 
         if (modules == null) {
             this.modules = new Module[0];
@@ -83,9 +120,17 @@ public abstract class CayenneRuntime {
     }
 
     /**
+     * Shuts down the DI injector of this runtime, giving all services that need to
+     * release some resources a chance to do that.
+     */
+    public void shutdown() {
+        injector.shutdown();
+    }
+
+    /**
      * Returns the runtime {@link DataChannel}.
      */
-    public DataChannel getDataChannel() {
+    public DataChannel getChannel() {
         return injector.getInstance(DataChannel.class);
     }
 

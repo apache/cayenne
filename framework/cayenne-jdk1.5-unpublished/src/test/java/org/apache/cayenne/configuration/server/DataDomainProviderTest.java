@@ -108,7 +108,7 @@ public class DataDomainProviderTest extends TestCase {
 
         final DefaultRuntimeProperties testProperties = new DefaultRuntimeProperties(
                 Collections.singletonMap(
-                        RuntimeProperties.CONFIGURATION_LOCATION,
+                        ServerModule.CONFIGURATION_LOCATION,
                         testConfigName));
 
         final EventManager eventManager = new MockEventManager();

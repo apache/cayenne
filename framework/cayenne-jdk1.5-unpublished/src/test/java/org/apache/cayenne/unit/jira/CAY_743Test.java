@@ -21,7 +21,7 @@ package org.apache.cayenne.unit.jira;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.server.CayenneServerModule;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -31,7 +31,7 @@ public class CAY_743Test extends TestCase {
 
     public void testLoad2MapsWithCrossMapInheritance() throws Exception {
 
-        Injector injector = DIBootstrap.createInjector(new CayenneServerModule(
+        Injector injector = DIBootstrap.createInjector(new ServerModule(
                 "cay743/cayenne-domain.xml"));
 
         DataDomain domain = injector.getInstance(DataDomain.class);

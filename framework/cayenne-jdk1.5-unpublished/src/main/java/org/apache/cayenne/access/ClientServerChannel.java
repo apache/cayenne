@@ -63,7 +63,10 @@ public class ClientServerChannel implements DataChannel {
         return serverContext.getQueryCache();
     }
 
-    DataChannel getParentChannel() {
+    /**
+     * @since 3.1
+     */
+    public DataChannel getParentChannel() {
         return serverContext;
     }
 

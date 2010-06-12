@@ -384,7 +384,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                             .equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE)) {
                         if (passwordSource != null) {
                             try {
-                                Process process = Runtime.getRuntime().exec(
+                                Process process = java.lang.Runtime.getRuntime().exec(
                                         passwordSource);
                                 password = passwordFromInputStream(process
                                         .getInputStream());

@@ -32,11 +32,11 @@ import org.apache.cayenne.remote.hessian.service.HessianService;
  * 
  * @since 3.1
  */
-public class CayenneROPServerModule implements Module {
+public class ROPServerModule implements Module {
 
     protected Map<String, String> eventBridgeProperties;
 
-    public CayenneROPServerModule(Map<String, String> eventBridgeProperties) {
+    public ROPServerModule(Map<String, String> eventBridgeProperties) {
         this.eventBridgeProperties = eventBridgeProperties;
     }
 

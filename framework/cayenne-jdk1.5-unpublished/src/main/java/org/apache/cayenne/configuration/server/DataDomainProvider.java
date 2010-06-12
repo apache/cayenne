@@ -92,14 +92,14 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     protected DataDomain createDataDomain() throws Exception {
         String configurationLocation = configurationProperties
-                .get(RuntimeProperties.CONFIGURATION_LOCATION);
+                .get(ServerModule.CONFIGURATION_LOCATION);
 
         if (configurationLocation == null) {
             throw new DataDomainLoadException(
                     "No configuration location available. "
                             + "You can specify when creating Cayenne runtime "
                             + "or via a system property '%s'",
-                    RuntimeProperties.CONFIGURATION_LOCATION);
+                    ServerModule.CONFIGURATION_LOCATION);
         }
 
         long t0 = System.currentTimeMillis();

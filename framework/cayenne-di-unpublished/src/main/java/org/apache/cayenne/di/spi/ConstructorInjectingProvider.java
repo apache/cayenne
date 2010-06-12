@@ -97,8 +97,9 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         }
 
         if (lastMatch == null) {
-            throw new IllegalStateException(
-                    "No applicable constructor is found for constructor injection");
+            throw new ConfigurationException(
+                    "No applicable constructor is found for constructor injection in class '%s'",
+                    implementation.getName());
         }
 
         // the cast is lame, but Class.getDeclaredConstructors() is not using

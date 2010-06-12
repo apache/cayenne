@@ -69,17 +69,15 @@ public class CayenneContext extends BaseContext {
     }
 
     /**
-     * Creates a new CayenneContext, initializing it with a channel. If
-     * <code>graphEventsEnabled</code> is true, this context will broadcast GraphEvents
-     * using ObjectContext.GRAPH_CHANGE_SUBJECT.
+     * Creates a new CayenneContext, initializing it with a channel.
      */
     public CayenneContext(DataChannel channel, boolean changeEventsEnabled,
-            boolean syncEventsEnabled) {
-        
+            boolean lifecyleEventsEnabled) {
+
         this.graphManager = new CayenneContextGraphManager(
                 this,
                 changeEventsEnabled,
-                syncEventsEnabled);
+                lifecyleEventsEnabled);
 
         setChannel(channel);
     }
@@ -497,15 +495,16 @@ public class CayenneContext extends BaseContext {
 
         if (childContext) {
 
-//            PropertyChangeProcessingStrategy oldStrategy = getPropertyChangeProcessingStrategy();
-//            setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
+            // PropertyChangeProcessingStrategy oldStrategy =
+            // getPropertyChangeProcessingStrategy();
+            // setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
             try {
                 changes.apply(new CayenneContextChildDiffLoader(this));
             }
             finally {
-//                setPropertyChangeProcessingStrategy(oldStrategy);
+                // setPropertyChangeProcessingStrategy(oldStrategy);
             }
-            
+
             fireDataChannelChanged(originatingContext, changes);
         }
 

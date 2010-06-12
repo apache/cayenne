@@ -26,7 +26,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.configuration.server.CayenneServerRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
@@ -34,21 +33,21 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
-public class CayenneServerRuntimeTest extends TestCase {
+public class ServerRuntimeTest extends TestCase {
 
     public void testDefaultConstructor() {
-        CayenneServerRuntime runtime = new CayenneServerRuntime("xxxx");
+        ServerRuntime runtime = new ServerRuntime("xxxx");
 
         assertEquals("xxxx", runtime
                 .getInjector()
                 .getInstance(RuntimeProperties.class)
-                .get(RuntimeProperties.CONFIGURATION_LOCATION));
+                .get(ServerModule.CONFIGURATION_LOCATION));
 
         assertEquals(1, runtime.getModules().length);
 
         Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof CayenneServerModule);
-        assertEquals("xxxx", ((CayenneServerModule) m0).configurationLocation);
+        assertTrue(m0 instanceof ServerModule);
+        assertEquals("xxxx", ((ServerModule) m0).configurationLocation);
     }
 
     public void testConstructor_Modules() {
@@ -69,15 +68,14 @@ public class CayenneServerRuntimeTest extends TestCase {
             }
         };
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(m1, m2);
-        assertEquals(2, runtime.getModules().length);
+        ServerRuntime runtime = new ServerRuntime("xxxx", m1, m2);
+        assertEquals(3, runtime.getModules().length);
 
-        for (int i = 0; i < configured.length; i++) {
-            assertTrue(configured[i]);
-        }
+        assertTrue(configured[0]);
+        assertTrue(configured[1]);
     }
 
-    public void testGetDataChannel() {
+    public void testGetDataChannel_CustomModule() {
         final DataChannel channel = new DataChannel() {
 
             public EntityResolver getEntityResolver() {
@@ -107,18 +105,18 @@ public class CayenneServerRuntimeTest extends TestCase {
             }
         };
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(module);
-        assertSame(channel, runtime.getDataChannel());
+        ServerRuntime runtime = new ServerRuntime("Yuis", module);
+        assertSame(channel, runtime.getChannel());
     }
 
-    public void testGetObjectContext() {
+    public void testGetObjectContext_CustomModule() {
         final ObjectContext context = new DataContext();
         final ObjectContextFactory factory = new ObjectContextFactory() {
-            
+
             public ObjectContext createContext(DataChannel parent) {
                 return context;
             }
-            
+
             public ObjectContext createContext() {
                 return context;
             }
@@ -131,7 +129,7 @@ public class CayenneServerRuntimeTest extends TestCase {
             }
         };
 
-        CayenneServerRuntime runtime = new CayenneServerRuntime(module);
+        ServerRuntime runtime = new ServerRuntime("mnYw", module);
         assertSame(context, runtime.getContext());
         assertSame(context, runtime.getContext());
     }

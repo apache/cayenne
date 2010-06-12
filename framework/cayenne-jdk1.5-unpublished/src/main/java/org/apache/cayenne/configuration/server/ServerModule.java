@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
-import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
@@ -49,22 +48,26 @@ import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * A DI module containing all Cayenne server runtime configurations. To customize Cayenne
- * runtime configuration, either extend this module, or supply an extra custom module when
- * creating {@link CayenneRuntime}.
+ * A DI module containing all Cayenne server runtime configuration.
  * 
  * @since 3.1
  */
-public class CayenneServerModule implements Module {
+public class ServerModule implements Module {
+
+    /**
+     * A property defining the location of the runtime configuration XML resource or file.
+     */
+    public static final String CONFIGURATION_LOCATION = "cayenne.config.location";
 
     protected String configurationLocation;
 
-    public CayenneServerModule(String configurationLocation) {
+    public ServerModule(String configurationLocation) {
         this.configurationLocation = configurationLocation;
     }
 
@@ -72,7 +75,7 @@ public class CayenneServerModule implements Module {
 
         // configure global stack properties
         binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP).put(
-                RuntimeProperties.CONFIGURATION_LOCATION,
+                ServerModule.CONFIGURATION_LOCATION,
                 configurationLocation);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
@@ -97,7 +100,7 @@ public class CayenneServerModule implements Module {
         binder.bind(ConfigurationNameMapper.class).to(
                 DefaultConfigurationNameMapper.class);
 
-        binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
+        binder.bind(EventManager.class).to(DefaultEventManager.class);
 
         // a service to provide the main stack DataDomain
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
