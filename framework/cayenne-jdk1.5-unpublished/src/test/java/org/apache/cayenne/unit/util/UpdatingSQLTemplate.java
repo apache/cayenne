@@ -28,7 +28,7 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 public class UpdatingSQLTemplate extends SQLTemplate {
 
-    public UpdatingSQLTemplate(Class rootClass, String defaultTemplate) {
+    public UpdatingSQLTemplate(Class<?> rootClass, String defaultTemplate) {
         super(rootClass, defaultTemplate != null ? defaultTemplate.trim() : null);
     }
 }

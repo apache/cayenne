@@ -21,13 +21,13 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.Gallery;
-import org.apache.art.Painting;
-import org.apache.art.ROPainting;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.ROPainting;
 
 public class CDOMany2OneTest extends CayenneDOTestBase {
 

@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.art.PrimitivesTestEntity;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.testdo.testmap.PrimitivesTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class PrimitiveAttributesTest extends CayenneCase {

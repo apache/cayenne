@@ -27,10 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.art.Artist;
-import org.apache.art.Exhibit;
-import org.apache.art.Painting;
-import org.apache.art.ROArtist;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
@@ -45,6 +41,10 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.ROArtist;
 
 public class DataContextTest extends DataContextCase {
 

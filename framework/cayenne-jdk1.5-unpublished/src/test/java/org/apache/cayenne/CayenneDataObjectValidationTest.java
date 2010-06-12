@@ -22,12 +22,12 @@ package org.apache.cayenne;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.Exhibit;
-import org.apache.art.Gallery;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;

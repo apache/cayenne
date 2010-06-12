@@ -20,11 +20,11 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextQueryChainTest extends CayenneCase {

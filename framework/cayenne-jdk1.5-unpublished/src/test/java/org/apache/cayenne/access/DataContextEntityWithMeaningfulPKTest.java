@@ -22,12 +22,12 @@ package org.apache.cayenne.access;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.art.MeaningfulPKDep;
-import org.apache.art.MeaningfulPKTest1;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.MeaningfulPKDep;
+import org.apache.cayenne.testdo.testmap.MeaningfulPKTest1;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

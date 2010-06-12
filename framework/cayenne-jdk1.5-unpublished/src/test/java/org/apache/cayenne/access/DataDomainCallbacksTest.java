@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
@@ -26,6 +25,7 @@ import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataDomainCallbacksTest extends CayenneCase {

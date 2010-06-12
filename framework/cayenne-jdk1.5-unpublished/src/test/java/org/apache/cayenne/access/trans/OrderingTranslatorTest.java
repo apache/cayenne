@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access.trans;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.TranslationCase;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class OrderingTranslatorTest extends CayenneCase {

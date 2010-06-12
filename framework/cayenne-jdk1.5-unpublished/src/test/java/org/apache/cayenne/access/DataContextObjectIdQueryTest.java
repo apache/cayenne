@@ -21,11 +21,11 @@ package org.apache.cayenne.access;
 import java.util.Collections;
 import java.util.Date;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextObjectIdQueryTest extends CayenneCase {

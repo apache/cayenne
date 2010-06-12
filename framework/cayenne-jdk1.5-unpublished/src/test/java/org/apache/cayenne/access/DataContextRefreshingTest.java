@@ -24,12 +24,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes

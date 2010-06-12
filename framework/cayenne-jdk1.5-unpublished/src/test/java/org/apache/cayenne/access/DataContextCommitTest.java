@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.MockGraphChangeHandler;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextCommitTest extends CayenneCase {

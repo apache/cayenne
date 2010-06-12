@@ -7,77 +7,77 @@
 	<!-- ======================================= -->
 	
 	<bean id="P1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (33001, 'PX', 1)
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="P2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (33002, 'PY', 2)
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="P3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (33003, 'PY', 2)
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="P4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (33004, 'PZ', 1)
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="P5" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (33005, 'PZ', 1)
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'AA1')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33002, 'AA2')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33003, 'BB1')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33004, 'BB2')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="P11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33007, 'P1', 33001, 3000)
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="P12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33008, 'P2', 33002, 5000)
 		</value></constructor-arg>
@@ -86,7 +86,7 @@
 
 	<bean id="P111" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value>
@@ -98,7 +98,7 @@
 	
 	<bean id="P112" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value>
@@ -109,14 +109,14 @@
 	</bean>
 	
 	<bean id="G1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Gallery</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33001, 'gallery1')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="G2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Gallery</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33002, 'gallery2')
 		</value></constructor-arg>

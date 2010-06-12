@@ -20,12 +20,12 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.List;
 
-import org.apache.art.ClobTestEntity;
-import org.apache.art.ClobTestRelation;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.ClobTestEntity;
+import org.apache.cayenne.testdo.testmap.ClobTestRelation;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class SelectActionTest extends CayenneCase {

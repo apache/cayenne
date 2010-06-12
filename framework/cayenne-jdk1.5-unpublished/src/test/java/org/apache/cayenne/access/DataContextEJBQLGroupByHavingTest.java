@@ -24,10 +24,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.Gallery;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.AssertExtras;
+import org.apache.cayenne.test.junit.AssertExtras;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLGroupByHavingTest extends CayenneCase {

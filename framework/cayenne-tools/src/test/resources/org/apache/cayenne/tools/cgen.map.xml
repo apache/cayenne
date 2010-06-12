@@ -9,7 +9,7 @@
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 		<db-attribute name="PARENT_GROUP_ID" type="INTEGER"/>
 	</db-entity>
-	<obj-entity name="ArtGroup" className="org.apache.art.ArtGroup" dbEntityName="ARTGROUP">
+	<obj-entity name="ArtGroup" className="org.apache.cayenne.testdo.testmap.ArtGroup" dbEntityName="ARTGROUP">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 </data-map>

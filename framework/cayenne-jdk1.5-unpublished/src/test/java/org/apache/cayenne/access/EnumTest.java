@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.art.Enum1;
-import org.apache.art.EnumEntity;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Enum1;
+import org.apache.cayenne.testdo.testmap.EnumEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class EnumTest extends CayenneCase {

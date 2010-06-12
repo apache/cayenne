@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.art.BinaryPKTest1;
-import org.apache.art.BinaryPKTest2;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.BinaryPKTest1;
+import org.apache.cayenne.testdo.testmap.BinaryPKTest2;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

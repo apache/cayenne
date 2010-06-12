@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.art.Artist;
-import org.apache.art.GeneratedColumnTestEntity;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

@@ -21,9 +21,9 @@ package org.apache.cayenne.access;
 
 import java.sql.Connection;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class TransactionThreadTest extends CayenneCase {

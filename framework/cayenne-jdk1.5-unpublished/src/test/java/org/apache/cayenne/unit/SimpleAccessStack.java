@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.apache.art.StringET1ExtendedType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -50,6 +49,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.testdo.testmap.StringET1ExtendedType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

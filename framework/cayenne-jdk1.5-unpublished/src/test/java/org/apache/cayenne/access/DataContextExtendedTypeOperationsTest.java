@@ -20,13 +20,13 @@ package org.apache.cayenne.access;
 
 import java.util.Arrays;
 
-import org.apache.art.ExtendedTypeEntity;
-import org.apache.art.StringET1;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.ExtendedTypeEntity;
+import org.apache.cayenne.testdo.testmap.StringET1;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextExtendedTypeOperationsTest extends CayenneCase {

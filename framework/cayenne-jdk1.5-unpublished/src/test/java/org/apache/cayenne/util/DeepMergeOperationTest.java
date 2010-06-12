@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.DeepMergeOperation;
 

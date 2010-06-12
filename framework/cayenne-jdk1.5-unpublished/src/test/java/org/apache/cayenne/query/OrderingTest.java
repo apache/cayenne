@@ -25,7 +25,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.art.Painting;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.util.TestBean;
 
 public class OrderingTest extends TestCase {

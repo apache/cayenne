@@ -79,21 +79,21 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
         task.setMode("entity");
         task.setIncludeEntities("MyArtGroup");
         task.setDestDir(destDir);
-        task.setSuperpkg("org.apache.art2.auto");
+        task.setSuperpkg("org.apache.cayenne.testdo.cgen2.auto");
         task.setUsepkgpath(true);
 
         // run task
         task.execute();
 
         // check results
-        File a = new File(destDir, convertPath("org/apache/art2/MyArtGroup.java"));
+        File a = new File(destDir, convertPath("org/apache/cayenne/testdo/cgen2/MyArtGroup.java"));
         assertTrue(a.isFile());
-        assertContents(a, "MyArtGroup", "org.apache.art2", "_MyArtGroup");
+        assertContents(a, "MyArtGroup", "org.apache.cayenne.testdo.cgen2", "_MyArtGroup");
 
-        File _a = new File(destDir, convertPath("org/apache/art2/auto/_MyArtGroup.java"));
+        File _a = new File(destDir, convertPath("org/apache/cayenne/testdo/cgen2/auto/_MyArtGroup.java"));
         assertTrue(_a.exists());
-        assertContents(_a, "_MyArtGroup", "org.apache.art2.auto", "CayenneDataObject");
-        assertContents(_a, "import org.apache.art.ArtGroup;");
+        assertContents(_a, "_MyArtGroup", "org.apache.cayenne.testdo.cgen2.auto", "CayenneDataObject");
+        assertContents(_a, "import org.apache.cayenne.testdo.testmap.ArtGroup;");
         assertContents(_a, " ArtGroup getToParentGroup()");
         assertContents(_a, "setToParentGroup(ArtGroup toParentGroup)");
     }

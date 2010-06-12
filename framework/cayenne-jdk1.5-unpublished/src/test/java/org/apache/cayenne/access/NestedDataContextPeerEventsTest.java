@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class NestedDataContextPeerEventsTest extends CayenneCase {

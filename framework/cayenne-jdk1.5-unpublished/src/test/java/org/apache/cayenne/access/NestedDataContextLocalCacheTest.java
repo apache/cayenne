@@ -20,11 +20,11 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class NestedDataContextLocalCacheTest extends CayenneCase {

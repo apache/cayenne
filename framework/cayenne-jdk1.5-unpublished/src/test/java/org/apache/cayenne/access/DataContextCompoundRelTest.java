@@ -21,11 +21,11 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.CompoundFkTestEntity;
-import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

@@ -24,11 +24,11 @@ import java.util.Collections;
 
 import junit.framework.AssertionFailedError;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
-import org.apache.art.PaintingInfo;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 
 /**
  * A test case checking that TestDataDomain query blocking works.

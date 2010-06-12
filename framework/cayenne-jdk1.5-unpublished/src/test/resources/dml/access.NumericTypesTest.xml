@@ -6,25 +6,25 @@
 	<!-- Named Queries -->
 	<!-- ======================================= -->
 	<bean id="SI1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.SmallintTestEntity</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.SmallintTestEntity</value></constructor-arg>
 		<constructor-arg><value>
 		insert into SMALLINT_TEST (ID, SMALLINT_COL) values (1, 9999)
 		</value></constructor-arg>
 	</bean>
 	<bean id="SI2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.SmallintTestEntity</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.SmallintTestEntity</value></constructor-arg>
 		<constructor-arg><value>
 		insert into SMALLINT_TEST (ID, SMALLINT_COL) values (2, 3333)
 		</value></constructor-arg>
 	</bean>
 	<bean id="TI1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.TinyintTestEntity</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.TinyintTestEntity</value></constructor-arg>
 		<constructor-arg><value>
 		insert into TINYINT_TEST (ID, TINYINT_COL) values (1, 81)
 		</value></constructor-arg>
 	</bean>
 	<bean id="TI2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.TinyintTestEntity</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.TinyintTestEntity</value></constructor-arg>
 		<constructor-arg><value>
 		insert into TINYINT_TEST (ID, TINYINT_COL) values (2, 50)
 		</value></constructor-arg>

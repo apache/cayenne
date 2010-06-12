@@ -21,7 +21,7 @@ package org.apache.cayenne.query;
 
 import java.util.List;
 
-import org.apache.art.Artist;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class SelectQueryFetchLimitOrderingTest extends CayenneCase {

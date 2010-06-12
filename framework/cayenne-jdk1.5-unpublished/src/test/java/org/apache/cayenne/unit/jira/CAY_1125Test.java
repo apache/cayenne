@@ -21,7 +21,6 @@ package org.apache.cayenne.unit.jira;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -29,6 +28,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.MySQLStackAdapter;
 

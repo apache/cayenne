@@ -20,7 +20,7 @@ package org.apache.cayenne.exp;
 
 import junit.framework.TestCase;
 
-import org.apache.art.BooleanTestEntity;
+import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
 
 public class BooleanExpressionTest extends TestCase {
     public void testCAY1185() {

@@ -20,11 +20,11 @@ package org.apache.cayenne.access;
 
 import java.lang.reflect.Array;
 
-import org.apache.art.ArraysEntity;
-import org.apache.art.CharacterEntity;
-import org.apache.art.SerializableEntity;
 import org.apache.cayenne.MockSerializable;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.ArraysEntity;
+import org.apache.cayenne.testdo.testmap.CharacterEntity;
+import org.apache.cayenne.testdo.testmap.SerializableEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class MiscTypesTest extends CayenneCase {

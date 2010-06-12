@@ -27,14 +27,14 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.art.Artist;
-import org.apache.art.Gallery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.CayenneResources;
 import org.xml.sax.InputSource;
 

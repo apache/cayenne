@@ -8,7 +8,7 @@
 	
 	<!-- ARTIST -->
 	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'artist1')
 		</value></constructor-arg>
@@ -16,14 +16,14 @@
 	
 	<!-- ARTGROUP -->
 	<bean id="AG1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtGroup</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.ArtGroup</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO ARTGROUP (GROUP_ID, NAME) VALUES (1,'g1')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="AG2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtGroup</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.ArtGroup</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO ARTGROUP (GROUP_ID, NAME) VALUES (2,'g2')
 		</value></constructor-arg>
@@ -32,7 +32,7 @@
 	
 	<!-- ARTIST_GROUP -->
 	<bean id="AGG1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtGroup</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.ArtGroup</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO ARTIST_GROUP (ARTIST_ID, GROUP_ID) VALUES (33001,1)
 		</value></constructor-arg>

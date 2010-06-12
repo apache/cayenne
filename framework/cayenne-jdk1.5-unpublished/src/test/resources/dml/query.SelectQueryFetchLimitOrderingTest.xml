@@ -8,42 +8,42 @@
 	
 	<!-- ARTIST -->
 	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'c')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33002, 'b')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33003, 'f')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33004, 'd')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A5" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33005, 'a')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="A6" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33006, 'e')
 		</value></constructor-arg>

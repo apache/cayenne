@@ -24,10 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.art.Artist;
-import org.apache.art.CompoundFkTestEntity;
-import org.apache.art.CompoundPkTestEntity;
-import org.apache.art.Painting;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -38,6 +34,10 @@ import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

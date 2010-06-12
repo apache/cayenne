@@ -24,9 +24,9 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.apache.cayenne.testdo.testmap.Artist;
 
 public class ClientEntityResolverTest extends TestCase {
 

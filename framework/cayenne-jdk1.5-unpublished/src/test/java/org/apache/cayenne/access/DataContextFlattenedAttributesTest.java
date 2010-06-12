@@ -26,14 +26,14 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.CompoundPainting;
-import org.apache.art.Gallery;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.CompoundPainting;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

@@ -24,12 +24,6 @@ import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.ArtistExhibit;
-import org.apache.art.ClobTestEntity;
-import org.apache.art.Exhibit;
-import org.apache.art.Gallery;
-import org.apache.art.Painting;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
@@ -37,7 +31,13 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.test.TableHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.ClobTestEntity;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
 
 public class SelectQueryTest extends SelectQueryBase {
 

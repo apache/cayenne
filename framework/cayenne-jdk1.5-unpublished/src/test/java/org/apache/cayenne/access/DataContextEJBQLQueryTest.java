@@ -26,17 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.art.Artist;
-import org.apache.art.CompoundFkTestEntity;
-import org.apache.art.CompoundPkTestEntity;
-import org.apache.art.Painting;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-import org.apache.cayenne.test.AssertExtras;
+import org.apache.cayenne.test.junit.AssertExtras;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLQueryTest extends CayenneCase {

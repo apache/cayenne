@@ -6,31 +6,31 @@
 	<!-- Named Queries -->
 	<!-- ======================================= -->
 	<bean id="Artist1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.oneway.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.oneway.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (201, 'artist with one painting', null)
 		</value></constructor-arg>
 	</bean>
 	<bean id="Artist2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.oneway.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.oneway.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (202, 'artist XXX', null)
 		</value></constructor-arg>
 	</bean>
 	<bean id="Painting1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.oneway.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.oneway.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (ARTIST_ID, ESTIMATED_PRICE, GALLERY_ID, PAINTING_ID, PAINTING_TITLE) VALUES (201, null, null, 201, 'p1')
 		</value></constructor-arg>
 	</bean>
 	<bean id="Painting2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.oneway.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.oneway.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (ARTIST_ID, ESTIMATED_PRICE, GALLERY_ID, PAINTING_ID, PAINTING_TITLE) VALUES (201, null, null, 202, 'p2')
 		</value></constructor-arg>
 	</bean>
 	<bean id="Painting3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.oneway.Painting</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.oneway.Painting</value></constructor-arg>
 		<constructor-arg><value>
 		INSERT INTO PAINTING (ARTIST_ID, ESTIMATED_PRICE, GALLERY_ID, PAINTING_ID, PAINTING_TITLE) VALUES (202, null, null, 203, 'p2')
 		</value></constructor-arg>

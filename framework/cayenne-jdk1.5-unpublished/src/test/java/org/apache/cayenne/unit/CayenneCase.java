@@ -33,7 +33,7 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.test.DBHelper;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
 /**

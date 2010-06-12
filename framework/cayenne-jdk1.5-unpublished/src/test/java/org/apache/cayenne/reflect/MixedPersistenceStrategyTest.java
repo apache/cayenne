@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.art.MixedPersistenceStrategy;
-import org.apache.art.MixedPersistenceStrategy2;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy;
+import org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy2;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

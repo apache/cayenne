@@ -22,9 +22,9 @@ package org.apache.cayenne.dba;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 import com.mockrunner.mock.jdbc.MockConnection;

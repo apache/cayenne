@@ -22,14 +22,14 @@ package org.apache.cayenne.access;
 import java.util.Collections;
 import java.util.Date;
 
-import org.apache.art.Artist;
-import org.apache.art.Gallery;
-import org.apache.art.Painting;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.MockDataObject;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

@@ -21,12 +21,12 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.art.ArtGroup;
-import org.apache.art.Artist;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.MockDataNode;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.ArtGroup;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.art.Artist;
-import org.apache.art.Gallery;
-import org.apache.art.Painting;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class SelectQueryPrefetchRouterActionTest extends CayenneCase {

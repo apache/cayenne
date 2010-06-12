@@ -7,21 +7,21 @@
 	<!-- ======================================= -->
 	
 	<bean id="M11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.MixedPersistenceStrategy</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy</value></constructor-arg>
 		<constructor-arg><value>
 		insert into MIXED_PERSISTENCE_STRATEGY (ID, DESCRIPTION, NAME) values (1, 'd1', 'n1')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="M21" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.MixedPersistenceStrategy2</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy2</value></constructor-arg>
 		<constructor-arg><value>
 		insert into MIXED_PERSISTENCE_STRATEGY2 (ID, MASTER_ID, NAME) values (1, 1, 'dn1')
 		</value></constructor-arg>
 	</bean>
 	
 	<bean id="M22" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.MixedPersistenceStrategy2</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy2</value></constructor-arg>
 		<constructor-arg><value>
 		insert into MIXED_PERSISTENCE_STRATEGY2 (ID, MASTER_ID, NAME) values (2, 1, 'dn2')
 		</value></constructor-arg>

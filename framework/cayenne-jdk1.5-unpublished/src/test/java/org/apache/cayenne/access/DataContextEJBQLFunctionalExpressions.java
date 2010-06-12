@@ -23,16 +23,16 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.BigDecimalEntity;
-import org.apache.art.BigIntegerEntity;
-import org.apache.art.DateTestEntity;
-import org.apache.art.Painting;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.BigDecimalEntity;
+import org.apache.cayenne.testdo.testmap.BigIntegerEntity;
+import org.apache.cayenne.testdo.testmap.DateTestEntity;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLFunctionalExpressions extends CayenneCase {

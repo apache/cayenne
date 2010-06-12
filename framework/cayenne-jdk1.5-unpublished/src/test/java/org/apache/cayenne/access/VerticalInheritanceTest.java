@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.DBHelper;
-import org.apache.cayenne.test.TableHelper;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance.vertical.Iv1Root;
 import org.apache.cayenne.testdo.inheritance.vertical.Iv1Sub1;
 import org.apache.cayenne.testdo.inheritance.vertical.IvRoot;

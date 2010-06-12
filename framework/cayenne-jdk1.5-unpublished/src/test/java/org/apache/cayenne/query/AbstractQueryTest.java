@@ -22,8 +22,8 @@ package org.apache.cayenne.query;
 
 import junit.framework.TestCase;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
 
 public class AbstractQueryTest extends TestCase {
 

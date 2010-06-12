@@ -8,14 +8,14 @@
 	
 	<!-- ARTIST -->
 	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'artist1')
 		</value></constructor-arg>
 	</bean>
 
 	<bean id="A2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33002, 'artist2')
 		</value></constructor-arg>
@@ -23,7 +23,7 @@
 
 	<!-- COMPOUND_PK_TEST -->
 	<bean id="C1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.CompoundPkTestEntity</value></constructor-arg>
 		<constructor-arg><value>
 		insert into COMPOUND_PK_TEST (KEY1, KEY2, NAME) values ('PK1', 'PK2', 'BBB')
 		</value></constructor-arg>
@@ -31,7 +31,7 @@
 
 	<!-- CHAR_PK_TEST -->
 	<bean id="CH1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharPkTestEntity</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.CharPkTestEntity</value></constructor-arg>
 		<constructor-arg><value>
 		insert into CHAR_PK_TEST (PK_COL, OTHER_COL) values ('CPK', 'AAAA')
 		</value></constructor-arg>

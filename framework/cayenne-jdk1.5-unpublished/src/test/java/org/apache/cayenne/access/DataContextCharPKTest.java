@@ -22,8 +22,8 @@ package org.apache.cayenne.access;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.art.CharPkTestEntity;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

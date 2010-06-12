@@ -21,14 +21,14 @@ package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.TestBean;
 

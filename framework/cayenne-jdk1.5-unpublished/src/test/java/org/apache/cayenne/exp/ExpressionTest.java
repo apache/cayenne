@@ -25,8 +25,8 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.testdo.testmap.Artist;
 
 /**
  */

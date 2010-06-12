@@ -23,11 +23,11 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.art.CalendarEntity;
-import org.apache.art.DateTestEntity;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.CalendarEntity;
+import org.apache.cayenne.testdo.testmap.DateTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

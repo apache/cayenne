@@ -20,9 +20,9 @@ package org.apache.cayenne.access;
 
 import java.util.UUID;
 
-import org.apache.art.UuidTestEntity;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.UuidTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class UUIDTest extends CayenneCase {

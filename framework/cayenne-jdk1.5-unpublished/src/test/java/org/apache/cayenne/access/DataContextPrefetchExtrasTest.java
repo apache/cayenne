@@ -21,10 +21,6 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.CharFkTestEntity;
-import org.apache.art.CharPkTestEntity;
-import org.apache.art.CompoundFkTestEntity;
-import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.PersistenceState;
@@ -33,6 +29,10 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.testdo.testmap.CharFkTestEntity;
+import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
+import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

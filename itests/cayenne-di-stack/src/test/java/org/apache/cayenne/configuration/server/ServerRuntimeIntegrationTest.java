@@ -27,7 +27,7 @@ import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.itest.di_stack.Table1;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.DBHelper;
+import org.apache.cayenne.test.jdbc.DBHelper;
 
 public class ServerRuntimeIntegrationTest extends ServerRuntimeCase {
 

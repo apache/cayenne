@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class CompoundPkChangeTest extends CayenneCase {

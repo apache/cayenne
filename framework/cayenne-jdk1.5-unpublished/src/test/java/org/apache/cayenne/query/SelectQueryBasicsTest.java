@@ -27,10 +27,10 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExpressionParameter;
+import org.apache.cayenne.testdo.testmap.Artist;
 
 public class SelectQueryBasicsTest extends TestCase {
 

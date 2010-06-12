@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
@@ -38,6 +36,8 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextExtrasTest extends CayenneCase {

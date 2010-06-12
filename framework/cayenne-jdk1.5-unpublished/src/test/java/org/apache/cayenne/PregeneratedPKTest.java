@@ -19,10 +19,10 @@
 
 package org.apache.cayenne;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

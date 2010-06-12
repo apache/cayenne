@@ -21,13 +21,13 @@ package org.apache.cayenne.access;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.art.Artist;
-import org.apache.art.BooleanTestEntity;
-import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
+import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLUpdateTest extends CayenneCase {

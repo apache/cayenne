@@ -19,13 +19,13 @@
 
 package org.apache.cayenne;
 
-import org.apache.art.Artist;
-import org.apache.art.ArtistExhibit;
-import org.apache.art.Exhibit;
-import org.apache.art.Gallery;
-import org.apache.art.Painting;
-import org.apache.art.PaintingInfo;
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 
 public class CDOOneDep2OneTest extends CayenneDOTestBase {
 

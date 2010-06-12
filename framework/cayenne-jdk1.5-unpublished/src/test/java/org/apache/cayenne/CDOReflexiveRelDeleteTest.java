@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.art.ArtGroup;
+import org.apache.cayenne.testdo.testmap.ArtGroup;
 
 public class CDOReflexiveRelDeleteTest extends CayenneDOTestBase {
 

@@ -25,19 +25,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.art.BigDecimalEntity;
-import org.apache.art.BigIntegerEntity;
-import org.apache.art.BitTestEntity;
-import org.apache.art.BooleanTestEntity;
-import org.apache.art.DecimalPKTest1;
-import org.apache.art.DecimalPKTestEntity;
-import org.apache.art.LongEntity;
-import org.apache.art.SmallintTestEntity;
-import org.apache.art.TinyintTestEntity;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.BigDecimalEntity;
+import org.apache.cayenne.testdo.testmap.BigIntegerEntity;
+import org.apache.cayenne.testdo.testmap.BitTestEntity;
+import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
+import org.apache.cayenne.testdo.testmap.DecimalPKTest1;
+import org.apache.cayenne.testdo.testmap.DecimalPKTestEntity;
+import org.apache.cayenne.testdo.testmap.LongEntity;
+import org.apache.cayenne.testdo.testmap.SmallintTestEntity;
+import org.apache.cayenne.testdo.testmap.TinyintTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

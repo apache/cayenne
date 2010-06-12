@@ -22,10 +22,10 @@ package org.apache.cayenne.access;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.art.NoPkTestEntity;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.TableHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.testmap.NoPkTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextNoPkTest extends CayenneCase {

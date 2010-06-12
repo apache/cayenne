@@ -4,13 +4,13 @@
 <beans default-lazy-init="true">
 
 	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'artist1')
 		</value></constructor-arg>
 	</bean>
 	<bean id="A2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
-		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.testmap.Artist</value></constructor-arg>
 		<constructor-arg><value>
 		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33002, 'artist2')
 		</value></constructor-arg>
@@ -18,7 +18,7 @@
 
 	<bean id="P1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value>
@@ -30,7 +30,7 @@
 
 	<bean id="P2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value>
@@ -42,7 +42,7 @@
 	
 	<bean id="P3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value>
@@ -54,7 +54,7 @@
 	
 	<bean id="P4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value>

@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 

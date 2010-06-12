@@ -35,8 +35,8 @@ import org.apache.cayenne.ValueHolder;
  * 
  * @since 1.2
  */
-public class PersistentObjectList extends RelationshipFault 
-    implements List, ValueHolder, PersistentObjectCollection {
+public class PersistentObjectList extends RelationshipFault implements List, ValueHolder,
+        PersistentObjectCollection {
 
     // wrapped objects list
     protected List objectList;
@@ -45,7 +45,7 @@ public class PersistentObjectList extends RelationshipFault
     protected LinkedList addedToUnresolved;
     protected LinkedList<Object> removedFromUnresolved;
 
-    // exists for the benefit of manual serialization schemes such as the one in Hessian.
+    // exists for the benefit of custom serialization schemes such as the one in Hessian.
     @SuppressWarnings("unused")
     private PersistentObjectList() {
 
@@ -384,9 +384,10 @@ public class PersistentObjectList extends RelationshipFault
         // if an object was present in the list
         return true;
     }
-    
+
     /**
-     * @return whether object should be added to {@link #removedFromUnresolved} during removal
+     * @return whether object should be added to {@link #removedFromUnresolved} during
+     *         removal
      */
     protected boolean shouldAddToRemovedFromUnresolvedList(Object object) {
         return true;
@@ -416,7 +417,9 @@ public class PersistentObjectList extends RelationshipFault
                     null,
                     addedObject);
             if (addedObject instanceof Persistent) {
-                Util.setReverse(relationshipOwner, relationshipName,
+                Util.setReverse(
+                        relationshipOwner,
+                        relationshipName,
                         (Persistent) addedObject);
             }
         }
@@ -432,7 +435,9 @@ public class PersistentObjectList extends RelationshipFault
                     removedObject,
                     null);
             if (removedObject instanceof Persistent) {
-                Util.unsetReverse(relationshipOwner, relationshipName,
+                Util.unsetReverse(
+                        relationshipOwner,
+                        relationshipName,
                         (Persistent) removedObject);
             }
         }

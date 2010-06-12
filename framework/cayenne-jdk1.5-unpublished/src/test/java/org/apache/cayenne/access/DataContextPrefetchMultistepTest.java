@@ -24,9 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.art.ArtistExhibit;
-import org.apache.art.Exhibit;
-import org.apache.art.Gallery;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -35,6 +32,9 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
 
 /**
  * Testing chained prefetches...

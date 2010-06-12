@@ -22,9 +22,9 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.BlobTestEntity;
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.BlobTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

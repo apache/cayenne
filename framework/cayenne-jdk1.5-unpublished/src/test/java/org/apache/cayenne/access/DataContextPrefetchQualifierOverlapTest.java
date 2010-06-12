@@ -20,13 +20,13 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextPrefetchQualifierOverlapTest extends CayenneCase {

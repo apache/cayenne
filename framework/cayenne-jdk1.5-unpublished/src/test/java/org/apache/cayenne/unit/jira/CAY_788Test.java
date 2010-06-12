@@ -21,12 +21,12 @@ package org.apache.cayenne.unit.jira;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.art.Painting;
-import org.apache.art.PaintingInfo;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SelectQueryBase;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 
 public class CAY_788Test extends SelectQueryBase {
 

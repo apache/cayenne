@@ -21,9 +21,9 @@ package org.apache.cayenne;
 
 import java.util.Arrays;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting1;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting1;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

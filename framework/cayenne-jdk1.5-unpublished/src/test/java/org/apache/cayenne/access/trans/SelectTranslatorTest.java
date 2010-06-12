@@ -24,10 +24,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.ArtistExhibit;
-import org.apache.art.CompoundPainting;
-import org.apache.art.Painting;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -40,6 +36,10 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.CompoundPainting;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class SelectTranslatorTest extends CayenneCase {

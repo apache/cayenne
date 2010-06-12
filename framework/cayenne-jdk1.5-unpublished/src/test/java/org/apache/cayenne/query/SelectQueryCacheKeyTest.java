@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class SelectQueryCacheKeyTest extends CayenneCase {

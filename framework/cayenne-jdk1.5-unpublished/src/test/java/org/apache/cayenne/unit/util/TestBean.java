@@ -16,20 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-
 package org.apache.cayenne.unit.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-
 /**
  * A non-persistent Java Bean. Useful for testing Cayenne operations that rely on
  * introspection.
- * 
- * @since 1.1
  */
 public class TestBean {
 
@@ -38,7 +33,7 @@ public class TestBean {
     protected String property1;
     protected int property2;
     protected Date dateProperty;
-    protected Collection collection;
+    protected Collection<?> collection;
     protected TestBean relatedBean;
 
     public static TestBean testFixtureWithCollection(
@@ -46,7 +41,7 @@ public class TestBean {
             String childBaseName) {
         TestBean root = new TestBean(rootBaseName, 0);
 
-        Collection collection = new ArrayList(10);
+        Collection<TestBean> collection = new ArrayList<TestBean>(10);
         for (int i = 0; i < 10; i++) {
             collection.add(new TestBean(childBaseName + i, i));
         }
@@ -100,11 +95,11 @@ public class TestBean {
         this.property2 = property2;
     }
 
-    public Collection getCollection() {
+    public Collection<?> getCollection() {
         return collection;
     }
 
-    public void setCollection(Collection collection) {
+    public void setCollection(Collection<?> collection) {
         this.collection = collection;
     }
 

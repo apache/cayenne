@@ -22,11 +22,11 @@ package org.apache.cayenne.access;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 

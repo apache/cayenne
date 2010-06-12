@@ -21,10 +21,10 @@ package org.apache.cayenne.gen;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.Testmap;
-import org.apache.cayenne.test.DBHelper;
-import org.apache.cayenne.test.TableHelper;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Testmap;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataMapGeneratedQueryRunTest extends CayenneCase {

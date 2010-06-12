@@ -21,9 +21,9 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ToManyList;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 

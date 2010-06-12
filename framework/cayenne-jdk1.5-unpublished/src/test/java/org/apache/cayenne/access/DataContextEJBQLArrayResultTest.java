@@ -21,8 +21,8 @@ package org.apache.cayenne.access;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLArrayResultTest extends CayenneCase {

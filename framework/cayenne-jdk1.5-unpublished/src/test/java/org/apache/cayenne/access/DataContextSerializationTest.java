@@ -21,11 +21,11 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 

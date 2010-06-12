@@ -21,10 +21,10 @@ package org.apache.cayenne.access;
 
 import java.util.Date;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.MultiContextCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 

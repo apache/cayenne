@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.graph.GraphEvent;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 import org.apache.cayenne.util.EventUtil;

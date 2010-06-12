@@ -21,8 +21,8 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.ClobTestEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

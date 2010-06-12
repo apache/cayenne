@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import java.sql.Connection;
 
-import org.apache.art.Artist;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class UserTransactionTest extends CayenneCase {

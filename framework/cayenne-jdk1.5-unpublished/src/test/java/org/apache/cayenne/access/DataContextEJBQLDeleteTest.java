@@ -20,11 +20,11 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.MeaningfulPKTest1;
-import org.apache.art.Painting;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.testdo.testmap.MeaningfulPKTest1;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLDeleteTest extends CayenneCase {

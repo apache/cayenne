@@ -24,11 +24,11 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.apache.art.Artist;
-import org.apache.art.Painting;
-import org.apache.art.ROArtist;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.CayenneCase;
 
 public abstract class DataContextCase extends CayenneCase {

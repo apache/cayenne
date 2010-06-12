@@ -21,15 +21,15 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.art.ArtGroup;
-import org.apache.art.Artist;
-import org.apache.art.Gallery;
-import org.apache.art.Painting;
-import org.apache.art.PaintingInfo;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.ArtGroup;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.CaseDataFactory;
 
 public class CayenneDataObjectRelTest extends CayenneDOTestBase {

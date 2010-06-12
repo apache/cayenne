@@ -8,7 +8,7 @@
 	<bean id="Artist1" 
 		class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Artist</value>
+			<value>org.apache.cayenne.testdo.testmap.Artist</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value> insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'artist1') </value>
@@ -17,7 +17,7 @@
 	<bean id="Artist2" 
 		class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Artist</value>
+			<value>org.apache.cayenne.testdo.testmap.Artist</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value> insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (2, 'artist2') </value>
@@ -26,7 +26,7 @@
 	<bean id="Painting1" 
 		class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value> insert into PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID) values (1, 'painting1', 1) </value>
@@ -35,7 +35,7 @@
 	<bean id="Painting2" 
 		class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value> insert into PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID) values (2, 'painting2', 1) </value>
@@ -44,7 +44,7 @@
 	<bean id="Painting3" 
 		class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class">
-			<value>org.apache.art.Painting</value>
+			<value>org.apache.cayenne.testdo.testmap.Painting</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value> insert into PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID) values (3, 'painting3', 1) </value>

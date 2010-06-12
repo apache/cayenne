@@ -23,20 +23,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.art.GeneratedColumnCompKey;
-import org.apache.art.GeneratedColumnCompMaster;
-import org.apache.art.GeneratedColumnDep;
-import org.apache.art.GeneratedColumnTest2;
-import org.apache.art.GeneratedColumnTestEntity;
-import org.apache.art.GeneratedF1;
-import org.apache.art.GeneratedF2;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.TableHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.testmap.GeneratedColumnCompKey;
+import org.apache.cayenne.testdo.testmap.GeneratedColumnCompMaster;
+import org.apache.cayenne.testdo.testmap.GeneratedColumnDep;
+import org.apache.cayenne.testdo.testmap.GeneratedColumnTest2;
+import org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity;
+import org.apache.cayenne.testdo.testmap.GeneratedF1;
+import org.apache.cayenne.testdo.testmap.GeneratedF2;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

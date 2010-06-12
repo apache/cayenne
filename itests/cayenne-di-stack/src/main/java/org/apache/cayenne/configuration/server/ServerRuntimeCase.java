@@ -28,8 +28,8 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.test.DBHelper;
-import org.apache.cayenne.test.TableHelper;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 
 public abstract class ServerRuntimeCase extends TestCase {
 

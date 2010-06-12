@@ -24,13 +24,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;

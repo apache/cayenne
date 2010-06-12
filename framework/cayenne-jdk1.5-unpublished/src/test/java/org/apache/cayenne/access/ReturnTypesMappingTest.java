@@ -24,12 +24,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.art.DateTestEntity;
-import org.apache.art.ReturnTypesMap1;
-import org.apache.art.ReturnTypesMap2;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.DateTestEntity;
+import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
+import org.apache.cayenne.testdo.testmap.ReturnTypesMap2;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**

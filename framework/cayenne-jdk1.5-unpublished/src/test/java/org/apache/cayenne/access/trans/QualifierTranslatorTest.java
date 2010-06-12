@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.trans;
 
-import org.apache.art.Gallery;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
@@ -32,6 +31,7 @@ import org.apache.cayenne.exp.TstUnaryExpSuite;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class QualifierTranslatorTest extends CayenneCase {

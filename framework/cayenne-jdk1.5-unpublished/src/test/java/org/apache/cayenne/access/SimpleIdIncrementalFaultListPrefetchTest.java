@@ -22,13 +22,13 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 
 /**
  */

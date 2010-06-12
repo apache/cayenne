@@ -21,15 +21,15 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.art.ArtGroup;
-import org.apache.art.Artist;
-import org.apache.art.ArtistExhibit;
-import org.apache.art.Exhibit;
-import org.apache.art.Gallery;
-import org.apache.art.Painting;
-import org.apache.art.PaintingInfo;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testdo.testmap.ArtGroup;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.CayenneCase;
 
 // TODO: redefine all test cases in terms of entities in "relationships" map
