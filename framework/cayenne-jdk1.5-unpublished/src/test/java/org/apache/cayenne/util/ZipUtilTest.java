@@ -35,7 +35,7 @@ public class ZipUtilTest extends TestCase {
     public void testUnzip() throws Exception {
 
         URL jarResource = Thread.currentThread().getContextClassLoader().getResource(
-                "jar-test.jar");
+                "org/apache/cayenne/util/jar-test.jar");
         File jarCopy = new File(
                 CayenneResources.getResources().getTestDir(),
                 "jar-test.jar");
@@ -66,7 +66,7 @@ public class ZipUtilTest extends TestCase {
 
     public void testZip() throws Exception {
         URL jarResource = Thread.currentThread().getContextClassLoader().getResource(
-                "jar-test.jar");
+                "org/apache/cayenne/util/jar-test.jar");
         File jarCopy = new File(
                 CayenneResources.getResources().getTestDir(),
                 "jar-test.jar");

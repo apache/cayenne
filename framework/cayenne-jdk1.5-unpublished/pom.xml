@@ -123,10 +123,6 @@
 			<groupId>mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
 		</dependency>
-        <dependency>
-			<groupId>oro</groupId>
-			<artifactId>oro</artifactId>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

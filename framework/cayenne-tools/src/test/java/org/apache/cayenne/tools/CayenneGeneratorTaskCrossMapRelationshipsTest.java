@@ -23,11 +23,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
 import org.apache.cayenne.unit.CayenneResources;
-import org.apache.oro.text.perl.Perl5Util;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
@@ -35,27 +35,16 @@ import org.apache.tools.ant.types.Path;
 
 public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
 
-    private static final Perl5Util regexUtil = new Perl5Util();
-    private static final Project project = new Project();
+    /**
+     * Tests pairs generation with a cross-DataMap relationship.
+     */
+    public void testCrossDataMapRelationships() throws Exception {
 
-    protected CayenneGeneratorTask task;
-
-    @Override
-    public void setUp() {
-        task = new CayenneGeneratorTask();
-        task.setProject(project);
+        CayenneGeneratorTask task = new CayenneGeneratorTask();
+        task.setProject(new Project());
         task.setTaskName("Test");
         task.setLocation(Location.UNKNOWN_LOCATION);
-    }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        task = null;
-    }
-
-    /** Test pairs generation with a cross-DataMap relationship. */
-    public void testCrossDataMapRelationships() throws Exception {
         // prepare destination directory
 
         File destDir = new File(CayenneResources.getResources().getTestDir(), "cgen12");
@@ -64,12 +53,16 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
             assertTrue(destDir.mkdirs());
         }
 
-        File map = new File(destDir, "testmap-dependent.map.xml");
-        CayenneResources.copyResourceToFile("testmap-dependent.map.xml", map);
+        File map = new File(destDir, "cgen-dependent.map.xml");
+        CayenneResources.copyResourceToFile(
+                "org/apache/cayenne/tools/cgen-dependent.map.xml",
+                map);
 
         File additionalMaps[] = new File[1];
-        additionalMaps[0] = new File(destDir, "testmap.map.xml");
-        CayenneResources.copyResourceToFile("testmap.map.xml", additionalMaps[0]);
+        additionalMaps[0] = new File(destDir, "cgen.map.xml");
+        CayenneResources.copyResourceToFile(
+                "org/apache/cayenne/tools/cgen.map.xml",
+                additionalMaps[0]);
 
         FileList additionalMapsFilelist = new FileList();
         additionalMapsFilelist.setDir(additionalMaps[0].getParentFile());
@@ -152,7 +145,8 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
 
         String s = null;
         while ((s = in.readLine()) != null) {
-            if (regexUtil.match("/^package\\s+([^\\s;]+);/", s + '\n')) {
+
+            if (Pattern.matches("^package\\s+([^\\s;]+);", s)) {
                 assertTrue(s.contains(packageName));
                 return;
             }
@@ -163,10 +157,12 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
 
     private void assertClass(BufferedReader in, String className, String extendsName)
             throws Exception {
+        
+        Pattern classPattern = Pattern.compile("^public\\s+");
 
         String s = null;
         while ((s = in.readLine()) != null) {
-            if (regexUtil.match("/class\\s+([^\\s]+)\\s+extends\\s+([^\\s]+)/", s + '\n')) {
+            if (classPattern.matcher(s).find()) {
                 assertTrue(s.contains(className));
                 assertTrue(s.contains(extendsName));
                 assertTrue(s.indexOf(className) < s.indexOf(extendsName));

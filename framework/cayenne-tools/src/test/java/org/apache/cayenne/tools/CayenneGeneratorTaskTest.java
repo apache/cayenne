@@ -23,64 +23,52 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
 import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.util.ResourceLocator;
-import org.apache.cayenne.util.Util;
-import org.apache.oro.text.perl.Perl5Util;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 
 public class CayenneGeneratorTaskTest extends TestCase {
 
-    private static final Perl5Util regexUtil = new Perl5Util();
-    private static final Project project = new Project();
-    private static final File baseDir = CayenneResources.getResources().getTestDir();
-    private static final File map = new File(baseDir, "antmap.xml");
-    private static final File mapEmbeddables = new File(baseDir, "antmap-embeddables.xml");
-    private static final File template = new File(baseDir, "velotemplate.vm");
+    private static final File baseDir;
+    private static final File map;
+    private static final File mapEmbeddables;
+    private static final File template;
 
     static {
-        extractFiles();
-        project.setBaseDir(baseDir);
+
+        baseDir = CayenneResources.getResources().getTestDir();
+        map = new File(baseDir, "antmap.xml");
+        mapEmbeddables = new File(baseDir, "antmap-embeddables.xml");
+        template = new File(baseDir, "velotemplate.vm");
+
+        CayenneResources.copyResourceToFile("testmap.map.xml", map);
+        CayenneResources.copyResourceToFile("embeddable.map.xml", mapEmbeddables);
+        CayenneResources.copyResourceToFile(
+                "org/apache/cayenne/tools/velotemplate.vm",
+                template);
     }
 
     protected CayenneGeneratorTask task;
 
-    private static void extractFiles() {
-        ResourceLocator locator = new ResourceLocator();
-        locator.setSkipAbsolutePath(true);
-        locator.setSkipClasspath(false);
-        locator.setSkipCurrentDirectory(true);
-        locator.setSkipHomeDirectory(true);
-
-        URL url1 = locator.findResource("testmap.map.xml");
-        Util.copy(url1, map);
-        URL url2 = locator.findResource("testtemplate.vm");
-        Util.copy(url2, template);
-
-        URL url3 = locator.findResource("embeddable.map.xml");
-        Util.copy(url3, mapEmbeddables);
-    }
-
     @Override
     public void setUp() {
+
+        Project project = new Project();
+        project.setBaseDir(baseDir);
+
         task = new CayenneGeneratorTask();
         task.setProject(project);
         task.setTaskName("Test");
         task.setLocation(Location.UNKNOWN_LOCATION);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        task = null;
-    }
-
-    /** Test single classes with a non-standard template. */
+    /**
+     * Test single classes with a non-standard template.
+     */
     public void testSingleClassesCustTemplate() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "single-classes-custtempl");
@@ -323,7 +311,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
 
         String s = null;
         while ((s = in.readLine()) != null) {
-            if (regexUtil.match("/^package\\s+([^\\s;]+);/", s + '\n')) {
+            if (Pattern.matches("^package\\s+([^\\s;]+);", s)) {
                 assertTrue(s.indexOf(packageName) > 0);
                 return;
             }
@@ -335,9 +323,11 @@ public class CayenneGeneratorTaskTest extends TestCase {
     private void assertClass(BufferedReader in, String className, String extendsName)
             throws Exception {
 
+        Pattern classPattern = Pattern.compile("^public\\s+");
+
         String s = null;
         while ((s = in.readLine()) != null) {
-            if (regexUtil.match("/class\\s+([^\\s]+)\\s+extends\\s+([^\\s]+)/", s + '\n')) {
+            if (classPattern.matcher(s).find()) {
                 assertTrue(s.indexOf(className) > 0);
                 assertTrue(s.indexOf(extendsName) > 0);
                 assertTrue(s.indexOf(className) < s.indexOf(extendsName));
