@@ -20,7 +20,7 @@ package org.apache.cayenne.configuration.web;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
 
@@ -45,7 +45,7 @@ public class CayenneFilterTest extends TestCase {
         assertNull(WebUtil.getCayenneRuntime(context));
         filter.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals("abc.xml", runtime
@@ -66,7 +66,7 @@ public class CayenneFilterTest extends TestCase {
         CayenneFilter filter = new CayenneFilter();
         filter.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals("xyz", runtime
@@ -88,7 +88,7 @@ public class CayenneFilterTest extends TestCase {
         assertNull(WebUtil.getCayenneRuntime(context));
         filter.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals("cayenne-abc.xml", runtime.getInjector().getInstance(
@@ -115,7 +115,7 @@ public class CayenneFilterTest extends TestCase {
         CayenneFilter filter = new CayenneFilter();
         filter.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals(4, runtime.getModules().length);
@@ -142,7 +142,7 @@ public class CayenneFilterTest extends TestCase {
         CayenneFilter filter = new CayenneFilter();
         filter.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         CayenneFilter_DispatchRequestHandler handler = (CayenneFilter_DispatchRequestHandler) runtime
                 .getInjector()
                 .getInstance(RequestHandler.class);

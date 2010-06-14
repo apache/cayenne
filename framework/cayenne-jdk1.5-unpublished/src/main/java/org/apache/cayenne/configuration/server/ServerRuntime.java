@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.server;
 import java.util.Collection;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Module;
 
@@ -34,7 +34,7 @@ import org.apache.cayenne.di.Module;
  * 
  * @since 3.1
  */
-public class ServerRuntime extends Runtime {
+public class ServerRuntime extends CayenneRuntime {
 
     private static Module mainModule(String configurationLocation) {
         return new ServerModule(configurationLocation);

@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.web.RequestHandler;
 import org.apache.cayenne.configuration.web.WebConfiguration;
@@ -108,7 +108,7 @@ public class ROPHessianServlet extends HessianServlet {
     public void destroy() {
         super.destroy();
 
-        Runtime runtime = WebUtil.getCayenneRuntime(servletContext);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
         if (runtime != null) {
             runtime.shutdown();
         }

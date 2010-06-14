@@ -19,7 +19,7 @@
 package org.apache.cayenne.configuration;
 
 /**
- * Represents a properties map for a given {@link Runtime}.
+ * Represents a properties map for a given {@link CayenneRuntime}.
  * 
  * @since 3.1
  */

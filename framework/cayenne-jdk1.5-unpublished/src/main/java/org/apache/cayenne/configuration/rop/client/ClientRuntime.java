@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.rop.client;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
 
@@ -30,7 +30,7 @@ import org.apache.cayenne.remote.ClientConnection;
  * 
  * @since 3.1
  */
-public class ClientRuntime extends Runtime {
+public class ClientRuntime extends CayenneRuntime {
 
     private static Module mainModule(Map<String, String> properties) {
         return new ClientModule(properties);

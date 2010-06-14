@@ -31,11 +31,11 @@ import org.apache.cayenne.di.Module;
  * Cayenne for a user application. It provides a default Cayenne configuration as well as
  * a way to customize this configuration via a built-in dependency injection (DI)
  * container. In fact implementation-wise, Runtime object is just a convenience thin
- * wrapper around a DI container.
+ * wrapper around a DI {@link Injector}.
  * 
  * @since 3.1
  */
-public abstract class Runtime {
+public abstract class CayenneRuntime {
 
     protected Injector injector;
     protected Module[] modules;
@@ -81,7 +81,7 @@ public abstract class Runtime {
      * Creates a CayenneRuntime with configuration based on the supplied array of DI
      * modules.
      */
-    public Runtime(Module... modules) {
+    public CayenneRuntime(Module... modules) {
 
         if (modules == null) {
             modules = new Module[0];
@@ -95,7 +95,7 @@ public abstract class Runtime {
      * Creates a CayenneRuntime with configuration based on the supplied collection of DI
      * modules.
      */
-    public Runtime(Collection<Module> modules) {
+    public CayenneRuntime(Collection<Module> modules) {
 
         if (modules == null) {
             this.modules = new Module[0];

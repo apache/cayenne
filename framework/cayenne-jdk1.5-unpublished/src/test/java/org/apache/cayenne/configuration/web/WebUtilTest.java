@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
-import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 
 import com.mockrunner.mock.web.MockServletContext;
 
@@ -31,13 +31,13 @@ public class WebUtilTest extends TestCase {
 
         assertNull(WebUtil.getCayenneRuntime(context));
 
-        Runtime runtime = new Runtime() {
+        CayenneRuntime runtime = new CayenneRuntime() {
         };
 
         WebUtil.setCayenneRuntime(context, runtime);
         assertSame(runtime, WebUtil.getCayenneRuntime(context));
 
-        Runtime runtime1 = new Runtime() {
+        CayenneRuntime runtime1 = new CayenneRuntime() {
         };
 
         WebUtil.setCayenneRuntime(context, runtime1);

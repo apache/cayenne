@@ -117,15 +117,13 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
     public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
             throws ConfigurationException {
-        
-      
 
         if (configurationResource == null) {
             throw new NullPointerException("Null configurationResource");
         }
 
         URL configurationURL = configurationResource.getURL();
-        
+
         logger.info("Loading XML configuration resource from " + configurationURL);
 
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
@@ -388,7 +386,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                             .equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE)) {
                         if (passwordSource != null) {
                             try {
-                                Process process = java.lang.Runtime.getRuntime().exec(
+                                Process process = Runtime.getRuntime().exec(
                                         passwordSource);
                                 password = passwordFromInputStream(process
                                         .getInputStream());

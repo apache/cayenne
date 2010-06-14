@@ -29,7 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Module;
@@ -76,7 +76,7 @@ public class CayenneFilter implements Filter {
     }
 
     public void destroy() {
-        Runtime runtime = WebUtil.getCayenneRuntime(servletContext);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
 
         if (runtime != null) {
             runtime.shutdown();
@@ -88,7 +88,7 @@ public class CayenneFilter implements Filter {
             ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
-        Runtime runtime = WebUtil.getCayenneRuntime(servletContext);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
         RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 
         handler.requestStart(request, response);

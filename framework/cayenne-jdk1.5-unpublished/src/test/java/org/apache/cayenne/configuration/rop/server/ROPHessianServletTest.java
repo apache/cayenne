@@ -20,7 +20,7 @@ package org.apache.cayenne.configuration.rop.server;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.configuration.Runtime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.web.MockModule1;
@@ -49,7 +49,7 @@ public class ROPHessianServletTest extends TestCase {
         assertNull(WebUtil.getCayenneRuntime(context));
         servlet.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals(
@@ -71,7 +71,7 @@ public class ROPHessianServletTest extends TestCase {
         ROPHessianServlet servlet = new ROPHessianServlet();
         servlet.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals(location, runtime
@@ -93,7 +93,7 @@ public class ROPHessianServletTest extends TestCase {
         ROPHessianServlet servlet = new ROPHessianServlet();
         servlet.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals(name + ".xml", runtime.getInjector().getInstance(
@@ -121,7 +121,7 @@ public class ROPHessianServletTest extends TestCase {
         ROPHessianServlet servlet = new ROPHessianServlet();
         servlet.init(config);
 
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
         assertEquals(4, runtime.getModules().length);
@@ -148,7 +148,7 @@ public class ROPHessianServletTest extends TestCase {
         ROPHessianServlet servlet = new ROPHessianServlet();
 
         servlet.init(config);
-        Runtime runtime = WebUtil.getCayenneRuntime(context);
+        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertTrue(runtime.getModules()[2] instanceof ROPHessianServlet_ConfigModule);
 
         assertTrue(RemoteService.class.equals(servlet.getAPIClass()));
