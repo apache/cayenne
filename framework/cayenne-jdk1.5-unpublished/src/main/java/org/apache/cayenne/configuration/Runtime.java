@@ -29,7 +29,9 @@ import org.apache.cayenne.di.Module;
 /**
  * A superclass of various Cayenne runtime stacks. A Runtime is the main access point to
  * Cayenne for a user application. It provides a default Cayenne configuration as well as
- * a way to customize this configuration via a built-in dependency injection container.
+ * a way to customize this configuration via a built-in dependency injection (DI)
+ * container. In fact implementation-wise, Runtime object is just a convenience thin
+ * wrapper around a DI container.
  * 
  * @since 3.1
  */

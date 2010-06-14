@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import java.util.Collection;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.spi.DefaultInjector;
 
@@ -34,5 +36,13 @@ public class DIBootstrap {
     public static Injector createInjector(Module... modules)
             throws ConfigurationException {
         return new DefaultInjector(modules);
+    }
+
+    /**
+     * Creates and returns an injector instance working with the set of provided modules.
+     */
+    public static Injector createInjector(Collection<Module> modules) {
+        Module[] moduleArray = modules.toArray(new Module[modules.size()]);
+        return createInjector(moduleArray);
     }
 }
