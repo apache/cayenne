@@ -5,8 +5,8 @@
 	 project-version="6">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.quotemap"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
-	<db-entity name="QUOTE_ADRESS">
-		<db-attribute name="ADRES ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	<db-entity name="QUOTED_ADDRESS">
+		<db-attribute name="ADDRESS ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="City" type="VARCHAR" length="200"/>
 	</db-entity>
 	<db-entity name="quote Person">
@@ -16,7 +16,7 @@
 		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="salary" type="INTEGER"/>
 	</db-entity>
-	<obj-entity name="QuoteAdress" className="org.apache.cayenne.testdo.quotemap.QuoteAdress" dbEntityName="QUOTE_ADRESS">
+	<obj-entity name="QuoteAdress" className="org.apache.cayenne.testdo.quotemap.QuoteAdress" dbEntityName="QUOTED_ADDRESS">
 		<obj-attribute name="city" type="java.lang.String" db-attribute-path="City"/>
 	</obj-entity>
 	<obj-entity name="Quote_Person" className="org.apache.cayenne.testdo.quotemap.Quote_Person" dbEntityName="quote Person">

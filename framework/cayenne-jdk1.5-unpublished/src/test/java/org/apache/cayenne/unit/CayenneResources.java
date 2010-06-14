@@ -241,13 +241,13 @@ public class CayenneResources implements BeanFactoryAware {
     /**
      * Returns DB-specific testing adapter.
      */
-    public AccessStackAdapter getAccessStackAdapter(Class adapterClass) {
+    public AccessStackAdapter getAccessStackAdapter(String adapterClassName) {
         AccessStackAdapter stackAdapter = (AccessStackAdapter) adapterMap
-                .get(adapterClass.getName());
+                .get(adapterClassName);
 
         if (stackAdapter == null) {
             throw new RuntimeException("No AccessStackAdapter for DbAdapter class: "
-                    + adapterClass);
+                    + adapterClassName);
         }
 
         // post init
@@ -274,8 +274,8 @@ public class CayenneResources implements BeanFactoryAware {
      * Creates new DataNode.
      */
     public DataNode newDataNode(String name) throws Exception {
-        AccessStackAdapter adapter = getAccessStackAdapter(Class.forName(connectionInfo
-                .getAdapterClassName()));
+        AccessStackAdapter adapter = getAccessStackAdapter(connectionInfo
+                .getAdapterClassName());
 
         DataNode node = new DataNode(name);
         node.setDataSource(dataSource);

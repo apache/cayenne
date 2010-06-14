@@ -42,6 +42,15 @@ public class DBHelper {
     }
 
     /**
+     * Quotes a SQL identifier as appropriate for the given DB. This implementation
+     * returns the identifier unchanged, while subclasses can implement a custom quoting
+     * strategy.
+     */
+    protected String quote(String sqlIdentifier) {
+        return sqlIdentifier;
+    }
+
+    /**
      * Selects a single row.
      */
     public Object[] select(String table, final String[] columns) throws SQLException {
@@ -51,11 +60,11 @@ public class DBHelper {
         }
 
         StringBuilder sql = new StringBuilder("select ");
-        sql.append(columns[0]);
+        sql.append(quote(columns[0]));
         for (int i = 1; i < columns.length; i++) {
-            sql.append(", ").append(columns[i]);
+            sql.append(", ").append(quote(columns[i]));
         }
-        sql.append(" from ").append(table);
+        sql.append(" from ").append(quote(table));
 
         return new RowTemplate<Object[]>(this) {
 
@@ -91,9 +100,9 @@ public class DBHelper {
         }
 
         StringBuilder sql = new StringBuilder("INSERT INTO ");
-        sql.append(table).append(" (").append(columns[0]);
+        sql.append(quote(table)).append(" (").append(quote(columns[0]));
         for (int i = 1; i < columns.length; i++) {
-            sql.append(", ").append(columns[i]);
+            sql.append(", ").append(quote(columns[i]));
         }
 
         sql.append(") VALUES (?");
@@ -105,7 +114,9 @@ public class DBHelper {
         Connection c = getConnection();
         try {
 
-            PreparedStatement st = c.prepareStatement(sql.toString());
+            String sqlString = sql.toString();
+            UtilityLogger.log(sqlString);
+            PreparedStatement st = c.prepareStatement(sqlString);
             ParameterMetaData parameters = null;
             try {
                 for (int i = 0; i < values.length; i++) {
@@ -137,8 +148,9 @@ public class DBHelper {
     }
 
     public int deleteAll(String table) throws SQLException {
-        String sql = "delete from " + table;
-
+        String sql = "delete from " + quote(table);
+        UtilityLogger.log(sql);
+        
         Connection c = getConnection();
         try {
 
@@ -155,7 +167,7 @@ public class DBHelper {
     }
 
     public int getRowCount(String table) throws SQLException {
-        String sql = "select count(*) from " + table;
+        String sql = "select count(*) from " + quote(table);
 
         return new RowTemplate<Integer>(this) {
 
@@ -168,7 +180,7 @@ public class DBHelper {
     }
 
     public Object getObject(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Object>(this) {
 
@@ -181,7 +193,7 @@ public class DBHelper {
     }
 
     public byte getByte(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Byte>(this) {
 
@@ -194,7 +206,7 @@ public class DBHelper {
     }
 
     public byte[] getBytes(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<byte[]>(this) {
 
@@ -207,7 +219,7 @@ public class DBHelper {
     }
 
     public int getInt(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Integer>(this) {
 
@@ -220,7 +232,7 @@ public class DBHelper {
     }
 
     public long getLong(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Long>(this) {
 
@@ -233,7 +245,7 @@ public class DBHelper {
     }
 
     public double getDouble(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Double>(this) {
 
@@ -246,7 +258,7 @@ public class DBHelper {
     }
 
     public boolean getBoolean(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Boolean>(this) {
 
@@ -264,7 +276,7 @@ public class DBHelper {
     }
 
     public java.sql.Date getSqlDate(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<java.sql.Date>(this) {
 
@@ -277,7 +289,7 @@ public class DBHelper {
     }
 
     public Time getTime(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Time>(this) {
 
@@ -290,7 +302,7 @@ public class DBHelper {
     }
 
     public Timestamp getTimestamp(String table, String column) throws SQLException {
-        final String sql = "select " + column + " from " + table;
+        final String sql = "select " + quote(column) + " from " + quote(table);
 
         return new RowTemplate<Timestamp>(this) {
 

@@ -16,46 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
-abstract class ResultSetTemplate<T> {
+public class ServerCaseDataContextProvider implements Provider<ObjectContext> {
 
-    DBHelper parent;
+    @Inject
+    protected ServerRuntimeFactory runtimeFactory;
 
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
-    }
+    @Inject
+    protected ServerCaseProperties properties;
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
-
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
-
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
+    public ObjectContext get() throws ConfigurationException {
+        return runtimeFactory.get(properties.getConfigurationLocation()).getContext();
     }
 }

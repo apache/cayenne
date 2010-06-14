@@ -91,7 +91,7 @@ public abstract class EventfulScope implements Scope {
      * event dispatching. An exception thrown by any of the listeners stops further event
      * processing and is rethrown.
      */
-    protected void postScopeEvent(
+    public void postScopeEvent(
             Class<? extends Annotation> type,
             Object... eventParameters) {
 

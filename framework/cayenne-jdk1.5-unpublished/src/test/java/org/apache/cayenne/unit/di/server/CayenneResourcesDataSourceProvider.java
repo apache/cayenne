@@ -16,46 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
-abstract class ResultSetTemplate<T> {
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.CayenneResources;
 
-    DBHelper parent;
+public class CayenneResourcesDataSourceProvider implements Provider<DataSource> {
 
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
+    protected CayenneResources resources;
+
+    public CayenneResourcesDataSourceProvider(CayenneResources resources) {
+        this.resources = resources;
     }
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
-
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
-
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
+    public DataSource get() throws ConfigurationException {
+        return resources.getDataSource();
     }
+
 }

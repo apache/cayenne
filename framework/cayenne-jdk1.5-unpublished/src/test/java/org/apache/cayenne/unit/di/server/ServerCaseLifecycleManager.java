@@ -16,46 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import junit.framework.TestCase;
 
-abstract class ResultSetTemplate<T> {
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.di.DefaultUnitTestLifecycleManager;
+import org.apache.cayenne.unit.di.UnitTestScope;
 
-    DBHelper parent;
+public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager {
 
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
+    @Inject
+    protected Provider<ServerCaseProperties> propertiesProvider;
+
+    public ServerCaseLifecycleManager(UnitTestScope scope) {
+        super(scope);
     }
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
+    @Override
+    public <T extends TestCase> void setUp(T testCase) {
 
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
+        UseServerRuntime runtimeName = testCase.getClass().getAnnotation(
+                UseServerRuntime.class);
 
-            PreparedStatement st = c.prepareStatement(sql);
+        String location = runtimeName != null ? runtimeName.value() : null;
+        propertiesProvider.get().setConfigurationLocation(location);
 
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
+        super.setUp(testCase);
     }
 }

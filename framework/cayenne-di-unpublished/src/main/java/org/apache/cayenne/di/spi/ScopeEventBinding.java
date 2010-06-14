@@ -37,6 +37,9 @@ class ScopeEventBinding {
         this.object = object;
         this.eventHandlerMethod = eventHandlerMethod;
         this.argWidth = eventHandlerMethod.getParameterTypes().length;
+
+        // allow public methods of non-public classes to be annotated
+        eventHandlerMethod.setAccessible(true);
     }
 
     void onScopeEvent(Object... eventArgs) {

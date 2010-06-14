@@ -16,46 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.apache.cayenne.di.OnScopeEnd;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.spi.EventfulScope;
 
-abstract class ResultSetTemplate<T> {
+public class UnitTestScope extends EventfulScope {
 
-    DBHelper parent;
-
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
+    public UnitTestScope() {
+        addEventAnnotation(OnScopeEnd.class);
     }
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
-
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
-
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
+    @Override
+    public <T> Provider<T> scope(Provider<T> unscoped) {
+        return new UnitTestScopedProvider<T>(this, unscoped);
     }
+
 }

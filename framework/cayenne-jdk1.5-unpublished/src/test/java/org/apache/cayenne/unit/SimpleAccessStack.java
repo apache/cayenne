@@ -83,7 +83,7 @@ public class SimpleAccessStack implements AccessStack {
     }
 
     public AccessStackAdapter getAdapter(DataNode node) {
-        return resources.getAccessStackAdapter(node.getAdapter().getClass());
+        return resources.getAccessStackAdapter(node.getAdapter().getClass().getName());
     }
 
     protected DataDomain getDomain() {

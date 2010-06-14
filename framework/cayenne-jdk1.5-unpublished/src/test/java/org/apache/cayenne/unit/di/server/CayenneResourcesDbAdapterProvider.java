@@ -16,46 +16,29 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.CayenneResources;
 
-abstract class ResultSetTemplate<T> {
+public class CayenneResourcesDbAdapterProvider implements Provider<DbAdapter> {
 
-    DBHelper parent;
+    protected CayenneResources resources;
 
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
+    public CayenneResourcesDbAdapterProvider(CayenneResources resources) {
+        this.resources = resources;
     }
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
+    public DbAdapter get() throws ConfigurationException {
 
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
+        DataSourceInfo connectionInfo = resources.getConnectionInfo();
+        AccessStackAdapter adapter = resources.getAccessStackAdapter(connectionInfo
+                .getAdapterClassName());
 
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
+        return adapter.getAdapter();
     }
 }

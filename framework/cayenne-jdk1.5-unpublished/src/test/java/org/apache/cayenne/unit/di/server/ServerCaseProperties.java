@@ -16,46 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+/**
+ * Stores various unit test properties. This object should be bound in a unit test scope.
+ */
+public class ServerCaseProperties {
 
-abstract class ResultSetTemplate<T> {
+    protected String configurationLocation;
 
-    DBHelper parent;
-
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
+    public String getConfigurationLocation() {
+        return configurationLocation;
     }
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
-
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
-
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
+    public void setConfigurationLocation(String configurationLocation) {
+        this.configurationLocation = configurationLocation;
     }
 }

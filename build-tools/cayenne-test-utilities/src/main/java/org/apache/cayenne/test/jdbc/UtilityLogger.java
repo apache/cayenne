@@ -18,44 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.test.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-abstract class ResultSetTemplate<T> {
+class UtilityLogger {
 
-    DBHelper parent;
-
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
-    }
-
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
-
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
-
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
+    private static Log logger = LogFactory.getLog(UtilityLogger.class);
+    
+    static void log(String sql) {
+        logger.info(sql);
     }
 }

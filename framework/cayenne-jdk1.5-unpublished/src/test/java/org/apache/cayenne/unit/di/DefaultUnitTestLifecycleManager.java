@@ -16,17 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
+package org.apache.cayenne.unit.di;
 
-/**
- * A superclass of test cases using "inheritance" DataMap for its access stack.
- * 
- */
-public abstract class InheritanceCase extends CayenneCase {
-    public static final String INHERITANCE_ACCESS_STACK = "InheritanceStack";
+import junit.framework.TestCase;
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(INHERITANCE_ACCESS_STACK);
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.OnScopeEnd;
+
+public class DefaultUnitTestLifecycleManager implements UnitTestLifecycleManager {
+
+    @Inject
+    protected Injector injector;
+
+    protected UnitTestScope scope;
+
+    public DefaultUnitTestLifecycleManager(UnitTestScope scope) {
+        this.scope = scope;
+    }
+
+    public <T extends TestCase> void setUp(T testCase) {
+        injector.injectMembers(testCase);
+    }
+
+    @OnScopeEnd
+    public <T extends TestCase> void tearDown(T testCase) {
+        scope.postScopeEvent(OnScopeEnd.class);
     }
 }

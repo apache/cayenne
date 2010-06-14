@@ -16,46 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import junit.framework.TestCase;
 
-abstract class ResultSetTemplate<T> {
+import org.apache.cayenne.di.Injector;
 
-    DBHelper parent;
+/**
+ * A unit test superclass that supports injection of members based on the standard unit
+ * test container.
+ */
+public abstract class DICase extends TestCase {
 
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
+    protected abstract Injector getUnitTestInjector();
+
+    @Override
+    protected final void setUp() throws Exception {
+        getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).setUp(this);
+        setUpAfterInjection();
     }
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
+    @Override
+    protected final void tearDown() throws Exception {
 
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
         try {
-
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
+            tearDownBeforeInjection();
         }
         finally {
-            c.close();
+            getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).tearDown(
+                    this);
         }
+    }
+
+    protected void setUpAfterInjection() throws Exception {
+        // noop
+    }
+
+    protected void tearDownBeforeInjection() throws Exception {
+        // noop
     }
 }

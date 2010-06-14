@@ -16,46 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.jdbc;
+package org.apache.cayenne.unit.di.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.apache.cayenne.di.Inject;
 
-abstract class ResultSetTemplate<T> {
+@UseServerRuntime("xUy")
+public class ServerCaseSelfTest extends ServerCase {
 
-    DBHelper parent;
+    @Inject
+    protected ServerRuntimeFactory runtimeFactory;
+    
+    @Inject
+    protected ServerCaseProperties properties;
 
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
+    public void testSetup_TearDown_Runtime() throws Exception {
+
+        assertNotNull(properties);
+        assertEquals("xUy", properties.getConfigurationLocation());
+        
+        ServerRuntimeFactory localFactory = this.runtimeFactory;
+        assertNotNull(localFactory);
+
+        tearDown();
+
+        setUp();
+        assertSame(localFactory, this.runtimeFactory);
     }
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
-
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
-
-            PreparedStatement st = c.prepareStatement(sql);
-
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
-
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
-    }
 }

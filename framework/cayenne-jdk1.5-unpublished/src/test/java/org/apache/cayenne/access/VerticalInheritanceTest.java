@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -32,40 +33,38 @@ import org.apache.cayenne.testdo.inheritance.vertical.IvRoot;
 import org.apache.cayenne.testdo.inheritance.vertical.IvSub1;
 import org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1;
 import org.apache.cayenne.testdo.inheritance.vertical.IvSub2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class VerticalInheritanceTest extends CayenneCase {
+@UseServerRuntime(ServerCase.INHERTITANCE_VERTICAL_STACK)
+public class VerticalInheritanceTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
 
-        DBHelper dbHelper = getDbHelper();
         dbHelper.deleteAll("IV_SUB1_SUB1");
         dbHelper.deleteAll("IV_SUB1");
         dbHelper.deleteAll("IV_SUB2");
         dbHelper.deleteAll("IV_ROOT");
-        
+
         dbHelper.deleteAll("IV1_SUB1");
         dbHelper.deleteAll("IV1_ROOT");
     }
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack("InheritanceVerticalStack");
-    }
-
     public void testInsert_Root() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
 
         assertEquals(0, ivRootTable.getRowCount());
 
-        IvRoot root = createDataContext().newObject(IvRoot.class);
+        IvRoot root = context.newObject(IvRoot.class);
         root.setName("XyZ");
         root.getObjectContext().commitChanges();
 
@@ -80,7 +79,6 @@ public class VerticalInheritanceTest extends CayenneCase {
     }
 
     public void testInsert_Sub1() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -88,7 +86,7 @@ public class VerticalInheritanceTest extends CayenneCase {
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
 
-        IvSub1 sub1 = createDataContext().newObject(IvSub1.class);
+        IvSub1 sub1 = context.newObject(IvSub1.class);
         sub1.setName("XyZX");
         sub1.getObjectContext().commitChanges();
 
@@ -110,7 +108,7 @@ public class VerticalInheritanceTest extends CayenneCase {
         ivSub1Table.deleteAll();
         ivRootTable.deleteAll();
 
-        IvSub1 sub11 = createDataContext().newObject(IvSub1.class);
+        IvSub1 sub11 = context.newObject(IvSub1.class);
         sub11.setName("XyZXY");
         sub11.setSub1Name("BdE2");
         sub11.getObjectContext().commitChanges();
@@ -129,7 +127,6 @@ public class VerticalInheritanceTest extends CayenneCase {
     }
 
     public void testInsert_Sub1Sub1() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -140,7 +137,7 @@ public class VerticalInheritanceTest extends CayenneCase {
         TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
         ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
 
-        IvSub1Sub1 sub1Sub1 = createDataContext().newObject(IvSub1Sub1.class);
+        IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
         sub1Sub1.setName("XyZN");
         sub1Sub1.setSub1Name("mDA");
         sub1Sub1.setSub1Sub1Name("3DQa");
@@ -169,7 +166,6 @@ public class VerticalInheritanceTest extends CayenneCase {
     }
 
     public void testSelectQuery_SuperSub() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -183,7 +179,7 @@ public class VerticalInheritanceTest extends CayenneCase {
         ivSub1Table.insert(2, "xSUB1");
 
         SelectQuery query = new SelectQuery(IvRoot.class);
-        List<IvRoot> results = createDataContext().performQuery(query);
+        List<IvRoot> results = context.performQuery(query);
 
         assertEquals(2, results.size());
 
@@ -209,7 +205,6 @@ public class VerticalInheritanceTest extends CayenneCase {
     }
 
     public void testSelectQuery_DeepAndWide() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -237,7 +232,7 @@ public class VerticalInheritanceTest extends CayenneCase {
         ivSub2Table.insert(4, "xSUB2");
 
         SelectQuery query = new SelectQuery(IvRoot.class);
-        List<IvRoot> results = createDataContext().performQuery(query);
+        List<IvRoot> results = context.performQuery(query);
 
         assertEquals(4, results.size());
 
@@ -276,7 +271,6 @@ public class VerticalInheritanceTest extends CayenneCase {
     }
 
     public void testSelectQuery_MiddleLeaf() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -304,7 +298,7 @@ public class VerticalInheritanceTest extends CayenneCase {
         ivSub2Table.insert(4, "xSUB2");
 
         SelectQuery query = new SelectQuery(IvSub1.class);
-        List<IvRoot> results = createDataContext().performQuery(query);
+        List<IvRoot> results = context.performQuery(query);
 
         assertEquals(2, results.size());
 
@@ -332,7 +326,6 @@ public class VerticalInheritanceTest extends CayenneCase {
     }
 
     public void testDelete_Mix() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
         ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -361,7 +354,6 @@ public class VerticalInheritanceTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(IvRoot.class);
 
-        ObjectContext context = createDataContext();
         List<IvRoot> results = context.performQuery(query);
 
         assertEquals(4, results.size());
@@ -391,7 +383,6 @@ public class VerticalInheritanceTest extends CayenneCase {
     }
 
     public void testSelectQuery_AttributeOverrides() throws Exception {
-        DBHelper dbHelper = getDbHelper();
 
         TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");
         iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -405,7 +396,7 @@ public class VerticalInheritanceTest extends CayenneCase {
         iv1Sub1Table.insert(2, "xSUB1");
 
         SelectQuery query = new SelectQuery(Iv1Root.class);
-        List<Iv1Root> results = createDataContext().performQuery(query);
+        List<Iv1Root> results = context.performQuery(query);
 
         assertEquals(2, results.size());
 
