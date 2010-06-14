@@ -28,23 +28,82 @@ import java.util.Set;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLConditionsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLConditionsTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+    }
+
+    protected void createCollectionDataSet() throws Exception {
+        tArtist.insert(33001, "B");
+        tArtist.insert(33002, "A");
+        tArtist.insert(33003, "D");
+
+        tPainting.insert(33009, 33001, "X", 5000);
+        tPainting.insert(33010, 33001, "Y", 5000);
+        tPainting.insert(33011, 33002, "Z", 5000);
+    }
+
+    protected void createLikeDataSet() throws Exception {
+        tPainting.insert(33001, null, "ABAAC", 3000);
+        tPainting.insert(33002, null, "ADDDD", 4000);
+        tPainting.insert(33003, null, "BDDDD", 5000);
+        tPainting.insert(33004, null, "BBDDDD", 5000);
+        tPainting.insert(33005, null, "_DDDD", 5000);
+    }
+
+    protected void createGreaterThanDataSet() throws Exception {
+        createLikeDataSet();
+    }
+
+    protected void createInDataSet() throws Exception {
+        tPainting.insert(33006, null, "A", 5000);
+        tPainting.insert(33007, null, "B", 5000);
+        tPainting.insert(33008, null, "C", 5000);
+    }
+
+    protected void createInSubqueryDataSet() throws Exception {
+        tPainting.insert(33012, null, "C", 5000);
+        tPainting.insert(33013, null, "D", 5000);
+        tPainting.insert(33014, null, "C", 5000);
     }
 
     public void testDateParameter() throws Exception {
-        createTestData("prepareCollection");
-
-        ObjectContext context = createDataContext();
+        createCollectionDataSet();
 
         SelectQuery q = new SelectQuery(Artist.class);
         List<Artist> allArtists = context.performQuery(q);
@@ -64,7 +123,7 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testArithmetics() throws Exception {
-        createTestData("prepareLike");
+        createLikeDataSet();
 
         // TODO: andrus 02/25/2008 - fails on HSQLDB / succeeds on MySQL. HSQLDB error is
         // "Unresolved parameter type : as both operands of aritmetic operator in
@@ -89,12 +148,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testLike1() throws Exception {
-        createTestData("prepareLike");
+        createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'A%C'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -108,12 +167,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testNotLike() throws Exception {
-        createTestData("prepareLike");
+        createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT LIKE 'A%C'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(4, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -127,12 +186,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testLike2() throws Exception {
-        createTestData("prepareLike");
+        createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE '_DDDD'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(3, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -148,12 +207,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testLikeEscape() throws Exception {
-        createTestData("prepareLike");
+        createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'X_DDDD' ESCAPE 'X'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -167,12 +226,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testIn() throws Exception {
-        createTestData("prepareIn");
+        createInDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ('A', 'B')";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -187,12 +246,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testNotIn() throws Exception {
-        createTestData("prepareIn");
+        createInDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT IN ('A', 'B')";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -206,14 +265,14 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testInSubquery() throws Exception {
-        createTestData("prepareInSubquery");
+        createInSubqueryDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ("
                 + "SELECT p1.paintingTitle FROM Painting p1 WHERE p1.paintingTitle = 'C'"
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -228,12 +287,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testCollectionEmpty() throws Exception {
-        createTestData("prepareCollection");
+        createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -247,12 +306,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testCollectionNotEmpty() throws Exception {
-        createTestData("prepareCollection");
+        createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -267,12 +326,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testCollectionNotEmptyExplicitDistinct() throws Exception {
-        createTestData("prepareCollection");
+        createCollectionDataSet();
 
         String ejbql = "SELECT DISTINCT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -287,17 +346,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testCollectionMemberOfParameter() throws Exception {
-        createTestData("prepareCollection");
+        createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE :x MEMBER OF a.paintingArray";
 
-        ObjectContext context = createDataContext();
-
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter("x", Cayenne.objectForPK(
-                context,
-                Painting.class,
-                33010));
+        query.setParameter("x", Cayenne.objectForPK(context, Painting.class, 33010));
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
@@ -312,11 +366,9 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testGreaterOrEquals() throws Exception {
-        createTestData("prepareGreaterThan");
+        createGreaterThanDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice >= :estimatedPrice";
-
-        ObjectContext context = createDataContext();
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("estimatedPrice", new BigDecimal(4000));
@@ -325,11 +377,9 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testLessOrEquals() throws Exception {
-        createTestData("prepareGreaterThan");
+        createGreaterThanDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice <= :estimatedPrice";
-
-        ObjectContext context = createDataContext();
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("estimatedPrice", new BigDecimal(4000));
@@ -338,17 +388,12 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testCollectionNotMemberOfParameter() throws Exception {
-        createTestData("prepareCollection");
+        createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE :x NOT MEMBER a.paintingArray";
 
-        ObjectContext context = createDataContext();
-
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter("x", Cayenne.objectForPK(
-                context,
-                Painting.class,
-                33010));
+        query.setParameter("x", Cayenne.objectForPK(context, Painting.class, 33010));
         List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
@@ -364,13 +409,13 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testCollectionMemberOfThetaJoin() throws Exception {
-        createTestData("prepareCollection");
+        createCollectionDataSet();
 
         String ejbql = "SELECT p FROM Painting p, Artist a "
                 + "WHERE p MEMBER OF a.paintingArray AND a.artistName = 'B'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<Object>();
@@ -383,4 +428,5 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33009)));
         assertTrue(ids.contains(new Integer(33010)));
     }
+
 }

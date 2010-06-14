@@ -30,14 +30,15 @@ public interface Injector {
 
     /**
      * Returns a service instance bound in the container for a specific type. Throws
-     * {@link DIException} if the type is not bound, or an instance can not be created.
+     *{@link ConfigurationException} if the type is not bound, or an instance can not be
+     * created.
      */
     <T> T getInstance(Class<T> type) throws ConfigurationException;
 
     /**
      * Returns a service instance bound in the container for a specific binding key.
-     * Throws {@link DIException} if the key is not bound, or an instance can not be
-     * created.
+     * Throws {@link ConfigurationException} if the key is not bound, or an instance can
+     * not be created.
      */
     <T> T getInstance(Key<T> key) throws ConfigurationException;
 

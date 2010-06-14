@@ -16,35 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.unit.di.server;
 
-package org.apache.cayenne.query;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
-import java.util.Collections;
+public class ServerCaseDataNodeProvider implements Provider<DataNode> {
 
-import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.unit.CayenneCase;
+    @Inject
+    protected ServerRuntimeFactory runtimeFactory;
 
-public abstract class SelectQueryBase extends CayenneCase {
+    @Inject
+    protected ServerCaseProperties properties;
 
-    protected SelectQuery query;
-    protected MockOperationObserver opObserver;
-
-    @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
-        populateTables();
-        query = new SelectQuery();
-        opObserver = new MockOperationObserver();
+    public DataNode get() throws ConfigurationException {
+        DataDomain channel = (DataDomain) runtimeFactory.get(
+                properties.getConfigurationLocation()).getChannel();
+        return channel.getDataNodes().iterator().next();
     }
-
-    protected void performQuery() throws Exception {
-        // run query
-        getDomain().performQueries(Collections.singletonList(getQuery()), opObserver);
-    }
-
-    protected Query getQuery() {
-        return query;
-    }
-
-    protected abstract void populateTables() throws java.lang.Exception;
 }

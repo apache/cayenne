@@ -46,6 +46,10 @@ public class TableHelper {
         dbHelper.deleteAll(tableName);
         return this;
     }
+    
+    public String getTableName() {
+        return tableName;
+    }
 
     /**
      * Sets columns that will be implicitly used in subsequent inserts and selects.

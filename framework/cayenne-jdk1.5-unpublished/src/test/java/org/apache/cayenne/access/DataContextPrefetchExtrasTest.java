@@ -37,7 +37,6 @@ import org.apache.cayenne.unit.CayenneCase;
 
 /**
  * Test prefetching of various obscure cases.
- * 
  */
 public class DataContextPrefetchExtrasTest extends CayenneCase {
 
@@ -64,7 +63,7 @@ public class DataContextPrefetchExtrasTest extends CayenneCase {
         assertEquals("n1", pk1.getOtherCol());
         List toMany = (List) pk1.readPropertyDirectly("charFKs");
         assertNotNull(toMany);
-        assertFalse(((ValueHolder)toMany).isFault());
+        assertFalse(((ValueHolder) toMany).isFault());
         assertEquals(3, toMany.size());
 
         CharFkTestEntity fk1 = (CharFkTestEntity) toMany.get(0);

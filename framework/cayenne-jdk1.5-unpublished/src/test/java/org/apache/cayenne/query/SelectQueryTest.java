@@ -19,18 +19,19 @@
 
 package org.apache.cayenne.query;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -38,25 +39,73 @@ import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SelectQueryTest extends SelectQueryBase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SelectQueryTest extends ServerCase {
 
-    private static final int _artistCount = 20;
-    private static final int _clobCount = 2;
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected AccessStackAdapter accessStackAdapter;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+    }
+
+    protected void createClobDataSet() throws Exception {
+        TableHelper tClobTest = new TableHelper(dbHelper, "CLOB_TEST");
+        tClobTest.setColumns("CLOB_TEST_ID", "CLOB_COL");
+
+        tClobTest.deleteAll();
+
+        tClobTest.insert(1, "clob1");
+        tClobTest.insert(2, "clob2");
+    }
+
+    protected void createArtistsDataSet() throws Exception {
+        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+
+        long dateBase = System.currentTimeMillis();
+
+        for (int i = 1; i <= 20; i++) {
+            tArtist.insert(i, "artist" + i, new java.sql.Date(dateBase + 10000 * i));
+        }
+    }
+
+    protected void createArtistsWildcardDataSet() throws Exception {
+        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tArtist.insert(1, "_X");
+        tArtist.insert(2, "Y_");
+    }
 
     public void testFetchLimit() throws Exception {
-        query.setRoot(Artist.class);
-        query.setFetchLimit(7);
-        performQuery();
+        createArtistsDataSet();
 
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.setFetchLimit(7);
+
+        List objects = context.performQuery(query);
         assertNotNull(objects);
         assertEquals(7, objects.size());
     }
 
     public void testFetchOffset() throws Exception {
-        ObjectContext context = createDataContext();
+
+        createArtistsDataSet();
 
         int totalRows = context.performQuery(new SelectQuery(Artist.class)).size();
 
@@ -69,10 +118,12 @@ public class SelectQueryTest extends SelectQueryBase {
         assertEquals("artist6", results.get(0).getArtistName());
     }
 
-    public void testDbEntityRoot() {
-        ObjectContext context = createDataContext();
+    public void testDbEntityRoot() throws Exception {
 
-        SelectQuery query = new SelectQuery(getDbEntity("ARTIST"));
+        createArtistsDataSet();
+        DbEntity artistDbEntity = context.getEntityResolver().getDbEntity("ARTIST");
+
+        SelectQuery query = new SelectQuery(artistDbEntity);
         List results = context.performQuery(query);
 
         assertEquals(20, results.size());
@@ -80,8 +131,7 @@ public class SelectQueryTest extends SelectQueryBase {
     }
 
     public void testFetchLimitWithOffset() throws Exception {
-        ObjectContext context = createDataContext();
-
+        createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
         query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING);
         query.setFetchOffset(15);
@@ -93,314 +143,259 @@ public class SelectQueryTest extends SelectQueryBase {
     }
 
     public void testFetchOffsetWithQualifier() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
         query.setFetchOffset(5);
-        performQuery();
-        int size = opObserver.rowsForQuery(query).size();
 
-        SelectQuery sizeQ = new SelectQuery();
-        sizeQ.setRoot(Artist.class);
+        List objects = context.performQuery(query);
+        int size = objects.size();
+
+        SelectQuery sizeQ = new SelectQuery(Artist.class);
         sizeQ.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
-        query = sizeQ;
-        performQuery();
-        int sizeAll = opObserver.rowsForQuery(query).size();
+        List objects1 = context.performQuery(sizeQ);
+        int sizeAll = objects1.size();
         assertEquals(size, sizeAll - 5);
     }
 
     public void testFetchLimitWithQualifier() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
         query.setFetchLimit(7);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
+        List objects = context.performQuery(query);
         assertEquals(7, objects.size());
     }
 
     public void testSelectAllObjectsRootEntityName() throws Exception {
-        query.setRoot(Artist.class);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
-        assertEquals(_artistCount, objects.size());
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery("Artist");
+        List objects = context.performQuery(query);
+        assertEquals(20, objects.size());
     }
 
     public void testSelectAllObjectsRootClass() throws Exception {
-        query.setRoot(Artist.class);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
-        assertEquals(_artistCount, objects.size());
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
+        List objects = context.performQuery(query);
+        assertEquals(20, objects.size());
     }
 
     public void testSelectAllObjectsRootObjEntity() throws Exception {
-        query.setRoot(this.getDomain().getEntityResolver().lookupObjEntity(Artist.class));
-        performQuery();
+        createArtistsDataSet();
+        ObjEntity artistEntity = context
+                .getEntityResolver()
+                .lookupObjEntity(Artist.class);
+        SelectQuery query = new SelectQuery(artistEntity);
 
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
-        assertEquals(_artistCount, objects.size());
+        List objects = context.performQuery(query);
+        assertEquals(20, objects.size());
     }
 
     public void testSelectLikeExactMatch() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "artist1");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
     public void testSelectNotLikeSingleWildcardMatch() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.notLikeExp("artistName", "artist11%");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertEquals(_artistCount - 1, objects.size());
+        List objects = context.performQuery(query);
+        assertEquals(19, objects.size());
     }
 
     public void testSelectNotLikeIgnoreCaseSingleWildcardMatch() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.notLikeIgnoreCaseExp(
                 "artistName",
                 "aRtIsT11%");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertEquals(_artistCount - 1, objects.size());
+        List objects = context.performQuery(query);
+        assertEquals(19, objects.size());
     }
 
     public void testSelectLikeCaseSensitive() throws Exception {
-        if (!getAccessStackAdapter().supportsCaseSensitiveLike()) {
+        if (!accessStackAdapter.supportsCaseSensitiveLike()) {
             return;
         }
 
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "aRtIsT%");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
     public void testSelectLikeSingleWildcardMatch() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "artist11%");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
     public void testSelectLikeSingleWildcardMatchAndEscape() throws Exception {
 
-        TableHelper artistHelper = new TableHelper(getDbHelper(), "ARTIST");
-        artistHelper.deleteAll();
-        artistHelper.setColumns("ARTIST_ID", "ARTIST_NAME");
-        artistHelper.insert(1, "_X");
-        artistHelper.insert(2, "Y_");
+        createArtistsWildcardDataSet();
 
         SelectQuery query = new SelectQuery(Artist.class);
         query.andQualifier(ExpressionFactory.likeExp("artistName", "=_%", '='));
- 
-        List objects = createDataContext().performQuery(query);
+
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
     public void testSelectLikeMultipleWildcardMatch() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "artist1%");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
+        List objects = context.performQuery(query);
         assertEquals(11, objects.size());
     }
 
     /** Test how "like ignore case" works when using uppercase parameter. */
     public void testSelectLikeIgnoreCaseObjects1() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeIgnoreCaseExp("artistName", "ARTIST%");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
-        assertEquals(_artistCount, objects.size());
+        List objects = context.performQuery(query);
+        assertEquals(20, objects.size());
     }
 
     /** Test how "like ignore case" works when using lowercase parameter. */
     public void testSelectLikeIgnoreCaseObjects2() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeIgnoreCaseExp("artistName", "artist%");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
-        assertNotNull(objects);
-        assertEquals(_artistCount, objects.size());
+        List objects = context.performQuery(query);
+        assertEquals(20, objects.size());
     }
 
     /** Test how "like ignore case" works when using uppercase parameter. */
     public void testSelectLikeIgnoreCaseClob() throws Exception {
-        if (accessStack.getAdapter(getNode()).supportsLobs()) {
-            query.setRoot(ClobTestEntity.class);
+        if (accessStackAdapter.supportsLobs()) {
+            createClobDataSet();
+            SelectQuery query = new SelectQuery(ClobTestEntity.class);
             Expression qual = ExpressionFactory.likeIgnoreCaseExp("clobCol", "clob%");
             query.setQualifier(qual);
-            performQuery();
-
-            // check query results
-            List objects = opObserver.rowsForQuery(query);
-            assertNotNull(objects);
-            assertEquals(_clobCount, objects.size());
+            List objects = context.performQuery(query);
+            assertEquals(2, objects.size());
         }
     }
 
     public void testSelectIn() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName in ('artist1', 'artist2')");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(2, objects.size());
     }
 
     public void testSelectParameterizedIn() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName in $list");
         query.setQualifier(qual);
         query = query.queryWithParameters(Collections.singletonMap("list", new Object[] {
                 "artist1", "artist2"
         }));
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(2, objects.size());
     }
 
     public void testSelectParameterizedEmptyIn() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName in $list");
         query.setQualifier(qual);
         query = query.queryWithParameters(Collections.singletonMap(
                 "list",
                 new Object[] {}));
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
     public void testSelectParameterizedEmptyNotIn() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName not in $list");
         query.setQualifier(qual);
         query = query.queryWithParameters(Collections.singletonMap(
                 "list",
                 new Object[] {}));
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
     public void testSelectEmptyIn() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.inExp("artistName");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
     public void testSelectEmptyNotIn() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.notInExp("artistName");
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
     public void testSelectBooleanTrue() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.expTrue();
         qual = qual.andExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
     public void testSelectBooleanNotTrueOr() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.expTrue();
         qual = qual.notExp();
         qual = qual.orExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
     public void testSelectBooleanFalse() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.expFalse();
         qual = qual.andExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
     public void testSelectBooleanFalseOr() throws Exception {
-        query.setRoot(Artist.class);
+        createArtistsDataSet();
+        SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.expFalse();
         qual = qual.orExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        performQuery();
-
-        // check query results
-        List objects = opObserver.rowsForQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -409,7 +404,7 @@ public class SelectQueryTest extends SelectQueryBase {
      * prefetch scenario.
      */
     public void testRouteWithPrefetches() {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = context.getEntityResolver();
         MockQueryRouter router = new MockQueryRouter();
 
         SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
@@ -446,7 +441,7 @@ public class SelectQueryTest extends SelectQueryBase {
      */
     public void testRouteQueryWithPrefetchesNoReverse() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = context.getEntityResolver();
         ObjEntity paintingEntity = resolver.lookupObjEntity(Painting.class);
         ObjEntity galleryEntity = resolver.lookupObjEntity(Gallery.class);
         ObjEntity artistExhibitEntity = resolver.lookupObjEntity(ArtistExhibit.class);
@@ -500,74 +495,27 @@ public class SelectQueryTest extends SelectQueryBase {
 
         // test how prefetches are resolved in this case - this was a stumbling block for
         // a while
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = context.getEntityResolver();
         MockQueryRouter router = new MockQueryRouter();
         q.route(router, resolver, null);
         assertEquals(2, router.getQueryCount());
     }
 
-    @Override
-    protected void populateTables() throws java.lang.Exception {
-        String insertArtist = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (?,?,?)";
-        Connection conn = getConnection();
-
-        try {
-            conn.setAutoCommit(false);
-
-            PreparedStatement stmt = conn.prepareStatement(insertArtist);
-            long dateBase = System.currentTimeMillis();
-
-            for (int i = 1; i <= _artistCount; i++) {
-                stmt.setInt(1, i);
-                stmt.setString(2, "artist" + i);
-                stmt.setDate(3, new java.sql.Date(dateBase + 1000 * 60 * 60 * 24 * i));
-                stmt.executeUpdate();
-            }
-
-            stmt.close();
-            conn.commit();
-        }
-        finally {
-            conn.close();
-        }
-
-        if (accessStack.getAdapter(getNode()).supportsLobs()) {
-            String insertClob = "INSERT INTO CLOB_TEST (CLOB_TEST_ID, CLOB_COL) VALUES (?,?)";
-            Connection connection = getConnection();
-
-            try {
-                connection.setAutoCommit(false);
-
-                PreparedStatement stmt = connection.prepareStatement(insertClob);
-
-                for (int i = 1; i <= _clobCount; i++) {
-                    stmt.setInt(1, i);
-                    stmt.setString(2, "clob" + i);
-                    stmt.executeUpdate();
-                }
-
-                stmt.close();
-                connection.commit();
-            }
-            finally {
-                connection.close();
-            }
-        }
-    }
-
-    public void testLeftJoinAndPrefetchToMany() {
+    public void testLeftJoinAndPrefetchToMany() throws Exception {
+        createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
                 "paintingArray+.toGallery",
                 null));
         query.addPrefetch("artistExhibitArray");
-        createDataContext().performQuery(query);
+        context.performQuery(query);
     }
 
-    public void testLeftJoinAndPrefetchToOne() {
+    public void testLeftJoinAndPrefetchToOne() throws Exception {
+        createArtistsDataSet();
         SelectQuery query = new SelectQuery(Painting.class, ExpressionFactory.matchExp(
                 "toArtist+.artistName",
                 null));
         query.addPrefetch("toGallery");
-        createDataContext().performQuery(query);
+        context.performQuery(query);
     }
 }

@@ -79,7 +79,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     public DataDomain get() throws ConfigurationException {
 
         try {
-            return createDataDomain();
+            return createAndInitDataDomain();
         }
         catch (ConfigurationException e) {
             throw e;
@@ -89,8 +89,12 @@ public class DataDomainProvider implements Provider<DataDomain> {
                     .getMessage());
         }
     }
+    
+    protected DataDomain createDataDomain(String name) {
+        return new DataDomain(name);
+    }
 
-    protected DataDomain createDataDomain() throws Exception {
+    protected DataDomain createAndInitDataDomain() throws Exception {
         String configurationLocation = configurationProperties
                 .get(ServerModule.CONFIGURATION_LOCATION);
 
@@ -144,7 +148,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         DataChannelDescriptor descriptor = tree.getRootNode();
-        DataDomain dataDomain = new DataDomain(descriptor.getName());
+        DataDomain dataDomain = createDataDomain(descriptor.getName());
         injector.injectMembers(dataDomain);
 
         dataDomain.initWithProperties(descriptor.getProperties());

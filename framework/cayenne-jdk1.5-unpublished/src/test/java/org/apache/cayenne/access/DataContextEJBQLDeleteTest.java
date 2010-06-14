@@ -21,29 +21,70 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.testdo.testmap.MeaningfulPKTest1;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerRuntimeFactory;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLDeleteTest extends CayenneCase {
-    
-    protected DataContext context;
-    
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLDeleteTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected ServerRuntimeFactory runtimeFactory;
+
+    protected TableHelper tPainting;
+
+    protected TableHelper tMeaningfulPKTest1Table;
+
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+
+        tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
+        tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");
     }
-    
+
+    protected void createPaintingsDataSet() throws Exception {
+        tPainting.insert(33001, null, "P1", 3000);
+        tPainting.insert(33002, null, "P2", 5000);
+    }
+
+    protected void createMeaningfulPKDataSet() throws Exception {
+
+        for (int i = 1; i <= 33; i++) {
+            tMeaningfulPKTest1Table.insert(i, "a" + i);
+        }
+    }
+
     public void testDeleteNoIdVar() throws Exception {
-        createTestData("prepare");
+        createPaintingsDataSet();
 
         String ejbql = "delete from Painting";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = createDataContext().performGenericQuery(query);
+        QueryResponse result = context.performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
@@ -52,12 +93,12 @@ public class DataContextEJBQLDeleteTest extends CayenneCase {
     }
 
     public void testDeleteNoQualifier() throws Exception {
-        createTestData("prepare");
+        createPaintingsDataSet();
 
         String ejbql = "delete from Painting AS p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = createDataContext().performGenericQuery(query);
+        QueryResponse result = context.performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
@@ -66,52 +107,41 @@ public class DataContextEJBQLDeleteTest extends CayenneCase {
     }
 
     public void testDeleteSameEntityQualifier() throws Exception {
-        createTestData("prepare");
+        createPaintingsDataSet();
 
         String ejbql = "delete from Painting AS p WHERE p.paintingTitle = 'P2'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = createDataContext().performGenericQuery(query);
+        QueryResponse result = context.performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
 
-        assertNotNull(Cayenne
-                .objectForPK(createDataContext(), Painting.class, 33001));
-        assertNull(Cayenne
-                .objectForPK(createDataContext(), Painting.class, 33002));
+        ObjectContext freshContext = runtimeFactory.get(TESTMAP_PROJECT).getContext();
+
+        assertNotNull(Cayenne.objectForPK(freshContext, Painting.class, 33001));
+        assertNull(Cayenne.objectForPK(freshContext, Painting.class, 33002));
     }
-    
+
     public void testDeleteIdVar() throws Exception {
-        insertValue();
-        
+
+        createMeaningfulPKDataSet();
+
         EJBQLQuery q = new EJBQLQuery("select m.pkAttribute from MeaningfulPKTest1 m");
-    
-        List<Integer> id = createDataContext().performQuery(q);
-       
+
+        List<Integer> id = context.performQuery(q);
+
         String ejbql = "delete from MeaningfulPKTest1 m WHERE m.pkAttribute in (:id)";
-         
+
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("id", id);
-        QueryResponse result = createDataContext().performGenericQuery(query);
-    
+        QueryResponse result = context.performGenericQuery(query);
+
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
-        assertEquals(420, count[0]);
-
-    }
-    
-    public void insertValue(){
-        MeaningfulPKTest1 obj ;
-        
-        for(int i=0;i<420;i++){
-            obj = (MeaningfulPKTest1) context.newObject("MeaningfulPKTest1");
-            obj.setPkAttribute(new Integer(i));
-            obj.setDescr("a" + i);
-            context.commitChanges();
-        }
+        assertEquals(33, count[0]);
     }
 }

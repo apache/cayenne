@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.dba.DbAdapter;
@@ -37,8 +38,14 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
     protected DbAdapter adapter;
 
     @Override
-    protected DataDomain createDataDomain() throws Exception {
-        DataDomain domain = super.createDataDomain();
+    protected DataDomain createDataDomain(String name) {
+        return new UnitTestDomain(name);
+    }
+
+    @Override
+    protected DataDomain createAndInitDataDomain() throws Exception {
+
+        DataDomain domain = super.createAndInitDataDomain();
 
         // add nodes dynamically
         // TODO: andrus, 06/14/2010 should probably map them in XML to avoid this mess...

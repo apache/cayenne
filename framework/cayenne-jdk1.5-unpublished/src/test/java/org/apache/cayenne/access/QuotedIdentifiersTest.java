@@ -33,7 +33,7 @@ import org.apache.cayenne.testdo.quotemap.Quote_Person;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime(ServerCase.QUOTED_IDENTIFIERS_STACK)
+@UseServerRuntime(ServerCase.QUOTED_IDENTIFIERS_PROJECT)
 public class QuotedIdentifiersTest extends ServerCase {
 
     @Inject

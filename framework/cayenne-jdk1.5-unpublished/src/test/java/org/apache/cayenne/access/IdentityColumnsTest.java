@@ -24,11 +24,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.GeneratedColumnCompKey;
 import org.apache.cayenne.testdo.testmap.GeneratedColumnCompMaster;
@@ -37,16 +41,36 @@ import org.apache.cayenne.testdo.testmap.GeneratedColumnTest2;
 import org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity;
 import org.apache.cayenne.testdo.testmap.GeneratedF1;
 import org.apache.cayenne.testdo.testmap.GeneratedF2;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class IdentityColumnsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class IdentityColumnsTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected DbAdapter adapter;
+
+    @Inject
+    protected DataNode node;
+
+    protected TableHelper joinTable;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        // TODO: extract in a separate DataMap?
+        dbHelper.deleteAll("GENERATED_JOIN");
+        dbHelper.deleteAll("GENERATED_F1");
+        dbHelper.deleteAll("GENERATED_F2");
+        dbHelper.deleteAll("GENERATED_COLUMN_DEP");
+        dbHelper.deleteAll("GENERATED_COLUMN_TEST");
+
+        joinTable = new TableHelper(dbHelper, "GENERATED_JOIN");
     }
 
     /**
@@ -54,7 +78,7 @@ public class IdentityColumnsTest extends CayenneCase {
      * column.
      */
     public void testCAY823() throws Exception {
-        DataContext context = createDataContext();
+
         GeneratedColumnTestEntity idObject = context
                 .newObject(GeneratedColumnTestEntity.class);
 
@@ -76,7 +100,7 @@ public class IdentityColumnsTest extends CayenneCase {
     }
 
     public void testNewObject() throws Exception {
-        DataContext context = createDataContext();
+
         GeneratedColumnTestEntity idObject = context
                 .newObject(GeneratedColumnTestEntity.class);
 
@@ -100,20 +124,13 @@ public class IdentityColumnsTest extends CayenneCase {
     }
 
     public void testGeneratedJoinInFlattenedRelationship() throws Exception {
-        String joinTableName = "GENERATED_JOIN";
-
-        TableHelper joinTable = new TableHelper(getDbHelper(), joinTableName);
-        joinTable.deleteAll();
-
-        DataContext context = createDataContext();
 
         // before saving objects, let's manually access PKGenerator to get a base PK value
         // for comparison
-        DbEntity joinTableEntity = context.getEntityResolver().getDbEntity(joinTableName);
+        DbEntity joinTableEntity = context.getEntityResolver().getDbEntity(
+                joinTable.getTableName());
         DbAttribute pkAttribute = (DbAttribute) joinTableEntity.getAttribute("ID");
-        Number pk = (Number) getNode().getAdapter().getPkGenerator().generatePk(
-                getNode(),
-                pkAttribute);
+        Number pk = (Number) adapter.getPkGenerator().generatePk(node, pkAttribute);
 
         GeneratedF1 f1 = context.newObject(GeneratedF1.class);
         GeneratedF2 f2 = context.newObject(GeneratedF2.class);
@@ -127,7 +144,7 @@ public class IdentityColumnsTest extends CayenneCase {
         // this is a leap of faith that autoincrement-based IDs will not match
         // PkGenertor provided ids... This sorta works though if pk generator has a 200
         // base value
-        if (getNode().getAdapter().supportsGeneratedKeys()) {
+        if (adapter.supportsGeneratedKeys()) {
             assertFalse("Looks like auto-increment wasn't used for the join table. ID: "
                     + id, id == pk.intValue() + 1);
         }
@@ -140,7 +157,7 @@ public class IdentityColumnsTest extends CayenneCase {
      * Tests CAY-422 bug.
      */
     public void testUnrelatedUpdate() throws Exception {
-        DataContext context = createDataContext();
+
         GeneratedColumnTestEntity m = context.newObject(GeneratedColumnTestEntity.class);
 
         m.setName("m");
@@ -166,7 +183,6 @@ public class IdentityColumnsTest extends CayenneCase {
      * CAY-341 for the original bug.
      */
     public void testMultipleNewObjectsSeparateTables() throws Exception {
-        DataContext context = createDataContext();
 
         GeneratedColumnTestEntity idObject1 = context
                 .newObject(GeneratedColumnTestEntity.class);
@@ -179,7 +195,6 @@ public class IdentityColumnsTest extends CayenneCase {
     }
 
     public void testMultipleNewObjects() throws Exception {
-        DataContext context = createDataContext();
 
         String[] names = new String[] {
                 "n1_" + System.currentTimeMillis(), "n2_" + System.currentTimeMillis(),
@@ -217,7 +232,7 @@ public class IdentityColumnsTest extends CayenneCase {
     }
 
     public void testCompoundPKWithGeneratedColumn() throws Exception {
-        if (getAccessStackAdapter().getAdapter().supportsGeneratedKeys()) {
+        if (adapter.supportsGeneratedKeys()) {
             // only works for generated keys, as the entity tested has one Cayenne
             // auto-pk and one generated key
 
@@ -225,7 +240,6 @@ public class IdentityColumnsTest extends CayenneCase {
             String depName1 = "dep1_" + System.currentTimeMillis();
             String depName2 = "dep2_" + System.currentTimeMillis();
 
-            DataContext context = createDataContext();
             GeneratedColumnCompMaster master = context
                     .newObject(GeneratedColumnCompMaster.class);
             master.setName(masterName);
@@ -268,7 +282,7 @@ public class IdentityColumnsTest extends CayenneCase {
     }
 
     public void testUpdateDependentWithNewMaster() throws Exception {
-        DataContext context = createDataContext();
+
         GeneratedColumnTestEntity master1 = context
                 .newObject(GeneratedColumnTestEntity.class);
         master1.setName("aaa");
@@ -308,7 +322,7 @@ public class IdentityColumnsTest extends CayenneCase {
     }
 
     public void testPropagateToDependent() throws Exception {
-        DataContext context = createDataContext();
+
         GeneratedColumnTestEntity idObject = context
                 .newObject(GeneratedColumnTestEntity.class);
         idObject.setName("aaa");

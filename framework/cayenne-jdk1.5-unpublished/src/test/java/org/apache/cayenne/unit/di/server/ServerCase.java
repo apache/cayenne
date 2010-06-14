@@ -21,12 +21,14 @@ package org.apache.cayenne.unit.di.server;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.DICase;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
@@ -37,9 +39,10 @@ public class ServerCase extends DICase {
     // known runtimes... unit tests may reuse these with @UseServerRuntime annotation or
     // can define their own on the fly (TODO: how would that work with the global schema
     // setup?)
-    public static final String INHERTITANCE_SINGLE_TABLE1_STACK = "cayenne-inheritance-single-table1.xml";
-    public static final String INHERTITANCE_VERTICAL_STACK = "cayenne-inheritance-vertical.xml";
-    public static final String QUOTED_IDENTIFIERS_STACK = "cayenne-quoted-identifiers.xml";
+    public static final String INHERTITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
+    public static final String INHERTITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
+    public static final String QUOTED_IDENTIFIERS_PROJECT = "cayenne-quoted-identifiers.xml";
+    public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
 
     private static final Injector injector;
 
@@ -68,6 +71,11 @@ public class ServerCase extends DICase {
                         new CayenneResourcesDataSourceProvider(resources));
                 binder.bind(DbAdapter.class).toProviderInstance(
                         new CayenneResourcesDbAdapterProvider(resources));
+                binder.bind(AccessStackAdapter.class).toProviderInstance(
+                        new CayenneResourcesAccessStackAdapterProvider(resources));
+                binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class);
+                binder.bind(DataChannelQueryBlocker.class).to(
+                        ServerCaseDataChannelQueryBlocker.class);
 
                 // test-scoped objects
                 binder

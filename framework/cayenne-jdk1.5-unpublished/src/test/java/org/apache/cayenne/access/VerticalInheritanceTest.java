@@ -36,7 +36,7 @@ import org.apache.cayenne.testdo.inheritance.vertical.IvSub2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime(ServerCase.INHERTITANCE_VERTICAL_STACK)
+@UseServerRuntime(ServerCase.INHERTITANCE_VERTICAL_PROJECT)
 public class VerticalInheritanceTest extends ServerCase {
 
     @Inject

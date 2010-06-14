@@ -20,6 +20,8 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
@@ -29,9 +31,17 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextOuterJoinsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextOuterJoinsTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
 
     protected TableHelper artistHelper;
     protected TableHelper paintingHelper;
@@ -39,8 +49,8 @@ public class DataContextOuterJoinsTest extends CayenneCase {
     protected TableHelper artistGroupHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        DBHelper dbHelper = getDbHelper();
+    protected void setUpAfterInjection() throws Exception {
+
         artistHelper = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
         paintingHelper = new TableHelper(
                 dbHelper,
@@ -48,6 +58,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE");
+
         artgroupHelper = new TableHelper(dbHelper, "ARTGROUP", "GROUP_ID", "NAME");
         artistGroupHelper = new TableHelper(
                 dbHelper,
@@ -80,7 +91,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
                 null));
         missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
-        List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
+        List<Artist> artists = context.performQuery(missingToManyQuery);
         assertEquals(1, artists.size());
         assertEquals("BB1", artists.get(0).getArtistName());
     }
@@ -101,7 +112,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
                 null));
         missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
-        List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
+        List<Artist> artists = context.performQuery(missingToManyQuery);
         assertEquals(2, artists.size());
         assertEquals("BB1", artists.get(0).getArtistName());
 
@@ -114,7 +125,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
                 "AA1"));
         mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
-        artists = createDataContext().performQuery(mixedConditionQuery);
+        artists = context.performQuery(mixedConditionQuery);
         assertEquals(3, artists.size());
         assertEquals("AA1", artists.get(0).getArtistName());
         assertEquals("BB1", artists.get(1).getArtistName());
@@ -135,7 +146,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         missingToManyQuery.andQualifier(Expression.fromString("paintingArray+ = null"));
         missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
-        List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
+        List<Artist> artists = context.performQuery(missingToManyQuery);
         assertEquals(2, artists.size());
         assertEquals("BB1", artists.get(0).getArtistName());
 
@@ -148,7 +159,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
                 "AA1"));
         mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
-        artists = createDataContext().performQuery(mixedConditionQuery);
+        artists = context.performQuery(mixedConditionQuery);
         assertEquals(3, artists.size());
         assertEquals("AA1", artists.get(0).getArtistName());
         assertEquals("BB1", artists.get(1).getArtistName());
@@ -168,7 +179,7 @@ public class DataContextOuterJoinsTest extends CayenneCase {
 
         query.addOrdering("toArtist+.artistName", SortOrder.DESCENDING);
 
-        List<Artist> paintings = createDataContext().performQuery(query);
+        List<Artist> paintings = context.performQuery(query);
         assertEquals(3, paintings.size());
     }
 }

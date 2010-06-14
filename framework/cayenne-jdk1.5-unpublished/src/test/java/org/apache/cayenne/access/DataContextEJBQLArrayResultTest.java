@@ -21,26 +21,56 @@ package org.apache.cayenne.access;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLArrayResultTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLArrayResultTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist.insert(33001, "AA1");
+        tArtist.insert(33002, "AA2");
+        tArtist.insert(33003, "BB1");
+        tArtist.insert(33004, "BB2");
+
+        TableHelper tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+        tPainting.insert(33001, 33001, "P1", 3000);
+        tPainting.insert(33002, 33002, "P2", 5000);
+        tPainting.insert(33003, null, "P3", 5000);
     }
 
     public void testSQLResultSetMappingScalar() throws Exception {
-        createTestData("prepare");
 
         String ejbql = "SELECT count(p) FROM Painting p JOIN p.toArtist a";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List objects = createDataContext().performQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
@@ -48,13 +78,12 @@ public class DataContextEJBQLArrayResultTest extends CayenneCase {
     }
 
     public void testSQLResultSetMappingScalars() throws Exception {
-        createTestData("prepare");
 
         String ejbql = "SELECT count(p), sum(p.estimatedPrice) FROM Painting p JOIN p.toArtist a";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List objects = createDataContext().performQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
@@ -67,7 +96,6 @@ public class DataContextEJBQLArrayResultTest extends CayenneCase {
     }
 
     public void testSQLResultSetMappingMixed() throws Exception {
-        createTestData("prepare");
 
         String ejbql = "SELECT count(p), a, sum(p.estimatedPrice) "
                 + "FROM Artist a LEFT JOIN a.paintingArray p "
@@ -75,7 +103,7 @@ public class DataContextEJBQLArrayResultTest extends CayenneCase {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List objects = createDataContext().performQuery(query);
+        List objects = context.performQuery(query);
         assertEquals(4, objects.size());
 
         Object o1 = objects.get(0);
@@ -87,4 +115,5 @@ public class DataContextEJBQLArrayResultTest extends CayenneCase {
         assertTrue("Expected Artist, got: " + array1[1], array1[1] instanceof Artist);
         assertEquals(0, new BigDecimal(3000).compareTo((BigDecimal) array1[2]));
     }
+
 }

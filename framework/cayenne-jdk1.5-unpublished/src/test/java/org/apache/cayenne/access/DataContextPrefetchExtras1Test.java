@@ -16,24 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access;
 
 import java.util.List;
-import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.NoPkTestEntity;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+/**
+ * A test case for CAY-788.
+ */
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class DataContextNoPkTest extends ServerCase {
+public class DataContextPrefetchExtras1Test extends ServerCase {
 
     @Inject
     protected ObjectContext context;
@@ -43,39 +45,39 @@ public class DataContextNoPkTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        TableHelper noPkTestTable = new TableHelper(dbHelper, "NO_PK_TEST", "ATTRIBUTE1");
-        noPkTestTable.deleteAll();
-
-        noPkTestTable.insert(1);
-        noPkTestTable.insert(2);
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
     }
 
-    public void testNoPkFetchObjects() throws Exception {
-        try {
-            List objects = context.performQuery(new SelectQuery(NoPkTestEntity.class));
-            fail("Query for entity with no primary key must have failed, instead we got "
-                    + objects.size()
-                    + " rows.");
+    protected void createDataSet() throws Exception {
+
+        TableHelper tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE");
+
+        TableHelper tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+
+        for (int i = 1; i <= 10; i++) {
+            tPainting.insert(i, "P" + i);
+            tPaintingInfo.insert(i, "Review #" + i);
         }
-        catch (CayenneRuntimeException ex) {
-            // exception expected
+    }
+
+    public void testPrefetchToOne() throws Exception {
+        createDataSet();
+
+        SelectQuery query = new SelectQuery(Painting.class);
+        query.addPrefetch(Painting.TO_PAINTING_INFO_PROPERTY);
+
+        List<Painting> objects = context.performQuery(query);
+        assertTrue(!objects.isEmpty());
+        for (Painting p : objects) {
+            PaintingInfo pi = p.getToPaintingInfo();
+            assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, pi.getPersistenceState());
         }
     }
 
-    public void testNoPkFetchDataRows() throws Exception {
-        SelectQuery query = new SelectQuery(NoPkTestEntity.class);
-        query.setFetchingDataRows(true);
-
-        List rows = context.performQuery(query);
-        assertNotNull(rows);
-        assertEquals(2, rows.size());
-
-        Map row1 = (Map) rows.get(0);
-        Map row2 = (Map) rows.get(1);
-
-        // assert that rows have different values
-        // (there was a bug earlier that fetched distinct rows for
-        // entities with no primary key.
-        assertTrue(!row1.get("ATTRIBUTE1").equals(row2.get("ATTRIBUTE1")));
-    }
 }
