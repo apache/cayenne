@@ -104,6 +104,11 @@ public class DefaultScope implements Scope {
 
     public void removeScopeEventListener(Object object) {
 
+        // TODO: 2 level-deep full scan will not be very efficient for short scopes. Right
+        // now this would only affect the unit test scope, but if we start creating the
+        // likes of HTTP request scope, we may need to create a faster listener
+        // removal algorithm.
+
         for (Entry<String, Collection<ScopeEventBinding>> entry : listeners.entrySet()) {
 
             if (SPECIAL_EVENT.equals(entry.getKey())) {
