@@ -25,7 +25,6 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.OnScopeEnd;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
@@ -36,7 +35,7 @@ import org.apache.cayenne.di.Scope;
  */
 public class DefaultInjector implements Injector {
 
-    private SingletonScope singletonScope;
+    private DefaultScope singletonScope;
     private Scope noScope;
 
     private Map<Key<?>, Binding<?>> bindings;
@@ -45,7 +44,7 @@ public class DefaultInjector implements Injector {
 
     public DefaultInjector(Module... modules) throws ConfigurationException {
 
-        this.singletonScope = new SingletonScope();
+        this.singletonScope = new DefaultScope();
         this.noScope = NoScope.SINGLETON;
 
         // this is intentionally hardcoded and is not configurable
@@ -131,18 +130,15 @@ public class DefaultInjector implements Injector {
 
     public void injectMembers(Object object) {
         Provider<Object> provider0 = new InstanceProvider<Object>(object);
-        Provider<Object> provider1 = new FieldInjectingProvider<Object>(
-                provider0,
-                this,
-                Key.get(object.getClass()));
+        Provider<Object> provider1 = new FieldInjectingProvider<Object>(provider0, this);
         provider1.get();
     }
 
     public void shutdown() {
-        singletonScope.postScopeEvent(OnScopeEnd.class);
-    };
+        singletonScope.shutdown();
+    }
 
-    SingletonScope getSingletonScope() {
+    DefaultScope getSingletonScope() {
         return singletonScope;
     }
 

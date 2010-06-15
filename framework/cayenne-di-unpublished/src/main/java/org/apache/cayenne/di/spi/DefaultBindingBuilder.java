@@ -43,10 +43,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         Provider<T> provider0 = new ConstructorInjectingProvider<T>(
                 implementation,
                 injector);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(
-                provider0,
-                injector,
-                bindingKey);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
         injector.putBinding(bindingKey, provider1);
         return this;
@@ -54,10 +51,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
 
     public BindingBuilder<T> toInstance(T instance) throws ConfigurationException {
         Provider<T> provider0 = new InstanceProvider<T>(instance);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(
-                provider0,
-                injector,
-                bindingKey);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
         injector.putBinding(bindingKey, provider1);
         return this;
     };
@@ -70,14 +64,10 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
                 injector);
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(
                 provider0,
-                injector,
-                bindingKey);
+                injector);
 
         Provider<T> provider2 = new CustomProvidersProvider<T>(provider1);
-        Provider<T> provider3 = new FieldInjectingProvider<T>(
-                provider2,
-                injector,
-                bindingKey);
+        Provider<T> provider3 = new FieldInjectingProvider<T>(provider2, injector);
 
         injector.putBinding(bindingKey, provider3);
         return this;
@@ -89,14 +79,10 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
                 provider);
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(
                 provider0,
-                injector,
-                bindingKey);
+                injector);
 
         Provider<T> provider2 = new CustomProvidersProvider<T>(provider1);
-        Provider<T> provider3 = new FieldInjectingProvider<T>(
-                provider2,
-                injector,
-                bindingKey);
+        Provider<T> provider3 = new FieldInjectingProvider<T>(provider2, injector);
 
         injector.putBinding(bindingKey, provider3);
         return this;

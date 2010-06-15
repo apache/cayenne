@@ -27,12 +27,12 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.DICase;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
-import org.apache.cayenne.unit.di.UnitTestScope;
 
 public class ServerCase extends DICase {
 
@@ -54,7 +54,7 @@ public class ServerCase extends DICase {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                UnitTestScope testScope = new UnitTestScope();
+                DefaultScope testScope = new DefaultScope();
 
                 // these are the objects injectable in unit tests that subclass from
                 // ServerCase. Server runtime extensions are configured in

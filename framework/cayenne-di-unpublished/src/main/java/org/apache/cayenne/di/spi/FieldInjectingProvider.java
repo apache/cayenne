@@ -30,15 +30,12 @@ import org.apache.cayenne.di.Provider;
  */
 class FieldInjectingProvider<T> implements Provider<T> {
 
-    private Key<?> bindingKey;
     private DefaultInjector injector;
     private Provider<T> delegate;
 
-    FieldInjectingProvider(Provider<T> delegate, DefaultInjector injector,
-            Key<?> bindingKey) {
+    FieldInjectingProvider(Provider<T> delegate, DefaultInjector injector) {
         this.delegate = delegate;
         this.injector = injector;
-        this.bindingKey = bindingKey;
     }
 
     public T get() throws ConfigurationException {
@@ -88,9 +85,9 @@ class FieldInjectingProvider<T> implements Provider<T> {
             value = injector.getProvider(Key.get(objectClass, bindingName));
         }
         else {
-            
+
             Key<?> key = Key.get(fieldType, bindingName);
-            
+
             stack.push(key);
             try {
                 value = injector.getInstance(key);

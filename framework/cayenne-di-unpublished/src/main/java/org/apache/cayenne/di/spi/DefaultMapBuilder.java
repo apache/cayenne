@@ -55,10 +55,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     public MapBuilder<T> put(String key, T value) throws ConfigurationException {
 
         Provider<T> provider0 = new InstanceProvider<T>(value);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(
-                provider0,
-                injector,
-                bindingKey);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
         // TODO: andrus 11/15/2009 - report overriding the key??
         getMapProvider().put(key, provider1);
@@ -72,10 +69,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         for (Entry<String, T> entry : map.entrySet()) {
 
             Provider<T> provider0 = new InstanceProvider<T>(entry.getValue());
-            Provider<T> provider1 = new FieldInjectingProvider<T>(
-                    provider0,
-                    injector,
-                    bindingKey);
+            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
             provider.put(entry.getKey(), provider1);
         }
 

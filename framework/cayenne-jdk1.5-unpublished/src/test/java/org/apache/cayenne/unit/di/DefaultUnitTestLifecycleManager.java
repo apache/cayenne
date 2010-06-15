@@ -20,18 +20,19 @@ package org.apache.cayenne.unit.di;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.OnScopeEnd;
+import org.apache.cayenne.di.spi.DefaultScope;
 
 public class DefaultUnitTestLifecycleManager implements UnitTestLifecycleManager {
 
     @Inject
     protected Injector injector;
 
-    protected UnitTestScope scope;
+    protected DefaultScope scope;
 
-    public DefaultUnitTestLifecycleManager(UnitTestScope scope) {
+    public DefaultUnitTestLifecycleManager(DefaultScope scope) {
         this.scope = scope;
     }
 
@@ -39,8 +40,8 @@ public class DefaultUnitTestLifecycleManager implements UnitTestLifecycleManager
         injector.injectMembers(testCase);
     }
 
-    @OnScopeEnd
+    @BeforeScopeEnd
     public <T extends TestCase> void tearDown(T testCase) {
-        scope.postScopeEvent(OnScopeEnd.class);
+        scope.shutdown();
     }
 }

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.mock;
 
-import org.apache.cayenne.di.OnScopeEnd;
+import org.apache.cayenne.di.BeforeScopeEnd;
 
 public class MockImplementation1_EventAnnotations extends
         MockImplementation1_EventAnnotationsBase implements MockInterface1 {
@@ -27,12 +27,12 @@ public class MockImplementation1_EventAnnotations extends
         return "XuI";
     }
 
-    @OnScopeEnd
+    @BeforeScopeEnd
     public void onShutdown1() {
         shutdown1 = true;
     }
 
-    @OnScopeEnd
+    @BeforeScopeEnd
     public void onShutdown2() {
         shutdown2 = true;
     }

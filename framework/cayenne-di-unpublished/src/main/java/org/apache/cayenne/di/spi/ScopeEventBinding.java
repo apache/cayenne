@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -27,14 +28,17 @@ import org.apache.cayenne.CayenneRuntimeException;
  * 
  * @since 3.1
  */
-class ScopeEventBinding {
+public class ScopeEventBinding {
 
-    private Object object;
+    private WeakReference<Object> objectReference;
     private Method eventHandlerMethod;
     private int argWidth;
 
-    ScopeEventBinding(Object object, Method eventHandlerMethod) {
-        this.object = object;
+    public ScopeEventBinding(Object object, Method eventHandlerMethod) {
+
+        // store weak references for objects to avoid retaining them when they go out of
+        // scope
+        this.objectReference = new WeakReference<Object>(object);
         this.eventHandlerMethod = eventHandlerMethod;
         this.argWidth = eventHandlerMethod.getParameterTypes().length;
 
@@ -42,7 +46,16 @@ class ScopeEventBinding {
         eventHandlerMethod.setAccessible(true);
     }
 
-    void onScopeEvent(Object... eventArgs) {
+    public Object getObject() {
+        return objectReference.get();
+    }
+
+    public boolean onScopeEvent(Object... eventArgs) {
+
+        Object object = objectReference.get();
+        if (object == null) {
+            return false;
+        }
 
         try {
             eventHandlerMethod.invoke(object, invocationArguments(eventArgs));
@@ -53,6 +66,8 @@ class ScopeEventBinding {
                     e,
                     eventHandlerMethod.getName());
         }
+
+        return true;
     }
 
     private Object[] invocationArguments(Object[] eventArgs) {

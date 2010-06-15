@@ -23,8 +23,8 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DefaultUnitTestLifecycleManager;
-import org.apache.cayenne.unit.di.UnitTestScope;
 
 public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager {
 
@@ -34,7 +34,7 @@ public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager 
     @Inject
     protected ServerRuntimeFactory runtimeFactory;
 
-    public ServerCaseLifecycleManager(UnitTestScope scope) {
+    public ServerCaseLifecycleManager(DefaultScope scope) {
         super(scope);
     }
 

@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.di.OnScopeEnd;
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.util.Invocation;
 
 /**
@@ -107,7 +107,7 @@ public class DefaultEventManager implements EventManager {
      * 
      * @since 3.0
      */
-    @OnScopeEnd
+    @BeforeScopeEnd
     public void shutdown() {
 
         if (!stopped) {

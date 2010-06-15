@@ -18,20 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.OnScopeEnd;
-import org.apache.cayenne.di.Provider;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * A non-public event annotation used by scope object providers to unregister objects
+ * created within a scope. Registry objects within a given scope will never be able to
+ * receive this event, so never annotate custom objects with this.
+ * 
  * @since 3.1
  */
-class SingletonScope extends EventfulScope {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@interface AfterScopeEnd {
 
-    SingletonScope() {
-        addEventAnnotation(OnScopeEnd.class);
-    }
-
-    @Override
-    public <T> Provider<T> scope(Provider<T> unscoped) {
-        return new SingletonProvider<T>(this, unscoped);
-    }
 }

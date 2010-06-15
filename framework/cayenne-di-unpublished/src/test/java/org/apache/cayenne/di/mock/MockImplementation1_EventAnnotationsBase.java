@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.mock;
 
-import org.apache.cayenne.di.OnScopeEnd;
+import org.apache.cayenne.di.BeforeScopeEnd;
 
 public class MockImplementation1_EventAnnotationsBase {
 
@@ -32,7 +32,7 @@ public class MockImplementation1_EventAnnotationsBase {
         shutdown3 = false;
     }
 
-    @OnScopeEnd
+    @BeforeScopeEnd
     public void onShutdown3() {
         shutdown3 = true;
     }

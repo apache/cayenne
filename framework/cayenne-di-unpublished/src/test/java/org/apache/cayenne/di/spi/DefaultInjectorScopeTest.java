@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.OnScopeEnd;
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockImplementation1_Provider;
@@ -127,7 +127,7 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertFalse(MockImplementation1_EventAnnotations.shutdown2);
         assertFalse(MockImplementation1_EventAnnotations.shutdown3);
 
-        injector.getSingletonScope().postScopeEvent(OnScopeEnd.class);
+        injector.getSingletonScope().postScopeEvent(BeforeScopeEnd.class);
 
         assertTrue(MockImplementation1_EventAnnotations.shutdown1);
         assertTrue(MockImplementation1_EventAnnotations.shutdown2);

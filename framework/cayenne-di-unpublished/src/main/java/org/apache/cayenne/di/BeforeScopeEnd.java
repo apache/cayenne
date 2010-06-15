@@ -16,21 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di;
+package org.apache.cayenne.di;
 
-import org.apache.cayenne.di.OnScopeEnd;
-import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.di.spi.EventfulScope;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class UnitTestScope extends EventfulScope {
-
-    public UnitTestScope() {
-        addEventAnnotation(OnScopeEnd.class);
-    }
-
-    @Override
-    public <T> Provider<T> scope(Provider<T> unscoped) {
-        return new UnitTestScopedProvider<T>(this, unscoped);
-    }
+/**
+ * An annotation used by objects that want to receive scope ending events from the DI
+ * registry.
+ * <p>
+ * Annotated method must be public and have no parameters. Return type is ignored by the
+ * event dispatcher.
+ * 
+ * @since 3.1
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface BeforeScopeEnd {
 
 }

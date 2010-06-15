@@ -53,10 +53,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     public ListBuilder<T> add(T value) throws ConfigurationException {
 
         Provider<T> provider0 = new InstanceProvider<T>(value);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(
-                provider0,
-                injector,
-                bindingKey);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
         getListProvider().add(provider1);
         return this;
@@ -68,10 +65,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
 
         for (T value : values) {
             Provider<T> provider0 = new InstanceProvider<T>(value);
-            Provider<T> provider1 = new FieldInjectingProvider<T>(
-                    provider0,
-                    injector,
-                    bindingKey);
+            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
             listProvider.add(provider1);
         }

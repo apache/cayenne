@@ -24,6 +24,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultScope;
 
 public class DICaseSelfTest extends DICase {
 
@@ -33,7 +34,7 @@ public class DICaseSelfTest extends DICase {
         Module selfTestModule = new Module() {
 
             public void configure(Binder binder) {
-                UnitTestScope testScope = new UnitTestScope();
+                DefaultScope testScope = new DefaultScope();
 
                 binder.bind(UnitTestLifecycleManager.class).toInstance(
                         new DefaultUnitTestLifecycleManager(testScope));

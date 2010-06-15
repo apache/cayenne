@@ -28,27 +28,27 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.unit.di.UnitTestScope;
 
 public class CachingServerRuntimeFactory implements ServerRuntimeFactory {
 
     protected CayenneResources resources;
-    protected UnitTestScope testScope;
+    protected DefaultScope testScope;
     protected Map<String, ServerRuntime> cache;
 
-    public CachingServerRuntimeFactory(CayenneResources resources, UnitTestScope testScope) {
+    public CachingServerRuntimeFactory(CayenneResources resources, DefaultScope testScope) {
         this.resources = resources;
         this.testScope = testScope;
         this.cache = new HashMap<String, ServerRuntime>();
     }
 
     public ServerRuntime get(String configurationLocation) {
-        
+
         if (configurationLocation == null) {
             throw new NullPointerException("Null 'configurationLocation'");
         }
-        
+
         ServerRuntime runtime = cache.get(configurationLocation);
 
         if (runtime == null) {
