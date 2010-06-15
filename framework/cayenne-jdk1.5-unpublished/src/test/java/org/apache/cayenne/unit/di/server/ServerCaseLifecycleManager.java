@@ -20,6 +20,7 @@ package org.apache.cayenne.unit.di.server;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.di.DefaultUnitTestLifecycleManager;
@@ -30,6 +31,9 @@ public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager 
     @Inject
     protected Provider<ServerCaseProperties> propertiesProvider;
 
+    @Inject
+    protected ServerRuntimeFactory runtimeFactory;
+
     public ServerCaseLifecycleManager(UnitTestScope scope) {
         super(scope);
     }
@@ -37,11 +41,21 @@ public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager 
     @Override
     public <T extends TestCase> void setUp(T testCase) {
 
+        // init current runtime
         UseServerRuntime runtimeName = testCase.getClass().getAnnotation(
                 UseServerRuntime.class);
 
         String location = runtimeName != null ? runtimeName.value() : null;
         propertiesProvider.get().setConfigurationLocation(location);
+
+        // clear shared caches
+        if (location != null) {
+            DataDomain channel = (DataDomain) runtimeFactory.get(location).getChannel();
+            channel.getEventManager().removeAllListeners(
+                    channel.getSharedSnapshotCache().getSnapshotEventSubject());
+            channel.getSharedSnapshotCache().clear();
+            channel.getQueryCache().clear();
+        }
 
         super.setUp(testCase);
     }

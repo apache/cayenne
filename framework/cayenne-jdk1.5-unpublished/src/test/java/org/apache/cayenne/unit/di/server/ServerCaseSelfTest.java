@@ -20,20 +20,20 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.di.Inject;
 
-@UseServerRuntime("xUy")
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ServerCaseSelfTest extends ServerCase {
 
     @Inject
     protected ServerRuntimeFactory runtimeFactory;
-    
+
     @Inject
     protected ServerCaseProperties properties;
 
     public void testSetup_TearDown_Runtime() throws Exception {
 
         assertNotNull(properties);
-        assertEquals("xUy", properties.getConfigurationLocation());
-        
+        assertEquals(ServerCase.TESTMAP_PROJECT, properties.getConfigurationLocation());
+
         ServerRuntimeFactory localFactory = this.runtimeFactory;
         assertNotNull(localFactory);
 
