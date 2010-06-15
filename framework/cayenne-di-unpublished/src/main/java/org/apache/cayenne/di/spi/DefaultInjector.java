@@ -45,7 +45,7 @@ public class DefaultInjector implements Injector {
     public DefaultInjector(Module... modules) throws ConfigurationException {
 
         this.singletonScope = new DefaultScope();
-        this.noScope = NoScope.SINGLETON;
+        this.noScope = NoScope.INSTANCE;
 
         // this is intentionally hardcoded and is not configurable
         this.defaultScope = singletonScope;

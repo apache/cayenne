@@ -58,10 +58,10 @@ public class ServerCase extends DICase {
                 DefaultScope testScope = new DefaultScope();
 
                 // these are the objects injectable in unit tests that subclass from
-                // ServerCase. Server runtime extensions are configured in
-                // CachingServerRuntimeFactory. There is some overlap between the two
-                // registries (some services declared in both), as cayenne-di does not
-                // support registry inheritance.
+                // ServerCase. Note that ServerRuntimeProvider creates ServerRuntime
+                // instances complete with their own DI injectors, independent from the
+                // unit test injector. ServerRuntime injector contents are customized
+                // inside ServerRuntimeProvider.
 
                 // singleton objects
                 binder.bind(UnitTestLifecycleManager.class).toInstance(
@@ -86,7 +86,6 @@ public class ServerCase extends DICase {
                         new ServerRuntimeProvider(resources)).in(testScope);
                 binder.bind(ObjectContext.class).toProvider(
                         ServerCaseDataContextProvider.class).in(testScope);
-
                 binder
                         .bind(DBHelper.class)
                         .toProvider(FlavoredDBHelperProvider.class)

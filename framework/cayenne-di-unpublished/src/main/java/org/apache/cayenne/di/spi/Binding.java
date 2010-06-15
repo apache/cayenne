@@ -39,7 +39,7 @@ class Binding<T> {
 
     void changeScope(Scope scope) {
         if (scope == null) {
-            scope = NoScope.SINGLETON;
+            scope = NoScope.INSTANCE;
         }
 
         scoped = scope.scope(unscoped);

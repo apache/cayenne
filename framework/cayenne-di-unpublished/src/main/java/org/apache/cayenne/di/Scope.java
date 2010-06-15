@@ -25,7 +25,7 @@ package org.apache.cayenne.di;
  * shutdown.
  * <p>
  * Cayenne defines a few standard scopes in {@link Scopes} class. The default scope of a
- * binding in Cayenne is {@link Scopes#SINGLETON}.
+ * binding in Cayenne is {@link Scopes#INSTANCE}.
  * 
  * @since 3.1
  */

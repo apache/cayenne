@@ -26,7 +26,7 @@ import org.apache.cayenne.di.Scope;
  */
 final class NoScope implements Scope {
 
-    static final Scope SINGLETON = new NoScope();
+    static final Scope INSTANCE = new NoScope();
 
     public <T> Provider<T> scope(Provider<T> unscoped) {
         return unscoped;
