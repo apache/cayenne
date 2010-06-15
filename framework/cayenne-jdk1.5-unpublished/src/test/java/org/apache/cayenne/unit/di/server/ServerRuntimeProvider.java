@@ -18,48 +18,37 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.sql.DataSource;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.CayenneResources;
 
-public class CachingServerRuntimeFactory implements ServerRuntimeFactory {
+public class ServerRuntimeProvider implements Provider<ServerRuntime> {
+
+    @Inject
+    protected ServerCaseProperties properties;
 
     protected CayenneResources resources;
-    protected DefaultScope testScope;
-    protected Map<String, ServerRuntime> cache;
 
-    public CachingServerRuntimeFactory(CayenneResources resources, DefaultScope testScope) {
+    public ServerRuntimeProvider(CayenneResources resources) {
         this.resources = resources;
-        this.testScope = testScope;
-        this.cache = new HashMap<String, ServerRuntime>();
     }
 
-    public ServerRuntime get(String configurationLocation) {
+    public ServerRuntime get() throws ConfigurationException {
 
+        String configurationLocation = properties.getConfigurationLocation();
         if (configurationLocation == null) {
-            throw new NullPointerException("Null 'configurationLocation'");
+            throw new NullPointerException(
+                    "Null 'configurationLocation', method is called out of scope");
         }
 
-        ServerRuntime runtime = cache.get(configurationLocation);
-
-        if (runtime == null) {
-            runtime = create(configurationLocation);
-            cache.put(configurationLocation, runtime);
-        }
-
-        return runtime;
-    }
-
-    protected ServerRuntime create(String configurationLocation) {
         return new ServerRuntime(configurationLocation, new ServerExtraModule());
     }
 

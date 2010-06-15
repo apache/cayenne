@@ -18,13 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ServerCaseSelfTest extends ServerCase {
 
     @Inject
-    protected ServerRuntimeFactory runtimeFactory;
+    protected ServerRuntime runtime;
+    
+    @Inject
+    protected Provider<ServerRuntime> runtimeProvider;
 
     @Inject
     protected ServerCaseProperties properties;
@@ -34,13 +39,14 @@ public class ServerCaseSelfTest extends ServerCase {
         assertNotNull(properties);
         assertEquals(ServerCase.TESTMAP_PROJECT, properties.getConfigurationLocation());
 
-        ServerRuntimeFactory localFactory = this.runtimeFactory;
-        assertNotNull(localFactory);
+        ServerRuntime local = this.runtime;
+        assertNotNull(local);
+        assertSame(local, runtimeProvider.get());
 
         tearDown();
 
         setUp();
-        assertSame(localFactory, this.runtimeFactory);
+        assertNotSame(local, this.runtime);
     }
 
 }

@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -125,6 +126,9 @@ public abstract class CayenneRuntime {
      * Shuts down the DI injector of this runtime, giving all services that need to
      * release some resources a chance to do that.
      */
+    // the following annotation is for environments that manage CayenneRuntimes within
+    // another DI registry (e.g. unit tests)
+    @BeforeScopeEnd
     public void shutdown() {
         injector.shutdown();
     }

@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -65,8 +66,7 @@ public class ServerCase extends DICase {
                 // singleton objects
                 binder.bind(UnitTestLifecycleManager.class).toInstance(
                         new ServerCaseLifecycleManager(testScope));
-                binder.bind(ServerRuntimeFactory.class).toInstance(
-                        new CachingServerRuntimeFactory(resources, testScope));
+
                 binder.bind(DataSource.class).toProviderInstance(
                         new CayenneResourcesDataSourceProvider(resources));
                 binder.bind(DbAdapter.class).toProviderInstance(
@@ -82,6 +82,8 @@ public class ServerCase extends DICase {
                         .bind(ServerCaseProperties.class)
                         .to(ServerCaseProperties.class)
                         .in(testScope);
+                binder.bind(ServerRuntime.class).toProviderInstance(
+                        new ServerRuntimeProvider(resources)).in(testScope);
                 binder.bind(ObjectContext.class).toProvider(
                         ServerCaseDataContextProvider.class).in(testScope);
 

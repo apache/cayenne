@@ -19,21 +19,22 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.access.UnitTestDomain;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 
 public class ServerCaseDataChannelQueryBlocker implements DataChannelQueryBlocker {
 
     @Inject
-    protected ServerRuntimeFactory runtimeFactory;
-
-    @Inject
-    protected ServerCaseProperties properties;
+    // injecting provider to make this provider independent from scoping of ServerRuntime
+    protected Provider<ServerRuntime> serverRuntimeProvider;
 
     public void runWithQueriesBlocked(UnitTestClosure closure) {
 
-        UnitTestDomain channel = (UnitTestDomain) runtimeFactory.get(
-                properties.getConfigurationLocation()).getChannel();
+        UnitTestDomain channel = (UnitTestDomain) serverRuntimeProvider
+                .get()
+                .getChannel();
 
         channel.setBlockingQueries(true);
         try {

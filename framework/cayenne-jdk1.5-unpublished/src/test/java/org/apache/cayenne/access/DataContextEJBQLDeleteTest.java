@@ -23,13 +23,13 @@ import java.util.List;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerRuntimeFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -42,7 +42,7 @@ public class DataContextEJBQLDeleteTest extends ServerCase {
     protected DBHelper dbHelper;
 
     @Inject
-    protected ServerRuntimeFactory runtimeFactory;
+    protected ServerRuntime runtime;
 
     protected TableHelper tPainting;
 
@@ -119,7 +119,7 @@ public class DataContextEJBQLDeleteTest extends ServerCase {
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
 
-        ObjectContext freshContext = runtimeFactory.get(TESTMAP_PROJECT).getContext();
+        ObjectContext freshContext = runtime.getContext();
 
         assertNotNull(Cayenne.objectForPK(freshContext, Painting.class, 33001));
         assertNull(Cayenne.objectForPK(freshContext, Painting.class, 33002));
