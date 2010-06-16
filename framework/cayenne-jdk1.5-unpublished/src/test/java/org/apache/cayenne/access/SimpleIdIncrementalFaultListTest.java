@@ -84,17 +84,17 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
 
     public void testSize() throws Exception {
         prepareList(6);
-        assertEquals(DataContextTest.artistCount, list.size());
+        assertEquals(25, list.size());
     }
 
     public void testSmallList() throws Exception {
         prepareList(49);
-        assertEquals(DataContextTest.artistCount, list.size());
+        assertEquals(25, list.size());
     }
 
     public void testOnePageList() throws Exception {
-        prepareList(DataContextTest.artistCount);
-        assertEquals(DataContextTest.artistCount, list.size());
+        prepareList(25);
+        assertEquals(25, list.size());
     }
 
     public void testIterator() throws Exception {
@@ -139,7 +139,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
                 context,
                 q);
 
-        assertSame(newArtist, list.get(DataContextTest.artistCount));
+        assertSame(newArtist, list.get(25));
     }
 
     public void testListIterator() throws Exception {
@@ -183,9 +183,9 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
 
     public void testUnfetchedObjects() throws Exception {
         prepareList(6);
-        assertEquals(DataContextTest.artistCount, list.getUnfetchedObjects());
+        assertEquals(25, list.getUnfetchedObjects());
         list.get(7);
-        assertEquals(DataContextTest.artistCount - 6, list.getUnfetchedObjects());
+        assertEquals(25 - 6, list.getUnfetchedObjects());
         list.resolveAll();
         assertEquals(0, list.getUnfetchedObjects());
     }

@@ -21,6 +21,7 @@ package org.apache.cayenne.unit.di.server;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
@@ -74,8 +75,8 @@ public class ServerCase extends DICase {
                 binder.bind(AccessStackAdapter.class).toProviderInstance(
                         new CayenneResourcesAccessStackAdapterProvider(resources));
                 binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class);
-                binder.bind(DataChannelQueryBlocker.class).to(
-                        ServerCaseDataChannelQueryBlocker.class);
+                binder.bind(DataChannelQueryInterceptor.class).to(
+                        ServerCaseDataChannelQueryInterceptor.class);
 
                 // test-scoped objects
                 binder
@@ -85,6 +86,8 @@ public class ServerCase extends DICase {
                 binder.bind(ServerRuntime.class).toProviderInstance(
                         new ServerRuntimeProvider(resources)).in(testScope);
                 binder.bind(ObjectContext.class).toProvider(
+                        ServerCaseObjectContextProvider.class).in(testScope);
+                binder.bind(DataContext.class).toProvider(
                         ServerCaseDataContextProvider.class).in(testScope);
                 binder
                         .bind(DBHelper.class)

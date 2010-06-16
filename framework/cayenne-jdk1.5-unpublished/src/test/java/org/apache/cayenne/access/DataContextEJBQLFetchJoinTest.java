@@ -35,7 +35,7 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.DataChannelQueryBlocker;
+import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -49,7 +49,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
     protected DBHelper dbHelper;
 
     @Inject
-    protected DataChannelQueryBlocker queryBlocker;
+    protected DataChannelQueryInterceptor queryBlocker;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;

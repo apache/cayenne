@@ -23,14 +23,35 @@ import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataContextRollbackTest extends DataContextCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextRollbackTest extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected ServerRuntime serverRuntime;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+    }
 
     public void testRollbackNew() {
         Artist artist = (Artist) context.newObject("Artist");
@@ -56,10 +77,6 @@ public class DataContextRollbackTest extends DataContextCase {
 
         // after:
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
-
-        // TODO: should we expect relationships to be unset?
-        // assertNull(p1.getToArtist());
-        // assertEquals(0, artist.getPaintingArray().size());
     }
 
     public void testRollbackNewObject() {
@@ -74,17 +91,19 @@ public class DataContextRollbackTest extends DataContextCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = createDataContext();
+        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        assertNotSame(this.context, freshContext);
+
         SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List queryResults = freshContext.performQuery(query);
+        List<?> queryResults = freshContext.performQuery(query);
 
         assertEquals(0, queryResults.size());
     }
 
     // Catches a bug where new objects were unregistered within an object iterator, thus
-    // modifying the
-    // collection the iterator was iterating over (ConcurrentModificationException)
+    // modifying the collection the iterator was iterating over
+    // (ConcurrentModificationException)
     public void testRollbackWithMultipleNewObjects() {
         String artistName = "rollbackTestArtist";
         String paintingTitle = "rollbackTestPainting";
@@ -95,23 +114,20 @@ public class DataContextRollbackTest extends DataContextCase {
         painting.setPaintingTitle(paintingTitle);
         painting.setToArtist(artist);
 
-        try {
-            context.rollbackChanges();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            fail("rollbackChanges should not have caused the exception " + e.getMessage());
-        }
+        context.rollbackChanges();
 
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
         context.commitChanges();
+        
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = createDataContext();
+        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        assertNotSame(this.context, freshContext);
+
         SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List queryResults = freshContext.performQuery(query);
+        List<?> queryResults = freshContext.performQuery(query);
 
         assertEquals(0, queryResults.size());
     }
@@ -138,7 +154,9 @@ public class DataContextRollbackTest extends DataContextCase {
         assertEquals(1, artist.getPaintingArray().size());
         context.commitChanges();
 
-        DataContext freshContext = createDataContext();
+        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        assertNotSame(this.context, freshContext);
+        
         SelectQuery query = new SelectQuery(Painting.class);
         query.setQualifier(ExpressionFactory.matchExp("paintingTitle", paintingTitle));
         List queryResults = freshContext.performQuery(query);
@@ -166,7 +184,9 @@ public class DataContextRollbackTest extends DataContextCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been deleted from the db
 
-        DataContext freshContext = createDataContext();
+        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        assertNotSame(this.context, freshContext);
+        
         SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
         List queryResults = freshContext.performQuery(query);
@@ -191,7 +211,10 @@ public class DataContextRollbackTest extends DataContextCase {
         context.commitChanges();
 
         // .. and ensure that the correct data is in the db
-        DataContext freshContext = createDataContext();
+        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        assertNotSame(this.context, freshContext);
+        
+        
         SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
         List queryResults = freshContext.performQuery(query);

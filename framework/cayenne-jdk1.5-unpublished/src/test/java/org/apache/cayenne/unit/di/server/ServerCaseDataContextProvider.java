@@ -20,17 +20,16 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
-public class ServerCaseDataContextProvider implements Provider<ObjectContext> {
+public class ServerCaseDataContextProvider implements Provider<DataContext> {
 
     @Inject
-    // injecting provider to make this provider independent from scoping of ServerRuntime
-    protected Provider<ServerRuntime> serverRuntimeProvider;
+    protected Provider<ObjectContext> objectContextProvider;
 
-    public ObjectContext get() throws ConfigurationException {
-        return serverRuntimeProvider.get().getContext();
+    public DataContext get() throws ConfigurationException {
+        return (DataContext) objectContextProvider.get();
     }
 }

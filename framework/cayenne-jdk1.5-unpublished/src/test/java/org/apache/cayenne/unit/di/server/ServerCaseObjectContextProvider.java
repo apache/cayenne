@@ -18,9 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
-public interface DataChannelQueryBlocker {
+public class ServerCaseObjectContextProvider implements Provider<ObjectContext> {
 
-    void runWithQueriesBlocked(UnitTestClosure closure);
+    @Inject
+    // injecting provider to make this provider independent from scoping of ServerRuntime
+    protected Provider<ServerRuntime> serverRuntimeProvider;
+
+    public ObjectContext get() throws ConfigurationException {
+        return serverRuntimeProvider.get().getContext();
+    }
 }
