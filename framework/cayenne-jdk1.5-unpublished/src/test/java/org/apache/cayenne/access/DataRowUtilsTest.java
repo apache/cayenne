@@ -22,37 +22,65 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataRowUtilsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataRowUtilsTest extends ServerCase {
 
+    @Inject
     protected DataContext context;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Inject
+    protected DBHelper dbHelper;
 
-        deleteTestData();
-        context = createDataContext();
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+    }
+
+    protected void createOneArtist() throws Exception {
+        tArtist.insert(11, "artist2");
+    }
+
+    protected void createOneArtistAndOnePainting() throws Exception {
+        tArtist.insert(11, "artist2");
+        tPainting.insert(6, "p_artist2", 11, 1000);
     }
 
     public void testMerge() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createOneArtist();
 
         String n1 = "changed";
         String n2 = "changed again";
 
-        SelectQuery artistQ = new SelectQuery(Artist.class, Expression
-                .fromString("artistName = 'artist1'"));
+        SelectQuery artistQ = new SelectQuery(Artist.class);
         Artist a1 = (Artist) context.performQuery(artistQ).get(0);
         a1.setArtistName(n1);
 
@@ -71,24 +99,26 @@ public class DataRowUtilsTest extends CayenneCase {
     }
 
     public void testIsToOneTargetModified() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createOneArtist();
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
         ArcProperty toArtist = (ArcProperty) d.getProperty("toArtist");
 
-        SelectQuery artistQ = new SelectQuery(Artist.class, Expression
-                .fromString("artistName = 'artist2'"));
-        Artist anotherArtist = (Artist) context.performQuery(artistQ).get(0);
+        Artist artist2 = (Artist) context
+                .performQuery(new SelectQuery(Artist.class))
+                .get(0);
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("PX");
-        painting.setToArtist(anotherArtist);
+        painting.setToArtist(artist2);
 
         context.commitChanges();
 
-        artistQ = new SelectQuery(Artist.class, Expression
-                .fromString("artistName = 'artist1'"));
-        Artist artist = (Artist) context.performQuery(artistQ).get(0);
-        assertNotSame(artist, painting.getToArtist());
+        tArtist.insert(119, "artist3");
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
+                Artist.ARTIST_NAME_PROPERTY,
+                "artist3"));
+        Artist artist3 = (Artist) context.performQuery(query).get(0);
+        assertNotSame(artist3, painting.getToArtist());
 
         ObjectDiff diff = context.getObjectStore().registerDiff(
                 painting.getObjectId(),
@@ -96,17 +126,17 @@ public class DataRowUtilsTest extends CayenneCase {
 
         assertFalse(DataRowUtils.isToOneTargetModified(toArtist, painting, diff));
 
-        painting.setToArtist(artist);
+        painting.setToArtist(artist3);
         assertTrue(DataRowUtils.isToOneTargetModified(toArtist, painting, diff));
     }
 
     public void testIsToOneTargetModifiedWithNewTarget() throws Exception {
-        createTestData("testIsToOneTargetModifiedWithNewTarget");
+        createOneArtistAndOnePainting();
 
         // add NEW gallery to painting
-        List paintings = context.performQuery(new SelectQuery(Painting.class));
+        List<Painting> paintings = context.performQuery(new SelectQuery(Painting.class));
         assertEquals(1, paintings.size());
-        Painting p1 = (Painting) paintings.get(0);
+        Painting p1 = paintings.get(0);
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
         ArcProperty toGallery = (ArcProperty) d.getProperty("toGallery");

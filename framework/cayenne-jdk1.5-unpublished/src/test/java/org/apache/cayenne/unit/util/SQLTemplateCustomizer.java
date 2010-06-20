@@ -26,14 +26,13 @@ import org.apache.cayenne.query.SQLTemplate;
 
 /**
  * Helper class to customize SQLTemplate queries used in test cases per adapter.
- * 
  */
 public class SQLTemplateCustomizer {
 
     protected DbAdapter adapter;
-    protected Map sqlMap;
+    protected Map<String, Map<String, String>> sqlMap;
 
-    public SQLTemplateCustomizer(Map sqlMap) {
+    public SQLTemplateCustomizer(Map<String, Map<String, String>> sqlMap) {
         this.sqlMap = sqlMap;
     }
 
@@ -41,17 +40,17 @@ public class SQLTemplateCustomizer {
      * Customizes SQLTemplate, injecting the template for the current adapter.
      */
     public void updateSQLTemplate(SQLTemplate query) {
-        Map customSQL = (Map) sqlMap.get(query.getDefaultTemplate());
+        Map<String, String> customSQL = sqlMap.get(query.getDefaultTemplate());
         if (customSQL != null) {
             String key = adapter.getClass().getName();
-            String template = (String) customSQL.get(key);
+            String template = customSQL.get(key);
             if (template != null) {
                 query.setTemplate(key, template);
             }
         }
     }
 
-    public SQLTemplate createSQLTemplate(Class root, String defaultTemplate) {
+    public SQLTemplate createSQLTemplate(Class<?> root, String defaultTemplate) {
         SQLTemplate template = new SQLTemplate(root, defaultTemplate);
         updateSQLTemplate(template);
         return template;

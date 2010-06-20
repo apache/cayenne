@@ -21,280 +21,344 @@ package org.apache.cayenne.access;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes
  * refreshing relationships and attributes changed outside of Cayenne with and without
  * prefetching.
  */
-public class DataContextRefreshingTest extends DataContextCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextRefreshingTest extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected DataChannelQueryInterceptor queryInterceptor;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+    }
+
+    protected void createSingleArtistDataSet() throws Exception {
+        tArtist.insert(5, "artist2");
+    }
+
+    protected void createSingleArtistAndPaintingDataSet() throws Exception {
+        createSingleArtistDataSet();
+        tPainting.insert(4, "p", 5, 1000);
+    }
+
+    protected void createSingleArtistAndUnrelatedPaintingDataSet() throws Exception {
+        createSingleArtistDataSet();
+        tPainting.insert(4, "p", null, 1000);
+    }
+
+    protected void createTwoArtistsAndPaintingDataSet() throws Exception {
+        tArtist.insert(5, "artist2");
+        tArtist.insert(6, "artist3");
+        tPainting.insert(4, "p", 5, 1000);
+    }
 
     public void testRefetchRootWithUpdatedAttributes() throws Exception {
+
+        createSingleArtistDataSet();
+
         String nameBefore = "artist2";
         String nameAfter = "not an artist";
 
-        Artist artist = fetchArtist(nameBefore, false);
-        assertNotNull(artist);
+        SelectQuery queryBefore = new SelectQuery(Artist.class, ExpressionFactory
+                .matchExp("artistName", nameBefore));
+
+        Artist artist = (Artist) context.performQuery(queryBefore).get(0);
         assertEquals(nameBefore, artist.getArtistName());
 
-        // update via DataNode directly
-        updateRow(artist.getObjectId(), "ARTIST_NAME", nameAfter);
+        assertEquals(1, tArtist.update().set("ARTIST_NAME", nameAfter).execute());
 
         // fetch into the same context
-        artist = fetchArtist(nameBefore, false);
-        assertNull(artist);
+        List<Artist> artists = context.performQuery(queryBefore);
+        assertEquals(0, artists.size());
 
-        artist = fetchArtist(nameAfter, false);
+        SelectQuery queryAfter = new SelectQuery(Artist.class, ExpressionFactory
+                .matchExp("artistName", nameAfter));
+
+        artist = (Artist) context.performQuery(queryAfter).get(0);
         assertNotNull(artist);
         assertEquals(nameAfter, artist.getArtistName());
     }
 
     public void testRefetchRootWithNullifiedToOne() throws Exception {
-        Painting painting = insertPaintingInContext("p");
-        assertNotNull(painting.getToArtist());
+        createSingleArtistAndPaintingDataSet();
 
-        // update via DataNode directly
-        updateRow(painting.getObjectId(), "ARTIST_ID", null);
+        Painting painting = (Painting) context.performQuery(
+                new SelectQuery(Painting.class)).get(0);
+
+        assertNotNull(painting.getToArtist());
+        assertEquals("artist2", painting.getToArtist().getArtistName());
+
+        assertEquals(1, tPainting.update().set("ARTIST_ID", null).execute());
 
         // select without prefetch
-        painting = fetchPainting(painting.getPaintingTitle(), false);
+        painting = (Painting) context
+                .performQuery(new SelectQuery(Painting.class))
+                .get(0);
         assertNotNull(painting);
         assertNull(painting.getToArtist());
     }
 
     public void testRefetchRootWithChangedToOneTarget() throws Exception {
-        Painting painting = insertPaintingInContext("p");
+        createTwoArtistsAndPaintingDataSet();
+
+        Painting painting = (Painting) context.performQuery(
+                new SelectQuery(Painting.class)).get(0);
+
         Artist artistBefore = painting.getToArtist();
         assertNotNull(artistBefore);
+        assertEquals("artist2", artistBefore.getArtistName());
 
-        Artist artistAfter = fetchArtist("artist3", false);
-        assertNotNull(artistAfter);
-        assertNotSame(artistBefore, artistAfter);
-
-        // update via DataNode directly
-        updateRow(painting.getObjectId(), "ARTIST_ID", artistAfter
-                .getObjectId()
-                .getIdSnapshot()
-                .get("ARTIST_ID"));
+        assertEquals(1, tPainting.update().set("ARTIST_ID", 6).execute());
 
         // select without prefetch
-        painting = fetchPainting(painting.getPaintingTitle(), false);
+        painting = (Painting) context
+                .performQuery(new SelectQuery(Painting.class))
+                .get(0);
         assertNotNull(painting);
-        assertSame(artistAfter, painting.getToArtist());
+        assertEquals("artist3", painting.getToArtist().getArtistName());
     }
 
     public void testRefetchRootWithNullToOneTargetChangedToNotNull() throws Exception {
-        Painting painting = insertPaintingInContext("p");
-        painting.setToArtist(null);
-        context.commitChanges();
+        createSingleArtistAndUnrelatedPaintingDataSet();
+
+        Painting painting = (Painting) context.performQuery(
+                new SelectQuery(Painting.class)).get(0);
 
         assertNull(painting.getToArtist());
 
-        Artist artistAfter = fetchArtist("artist3", false);
-        assertNotNull(artistAfter);
-
-        // update via DataNode directly
-        updateRow(painting.getObjectId(), "ARTIST_ID", artistAfter
-                .getObjectId()
-                .getIdSnapshot()
-                .get("ARTIST_ID"));
+        assertEquals(1, tPainting.update().set("ARTIST_ID", 5).execute());
 
         // select without prefetch
-        painting = fetchPainting(painting.getPaintingTitle(), false);
+        painting = (Painting) context
+                .performQuery(new SelectQuery(Painting.class))
+                .get(0);
         assertNotNull(painting);
-        assertSame(artistAfter, painting.getToArtist());
+        assertEquals("artist2", painting.getToArtist().getArtistName());
     }
 
     public void testRefetchRootWithDeletedToMany() throws Exception {
-        Painting painting = insertPaintingInContext("p");
-        Artist artist = painting.getToArtist();
+        createSingleArtistAndPaintingDataSet();
+
+        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
+                0);
         assertEquals(artist.getPaintingArray().size(), 1);
 
-        deleteRow(painting.getObjectId());
+        assertEquals(1, tPainting
+                .delete()
+                .where(Painting.PAINTING_ID_PK_COLUMN, 4)
+                .execute());
 
         // select without prefetch
-        artist = fetchArtist(artist.getArtistName(), false);
+        artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(0);
         assertEquals(artist.getPaintingArray().size(), 1);
 
         // select using relationship prefetching
-        artist = fetchArtist(artist.getArtistName(), true);
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+        artist = (Artist) context.performQuery(query).get(0);
         assertEquals(0, artist.getPaintingArray().size());
     }
 
     public void testRefetchRootWithAddedToMany() throws Exception {
-        Artist artist = fetchArtist("artist2", false);
+
+        createSingleArtistDataSet();
+
+        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
+                0);
         assertEquals(artist.getPaintingArray().size(), 0);
 
-        createTestData("P2");
+        tPainting.insert(5, "p", 5, 1000);
 
         // select without prefetch
-        artist = fetchArtist(artist.getArtistName(), false);
+        SelectQuery query = new SelectQuery(Artist.class);
+        artist = (Artist) context.performQuery(query).get(0);
         assertEquals(artist.getPaintingArray().size(), 0);
 
         // select using relationship prefetching
-        artist = fetchArtist(artist.getArtistName(), true);
+        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+        artist = (Artist) context.performQuery(query).get(0);
         assertEquals(artist.getPaintingArray().size(), 1);
     }
 
     public void testInvalidateRootWithUpdatedAttributes() throws Exception {
+        createSingleArtistDataSet();
+
         String nameBefore = "artist2";
         String nameAfter = "not an artist";
 
-        Artist artist = fetchArtist(nameBefore, false);
+        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
+                0);
         assertNotNull(artist);
         assertEquals(nameBefore, artist.getArtistName());
 
         // update via DataNode directly
-        updateRow(artist.getObjectId(), "ARTIST_NAME", nameAfter);
+        assertEquals(1, tArtist.update().set("ARTIST_NAME", nameAfter).execute());
 
         context.invalidateObjects(Collections.singletonList(artist));
         assertEquals(nameAfter, artist.getArtistName());
     }
 
     public void testInvalidateRootWithNullifiedToOne() throws Exception {
-        Painting painting = insertPaintingInContext("p");
-        assertNotNull(painting.getToArtist());
 
-        // update via DataNode directly
-        updateRow(painting.getObjectId(), "ARTIST_ID", null);
+        createSingleArtistAndPaintingDataSet();
+
+        Painting painting = (Painting) context.performQuery(
+                new SelectQuery(Painting.class)).get(0);
+
+        assertNotNull(painting.getToArtist());
+        assertEquals("artist2", painting.getToArtist().getArtistName());
+
+        assertEquals(1, tPainting.update().set("ARTIST_ID", null).execute());
 
         context.invalidateObjects(Collections.singletonList(painting));
         assertNull(painting.getToArtist());
     }
 
     public void testInvalidateRootWithChangedToOneTarget() throws Exception {
-        Painting painting = insertPaintingInContext("p");
+        createTwoArtistsAndPaintingDataSet();
+
+        Painting painting = (Painting) context.performQuery(
+                new SelectQuery(Painting.class)).get(0);
         Artist artistBefore = painting.getToArtist();
         assertNotNull(artistBefore);
+        assertEquals("artist2", artistBefore.getArtistName());
 
-        Artist artistAfter = fetchArtist("artist3", false);
-        assertNotNull(artistAfter);
-        assertNotSame(artistBefore, artistAfter);
-
-        // update via DataNode directly
-        updateRow(painting.getObjectId(), "ARTIST_ID", artistAfter
-                .getObjectId()
-                .getIdSnapshot()
-                .get("ARTIST_ID"));
+        assertEquals(1, tPainting.update().set("ARTIST_ID", 6).execute());
 
         context.invalidateObjects(Collections.singletonList(painting));
-        assertSame(artistAfter, painting.getToArtist());
+        assertNotSame(artistBefore, painting.getToArtist());
+        assertEquals("artist3", painting.getToArtist().getArtistName());
     }
 
     public void testInvalidateRootWithNullToOneTargetChangedToNotNull() throws Exception {
-        Painting painting = insertPaintingInContext("p");
-        painting.setToArtist(null);
-        context.commitChanges();
+        createSingleArtistAndUnrelatedPaintingDataSet();
 
+        Painting painting = (Painting) context.performQuery(
+                new SelectQuery(Painting.class)).get(0);
         assertNull(painting.getToArtist());
 
-        Artist artistAfter = fetchArtist("artist3", false);
-        assertNotNull(artistAfter);
-
-        // update via DataNode directly
-        updateRow(painting.getObjectId(), "ARTIST_ID", artistAfter
-                .getObjectId()
-                .getIdSnapshot()
-                .get("ARTIST_ID"));
+        assertEquals(1, tPainting.update().set("ARTIST_ID", 5).execute());
 
         context.invalidateObjects(Collections.singletonList(painting));
-        assertSame(artistAfter, painting.getToArtist());
+        assertNotNull(painting.getToArtist());
+        assertEquals("artist2", painting.getToArtist().getArtistName());
     }
 
     public void testInvalidateRootWithDeletedToMany() throws Exception {
-        Painting painting = insertPaintingInContext("p");
-        Artist artist = painting.getToArtist();
+        createSingleArtistAndPaintingDataSet();
+
+        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
+                0);
         assertEquals(artist.getPaintingArray().size(), 1);
 
-        deleteRow(painting.getObjectId());
+        assertEquals(1, tPainting.delete().execute());
 
         context.invalidateObjects(Collections.singletonList(artist));
         assertEquals(artist.getPaintingArray().size(), 0);
     }
 
     public void testInvaliateRootWithAddedToMany() throws Exception {
-        Artist artist = fetchArtist("artist2", false);
+
+        createSingleArtistDataSet();
+
+        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
+                0);
         assertEquals(artist.getPaintingArray().size(), 0);
 
-        createTestData("P2");
+        tPainting.insert(4, "p", 5, 1000);
+
         assertEquals(artist.getPaintingArray().size(), 0);
         context.invalidateObjects(Collections.singletonList(artist));
         assertEquals(artist.getPaintingArray().size(), 1);
     }
 
     public void testInvalidateThenModify() throws Exception {
-        Artist artist = fetchArtist("artist2", false);
+
+        createSingleArtistDataSet();
+
+        final Artist artist = (Artist) context
+                .performQuery(new SelectQuery(Artist.class))
+                .get(0);
         assertNotNull(artist);
 
         context.invalidateObjects(Collections.singletonList(artist));
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
 
-        // this must trigger a fetch
-        artist.setArtistName("new name");
+        int queries = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                // this must trigger a fetch
+                artist.setArtistName("new name");
+            }
+        });
+
+        assertEquals(1, queries);
         assertEquals(PersistenceState.MODIFIED, artist.getPersistenceState());
     }
 
     public void testModifyHollow() throws Exception {
-        createTestData("P2");
 
-        // reset context
-        context = createDataContext();
+        createSingleArtistAndPaintingDataSet();
 
-        Painting painting = fetchPainting("P_artist2", false);
-        Artist artist = painting.getToArtist();
+        Painting painting = (Painting) context.performQuery(
+                new SelectQuery(Painting.class)).get(0);
+        final Artist artist = painting.getToArtist();
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
         assertNull(artist.readPropertyDirectly("artistName"));
 
-        // this must trigger a fetch
-        artist.setDateOfBirth(new Date());
+        int queries = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                // this must trigger a fetch
+                artist.setDateOfBirth(new Date());
+            }
+        });
+
+        assertEquals(1, queries);
+
         assertEquals(PersistenceState.MODIFIED, artist.getPersistenceState());
         assertNotNull(artist.readPropertyDirectly("artistName"));
-    }
-
-    /**
-     * Helper method to update a single column in a database row.
-     */
-    private void updateRow(ObjectId id, String dbAttribute, Object newValue) {
-        SQLTemplate updateQuery = new SQLTemplate(
-                id.getEntityName(),
-                "UPDATE $table SET $column = #bind($value) "
-                        + "WHERE $idColumn = #bind($id)");
-
-        ObjEntity entity = getDomain().getEntityResolver().getObjEntity(
-                id.getEntityName());
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("table", entity.getDbEntityName());
-        parameters.put("column", dbAttribute);
-        parameters.put("value", newValue);
-        parameters.put("idColumn", id.getIdSnapshot().keySet().iterator().next());
-        parameters.put("id", id.getIdSnapshot().values().iterator().next());
-        updateQuery.setParameters(parameters);
-
-        getDomain().onQuery(null, updateQuery);
-    }
-
-    private void deleteRow(ObjectId id) {
-        SQLTemplate deleteQuery = new SQLTemplate(
-                id.getEntityName(),
-                "DELETE FROM $table " + "WHERE $idColumn = #bind($id)");
-
-        ObjEntity entity = getDomain().getEntityResolver().getObjEntity(
-                id.getEntityName());
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("table", entity.getDbEntityName());
-        parameters.put("idColumn", id.getIdSnapshot().keySet().iterator().next());
-        parameters.put("id", id.getIdSnapshot().values().iterator().next());
-        deleteQuery.setParameters(parameters);
-
-        getDomain().onQuery(null, deleteQuery);
     }
 }

@@ -26,42 +26,99 @@ import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
-/**
- */
-public class DataContextSQLTemplateTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextSQLTemplateTest extends ServerCase {
 
+    @Inject
     protected DataContext context;
 
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected SQLTemplateCustomizer sqlTemplateCustomizer;
+
+    protected TableHelper tPainting;
+    protected TableHelper tArtist;
+    protected TableHelper tCompoundPkTest;
+    protected TableHelper tCompoundFkTest;
+
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("COMPOUND_FK_TEST");
+        dbHelper.deleteAll("COMPOUND_PK_TEST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+
+        tCompoundPkTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPkTest.setColumns("KEY1", "KEY2");
+
+        tCompoundFkTest = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
+        tCompoundFkTest.setColumns("PKEY", "F_KEY1", "F_KEY2");
+    }
+
+    protected void createFourArtists() throws Exception {
+        tArtist.insert(11, "artist2");
+        tArtist.insert(101, "artist3");
+        tArtist.insert(201, "artist4");
+        tArtist.insert(3001, "artist5");
+    }
+
+    protected void createFourArtistsAndThreePaintingsDataSet() throws Exception {
+        createFourArtists();
+
+        tPainting.insert(6, "p_artist3", 11, 1000);
+        tPainting.insert(7, "p_artist2", 101, 2000);
+        tPainting.insert(8, "p_artist4", null, 3000);
+    }
+
+    protected void createTwoCompoundPKsAndCompoundFKsDataSet() throws Exception {
+        tCompoundPkTest.insert("a1", "a2");
+        tCompoundPkTest.insert("b1", "b2");
+
+        tCompoundFkTest.insert(6, "a1", "a2");
+        tCompoundFkTest.insert(7, "b1", "b2");
     }
 
     public void testSQLResultSetMappingMixed() throws Exception {
-        createTestData("prepare");
+        createFourArtistsAndThreePaintingsDataSet();
 
         String sql = "SELECT #result('t0.ARTIST_ID' 'long' 'X'), #result('t0.ARTIST_NAME' 'String' 'Y'), #result('t0.DATE_OF_BIRTH' 'Date' 'Z'), #result('count(t1.PAINTING_ID)' 'int' 'C') "
                 + "FROM ARTIST t0 LEFT JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) "
                 + "GROUP BY t0.ARTIST_ID, t0.ARTIST_NAME, t0.DATE_OF_BIRTH "
                 + "ORDER BY t0.ARTIST_ID";
 
-        DataMap map = getDomain().getMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
@@ -75,7 +132,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         rsMap.addColumnResult("C");
         query.setResult(rsMap);
 
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(4, objects.size());
 
         Object o1 = objects.get(0);
@@ -97,11 +154,11 @@ public class DataContextSQLTemplateTest extends CayenneCase {
     }
 
     public void testSQLResultSetMappingScalar() throws Exception {
-        createTestData("testSQLResultSetMappingScalar");
+        createFourArtists();
 
         String sql = "SELECT count(1) AS X FROM ARTIST";
 
-        DataMap map = getDomain().getMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
@@ -115,7 +172,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         rsMap.addColumnResult("X");
         query.setResult(rsMap);
 
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Object o = objects.get(0);
@@ -124,11 +181,11 @@ public class DataContextSQLTemplateTest extends CayenneCase {
     }
 
     public void testSQLResultSetMappingScalarArray() throws Exception {
-        createTestData("testSQLResultSetMappingScalar");
+        createFourArtists();
 
         String sql = "SELECT count(1) AS X, 77 AS Y FROM ARTIST";
 
-        DataMap map = getDomain().getMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
@@ -143,7 +200,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         rsMap.addColumnResult("Y");
         query.setResult(rsMap);
 
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Object o = objects.get(0);
@@ -157,82 +214,77 @@ public class DataContextSQLTemplateTest extends CayenneCase {
     }
 
     public void testColumnNamesCapitalization() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtistsAndThreePaintingsDataSet();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Artist.class, template);
         query.setColumnNamesCapitalization(CapsStrategy.LOWER);
         query.setFetchingDataRows(true);
 
-        List rows = context.performQuery(query);
+        List<DataRow> rows = context.performQuery(query);
 
-        DataRow row1 = (DataRow) rows.get(0);
+        DataRow row1 = rows.get(0);
         assertFalse(row1.containsKey("ARTIST_ID"));
         assertTrue(row1.containsKey("artist_id"));
 
-        DataRow row2 = (DataRow) rows.get(1);
+        DataRow row2 = rows.get(1);
         assertFalse(row2.containsKey("ARTIST_ID"));
         assertTrue(row2.containsKey("artist_id"));
 
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-        List rowsUpper = context.performQuery(query);
+        List<DataRow> rowsUpper = context.performQuery(query);
 
-        DataRow row3 = (DataRow) rowsUpper.get(0);
+        DataRow row3 = rowsUpper.get(0);
         assertFalse(row3.containsKey("artist_id"));
         assertTrue(row3.containsKey("ARTIST_ID"));
 
-        DataRow row4 = (DataRow) rowsUpper.get(1);
+        DataRow row4 = rowsUpper.get(1);
         assertFalse(row4.containsKey("artist_id"));
         assertTrue(row4.containsKey("ARTIST_ID"));
     }
 
     public void testFetchDataRows() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtists();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Artist.class, template);
 
-        getSQLTemplateBuilder().updateSQLTemplate(query);
+        sqlTemplateCustomizer.updateSQLTemplate(query);
 
         query.setFetchingDataRows(true);
 
-        List rows = context.performQuery(query);
-        assertEquals(DataContextCase.artistCount, rows.size());
-        assertTrue(
-                "Expected DataRow, got this: " + rows.get(1),
-                rows.get(1) instanceof DataRow);
+        List<DataRow> rows = context.performQuery(query);
+        assertEquals(4, rows.size());
 
-        DataRow row2 = (DataRow) rows.get(1);
+        DataRow row2 = rows.get(1);
         assertEquals(3, row2.size());
         Object id = row2.get("ARTIST_ID");
-        assertEquals(new Integer(33002), new Integer(id.toString()));
+        assertEquals(new Integer(101), new Integer(id.toString()));
     }
 
     public void testFetchObjects() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtists();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 template);
 
         query.setFetchingDataRows(false);
 
-        List objects = context.performQuery(query);
-        assertEquals(DataContextCase.artistCount, objects.size());
+        List<?> objects = context.performQuery(query);
+        assertEquals(4, objects.size());
         assertTrue(objects.get(1) instanceof Artist);
 
         Artist artist2 = (Artist) objects.get(1);
-        assertEquals("artist2", artist2.getArtistName());
+        assertEquals("artist3", artist2.getArtistName());
     }
 
     public void testBindObjectEqualShort() throws Exception {
-        createTestData("prepare");
+        createFourArtistsAndThreePaintingsDataSet();
 
-        ObjectContext context = createDataContext();
-
-        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 101);
 
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
@@ -240,19 +292,17 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33002, Cayenne.intPKForObject(p));
+        assertEquals(7, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualShort() throws Exception {
-        createTestData("prepare");
+        createFourArtistsAndThreePaintingsDataSet();
 
-        ObjectContext context = createDataContext();
-
-        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 101);
 
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
@@ -260,22 +310,20 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
 
         // null comparison is unpredictable across DB's ... some would return true on null
         // <> value, some - false
         assertTrue(objects.size() == 1 || objects.size() == 2);
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33001, Cayenne.intPKForObject(p));
+        assertEquals(6, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualFull() throws Exception {
-        createTestData("prepare");
+        createFourArtistsAndThreePaintingsDataSet();
 
-        ObjectContext context = createDataContext();
-
-        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 101);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -283,19 +331,17 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33002, Cayenne.intPKForObject(p));
+        assertEquals(7, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualFullNonArray() throws Exception {
-        createTestData("prepare");
+        createFourArtistsAndThreePaintingsDataSet();
 
-        ObjectContext context = createDataContext();
-
-        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 101);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
@@ -303,17 +349,15 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33002, Cayenne.intPKForObject(p));
+        assertEquals(7, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualNull() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createDataContext();
+        createFourArtistsAndThreePaintingsDataSet();
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -321,19 +365,17 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", null));
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33003, Cayenne.intPKForObject(p));
+        assertEquals(8, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualFull() throws Exception {
-        createTestData("prepare");
+        createFourArtistsAndThreePaintingsDataSet();
 
-        ObjectContext context = createDataContext();
-
-        Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 101);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -341,19 +383,17 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         // null comparison is unpredictable across DB's ... some would return true on null
         // <> value, some - false
         assertTrue(objects.size() == 1 || objects.size() == 2);
 
         Painting p = (Painting) objects.get(0);
-        assertEquals(33001, Cayenne.intPKForObject(p));
+        assertEquals(6, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectEqualCompound() throws Exception {
-        createTestData("testBindObjectEqualCompound");
-
-        ObjectContext context = createDataContext();
+        createTwoCompoundPKsAndCompoundFKsDataSet();
 
         Map<String, String> pk = new HashMap<String, String>();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
@@ -370,17 +410,15 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
-        List objects = context.performQuery(query);
+        List<CompoundFkTestEntity> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
-        assertEquals(33001, Cayenne.intPKForObject(p));
+        CompoundFkTestEntity p = objects.get(0);
+        assertEquals(6, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualCompound() throws Exception {
-        createTestData("testBindObjectEqualCompound");
-
-        ObjectContext context = createDataContext();
+        createTwoCompoundPKsAndCompoundFKsDataSet();
 
         Map<String, String> pk = new HashMap<String, String>();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
@@ -397,17 +435,15 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
-        List objects = context.performQuery(query);
+        List<CompoundFkTestEntity> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
-        assertEquals(33002, Cayenne.intPKForObject(p));
+        CompoundFkTestEntity p = objects.get(0);
+        assertEquals(7, Cayenne.intPKForObject(p));
     }
 
     public void testBindObjectNotEqualNull() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createDataContext();
+        createFourArtistsAndThreePaintingsDataSet();
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -415,20 +451,18 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", null));
 
-        List objects = context.performQuery(query);
+        List<Painting> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
-        Painting p1 = (Painting) objects.get(0);
-        assertEquals(33001, Cayenne.intPKForObject(p1));
+        Painting p1 = objects.get(0);
+        assertEquals(6, Cayenne.intPKForObject(p1));
 
-        Painting p2 = (Painting) objects.get(1);
-        assertEquals(33002, Cayenne.intPKForObject(p2));
+        Painting p2 = objects.get(1);
+        assertEquals(7, Cayenne.intPKForObject(p2));
     }
-    
-    public void testBindEqualNull() throws Exception {
-        createTestData("prepare");
 
-        ObjectContext context = createDataContext();
+    public void testBindEqualNull() throws Exception {
+        createFourArtistsAndThreePaintingsDataSet();
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE t0.ARTIST_ID #bindEqual($id) ORDER BY PAINTING_ID";
@@ -436,105 +470,104 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("id", null));
 
-        List objects = context.performQuery(query);
+        List<Painting> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        Painting p = (Painting) objects.get(0);
-        assertEquals(33003, Cayenne.intPKForObject(p));
+        Painting p = objects.get(0);
+        assertEquals(8, Cayenne.intPKForObject(p));
     }
 
     public void testFetchLimit() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtists();
 
-        int fetchLimit = 3;
+        int fetchLimit = 2;
 
         // sanity check
-        assertTrue(fetchLimit < DataContextCase.artistCount);
+        assertTrue(fetchLimit < 4);
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 template);
         query.setFetchLimit(fetchLimit);
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(fetchLimit, objects.size());
         assertTrue(objects.get(0) instanceof Artist);
     }
 
     public void testFetchOffset() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtists();
 
-        int fetchOffset = 3;
+        int fetchOffset = 2;
 
         // sanity check
-        assertTrue(fetchOffset < DataContextCase.artistCount);
+        assertTrue(fetchOffset < 4);
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 template);
         query.setFetchOffset(fetchOffset);
 
-        List objects = context.performQuery(query);
-        assertEquals(DataContextCase.artistCount - fetchOffset, objects.size());
+        List<?> objects = context.performQuery(query);
+        assertEquals(4 - fetchOffset, objects.size());
         assertTrue(objects.get(0) instanceof Artist);
     }
 
     public void testFetchOffsetFetchLimit() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtists();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 template);
         query.setFetchOffset(1);
         query.setFetchLimit(2);
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.get(0) instanceof Artist);
     }
 
     public void testPageSize() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtists();
 
         int pageSize = 3;
 
         // sanity check
-        assertTrue(pageSize < DataContextCase.artistCount);
+        assertTrue(pageSize < 4);
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 template);
 
         query.setPageSize(pageSize);
 
-        List objects = context.performQuery(query);
-        
-        assertEquals(DataContextCase.artistCount, objects.size());
+        List<?> objects = context.performQuery(query);
+
+        assertEquals(4, objects.size());
         assertTrue(objects.get(0) instanceof Artist);
 
-        assertTrue(objects instanceof IncrementalFaultList);
-        IncrementalFaultList pagedList = (IncrementalFaultList) objects;
-        assertEquals(DataContextCase.artistCount - pageSize, pagedList
-                .getUnfetchedObjects());
+        assertTrue(objects instanceof IncrementalFaultList<?>);
+        IncrementalFaultList<?> pagedList = (IncrementalFaultList<?>) objects;
+        assertEquals(4 - pageSize, pagedList.getUnfetchedObjects());
 
         // check if we can resolve subsequent pages
         Artist artist = (Artist) objects.get(pageSize);
 
-        int expectUnresolved = DataContextCase.artistCount - pageSize - pageSize;
+        int expectUnresolved = 4 - pageSize - pageSize;
         if (expectUnresolved < 0) {
             expectUnresolved = 0;
         }
         assertEquals(expectUnresolved, pagedList.getUnfetchedObjects());
-        assertEquals("artist" + (pageSize + 1), artist.getArtistName());
+        assertEquals("artist" + (pageSize + 2), artist.getArtistName());
     }
 
     public void testIteratedQuery() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createFourArtists();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 template);
 
@@ -548,31 +581,30 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
                 DataRow row = (DataRow) it.nextRow();
                 assertEquals(3, row.size());
-                Object id = row.get("ARTIST_ID");
-                assertEquals(new Integer((int) (33000 + i)), new Integer(id.toString()));
+                assertEquals("artist" + (1 + i), row.get("ARTIST_NAME"));
             }
 
-            assertEquals(DataContextCase.artistCount, i);
+            assertEquals(4, i);
         }
         finally {
             it.close();
         }
     }
 
-    public void testQueryWithLineBreakAfterMacroCAY726() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+    public void testQueryWithLineBreakAfterMacro() throws Exception {
+        createFourArtists();
 
         // see CAY-726 for details
         String template = "SELECT #result('count(*)' 'int' 'X')"
                 + System.getProperty("line.separator")
                 + "FROM ARTIST";
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 template);
         query.setFetchingDataRows(true);
 
-        List result = context.performQuery(query);
+        List<?> result = context.performQuery(query);
 
-        assertEquals(new Integer(25), ((Map) result.get(0)).get("X"));
+        assertEquals(4, ((DataRow) result.get(0)).get("X"));
     }
 }

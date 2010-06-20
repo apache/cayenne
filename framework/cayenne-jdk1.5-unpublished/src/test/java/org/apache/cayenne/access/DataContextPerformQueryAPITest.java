@@ -26,65 +26,113 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataContextPerformQueryAPITest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextPerformQueryAPITest extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected ServerRuntime runtime;
+
+    @Inject
+    protected AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    protected DataChannelQueryInterceptor queryInterceptor;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("GALLERY");
+        dbHelper.deleteAll("EXHIBIT");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+    }
+
+    protected void createTwoArtists() throws Exception {
+        tArtist.insert(21, "artist2");
+        tArtist.insert(201, "artist3");
+    }
+
+    protected void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {
+        tArtist.insert(11, "artist2");
+        tArtist.insert(101, "artist3");
+        tPainting.insert(6, "p_artist3", 101, 1000);
+        tPainting.insert(7, "p_artist2", 11, 2000);
     }
 
     public void testObjectQueryStringBoolean() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
-        getAccessStack().createTestData(DataContextCase.class, "testPaintings", null);
+        createTwoArtistsAndTwoPaintingsDataSet();
 
-        List paintings = createDataContext().performQuery("ObjectQuery", true);
+        List<?> paintings = context.performQuery("ObjectQuery", true);
         assertNotNull(paintings);
-        assertEquals(25, paintings.size());
+        assertEquals(2, paintings.size());
     }
 
     public void testObjectQueryStringMapBoolean() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
-        getAccessStack().createTestData(DataContextCase.class, "testPaintings", null);
+        createTwoArtistsAndTwoPaintingsDataSet();
 
-        // fetch artist
-        DataContext context = createDataContext();
         Artist a = (Artist) context.localObject(new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
-                33018), null);
-        Map parameters = Collections.singletonMap("artist", a);
+                11), null);
+        Map<String, Artist> parameters = Collections.singletonMap("artist", a);
 
-        List paintings = createDataContextWithSharedCache(false)
-                .performQuery("ObjectQuery", parameters, true);
+        List<?> paintings = ((DataContext) runtime.getContext()).performQuery(
+                "ObjectQuery",
+                parameters,
+                true);
         assertNotNull(paintings);
         assertEquals(1, paintings.size());
     }
 
     public void testProcedureQueryStringMapBoolean() throws Exception {
-        // Don't run this on MySQL
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
-        if (!getAccessStackAdapter().canMakeObjectsOutOfProcedures()) {
+        if (!accessStackAdapter.canMakeObjectsOutOfProcedures()) {
             return;
         }
 
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
-        getAccessStack().createTestData(DataContextCase.class, "testPaintings", null);
+        createTwoArtistsAndTwoPaintingsDataSet();
 
         // fetch artist
-        Map parameters = Collections.singletonMap("aName", "artist2");
-        DataContext context = createDataContext();
-        List artists;
+        Map<String, String> parameters = Collections.singletonMap("aName", "artist2");
+
+        List<?> artists;
 
         // Sybase blows whenever a transaction wraps a SP, so turn of transactions
         boolean transactionsFlag = context
@@ -108,7 +156,6 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
     }
 
     public void testNonSelectingQueryString() throws Exception {
-        DataContext context = createDataContext();
 
         int[] counts = context.performNonSelectingQuery("NonSelectingQuery");
 
@@ -124,10 +171,9 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
     }
 
     public void testNonSelectingQueryStringMap() throws Exception {
-        DataContext context = createDataContext();
 
-        Map parameters = new HashMap();
-        parameters.put("id", new Integer(300));
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("id", 300);
         parameters.put("title", "Go Figure");
         parameters.put("price", new BigDecimal("22.01"));
 
@@ -147,7 +193,7 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
     }
 
     public void testPerfomQueryNonSelecting() throws Exception {
-        DataContext context = createDataContext();
+
         Artist a = context.newObject(Artist.class);
         a.setArtistName("aa");
         context.commitChanges();
@@ -155,47 +201,43 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
         SQLTemplate q = new SQLTemplate(Artist.class, "DELETE FROM ARTIST");
 
         // this way of executing a query makes no sense, but it shouldn't blow either...
-        List result = context.performQuery(q);
+        List<?> result = context.performQuery(q);
 
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
     public void testObjectQueryWithLocalCache() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createTwoArtists();
 
-        DataContext context = createDataContext();
-        List artists = context.performQuery("QueryWithLocalCache", true);
-        assertEquals(25, artists.size());
+        List<?> artists = context.performQuery("QueryWithLocalCache", true);
+        assertEquals(2, artists.size());
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-            List artists1 = context.performQuery("QueryWithLocalCache", false);
-            assertEquals(25, artists1.size());
-        }
-        finally {
-            unblockQueries();
-        }
+            public void execute() {
+                List<?> artists1 = context.performQuery("QueryWithLocalCache", false);
+                assertEquals(2, artists1.size());
+            }
+        });
     }
 
     public void testObjectQueryWithSharedCache() throws Exception {
-        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+        createTwoArtists();
 
-        DataContext context = createDataContext();
-        List artists = context.performQuery("QueryWithSharedCache", true);
-        assertEquals(25, artists.size());
+        List<?> artists = context.performQuery("QueryWithSharedCache", true);
+        assertEquals(2, artists.size());
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-            List artists1 = createDataContextWithSharedCache(false).performQuery(
-                    "QueryWithSharedCache",
-                    false);
-            assertEquals(25, artists1.size());
-        }
-        finally {
-            unblockQueries();
-        }
+            public void execute() {
+
+                DataContext otherContext = (DataContext) runtime.getContext();
+                List<?> artists1 = otherContext.performQuery(
+                        "QueryWithSharedCache",
+                        false);
+                assertEquals(2, artists1.size());
+            }
+        });
     }
 }

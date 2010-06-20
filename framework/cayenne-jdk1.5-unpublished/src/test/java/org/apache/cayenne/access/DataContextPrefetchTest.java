@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collections;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
@@ -38,129 +37,225 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataContextPrefetchTest extends DataContextCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextPrefetchTest extends ServerCase {
 
-    /**
-     * Test that a to-many relationship is initialized.
-     */
-    public void testPrefetchToMany() throws Exception {
-        createTestData("testPaintings");
+    @Inject
+    protected DataContext context;
 
-        Map params = new HashMap();
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected DataChannelQueryInterceptor queryInterceptor;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+    protected TableHelper tPaintingInfo;
+    protected TableHelper tExhibit;
+    protected TableHelper tGallery;
+    protected TableHelper tArtistExhibit;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+
+        tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+
+        tExhibit = new TableHelper(dbHelper, "EXHIBIT");
+        tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
+
+        tArtistExhibit = new TableHelper(dbHelper, "ARTIST_EXHIBIT");
+        tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
+
+        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+    }
+
+    protected void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {
+        tArtist.insert(11, "artist2");
+        tArtist.insert(101, "artist3");
+        tPainting.insert(6, "p_artist3", 101, 1000);
+        tPainting.insert(7, "p_artist2", 11, 2000);
+    }
+
+    protected void createArtistWithTwoPaintingsAndTwoInfosDataSet() throws Exception {
+        tArtist.insert(11, "artist2");
+
+        tPainting.insert(6, "p_artist2", 11, 1000);
+        tPainting.insert(7, "p_artist3", 11, 2000);
+
+        tPaintingInfo.insert(6, "xYs");
+    }
+
+    protected void createTwoArtistsWithExhibitsDataSet() throws Exception {
+        tArtist.insert(11, "artist2");
+        tArtist.insert(101, "artist3");
+
+        tGallery.insert(25, "gallery1");
+        tGallery.insert(31, "gallery2");
+        tGallery.insert(45, "gallery3");
+
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
+        tExhibit.insert(1, 25, now, now);
+        tExhibit.insert(2, 31, now, now);
+        tExhibit.insert(3, 45, now, now);
+        tExhibit.insert(4, 25, now, now);
+
+        tArtistExhibit.insert(11, 2);
+        tArtistExhibit.insert(11, 4);
+        tArtistExhibit.insert(101, 1);
+        tArtistExhibit.insert(101, 3);
+        tArtistExhibit.insert(101, 4);
+    }
+
+    public void testPrefetchToMany_WithQualfier() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
+
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("name1", "artist2");
         params.put("name2", "artist3");
         Expression e = Expression
                 .fromString("artistName = $name1 or artistName = $name2");
         SelectQuery q = new SelectQuery("Artist", e.expWithParameters(params));
-        q.addPrefetch("paintingArray");
+        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
 
-        List artists = context.performQuery(q);
+        final List<Artist> artists = context.performQuery(q);
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-            assertEquals(2, artists.size());
+            public void execute() {
 
-            Artist a1 = (Artist) artists.get(0);
-            List toMany = (List) a1.readPropertyDirectly("paintingArray");
-            assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
-            assertEquals(1, toMany.size());
+                assertEquals(2, artists.size());
 
-            Painting p1 = (Painting) toMany.get(0);
-            assertEquals("P_" + a1.getArtistName(), p1.getPaintingTitle());
-
-            Artist a2 = (Artist) artists.get(1);
-            List toMany2 = (List) a2.readPropertyDirectly("paintingArray");
-            assertNotNull(toMany2);
-            assertFalse(((ValueHolder) toMany2).isFault());
-            assertEquals(1, toMany2.size());
-
-            Painting p2 = (Painting) toMany2.get(0);
-            assertEquals("P_" + a2.getArtistName(), p2.getPaintingTitle());
-        }
-        finally {
-            unblockQueries();
-        }
-    }
-
-    /**
-     * Test that a to-many relationship is initialized.
-     */
-    public void testPrefetchToManyNoQualifier() throws Exception {
-        createTestData("testPaintings");
-        SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch("paintingArray");
-
-        List artists = context.performQuery(q);
-
-        blockQueries();
-        try {
-            assertEquals(artistCount, artists.size());
-
-            for (int i = 0; i < artistCount; i++) {
-                Artist a = (Artist) artists.get(i);
-                List toMany = (List) a.readPropertyDirectly("paintingArray");
+                Artist a1 = artists.get(0);
+                List<?> toMany = (List<?>) a1
+                        .readPropertyDirectly(Artist.PAINTING_ARRAY_PROPERTY);
                 assertNotNull(toMany);
                 assertFalse(((ValueHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
 
-                Painting p = (Painting) toMany.get(0);
-                assertEquals(
-                        "Invalid prefetched painting:" + p,
-                        "P_" + a.getArtistName(),
-                        p.getPaintingTitle());
+                Painting p1 = (Painting) toMany.get(0);
+                assertEquals("p_" + a1.getArtistName(), p1.getPaintingTitle());
+
+                Artist a2 = artists.get(1);
+                List<?> toMany2 = (List<?>) a2
+                        .readPropertyDirectly(Artist.PAINTING_ARRAY_PROPERTY);
+                assertNotNull(toMany2);
+                assertFalse(((ValueHolder) toMany2).isFault());
+                assertEquals(1, toMany2.size());
+
+                Painting p2 = (Painting) toMany2.get(0);
+                assertEquals("p_" + a2.getArtistName(), p2.getPaintingTitle());
             }
-        }
-        finally {
-            unblockQueries();
-        }
+        });
+    }
+
+    public void testPrefetchToManyNoQualifier() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
+
+        SelectQuery q = new SelectQuery(Artist.class);
+        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+
+        final List<Artist> artists = context.performQuery(q);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+
+                assertEquals(2, artists.size());
+
+                for (int i = 0; i < 2; i++) {
+                    Artist a = artists.get(i);
+                    List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
+                    assertNotNull(toMany);
+                    assertFalse(((ValueHolder) toMany).isFault());
+                    assertEquals(1, toMany.size());
+
+                    Painting p = (Painting) toMany.get(0);
+                    assertEquals("Invalid prefetched painting:" + p, "p_"
+                            + a.getArtistName(), p.getPaintingTitle());
+                }
+            }
+        });
     }
 
     /**
      * Test that a to-many relationship is initialized when a target entity has a compound
      * PK only partially involved in relationship.
      */
-    public void testPrefetchToManyOnJoinTableDisjoinedPrefetch() throws Exception {
-        // setup data
-        createTestData("testGalleries");
-        populateExhibits();
-        createTestData("testArtistExhibits");
+    public void testPrefetchToMany_OnJoinTableDisjoinedPrefetch() throws Exception {
+
+        createTwoArtistsWithExhibitsDataSet();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch("artistExhibitArray").setSemantics(
+        q.addPrefetch(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY).setSemantics(
                 PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
-        List artists = context.performQuery(q);
+        final List<Artist> artists = context.performQuery(q);
 
-        blockQueries();
-        try {
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            assertEquals(artistCount, artists.size());
+            public void execute() {
+                assertEquals(2, artists.size());
 
-            Artist a1 = (Artist) artists.get(0);
-            assertEquals("artist1", a1.getArtistName());
-            List toMany = (List) a1.readPropertyDirectly("artistExhibitArray");
-            assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
-            assertEquals(2, toMany.size());
+                Artist a1 = artists.get(0);
+                assertEquals("artist2", a1.getArtistName());
+                List<?> toMany = (List<?>) a1
+                        .readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
+                assertNotNull(toMany);
+                assertFalse(((ValueHolder) toMany).isFault());
+                assertEquals(2, toMany.size());
 
-            ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
-            assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
-            assertSame(a1, artistExhibit.getToArtist());
-        }
-        finally {
-            unblockQueries();
-        }
+                ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
+                assertEquals(PersistenceState.COMMITTED, artistExhibit
+                        .getPersistenceState());
+                assertSame(a1, artistExhibit.getToArtist());
+
+                Artist a2 = artists.get(1);
+                assertEquals("artist3", a2.getArtistName());
+                List<?> toMany2 = (List<?>) a2
+                        .readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
+                assertNotNull(toMany2);
+                assertFalse(((ValueHolder) toMany2).isFault());
+                assertEquals(3, toMany2.size());
+
+                ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
+                assertEquals(PersistenceState.COMMITTED, artistExhibit2
+                        .getPersistenceState());
+                assertSame(a2, artistExhibit2.getToArtist());
+            }
+        });
     }
 
     /**
@@ -168,45 +263,55 @@ public class DataContextPrefetchTest extends DataContextCase {
      * PK only partially involved in relationship.
      */
     public void testPrefetchToManyOnJoinTableJoinedPrefetch() throws Exception {
-        // setup data
-        createTestData("testGalleries");
-        populateExhibits();
-        createTestData("testArtistExhibits");
+        createTwoArtistsWithExhibitsDataSet();
 
         SelectQuery q = new SelectQuery(Artist.class);
         q.addPrefetch("artistExhibitArray").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
-        List artists = context.performQuery(q);
+        final List<Artist> artists = context.performQuery(q);
 
-        blockQueries();
-        try {
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            assertEquals(artistCount, artists.size());
+            public void execute() {
 
-            Artist a1 = (Artist) artists.get(0);
-            assertEquals("artist1", a1.getArtistName());
-            List toMany = (List) a1.readPropertyDirectly("artistExhibitArray");
-            assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
-            assertEquals(2, toMany.size());
+                assertEquals(2, artists.size());
 
-            ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
-            assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
-            assertSame(a1, artistExhibit.getToArtist());
-        }
-        finally {
-            unblockQueries();
-        }
+                Artist a1 = artists.get(0);
+                assertEquals("artist2", a1.getArtistName());
+                List<?> toMany = (List<?>) a1.readPropertyDirectly("artistExhibitArray");
+                assertNotNull(toMany);
+                assertFalse(((ValueHolder) toMany).isFault());
+                assertEquals(2, toMany.size());
+
+                ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
+                assertEquals(PersistenceState.COMMITTED, artistExhibit
+                        .getPersistenceState());
+                assertSame(a1, artistExhibit.getToArtist());
+
+                Artist a2 = artists.get(1);
+                assertEquals("artist3", a2.getArtistName());
+                List<?> toMany2 = (List<?>) a2
+                        .readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
+                assertNotNull(toMany2);
+                assertFalse(((ValueHolder) toMany2).isFault());
+                assertEquals(3, toMany2.size());
+
+                ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
+                assertEquals(PersistenceState.COMMITTED, artistExhibit2
+                        .getPersistenceState());
+                assertSame(a2, artistExhibit2.getToArtist());
+            }
+        });
     }
 
     /**
      * Test that a to-many relationship is initialized when there is no inverse
      * relationship
      */
-    public void testPrefetch3a() throws Exception {
-        createTestData("testPaintings");
+    public void testPrefetch_ToManyNoReverse() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjEntity paintingEntity = context.getEntityResolver().lookupObjEntity(
                 Painting.class);
@@ -214,37 +319,29 @@ public class DataContextPrefetchTest extends DataContextCase {
                 .getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
-        SelectQuery q = new SelectQuery("Artist");
-        q.addPrefetch("paintingArray");
-
         try {
-            List result = context.performQuery(q);
+            SelectQuery q = new SelectQuery(Artist.class);
+            q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+            final List<Artist> result = context.performQuery(q);
 
-            blockQueries();
-            try {
-                assertFalse(result.isEmpty());
-                CayenneDataObject a1 = (CayenneDataObject) result.get(0);
-                List toMany = (List) a1.readPropertyDirectly("paintingArray");
-                assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
-            }
-            finally {
-                unblockQueries();
-            }
+            queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+                public void execute() {
+                    assertFalse(result.isEmpty());
+                    Artist a1 = result.get(0);
+                    List<?> toMany = (List<?>) a1.readPropertyDirectly("paintingArray");
+                    assertNotNull(toMany);
+                    assertFalse(((ValueHolder) toMany).isFault());
+                }
+            });
         }
         finally {
-            // Fix it up again, so other tests do not fail
             paintingEntity.addRelationship(relationship);
         }
-
     }
 
-    /**
-     * Test that a to-many relationship is initialized when there is no inverse
-     * relationship and the root query is qualified
-     */
-    public void testPrefetchOneWayToMany() throws Exception {
-        createTestData("testPaintings");
+    public void testPrefetch_ToManyNoReverseWithQualifier() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjEntity paintingEntity = context.getEntityResolver().lookupObjEntity(
                 Painting.class);
@@ -252,97 +349,81 @@ public class DataContextPrefetchTest extends DataContextCase {
                 .getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
-        SelectQuery q = new SelectQuery("Artist");
-        q.setQualifier(ExpressionFactory.matchExp("artistName", "artist1"));
-        q.addPrefetch("paintingArray");
-
         try {
-            List result = context.performQuery(q);
 
-            blockQueries();
+            SelectQuery q = new SelectQuery(Artist.class);
+            q.setQualifier(ExpressionFactory.matchExp("artistName", "artist2"));
+            q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
 
-            try {
-                assertFalse(result.isEmpty());
+            final List<Artist> result = context.performQuery(q);
 
-                CayenneDataObject a1 = (CayenneDataObject) result.get(0);
-                List toMany = (List) a1.readPropertyDirectly("paintingArray");
-                assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
-            }
-            finally {
-                unblockQueries();
-            }
+            queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+                public void execute() {
+                    assertFalse(result.isEmpty());
+                    Artist a1 = result.get(0);
+                    List<?> toMany = (List<?>) a1.readPropertyDirectly("paintingArray");
+                    assertNotNull(toMany);
+                    assertFalse(((ValueHolder) toMany).isFault());
+                }
+            });
+
         }
         finally {
-            // Fix it up again, so other tests do not fail
             paintingEntity.addRelationship(relationship);
         }
-
     }
 
-    /**
-     * Test that a to-one relationship is initialized.
-     */
-    public void testPrefetch4() throws Exception {
-        createTestData("testPaintings");
+    public void testPrefetch_ToOne() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
 
-        SelectQuery q = new SelectQuery("Painting");
-        q.addPrefetch("toArtist");
+        SelectQuery q = new SelectQuery(Painting.class);
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
 
-        List result = context.performQuery(q);
+        final List<Painting> result = context.performQuery(q);
 
-        blockQueries();
-        try {
-            assertFalse(result.isEmpty());
-            DataObject p1 = (DataObject) result.get(0);
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            Object toOnePrefetch = p1.readNestedProperty("toArtist");
-            assertNotNull(toOnePrefetch);
-            assertTrue(
-                    "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
-                    toOnePrefetch instanceof DataObject);
+            public void execute() {
+                assertFalse(result.isEmpty());
+                Painting p1 = result.get(0);
 
-            DataObject a1 = (DataObject) toOnePrefetch;
-            assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-        }
-        finally {
-            unblockQueries();
-        }
+                Object toOnePrefetch = p1.readNestedProperty("toArtist");
+                assertNotNull(toOnePrefetch);
+                assertTrue(
+                        "Expected Artist, got: " + toOnePrefetch.getClass().getName(),
+                        toOnePrefetch instanceof Artist);
+
+                Artist a1 = (Artist) toOnePrefetch;
+                assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
+            }
+        });
     }
 
-    /**
-     * Test prefetching with queries using DB_PATH.
-     */
-    public void testPrefetch5() throws Exception {
-        createTestData("testPaintings");
+    public void testPrefetch_ToOne_DbPath() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
 
-        SelectQuery q = new SelectQuery("Painting");
+        SelectQuery q = new SelectQuery(Painting.class);
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
         q.andQualifier(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist2"));
-        q.addPrefetch("toArtist");
 
-        List results = context.performQuery(q);
+        List<Painting> results = context.performQuery(q);
 
         assertEquals(1, results.size());
     }
 
-    /**
-     * Test prefetching with queries using OBJ_PATH.
-     */
-    public void testPrefetch6() throws Exception {
-        createTestData("testPaintings");
+    public void testPrefetch_ToOne_ObjPath() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
 
-        SelectQuery q = new SelectQuery("Painting");
+        SelectQuery q = new SelectQuery(Painting.class);
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
         q.andQualifier(ExpressionFactory.matchExp("toArtist.artistName", "artist2"));
-        q.addPrefetch("toArtist");
 
-        List results = context.performQuery(q);
+        List<Painting> results = context.performQuery(q);
         assertEquals(1, results.size());
     }
 
-    /**
-     * Test prefetching with the prefetch on a reflexive relationship
-     */
-    public void testPrefetch7() throws Exception {
+    public void testPrefetch_ReflexiveRelationship() throws Exception {
         ArtGroup parent = (ArtGroup) context.newObject("ArtGroup");
         parent.setName("parent");
         ArtGroup child = (ArtGroup) context.newObject("ArtGroup");
@@ -354,60 +435,51 @@ public class DataContextPrefetchTest extends DataContextCase {
         q.setQualifier(ExpressionFactory.matchExp("name", "child"));
         q.addPrefetch("toParentGroup");
 
-        List results = context.performQuery(q);
+        final List<ArtGroup> results = context.performQuery(q);
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-            assertEquals(1, results.size());
+            public void execute() {
+                assertEquals(1, results.size());
 
-            ArtGroup fetchedChild = (ArtGroup) results.get(0);
-            // The parent must be fully fetched, not just HOLLOW (a fault)
-            assertEquals(PersistenceState.COMMITTED, fetchedChild
-                    .getToParentGroup()
-                    .getPersistenceState());
-        }
-        finally {
-            unblockQueries();
-        }
+                ArtGroup fetchedChild = results.get(0);
+                // The parent must be fully fetched, not just HOLLOW (a fault)
+                assertEquals(PersistenceState.COMMITTED, fetchedChild
+                        .getToParentGroup()
+                        .getPersistenceState());
+            }
+        });
     }
 
-    /**
-     * Test prefetching with qualifier on the root query containing the path to the
-     * prefetch.
-     */
-    public void testPrefetch8() throws Exception {
-        createTestData("testPaintings");
-        Expression exp = ExpressionFactory.matchExp("toArtist.artistName", "artist1");
+    public void testPrefetch_ToOneWithQualifierOverlappingPrefetchPath() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
+
+        Expression exp = ExpressionFactory.matchExp("toArtist.artistName", "artist3");
 
         SelectQuery q = new SelectQuery(Painting.class, exp);
-        q.addPrefetch("toArtist");
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
 
-        List results = context.performQuery(q);
+        final List<Painting> results = context.performQuery(q);
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-            assertEquals(1, results.size());
+            public void execute() {
+                assertEquals(1, results.size());
 
-            Painting painting = (Painting) results.get(0);
+                Painting painting = results.get(0);
 
-            // The parent must be fully fetched, not just HOLLOW (a fault)
-            assertEquals(PersistenceState.COMMITTED, painting
-                    .getToArtist()
-                    .getPersistenceState());
-        }
-        finally {
-            unblockQueries();
-        }
+                // The parent must be fully fetched, not just HOLLOW (a fault)
+                assertEquals(PersistenceState.COMMITTED, painting
+                        .getToArtist()
+                        .getPersistenceState());
+            }
+        });
     }
 
-    /**
-     * Test prefetching with qualifier on the root query being the path to the prefetch.
-     */
     public void testPrefetch9() throws Exception {
-        createTestData("testPaintings");
-        Expression artistExp = ExpressionFactory.matchExp("artistName", "artist1");
+        createTwoArtistsAndTwoPaintingsDataSet();
+
+        Expression artistExp = ExpressionFactory.matchExp("artistName", "artist3");
         SelectQuery artistQuery = new SelectQuery(Artist.class, artistExp);
         Artist artist1 = (Artist) context.performQuery(artistQuery).get(0);
 
@@ -418,63 +490,58 @@ public class DataContextPrefetchTest extends DataContextCase {
         SelectQuery q = new SelectQuery(Painting.class, exp);
         q.addPrefetch("toArtist");
 
-        // run the query ... see that it doesn't blow
-        List paintings = context.performQuery(q);
+        final List<Painting> results = context.performQuery(q);
 
-        blockQueries();
-        try {
-            assertEquals(24, paintings.size());
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            // see that artists are resolved...
+            public void execute() {
+                assertEquals(1, results.size());
 
-            Painting px = (Painting) paintings.get(3);
-            Artist ax = (Artist) px.readProperty(Painting.TO_ARTIST_PROPERTY);
-            assertEquals(PersistenceState.COMMITTED, ax.getPersistenceState());
-        }
-        finally {
-            unblockQueries();
-        }
+                // see that artists are resolved...
 
+                Painting px = results.get(0);
+                Artist ax = (Artist) px.readProperty(Painting.TO_ARTIST_PROPERTY);
+                assertEquals(PersistenceState.COMMITTED, ax.getPersistenceState());
+            }
+        });
     }
 
-    public void testPrefetchOneToOne() throws Exception {
-        createTestData("testPaintingInfos");
+    public void testPrefetch_OneToOneWithQualifier() throws Exception {
+        createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
         Expression e = ExpressionFactory.likeExp("toArtist.artistName", "a%");
         SelectQuery q = new SelectQuery(Painting.class, e);
         q.addPrefetch(Painting.TO_PAINTING_INFO_PROPERTY);
         q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
 
-        List results = context.performQuery(q);
+        final List<Painting> results = context.performQuery(q);
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-            assertEquals(4, results.size());
+            public void execute() {
+                assertEquals(2, results.size());
 
-            // testing non-null to-one target
-            Painting p2 = (Painting) results.get(1);
-            Object o2 = p2.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY);
-            assertTrue(o2 instanceof PaintingInfo);
-            PaintingInfo pi2 = (PaintingInfo) o2;
-            assertEquals(PersistenceState.COMMITTED, pi2.getPersistenceState());
-            assertEquals(Cayenne.intPKForObject(p2), Cayenne
-                    .intPKForObject(pi2));
+                // testing non-null to-one target
+                Painting p0 = results.get(0);
+                Object o2 = p0.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY);
+                assertTrue(o2 instanceof PaintingInfo);
+                PaintingInfo pi2 = (PaintingInfo) o2;
+                assertEquals(PersistenceState.COMMITTED, pi2.getPersistenceState());
+                assertEquals(Cayenne.intPKForObject(p0), Cayenne.intPKForObject(pi2));
 
-            // testing null to-one target
-            Painting p4 = (Painting) results.get(3);
-            assertNull(p4.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY));
+                // testing null to-one target
+                Painting p1 = results.get(1);
+                assertNull(p1.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY));
 
-            // there was a bug marking an object as dirty when clearing the relationships
-            assertEquals(PersistenceState.COMMITTED, p4.getPersistenceState());
-        }
-        finally {
-            unblockQueries();
-        }
+                // there was a bug marking an object as dirty when clearing the
+                // relationships
+                assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
+            }
+        });
     }
 
-    public void testCAY119() throws Exception {
-        createTestData("testPaintings");
+    public void testPrefetchToMany_DateInQualifier() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
 
         Expression e = ExpressionFactory.matchExp("dateOfBirth", new Date());
         SelectQuery q = new SelectQuery(Artist.class, e);
@@ -487,101 +554,91 @@ public class DataContextPrefetchTest extends DataContextCase {
 
     public void testPrefetchingToOneNull() throws Exception {
 
-        Painting p1 = context.newObject(Painting.class);
-        p1.setPaintingTitle("aaaa");
-
-        context.commitChanges();
-        context.invalidateObjects(Collections.singleton(p1));
+        tPainting.insert(6, "p_Xty", null, 1000);
 
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addPrefetch("toArtist");
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
 
-        // run the query ... see that it doesn't blow
-        List paintings = context.performQuery(q);
+        final List<Painting> paintings = context.performQuery(q);
 
-        blockQueries();
-        try {
-            assertEquals(1, paintings.size());
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            Painting p2 = (Painting) paintings.get(0);
-            assertNull(p2.readProperty(Painting.TO_ARTIST_PROPERTY));
-        }
-        finally {
-            unblockQueries();
-        }
+            public void execute() {
+                assertEquals(1, paintings.size());
+
+                Painting p2 = paintings.get(0);
+                assertNull(p2.readProperty(Painting.TO_ARTIST_PROPERTY));
+            }
+        });
     }
 
     public void testPrefetchToOneSharedCache() throws Exception {
-        createTestData("testPaintings");
+        createTwoArtistsAndTwoPaintingsDataSet();
 
-        SelectQuery q = new SelectQuery("Painting");
-        q.addPrefetch("toArtist");
-        q.setName("__testPrefetchToOneSharedCache__" + System.currentTimeMillis());
+        final SelectQuery q = new SelectQuery(Painting.class);
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
         q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         context.performQuery(q);
 
-        blockQueries();
-        try {
-            // per CAY-499 second run of a cached query with prefetches (i.e. when the
-            // result is served from cache) used to throw an exception...
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            List cachedResult = context.performQuery(q);
+            public void execute() {
+                // per CAY-499 second run of a cached query with prefetches (i.e. when the
+                // result is served from cache) used to throw an exception...
 
-            assertFalse(cachedResult.isEmpty());
-            DataObject p1 = (DataObject) cachedResult.get(0);
+                List<Painting> cachedResult = context.performQuery(q);
 
-            Object toOnePrefetch = p1.readNestedProperty("toArtist");
-            assertNotNull(toOnePrefetch);
-            assertTrue(
-                    "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
-                    toOnePrefetch instanceof DataObject);
+                assertFalse(cachedResult.isEmpty());
+                Painting p1 = cachedResult.get(0);
 
-            DataObject a1 = (DataObject) toOnePrefetch;
-            assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
+                Object toOnePrefetch = p1.readNestedProperty("toArtist");
+                assertNotNull(toOnePrefetch);
+                assertTrue(
+                        "Expected Artist, got: " + toOnePrefetch.getClass().getName(),
+                        toOnePrefetch instanceof Artist);
 
-            // and just in case - run one more time...
-            context.performQuery(q);
-        }
-        finally {
-            unblockQueries();
-        }
+                Artist a1 = (Artist) toOnePrefetch;
+                assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
+
+                // and just in case - run one more time...
+                context.performQuery(q);
+            }
+        });
     }
 
     public void testPrefetchToOneLocalCache() throws Exception {
-        createTestData("testPaintings");
+        createTwoArtistsAndTwoPaintingsDataSet();
 
-        SelectQuery q = new SelectQuery("Painting");
-        q.addPrefetch("toArtist");
-        q.setName("__testPrefetchToOneLocalCache__" + System.currentTimeMillis());
+        final SelectQuery q = new SelectQuery(Painting.class);
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
         q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         context.performQuery(q);
 
-        blockQueries();
-        try {
-            // per CAY-499 second run of a cached query with prefetches (i.e. when the
-            // result is served from cache) used to throw an exception...
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            List cachedResult = context.performQuery(q);
+            public void execute() {
+                // per CAY-499 second run of a cached query with prefetches (i.e. when the
+                // result is served from cache) used to throw an exception...
 
-            assertFalse(cachedResult.isEmpty());
-            DataObject p1 = (DataObject) cachedResult.get(0);
+                List<Painting> cachedResult = context.performQuery(q);
 
-            Object toOnePrefetch = p1.readNestedProperty("toArtist");
-            assertNotNull(toOnePrefetch);
-            assertTrue(
-                    "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
-                    toOnePrefetch instanceof DataObject);
+                assertFalse(cachedResult.isEmpty());
+                Painting p1 = cachedResult.get(0);
 
-            DataObject a1 = (DataObject) toOnePrefetch;
-            assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
+                Object toOnePrefetch = p1.readNestedProperty("toArtist");
+                assertNotNull(toOnePrefetch);
+                assertTrue(
+                        "Expected Artist, got: " + toOnePrefetch.getClass().getName(),
+                        toOnePrefetch instanceof Artist);
 
-            // and just in case - run one more time...
-            context.performQuery(q);
-        }
-        finally {
-            unblockQueries();
-        }
+                Artist a1 = (Artist) toOnePrefetch;
+                assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
+
+                // and just in case - run one more time...
+                context.performQuery(q);
+            }
+        });
     }
 }

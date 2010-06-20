@@ -42,11 +42,18 @@ public class TableHelper {
         setColumns(columns);
     }
 
-    public TableHelper deleteAll() throws SQLException {
-        dbHelper.deleteAll(tableName);
-        return this;
+    public UpdateBuilder update() throws SQLException {
+        return dbHelper.update(tableName);
     }
-    
+
+    public DeleteBuilder delete() {
+        return dbHelper.delete(tableName);
+    }
+
+    public int deleteAll() throws SQLException {
+        return dbHelper.deleteAll(tableName);
+    }
+
     public String getTableName() {
         return tableName;
     }
@@ -110,6 +117,10 @@ public class TableHelper {
 
     public boolean getBoolean(String column) throws SQLException {
         return dbHelper.getBoolean(tableName, column);
+    }
+
+    public String getString(String column) throws SQLException {
+        return dbHelper.getString(tableName, column);
     }
 
     public java.util.Date getUtilDate(String column) throws SQLException {

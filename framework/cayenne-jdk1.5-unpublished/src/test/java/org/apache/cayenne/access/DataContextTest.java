@@ -78,7 +78,7 @@ public class DataContextTest extends ServerCase {
     protected TableHelper tArtist;
     protected TableHelper tExhibit;
     protected TableHelper tGallery;
-    protected TableHelper tPaining;
+    protected TableHelper tPainting;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -98,8 +98,8 @@ public class DataContextTest extends ServerCase {
         tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
 
-        tPaining = new TableHelper(dbHelper, "PAINTING");
-        tPaining.setColumns(
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
@@ -144,13 +144,13 @@ public class DataContextTest extends ServerCase {
     protected void createArtistsAndPaintingsDataSet() throws Exception {
         createArtistsDataSet();
 
-        tPaining.insert(33001, "P_artist1", 33001, 1000);
-        tPaining.insert(33002, "P_artist2", 33002, 2000);
-        tPaining.insert(33003, "P_artist3", 33003, 3000);
-        tPaining.insert(33004, "P_artist4", 33004, 4000);
-        tPaining.insert(33005, "P_artist5", 33005, 5000);
-        tPaining.insert(33006, "P_artist11", 33006, 11000);
-        tPaining.insert(33007, "P_artist21", 33007, 21000);
+        tPainting.insert(33001, "P_artist1", 33001, 1000);
+        tPainting.insert(33002, "P_artist2", 33002, 2000);
+        tPainting.insert(33003, "P_artist3", 33003, 3000);
+        tPainting.insert(33004, "P_artist4", 33004, 4000);
+        tPainting.insert(33005, "P_artist5", 33005, 5000);
+        tPainting.insert(33006, "P_artist11", 33006, 11000);
+        tPainting.insert(33007, "P_artist21", 33007, 21000);
     }
 
     public void testCurrentSnapshot1() throws Exception {

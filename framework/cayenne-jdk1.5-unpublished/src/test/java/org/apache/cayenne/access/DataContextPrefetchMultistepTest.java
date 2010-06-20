@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,28 +30,79 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- * Testing chained prefetches...
- */
-public class DataContextPrefetchMultistepTest extends DataContextCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextPrefetchMultistepTest extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tExhibit;
+    protected TableHelper tGallery;
+    protected TableHelper tArtistExhibit;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
 
-        createTestData("testGalleries");
-        populateExhibits();
-        createTestData("testArtistExhibits");
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tExhibit = new TableHelper(dbHelper, "EXHIBIT");
+        tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
+
+        tArtistExhibit = new TableHelper(dbHelper, "ARTIST_EXHIBIT");
+        tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
+
+        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+    }
+
+    protected void createTwoArtistsWithExhibitsDataSet() throws Exception {
+        tArtist.insert(11, "artist2");
+        tArtist.insert(101, "artist3");
+
+        tGallery.insert(25, "gallery1");
+        tGallery.insert(31, "gallery2");
+        tGallery.insert(45, "gallery3");
+
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
+        tExhibit.insert(1, 25, now, now);
+        tExhibit.insert(2, 31, now, now);
+        tExhibit.insert(3, 45, now, now);
+        tExhibit.insert(4, 25, now, now);
+
+        tArtistExhibit.insert(11, 2);
+        tArtistExhibit.insert(11, 4);
+        tArtistExhibit.insert(101, 1);
+        tArtistExhibit.insert(101, 2);
+        tArtistExhibit.insert(101, 4);
     }
 
     public void testToManyToManyFirstStepUnresolved() throws Exception {
+
+        createTwoArtistsWithExhibitsDataSet();
 
         // since objects for the phantom prefetches are not retained explicitly, they may
         // get garbage collected, and we won't be able to detect them
@@ -60,14 +112,14 @@ public class DataContextPrefetchMultistepTest extends DataContextCase {
 
         // Check the target ArtistExhibit objects do not exist yet
 
-        Map id1 = new HashMap();
-        id1.put("ARTIST_ID", new Integer(33001));
-        id1.put("EXHIBIT_ID", new Integer(2));
+        Map<String, Object> id1 = new HashMap<String, Object>();
+        id1.put("ARTIST_ID", 11);
+        id1.put("EXHIBIT_ID", 2);
         ObjectId oid1 = new ObjectId("ArtistExhibit", id1);
 
-        Map id2 = new HashMap();
-        id2.put("ARTIST_ID", new Integer(33003));
-        id2.put("EXHIBIT_ID", new Integer(2));
+        Map<String, Object> id2 = new HashMap<String, Object>();
+        id2.put("ARTIST_ID", 101);
+        id2.put("EXHIBIT_ID", 2);
         ObjectId oid2 = new ObjectId("ArtistExhibit", id2);
 
         assertNull(context.getGraphManager().getNode(oid1));
@@ -78,10 +130,10 @@ public class DataContextPrefetchMultistepTest extends DataContextCase {
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray.artistExhibitArray");
 
-        List galleries = context.performQuery(q);
+        List<Gallery> galleries = context.performQuery(q);
         assertEquals(1, galleries.size());
 
-        Gallery g2 = (Gallery) galleries.get(0);
+        Gallery g2 = galleries.get(0);
 
         // this relationship wasn't explicitly prefetched....
         Object list = g2.readPropertyDirectly("exhibitArray");
@@ -99,37 +151,42 @@ public class DataContextPrefetchMultistepTest extends DataContextCase {
 
     public void testToManyToManyFirstStepResolved() throws Exception {
 
+        createTwoArtistsWithExhibitsDataSet();
+
         Expression e = Expression.fromString("galleryName = $name");
         SelectQuery q = new SelectQuery(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray");
         q.addPrefetch("exhibitArray.artistExhibitArray");
 
-        List galleries = context.performQuery(q);
+        List<Gallery> galleries = context.performQuery(q);
         assertEquals(1, galleries.size());
 
-        Gallery g2 = (Gallery) galleries.get(0);
+        Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
         assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ValueHolder);
-        List exhibits = (List) g2.readPropertyDirectly("exhibitArray");
+        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
         assertFalse(((ValueHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
-        Exhibit e1 = (Exhibit) exhibits.get(0);
+        Exhibit e1 = exhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
         assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
-        List aexhibits = (List) e1.readPropertyDirectly("artistExhibitArray");
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1
+                .readPropertyDirectly("artistExhibitArray");
         assertFalse(((ValueHolder) aexhibits).isFault());
         assertEquals(1, exhibits.size());
 
-        ArtistExhibit ae1 = (ArtistExhibit) aexhibits.get(0);
+        ArtistExhibit ae1 = aexhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
 
-    public void testMixedPrefetch1() {
+    public void testMixedPrefetch1() throws Exception {
+
+        createTwoArtistsWithExhibitsDataSet();
 
         Expression e = Expression.fromString("galleryName = $name");
         SelectQuery q = new SelectQuery(Gallery.class, e.expWithParameters(Collections
@@ -138,31 +195,34 @@ public class DataContextPrefetchMultistepTest extends DataContextCase {
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         q.addPrefetch("exhibitArray.artistExhibitArray");
 
-        List galleries = context.performQuery(q);
+        List<Gallery> galleries = context.performQuery(q);
         assertEquals(1, galleries.size());
 
-        Gallery g2 = (Gallery) galleries.get(0);
+        Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
         assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ValueHolder);
-        List exhibits = (List) g2.readPropertyDirectly("exhibitArray");
+        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
         assertFalse(((ValueHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
-        Exhibit e1 = (Exhibit) exhibits.get(0);
+        Exhibit e1 = exhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
         assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
-        List aexhibits = (List) e1.readPropertyDirectly("artistExhibitArray");
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1
+                .readPropertyDirectly("artistExhibitArray");
         assertFalse(((ValueHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
-        ArtistExhibit ae1 = (ArtistExhibit) aexhibits.get(0);
+        ArtistExhibit ae1 = aexhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
 
-    public void testMixedPrefetch2() {
+    public void testMixedPrefetch2() throws Exception {
+
+        createTwoArtistsWithExhibitsDataSet();
 
         Expression e = Expression.fromString("galleryName = $name");
         SelectQuery q = new SelectQuery(Gallery.class, e.expWithParameters(Collections
@@ -173,27 +233,28 @@ public class DataContextPrefetchMultistepTest extends DataContextCase {
         q.addPrefetch("exhibitArray.artistExhibitArray").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        List galleries = context.performQuery(q);
+        List<Gallery> galleries = context.performQuery(q);
         assertEquals(1, galleries.size());
 
-        Gallery g2 = (Gallery) galleries.get(0);
+        Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
         assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ValueHolder);
-        List exhibits = (List) g2.readPropertyDirectly("exhibitArray");
+        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
         assertFalse(((ValueHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
-        Exhibit e1 = (Exhibit) exhibits.get(0);
+        Exhibit e1 = exhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
         assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
-        List aexhibits = (List) e1.readPropertyDirectly("artistExhibitArray");
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1
+                .readPropertyDirectly("artistExhibitArray");
         assertFalse(((ValueHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
-        ArtistExhibit ae1 = (ArtistExhibit) aexhibits.get(0);
+        ArtistExhibit ae1 = aexhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
 }

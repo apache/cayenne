@@ -23,7 +23,6 @@ import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 
@@ -147,23 +146,16 @@ public class DBHelper {
         }
     }
 
-    public int deleteAll(String table) throws SQLException {
-        String sql = "delete from " + quote(table);
-        UtilityLogger.log(sql);
-        
-        Connection c = getConnection();
-        try {
+    public int deleteAll(String tableName) throws SQLException {
+        return delete(tableName).execute();
+    }
 
-            Statement st = c.createStatement();
-            int count = st.executeUpdate(sql);
-            st.close();
-            c.commit();
+    public UpdateBuilder update(String tableName) throws SQLException {
+        return new UpdateBuilder(this, tableName);
+    }
 
-            return count;
-        }
-        finally {
-            c.close();
-        }
+    public DeleteBuilder delete(String tableName) {
+        return new DeleteBuilder(this, tableName);
     }
 
     public int getRowCount(String table) throws SQLException {
@@ -174,6 +166,19 @@ public class DBHelper {
             @Override
             Integer readRow(ResultSet rs, String sql) throws SQLException {
                 return rs.getInt(1);
+            }
+
+        }.execute(sql);
+    }
+
+    public String getString(String table, String column) throws SQLException {
+        final String sql = "select " + quote(column) + " from " + quote(table);
+
+        return new RowTemplate<String>(this) {
+
+            @Override
+            String readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getString(1);
             }
 
         }.execute(sql);

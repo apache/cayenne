@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.DICase;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
+import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
 public class ServerCase extends DICase {
 
@@ -77,6 +78,8 @@ public class ServerCase extends DICase {
                 binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class);
                 binder.bind(DataChannelQueryInterceptor.class).to(
                         ServerCaseDataChannelQueryInterceptor.class);
+                binder.bind(SQLTemplateCustomizer.class).toProviderInstance(
+                        new CayenneResourcesSQLTemplateCustomizerProvider(resources));
 
                 // test-scoped objects
                 binder
@@ -93,6 +96,7 @@ public class ServerCase extends DICase {
                         .bind(DBHelper.class)
                         .toProvider(FlavoredDBHelperProvider.class)
                         .in(testScope);
+
             }
         };
 
