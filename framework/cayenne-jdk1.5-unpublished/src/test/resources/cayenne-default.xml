@@ -5,9 +5,9 @@
 	<map name="locking"/>
 	<map name="map-db1"/>
 	<map name="map-db2"/>
-	<map name="multi-tier"/>
 	<map name="people"/>
 	<map name="qualified"/>
 	<map name="relationships"/>
 	<map name="sus-map"/>
 </domain>
+

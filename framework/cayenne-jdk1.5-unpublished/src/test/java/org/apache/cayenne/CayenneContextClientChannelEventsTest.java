@@ -19,43 +19,70 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.configuration.rop.client.ClientModule;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTable4;
 import org.apache.cayenne.testdo.mt.ClientMtTable5;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.client.ClientRuntimeProperty;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests peer context synchronization via ClientChannel events.
- * 
  */
-public class CayenneContextClientChannelEventsTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@ClientRuntimeProperty( {
+        ClientModule.CHANNEL_EVENTS, "true"
+})
+public class CayenneContextClientChannelEventsTest extends ClientCase {
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private ClientRuntime runtime;
+
+    private TableHelper tMtTable1;
+    private TableHelper tMtTable2;
+    private TableHelper tMtTable4;
+    private TableHelper tMtTable5;
+    private TableHelper tMtJoin45;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+        dbHelper.deleteAll("MT_JOIN45");
+        dbHelper.deleteAll("MT_TABLE4");
+        dbHelper.deleteAll("MT_TABLE5");
+
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
+
+        tMtTable2 = new TableHelper(dbHelper, "MT_TABLE2");
+        tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE");
+
+        tMtTable4 = new TableHelper(dbHelper, "MT_TABLE4");
+        tMtTable4.setColumns("ID");
+
+        tMtTable5 = new TableHelper(dbHelper, "MT_TABLE5");
+        tMtTable5.setColumns("ID");
+
+        tMtJoin45 = new TableHelper(dbHelper, "MT_JOIN45");
+        tMtJoin45.setColumns("TABLE4_ID", "TABLE5_ID");
     }
 
     public void testSyncNewObject() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
-        deleteTestData();
 
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        assertNotSame(c1, c2);
 
         ClientMtTable1 o1 = c1.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("X");
@@ -77,17 +104,10 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncNewDeletedObject() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
-        deleteTestData();
 
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        assertNotSame(c1, c2);
 
         // insert, then delete - this shouldn't propagate via an event.
         ClientMtTable1 o1 = c1.newObject(ClientMtTable1.class);
@@ -109,17 +129,10 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncNewObjectIntoDirtyContext() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
-        deleteTestData();
 
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        assertNotSame(c1, c2);
 
         // make sure c2 has uncommitted changes
         c2.newObject(ClientMtTable1.class);
@@ -143,19 +156,12 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncSimpleProperty() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
 
-        deleteTestData();
-        createTestData("testSyncSimpleProperty");
+        tMtTable1.insert(1, "g1", "s1");
 
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        assertNotSame(c1, c2);
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
@@ -177,19 +183,13 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncToOneRelationship() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
 
-        deleteTestData();
-        createTestData("testSyncToOneRelationship");
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable1.insert(2, "g2", "s2");
+        tMtTable2.insert(1, 1, "g1");
 
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
 
         ClientMtTable2 o1 = (ClientMtTable2) Cayenne.objectForQuery(
                 c1,
@@ -215,19 +215,11 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncToManyRelationship() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable2.insert(1, 1, "g1");
 
-        deleteTestData();
-        createTestData("testSyncToManyRelationship");
-
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
@@ -253,19 +245,11 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncToManyRelationship1() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable2.insert(1, 1, "g1");
 
-        deleteTestData();
-        createTestData("testSyncToManyRelationship");
-
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
@@ -294,19 +278,14 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncManyToManyRelationship() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
+        tMtTable4.insert(1);
+        tMtTable5.insert(1);
+        tMtTable5.insert(2);
+        tMtJoin45.insert(1, 1);
+        tMtJoin45.insert(1, 2);
 
-        deleteTestData();
-        createTestData("testSyncManyToManyRelationship");
-
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
 
         ClientMtTable4 o1 = (ClientMtTable4) Cayenne.objectForQuery(
                 c1,
@@ -333,18 +312,9 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
     }
 
     public void testSyncManyToManyRelationship1() throws Exception {
-        // this resets snapshot cache...
-        createDataContext();
 
-        deleteTestData();
-
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c1 = new CayenneContext(clientChannel);
-        CayenneContext c2 = new CayenneContext(clientChannel);
+        CayenneContext c1 = (CayenneContext) runtime.getContext();
+        CayenneContext c2 = (CayenneContext) runtime.getContext();
 
         ClientMtTable4 o1 = c1.newObject(ClientMtTable4.class);
         ClientMtTable5 o1r = c1.newObject(ClientMtTable5.class);

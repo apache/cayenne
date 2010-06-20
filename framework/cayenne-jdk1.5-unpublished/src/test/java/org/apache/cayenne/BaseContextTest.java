@@ -20,9 +20,9 @@ package org.apache.cayenne;
 
 import java.util.Map;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-public class BaseContextTest extends CayenneCase {
+public class BaseContextTest extends TestCase {
 
     public void testUserPropertiesLazyInit() {
         BaseContext context = new MockBaseContext();

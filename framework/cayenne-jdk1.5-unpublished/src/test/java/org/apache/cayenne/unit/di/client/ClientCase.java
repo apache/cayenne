@@ -16,34 +16,34 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.server;
+package org.apache.cayenne.unit.di.client;
 
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.DICase;
+import org.apache.cayenne.unit.di.server.ServerCaseModule;
 
-public class ServerCase extends DICase {
+public class ClientCase extends DICase {
 
-    // known runtimes... unit tests may reuse these with @UseServerRuntime annotation or
-    // can define their own on the fly (TODO: how would that work with the global schema
-    // setup?)
-    public static final String INHERTITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
-    public static final String INHERTITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
-    public static final String QUOTED_IDENTIFIERS_PROJECT = "cayenne-quoted-identifiers.xml";
-    public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
+    public static final String ROP_CLIENT_KEY = "client";
+
+    public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
 
     private static final Injector injector;
 
     static {
-        CayenneResources resources = CayenneResources.getResources();
+        final CayenneResources resources = CayenneResources.getResources();
         DefaultScope testScope = new DefaultScope();
-        injector = DIBootstrap.createInjector(new ServerCaseModule(resources, testScope));
+        injector = DIBootstrap.createInjector(
+                new ServerCaseModule(resources, testScope),
+                new ClientCaseModule(testScope));
     }
 
     @Override
     protected Injector getUnitTestInjector() {
         return injector;
     }
+
 }

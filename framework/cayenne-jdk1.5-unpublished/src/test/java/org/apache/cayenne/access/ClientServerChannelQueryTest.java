@@ -21,48 +21,68 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.PersistentObjectHolder;
 import org.apache.cayenne.util.PersistentObjectList;
 
-public class ClientServerChannelQueryTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class ClientServerChannelQueryTest extends ClientCase {
 
-    private ObjectContext context;
+    @Inject(ClientCase.ROP_CLIENT_KEY)
+    protected ObjectContext context;
+
+    @Inject
     private ClientServerChannel serverChannel;
 
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tMtTable1;
+    private TableHelper tMtTable2;
+
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
 
-        serverChannel = new ClientServerChannel(getDomain());
-        LocalConnection connector = new LocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
 
-        context = new CayenneContext(new ClientChannel(connector));
+        tMtTable2 = new TableHelper(dbHelper, "MT_TABLE2");
+        tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE");
     }
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void createSevenMtTable1sDataSet() throws Exception {
+
+        for (int i = 1; i <= 7; i++) {
+            tMtTable1.insert(i, "g" + i, "s" + i);
+        }
+    }
+
+    protected void createTwoMtTable1sAnd2sDataSet() throws Exception {
+
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable1.insert(2, "g2", "s2");
+
+        tMtTable2.insert(1, 1, "g1");
+        tMtTable2.insert(2, 1, "g2");
     }
 
     public void testPaginatedQueryServerCacheOverflow() throws Exception {
-        createTestData("testPaginatedQueryServerCacheOverflow");
+        createSevenMtTable1sDataSet();
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
@@ -84,7 +104,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testNamedQuery() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         NamedQuery q = new NamedQuery("AllMtTable1");
         List<?> results = context.performQuery(q);
@@ -94,7 +114,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testSelectQueryEntityNameRoot() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery("MtTable1");
         List<?> results = context.performQuery(q);
@@ -105,7 +125,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testSelectQueryClientClassRoot() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
         List<?> results = context.performQuery(q);
@@ -115,7 +135,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testSelectQuerySimpleQualifier() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
                 .fromString("globalAttribute1 = 'g1'"));
@@ -127,7 +147,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testSelectQueryToManyRelationshipQualifier() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
                 .fromString("table2Array.globalAttribute = 'g1'"));
@@ -138,7 +158,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testSelectQueryOrdering() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery("MtTable1");
         q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
@@ -165,7 +185,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testSelectQueryPrefetchToOne() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery(ClientMtTable2.class, Expression
                 .fromString("globalAttribute = 'g1'"));
@@ -187,7 +207,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
     }
 
     public void testSelectQueryPrefetchToMany() throws Exception {
-        createTestData("prepare");
+        createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
                 .fromString("globalAttribute1 = 'g1'"));
