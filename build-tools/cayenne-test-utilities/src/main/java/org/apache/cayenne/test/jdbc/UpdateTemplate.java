@@ -21,6 +21,7 @@ package org.apache.cayenne.test.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 
 class UpdateTemplate {
 
@@ -30,17 +31,41 @@ class UpdateTemplate {
         this.parent = parent;
     }
 
-    protected void bindParameters(PreparedStatement statement, Object... bindings)
-            throws SQLException {
+    protected void bindParameters(
+            PreparedStatement statement,
+            Collection<Object> bindings,
+            Collection<Integer> bindingTypes) throws SQLException {
 
-        if (bindings != null && bindings.length > 0) {
-            for (int i = 0; i < bindings.length; i++) {
-                statement.setObject(i + 1, bindings[i]);
+        if (bindings != null && !bindings.isEmpty()) {
+
+            Object[] values = bindings.toArray();
+            Integer[] types = bindingTypes.toArray(new Integer[bindingTypes.size()]);
+
+            for (int i = 0; i < values.length; i++) {
+
+                if (values[i] == null) {
+                    if (types[i] != SQLBuilder.NO_TYPE) {
+                        statement.setNull(i + 1, types[i]);
+                    }
+                    else {
+                        throw new IllegalStateException(
+                                "No type inmformation for null value at index " + i);
+                    }
+                }
+                else {
+                    if (types[i] != SQLBuilder.NO_TYPE) {
+                        statement.setObject(i + 1, values[i], types[i]);
+                    }
+                    else {
+                        statement.setObject(i + 1, values[i]);
+                    }
+                }
             }
         }
     }
 
-    int execute(String sql, Object... bindings) throws SQLException {
+    int execute(String sql, Collection<Object> bindings, Collection<Integer> bindingTypes)
+            throws SQLException {
         UtilityLogger.log(sql);
         Connection c = parent.getConnection();
         try {
@@ -48,7 +73,7 @@ class UpdateTemplate {
             PreparedStatement st = c.prepareStatement(sql);
 
             try {
-                bindParameters(st, bindings);
+                bindParameters(st, bindings, bindingTypes);
                 return st.executeUpdate();
             }
             finally {

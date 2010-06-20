@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.hsqldb.Types;
 
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes
@@ -130,7 +131,7 @@ public class DataContextRefreshingTest extends ServerCase {
         assertNotNull(painting.getToArtist());
         assertEquals("artist2", painting.getToArtist().getArtistName());
 
-        assertEquals(1, tPainting.update().set("ARTIST_ID", null).execute());
+        assertEquals(1, tPainting.update().set("ARTIST_ID", null, Types.BIGINT).execute());
 
         // select without prefetch
         painting = (Painting) context
@@ -250,7 +251,7 @@ public class DataContextRefreshingTest extends ServerCase {
         assertNotNull(painting.getToArtist());
         assertEquals("artist2", painting.getToArtist().getArtistName());
 
-        assertEquals(1, tPainting.update().set("ARTIST_ID", null).execute());
+        assertEquals(1, tPainting.update().set("ARTIST_ID", null, Types.BIGINT).execute());
 
         context.invalidateObjects(Collections.singletonList(painting));
         assertNull(painting.getToArtist());

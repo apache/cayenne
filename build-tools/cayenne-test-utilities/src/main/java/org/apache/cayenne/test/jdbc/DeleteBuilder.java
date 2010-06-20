@@ -18,19 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.test.jdbc;
 
-import java.util.ArrayList;
-
 public class DeleteBuilder extends SQLBuilder {
 
     protected DeleteBuilder(DBHelper dbHelper, String tableName) {
-        super(dbHelper, new StringBuilder(), new ArrayList<Object>());
-
+        super(dbHelper);
         sqlBuffer.append("delete from ").append(dbHelper.quote(tableName));
     }
 
     public WhereBuilder where(String column, Object value) {
-        WhereBuilder where = new WhereBuilder(dbHelper, sqlBuffer, bindings);
-        where.and(column, value);
+        return where(column, value, NO_TYPE);
+    }
+
+    public WhereBuilder where(String column, Object value, int valueType) {
+        WhereBuilder where = new WhereBuilder(dbHelper, sqlBuffer, bindings, bindingTypes);
+        where.and(column, value, valueType);
         return where;
     }
 }
