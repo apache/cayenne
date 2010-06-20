@@ -19,11 +19,15 @@
 package org.apache.cayenne.unit.di.client;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 
 public class ClientRuntimeProvider implements Provider<ClientRuntime> {
@@ -38,6 +42,31 @@ public class ClientRuntimeProvider implements Provider<ClientRuntime> {
     public ClientRuntime get() throws ConfigurationException {
         Injector serverInjector = serverRuntimeProvider.get().getInjector();
         return new ClientLocalRuntime(serverInjector, clientCaseProperties
-                .getRuntimeProperties());
+                .getRuntimeProperties(), new ClientExtraModule(serverInjector));
+    }
+
+    class ClientExtraModule implements Module {
+
+        private Injector serverInjector;
+
+        ClientExtraModule(Injector serverInjector) {
+            this.serverInjector = serverInjector;
+        }
+
+        public void configure(Binder binder) {
+
+            // these are the objects overriding standard ClientLocalModule definitions or
+            // dependencies needed by such overrides
+
+            // add an interceptor between client and server parts to capture and inspect
+            // the traffic
+            binder
+                    .bind(
+                            Key.get(
+                                    DataChannel.class,
+                                    ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY))
+                    .toProviderInstance(
+                            new InterceptingClientServerChannelProvider(serverInjector));
+        }
     }
 }

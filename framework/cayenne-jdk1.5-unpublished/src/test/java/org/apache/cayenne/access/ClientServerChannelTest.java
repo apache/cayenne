@@ -43,9 +43,9 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTable3;
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.EqualsBuilder;
 
@@ -62,7 +62,7 @@ public class ClientServerChannelTest extends ClientCase {
     protected DBHelper dbHelper;
 
     @Inject
-    protected DataChannelQueryInterceptor queryInterceptor;
+    protected DataChannelInterceptor queryInterceptor;
 
     private TableHelper tMtTable1;
     private TableHelper tMtTable2;

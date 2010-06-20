@@ -31,6 +31,7 @@ import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
@@ -63,8 +64,8 @@ public class ServerCaseModule implements Module {
         binder.bind(AccessStackAdapter.class).toProviderInstance(
                 new CayenneResourcesAccessStackAdapterProvider(resources));
         binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class);
-        binder.bind(DataChannelQueryInterceptor.class).to(
-                ServerCaseDataChannelQueryInterceptor.class);
+        binder.bind(DataChannelInterceptor.class).to(
+                ServerCaseDataChannelInterceptor.class);
         binder.bind(SQLTemplateCustomizer.class).toProviderInstance(
                 new CayenneResourcesSQLTemplateCustomizerProvider(resources));
 

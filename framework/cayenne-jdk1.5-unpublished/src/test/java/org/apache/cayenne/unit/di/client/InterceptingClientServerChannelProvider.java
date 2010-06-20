@@ -16,13 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.server;
+package org.apache.cayenne.unit.di.client;
 
-import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.configuration.rop.client.LocalClientServerChannelProvider;
+import org.apache.cayenne.di.Injector;
 
-public interface DataChannelQueryInterceptor {
+public class InterceptingClientServerChannelProvider extends
+        LocalClientServerChannelProvider {
 
-    void runWithQueriesBlocked(UnitTestClosure closure);
-    
-    int runWithQueryCounter(UnitTestClosure closure);
+    public InterceptingClientServerChannelProvider(Injector serverInjector) {
+        super(serverInjector);
+    }
+
+    @Override
+    public DataChannel get() throws ConfigurationException {
+        DataChannel clientServerChannel = super.get();
+        return new ClientServerDataChannelDecorator(clientServerChannel);
+    }
 }

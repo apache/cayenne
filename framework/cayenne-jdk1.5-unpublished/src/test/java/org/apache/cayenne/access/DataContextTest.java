@@ -52,8 +52,8 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -70,7 +70,7 @@ public class DataContextTest extends ServerCase {
     protected AccessStackAdapter accessStackAdapter;
 
     @Inject
-    protected DataChannelQueryInterceptor queryInterceptor;
+    protected DataChannelInterceptor queryInterceptor;
 
     @Inject
     protected DataSource dataSource;

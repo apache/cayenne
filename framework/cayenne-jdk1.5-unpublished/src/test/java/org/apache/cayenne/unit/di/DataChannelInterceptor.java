@@ -16,28 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.rop.client;
-
-import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.remote.service.LocalConnection;
+package org.apache.cayenne.unit.di;
 
 /**
- * @since 3.1
+ * An interface that allows to block a DataChannel or to collect DataChannel statistics
+ * for the duration of execution of some code.
  */
-public class LocalConnectionProvider implements Provider<ClientConnection> {
+public interface DataChannelInterceptor {
 
-    @Inject(ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)
-    protected Provider<DataChannel> clientServerChannelProvider;
+    void runWithQueriesBlocked(UnitTestClosure closure);
 
-    public ClientConnection get() throws ConfigurationException {
+    int runWithQueryCounter(UnitTestClosure closure);
 
-        DataChannel clientServerChannel = clientServerChannelProvider.get();
-        return new LocalConnection(
-                clientServerChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-    }
+    DataChannelSyncStats runWithSyncStatsCollection(UnitTestClosure closure);
 }

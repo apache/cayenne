@@ -16,50 +16,60 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.server;
+package org.apache.cayenne.unit.di.client;
 
-import org.apache.cayenne.access.UnitTestDomain;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.DataChannelSyncStats;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 
-public class ServerCaseDataChannelQueryInterceptor implements DataChannelQueryInterceptor {
+public class ClientServerDataChannelInterceptor implements DataChannelInterceptor {
 
     @Inject
-    // injecting provider to make this provider independent from scoping of ServerRuntime
-    protected Provider<ServerRuntime> serverRuntimeProvider;
+    protected Provider<ClientRuntime> clientRuntimeProvider;
+
+    private ClientServerDataChannelDecorator getChannelDecorator() {
+
+        LocalConnection connection = (LocalConnection) clientRuntimeProvider
+                .get()
+                .getConnection();
+
+        return (ClientServerDataChannelDecorator) connection.getChannel();
+    }
 
     public void runWithQueriesBlocked(UnitTestClosure closure) {
+        ClientServerDataChannelDecorator channel = getChannelDecorator();
 
-        UnitTestDomain channel = (UnitTestDomain) serverRuntimeProvider
-                .get()
-                .getChannel();
-
-        channel.setBlockingQueries(true);
+        channel.setBlockingMessages(true);
         try {
             closure.execute();
         }
         finally {
-            channel.setBlockingQueries(false);
+            channel.setBlockingMessages(false);
         }
     }
 
     public int runWithQueryCounter(UnitTestClosure closure) {
+        throw new UnsupportedOperationException("TODO... unused for now");
+    }
 
-        UnitTestDomain channel = (UnitTestDomain) serverRuntimeProvider
-                .get()
-                .getChannel();
+    public DataChannelSyncStats runWithSyncStatsCollection(UnitTestClosure closure) {
+        ClientServerDataChannelDecorator channel = getChannelDecorator();
 
-        int start = channel.getQueryCount();
-        int end;
+        DataChannelSyncStats stats = new DataChannelSyncStats();
+
+        channel.setSyncStatsCounter(stats);
         try {
             closure.execute();
         }
         finally {
-            end = channel.getQueryCount();
+            channel.setSyncStatsCounter(null);
         }
 
-        return end - start;
+        return stats;
     }
+
 }

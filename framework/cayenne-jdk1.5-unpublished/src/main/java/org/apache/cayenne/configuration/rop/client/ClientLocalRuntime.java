@@ -21,36 +21,44 @@ package org.apache.cayenne.configuration.rop.client;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
 
 /**
- * A {@link ClientRuntime} that provides an ROP stack based on a local connection
- * on top of a server stack.
+ * A {@link ClientRuntime} that provides an ROP stack based on a local connection on top
+ * of a server stack.
  * 
  * @since 3.1
  */
 public class ClientLocalRuntime extends ClientRuntime {
 
+    public static final String CLIENT_SERVER_CHANNEL_KEY = "client-server-channel";
+
     private static Module mainModuleOverride(final Injector serverInjector) {
         return new Module() {
 
             public void configure(Binder binder) {
+                binder
+                        .bind(Key.get(DataChannel.class, CLIENT_SERVER_CHANNEL_KEY))
+                        .toProviderInstance(
+                                new LocalClientServerChannelProvider(serverInjector));
                 binder.bind(ClientConnection.class).toProviderInstance(
-                        new LocalConnectionProvider(serverInjector));
+                        new LocalConnectionProvider());
             }
         };
     }
 
-    public ClientLocalRuntime(Injector serverInjector,
-            Map<String, String> properties, Collection<Module> extraModules) {
+    public ClientLocalRuntime(Injector serverInjector, Map<String, String> properties,
+            Collection<Module> extraModules) {
         super(properties, mergeModules(mainModuleOverride(serverInjector), extraModules));
     }
 
-    public ClientLocalRuntime(Injector serverInjector,
-            Map<String, String> properties, Module... extraModules) {
+    public ClientLocalRuntime(Injector serverInjector, Map<String, String> properties,
+            Module... extraModules) {
         super(properties, mergeModules(mainModuleOverride(serverInjector), extraModules));
     }
 

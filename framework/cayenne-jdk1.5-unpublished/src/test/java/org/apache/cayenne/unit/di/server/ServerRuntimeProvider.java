@@ -45,8 +45,8 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
         String configurationLocation = properties.getConfigurationLocation();
         if (configurationLocation == null) {
-            throw new NullPointerException(
-                    "Null 'configurationLocation', method is called out of scope");
+            throw new NullPointerException("Null 'configurationLocation', "
+                    + "annotate your test case with @UseServerRuntime");
         }
 
         return new ServerRuntime(configurationLocation, new ServerExtraModule());

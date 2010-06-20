@@ -20,44 +20,40 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.unit.UnitLocalConnection;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextEJBQLTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextEJBQLTest extends ClientCase {
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private CayenneContext context;
+
+    private TableHelper tMtTable1;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
-    }
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
     public void testEJBQLSelect() throws Exception {
-        createTestData("testEJBQLSelect");
-        
-        DataContext context = createDataContext();
-        ClientServerChannel clientServerChannel = new ClientServerChannel(context);
-        UnitLocalConnection connection = new UnitLocalConnection(
-                clientServerChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel channel = new ClientChannel(connection);
-        CayenneContext clientContext = new CayenneContext(channel);
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable1.insert(2, "g2", "s2");
 
         EJBQLQuery query = new EJBQLQuery("SELECT a FROM MtTable1 a");
-
-        List<ClientMtTable1> results = clientContext.performQuery(query);
+        List<ClientMtTable1> results = context.performQuery(query);
         assertEquals(2, results.size());
     }
 }

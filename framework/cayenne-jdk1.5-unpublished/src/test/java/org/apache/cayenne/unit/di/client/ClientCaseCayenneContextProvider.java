@@ -16,28 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.rop.client;
+package org.apache.cayenne.unit.di.client;
 
+import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.remote.service.LocalConnection;
 
-/**
- * @since 3.1
- */
-public class LocalConnectionProvider implements Provider<ClientConnection> {
 
-    @Inject(ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)
-    protected Provider<DataChannel> clientServerChannelProvider;
+public class ClientCaseCayenneContextProvider implements Provider<CayenneContext> {
 
-    public ClientConnection get() throws ConfigurationException {
-
-        DataChannel clientServerChannel = clientServerChannelProvider.get();
-        return new LocalConnection(
-                clientServerChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
+    @Inject(ClientCase.ROP_CLIENT_KEY)
+    protected Provider<ObjectContext> objectContextProvider;
+    
+    public CayenneContext get() throws ConfigurationException {
+        return (CayenneContext) objectContextProvider.get();
     }
 }

@@ -31,8 +31,8 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.DataChannelQueryInterceptor;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.hsqldb.Types;
@@ -52,7 +52,7 @@ public class DataContextRefreshingTest extends ServerCase {
     protected DBHelper dbHelper;
 
     @Inject
-    protected DataChannelQueryInterceptor queryInterceptor;
+    protected DataChannelInterceptor queryInterceptor;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;

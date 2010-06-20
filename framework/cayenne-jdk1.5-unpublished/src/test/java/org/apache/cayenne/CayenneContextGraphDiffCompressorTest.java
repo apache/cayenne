@@ -18,130 +18,79 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.DataChannelSyncStats;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextGraphDiffCompressorTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextGraphDiffCompressorTest extends ClientCase {
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
+    @Inject(ClientCase.ROP_CLIENT_KEY)
+    protected DataChannelInterceptor clientServerInterceptor;
+
+    @Inject
+    protected CayenneContext context;
 
     public void testMultipleSimpleProperties() {
-        DiffCounter serverChannel = new DiffCounter(getDomain());
-        LocalConnection connection = new LocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel channel = new ClientChannel(connection);
-        CayenneContext context = new CayenneContext(channel);
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("v1");
         o1.setGlobalAttribute1("v2");
 
-        context.commitChanges();
-        assertEquals(1, serverChannel.nodePropertiesChanged);
-        assertEquals(1, serverChannel.nodesCreated);
+        DataChannelSyncStats stats = clientServerInterceptor
+                .runWithSyncStatsCollection(new UnitTestClosure() {
+
+                    public void execute() {
+                        context.commitChanges();
+                    }
+                });
+
+        assertEquals(1, stats.nodePropertiesChanged);
+        assertEquals(1, stats.nodesCreated);
     }
 
     public void testComplimentaryArcs() {
-        DiffCounter serverChannel = new DiffCounter(getDomain());
-        LocalConnection connection = new LocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel channel = new ClientChannel(connection);
-        CayenneContext context = new CayenneContext(channel);
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
         o2.setTable1(o1);
         o2.setTable1(null);
 
-        context.commitChanges();
-        assertEquals(0, serverChannel.nodePropertiesChanged);
-        assertEquals(2, serverChannel.nodesCreated);
-        assertEquals(0, serverChannel.arcsCreated);
-        assertEquals(0, serverChannel.arcsDeleted);
+        DataChannelSyncStats stats = clientServerInterceptor
+                .runWithSyncStatsCollection(new UnitTestClosure() {
+
+                    public void execute() {
+                        context.commitChanges();
+                    }
+                });
+
+        assertEquals(0, stats.nodePropertiesChanged);
+        assertEquals(2, stats.nodesCreated);
+        assertEquals(0, stats.arcsCreated);
+        assertEquals(0, stats.arcsDeleted);
     }
 
     public void testDelete() {
-        DiffCounter serverChannel = new DiffCounter(getDomain());
-        LocalConnection connection = new LocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel channel = new ClientChannel(connection);
-        CayenneContext context = new CayenneContext(channel);
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("v1");
         context.deleteObject(o1);
 
-        context.commitChanges();
-        assertEquals(0, serverChannel.nodePropertiesChanged);
-        assertEquals(0, serverChannel.nodesCreated);
-        assertEquals(0, serverChannel.nodesRemoved);
+        DataChannelSyncStats stats = clientServerInterceptor
+                .runWithSyncStatsCollection(new UnitTestClosure() {
+
+                    public void execute() {
+                        context.commitChanges();
+                    }
+                });
+        assertEquals(0, stats.nodePropertiesChanged);
+        assertEquals(0, stats.nodesCreated);
+        assertEquals(0, stats.nodesRemoved);
     }
 
-    final class DiffCounter extends ClientServerChannel implements GraphChangeHandler {
-
-        int arcsCreated;
-        int arcsDeleted;
-        int nodesCreated;
-        int nodeIdsChanged;
-        int nodePropertiesChanged;
-        int nodesRemoved;
-
-        public DiffCounter(DataDomain domain) {
-            super(domain);
-        }
-
-        @Override
-        public GraphDiff onSync(
-                ObjectContext originatingContext,
-                GraphDiff changes,
-                int syncType) {
-
-            changes.apply(this);
-
-            return super.onSync(originatingContext, changes, syncType);
-        }
-
-        public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
-            arcsCreated++;
-        }
-
-        public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
-            arcsDeleted++;
-        }
-
-        public void nodeCreated(Object nodeId) {
-            nodesCreated++;
-        }
-
-        public void nodeIdChanged(Object nodeId, Object newId) {
-            nodeIdsChanged++;
-        }
-
-        public void nodePropertyChanged(
-                Object nodeId,
-                String property,
-                Object oldValue,
-                Object newValue) {
-            nodePropertiesChanged++;
-        }
-
-        public void nodeRemoved(Object nodeId) {
-            nodesRemoved++;
-        }
-    }
 }

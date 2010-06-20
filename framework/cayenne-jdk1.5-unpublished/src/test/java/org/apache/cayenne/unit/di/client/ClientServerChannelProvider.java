@@ -35,6 +35,8 @@ public class ClientServerChannelProvider implements Provider<ClientServerChannel
         LocalConnection connection = (LocalConnection) clientRuntimeProvider
                 .get()
                 .getConnection();
-        return (ClientServerChannel) connection.getChannel();
+        
+        ClientServerDataChannelDecorator channelDecorator = (ClientServerDataChannelDecorator) connection.getChannel();
+        return (ClientServerChannel) channelDecorator.getDelegate();
     }
 }

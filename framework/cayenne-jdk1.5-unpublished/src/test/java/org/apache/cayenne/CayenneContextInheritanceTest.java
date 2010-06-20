@@ -20,44 +20,41 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass;
-import org.apache.cayenne.testdo.mt.MtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextInheritanceTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextInheritanceTest extends ClientCase {
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private CayenneContext context;
+
+    private TableHelper tMtTable1;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns(
+                "TABLE1_ID",
+                "GLOBAL_ATTRIBUTE1",
+                "SERVER_ATTRIBUTE1",
+                "SUBCLASS_ATTRIBUTE1");
     }
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
-
-    private CayenneContext createClientContext() {
-        ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
-        LocalConnection connection = new LocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel clientChannel = new ClientChannel(connection);
-        return new CayenneContext(clientChannel);
-    }
-
-    public void testInsertSubclass() {
-        CayenneContext context = createClientContext();
+    public void testInsertSubclass() throws Exception {
 
         ClientMtTable1Subclass object = context.newObject(ClientMtTable1Subclass.class);
         object.setGlobalAttribute1("sub1");
@@ -66,35 +63,17 @@ public class CayenneContextInheritanceTest extends CayenneCase {
 
         context.commitChanges();
 
-        ObjectContext checkContext = createDataContext();
-        SQLTemplate query = new SQLTemplate(MtTable1.class, "SELECT * FROM MT_TABLE1");
-        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        query.setFetchingDataRows(true);
-
-        List<DataRow> rows = checkContext.performQuery(query);
-        assertEquals(1, rows.size());
-        assertEquals("sub1", rows.get(0).get("GLOBAL_ATTRIBUTE1"));
-        assertEquals("sa1", rows.get(0).get("SERVER_ATTRIBUTE1"));
-        assertEquals("suba1", rows.get(0).get("SUBCLASS_ATTRIBUTE1"));
+        assertEquals(1, tMtTable1.getRowCount());
+        assertEquals("sub1", tMtTable1.getString("GLOBAL_ATTRIBUTE1"));
+        assertEquals("sa1", tMtTable1.getString("SERVER_ATTRIBUTE1"));
+        assertEquals("suba1", tMtTable1.getString("SUBCLASS_ATTRIBUTE1"));
     }
 
-    public void testPerformQueryInheritanceLeaf() {
+    public void testPerformQueryInheritanceLeaf() throws Exception {
 
-        ObjectContext setupContext = createDataContext();
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) VALUES (1, 'xxx', 'yyy')"));
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1, SUBCLASS_ATTRIBUTE1) VALUES (2, 'sub1', 'zzz', 'sa1')"));
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) VALUES (3, '1111', 'aaa')"));
-
-        CayenneContext context = createClientContext();
+        tMtTable1.insert(1, "xxx", "yyy", null);
+        tMtTable1.insert(2, "sub1", "zzz", "sa1");
+        tMtTable1.insert(3, "1111", "aaa", null);
 
         SelectQuery query = new SelectQuery(ClientMtTable1Subclass.class);
         List<ClientMtTable1Subclass> objects = context.performQuery(query);
@@ -103,23 +82,11 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         assertEquals("sa1", objects.get(0).getSubclassAttribute1());
     }
 
-    public void testPerformQueryInheritanceSuper() {
+    public void testPerformQueryInheritanceSuper() throws Exception {
 
-        ObjectContext setupContext = createDataContext();
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) VALUES (1, 'a', 'yyy')"));
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1, SUBCLASS_ATTRIBUTE1) VALUES (2, 'sub1', 'zzz', 'sa1')"));
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) VALUES (3, 'z', 'aaa')"));
-
-        CayenneContext context = createClientContext();
+        tMtTable1.insert(1, "a", "yyy", null);
+        tMtTable1.insert(2, "sub1", "zzz", "sa1");
+        tMtTable1.insert(3, "z", "aaa", null);
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         List<ClientMtTable1> objects = context.performQuery(query);
@@ -144,23 +111,11 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         assertEquals(2, checkedFields);
     }
 
-    public void testPerformQueryWithQualifierInheritanceSuper() {
+    public void testPerformQueryWithQualifierInheritanceSuper() throws Exception {
 
-        ObjectContext setupContext = createDataContext();
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) VALUES (1, 'a', 'XX')"));
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1, SUBCLASS_ATTRIBUTE1) VALUES (2, 'sub1', 'XXA', 'sa1')"));
-        setupContext
-                .performQuery(new SQLTemplate(
-                        MtTable1.class,
-                        "INSERT INTO MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) VALUES (3, 'z', 'MM')"));
-
-        CayenneContext context = createClientContext();
+        tMtTable1.insert(1, "a", "XX", null);
+        tMtTable1.insert(2, "sub1", "XXA", "sa1");
+        tMtTable1.insert(3, "z", "MM", null);
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         query.andQualifier(ExpressionFactory.likeExp(
@@ -169,7 +124,7 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         List<ClientMtTable1> objects = context.performQuery(query);
 
         assertEquals(2, objects.size());
-        
+
         int checkedFields = 0;
         for (int i = 0; i < objects.size(); i++) {
             Integer id = (Integer) objects.get(i).getObjectId().getIdSnapshot().get(

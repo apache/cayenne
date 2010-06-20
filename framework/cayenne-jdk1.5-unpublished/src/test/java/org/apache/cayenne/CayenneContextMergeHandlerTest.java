@@ -19,40 +19,38 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextMergeHandlerTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextMergeHandlerTest extends ClientCase {
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
+    @Inject
+    protected CayenneContext context;
 
     public void testShouldProcessEvent() {
-        DataChannel channel = new MockDataChannel();
-        CayenneContext context = new CayenneContext(channel);
 
         CayenneContextMergeHandler handler = new CayenneContextMergeHandler(context);
 
         // 1. Our context initiated the sync:
         // src == channel && postedBy == context
-        GraphEvent e1 = new GraphEvent(channel, context, null);
+        GraphEvent e1 = new GraphEvent(context.getChannel(), context, null);
         assertFalse(handler.shouldProcessEvent(e1));
 
         // 2. Another context initiated the sync:
         // postedBy != context && source == channel
-        GraphEvent e2 = new GraphEvent(channel, new MockObjectContext(), null);
+        GraphEvent e2 = new GraphEvent(
+                context.getChannel(),
+                new MockObjectContext(),
+                null);
         assertTrue(handler.shouldProcessEvent(e2));
 
         // 2.1 Another object initiated the sync:
         // postedBy != context && source == channel
-        GraphEvent e21 = new GraphEvent(channel, new Object(), null);
+        GraphEvent e21 = new GraphEvent(context.getChannel(), new Object(), null);
         assertTrue(handler.shouldProcessEvent(e21));
 
         // 3. Another channel initiated the sync:
@@ -61,17 +59,16 @@ public class CayenneContextMergeHandlerTest extends CayenneCase {
         assertFalse(handler.shouldProcessEvent(e3));
 
         // 4. inactive
-        GraphEvent e4 = new GraphEvent(channel, new MockObjectContext(), null);
+        GraphEvent e4 = new GraphEvent(
+                context.getChannel(),
+                new MockObjectContext(),
+                null);
         handler.active = false;
         assertFalse(handler.shouldProcessEvent(e4));
     }
 
     public void testNodePropertyChanged() {
-        DataChannel channel = new MockDataChannel(getDomain()
-                .getEntityResolver()
-                .getClientEntityResolver());
 
-        CayenneContext context = new CayenneContext(channel);
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
 
         CayenneContextMergeHandler handler = new CayenneContextMergeHandler(context);

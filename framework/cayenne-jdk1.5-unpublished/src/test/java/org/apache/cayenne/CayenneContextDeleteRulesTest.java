@@ -19,42 +19,26 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteCascade;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteDeny;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteNullify;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteRule;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextDeleteRulesTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextDeleteRulesTest extends ClientCase {
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
-
-    private CayenneContext createClientContext() {
-        ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
-        LocalConnection connection = new LocalConnection(serverChannel);
-        ClientChannel clientChannel = new ClientChannel(connection);
-        return new CayenneContext(clientChannel);
-    }
+    @Inject
+    private CayenneContext context;
 
     public void testNullifyToOne() {
-        CayenneContext context = createClientContext();
 
-        ClientMtDeleteNullify object = context
-                .newObject(ClientMtDeleteNullify.class);
+        ClientMtDeleteNullify object = context.newObject(ClientMtDeleteNullify.class);
         object.setName("object");
 
-        ClientMtDeleteRule related = context
-                .newObject(ClientMtDeleteRule.class);
+        ClientMtDeleteRule related = context.newObject(ClientMtDeleteRule.class);
         object.setName("related");
 
         object.setNullify(related);
@@ -70,12 +54,8 @@ public class CayenneContextDeleteRulesTest extends CayenneCase {
 
     public void testDenyToOne() {
 
-        CayenneContext context = createClientContext();
-
-        ClientMtDeleteDeny object = context
-                .newObject(ClientMtDeleteDeny.class);
-        ClientMtDeleteRule related = context
-                .newObject(ClientMtDeleteRule.class);
+        ClientMtDeleteDeny object = context.newObject(ClientMtDeleteDeny.class);
+        ClientMtDeleteRule related = context.newObject(ClientMtDeleteRule.class);
         object.setDeny(related);
         context.commitChanges();
 
@@ -93,14 +73,11 @@ public class CayenneContextDeleteRulesTest extends CayenneCase {
     }
 
     public void testCascadeToOne() {
-        CayenneContext context = createClientContext();
 
-        ClientMtDeleteCascade object = context
-                .newObject(ClientMtDeleteCascade.class);
+        ClientMtDeleteCascade object = context.newObject(ClientMtDeleteCascade.class);
         object.setName("object");
 
-        ClientMtDeleteRule related = context
-                .newObject(ClientMtDeleteRule.class);
+        ClientMtDeleteRule related = context.newObject(ClientMtDeleteRule.class);
         object.setName("related");
 
         object.setCascade(related);
@@ -115,14 +92,11 @@ public class CayenneContextDeleteRulesTest extends CayenneCase {
     }
 
     public void testCascadeToOneNewObject() {
-        CayenneContext context = createClientContext();
 
-        ClientMtDeleteRule related = context
-                .newObject(ClientMtDeleteRule.class);
+        ClientMtDeleteRule related = context.newObject(ClientMtDeleteRule.class);
         context.commitChanges();
 
-        ClientMtDeleteCascade object = context
-                .newObject(ClientMtDeleteCascade.class);
+        ClientMtDeleteCascade object = context.newObject(ClientMtDeleteCascade.class);
         object.setName("object");
         object.setCascade(related);
 
