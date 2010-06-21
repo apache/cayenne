@@ -25,7 +25,7 @@ import org.apache.cayenne.testdo.persistent.Continent;
 import org.apache.cayenne.testdo.persistent.Country;
 
 public class LightSuperClassTest extends PersistentCase {
-    
+     
     public void testServer() throws Exception {
         deleteTestData();
         

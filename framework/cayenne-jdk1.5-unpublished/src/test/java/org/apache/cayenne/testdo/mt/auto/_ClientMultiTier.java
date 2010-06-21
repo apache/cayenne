@@ -3,7 +3,6 @@ package org.apache.cayenne.testdo.mt.auto;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 

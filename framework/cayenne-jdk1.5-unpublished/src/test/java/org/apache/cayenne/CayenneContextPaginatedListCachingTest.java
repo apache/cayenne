@@ -20,55 +20,56 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.unit.UnitLocalConnection;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextPaginatedListCachingTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextPaginatedListCachingTest extends ClientCase {
 
-    protected UnitLocalConnection connection;
-    protected CayenneContext context;
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private CayenneContext context;
+
+    private TableHelper tMtTable1;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
-        connection = new UnitLocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel clientChannel = new ClientChannel(connection);
-        context = new CayenneContext(clientChannel);
+    protected void createSevenMtTable1sDataSet() throws Exception {
+        for (int i = 1; i <= 7; i++) {
+            tMtTable1.insert(i, "g" + i, "s" + i);
+        }
     }
 
     public void testLocalCache() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+        createSevenMtTable1sDataSet();
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         query.setPageSize(3);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        List<?> result1 = context.performQuery(query);
+        List<ClientMtTable1> result1 = context.performQuery(query);
         assertEquals(7, result1.size());
 
         // ensure we can resolve all objects without a failure...
-        for(Object x : result1) {
-            ((ClientMtTable1) x).getGlobalAttribute1();
+        for (ClientMtTable1 x : result1) {
+            x.getGlobalAttribute1();
         }
     }
 }

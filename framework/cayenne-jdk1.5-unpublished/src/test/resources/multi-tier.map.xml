@@ -81,10 +81,10 @@
 	<db-entity name="MT_TABLE5">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
-	<db-entity name="MT_TABLE_BOOL">
+	<db-entity name="MT_TABLE_PRIMITIVES">
 		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NUMERIC_COLUMN" type="INTEGER"/>
+		<db-attribute name="INT_COLUMN" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="MT_TOONE_DEP">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -143,9 +143,9 @@
 	</obj-entity>
 	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable5" dbEntityName="MT_TABLE5">
 	</obj-entity>
-	<obj-entity name="MtTableBool" className="org.apache.cayenne.testdo.mt.MtTableBool" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTableBool" dbEntityName="MT_TABLE_BOOL">
-		<obj-attribute name="blablacheck" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
-		<obj-attribute name="number" type="int" db-attribute-path="NUMERIC_COLUMN"/>
+	<obj-entity name="MtTablePrimitives" className="org.apache.cayenne.testdo.mt.MtTablePrimitives" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTablePrimitives" dbEntityName="MT_TABLE_PRIMITIVES">
+		<obj-attribute name="booleanColumn" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
+		<obj-attribute name="intColumn" type="int" db-attribute-path="INT_COLUMN"/>
 	</obj-entity>
 	<obj-entity name="MtTooneDep" className="org.apache.cayenne.testdo.mt.MtTooneDep" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTooneDep" dbEntityName="MT_TOONE_DEP">
 	</obj-entity>

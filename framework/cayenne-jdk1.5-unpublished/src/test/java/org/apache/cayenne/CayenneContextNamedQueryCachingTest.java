@@ -22,100 +22,102 @@ package org.apache.cayenne;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.NamedQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.unit.UnitLocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextNamedQueryCachingTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextNamedQueryCachingTest extends ClientCase {
 
-    protected UnitLocalConnection connection;
-    protected CayenneContext context;
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private CayenneContext context;
+
+    @Inject(ClientCase.ROP_CLIENT_KEY)
+    private DataChannelInterceptor clientServerInterceptor;
+
+    private TableHelper tMtTable1;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
-        connection = new UnitLocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel clientChannel = new ClientChannel(connection);
-        context = new CayenneContext(clientChannel);
+    protected void createThreeMtTable1sDataSet() throws Exception {
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable1.insert(2, "g2", "s2");
+        tMtTable1.insert(3, "g3", "s3");
     }
 
     public void testLocalCache() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+        createThreeMtTable1sDataSet();
 
-        NamedQuery q1 = new NamedQuery("MtQueryWithLocalCache");
+        final NamedQuery q1 = new NamedQuery("MtQueryWithLocalCache");
 
-        List result1 = context.performQuery(q1);
+        final List<?> result1 = context.performQuery(q1);
         assertEquals(3, result1.size());
 
-        connection.setBlockingMessages(true);
-        try {
-            List result2 = context.performQuery(q1);
-            assertSame(result1, result2);
-        }
-        finally {
-            connection.setBlockingMessages(false);
-        }
+        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                List<?> result2 = context.performQuery(q1);
+                assertSame(result1, result2);
+            }
+        });
 
         // refresh
         q1.setForceNoCache(true);
-        List result3 = context.performQuery(q1);
+        List<?> result3 = context.performQuery(q1);
         assertNotSame(result1, result3);
         assertEquals(3, result3.size());
     }
 
     public void testLocalCacheParameterized() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+        createThreeMtTable1sDataSet();
 
-        NamedQuery q1 = new NamedQuery("ParameterizedMtQueryWithLocalCache", Collections
-                .singletonMap("g", "g1"));
+        final NamedQuery q1 = new NamedQuery(
+                "ParameterizedMtQueryWithLocalCache",
+                Collections.singletonMap("g", "g1"));
 
-        NamedQuery q2 = new NamedQuery("ParameterizedMtQueryWithLocalCache", Collections
-                .singletonMap("g", "g2"));
+        final NamedQuery q2 = new NamedQuery(
+                "ParameterizedMtQueryWithLocalCache",
+                Collections.singletonMap("g", "g2"));
 
-        List result1 = context.performQuery(q1);
+        final List<?> result1 = context.performQuery(q1);
         assertEquals(1, result1.size());
 
-        connection.setBlockingMessages(true);
-        try {
-            List result2 = context.performQuery(q1);
-            assertSame(result1, result2);
-        }
-        finally {
-            connection.setBlockingMessages(false);
-        }
+        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        List result3 = context.performQuery(q2);
+            public void execute() {
+                List<?> result2 = context.performQuery(q1);
+                assertSame(result1, result2);
+            }
+        });
+
+        final List<?> result3 = context.performQuery(q2);
         assertNotSame(result1, result3);
         assertEquals(1, result3.size());
-        
-        connection.setBlockingMessages(true);
-        try {
-            List result4 = context.performQuery(q2);
-            assertSame(result3, result4);
-            
-            List result5 = context.performQuery(q1);
-            assertSame(result1, result5);
-        }
-        finally {
-            connection.setBlockingMessages(false);
-        }
+
+        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                List<?> result4 = context.performQuery(q2);
+                assertSame(result3, result4);
+
+                List<?> result5 = context.performQuery(q1);
+                assertSame(result1, result5);
+            }
+        });
     }
 }
