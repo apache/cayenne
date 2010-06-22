@@ -49,7 +49,7 @@ import org.apache.cayenne.util.GenericResponse;
 public class CayenneContextTest extends ClientCase {
 
     @Inject
-    protected ObjectContext serverContext;
+    private ObjectContext serverContext;
 
     public void testConstructor() {
 

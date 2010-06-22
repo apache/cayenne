@@ -19,46 +19,54 @@
 
 package org.apache.cayenne;
 
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.event.MockEventManager;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.PersistentObjectHolder;
 
-public class PersistentObjectInContextTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class PersistentObjectInContextTest extends ClientCase {
+
+    @Inject
+    private CayenneContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tMtTable1;
+    private TableHelper tMtTable2;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
+
+        tMtTable2 = new TableHelper(dbHelper, "MT_TABLE2");
+        tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE");
     }
 
-    protected ObjectContext createObjectContext() {
-        // wrap ClientServerChannel in LocalConnection to enable logging...
-        ClientConnection connector = new LocalConnection(new ClientServerChannel(
-                getDomain()), LocalConnection.HESSIAN_SERIALIZATION);
-        return new CayenneContext(new ClientChannel(
-                connector,
-                false,
-                new MockEventManager(),
-                false));
+    private void createTwoMtTable1sAnd2sDataSet() throws Exception {
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable1.insert(2, "g2", "s2");
+
+        tMtTable2.insert(1, 1, "g1");
+        tMtTable2.insert(2, 1, "g2");
     }
 
     public void testResolveToManyReverseResolved() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createObjectContext();
+        createTwoMtTable1sAnd2sDataSet();
 
         ObjectId gid = new ObjectId(
                 "MtTable1",
@@ -70,11 +78,10 @@ public class PersistentObjectInContextTest extends CayenneCase {
 
         assertNotNull(t1);
 
-        List t2s = t1.getTable2Array();
+        List<ClientMtTable2> t2s = t1.getTable2Array();
         assertEquals(2, t2s.size());
-        Iterator it = t2s.iterator();
-        while (it.hasNext()) {
-            ClientMtTable2 t2 = (ClientMtTable2) it.next();
+
+        for (ClientMtTable2 t2 : t2s) {
 
             PersistentObjectHolder holder = (PersistentObjectHolder) t2.getTable1Direct();
             assertFalse(holder.isFault());
@@ -83,9 +90,7 @@ public class PersistentObjectInContextTest extends CayenneCase {
     }
 
     public void testToOneRelationship() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createObjectContext();
+        createTwoMtTable1sAnd2sDataSet();
 
         ObjectId gid = new ObjectId(
                 "MtTable2",
@@ -103,9 +108,7 @@ public class PersistentObjectInContextTest extends CayenneCase {
     }
 
     public void testResolveToOneReverseResolved() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createObjectContext();
+        createTwoMtTable1sAnd2sDataSet();
 
         ObjectId gid = new ObjectId(
                 "MtTable2",
@@ -120,7 +123,7 @@ public class PersistentObjectInContextTest extends CayenneCase {
         ClientMtTable1 mtTable1 = mtTable21.getTable1();
         assertNotNull("To one relationship incorrectly resolved to null", mtTable1);
 
-        List list = mtTable1.getTable2Array();
+        List<ClientMtTable2> list = mtTable1.getTable2Array();
         assertNotNull(list);
         assertTrue(list instanceof ValueHolder);
 
@@ -128,10 +131,7 @@ public class PersistentObjectInContextTest extends CayenneCase {
 
         // resolve it here...
         assertEquals(2, list.size());
-        Iterator it = list.iterator();
-        while (it.hasNext()) {
-            ClientMtTable2 t2 = (ClientMtTable2) it.next();
-
+        for (ClientMtTable2 t2 : list) {
             PersistentObjectHolder holder = (PersistentObjectHolder) t2.getTable1Direct();
             assertFalse(holder.isFault());
             assertSame(mtTable1, holder.getValue());

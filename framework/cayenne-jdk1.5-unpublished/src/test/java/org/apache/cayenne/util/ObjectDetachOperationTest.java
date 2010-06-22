@@ -22,26 +22,38 @@ package org.apache.cayenne.util;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class ObjectDetachOperationTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class ObjectDetachOperationTest extends ClientCase {
+
+    @Inject
+    private DataContext serverContext;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tMtTable1;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
     public void testDetachCommitted() {
 
-        DataContext context = createDataContext();
-        EntityResolver serverResover = context.getEntityResolver();
+        EntityResolver serverResover = serverContext.getEntityResolver();
         EntityResolver clientResolver = serverResover.getClientEntityResolver();
         ObjectDetachOperation op = new ObjectDetachOperation(clientResolver);
 
@@ -50,8 +62,8 @@ public class ObjectDetachOperationTest extends CayenneCase {
         so.setObjectId(oid);
         so.setGlobalAttribute1("gx");
         so.setPersistenceState(PersistenceState.COMMITTED);
-        so.setObjectContext(context);
-        context.getGraphManager().registerNode(oid, so);
+        so.setObjectContext(serverContext);
+        serverContext.getGraphManager().registerNode(oid, so);
 
         Object detached = op.detach(
                 so,
@@ -70,19 +82,18 @@ public class ObjectDetachOperationTest extends CayenneCase {
 
     public void testDetachHollow() throws Exception {
 
-        createTestData("testDetachHollow");
+        tMtTable1.insert(4, "g1", "s1");
 
-        DataContext context = createDataContext();
-        EntityResolver serverResover = context.getEntityResolver();
+        EntityResolver serverResover = serverContext.getEntityResolver();
         EntityResolver clientResolver = serverResover.getClientEntityResolver();
         ObjectDetachOperation op = new ObjectDetachOperation(clientResolver);
 
-        ObjectId oid = new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 1);
+        ObjectId oid = new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 4);
         MtTable1 so = new MtTable1();
         so.setObjectId(oid);
         so.setPersistenceState(PersistenceState.HOLLOW);
-        so.setObjectContext(context);
-        context.getGraphManager().registerNode(oid, so);
+        so.setObjectContext(serverContext);
+        serverContext.getGraphManager().registerNode(oid, so);
 
         Object detached = op.detach(
                 so,
