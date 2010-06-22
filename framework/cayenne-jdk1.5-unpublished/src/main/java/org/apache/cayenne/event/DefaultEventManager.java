@@ -112,12 +112,13 @@ public class DefaultEventManager implements EventManager {
 
         if (!stopped) {
 
+            this.stopped = true;
+
             for (DispatchThread thread : dispatchThreads) {
                 thread.interrupt();
             }
 
             dispatchThreads.clear();
-            this.stopped = true;
         }
     }
 
