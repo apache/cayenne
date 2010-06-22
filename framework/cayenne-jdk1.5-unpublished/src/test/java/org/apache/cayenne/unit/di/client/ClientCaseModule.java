@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
 
@@ -61,5 +62,7 @@ public class ClientCaseModule implements Module {
 
         binder.bind(ClientServerChannel.class).toProvider(
                 ClientServerChannelProvider.class).in(testScope);
+        binder.bind(ClientConnection.class).toProvider(
+                ClientCaseClientConnectionProvider.class).in(testScope);
     }
 }

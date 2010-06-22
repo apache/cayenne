@@ -18,43 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextSQLTemplateTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextSQLTemplateTest extends ClientCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        getDomain().getSharedSnapshotCache().clear();
-        getDomain().getQueryCache().clear();
-        deleteTestData();
-    }
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private CayenneContext context;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
-
-    private CayenneContext createClientContext() {
-
-        ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
-        LocalConnection connection = new LocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel clientChannel = new ClientChannel(connection);
-        return new CayenneContext(clientChannel);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
     }
 
     public void testObjectRoot() throws Exception {
-
-        CayenneContext context = createClientContext();
 
         assertNull(Cayenne.objectForPK(context, ClientMtTable1.class, 1));
         context.performGenericQuery(new SQLTemplate(

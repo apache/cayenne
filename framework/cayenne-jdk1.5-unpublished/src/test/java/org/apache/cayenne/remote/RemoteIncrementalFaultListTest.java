@@ -26,6 +26,7 @@ import java.util.ListIterator;
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
@@ -67,7 +68,10 @@ public class RemoteIncrementalFaultListTest extends CayenneCase {
         LocalConnection connection = new LocalConnection(
                 serverChannel,
                 LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel clientChannel = new ClientChannel(connection);
+        ClientChannel clientChannel = new ClientChannel(connection,
+                false,
+                new MockEventManager(),
+                false);
 
         this.list = new RemoteIncrementalFaultList(
                 new CayenneContext(clientChannel),

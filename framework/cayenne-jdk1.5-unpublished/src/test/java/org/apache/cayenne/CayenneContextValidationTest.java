@@ -19,75 +19,71 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationException;
 
-public class CayenneContextValidationTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextValidationTest extends ClientCase {
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private CayenneContext context;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
     }
 
     public void testValidate() throws Exception {
 
-        deleteTestData();
-        DataChannel serverChannel = new ClientServerChannel(getDomain());
-        ClientChannel clientChannel = new ClientChannel(
-                new LocalConnection(serverChannel),
-                true);
-
-        CayenneContext c = new CayenneContext(clientChannel);
-        
-        ClientMtTable1 o1 = c.newObject(ClientMtTable1.class);
+        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("G1");
         o1.resetValidation(false);
-        
+
         // this one is not validating
-        ClientMtTable2 o2 = c.newObject(ClientMtTable2.class);
+        ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
         o2.setTable1(o1);
-        
-        c.commitChanges();
+
+        context.commitChanges();
         assertTrue(o1.isValidatedForInsert());
         assertFalse(o1.isValidatedForDelete());
         assertFalse(o1.isValidatedForUpdate());
-        
+
         o1.resetValidation(false);
         o1.setGlobalAttribute1("G2");
-        
-        c.commitChanges();
+
+        context.commitChanges();
         assertFalse(o1.isValidatedForInsert());
         assertFalse(o1.isValidatedForDelete());
         assertTrue(o1.isValidatedForUpdate());
-        
+
         o1.resetValidation(false);
-        c.deleteObject(o1);
-        c.deleteObject(o2);
-        
-        c.commitChanges();
+        context.deleteObject(o1);
+        context.deleteObject(o2);
+
+        context.commitChanges();
         assertFalse(o1.isValidatedForInsert());
         assertTrue(o1.isValidatedForDelete());
         assertFalse(o1.isValidatedForUpdate());
-        
-        ClientMtTable1 o11 = c.newObject(ClientMtTable1.class);
+
+        ClientMtTable1 o11 = context.newObject(ClientMtTable1.class);
         o11.setGlobalAttribute1("G1");
         o11.resetValidation(true);
-        
+
         try {
-            c.commitChanges();
+            context.commitChanges();
             fail("Validation failure must have prevented commit");
         }
         catch (ValidationException e) {
-           // expected
+            // expected
         }
     }
 }

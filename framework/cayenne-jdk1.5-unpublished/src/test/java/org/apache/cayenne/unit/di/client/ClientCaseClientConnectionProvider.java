@@ -16,34 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.unit.di.client;
 
-package org.apache.cayenne.unit;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.remote.ClientConnection;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
+public class ClientCaseClientConnectionProvider implements Provider<ClientConnection> {
 
-import org.apache.cayenne.MockDataChannel;
-import org.apache.cayenne.query.NamedQuery;
-import org.apache.cayenne.remote.QueryMessage;
+    @Inject
+    protected Provider<ClientRuntime> clientRuntimeProvider;
 
-public class TestLocalConnectionTest extends TestCase {
-
-    public void testBlockUnblock() {
-
-        UnitLocalConnection c = new UnitLocalConnection(new MockDataChannel());
-        assertFalse(c.isBlockingMessages());
-
-        c.setBlockingMessages(true);
-        assertTrue(c.isBlockingMessages());
-
-        try {
-            c.sendMessage(new QueryMessage(new NamedQuery("dummy")));
-        }
-        catch (AssertionFailedError e) {
-            // expected...
-            return;
-        }
-        fail("Didn't block message...");
+    public ClientConnection get() throws ConfigurationException {
+        return clientRuntimeProvider.get().getConnection();
     }
-
 }

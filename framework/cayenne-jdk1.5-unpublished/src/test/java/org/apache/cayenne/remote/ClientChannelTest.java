@@ -34,6 +34,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.event.CayenneEvent;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
+import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -51,7 +52,11 @@ public class ClientChannelTest extends CayenneCase {
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
                 Arrays.asList(o1)));
 
-        ClientChannel channel = new ClientChannel(connection);
+        ClientChannel channel = new ClientChannel(
+                connection,
+                false,
+                new MockEventManager(),
+                false);
 
         CayenneContext context = new CayenneContext(channel);
         ObjEntity entity = new ObjEntity("test_entity");
@@ -59,12 +64,12 @@ public class ClientChannelTest extends CayenneCase {
 
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
+        Collection<DataMap> entities = Collections.singleton(dataMap);
         context.setEntityResolver(new EntityResolver(entities));
 
         QueryResponse response = channel.onQuery(context, new SelectQuery("test_entity"));
         assertNotNull(response);
-        List list = response.firstList();
+        List<?> list = response.firstList();
         assertNotNull(list);
         assertEquals(1, list.size());
         Persistent o1_1 = (Persistent) list.get(0);
@@ -82,7 +87,7 @@ public class ClientChannelTest extends CayenneCase {
 
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
+        Collection<DataMap> entities = Collections.singleton(dataMap);
         EntityResolver resolver = new EntityResolver(entities);
 
         CayenneContext context = new CayenneContext();
@@ -101,13 +106,17 @@ public class ClientChannelTest extends CayenneCase {
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
                 Arrays.asList(o2)));
 
-        ClientChannel channel = new ClientChannel(connection);
+        ClientChannel channel = new ClientChannel(
+                connection,
+                false,
+                new MockEventManager(),
+                false);
 
         context.setChannel(channel);
         QueryResponse response = channel.onQuery(context, new SelectQuery("test_entity"));
         assertNotNull(response);
 
-        List list = response.firstList();
+        List<?> list = response.firstList();
         assertNotNull(list);
         assertEquals(1, list.size());
         assertTrue("Expected cached object, got: " + list, list.contains(o1));
@@ -119,7 +128,7 @@ public class ClientChannelTest extends CayenneCase {
         entity.setClassName(MockPersistentObject.class.getName());
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
+        Collection<DataMap> entities = Collections.singleton(dataMap);
         EntityResolver resolver = new EntityResolver(entities);
         CayenneContext context = new CayenneContext();
         context.setEntityResolver(resolver);
@@ -137,13 +146,16 @@ public class ClientChannelTest extends CayenneCase {
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
                 Arrays.asList(o2)));
 
-        ClientChannel channel = new ClientChannel(connection);
+        ClientChannel channel = new ClientChannel(connection,
+                false,
+                new MockEventManager(),
+                false);
 
         context.setChannel(channel);
         QueryResponse response = channel.onQuery(context, new SelectQuery("test_entity"));
         assertNotNull(response);
         assertEquals(1, response.size());
-        List list = response.firstList();
+        List<?> list = response.firstList();
         assertNotNull(list);
         assertEquals(1, list.size());
         assertTrue("Expected cached object, got: " + list, list.contains(o1));
@@ -177,7 +189,10 @@ public class ClientChannelTest extends CayenneCase {
 
         // default constructor must fail
         try {
-            new ClientChannel(connection);
+            new ClientChannel(connection,
+                    false,
+                    new MockEventManager(),
+                    false);
             fail("Channel didn't throw on broken EventBridge");
         }
         catch (CayenneRuntimeException e) {

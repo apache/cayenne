@@ -19,42 +19,39 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientChannelServerDiffsListener1;
-import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextServerDiffsTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextServerDiffsTest extends ClientCase {
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
+    @Inject
+    private ClientServerChannel clientServerChannel;
+
+    @Inject
+    private CayenneContext context;
 
     public void testReturnDiffInPrePersist() {
 
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
                 .getCallbackRegistry();
 
         try {
 
-            registry.addListener(
+            callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
                     MtTable1.class,
                     new ClientChannelServerDiffsListener1(),
                     "prePersist");
 
-            ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-            ClientChannel channel = new ClientChannel(new LocalConnection(csChannel));
-            CayenneContext context = new CayenneContext(channel);
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             o.setServerAttribute1("YY");
             context.commitChanges();
@@ -64,27 +61,23 @@ public class CayenneContextServerDiffsTest extends CayenneCase {
             assertEquals("XXX", o.getGlobalAttribute1());
         }
         finally {
-            registry.clear();
+            callbackRegistry.clear();
         }
     }
 
     public void testReturnDiffInPreUpdate() {
-
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
                 .getCallbackRegistry();
 
         try {
 
-            registry.addListener(
+            callbackRegistry.addListener(
                     LifecycleEvent.PRE_UPDATE,
                     MtTable1.class,
                     new ClientChannelServerDiffsListener1(),
                     "preUpdate");
 
-            ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-            ClientChannel channel = new ClientChannel(new LocalConnection(csChannel));
-            CayenneContext context = new CayenneContext(channel);
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             o.setServerAttribute1("YY");
             context.commitChanges();
@@ -99,26 +92,23 @@ public class CayenneContextServerDiffsTest extends CayenneCase {
             assertEquals("111", o.getGlobalAttribute1());
         }
         finally {
-            registry.clear();
+            callbackRegistry.clear();
         }
     }
 
     public void testReturnDiffClientArcChanges() {
 
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
                 .getCallbackRegistry();
 
         try {
-            registry.addListener(
+            callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
                     MtTable1.class,
                     new ClientChannelServerDiffsListener1(),
                     "prePersist");
 
-            ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-            ClientChannel channel = new ClientChannel(new LocalConnection(csChannel));
-            CayenneContext context = new CayenneContext(channel);
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             ClientMtTable2 o1 = context.newObject(ClientMtTable2.class);
             o.addToTable2Array(o1);
@@ -129,26 +119,23 @@ public class CayenneContextServerDiffsTest extends CayenneCase {
             assertEquals("XXX", o.getGlobalAttribute1());
         }
         finally {
-            registry.clear();
+            callbackRegistry.clear();
         }
     }
 
     public void testReturnDiffServerArcChanges() {
 
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
                 .getCallbackRegistry();
 
         try {
-            registry.addListener(
+            callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
                     MtTable1.class,
                     new ClientChannelServerDiffsListener1(),
                     "prePersistAddRelationship");
 
-            ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-            ClientChannel channel = new ClientChannel(new LocalConnection(csChannel));
-            CayenneContext context = new CayenneContext(channel);
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             ClientMtTable2 o1 = context.newObject(ClientMtTable2.class);
             o.addToTable2Array(o1);
@@ -157,10 +144,10 @@ public class CayenneContextServerDiffsTest extends CayenneCase {
             assertFalse(o.getObjectId().isTemporary());
             assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
             assertEquals(2, o.getTable2Array().size());
-            
+
         }
         finally {
-            registry.clear();
+            callbackRegistry.clear();
         }
     }
 }

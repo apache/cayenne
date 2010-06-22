@@ -25,24 +25,26 @@ import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class ClientChannelServerDiffsTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class ClientChannelServerDiffsTest extends ClientCase {
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
+    @Inject
+    private ClientServerChannel clientServerChannel;
+
+    @Inject
+    private ClientConnection connection;
 
     public void testReturnIdDiff() {
 
@@ -57,8 +59,11 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
             }
         };
 
-        ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-        ClientChannel channel = new ClientChannel(new LocalConnection(csChannel)) {
+        ClientChannel channel = new ClientChannel(
+                connection,
+                false,
+                new MockEventManager(),
+                false) {
 
             @Override
             public GraphDiff onSync(
@@ -109,20 +114,23 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
 
         };
 
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
                 .getCallbackRegistry();
 
         try {
 
-            registry.addListener(
+            callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
                     MtTable1.class,
                     new ClientChannelServerDiffsListener1(),
                     "prePersist");
 
-            ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-            ClientChannel channel = new ClientChannel(new LocalConnection(csChannel)) {
+            ClientChannel channel = new ClientChannel(
+                    connection,
+                    false,
+                    new MockEventManager(),
+                    false) {
 
                 @Override
                 public GraphDiff onSync(
@@ -155,7 +163,7 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
             assertEquals("XXX", diffs.get(0).newValue);
         }
         finally {
-            registry.clear();
+            callbackRegistry.clear();
         }
     }
 
@@ -163,8 +171,11 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
 
         final NoopGraphChangeHandler diffReader = new NoopGraphChangeHandler();
 
-        ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-        ClientChannel channel = new ClientChannel(new LocalConnection(csChannel)) {
+        ClientChannel channel = new ClientChannel(
+                connection,
+                false,
+                new MockEventManager(),
+                false) {
 
             @Override
             public GraphDiff onSync(
@@ -241,18 +252,9 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
         private Object oldValue;
         private Object newValue;
         private ObjectId sourceId;
-        private ObjectId targetId;
 
         GenericDiff(ObjectId sourceId, String property, Object oldValue, Object newValue) {
-
-            this(sourceId, null, property, oldValue, newValue);
-        }
-
-        GenericDiff(ObjectId sourceId, ObjectId targetId, String property,
-                Object oldValue, Object newValue) {
-
             this.sourceId = sourceId;
-            this.targetId = targetId;
             this.property = property;
             this.oldValue = oldValue;
             this.newValue = newValue;

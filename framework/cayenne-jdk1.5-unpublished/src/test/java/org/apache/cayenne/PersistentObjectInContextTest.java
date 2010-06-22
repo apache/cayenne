@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
@@ -40,16 +41,18 @@ public class PersistentObjectInContextTest extends CayenneCase {
 
     @Override
     protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
 
     protected ObjectContext createObjectContext() {
         // wrap ClientServerChannel in LocalConnection to enable logging...
         ClientConnection connector = new LocalConnection(new ClientServerChannel(
                 getDomain()), LocalConnection.HESSIAN_SERIALIZATION);
-        return new CayenneContext(new ClientChannel(connector));
+        return new CayenneContext(new ClientChannel(
+                connector,
+                false,
+                new MockEventManager(),
+                false));
     }
 
     public void testResolveToManyReverseResolved() throws Exception {

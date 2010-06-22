@@ -20,48 +20,55 @@ package org.apache.cayenne;
 
 import java.util.Map;
 
-import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtMapToMany;
 import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
 import org.apache.cayenne.testdo.mt.MtMapToMany;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextMapRelationshipTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextMapRelationshipTest extends ClientCase {
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
+    @Inject
+    private CayenneContext context;
 
-    private CayenneContext createClientContext() {
-        ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
-        LocalConnection connection = new LocalConnection(serverChannel);
-        ClientChannel clientChannel = new ClientChannel(connection);
-        return new CayenneContext(clientChannel);
-    }
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tMtMapToMany;
+    private TableHelper tMtMapToManyTarget;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_MAP_TO_MANY_TARGET");
+        dbHelper.deleteAll("MT_MAP_TO_MANY");
+
+        tMtMapToMany = new TableHelper(dbHelper, "MT_MAP_TO_MANY");
+        tMtMapToMany.setColumns("ID");
+
+        tMtMapToManyTarget = new TableHelper(dbHelper, "MT_MAP_TO_MANY_TARGET");
+        tMtMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
+    }
+
+    private void createTwoMapToManysWithTargetsDataSet() throws Exception {
+        tMtMapToMany.insert(1).insert(2);
+        tMtMapToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
     }
 
     public void testReadToMany() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createClientContext();
+        createTwoMapToManysWithTargetsDataSet();
 
         ObjectId id = new ObjectId("MtMapToMany", MtMapToMany.ID_PK_COLUMN, 1);
         ClientMtMapToMany o1 = (ClientMtMapToMany) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(id));
 
-        Map targets = o1.getTargets();
+        Map<Object, ClientMtMapToManyTarget> targets = o1.getTargets();
 
         assertTrue(((ValueHolder) targets).isFault());
 
@@ -73,22 +80,19 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
     }
 
     public void testAddToMany() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createClientContext();
+        createTwoMapToManysWithTargetsDataSet();
 
         ObjectId id = new ObjectId("MtMapToMany", MtMapToMany.ID_PK_COLUMN, 1);
         ClientMtMapToMany o1 = (ClientMtMapToMany) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(id));
 
-        Map targets = o1.getTargets();
+        Map<Object, ClientMtMapToManyTarget> targets = o1.getTargets();
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        ClientMtMapToManyTarget newTarget = o1
-                .getObjectContext()
-                .newObject(ClientMtMapToManyTarget.class);
+        ClientMtMapToManyTarget newTarget = o1.getObjectContext().newObject(
+                ClientMtMapToManyTarget.class);
 
         o1.addToTargets(newTarget);
         assertEquals(4, targets.size());
@@ -98,10 +102,10 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
 
         o1.getObjectContext().performGenericQuery(new RefreshQuery());
         assertEquals(4, o1.getTargets().size());
-        
+
         int newId = Cayenne.intPKForObject(newTarget);
         assertSame(newTarget, o1.getTargets().get(new Integer(newId)));
-        
+
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, newTarget.getPersistenceState());
     }

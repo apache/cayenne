@@ -19,6 +19,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
@@ -33,14 +34,18 @@ public class CayenneContextRefreshQueryTest extends CayenneCase {
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
-    
+
     private CayenneContext createClientContext() {
         ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
         LocalConnection connection = new LocalConnection(serverChannel);
-        ClientChannel clientChannel = new ClientChannel(connection);
+        ClientChannel clientChannel = new ClientChannel(
+                connection,
+                false,
+                new MockEventManager(),
+                false);
         return new CayenneContext(clientChannel);
     }
-    
+
     public void testRefreshToMany() throws Exception {
 
         deleteTestData();

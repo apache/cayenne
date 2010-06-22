@@ -25,8 +25,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.MockGraphDiff;
@@ -39,19 +41,15 @@ import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.MockClientConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.GenericResponse;
 
-/**
- */
-public class CayenneContextTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextTest extends ClientCase {
 
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
+    @Inject
+    protected ObjectContext serverContext;
 
     public void testConstructor() {
 
@@ -70,9 +68,12 @@ public class CayenneContextTest extends CayenneCase {
 
         MockDataChannel channel = new MockDataChannel();
         CayenneContext src = new CayenneContext(channel);
-        src.setEntityResolver(getDomain().getEntityResolver().getClientEntityResolver());
+        src
+                .setEntityResolver(serverContext
+                        .getEntityResolver()
+                        .getClientEntityResolver());
 
-        List sources = new ArrayList();
+        List<Persistent> sources = new ArrayList<Persistent>();
 
         ClientMtTable1 s1 = new ClientMtTable1();
         s1.setPersistenceState(PersistenceState.COMMITTED);
@@ -98,12 +99,12 @@ public class CayenneContextTest extends CayenneCase {
         sources.add(s3);
 
         CayenneContext target = new CayenneContext(channel);
-        target.setEntityResolver(getDomain()
+        target.setEntityResolver(serverContext
                 .getEntityResolver()
                 .getClientEntityResolver());
 
         for (int i = 0; i < sources.size(); i++) {
-            Persistent srcObject = (Persistent) sources.get(i);
+            Persistent srcObject = sources.get(i);
             Persistent targetObject = target.localObject(
                     srcObject.getObjectId(),
                     srcObject);
@@ -136,7 +137,7 @@ public class CayenneContextTest extends CayenneCase {
     public void testCommitCommandExecuted() {
 
         MockDataChannel channel = new MockDataChannel(new MockGraphDiff());
-        channel.setEntityResolver(getDomain()
+        channel.setEntityResolver(serverContext
                 .getEntityResolver()
                 .getClientEntityResolver());
         CayenneContext context = new CayenneContext(channel);
@@ -189,7 +190,7 @@ public class CayenneContextTest extends CayenneCase {
 
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
+        Collection<DataMap> entities = Collections.singleton(dataMap);
         context.setEntityResolver(new EntityResolver(entities));
         Persistent object = context.newObject(MockPersistentObject.class);
 
@@ -212,7 +213,7 @@ public class CayenneContextTest extends CayenneCase {
 
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
+        Collection<DataMap> entities = Collections.singleton(dataMap);
         context.setEntityResolver(new EntityResolver(entities));
 
         Persistent object = context.newObject(MockPersistentObject.class);
@@ -236,7 +237,7 @@ public class CayenneContextTest extends CayenneCase {
 
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
+        Collection<DataMap> entities = Collections.singleton(dataMap);
         context.setEntityResolver(new EntityResolver(entities));
 
         // TRANSIENT ... should quietly ignore it
@@ -292,7 +293,11 @@ public class CayenneContextTest extends CayenneCase {
 
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
                 Arrays.asList(inflated)));
-        ClientChannel channel = new ClientChannel(connection);
+        ClientChannel channel = new ClientChannel(
+                connection,
+                false,
+                new MockEventManager(),
+                false);
 
         // check that a HOLLOW object is infalted on "beforePropertyRead"
         ClientMtTable1 hollow = new ClientMtTable1();
@@ -303,13 +308,13 @@ public class CayenneContextTest extends CayenneCase {
         CayenneContext context = new CayenneContext(channel) {
 
             @Override
-            public List performQuery(Query query) {
+            public List<?> performQuery(Query query) {
                 selectExecuted[0] = true;
                 return super.performQuery(query);
             }
         };
 
-        context.setEntityResolver(getDomain()
+        context.setEntityResolver(serverContext
                 .getEntityResolver()
                 .getClientEntityResolver());
 
@@ -338,10 +343,14 @@ public class CayenneContextTest extends CayenneCase {
 
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
                 Arrays.asList(inflated)));
-        ClientChannel channel = new ClientChannel(connection);
+        ClientChannel channel = new ClientChannel(
+                connection,
+                false,
+                new MockEventManager(),
+                false);
 
         CayenneContext context = new CayenneContext(channel);
-        context.setEntityResolver(getDomain()
+        context.setEntityResolver(serverContext
                 .getEntityResolver()
                 .getClientEntityResolver());
         ClientMtTable1 hollow = (ClientMtTable1) context.localObject(gid, null);
