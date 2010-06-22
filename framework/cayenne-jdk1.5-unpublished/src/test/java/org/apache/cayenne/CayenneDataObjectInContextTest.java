@@ -23,24 +23,44 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CaseDataFactory;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneDataObjectInCtxtTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CayenneDataObjectInContextTest extends ServerCase {
+
+    @Inject
+    protected ServerRuntime runtime;
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 
     public void testDoubleRegistration() {
-        DataContext context = createDataContext();
 
         DataObject object = new Artist();
         assertNull(object.getObjectId());
@@ -57,7 +77,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         assertSame(object, context.getGraphManager().getNode(tempID));
 
         // registering in another context should throw an exception
-        DataContext anotherContext = createDataContext();
+        ObjectContext anotherContext = runtime.getContext();
         try {
             anotherContext.registerNewObject(object);
             fail("registerNewObject should've failed - object is already in another context");
@@ -67,8 +87,8 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         }
     }
 
+    @Deprecated
     public void testObjEntity() {
-        DataContext context = createDataContext();
 
         Artist a = new Artist();
         assertNull(a.getObjEntity());
@@ -88,25 +108,23 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testCommitChangesInBatch() {
-        DataContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject("Artist");
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("abc1");
 
-        Artist a2 = (Artist) context.newObject("Artist");
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("abc2");
 
-        Artist a3 = (Artist) context.newObject("Artist");
+        Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("abc3");
 
         context.commitChanges();
 
-        List artists = context.performQuery(new SelectQuery(Artist.class));
+        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
         assertEquals(3, artists.size());
     }
 
     public void testSetObjectId() {
-        DataContext context = createDataContext();
 
         Artist o1 = new Artist();
         assertNull(o1.getObjectId());
@@ -116,7 +134,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testStateTransToNew() {
-        DataContext context = createDataContext();
+
         Artist o1 = new Artist();
         assertEquals(PersistenceState.TRANSIENT, o1.getPersistenceState());
 
@@ -125,7 +143,6 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testStateNewToCommitted() {
-        DataContext context = createDataContext();
 
         Artist o1 = new Artist();
         o1.setArtistName("a");
@@ -138,7 +155,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testStateCommittedToModified() {
-        DataContext context = createDataContext();
+
         Artist o1 = new Artist();
         o1.setArtistName("a");
         context.registerNewObject(o1);
@@ -150,9 +167,11 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testStateModifiedToCommitted() {
-        DataContext context = createDataContext();
 
-        Artist o1 = newSavedArtist(context);
+        Artist o1 = context.newObject(Artist.class);
+        o1.setArtistName("qY");
+        context.commitChanges();
+
         o1.setArtistName(o1.getArtistName() + "_1");
         assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
 
@@ -161,7 +180,6 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testStateCommittedToDeleted() {
-        DataContext context = createDataContext();
 
         Artist o1 = new Artist();
         o1.setArtistName("a");
@@ -174,9 +192,11 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testStateDeletedToTransient() {
-        DataContext context = createDataContext();
 
-        Artist o1 = newSavedArtist(context);
+        Artist o1 = context.newObject(Artist.class);
+        o1.setArtistName("qY");
+        context.commitChanges();
+
         context.deleteObject(o1);
         assertEquals(PersistenceState.DELETED, o1.getPersistenceState());
 
@@ -186,8 +206,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         assertNull(o1.getObjectContext());
     }
 
-    public void testSetDataContext() {
-        DataContext context = createDataContext();
+    public void testSetContext() {
 
         Artist o1 = new Artist();
         assertNull(o1.getObjectContext());
@@ -196,31 +215,31 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         assertSame(context, o1.getObjectContext());
     }
 
-    public void testFetchByAttr() throws Exception {
-        DataContext context = createDataContext();
+    public void testFetchByAttribute() throws Exception {
 
-        String artistName = "artist with one painting";
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {}, false);
+        tArtist.insert(7, "m6");
 
-        SelectQuery q = new SelectQuery("Artist", ExpressionFactory.matchExp(
-                "artistName",
-                artistName));
+        SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
+                Artist.ARTIST_NAME_PROPERTY,
+                "m6"));
 
-        List artists = context.performQuery(q);
+        List<Artist> artists = context.performQuery(q);
         assertEquals(1, artists.size());
-        Artist o1 = (Artist) artists.get(0);
+        Artist o1 = artists.get(0);
         assertNotNull(o1);
-        assertEquals(artistName, o1.getArtistName());
+        assertEquals("m6", o1.getArtistName());
     }
 
     public void testUniquing() throws Exception {
-        DataContext context = createDataContext();
 
-        String artistName = "unique artist with no paintings";
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {}, false);
+        tArtist.insert(7, "m6");
 
-        Artist a1 = fetchArtist(context, artistName);
-        Artist a2 = fetchArtist(context, artistName);
+        SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
+                Artist.ARTIST_NAME_PROPERTY,
+                "m6"));
+
+        Artist a1 = (Artist) Cayenne.objectForQuery(context, q);
+        Artist a2 = (Artist) Cayenne.objectForQuery(context, q);
 
         assertNotNull(a1);
         assertNotNull(a2);
@@ -229,9 +248,8 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testSnapshotVersion1() {
-        DataContext context = createDataContext();
 
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = context.newObject(Artist.class);
         assertEquals(DataObject.DEFAULT_VERSION, artist.getSnapshotVersion());
 
         // test versions set on commit
@@ -246,20 +264,14 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         assertEquals(cachedSnapshot.getVersion(), artist.getSnapshotVersion());
     }
 
-    public void testSnapshotVersion2() {
-        DataContext context = createDataContext();
+    public void testSnapshotVersion2() throws Exception {
 
-        newSavedArtist(context);
+        tArtist.insert(7, "m6");
 
         // test versions assigned on fetch... clean up domain cache
-        // before doing it
-        getDomain().getEventManager().removeAllListeners(
-                getDomain().getSharedSnapshotCache().getSnapshotEventSubject());
-        getDomain().getSharedSnapshotCache().clear();
-        context = createDataContext();
 
-        List artists = context.performQuery(new SelectQuery(Artist.class));
-        Artist artist = (Artist) artists.get(0);
+        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
+        Artist artist = artists.get(0);
 
         assertFalse(DataObject.DEFAULT_VERSION == artist.getSnapshotVersion());
         assertEquals(context
@@ -269,9 +281,10 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     }
 
     public void testSnapshotVersion3() {
-        DataContext context = createDataContext();
 
-        Artist artist = newSavedArtist(context);
+        Artist artist = context.newObject(Artist.class);
+        artist.setArtistName("qY");
+        context.commitChanges();
 
         // test versions assigned after update
         long oldVersion = artist.getSnapshotVersion();
@@ -292,7 +305,6 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
      * http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0210.html
      */
     public void testObjectsCommittedManualOID() {
-        DataContext context = createDataContext();
 
         Artist object = context.newObject(Artist.class);
         object.setArtistName("ABC1");
@@ -315,20 +327,4 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         assertEquals("ABC1", object2.getArtistName());
     }
 
-    private Artist newSavedArtist(DataContext context) {
-        Artist o1 = new Artist();
-        o1.setArtistName("a");
-        o1.setDateOfBirth(new java.sql.Date(System.currentTimeMillis()));
-        context.registerNewObject(o1);
-        context.commitChanges();
-        return o1;
-    }
-
-    private Artist fetchArtist(DataContext context, String name) {
-        SelectQuery q = new SelectQuery("Artist", ExpressionFactory.matchExp(
-                "artistName",
-                name));
-        List ats = context.performQuery(q);
-        return (ats.size() > 0) ? (Artist) ats.get(0) : null;
-    }
 }

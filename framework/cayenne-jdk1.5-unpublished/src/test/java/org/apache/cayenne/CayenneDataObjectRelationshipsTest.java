@@ -21,85 +21,112 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ToManyList;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.CaseDataFactory;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneDataObjectRelTest extends CayenneDOTestBase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CayenneDataObjectRelationshipsTest extends ServerCase {
 
-    private void prepareNestedProperties() throws Exception {
-        Artist a1 = super.newArtist();
-        Painting p1 = super.newPainting();
-        PaintingInfo pi1 = super.newPaintingInfo();
-        Gallery g1 = super.newGallery();
+    @Inject
+    private ObjectContext context;
 
-        p1.setToArtist(a1);
-        p1.setToPaintingInfo(pi1);
-        p1.setToGallery(g1);
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tArtist;
+    private TableHelper tPaintingInfo;
+    private TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID");
+
+        tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+    }
+
+    private void createArtistWithPaintingDataSet() throws Exception {
+        tArtist.insert(8, "aX");
+        tPainting.insert(6, "pW", 8);
+    }
+
+    private void createArtistWithPaintingAndInfoDataSet() throws Exception {
+        tArtist.insert(8, "aX");
+        tPainting.insert(6, "pW", 8);
+        tPaintingInfo.insert(6, "mE");
     }
 
     public void testReadNestedProperty1() throws Exception {
-        prepareNestedProperties();
+        createArtistWithPaintingDataSet();
 
-        Painting p1 = fetchPainting();
-        assertEquals(artistName, p1.readNestedProperty("toArtist.artistName"));
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        assertEquals("aX", p1.readNestedProperty("toArtist.artistName"));
     }
 
     public void testReadNestedProperty2() throws Exception {
-        prepareNestedProperties();
+        createArtistWithPaintingDataSet();
 
-        Painting p1 = fetchPainting();
-        assertTrue(p1.getToArtist().readNestedProperty("paintingArray") instanceof List);
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        assertTrue(p1.getToArtist().readNestedProperty("paintingArray") instanceof List<?>);
     }
 
     public void testReciprocalRel1() throws Exception {
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {
-            paintingName
-        }, false);
+        createArtistWithPaintingDataSet();
 
-        Painting p1 = fetchPainting();
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
         Artist a1 = p1.getToArtist();
 
         assertNotNull(a1);
-        assertEquals(artistName, a1.getArtistName());
+        assertEquals("aX", a1.getArtistName());
 
-        List paintings = a1.getPaintingArray();
+        List<Painting> paintings = a1.getPaintingArray();
         assertEquals(1, paintings.size());
-        Painting p2 = (Painting) paintings.get(0);
+        Painting p2 = paintings.get(0);
         assertSame(p1, p2);
     }
 
     public void testReadToOneRel1() throws Exception {
-        // read to-one relationship
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {
-            paintingName
-        }, false);
+        createArtistWithPaintingDataSet();
 
-        Painting p1 = fetchPainting();
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
         Artist a1 = p1.getToArtist();
 
         assertNotNull(a1);
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
-        assertEquals(artistName, a1.getArtistName());
+        assertEquals("aX", a1.getArtistName());
         assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
     }
 
     public void testReadToOneRel2() throws Exception {
         // test chained calls to read relationships
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {
-            paintingName
-        }, true);
+        createArtistWithPaintingAndInfoDataSet();
 
-        PaintingInfo pi1 = fetchPaintingInfo(paintingName);
+        PaintingInfo pi1 = Cayenne.objectForPK(context, PaintingInfo.class, 6);
         Painting p1 = pi1.getPainting();
         p1.getPaintingTitle();
 
@@ -107,115 +134,108 @@ public class CayenneDataObjectRelTest extends CayenneDOTestBase {
 
         assertNotNull(a1);
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
-        assertEquals(artistName, a1.getArtistName());
+        assertEquals("aX", a1.getArtistName());
         assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
     }
 
     public void testReadToOneRel3() throws Exception {
-        // test null relationship destination
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {
-            paintingName
-        }, false);
+        createArtistWithPaintingDataSet();
 
-        Painting p1 = fetchPainting();
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
         Gallery g1 = p1.getToGallery();
         assertNull(g1);
     }
 
     public void testReadToManyRel1() throws Exception {
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {
-            paintingName
-        }, false);
+        createArtistWithPaintingDataSet();
 
-        Artist a1 = fetchArtist();
-        List plist = a1.getPaintingArray();
+        Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
+        List<Painting> plist = a1.getPaintingArray();
 
         assertNotNull(plist);
         assertEquals(1, plist.size());
-        assertEquals(PersistenceState.COMMITTED, ((Painting) plist.get(0))
-                .getPersistenceState());
-        assertEquals(paintingName, ((Painting) plist.get(0)).getPaintingTitle());
+        assertEquals(PersistenceState.COMMITTED, plist.get(0).getPersistenceState());
+        assertEquals("pW", plist.get(0).getPaintingTitle());
     }
 
     public void testReadToManyRel2() throws Exception {
         // test empty relationship
-        CaseDataFactory.createArtistWithPainting(artistName, new String[] {}, false);
+        tArtist.insert(11, "aX");
 
-        Artist a1 = fetchArtist();
-        List plist = a1.getPaintingArray();
+        Artist a1 = Cayenne.objectForPK(context, Artist.class, 11);
+        List<Painting> plist = a1.getPaintingArray();
 
         assertNotNull(plist);
         assertEquals(0, plist.size());
     }
 
     public void testReflexiveRelationshipInsertOrder1() {
-        DataContext dc = this.createDataContext();
-        ArtGroup parentGroup = (ArtGroup) dc.newObject("ArtGroup");
+
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        ArtGroup childGroup1 = (ArtGroup) dc.newObject("ArtGroup");
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
-        dc.commitChanges();
+        context.commitChanges();
     }
 
     public void testReflexiveRelationshipInsertOrder2() {
-        // Create in a different order and see what happens
-        DataContext dc = this.createDataContext();
-        ArtGroup childGroup1 = (ArtGroup) dc.newObject("ArtGroup");
+
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
 
-        ArtGroup parentGroup = (ArtGroup) dc.newObject("ArtGroup");
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
         childGroup1.setToParentGroup(parentGroup);
 
-        dc.commitChanges();
+        context.commitChanges();
     }
 
     public void testReflexiveRelationshipInsertOrder3() {
-        // Tey multiple children, one created before parent, one after
-        DataContext dc = this.createDataContext();
-        ArtGroup childGroup1 = (ArtGroup) dc.newObject("ArtGroup");
+        // multiple children, one created before parent, one after
+
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
 
-        ArtGroup parentGroup = (ArtGroup) dc.newObject("ArtGroup");
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
         childGroup1.setToParentGroup(parentGroup);
 
-        ArtGroup childGroup2 = (ArtGroup) dc.newObject("ArtGroup");
+        ArtGroup childGroup2 = context.newObject(ArtGroup.class);
         childGroup2.setName("child2");
         childGroup2.setToParentGroup(parentGroup);
 
-        dc.commitChanges();
+        context.commitChanges();
     }
 
     public void testReflexiveRelationshipInsertOrder4() {
-        // Tey multiple children, one created before parent, one after
-        DataContext dc = this.createDataContext();
-        ArtGroup childGroup1 = (ArtGroup) dc.newObject("ArtGroup");
+        // multiple children, one created before parent, one after
+
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
 
-        ArtGroup parentGroup = (ArtGroup) dc.newObject("ArtGroup");
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
         childGroup1.setToParentGroup(parentGroup);
 
-        ArtGroup childGroup2 = (ArtGroup) dc.newObject("ArtGroup");
+        ArtGroup childGroup2 = context.newObject(ArtGroup.class);
         childGroup2.setName("subchild");
         childGroup2.setToParentGroup(childGroup1);
 
-        dc.commitChanges();
+        context.commitChanges();
     }
 
     public void testCrossContextRelationshipException() {
-        DataContext otherContext = createDataContext();
+
         // Create this object in one context...
-        Artist artist = (Artist) ctxt.newObject("Artist");
+        Artist artist = context.newObject(Artist.class);
+
         // ...and this object in another context
-        Painting painting = (Painting) otherContext
-                .newObject("Painting");
+        Painting painting = runtime.getContext().newObject(Painting.class);
 
         // Check setting a toOne relationship
         try {
@@ -238,43 +258,34 @@ public class CayenneDataObjectRelTest extends CayenneDOTestBase {
         }
 
         assertEquals(0, artist.getPaintingArray().size());
-
     }
 
     public void testComplexInsertUpdateOrdering() {
-        Artist artist = (Artist) ctxt.newObject("Artist");
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("a name");
 
-        ctxt.commitChanges();
+        context.commitChanges();
 
         // Cause an update and an insert that need correct ordering
-        Painting painting = (Painting) ctxt.newObject("Painting");
+        Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("a painting");
         artist.addToPaintingArray(painting);
 
-        ctxt.commitChanges();
+        context.commitChanges();
 
-        ctxt.deleteObject(artist);
-        ctxt.commitChanges();
-    }
-
-    private PaintingInfo fetchPaintingInfo(String name) {
-        SelectQuery q = new SelectQuery("PaintingInfo", ExpressionFactory.matchExp(
-                "painting.paintingTitle",
-                name));
-        List pts = ctxt.performQuery(q);
-        return (pts.size() > 0) ? (PaintingInfo) pts.get(0) : null;
+        context.deleteObject(artist);
+        context.commitChanges();
     }
 
     public void testNewToMany() throws Exception {
-        Artist artist = ctxt.newObject(Artist.class);
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("test");
         assertTrue(artist.readPropertyDirectly("paintingArray") instanceof ToManyList);
 
         ToManyList list = (ToManyList) artist.readPropertyDirectly("paintingArray");
         assertFalse(list.isFault());
 
-        ctxt.commitChanges();
+        context.commitChanges();
 
         assertFalse(list.isFault());
     }
