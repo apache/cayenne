@@ -141,7 +141,7 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
         
-        List listAttrs = model.getObjectList();
+        List<?> listAttrs = model.getObjectList();
         int[] newSel = new int[attrs.length];
         
         for (int i = 0; i < attrs.length; i++) {
@@ -222,6 +222,9 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
                 
         String[] types = TypesMapping.getDatabaseTypes();
         JComboBox comboBox = CayenneWidgetFactory.createComboBox(types, true);
+        
+        // Types.NULL makes no sense as a column type
+        comboBox.removeItem("NULL");
         
         AutoCompletion.enable(comboBox);
         
