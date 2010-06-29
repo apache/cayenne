@@ -37,7 +37,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A utility class that handles mappings of JDBC data types to the database types and Java
  * types. Also contains methods that provide information about JDBC types.
- * 
  */
 public class TypesMapping {
 
@@ -260,8 +259,8 @@ public class TypesMapping {
                 || type == Types.NUMERIC;
     }
 
-    /** 
-     * Returns an array of string names of the default JDBC data types. 
+    /**
+     * Returns an array of string names of the default JDBC data types.
      */
     public static String[] getDatabaseTypes() {
         Collection<String> types = sqlStringType.keySet();
@@ -453,8 +452,8 @@ public class TypesMapping {
      * etc.
      * 
      * @return Fully qualified Java type name or null if not found.
-     * @deprecated use getJavaBySqlType(int) instead. Not usable since "0" can mean
-     *             "undefined", not really zero.
+     * @deprecated since 3.0. use getJavaBySqlType(int) instead. Not usable since "0" can
+     *             mean "undefined", not really zero.
      */
     @Deprecated
     public static String getJavaBySqlType(int type, int length, int scale) {
@@ -462,14 +461,16 @@ public class TypesMapping {
         // this does not always produce the correct result. See for instance CAY-1052 - PG
         // drivers from 8.2 and newer decided that the scale of "0" means "undefined", not
         // really zero.
-        if (type == Types.NUMERIC && scale == 0) { //SQL integer's max value is 2^31-1, which has length of 10 
+        if (type == Types.NUMERIC && scale == 0) { // SQL integer's max value is 2^31-1,
+                                                   // which has length of 10
             if (length < 10) {
                 type = Types.INTEGER;
             }
-            else if (length < 19) { //SQL's BIGINT max value is 2^63-1, which has length of 19
+            else if (length < 19) { // SQL's BIGINT max value is 2^63-1, which has length
+                                    // of 19
                 type = Types.BIGINT;
             }
-            
+
         }
 
         return sqlEnumJava.get(Integer.valueOf(type));
