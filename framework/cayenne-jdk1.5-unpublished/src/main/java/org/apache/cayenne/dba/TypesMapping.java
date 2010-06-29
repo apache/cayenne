@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -259,9 +260,12 @@ public class TypesMapping {
                 || type == Types.NUMERIC;
     }
 
-    /** Returns an array of string names of the default JDBC data types. */
+    /** 
+     * Returns an array of string names of the default JDBC data types. 
+     */
     public static String[] getDatabaseTypes() {
-        return sqlStringType.keySet().toArray(new String[0]);
+        Collection<String> types = sqlStringType.keySet();
+        return types.toArray(new String[types.size()]);
     }
 
     /**
