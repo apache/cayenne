@@ -23,7 +23,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JMenuItem;
@@ -196,16 +195,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         ProjectTreeModel model = new ProjectTreeModel(project);
         setRootVisible(true);
         setModel(model);
-
-        // expand top level
         getSelectionModel().setSelectionMode(
                 TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-        Enumeration level = model.getRootNode().children();
-        while (level.hasMoreElements()) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) level.nextElement();
-            TreePath path = new TreePath(node.getPath());
-            expandPath(path);
-        }
     }
 
     /**
