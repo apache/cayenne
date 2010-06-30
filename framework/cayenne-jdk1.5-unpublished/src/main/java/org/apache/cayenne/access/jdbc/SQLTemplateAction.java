@@ -317,7 +317,7 @@ public class SQLTemplateAction implements SQLAction {
 
         // note that we MUST convert line breaks to spaces. On some databases (DB2)
         // queries with breaks simply won't run; the rest are affected by CAY-726.
-        return Util.stripLineBreaks(sql, " ");
+        return Util.stripLineBreaks(sql, ' ');
     }
 
     /**

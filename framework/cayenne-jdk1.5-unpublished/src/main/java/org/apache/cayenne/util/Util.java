@@ -452,10 +452,10 @@ public class Util {
     }
 
     /**
-     * Strips "\n", "\r\n", "\r" from the argument string.
-     * 
+     * @deprecated since 3.1 in favor of {@link #stripLineBreaks(String, char)}.
      * @since 1.2
      */
+    @Deprecated
     public static String stripLineBreaks(String string, String replaceWith) {
         if (isEmptyString(string)) {
             return string;
@@ -485,20 +485,62 @@ public class Util {
     }
 
     /**
+     * Strips "\n", "\r\n", "\r" from the argument string, replacing them with a provided
+     * character.
+     * 
+     * @since 3.1
+     */
+    public static String stripLineBreaks(String string, char replaceWith) {
+
+        if (string == null) {
+            return null;
+        }
+
+        int len = string.length();
+        char[] buffer = new char[len];
+        boolean matched = false;
+
+        int j = 0;
+        for (int i = 0; i < len; i++, j++) {
+            char c = string.charAt(i);
+
+            // skip \n, \r, \r\n
+            if (c == '\n' || c == '\r') {
+                
+                matched = true;
+
+                // do lookahead
+                if (i + 1 < len && string.charAt(i + 1) == '\n') {
+                    i++;
+                }
+
+                buffer[j] = replaceWith;
+            }
+            else {
+                buffer[j] = c;
+            }
+        }
+
+        return matched ? new String(buffer, 0, j) : string;
+    }
+
+    /**
      * Encodes a string so that it can be used as an attribute value in an XML document.
      * Will do conversion of the greater/less signs, quotes and ampersands.
      */
-    public static String encodeXmlAttribute(String str) {
-        if (str == null)
+    public static String encodeXmlAttribute(String string) {
+        if (string == null) {
             return null;
+        }
 
-        int len = str.length();
-        if (len == 0)
-            return str;
+        int len = string.length();
+        if (len == 0) {
+            return string;
+        }
 
         StringBuilder encoded = new StringBuilder();
         for (int i = 0; i < len; i++) {
-            char c = str.charAt(i);
+            char c = string.charAt(i);
             if (c == '<')
                 encoded.append("&lt;");
             else if (c == '\"')
