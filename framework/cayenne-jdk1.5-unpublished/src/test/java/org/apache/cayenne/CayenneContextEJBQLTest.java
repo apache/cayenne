@@ -48,12 +48,40 @@ public class CayenneContextEJBQLTest extends ClientCase {
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
-    public void testEJBQLSelect() throws Exception {
+    private void createTwoRecords() throws Exception {
         tMtTable1.insert(1, "g1", "s1");
         tMtTable1.insert(2, "g2", "s2");
+    }
+
+    public void testEJBQLSelect() throws Exception {
+        createTwoRecords();
 
         EJBQLQuery query = new EJBQLQuery("SELECT a FROM MtTable1 a");
         List<ClientMtTable1> results = context.performQuery(query);
+
         assertEquals(2, results.size());
+    }
+
+    public void testEJBQLSelectScalar() throws Exception {
+        createTwoRecords();
+
+        EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM MtTable1 a");
+
+        List<Long> results = context.performQuery(query);
+        assertEquals(Long.valueOf(2), results.get(0));
+    }
+
+    public void testEJBQLSelectMixed() throws Exception {
+        createTwoRecords();
+
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT COUNT(a), a, a.serverAttribute1  FROM MtTable1 a Group By a");
+
+        List<Object[]> results = context.performQuery(query);
+
+        assertEquals(2, results.size());
+        assertEquals(Long.valueOf(1), results.get(0)[0]);
+        assertTrue(results.get(0)[1] instanceof ClientMtTable1);
+        assertEquals("s1", results.get(0)[2]);
     }
 }

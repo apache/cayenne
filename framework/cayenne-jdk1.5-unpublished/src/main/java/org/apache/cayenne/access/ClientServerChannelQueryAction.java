@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -28,6 +27,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -173,37 +173,105 @@ class ClientServerChannelQueryAction {
 
     private List toClientObjects(List serverObjects) {
 
-        // create a list copy even if it is empty to ensure that we have a
-        // clean serializable list...
-        List clientObjects = new ArrayList(serverObjects.size());
-
         if (!serverObjects.isEmpty()) {
-            ObjectDetachOperation op = new ObjectDetachOperation(serverResolver
-                    .getClientEntityResolver());
-            Iterator it = serverObjects.iterator();
-            PrefetchTreeNode prefetchTree = serverMetadata.getPrefetchTree();
 
-            while (it.hasNext()) {
-                Persistent object = (Persistent) it.next();
-                ObjectId id = object.getObjectId();
+            List<Object> rsMapping = serverMetadata.getResultSetMapping();
 
-                // sanity check
-                if (id == null) {
-                    throw new CayenneRuntimeException(
-                            "Server returned an object without an id: " + object);
+            if (rsMapping == null) {
+                return singleObjectConversion(serverObjects);
+            }
+            else {
+                if (rsMapping.size() == 1) {
+                    if (rsMapping.get(0) instanceof EntityResultSegment) {
+                        return singleObjectConversion(serverObjects);
+                    }
+                    else {
+                        // we can return a single scalar result unchanged (hmm... a scalar
+                        // Object[] can also be returned unchanged)...
+                        return serverObjects;
+                    }
                 }
-
-                // have to resolve descriptor here for every object, as
-                // often a query will not have any info indicating the
-                // entity type
-                ClassDescriptor serverDescriptor = serverResolver.getClassDescriptor(id
-                        .getEntityName());
-
-                clientObjects.add(op.detach(object, serverDescriptor, prefetchTree));
+                else {
+                    return processMixedResult(serverObjects, rsMapping);
+                }
             }
         }
 
+        return new ArrayList<Object>(3);
+    }
+
+    private List<Object[]> processMixedResult(
+            List<Object[]> serverObjects,
+            List<Object> rsMapping) {
+
+        // must clone the list to ensure we do not mess up the server list that can be
+        // used elsewhere (e.g. it can be cached).
+        List<Object[]> clientObjects = new ArrayList<Object[]>(serverObjects.size());
+
+        ObjectDetachOperation op = new ObjectDetachOperation(serverResolver
+                .getClientEntityResolver());
+        int width = rsMapping.size();
+
+        for (Object[] serverObject : serverObjects) {
+
+            Object[] clientObject = new Object[width];
+
+            for (int i = 0; i < width; i++) {
+                if (rsMapping.get(i) instanceof EntityResultSegment) {
+
+                    clientObject[i] = convertSingleObject(serverMetadata
+                            .getPrefetchTree(), op, serverObject[i]);
+                }
+                else {
+                    clientObject[i] = serverObject[i];
+                }
+            }
+
+            clientObjects.add(clientObject);
+        }
+
         return clientObjects;
+    }
+
+    private List<?> singleObjectConversion(List<?> serverObjects) {
+
+        // must clone the list to ensure we do not mess up the server list that can be
+        // used elsewhere (e.g. it can be cached).
+        List<Object> clientObjects = new ArrayList<Object>(serverObjects.size());
+
+        ObjectDetachOperation op = new ObjectDetachOperation(serverResolver
+                .getClientEntityResolver());
+
+        PrefetchTreeNode prefetchTree = serverMetadata.getPrefetchTree();
+
+        for (Object serverObject : serverObjects) {
+            clientObjects.add(convertSingleObject(prefetchTree, op, serverObject));
+        }
+
+        return clientObjects;
+    }
+
+    private Object convertSingleObject(
+            PrefetchTreeNode prefetchTree,
+            ObjectDetachOperation op,
+            Object serverObject) {
+
+        Persistent object = (Persistent) serverObject;
+        ObjectId id = object.getObjectId();
+
+        // sanity check
+        if (id == null) {
+            throw new CayenneRuntimeException("Server returned an object without an id: "
+                    + object);
+        }
+
+        // have to resolve descriptor here for every object, as
+        // often a query will not have any info indicating the
+        // entity type
+        ClassDescriptor serverDescriptor = serverResolver.getClassDescriptor(id
+                .getEntityName());
+
+        return op.detach(object, serverDescriptor, prefetchTree);
     }
 
 }

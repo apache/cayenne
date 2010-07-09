@@ -67,6 +67,7 @@ CAY-1380 Support for Escaped LIKE Clauses in Expressions
 CAY-1402 Ability to use Terminating "@size" in Nested Properties Against Collections
 CAY-1416 ExpressionFactory.noMatchExp.toEJBQL() produces incorrect output
 CAY-1417 EJBQL doesn't support null numeric parameters 
+CAY-1452 EJBQL query scalar result is not supported
 CAY-1455 "NULL" JDBC type is shown for DbAttribute data types in the Modeler
 
 ----------------------------------

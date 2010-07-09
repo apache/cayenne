@@ -38,6 +38,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphDiffCompressor;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -155,33 +156,27 @@ public class ClientChannel implements DataChannel {
                 while (response.next()) {
                     if (response.isList()) {
 
-                        List<?> objects = response.currentList();
-
+                        List objects = response.currentList();
+                        DeepMergeOperation merger = new DeepMergeOperation(context);
                         if (!objects.isEmpty()) {
-
-                            DeepMergeOperation merger = new DeepMergeOperation(context);
-
-                            // subclass descriptors will be resolved on the fly... here
-                            // find objects base descriptor.
-                            ListIterator it = objects.listIterator();
-                            while (it.hasNext()) {
-                                Persistent object = (Persistent) it.next();
-                                ObjectId id = object.getObjectId();
-
-                                // sanity check
-                                if (id == null) {
-                                    throw new CayenneRuntimeException(
-                                            "Server returned an object without an id: "
-                                                    + object);
+                            List<Object> rsMapping = info.getResultSetMapping();
+                            if (rsMapping == null) {
+                                convertSingleObjects(resolver, objects, merger);
+                            }
+                            else {
+                                if (rsMapping.size() == 1) {
+                                    if (rsMapping.get(0) instanceof EntityResultSegment) {
+                                        convertSingleObjects(resolver, objects, merger);
+                                    }
                                 }
+                                else {
+                                    processMixedResult(
+                                            resolver,
+                                            objects,
+                                            merger,
+                                            rsMapping);
 
-                                // have to resolve descriptor here for every object, as
-                                // often a query will not have any info indicating the
-                                // entity type
-                                ClassDescriptor descriptor = resolver
-                                        .getClassDescriptor(id.getEntityName());
-
-                                it.set(merger.merge(object, descriptor));
+                                }
                             }
                         }
                     }
@@ -190,6 +185,54 @@ public class ClientChannel implements DataChannel {
         }
 
         return response;
+    }
+
+    private void processMixedResult(
+            EntityResolver resolver,
+            List<Object[]> objects,
+            DeepMergeOperation merger,
+            List<Object> rsMapping) {
+
+        int width = rsMapping.size();
+        for (int i = 0; i < width; i++) {
+            if (rsMapping.get(i) instanceof EntityResultSegment) {
+                for (Object[] object : objects) {
+                    object[i] = convertObject(resolver, merger, (Persistent) object[i]);
+                }
+            }
+        }
+    }
+
+    private void convertSingleObjects(
+            EntityResolver resolver,
+            List objects,
+            DeepMergeOperation merger) {
+
+        ListIterator it = objects.listIterator();
+        while (it.hasNext()) {
+            Object next = it.next();
+            it.set(convertObject(resolver, merger, (Persistent) next));
+        }
+    }
+
+    private Object convertObject(
+            EntityResolver resolver,
+            DeepMergeOperation merger,
+            Persistent object) {
+
+        ObjectId id = object.getObjectId();
+
+        // sanity check
+        if (id == null) {
+            throw new CayenneRuntimeException("Server returned an object without an id: "
+                    + object);
+        }
+
+        // have to resolve descriptor here for every object, as often a query will not
+        // have any info indicating the entity type
+        ClassDescriptor descriptor = resolver.getClassDescriptor(id.getEntityName());
+
+        return merger.merge(object, descriptor);
     }
 
     public GraphDiff onSync(
