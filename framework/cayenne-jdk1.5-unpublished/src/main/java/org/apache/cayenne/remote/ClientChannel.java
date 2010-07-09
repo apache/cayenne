@@ -123,7 +123,7 @@ public class ClientChannel implements DataChannel {
     public ClientConnection getConnection() {
         return connection;
     }
-    
+
     /**
      * @since 3.1
      */
@@ -157,8 +157,10 @@ public class ClientChannel implements DataChannel {
                     if (response.isList()) {
 
                         List objects = response.currentList();
-                        DeepMergeOperation merger = new DeepMergeOperation(context);
+
                         if (!objects.isEmpty()) {
+
+                            DeepMergeOperation merger = new DeepMergeOperation(context);
                             List<Object> rsMapping = info.getResultSetMapping();
                             if (rsMapping == null) {
                                 convertSingleObjects(resolver, objects, merger);
