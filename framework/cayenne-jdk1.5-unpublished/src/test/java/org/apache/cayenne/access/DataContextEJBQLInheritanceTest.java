@@ -21,29 +21,45 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
-import org.apache.cayenne.unit.PeopleCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLInheritanceTest extends PeopleCase {
+@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+public class DataContextEJBQLInheritanceTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PERSON");
+
+        TableHelper person = new TableHelper(dbHelper, "PERSON");
+        person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY");
+
+        person.insert(1, "a", "EE", 20000);
+        person.insert(2, "b", "EE", 25000);
+        person.insert(4, "c", "EM", 30000);
+        person.insert(5, "d", "EM", 40000);
+        person.insert(6, "e", "C", null);
     }
 
     public void testSelect() throws Exception {
-        createTestData("testSelect");
-
-        ObjectContext context = createDataContext();
 
         EJBQLQuery superclass = new EJBQLQuery(
                 "select p from AbstractPerson p ORDER BY p.name");
 
-        List superclassResult = context.performQuery(superclass);
+        List<?> superclassResult = context.performQuery(superclass);
         assertEquals(5, superclassResult.size());
 
         assertEquals(Employee.class.getName(), superclassResult
@@ -69,7 +85,7 @@ public class DataContextEJBQLInheritanceTest extends PeopleCase {
 
         EJBQLQuery subclass = new EJBQLQuery("select e from Employee e ORDER BY e.name");
 
-        List subclassResult = context.performQuery(subclass);
+        List<?> subclassResult = context.performQuery(subclass);
         assertEquals(4, subclassResult.size());
 
         assertEquals(Employee.class.getName(), subclassResult.get(0).getClass().getName());

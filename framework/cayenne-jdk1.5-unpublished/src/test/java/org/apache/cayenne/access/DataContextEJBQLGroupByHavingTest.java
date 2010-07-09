@@ -24,28 +24,98 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.junit.AssertExtras;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLGroupByHavingTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+    protected TableHelper tGallery;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "GALLERY_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+
+        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+    }
+
+    private void createFivePaintings() throws Exception {
+        tPainting.insert(33001, null, null, "PX", 1);
+        tPainting.insert(33002, null, null, "PY", 2);
+        tPainting.insert(33003, null, null, "PY", 2);
+        tPainting.insert(33004, null, null, "PZ", 1);
+        tPainting.insert(33005, null, null, "PZ", 1);
+    }
+
+    private void createFourArtistsAndTwoPaintings() throws Exception {
+        tArtist.insert(33001, "AA1");
+        tArtist.insert(33002, "AA2");
+        tArtist.insert(33003, "BB1");
+        tArtist.insert(33004, "BB2");
+        tPainting.insert(33007, 33001, null, "P1", 3000);
+        tPainting.insert(33008, 33002, null, "P2", 5000);
+    }
+
+    private void createArtistsPaintingGalleries() throws Exception {
+        tArtist.insert(33001, "AA1");
+        tArtist.insert(33002, "AA2");
+        tArtist.insert(33003, "BB1");
+        tArtist.insert(33004, "BB2");
+
+        tGallery.insert(33001, "gallery1");
+        tGallery.insert(33002, "gallery2");
+
+        tPainting.insert(33001, null, null, "PX", 1);
+        tPainting.insert(33002, null, null, "PY", 2);
+        tPainting.insert(33003, null, null, "PY", 2);
+        tPainting.insert(33007, 33001, null, "P1", 3000);
+        tPainting.insert(33008, 33002, null, "P2", 5000);
+        tPainting.insert(33009, 33002, 33001, "P111", 5000);
+        tPainting.insert(33010, 33001, 33002, "P112", 5000);
     }
 
     public void testGroupBy() throws Exception {
-        createTestData("prepare");
+        createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
                 + " GROUP BY p.estimatedPrice"
                 + " ORDER BY p.estimatedPrice";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List data = createDataContext().performQuery(query);
+        List<?> data = context.performQuery(query);
         assertEquals(2, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -59,14 +129,14 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByMultipleItems() throws Exception {
-        createTestData("prepare");
+        createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, p.paintingTitle, count(p) FROM Painting p"
                 + " GROUP BY p.estimatedPrice, p.paintingTitle"
                 + " ORDER BY p.estimatedPrice, p.paintingTitle";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List data = createDataContext().performQuery(query);
+        List<?> data = context.performQuery(query);
         assertEquals(3, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -88,14 +158,14 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
 
     public void testGroupByRelatedEntity() throws Exception {
 
-        createTestData("testGroupByRelatedEntity");
+        createFourArtistsAndTwoPaintings();
 
         String ejbql = "SELECT COUNT(p), a, a.artistName "
                 + "FROM Painting p INNER JOIN p.toArtist a GROUP BY a, a.artistName "
                 + "ORDER BY a.artistName";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List data = createDataContext().performQuery(query);
+        List<?> data = context.performQuery(query);
         assertEquals(2, data.size());
 
         assertTrue(data.get(0) instanceof Object[]);
@@ -107,12 +177,12 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByIdVariable() throws Exception {
-        createTestData("prepare");
+        createFivePaintings();
 
         String ejbql = "SELECT count(p), p FROM Painting p GROUP BY p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List data = createDataContext().performQuery(query);
+        List<?> data = context.performQuery(query);
         assertEquals(5, data.size());
 
         // TODO: andrus, 8/3/2007 the rest of the unit test fails as currently Cayenne
@@ -127,14 +197,14 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByHavingOnColumn() throws Exception {
-        createTestData("prepare");
+        createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
                 + " GROUP BY p.estimatedPrice"
                 + " HAVING p.estimatedPrice > 1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List data = createDataContext().performQuery(query);
+        List<?> data = context.performQuery(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -144,14 +214,14 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByHavingOnAggregate() throws Exception {
-        createTestData("prepare");
+        createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
                 + " GROUP BY p.estimatedPrice"
                 + " HAVING count(p) > 2";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List data = createDataContext().performQuery(query);
+        List<?> data = context.performQuery(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -161,14 +231,14 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByHavingOnAggregateMultipleConditions() throws Exception {
-        createTestData("prepare");
+        createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
                 + " GROUP BY p.estimatedPrice"
                 + " HAVING count(p) > 2 AND p.estimatedPrice < 10";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List data = createDataContext().performQuery(query);
+        List<?> data = context.performQuery(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -178,10 +248,11 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByJoinedRelatedEntities() throws Exception {
-        createTestData("testGroupByRelatedEntity");
+        createFourArtistsAndTwoPaintings();
+
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT COUNT(p), p.toArtist FROM Painting p GROUP BY p.toArtist ");
-        List<Object[]> data = createDataContext().performQuery(query);
+        List<Object[]> data = context.performQuery(query);
         assertNotNull(data);
         assertEquals(2, data.size());
 
@@ -201,15 +272,15 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByJoinedEntities() throws Exception {
-        createTestData("testGroupByEntities");
+        createArtistsPaintingGalleries();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT COUNT(p), p.toArtist, p.toGallery FROM Painting p "
                         + "GROUP BY p.toGallery, p.toArtist ");
-        List<Object[]> data = createDataContext().performQuery(query);
+        List<Object[]> data = context.performQuery(query);
         assertNotNull(data);
         assertEquals(2, data.size());
 
-        HashSet<List> expectedResults = new HashSet<List>();
+        HashSet<List<?>> expectedResults = new HashSet<List<?>>();
         expectedResults.add(Arrays.asList(1L, "AA2", "gallery1"));
         expectedResults.add(Arrays.asList(1L, "AA1", "gallery2"));
 
@@ -223,16 +294,17 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByJoinedEntityInCount() throws Exception {
-        createTestData("testGroupByEntities");
+        createArtistsPaintingGalleries();
+
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT COUNT(p.toArtist), p.paintingTitle FROM Painting p "
                         + "GROUP BY p.paintingTitle "
                         + "HAVING p.paintingTitle LIKE 'P1%'");
-        List<Object[]> data = createDataContext().performQuery(query);
+        List<Object[]> data = context.performQuery(query);
         assertNotNull(data);
         assertEquals(3, data.size());
 
-        HashSet<List> expectedResults = new HashSet<List>();
+        HashSet<List<?>> expectedResults = new HashSet<List<?>>();
         expectedResults.add(Arrays.asList(1L, "P1"));
         expectedResults.add(Arrays.asList(1L, "P111"));
         expectedResults.add(Arrays.asList(1L, "P112"));
@@ -243,17 +315,17 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
     }
 
     public void testGroupByChainedJoins() throws Exception {
-        createTestData("prepare");
+        createFivePaintings();
 
         String ejbql = "SELECT p.painting.toArtist.paintingArray FROM PaintingInfo p"
                 + " GROUP BY p.painting.toArtist.paintingArray";
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List data = createDataContext().performQuery(query);
+        context.performQuery(query);
 
         ejbql = "SELECT p.painting.toArtist FROM PaintingInfo p"
                 + " GROUP BY p.painting.toArtist";
         query = new EJBQLQuery(ejbql);
-        createDataContext().performQuery(query);
+        context.performQuery(query);
     }
 
 }
