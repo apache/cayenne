@@ -46,7 +46,7 @@ public class CayenneContextEJBQLTest extends CayenneCase {
 
     public void testEJBQLSelect() throws Exception {
         createTestData("testEJBQLSelect");
-        
+
         DataContext context = createDataContext();
         ClientServerChannel clientServerChannel = new ClientServerChannel(context);
         UnitLocalConnection connection = new UnitLocalConnection(
@@ -58,6 +58,43 @@ public class CayenneContextEJBQLTest extends CayenneCase {
         EJBQLQuery query = new EJBQLQuery("SELECT a FROM MtTable1 a");
 
         List<ClientMtTable1> results = clientContext.performQuery(query);
+
         assertEquals(2, results.size());
+    }
+
+    public void testEJBQLSelectScalar() throws Exception {
+        createTestData("testEJBQLSelect");
+        DataContext context = createDataContext();
+        ClientServerChannel clientServerChannel = new ClientServerChannel(context);
+        UnitLocalConnection connection = new UnitLocalConnection(
+                clientServerChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext clientContext = new CayenneContext(channel);
+
+        EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM MtTable1 a");
+
+        List<Long> results = clientContext.performQuery(query);
+        assertEquals(Long.valueOf(2), results.get(0));
+    }
+
+    public void testEJBQLSelectMixed() throws Exception {
+        createTestData("testEJBQLSelect");
+        DataContext context = createDataContext();
+        ClientServerChannel clientServerChannel = new ClientServerChannel(context);
+        UnitLocalConnection connection = new UnitLocalConnection(
+                clientServerChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext clientContext = new CayenneContext(channel);
+
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT COUNT(a), a, a.serverAttribute1  FROM MtTable1 a Group By a");
+
+        List<Object[]> results = clientContext.performQuery(query);
+        assertEquals(2, results.size());
+        assertEquals(Long.valueOf(1), results.get(0)[0]);
+        assertTrue(results.get(0)[1] instanceof ClientMtTable1);
+        assertEquals("s1", results.get(0)[2]);
     }
 }
