@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-
 public interface MergerToken {
 
     public String getTokenName();
@@ -35,7 +34,7 @@ public interface MergerToken {
      * Create a token with the reverse direction. AddColumn in one direction becomes
      * DropColumn in the other direction.
      * <p>
-     * Not all tokens are reversible. See {@link #reversible()}
+     * Not all tokens are reversible.
      */
     public MergerToken createReverse(MergerFactory factory);
 

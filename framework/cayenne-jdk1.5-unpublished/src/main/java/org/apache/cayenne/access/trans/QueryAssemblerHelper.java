@@ -369,10 +369,6 @@ public abstract class QueryAssemblerHelper {
      * Appends SQL code to the query buffer to handle <code>val</code> as a parameter to
      * the PreparedStatement being built. Adds <code>val</code> into QueryAssembler
      * parameter list.
-     * 
-     * @param buf query buffer
-     * @param val object that should be appended as a literal to the query. Must be of one
-     *            of "standard JDBC" types. Can not be null.
      */
     protected void appendLiteralDirect(
             Object val,
