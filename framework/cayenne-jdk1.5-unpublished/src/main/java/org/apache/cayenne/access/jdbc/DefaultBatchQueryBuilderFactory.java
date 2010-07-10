@@ -25,7 +25,7 @@ import org.apache.cayenne.access.trans.UpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 
 /**
- * Default implementation of {@link #BatchQueryBuilderFactory}
+ * Default implementation of {@link BatchQueryBuilderFactory}.
  */
 public class DefaultBatchQueryBuilderFactory implements BatchQueryBuilderFactory {
 
