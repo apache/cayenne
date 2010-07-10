@@ -249,7 +249,7 @@
 								</goals>
 								<configuration>
 									<outputDirectory>src/main/resources/doc</outputDirectory>
-									<baseUrl>http://cwiki.apache.org/confluence/</baseUrl>
+									<baseUrl>https://cwiki.apache.org/confluence/</baseUrl>
 									<startPage>Documentation</startPage>
 									<spaceName>CAYDOC</spaceName>
 								</configuration>
