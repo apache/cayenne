@@ -69,6 +69,7 @@ CAY-1416 ExpressionFactory.noMatchExp.toEJBQL() produces incorrect output
 CAY-1417 EJBQL doesn't support null numeric parameters 
 CAY-1452 EJBQL query scalar result is not supported on ROP client
 CAY-1455 "NULL" JDBC type is shown for DbAttribute data types in the Modeler
+CAY-1458 Document Vertical Inheritance
 
 ----------------------------------
 Release: 3.0 (final) 
