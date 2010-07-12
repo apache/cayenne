@@ -89,7 +89,7 @@ public class CayenneContextEJBQLTest extends CayenneCase {
         CayenneContext clientContext = new CayenneContext(channel);
 
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT COUNT(a), a, a.serverAttribute1  FROM MtTable1 a Group By a");
+                "SELECT COUNT(a), a, a.serverAttribute1 FROM MtTable1 a Group By a ORDER BY a.serverAttribute1");
 
         List<Object[]> results = clientContext.performQuery(query);
         assertEquals(2, results.size());
