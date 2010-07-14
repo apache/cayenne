@@ -36,12 +36,11 @@ import org.apache.commons.logging.LogFactory;
 /**
  * QueryLogger is intended to log special events that happen whenever Cayenne interacts
  * with a database. This includes execution of generated SQL statements, result counts,
- * connection events, etc. Normally QueryLogger methods are not invoked directly by the
- * . Rather it is a single logging point used by the framework.
+ * connection events, etc. Normally QueryLogger methods are not invoked directly by the .
+ * Rather it is a single logging point used by the framework.
  * <p>
  * Internally QueryLogger uses commons-logging at the "info" level.
  * </p>
- * 
  */
 public class QueryLogger {
 
@@ -68,8 +67,7 @@ public class QueryLogger {
     /**
      * Appends SQL literal for the specified object to the buffer. This is a utility
      * method and is not intended to build SQL queries, rather this is used in logging
-     * routines. In particular it will trim large values to avoid flooding the logs.
-     * </p>
+     * routines. In particular it will trim large values to avoid flooding the logs. </p>
      * 
      * @param buffer buffer to append value
      * @param object object to be transformed to SQL literal.
@@ -129,15 +127,19 @@ public class QueryLogger {
             buffer.append('\'').append(object).append('\'');
         }
         else if (object instanceof Enum) {
-//            buffer.append(object.getClass().getName()).append(".");
+            // buffer.append(object.getClass().getName()).append(".");
             buffer.append(((Enum<?>) object).name()).append("=");
             if (object instanceof ExtendedEnumeration) {
                 Object value = ((ExtendedEnumeration) object).getDatabaseValue();
-                if (value instanceof String) buffer.append("'");
+                if (value instanceof String)
+                    buffer.append("'");
                 buffer.append(value);
-                if (value instanceof String) buffer.append("'");
+                if (value instanceof String)
+                    buffer.append("'");
             }
-            else buffer.append(((Enum<?>) object).ordinal()); // FIXME -- this isn't quite right
+            else
+                buffer.append(((Enum<?>) object).ordinal()); // FIXME -- this isn't quite
+                                                             // right
         }
         else if (object instanceof ParameterBinding) {
             sqlLiteralForObject(buffer, ((ParameterBinding) object).getValue());
@@ -151,7 +153,7 @@ public class QueryLogger {
                 len = TRIM_VALUES_THRESHOLD;
                 trimming = true;
             }
-            
+
             for (int i = 0; i < len; i++) {
                 if (i > 0) {
                     buffer.append(",");
@@ -170,8 +172,6 @@ public class QueryLogger {
                     System.identityHashCode(object));
         }
     }
-    
-    
 
     /**
      * @since 1.2 logs an arbitrary message using logging level setup for QueryLogger.
@@ -264,45 +264,41 @@ public class QueryLogger {
     /**
      * @since 3.0
      */
-    public static void logGeneratedKey(DbAttribute attribute, Object value)
-    {
+    public static void logGeneratedKey(DbAttribute attribute, Object value) {
         if (isLoggable()) {
             String entity = attribute.getEntity().getName();
-            String key    = attribute.getName();
+            String key = attribute.getName();
 
             logObj.info("Generated PK: " + entity + "." + key + " = " + value);
         }
     }
 
-    private static void buildLog(StringBuffer      buffer,
-                                 String            prefix,
-                                 String            postfix,
-                                 List<DbAttribute> attributes,
-                                 List<?>           parameters,
-                                 boolean           isInserting)
-    {
-        if (parameters != null && parameters.size() > 0)
-        {
-            DbAttribute           attribute         = null;
+    private static void buildLog(
+            StringBuffer buffer,
+            String prefix,
+            String postfix,
+            List<DbAttribute> attributes,
+            List<?> parameters,
+            boolean isInserting) {
+        if (parameters != null && parameters.size() > 0) {
+            DbAttribute attribute = null;
             Iterator<DbAttribute> attributeIterator = null;
-            int                   position          = 0;
+            int position = 0;
 
             if (attributes != null)
                 attributeIterator = attributes.iterator();
 
-            for (Object parameter : parameters)
-            {
+            for (Object parameter : parameters) {
                 // If at the beginning, output the prefix, otherwise a separator.
                 if (position++ == 0)
                     buffer.append(prefix);
                 else
                     buffer.append(", ");
 
-                // Find the next attribute and SKIP generated attributes.  Only
-                // skip when logging inserts, though.  Should show previously
+                // Find the next attribute and SKIP generated attributes. Only
+                // skip when logging inserts, though. Should show previously
                 // generated keys on DELETE, UPDATE, or SELECT.
-                while (attributeIterator != null && attributeIterator.hasNext())
-                {
+                while (attributeIterator != null && attributeIterator.hasNext()) {
                     attribute = attributeIterator.next();
 
                     if (isInserting == false || attribute.isGenerated() == false)
@@ -311,27 +307,25 @@ public class QueryLogger {
 
                 buffer.append(position);
 
-              if (attribute != null)
-              {
-                  buffer.append("->");
-                  buffer.append(attribute.getName());
-              }
+                if (attribute != null) {
+                    buffer.append("->");
+                    buffer.append(attribute.getName());
+                }
 
-              buffer.append(":");
-              sqlLiteralForObject(buffer, parameter);
+                buffer.append(":");
+                sqlLiteralForObject(buffer, parameter);
             }
 
             buffer.append(postfix);
         }
     }
 
-    private static boolean isInserting(String query)
-    {
+    private static boolean isInserting(String query) {
         if (query == null || query.length() == 0)
             return false;
 
         char firstCharacter = query.charAt(0);
-        
+
         if (firstCharacter == 'I' || firstCharacter == 'i')
             return true;
         else
@@ -354,10 +348,14 @@ public class QueryLogger {
      *            in prepared statement.
      * @since 1.2
      */
-    public static void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time) {
+    public static void logQuery(
+            String queryStr,
+            List<DbAttribute> attrs,
+            List<?> params,
+            long time) {
         if (isLoggable()) {
-            StringBuffer buf = new StringBuffer((useQueryFormatting) ? 
-                    QueryFormatter.formatQuery(queryStr) : queryStr);
+            StringBuffer buf = new StringBuffer((useQueryFormatting) ? QueryFormatter
+                    .formatQuery(queryStr) : queryStr);
             buildLog(buf, " [bind: ", "]", attrs, params, isInserting(queryStr));
 
             // log preparation time only if it is something significant
@@ -372,10 +370,11 @@ public class QueryLogger {
     /**
      * @since 1.2
      */
-    public static void logQueryParameters(String           label,
-                                         List<DbAttribute> attrs,
-                                         List<Object>      parameters,
-                                         boolean           isInserting) {
+    public static void logQueryParameters(
+            String label,
+            List<DbAttribute> attrs,
+            List<Object> parameters,
+            boolean isInserting) {
         String prefix = "[" + label + ": ";
         if (isLoggable() && parameters.size() > 0) {
             StringBuffer buf = new StringBuffer();
