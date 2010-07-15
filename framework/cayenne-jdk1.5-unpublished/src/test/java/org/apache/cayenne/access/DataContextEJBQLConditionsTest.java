@@ -166,6 +166,27 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33005)));
     }
 
+    public void testLikeEscape_LikeParameter() throws Exception {
+        createTestData("prepareLike");
+
+        // test for CAY-1426
+        String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE ?1 ESCAPE 'X'";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter(1, "X_DDDD");
+        List<?> objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33005)));
+    }
+
     public void testIn() throws Exception {
         createTestData("prepareIn");
 
