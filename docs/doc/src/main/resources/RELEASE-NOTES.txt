@@ -22,6 +22,7 @@ CAY-1316 Deprecate DataObjectUtils and move its methods to new utility class org
 CAY-1318 Cayenne configuration to support a single DataDomain
 CAY-1319 Minimal DI container-based configuration to run Cayenne
 CAY-1323 oracle.sql.TIMESTAMP in Result of query
+CAY-1327 Migrate HSQLDB modeler preferences to Java preferences API
 CAY-1329 DI-based cayenne-project module
 CAY-1331 hessian upgrade stops rop
 CAY-1336 Oracle specific type support (oracle.sql.*), add handlers.
