@@ -419,17 +419,13 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     void postprocessAfterCommit(GraphDiff parentChanges) {
 
-        Iterator<Map.Entry<Object, Persistent>> entries = objectMap.entrySet().iterator();
-
-        // have to scan through all entries
-        while (entries.hasNext()) {
-            Map.Entry<Object, Persistent> entry = entries.next();
-
-            Persistent object = entry.getValue();
+        // scan through changed objects, set persistence state to committed
+        for (Object id : changes.keySet()) {
+            Persistent object = objectMap.get(id);
 
             switch (object.getPersistenceState()) {
                 case PersistenceState.DELETED:
-                    entries.remove();
+                    objectMap.remove(id);
                     object.setObjectContext(null);
                     object.setPersistenceState(PersistenceState.TRANSIENT);
                     break;

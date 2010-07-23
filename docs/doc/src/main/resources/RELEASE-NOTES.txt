@@ -54,6 +54,7 @@ CAY-1328 SQLTemplate for DataMap is not working
 CAY-1363 Postgress don't support notations float(a, b)
 CAY-1364 SQL server don't support notations float(a, b)
 CAY-1430 Problems with TINYINT type mapping
+CAY-1468 Commit performance degradation
 
 ----------------------------------
 Release: 3.0.1
