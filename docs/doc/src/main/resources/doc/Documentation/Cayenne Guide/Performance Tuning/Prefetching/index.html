@@ -114,7 +114,7 @@ query.addPrefetch(<span class="code-quote">"paintingArray.toGallery"</span>);
 
 <p>Each node specifies the name of prefetch path segment and execution semantics. There are two flavors of prefetch semantics - <b>joint</b> and <b>disjoint</b>. Semantics of each node is initially determined by Cayenne when a new prefetch path is added, and can be later customized by the user (e.g., see joint example below).</p>
 
-<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>In most cases prefetch semantics is of no concern to the users. Cayenne will do its best to configure the right semantics on the fly. Don't tweak semantics unless you understand the implications and have some proof that different semantics would result in better select performance on your database. </p></td></tr></table></div>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>In most cases prefetch semantics is of no concern to the users. Cayenne will do its best to configure the right semantics on the fly. Don't tweak semantics unless you understand the implications and have some proof that different semantics would result in better select performance on your database.</td></tr></table></div>
 
 <p>Some internal semantics rules:</p>
 

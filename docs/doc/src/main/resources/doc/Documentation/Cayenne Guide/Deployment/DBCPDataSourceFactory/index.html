@@ -57,13 +57,13 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>As an alternative to a simple and easy-to-use DataSource bundled with Cayenne, it is possible to configure a more feature-rich DataSource based on Apache Jakarta <a href="http://jakarta.apache.org/commons/dbcp" rel="nofollow">commons-dbcp</a>. To enable commons-dbcp pool, select <tt>DBCPDataSourceFactory</tt> in the Modeler for a DataNode:</p>
+<div id="ConfluenceContent"><p>As an alternative to a simple and easy-to-use DataSource bundled with Cayenne, it is possible to configure a more feature-rich DataSource based on Apache Jakarta <a href="http://jakarta.apache.org/commons/dbcp" class="external-link" rel="nofollow">commons-dbcp</a>. To enable commons-dbcp pool, select <tt>DBCPDataSourceFactory</tt> in the Modeler for a DataNode:</p>
 
-<p><img src="dbcp-step1.jpg" align="absmiddle" border="0" /></p>
+<p><span class="image-wrap" style=""><img src="dbcp-step1.jpg?version=1&amp;modificationDate=1158521459000" style="border: 0px solid black" /></span></p>
 
 <p>Configuration is done in a properties file that has to be edited in a text editor outside CayenneModeler. The name of this file is specified in the Modeler (with path relative to cayenne.xml location):</p>
 
-<p><img src="dbcp-step2.jpg" align="absmiddle" border="0" /></p>
+<p><span class="image-wrap" style=""><img src="dbcp-step2.jpg?version=1&amp;modificationDate=1158521459000" style="border: 0px solid black" /></span></p>
 
 <p>Here is an example of such properties file contents:</p>
 
@@ -84,6 +84,7 @@ cayenne.dbcp.maxWait=10000</pre>
 
 <h3><a name="DBCPDataSourceFactory-DataSourceProperties"></a>DataSource Properties</h3>
 
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>Property</th>
@@ -106,9 +107,12 @@ cayenne.dbcp.maxWait=10000</pre>
 <td class='confluenceTd'>Database login password</td>
 </tr>
 </tbody></table>
+</div>
+
 
 <h3><a name="DBCPDataSourceFactory-ConnectionPoolProperties"></a>Connection Pool Properties</h3>
 
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>Property</th>
@@ -183,9 +187,12 @@ cayenne.dbcp.maxWait=10000</pre>
 <td class='confluenceTd'>Default catalog of connections created by the pool</td>
 </tr>
 </tbody></table>
+</div>
+
 
 <h3><a name="DBCPDataSourceFactory-PreparedStatementPoolProperties"></a>PreparedStatement Pool Properties</h3>
 
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>Property</th>
@@ -239,7 +246,9 @@ cayenne.dbcp.maxWait=10000</pre>
 <td class='confluenceTd'> cayenne.dbcp.ps.whenExhaustedAction</td>
 <td class='confluenceTd'>Specifies a pool behavior when the pool is exhausted and more PreparedStatements are requested. Possible values are strings that follow the constant names defined in <tt>org.apache.commons.pool.impl.GenericObjectPool}: {{WHEN_EXHAUSTED_BLOCK</tt>, <tt>WHEN_EXHAUSTED_GROW</tt>, <tt>WHEN_EXHAUSTED_FAIL</tt>. If ommitted, <tt>WHEN_EXHAUSTED_BLOCK</tt> is assumed.</td>
 </tr>
-</tbody></table></div>
+</tbody></table>
+</div>
+</div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

@@ -61,6 +61,7 @@
 <p><tt>cdeploy</tt> is an Ant task that configures Cayenne connection information in existing jar files that contain Cayenne project information. It is useful for the automation of deployment of Cayenne-based frameworks in different environments.</p>
 
 <h3><a name="cdeploy-Parameters"></a>Parameters</h3>
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>Attribute</th>
@@ -83,12 +84,15 @@
 <td class='confluenceTd'>No</td>
 </tr>
 </tbody></table>
+</div>
+
 
 <h3><a name="cdeploy-NestedElements%3A"></a>Nested Elements:</h3>
 
 <h5><a name="cdeploy-node"></a>node</h5>
 <p>One or more nested "node" elements specify connection information for the named nodes. All nested nodes must exist in the project, or otherwise they will be ignored.<br/>
 Nested node Parameters:</p>
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>Attribute</th>
@@ -121,6 +125,8 @@ Nested node Parameters:</p>
 <td class='confluenceTd'>No</td>
 </tr>
 </tbody></table>
+</div>
+
 
 <p>"dataSource" and "driverFile" are mutually exclusive, but none of them are required.</p>
 

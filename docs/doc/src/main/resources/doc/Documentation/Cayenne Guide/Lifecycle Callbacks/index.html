@@ -51,7 +51,7 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="LifecycleCallbacks-LifecycleCallbacks"></a>Lifecycle Callbacks</h2>
 
-<p>Users can register callback methods that will be invoked during the lifecycle of persistent objects. Callback mechanism is similar to the one defined in the <a href="http://cwiki.apache.org/confluence/confluence/display/CAYJPA/JPA+Guide" title="JPA Guide">JPA Specification</a>, however there are some noteable differences introduced to better follow the Cayenne object lifecycle. There are eight lifecycle callbacks described below (PostAdd, PrePersist, PostPersist, PreUpdate, PostUpdate, PreRemove, PostRemove, PostLoad). Each one cab be invoked as a <b>callback on a persistent object</b> itself or as a <b>callback on an arbitrary listener object</b>.</p>
+<p>Users can register callback methods that will be invoked during the lifecycle of persistent objects. Callback mechanism is similar to the one defined in the <a href="https://cwiki.apache.org/confluence/confluence/display/CAYJPA/JPA%20Guide" title="JPA Guide">JPA Specification</a>, however there are some noteable differences introduced to better follow the Cayenne object lifecycle. There are eight lifecycle callbacks described below (PostAdd, PrePersist, PostPersist, PreUpdate, PostUpdate, PreRemove, PostRemove, PostLoad). Each one cab be invoked as a <b>callback on a persistent object</b> itself or as a <b>callback on an arbitrary listener object</b>.</p>
 
 <div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Callbacks feature supercedes the following 1.2/2.0 features:</b><br /><ul>
 	<li>Interception of object state transitions inside <tt>"Persistent.setPersistenceState()"</tt>.</li>
@@ -107,6 +107,7 @@
 
 <p>Valid callback types are defined as Java enumerated constants in the <tt>org.apache.cayenne.map.LifecycleEvent</tt> enumeration.</p>
 
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>Callback</th>
@@ -150,6 +151,8 @@
 </td>
 </tr>
 </tbody></table>
+</div>
+
 
 <h2><a name="LifecycleCallbacks-RegisteringCallbacks"></a>Registering Callbacks</h2>
 

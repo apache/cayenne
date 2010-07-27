@@ -68,7 +68,7 @@
 
 <h3><a name="Guideto3.0Features-DataMapDTDReplacedwithSchema"></a>DataMap DTD Replaced with Schema</h3>
 
-<p>A schema is now available <a href="http://cayenne.apache.org/schema/3.0/modelMap.html" rel="nofollow">here</a> for the DataMap XML format.</p>
+<p>A schema is now available <a href="http://cayenne.apache.org/schema/3.0/modelMap.html" class="external-link" rel="nofollow">here</a> for the DataMap XML format.</p>
 
 <h3><a name="Guideto3.0Features-Embeddables"></a>Embeddables</h3>
 
@@ -76,7 +76,11 @@
 
 <h3><a name="Guideto3.0Features-FlattenedAttributes"></a>Flattened Attributes</h3>
 
-<p>Just like with "flattened" relationships, now there is a way to map an ObjAttribute that spans one or more DbRelationships and is mapped to a column of a joined table.</p>
+<p>Just like with "flattened" relationships, now there is a way to map an ObjAttribute that spans one or more DbRelationships and is mapped to a column of a joined table. An important use of flattened attributes is vertical inheritance mapping, as described below.</p>
+
+<h3><a name="Guideto3.0Features-VerticalInheritance"></a>Vertical Inheritance</h3>
+
+<p>Adding flattened attributes to subclasses in a single-table mapping gives us another powerful way to map inheritance - "vertical inheritance mapping", described in more details <a href="../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Inheritance/Modeling Vertical Inheritance/index.html" title="Modeling Vertical Inheritance">here</a>.</p>
 
 <h3><a name="Guideto3.0Features-PersistingPrimitivesandaNumberofOtherSimpleProperties"></a>Persisting Primitives and a Number of Other Simple Properties</h3>
 
@@ -168,8 +172,8 @@
 
 <ul>
 	<li>Added support for "long" primary keys (vs. "int" PK used previously)</li>
-	<li>Added adapter for <a href="http://www.sqlite.org/" rel="nofollow">SQLite</a> database.</li>
-	<li>Added adapter for <a href="http://www.h2database.com/" rel="nofollow">H2</a> database.</li>
+	<li>Added adapter for <a href="http://www.sqlite.org/" class="external-link" rel="nofollow">SQLite</a> database.</li>
+	<li>Added adapter for <a href="http://www.h2database.com/" class="external-link" rel="nofollow">H2</a> database.</li>
 	<li>Added stored procedure support on MySQL.</li>
 	<li>Changed default table type on MySQL to InnoDB, added MySQL FK constraints support in the Modeler.</li>
 	<li>Turned on update query batching on SQL Server and Derby.</li>

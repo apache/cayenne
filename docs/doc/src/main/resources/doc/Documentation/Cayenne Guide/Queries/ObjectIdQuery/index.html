@@ -65,6 +65,7 @@
 
 <p>Normally if you need to find an object that matches a certain primary key value, you would use <tt>DataObjectUtils.objectForPK(DataContext,String,int)</tt>. This method will look up an object in the cache, and only run a query if it is not yet cached. <tt>ObjectIdQuery</tt> gives the user more control of the object caching behavior. It supports three possible caching policies:</p>
 
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>Policy</th>
@@ -83,6 +84,8 @@
 <td class='confluenceTd'>This policy suppresses database fetch. If an object is already cached (either at the DataContext or DataDomain level), query returns this object. Otherwise it returns an empty result.</td>
 </tr>
 </tbody></table>
+</div>
+
 
 <p>An example of getting a guranteed fresh object:</p>
 

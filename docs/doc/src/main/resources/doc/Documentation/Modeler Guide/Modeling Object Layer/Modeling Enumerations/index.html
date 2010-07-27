@@ -35,7 +35,6 @@
 <li><a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/index.html">Common Modeling Tasks</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Database Layer/index.html">Modeling Database Layer</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/index.html">Modeling Object Layer</a><ul>
-<li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Inheritance overview/index.html">Inheritance overview</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling ObjEntities/index.html">Modeling ObjEntities</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Inheritance/index.html">Modeling Inheritance</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Embeddables/index.html">Modeling Embeddables</a></li>
@@ -57,9 +56,9 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="ModelingEnumerations-MappingandModelingJavaEnumerations"></a>Mapping and Modeling Java Enumerations</h2>
 
-<p>Cayenne allows to use any <a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html" rel="nofollow">Java enumeration</a> as an ObjAttribute type. In CayenneModeler's ObjEntity editor, under the Attributes tab, enter the full class name for your enumeration under the Java Type column, and this is it:</p>
+<p>Cayenne allows to use any <a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html" class="external-link" rel="nofollow">Java enumeration</a> as an ObjAttribute type. In CayenneModeler's ObjEntity editor, under the Attributes tab, enter the full class name for your enumeration under the Java Type column, and this is it:</p>
 
-<p><img src="ColorEnum.png" align="absmiddle" border="0" /></p>
+<p><span class="image-wrap" style=""><img src="ColorEnum.png?version=1&amp;modificationDate=1205493649000" style="border: 0px solid black" /></span></p>
 
 <p>To convert a DB column value to an enumeration instance and back Cayenne uses enumeration's <tt>name</tt> for character colums (CHAR, VARCHAR, etc) or its <tt>ordinal</tt> for numeric columns. Also Cayenne allows users to explicitly control what value in DB corresponds to a given enumeration instance. To do that, a custom enumeration must implement <tt>org.apache.cayenne.ExtendedEnumeration</tt> interface, overriding <tt>"getDatabaseValue()"</tt> method to provide the DB value. Here is an example of a custom enumeration that maps to DB integers:</p>
 

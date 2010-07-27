@@ -106,11 +106,12 @@
 
 <p>Now create a new file called {["realm.properties"}} <em>at the root of the server project</em> and put user login/password in there:</p>
 
-<p><div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>cayenne-user: secret,cayenne-service-user</pre>
-</div></div>.</p>
+</div></div>
+<p>.</p>
 
-<p>Now let's stop the server and start it again. Everything should start as before, but if you go to <a href="http://localhost:8080/tutorial/cayenne-service" rel="nofollow">http://localhost:8080/tutorial/cayenne-service</a>, your browser should pop up authentication dialog. Enter "cayenne-user/secret" for user name / password, and you should see "Hessian Requires POST" message. So the server is now secured.</p>
+<p>Now let's stop the server and start it again. Everything should start as before, but if you go to <a href="http://localhost:8080/tutorial/cayenne-service" class="external-link" rel="nofollow">http://localhost:8080/tutorial/cayenne-service</a>, your browser should pop up authentication dialog. Enter "cayenne-user/secret" for user name / password, and you should see "Hessian Requires POST" message. So the server is now secured.</p>
 
 <h2><a name="RemoteObjectPersistenceTutorialAuthentication-RunningClientwithBasicAuthentication"></a>Running Client with Basic Authentication</h2>
 

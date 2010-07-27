@@ -61,11 +61,11 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>"Inheritance" is an Object Oriented concept absent in traditional RDBMS. Cayenne however allows to map a hierarchical class tree to a single base table (so called "single table inheritance"). Such mapping is described in detail in the <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Inheritance/index.html" title="Modeling Inheritance">Modeler Guide</a>. The idea of single table inheritance is that a "class" of a database row is determined from the values in one or more columns of the base table. These columns are called "class designator columns".</p>
+<div id="ConfluenceContent"><p>"Inheritance" is an Object Oriented concept absent in traditional RDBMS. Cayenne however allows to map a hierarchical class tree to a single base table (so called "single table inheritance"). Such mapping is described in detail in the <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Inheritance/Modeling Single Table Inheritance/index.html" title="Modeling Single Table Inheritance">Modeler Guide</a>. The idea of single table inheritance is that a "class" of a database row is determined from the values in one or more columns of the base table. These columns are called "class designator columns".</p>
 
 <h3><a name="HandlingInheritance-InheritanceandnewDataObjects"></a>Inheritance and new DataObjects</h3>
 <p>Consider the following class hierarchy (also used in the Modeler Guide example):<br/>
-<img src="inheritance-diagram.jpg" align="absmiddle" border="0" /></p>
+<span class="image-wrap" style=""><img src="inheritance-diagram.jpg?version=1&amp;modificationDate=1139447348000" style="border: 0px solid black" /></span></p>
 
 <p>If a class designator column is "PERSON_TYPE", AbstractPerson class should define an attribute (for instance called "personType") that maps to PERSON_TYPE. This attribute is redundant and meanigless in Java, since person type is defined already by the Java class of the object, however we still have to keep it around so that when the new objects are saved, correct PERSON_TYPE data is stored in the database. </p>
 
