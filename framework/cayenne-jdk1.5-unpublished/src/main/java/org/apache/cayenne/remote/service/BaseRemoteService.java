@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.remote.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +49,7 @@ public abstract class BaseRemoteService implements RemoteService {
     // keep logger non-static so that it could be garbage collected with this instance..
     private final Log logObj = LogFactory.getLog(BaseRemoteService.class);
 
+    protected Configuration configuration;
     protected DataDomain domain;
 
     protected String eventBridgeFactoryName;
@@ -85,6 +84,10 @@ public abstract class BaseRemoteService implements RemoteService {
      * service lifecycle methods.
      */
     protected void destroyService() {
+        if (configuration != null) {
+            configuration.shutdown();
+        }
+
         logObj.debug(getClass().getName() + " destroyed");
     }
 
@@ -208,6 +211,8 @@ public abstract class BaseRemoteService implements RemoteService {
             throw new CayenneRuntimeException("Error starting Cayenne", ex);
         }
 
+        this.configuration = cayenneConfig;
+        
         // TODO (Andrus 10/15/2005) this assumes that mapping has a single domain...
         // do something about multiple domains
         this.domain = cayenneConfig.getDomain();

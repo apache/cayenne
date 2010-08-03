@@ -60,12 +60,14 @@ public class WebApplicationContextFilter implements Filter {
     }
 
     /**
-     * Cleanup callback method that does nothing, as the filter doesn't store any state.
+     * Cleanup callback method that shuts down shared configuration, specifically
+     * EventManager dispatch threads.
      */
-    // TODO: andrus 9/17/2006 - should we shut down Cayenne stack? I.e. should it be
-    // complimentary to "init"?
     public void destroy() {
-        // noop
+        Configuration config = Configuration.getSharedConfiguration();
+        if (config != null) {
+            config.shutdown();
+        }
     }
 
     /**

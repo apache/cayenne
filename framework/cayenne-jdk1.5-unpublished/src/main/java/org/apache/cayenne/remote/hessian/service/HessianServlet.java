@@ -52,6 +52,8 @@ public class HessianServlet extends com.caucho.hessian.server.HessianServlet {
     // config parameters compatible with Hessian parameter names
     static final String API_CLASS_PARAMETER = "api-class";
     static final String SERVICE_CLASS_PARAMETER = "service-class";
+    
+    private HessianService service;
 
     /**
      * Installs {@link HessianService} to respond to {@link RemoteService} requests.
@@ -74,9 +76,24 @@ public class HessianServlet extends com.caucho.hessian.server.HessianServlet {
         service.init(config);
         setSerializerFactory(service.createSerializerFactory());
         setService(service);
-
+        
+      
+        
+        // store service in ServletContext to be able to shut it down on destroy
+        this.service = service;
+        
         // proceed to super
         super.init(config);
+    }
+    
+    @Override
+    public void destroy() {
+        if (service != null) {
+            service.destroy();
+            service = null;
+        }
+
+        super.destroy();
     }
 
     protected HessianService createService(ServletConfig config) throws ServletException {
