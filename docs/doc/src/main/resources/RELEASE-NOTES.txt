@@ -72,6 +72,7 @@ CAY-1426 EJBQL: ESCAPE fails after positional parameter
 CAY-1452 EJBQL query scalar result is not supported on ROP client
 CAY-1455 "NULL" JDBC type is shown for DbAttribute data types in the Modeler
 CAY-1458 Document Vertical Inheritance
+CAY-1467 Shut down EventManager in WebApplicationContextFilter.destroy()
 CAY-1468 Commit performance degradation
 
 ----------------------------------
