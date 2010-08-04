@@ -62,13 +62,13 @@
 
 <p>Let's look at a specific example shown below. An online bookstore may be selling regular paper books and electronic books. Both share a number of common attributes placed in a common superclass "Book", but also have a number of specific attributes found only in each book distribution format:</p>
 
-<p><span class="image-wrap" style=""><img src="single-table-inheritance.png?version=1&amp;modificationDate=1280228715730" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="single-table-inheritance.png?version=1&amp;modificationDate=1280228715000" style="border: 0px solid black" /></span></p>
 
 <blockquote><p>As with many other ORM inheritance examples, this one is contrived and oversimplified. In a real bookstore it is likely that the same book is available in both formats, so mapping this inheritance hierarchy as a composition may be more appropriate, but let's stick with this example for simplicity sake.</p></blockquote>
 
 <p>As you see, a "BOOK" table contains attributes from superclass and all subclasses, plus it has the ID (primary key) and a "TYPE" column which will be used as a "discriminator colum" to determine which sublcass is stored in each row. Mapping of this inheritance hierarchy, just like mapping a single class, starts by creating a DbEntity for the "BOOK" table:</p>
 
-<p><span class="image-wrap" style=""><img src="book-dbentity.png?version=1&amp;modificationDate=1280229286128" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="book-dbentity.png?version=1&amp;modificationDate=1280229286000" style="border: 0px solid black" /></span></p>
 
 <p>Now let's create a superclass "Book", mapping only the columns that should be in the superclass (you can do it by clicking on "Create ObjEntity" icon on the DbEntity toolbar, and then removing unneeded subclass attributes). The next step is to create two subclasses. For each one of them, create a new ObjEntity, then under "Inheritance" dropdown specify "Book" as a superclass. This automatically selects "Table/View" to be "BOOK". </p>
 
@@ -80,7 +80,7 @@
 </ul>
 
 
-<p><span class="image-wrap" style=""><img src="book-qualifier.png?version=1&amp;modificationDate=1280230324133" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="book-qualifier.png?version=1&amp;modificationDate=1280230324000" style="border: 0px solid black" /></span></p>
 
 <blockquote><p>Unlike some other ORMs, Cayenne is really flexible about the semantics of discriminator columns. Qualifier can be any valid Cayenne expression, as long as it doesn't span any relationships (i.e. uses columns of the root table only). It doesn't have to be a single collumn, it can contain less or greater expressions. E.g. "<tt>price &gt; 500</tt>", "<tt>type = 'E' and sizeMB &lt; 1000</tt>", etc. Note however that if the expression is not settable (e.g. when using &lt; or &gt;), Cayenne won't be able to guess the right values on insert and the user application must provide those values explicitly. </p></blockquote>
 
