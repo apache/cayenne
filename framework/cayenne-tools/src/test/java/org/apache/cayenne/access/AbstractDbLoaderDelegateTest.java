@@ -37,6 +37,7 @@ public class AbstractDbLoaderDelegateTest extends TestCase {
     private DbEntity dbEntity;
     private ObjEntity objEntity;
 
+    @Override
     public void setUp() {
         delegate = new TestDbLoaderDelegate();
         dataMap = new DataMap();

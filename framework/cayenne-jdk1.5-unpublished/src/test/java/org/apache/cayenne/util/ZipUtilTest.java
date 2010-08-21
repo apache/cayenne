@@ -24,7 +24,7 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.file.FileUtil;
 
 /**
  * @deprecated since 3.1
@@ -37,11 +37,11 @@ public class ZipUtilTest extends TestCase {
         URL jarResource = Thread.currentThread().getContextClassLoader().getResource(
                 "org/apache/cayenne/util/jar-test.jar");
         File jarCopy = new File(
-                CayenneResources.getResources().getTestDir(),
+                FileUtil.baseTestDirectory(),
                 "jar-test.jar");
         Util.copy(jarResource, jarCopy);
 
-        File unjarDir = CayenneResources.getResources().getTestDir();
+        File unjarDir = FileUtil.baseTestDirectory();
         File unjarRootDir = new File(unjarDir, "jar-test");
         File manifest = new File(unjarRootDir.getParentFile(), "META-INF"
                 + File.separator
@@ -68,11 +68,11 @@ public class ZipUtilTest extends TestCase {
         URL jarResource = Thread.currentThread().getContextClassLoader().getResource(
                 "org/apache/cayenne/util/jar-test.jar");
         File jarCopy = new File(
-                CayenneResources.getResources().getTestDir(),
+                FileUtil.baseTestDirectory(),
                 "jar-test.jar");
         Util.copy(jarResource, jarCopy);
 
-        File unjarDir = CayenneResources.getResources().getTestDir();
+        File unjarDir = FileUtil.baseTestDirectory();
         File unjarRootDir = new File(unjarDir, "jar-test");
         File newJarFile = new File(unjarDir, "new-jar.jar");
 

@@ -27,7 +27,8 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.file.FileUtil;
+import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
@@ -47,20 +48,20 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
 
         // prepare destination directory
 
-        File destDir = new File(CayenneResources.getResources().getTestDir(), "cgen12");
+        File destDir = new File(FileUtil.baseTestDirectory(), "cgen12");
         // prepare destination directory
         if (!destDir.exists()) {
             assertTrue(destDir.mkdirs());
         }
 
         File map = new File(destDir, "cgen-dependent.map.xml");
-        CayenneResources.copyResourceToFile(
+        ResourceUtil.copyResourceToFile(
                 "org/apache/cayenne/tools/cgen-dependent.map.xml",
                 map);
 
         File additionalMaps[] = new File[1];
         additionalMaps[0] = new File(destDir, "cgen.map.xml");
-        CayenneResources.copyResourceToFile(
+        ResourceUtil.copyResourceToFile(
                 "org/apache/cayenne/tools/cgen.map.xml",
                 additionalMaps[0]);
 

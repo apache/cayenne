@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 class UtilityLogger {
 
     private static Log logger = LogFactory.getLog(UtilityLogger.class);
-    
+
     static void log(String sql) {
         logger.info(sql);
     }

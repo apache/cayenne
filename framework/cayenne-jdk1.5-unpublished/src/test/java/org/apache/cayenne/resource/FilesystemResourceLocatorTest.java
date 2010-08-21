@@ -26,7 +26,7 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.file.FileUtil;
 
 public class FilesystemResourceLocatorTest extends TestCase {
 
@@ -35,7 +35,7 @@ public class FilesystemResourceLocatorTest extends TestCase {
         assertEquals(1, l1.roots.length);
         assertEquals(System.getProperty("user.dir"), l1.roots[0].getPath());
 
-        File base = CayenneResources.getResources().getTestDir();
+        File base = FileUtil.baseTestDirectory();
         File f1 = new File(base, "f1");
         File f2 = new File(new File(base, "f2"), "f3");
 
@@ -51,7 +51,7 @@ public class FilesystemResourceLocatorTest extends TestCase {
         assertEquals(1, l1.roots.length);
         assertEquals(System.getProperty("user.dir"), l1.roots[0].getPath());
 
-        File base = CayenneResources.getResources().getTestDir();
+        File base = FileUtil.baseTestDirectory();
         File f1 = new File(base, "f1");
         File f2 = new File(new File(base, "f2"), "f3");
 
@@ -64,7 +64,7 @@ public class FilesystemResourceLocatorTest extends TestCase {
 
     public void testFindResources() throws Exception {
 
-        File base = new File(CayenneResources.getResources().getTestDir(), getClass().getName());
+        File base = new File(FileUtil.baseTestDirectory(), getClass().getName());
         File root1 = new File(base, "r1");
         File root2 = new File(base, "r2");
 

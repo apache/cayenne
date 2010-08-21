@@ -27,15 +27,15 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.unit.CayenneResources;
 import org.xml.sax.InputSource;
 
 public class MapLoaderLoadTest extends TestCase {
@@ -120,7 +120,7 @@ public class MapLoaderLoadTest extends TestCase {
         assertNotNull(map);
 
         // encode map
-        File file = new File(CayenneResources.getResources().getTestDir(), "testmap_generated.map.xml");
+        File file = new File(FileUtil.baseTestDirectory(), "testmap_generated.map.xml");
         PrintWriter pw = new PrintWriter(new FileOutputStream(file));
         map.encodeAsXML(pw);
         pw.close();

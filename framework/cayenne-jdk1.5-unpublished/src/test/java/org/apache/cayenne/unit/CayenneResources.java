@@ -19,21 +19,16 @@
 
 package org.apache.cayenne.unit;
 
-import java.io.File;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
-import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -53,8 +48,6 @@ public class CayenneResources implements BeanFactoryAware {
 
     public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
     public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
-    public static final String TEST_DIR_KEY = "cayenne.test.dir";
-    public static final String DEFAULT_TEST_DIR = "target/testrun";
 
     public static final String SCHEMA_SETUP_STACK = "SchemaSetupStack";
     public static final String SQL_TEMPLATE_CUSTOMIZER = "SQLTemplateCustomizer";
@@ -86,7 +79,6 @@ public class CayenneResources implements BeanFactoryAware {
         return resources;
     }
 
-    protected File testDir;
     protected DataSourceInfo connectionInfo;
     protected DataSource dataSource;
     protected BeanFactory beanFactory;
@@ -115,59 +107,10 @@ public class CayenneResources implements BeanFactoryAware {
         return resources;
     }
 
-    /**
-     * Copies resources to a file, thus making it available to the caller as File.
-     */
-    public static void copyResourceToFile(String resourceName, File file) {
-        URL in = getResourceURL(resourceName);
 
-        if (!Util.copy(in, file)) {
-            throw new CayenneRuntimeException("Error copying resource to file : " + file);
-        }
-    }
-
-    /**
-     * Returns a guaranteed non-null resource for a given name.
-     */
-    public static URL getResourceURL(String name) {
-        URL in = Thread.currentThread().getContextClassLoader().getResource(name);
-
-        // Fix for the issue described at https://issues.apache.org/struts/browse/SB-35
-        // Basically, spaces in filenames make maven cry.
-        try {
-            in = new URL(in.toExternalForm().replaceAll(" ", "%20"));
-        }
-        catch (MalformedURLException e) {
-            throw new CayenneRuntimeException("Error constructing URL.", e);
-        }
-
-        if (in == null) {
-            throw new CayenneRuntimeException("Resource not found: " + name);
-        }
-
-        return in;
-    }
-
-    /**
-     * Returns a guaranteed non-null resource for a given name.
-     */
-    public static InputStream getResource(String name) {
-        InputStream in = Thread
-                .currentThread()
-                .getContextClassLoader()
-                .getResourceAsStream(name);
-
-        if (in == null) {
-            throw new CayenneRuntimeException("Resource not found: " + name);
-        }
-
-        return in;
-    }
 
     public CayenneResources(Map adapterMap) {
         this.adapterMap = adapterMap;
-
-        setupTestDir();
     }
 
     /**
@@ -264,13 +207,6 @@ public class CayenneResources implements BeanFactoryAware {
     }
 
     /**
-     * Returns a test directory that is used as a scratch area.
-     */
-    public File getTestDir() {
-        return testDir;
-    }
-
-    /**
      * Creates new DataNode.
      */
     public DataNode newDataNode(String name) throws Exception {
@@ -309,31 +245,4 @@ public class CayenneResources implements BeanFactoryAware {
         }
     }
 
-    protected void setupTestDir() {
-        String testDirName = System.getProperty(TEST_DIR_KEY);
-
-        if (testDirName == null) {
-            testDirName = DEFAULT_TEST_DIR;
-
-            logger.info("No property '"
-                    + TEST_DIR_KEY
-                    + "' set. Using default directory: '"
-                    + testDirName
-                    + "'");
-        }
-
-        testDir = new File(testDirName);
-
-        // delete old tests
-        if (testDir.exists()) {
-            if (!Util.delete(testDirName, true)) {
-                throw new RuntimeException("Error deleting test directory: "
-                        + testDirName);
-            }
-        }
-
-        if (!testDir.mkdirs()) {
-            throw new RuntimeException("Error creating test directory: " + testDirName);
-        }
-    }
 }

@@ -27,7 +27,8 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.file.FileUtil;
+import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 
@@ -40,14 +41,14 @@ public class CayenneGeneratorTaskTest extends TestCase {
 
     static {
 
-        baseDir = CayenneResources.getResources().getTestDir();
+        baseDir = FileUtil.baseTestDirectory();
         map = new File(baseDir, "antmap.xml");
         mapEmbeddables = new File(baseDir, "antmap-embeddables.xml");
         template = new File(baseDir, "velotemplate.vm");
 
-        CayenneResources.copyResourceToFile("testmap.map.xml", map);
-        CayenneResources.copyResourceToFile("embeddable.map.xml", mapEmbeddables);
-        CayenneResources.copyResourceToFile(
+        ResourceUtil.copyResourceToFile("testmap.map.xml", map);
+        ResourceUtil.copyResourceToFile("embeddable.map.xml", mapEmbeddables);
+        ResourceUtil.copyResourceToFile(
                 "org/apache/cayenne/tools/velotemplate.vm",
                 template);
     }

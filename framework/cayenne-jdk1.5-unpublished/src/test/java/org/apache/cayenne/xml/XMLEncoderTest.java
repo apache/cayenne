@@ -27,7 +27,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.resource.ResourceUtil;
 
 /**
  */
@@ -70,8 +70,8 @@ public class XMLEncoderTest extends TestCase {
     }
 
     private String loadTestFileAsString(String filename) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(CayenneResources
-                .getResource(XML_DATA_DIR + filename)));
+        BufferedReader in = new BufferedReader(new InputStreamReader(ResourceUtil
+                .getResource(XML_DATA_DIR + filename).openStream()));
         StringBuffer comp = new StringBuffer();
         while (in.ready()) {
             comp.append(in.readLine());
@@ -110,7 +110,7 @@ public class XMLEncoderTest extends TestCase {
     }
 
     public void testSimpleMapping() throws Exception {
-        XMLEncoder encoder = new XMLEncoder(CayenneResources.getResourceURL(
+        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(
                 XML_DATA_DIR + "simple-mapping.xml").toExternalForm());
         TestObject test = new TestObject();
         test.setAge(57);
@@ -126,7 +126,7 @@ public class XMLEncoderTest extends TestCase {
     
     //  Added test for 1-to-1 relationship mappings, per CAY-597.
     public void test1To1Mapping() throws Exception {
-        XMLEncoder encoder = new XMLEncoder(CayenneResources.getResourceURL(
+        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(
                 XML_DATA_DIR + "1to1-mapping.xml").toExternalForm());
         
         TestObject grandParent = new TestObject();
@@ -180,7 +180,7 @@ public class XMLEncoderTest extends TestCase {
     }
 
     public void testCollectionMapping() throws Exception {
-        XMLEncoder encoder = new XMLEncoder(CayenneResources.getResourceURL(
+        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(
                 XML_DATA_DIR + "collection-mapping.xml").toExternalForm());
         TestObject george = new TestObject();
         george.setAge(76);
@@ -219,7 +219,7 @@ public class XMLEncoderTest extends TestCase {
         dataObjects.add(new TestObject("Mary", 28, false));
         dataObjects.add(new TestObject("Joe", 31, true));
 
-        String xml = new XMLEncoder(CayenneResources.getResourceURL(
+        String xml = new XMLEncoder(ResourceUtil.getResource(
                 XML_DATA_DIR + "simple-mapping.xml").toExternalForm()).encode(
                 "EncodedTestList",
                 dataObjects);
