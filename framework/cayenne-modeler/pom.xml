@@ -130,13 +130,11 @@
 	  	<dependency>
       		<groupId>net.sf.jedit-syntax</groupId>
       		<artifactId>jedit-syntax</artifactId>
-      		<version>2.2.2</version>
     	</dependency>
     	
     	<dependency>
       		<groupId>jgraph</groupId>
       		<artifactId>jgraph</artifactId>
-      		<version>5.13.0.0</version>
     	</dependency>
   </dependencies>
 
