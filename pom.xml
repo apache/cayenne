@@ -484,20 +484,6 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
-		<pluginRepository>
-			<id>objectstyle-snapshots</id>
-			<name>ObjectStyle Snapshots Repository</name>
-			<url>http://objectstyle.org/maven2</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>weekly</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
 	</pluginRepositories>
 	<build>
 		<defaultGoal>install</defaultGoal>
@@ -509,7 +495,7 @@
 					<argLine>
 						-DcayenneTestConnection=${cayenneTestConnection} -Djava.net.preferIPv4Stack=true
 					</argLine>
-					<systemProperties>
+					<systemPropertyVariables>
 						<property>
 							<name>cayenneAdapter</name>
 							<value>${cayenneAdapter}</value>
@@ -530,7 +516,7 @@
 							<name>cayenneJdbcDriver</name>
 							<value>${cayenneJdbcDriver}</value>
 						</property>
-					</systemProperties>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -544,6 +530,13 @@
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>2.6.3</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4.3</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -563,14 +556,6 @@
 	</distributionManagement>
 	<reporting>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
@@ -598,22 +583,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<showProtected>true</showProtected>
@@ -625,23 +594,6 @@
 						<link>http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/</link>
 					</links>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>project-team</report>
-							<report>mailing-list</report>
-							<report>cim</report>
-							<report>issue-tracking</report>
-							<report>license</report>
-							<report>scm</report>
-							<report>javadoc</report>
-						</reports>
-					</reportSet>
-				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>
