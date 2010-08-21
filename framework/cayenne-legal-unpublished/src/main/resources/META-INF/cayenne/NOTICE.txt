@@ -34,3 +34,11 @@ GUI TOOLS
 
 8. CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
 (http://www.eclipse.org/).
+
+9. CayenneModeler includes jEdit-syntax library developed by Slava Pestov, Artur Biesiadowski, 
+Clancy Malcolm, Jonathan Revusky, Juha Lindfors and Mike Dillon.
+(http://jedit-syntax.sourceforge.net/)
+
+10. CayenneModeler includes Inflector library developed by the Inflector project
+(https://inflector.dev.java.net/)
+
