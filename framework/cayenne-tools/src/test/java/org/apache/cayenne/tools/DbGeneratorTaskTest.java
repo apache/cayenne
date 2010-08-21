@@ -19,12 +19,11 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-/**
- */
-public class DbGeneratorTaskTest extends CayenneCase {
+import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
+
+public class DbGeneratorTaskTest extends TestCase {
 
     public void testSetUserName() throws Exception {
         DbGeneratorTask task = new DbGeneratorTask();

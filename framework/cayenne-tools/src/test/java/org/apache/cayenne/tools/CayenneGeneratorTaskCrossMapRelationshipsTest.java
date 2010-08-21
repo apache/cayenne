@@ -26,7 +26,8 @@ import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.file.FileUtil;
+import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
@@ -47,7 +48,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
         task.setTaskName("Test");
         task.setLocation(Location.UNKNOWN_LOCATION);
     }
-    
+
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
@@ -63,18 +64,18 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
 
         // prepare destination directory
 
-        File destDir = new File(CayenneResources.getResources().getTestDir(), "cgen11");
+        File destDir = new File(FileUtil.baseTestDirectory(), "cgen11");
         // prepare destination directory
         if (!destDir.exists()) {
             assertTrue(destDir.mkdirs());
         }
 
         File map = new File(destDir, "testmap-dependent.map.xml");
-        CayenneResources.copyResourceToFile("testmap-dependent.map.xml", map);
+        ResourceUtil.copyResourceToFile("testmap-dependent.map.xml", map);
 
         File additionalMaps[] = new File[1];
         additionalMaps[0] = new File(destDir, "testmap.map.xml");
-        CayenneResources.copyResourceToFile("testmap.map.xml", additionalMaps[0]);
+        ResourceUtil.copyResourceToFile("testmap.map.xml", additionalMaps[0]);
 
         FileList additionalMapsFilelist = new FileList();
         additionalMapsFilelist.setDir(additionalMaps[0].getParentFile());
@@ -114,18 +115,18 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
     public void testCrossDataMapRelationships() throws Exception {
         // prepare destination directory
 
-        File destDir = new File(CayenneResources.getResources().getTestDir(), "cgen12");
+        File destDir = new File(FileUtil.baseTestDirectory(), "cgen12");
         // prepare destination directory
         if (!destDir.exists()) {
             assertTrue(destDir.mkdirs());
         }
 
         File map = new File(destDir, "testmap-dependent.map.xml");
-        CayenneResources.copyResourceToFile("testmap-dependent.map.xml", map);
+        ResourceUtil.copyResourceToFile("testmap-dependent.map.xml", map);
 
         File additionalMaps[] = new File[1];
         additionalMaps[0] = new File(destDir, "testmap.map.xml");
-        CayenneResources.copyResourceToFile("testmap.map.xml", additionalMaps[0]);
+        ResourceUtil.copyResourceToFile("testmap.map.xml", additionalMaps[0]);
 
         FileList additionalMapsFilelist = new FileList();
         additionalMapsFilelist.setDir(additionalMaps[0].getParentFile());

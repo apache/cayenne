@@ -19,15 +19,16 @@
 
 package org.apache.cayenne.gen;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.unit.BasicCase;
 
 /**
  * ClassGenerationInfo tests that are not template-specific.
  * 
  */
-public class ClassGeneratorTest extends BasicCase {
+public class ClassGeneratorTest extends TestCase {
 
     protected ClassGenerationInfo cgen;
 

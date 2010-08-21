@@ -23,14 +23,18 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
 
-import org.apache.cayenne.map.*;
-import org.apache.cayenne.unit.BasicCase;
+import org.apache.cayenne.map.CallbackDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.NamedQuery;
 
-public class ClassGenerationActionTest extends BasicCase {
+public class ClassGenerationActionTest extends TestCase {
 
     protected ClassGenerationAction action;
     protected Collection<StringWriter> writers;

@@ -21,8 +21,6 @@ package org.apache.cayenne.gen;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class ImportUtilsTest extends TestCase {
 
     protected ImportUtils importUtils = null;
@@ -32,7 +30,7 @@ public class ImportUtilsTest extends TestCase {
         super.setUp();
         importUtils = new ImportUtils();
     }
-    
+
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
@@ -189,13 +187,14 @@ public class ImportUtilsTest extends TestCase {
     public void testFormatJavaTypeWithPrimitives() throws Exception {
         assertEquals("int", importUtils.formatJavaType("int", true));
         assertEquals("Integer", importUtils.formatJavaType("int", false));
-        
+
         assertEquals("char", importUtils.formatJavaType("char", true));
-        assertEquals("Character", importUtils.formatJavaType("java.lang.Character", false));
-        
+        assertEquals("Character", importUtils
+                .formatJavaType("java.lang.Character", false));
+
         assertEquals("double", importUtils.formatJavaType("java.lang.Double", true));
         assertEquals("Double", importUtils.formatJavaType("java.lang.Double", false));
-        
+
         assertEquals("a.b.C", importUtils.formatJavaType("a.b.C", true));
         assertEquals("a.b.C", importUtils.formatJavaType("a.b.C", false));
     }
@@ -217,7 +216,7 @@ public class ImportUtilsTest extends TestCase {
 
         assertEquals(baseType, importUtils.formatJavaType(fullyQualifiedType));
     }
-    
+
     public void testFormatJavaType() {
         assertEquals("x.X", importUtils.formatJavaType("x.X"));
         assertEquals("X", importUtils.formatJavaType("java.lang.X"));

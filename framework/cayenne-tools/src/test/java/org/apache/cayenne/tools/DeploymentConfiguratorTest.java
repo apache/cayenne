@@ -22,23 +22,22 @@ package org.apache.cayenne.tools;
 import java.io.File;
 import java.net.URL;
 
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.Project;
+import junit.framework.TestCase;
+
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.project.DataNodeConfigInfo;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.ZipUtil;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
 
 /**
  */
-public class DeploymentConfiguratorTest extends CayenneCase {
+public class DeploymentConfiguratorTest extends TestCase {
 
-    private static final File baseDir = new File(CayenneResources
-            .getResources()
-            .getTestDir(), "cdeploy");
+    private static final File baseDir = new File(FileUtil.baseTestDirectory(), "cdeploy");
     private static File src = new File(baseDir, "cdeploy-test.jar");
     private static File altFile = new File(baseDir, "alt-cayenne.xml");
     private static File altNodeFile = new File(baseDir, "alt-node1.xml");
