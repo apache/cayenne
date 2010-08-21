@@ -14,20 +14,23 @@ originally developed at The ObjectStyle Group and donated to the ASF by its auth
 2. This software includes Ashwood graph library developed by Andriy Shapochka.
 (http://objectstyle.org/ashwood/)
 
+3. This software includes VPP library developed by FoundryLogic, LLC.
+(http://vpp.sourceforge.net/)
+
 
 GUI TOOLS
 
-3. CayenneModeler and DVModeler includes JGoodies library developed by Karsten Lentzsch.
+4. CayenneModeler and DVModeler includes JGoodies library developed by Karsten Lentzsch.
 (http://www.jgoodies.com/)
 
-4. CayenneModeler includes the Scope library developed by The Scope team.
+5. CayenneModeler includes the Scope library developed by The Scope team.
 (http://scope.sourceforge.net/)
 
-5. CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
+6. CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
 (http://www.ognl.org/)
 
-6. CayenneModeler includes HSQLDB library developed by The HSQL Development Group.
+7. CayenneModeler includes HSQLDB library developed by The HSQL Development Group.
 (http://www.hsqldb.org/)
 
-7. CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
+8. CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
 (http://www.eclipse.org/).
