@@ -46,15 +46,13 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * cases, and sometimes may actually lead to security issues. </i>
  * </p>
  * 
- * @since 3.1 
+ * @since 3.1 its predecessor was called DataObjectUtils
  */
 public final class Cayenne {
     
     /**
      * A special property denoting a size of the to-many collection, when encountered at
      * the end of the path</p>
-     * 
-     * @since 3.1
      */
     final static String PROPERTY_COLLECTION_SIZE = "@size";
 
@@ -82,7 +80,8 @@ public final class Cayenne {
     }
     
     /**
-     * Returns property desctiptor for specified property
+     * Returns property descriptor for specified property.
+     * 
      * @param properyName path to the property
      * @return property descriptor, <code>null</code> if not found
      */
