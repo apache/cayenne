@@ -28,7 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.Util;
+import org.apache.cayenne.test.file.FileUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -67,7 +67,7 @@ public class Project2Case extends TestCase {
 
         // delete old tests
         if (testDirectory.exists()) {
-            if (!Util.delete(location, true)) {
+            if (!FileUtil.delete(location, true)) {
                 throw new CayenneRuntimeException(
                         "Error deleting test directory '%s'",
                         location);

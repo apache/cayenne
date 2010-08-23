@@ -36,7 +36,7 @@ public class ResourceUtil {
     public static void copyResourceToFile(String resourceName, File file) {
         URL in = getResource(resourceName);
 
-        if (!copy(in, file)) {
+        if (!copyResourceToFile(in, file)) {
             throw new RuntimeException("Error copying resource to file : " + file);
         }
     }
@@ -63,7 +63,7 @@ public class ResourceUtil {
         return in;
     }
 
-    private static boolean copy(URL from, File to) {
+    public static boolean copyResourceToFile(URL from, File to) {
         BufferedInputStream urlin = null;
         BufferedOutputStream fout = null;
         try {

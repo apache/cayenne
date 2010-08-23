@@ -120,6 +120,8 @@ public class Util {
     /**
      * Copies file contents from source to destination. Makes up for the lack of file
      * copying utilities in Java
+     * 
+     * @deprecated since 3.1 this method is not used by Cayenne
      */
     public static boolean copy(File source, File destination) {
         BufferedInputStream fin = null;
@@ -157,6 +159,8 @@ public class Util {
 
     /**
      * Save URL contents to a file.
+     * 
+     * @deprecated since 3.1 this method is not used by Cayenne.
      */
     public static boolean copy(URL from, File to) {
         BufferedInputStream urlin = null;
@@ -198,10 +202,7 @@ public class Util {
      * Reads data from the input and writes it to the output, until the end of the input
      * stream.
      * 
-     * @param in
-     * @param out
-     * @param bufSizeHint
-     * @throws IOException
+     * @deprecated since 3.1 this method is unused by Cayenne.
      */
     public static void copyPipe(InputStream in, OutputStream out, int bufSizeHint)
             throws IOException {
@@ -216,6 +217,8 @@ public class Util {
     /**
      * Deletes a file or directory, allowing recursive directory deletion. This is an
      * improved version of File.delete() method.
+     * 
+     * @deprecated since 3.1 this method is unused by Cayenne.
      */
     public static boolean delete(String filePath, boolean recursive) {
         File file = new File(filePath);

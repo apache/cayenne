@@ -56,7 +56,7 @@ public final class FileUtil {
         return baseTestDirectory;
     }
 
-    private static boolean delete(String filePath, boolean recursive) {
+    public static boolean delete(String filePath, boolean recursive) {
         File file = new File(filePath);
         if (!file.exists()) {
             return true;

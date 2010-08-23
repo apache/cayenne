@@ -20,10 +20,10 @@ package org.apache.cayenne.wocompat.unit;
 
 import java.io.File;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.Util;
-
 import junit.framework.TestCase;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.test.file.FileUtil;
 
 public class WOCompatCase extends TestCase {
 
@@ -34,7 +34,7 @@ public class WOCompatCase extends TestCase {
 
         // delete old tests
         if (testDirectory.exists()) {
-            if (!Util.delete(location, true)) {
+            if (!FileUtil.delete(location, true)) {
                 throw new CayenneRuntimeException(
                         "Error deleting test directory '%s'",
                         location);

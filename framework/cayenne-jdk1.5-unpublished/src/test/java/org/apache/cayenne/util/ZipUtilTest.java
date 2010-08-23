@@ -25,6 +25,7 @@ import java.net.URL;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.test.file.FileUtil;
+import org.apache.cayenne.test.resource.ResourceUtil;
 
 /**
  * @deprecated since 3.1
@@ -39,7 +40,7 @@ public class ZipUtilTest extends TestCase {
         File jarCopy = new File(
                 FileUtil.baseTestDirectory(),
                 "jar-test.jar");
-        Util.copy(jarResource, jarCopy);
+        ResourceUtil.copyResourceToFile(jarResource, jarCopy);
 
         File unjarDir = FileUtil.baseTestDirectory();
         File unjarRootDir = new File(unjarDir, "jar-test");
@@ -59,8 +60,8 @@ public class ZipUtilTest extends TestCase {
             assertTrue(manifest.isFile());
         }
         finally {
-            Util.delete(unjarRootDir.getPath(), true);
-            Util.delete(new File(unjarDir, "META-INF").getPath(), true);
+            FileUtil.delete(unjarRootDir.getPath(), true);
+            FileUtil.delete(new File(unjarDir, "META-INF").getPath(), true);
         }
     }
 
@@ -70,7 +71,7 @@ public class ZipUtilTest extends TestCase {
         File jarCopy = new File(
                 FileUtil.baseTestDirectory(),
                 "jar-test.jar");
-        Util.copy(jarResource, jarCopy);
+        ResourceUtil.copyResourceToFile(jarResource, jarCopy);
 
         File unjarDir = FileUtil.baseTestDirectory();
         File unjarRootDir = new File(unjarDir, "jar-test");
@@ -91,14 +92,14 @@ public class ZipUtilTest extends TestCase {
             // assertEquals(jar.length(), newJarFile.length());
 
             // try unzipping it again
-            Util.delete(unjarRootDir.getPath(), true);
-            Util.delete(new File(unjarDir, "META-INF").getPath(), true);
+            FileUtil.delete(unjarRootDir.getPath(), true);
+            FileUtil.delete(new File(unjarDir, "META-INF").getPath(), true);
             ZipUtil.unzip(newJarFile, unjarDir);
 
         }
         finally {
-            Util.delete(unjarRootDir.getPath(), true);
-            Util.delete(new File(unjarDir, "META-INF").getPath(), true);
+            FileUtil.delete(unjarRootDir.getPath(), true);
+            FileUtil.delete(new File(unjarDir, "META-INF").getPath(), true);
             newJarFile.delete();
         }
     }

@@ -44,6 +44,7 @@ import org.apache.cayenne.project2.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project2.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.cayenne.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -171,7 +172,7 @@ public class ProjectUpgrader_V6Test extends Project2Case {
             URL url = getClass().getClassLoader().getResource(sourceUrl + source);
             File target = new File(testFolder, source);
             assertNotNull(source);
-            Util.copy(url, target);
+            ResourceUtil.copyResourceToFile(url, target);
             targetsBefore.add(target);
         }
 
