@@ -90,7 +90,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;

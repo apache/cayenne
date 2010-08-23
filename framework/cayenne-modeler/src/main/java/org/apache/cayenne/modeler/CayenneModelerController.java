@@ -46,8 +46,8 @@ import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.validation.ProjectValidator;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 

@@ -30,7 +30,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.OverwriteDialog;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

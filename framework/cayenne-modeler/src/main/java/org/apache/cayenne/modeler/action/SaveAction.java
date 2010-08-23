@@ -26,8 +26,8 @@ import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.pref.RenamedPreferences;
-import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.ProjectSaver;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectSaver;
 
 /**
  * An action that saves a project using to its default location.

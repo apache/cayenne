@@ -26,7 +26,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.Project;
 
 /**
  */

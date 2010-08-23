@@ -25,7 +25,8 @@ import java.util.Enumeration;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import org.apache.cayenne.project2.Project;
+
+import org.apache.cayenne.project.Project;
 
 /**
  * ProjectTreeModel is a model of Cayenne project tree.

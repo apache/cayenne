@@ -36,9 +36,9 @@ import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.pref.RenamedPreferences;
-import org.apache.cayenne.project2.Project;
-import org.apache.cayenne.project2.ProjectSaver;
-import org.apache.cayenne.project2.validation.ProjectValidator;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.ValidationResult;
 

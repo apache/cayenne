@@ -60,7 +60,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;

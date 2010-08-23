@@ -34,7 +34,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.Util;
 
 /**

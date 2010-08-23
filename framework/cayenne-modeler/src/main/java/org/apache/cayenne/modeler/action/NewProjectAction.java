@@ -30,7 +30,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.NamedObjectFactory;
 
 /**

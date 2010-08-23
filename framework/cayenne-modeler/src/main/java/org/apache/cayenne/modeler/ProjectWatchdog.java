@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.dialog.FileDeletedDialog;
 import org.apache.cayenne.modeler.util.FileWatchdog;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.Project;
 
 /**
  * ProjectWatchdog class is responsible for tracking changes in cayenne.xml and other

@@ -93,7 +93,7 @@ import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project2.ConfigurationNodeParentGetter;
+import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 
 /**
  * An object that manages CayenneModeler actions.

@@ -117,8 +117,8 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CircularArray;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.project2.ConfigurationNodeParentGetter;
-import org.apache.cayenne.project2.Project;
+import org.apache.cayenne.project.ConfigurationNodeParentGetter;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
 
