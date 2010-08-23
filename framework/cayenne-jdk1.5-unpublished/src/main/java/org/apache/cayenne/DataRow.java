@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -39,13 +40,11 @@ import org.apache.cayenne.util.Util;
  */
 public class DataRow extends HashMap<String, Object> {
 
-    // "volatile" is supposed to ensure consistency in read and increment operations;
-    // is this universally true?
-
     // make sure the starting value is different from DataObject default version value
-    private static volatile long currentVersion = DataObject.DEFAULT_VERSION + 1;
+    private static AtomicLong currentVersion = new AtomicLong(
+            DataObject.DEFAULT_VERSION + 1);
 
-    protected long version = currentVersion++;
+    protected long version = currentVersion.getAndIncrement();
     protected long replacesVersion = DataObject.DEFAULT_VERSION;
 
     /**
