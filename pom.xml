@@ -553,6 +553,19 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-5</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.0-beta-1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2</version>
+			</plugin>
 		</plugins>
 	</build>
 	<distributionManagement>
@@ -613,6 +626,15 @@
 		</plugins>
 	</reporting>
 	<profiles>
+		
+		<!-- Profile that generates assemblies after the build -->
+		<profile>
+			<id>assembly</id>
+			<modules>
+				<module>assembly</module>
+			</modules>
+		</profile>
+		
 		<!-- Optional profile used to sign artifacts -->
 		<profile>
 			<id>gpg</id>

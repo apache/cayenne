@@ -67,6 +67,7 @@
 			<artifactId>cayenne-doc</artifactId>
 			<version>${version}</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -80,72 +81,10 @@
 						</goals>
 						<phase>process-resources</phase>
 						<configuration>
-							<outputDirectory>
-								${project.build.directory}/legal
-							</outputDirectory>
+							<outputDirectory>${project.build.directory}/legal</outputDirectory>
 							<resourceBundles>
-								<resourceBundle>
-									org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
-								</resourceBundle>
+								<resourceBundle>org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}</resourceBundle>
 							</resourceBundles>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>dependency-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>unpack-sources</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/sources</outputDirectory>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.apache.cayenne</groupId>
-									<artifactId>cayenne-server</artifactId>
-									<version>${version}</version>
-									<classifier>sources</classifier>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-					<execution>
-						<id>unpack-docs</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/docs</outputDirectory>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.apache.cayenne.docs</groupId>
-									<artifactId>cayenne-doc</artifactId>
-									<version>${version}</version>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-					<execution>
-						<id>unpack-modeler</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/modeler</outputDirectory>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.apache.cayenne</groupId>
-									<artifactId>cayenne-modeler-java</artifactId>
-									<version>${version}</version>
-								</artifactItem>
-							</artifactItems>
 						</configuration>
 					</execution>
 				</executions>
@@ -153,24 +92,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.1</version>
-				<executions>
-					<execution>
-						<id>assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attached</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>${pom.basedir}/src/main/assembly/main.xml</descriptor>
-							</descriptors>
-							<finalName>cayenne-${version}</finalName>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<appendAssemblyId>false</appendAssemblyId>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<appendAssemblyId>false</appendAssemblyId>
+					<tarLongFileMode>gnu</tarLongFileMode>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -184,25 +110,24 @@
 
 	<profiles>
 		<profile>
-			<id>mac</id>
+			<!-- SOURCE assembly - the base assembly of a release build -->
+			<id>src</id>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>dependency-maven-plugin</artifactId>
+						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>unpack-modeler</id>
+								<id>assembly-src</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
 								<configuration>
-									<!-- Unpack to non-standard dir - we'll package it via a shell script -->
-									<outputDirectory>target/modeler-mac</outputDirectory>
-									<artifactItems>
-										<artifactItem>
-											<groupId>org.apache.cayenne</groupId>
-											<artifactId>cayenne-modeler-mac</artifactId>
-											<version>${version}</version>
-										</artifactItem>
-									</artifactItems>
+									<descriptors>
+										<descriptor>src/main/resources/assemblies/assembly-src.xml</descriptor>
+									</descriptors>
+									<finalName>cayenne-${version}-src</finalName>
 								</configuration>
 							</execution>
 						</executions>
@@ -211,24 +136,67 @@
 			</build>
 		</profile>
 		<profile>
-			<id>windows</id>
+			<!-- GENERIC cross-platform assembly. Can be created on any platform -->
+			<id>generic</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.apache.cayenne</groupId>
+					<artifactId>cayenne-modeler-java</artifactId>
+					<version>${version}</version>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>dependency-maven-plugin</artifactId>
+						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>unpack-modeler</id>
+								<id>assembly-generic</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
 								<configuration>
-									<outputDirectory>target/modeler</outputDirectory>
-									<artifactItems>
-										<artifactItem>
-											<groupId>org.apache.cayenne</groupId>
-											<artifactId>cayenne-modeler-win</artifactId>
-											<version>${version}</version>
-										</artifactItem>
-									</artifactItems>
+									<descriptors>
+										<descriptor>src/main/resources/assemblies/assembly-generic.xml</descriptor>
+									</descriptors>
+									<finalName>cayenne-${version}</finalName>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<!-- MAC assembly (can only be run on Mac)-->
+			<id>mac</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.apache.cayenne</groupId>
+					<artifactId>cayenne-modeler-mac</artifactId>
+					<version>${version}</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<!-- Make sure we are running on Mac -->
+					<plugin>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>enforce</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+					                	<requireOS>
+											<family>mac</family>
+										</requireOS>
+									</rules>
+									<fail>true</fail>
 								</configuration>
 							</execution>
 						</executions>
@@ -237,8 +205,116 @@
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>assembly</id>
+								<id>assembly-mac</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
 								<configuration>
+									<descriptors>
+										<descriptor>src/main/resources/assemblies/assembly-mac.xml</descriptor>
+									</descriptors>
+									<finalName>cayenne-${version}-macosx</finalName>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<!-- chmod executable ... while japplication plugin produces the correct permissions,
+							     jar/unjar operation resets 'x' flag, so the app becomes non-executable. Must
+							     fix that manually
+							-->
+							<execution>
+								<id>chmod-modeler</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>/bin/chmod</executable>
+									<arguments>
+										<argument>755</argument>
+										<argument>target/cayenne-${version}-macosx/CayenneModeler.app/Contents/MacOS/JavaApplicationStub</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							
+							<!-- Package into .dmg -->
+							<execution>
+								<id>dmg-distro</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>/usr/bin/hdiutil</executable>
+									<arguments>
+										<argument>create</argument>
+										<argument>-srcfolder</argument>
+										<argument>target/cayenne-${version}-macosx</argument>
+										<argument>-format</argument>
+										<argument>UDZO</argument>
+										<argument>-volname</argument>
+										<argument>cayenne-${version}</argument>
+										<argument>target/cayenne-${version}-macosx</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<!-- WINDOWS assembly (can only be run on Windows)-->
+			<id>windows</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.apache.cayenne</groupId>
+					<artifactId>cayenne-modeler-win</artifactId>
+					<version>${version}</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<!-- Make sure we are running on windows -->
+					<plugin>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>enforce</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+					                	<requireOS>
+											<family>windows</family>
+										</requireOS>
+									</rules>
+									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>assembly-win</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<descriptors>
+										<descriptor>src/main/resources/assemblies/assembly-windows.xml</descriptor>
+									</descriptors>
 									<finalName>cayenne-${version}-win</finalName>
 								</configuration>
 							</execution>
