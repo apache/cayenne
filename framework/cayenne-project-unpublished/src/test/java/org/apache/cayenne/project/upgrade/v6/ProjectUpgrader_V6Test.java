@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.upgrade.v6;
+package org.apache.cayenne.project.upgrade.v6;
 
 import java.io.File;
 import java.net.URL;
@@ -36,12 +36,13 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.project2.FileProjectSaver;
-import org.apache.cayenne.project2.ProjectSaver;
-import org.apache.cayenne.project2.unit.Project2Case;
-import org.apache.cayenne.project2.upgrade.UpgradeHandler;
-import org.apache.cayenne.project2.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project2.upgrade.UpgradeType;
+import org.apache.cayenne.project.FileProjectSaver;
+import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.project.unit.Project2Case;
+import org.apache.cayenne.project.upgrade.UpgradeHandler;
+import org.apache.cayenne.project.upgrade.UpgradeMetaData;
+import org.apache.cayenne.project.upgrade.UpgradeType;
+import org.apache.cayenne.project.upgrade.v6.ProjectUpgrader_V6;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.test.resource.ResourceUtil;

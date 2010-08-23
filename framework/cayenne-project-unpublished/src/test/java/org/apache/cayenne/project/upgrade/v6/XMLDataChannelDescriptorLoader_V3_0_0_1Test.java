@@ -16,31 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2;
+package org.apache.cayenne.project.upgrade.v6;
+
+import org.apache.cayenne.project.upgrade.v6.XMLDataChannelDescriptorLoader_V3_0_0_1;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationTree;
+public class XMLDataChannelDescriptorLoader_V3_0_0_1Test extends TestCase {
 
-public class ProjectTest extends TestCase {
+    public void testScrubDomainName() {
+        XMLDataChannelDescriptorLoader_V3_0_0_1 loader = new XMLDataChannelDescriptorLoader_V3_0_0_1();
 
-    public void testRootNode() {
-
-        ConfigurationNode object = new ConfigurationNode() {
-
-            public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-                return null;
-            }
-        };
-
-        Project project = new Project(new ConfigurationTree<ConfigurationNode>(object));
-        assertSame(object, project.getRootNode());
-
-        assertFalse(project.isModified());
-
-        project.setModified(true);
-        assertTrue(project.isModified());
+        assertEquals("abc123_N", loader.scrubDomainName("abc123_N"));
+        assertEquals("____$abc123_N", loader.scrubDomainName("1@! $abc123_N"));
     }
 }

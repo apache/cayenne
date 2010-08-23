@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2;
+package org.apache.cayenne.project;
 
 import java.io.File;
 import java.util.Arrays;
@@ -35,7 +35,9 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project2.unit.Project2Case;
+import org.apache.cayenne.project.FileProjectSaver;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.URLResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;

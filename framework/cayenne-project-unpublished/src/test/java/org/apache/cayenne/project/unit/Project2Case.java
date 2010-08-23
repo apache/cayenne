@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2.unit;
+package org.apache.cayenne.project.unit;
 
 import java.io.File;
 import java.io.IOException;

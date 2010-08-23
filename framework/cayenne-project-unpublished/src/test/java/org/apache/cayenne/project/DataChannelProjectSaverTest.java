@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project2;
+package org.apache.cayenne.project;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -33,7 +33,11 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.project2.unit.Project2Case;
+import org.apache.cayenne.project.DataChannelProjectLoader;
+import org.apache.cayenne.project.FileProjectSaver;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 
