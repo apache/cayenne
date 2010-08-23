@@ -74,6 +74,7 @@ CAY-1455 "NULL" JDBC type is shown for DbAttribute data types in the Modeler
 CAY-1458 Document Vertical Inheritance
 CAY-1467 Shut down EventManager in WebApplicationContextFilter.destroy()
 CAY-1468 Commit performance degradation
+CAY-1471 Create a source cayenne assembly
 
 ----------------------------------
 Release: 3.0 (final) 
