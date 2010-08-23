@@ -75,6 +75,7 @@ CAY-1458 Document Vertical Inheritance
 CAY-1467 Shut down EventManager in WebApplicationContextFilter.destroy()
 CAY-1468 Commit performance degradation
 CAY-1471 Create a source cayenne assembly
+CAY-1473 Ensure DataRow version increment is atomic
 
 ----------------------------------
 Release: 3.0 (final) 
