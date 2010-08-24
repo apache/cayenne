@@ -33,6 +33,11 @@
 	<groupId>org.apache.cayenne.parents</groupId>
 	<name>Cayenne Modeler Parent</name>
 	<packaging>pom</packaging>
+	
+	<modules>
+		<module>cayenne-modeler</module>
+		<module>maven-cayenne-modeler-plugin</module>
+	</modules>
 
 	<build>
 		<plugins>
@@ -50,7 +55,7 @@
 			<id>generic</id>
 			<modules>
 				<module>cayenne-modeler-generic-ext</module>
-				<module>cayenne-modeler-java</module>
+				<module>cayenne-modeler-generic</module>
 			</modules>
 		</profile>
 		<profile>

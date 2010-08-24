@@ -52,7 +52,6 @@
 			<includes>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-client</include>
-				<include>org.apache.cayenne:cayenne-modeler</include>
 				<include>org.apache.cayenne:cayenne-tools</include>
 			</includes>
 		</dependencySet>
@@ -82,7 +81,7 @@
 		<dependencySet>
 			<outputDirectory>bin</outputDirectory>
 			<includes>
-				<include>org.apache.cayenne:cayenne-modeler-java</include>
+				<include>org.apache.cayenne:cayenne-modeler-generic</include>
 			</includes>
 			<unpack>true</unpack>
 			<unpackOptions>

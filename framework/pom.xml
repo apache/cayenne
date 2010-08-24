@@ -56,9 +56,7 @@
 				<module>cayenne-server</module>
 				<module>cayenne-client</module>
 				<module>cayenne-tools</module>
-				<module>cayenne-modeler</module>
 				<module>maven-cayenne-plugin</module>
-				<module>maven-cayenne-modeler-plugin</module>
 			</modules>
 		</profile>
 		<profile>
@@ -76,9 +74,7 @@
 				<module>cayenne-server</module>
 				<module>cayenne-client</module>
 				<module>cayenne-tools</module>
-				<module>cayenne-modeler</module>
 				<module>maven-cayenne-plugin</module>
-				<module>maven-cayenne-modeler-plugin</module>
 			</modules>
 		</profile>
 	</profiles>

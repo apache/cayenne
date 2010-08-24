@@ -29,8 +29,8 @@
 		<version>3.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cayenne-modeler-java</artifactId>
-	<name>Cayenne Modeler Java</name>
+	<artifactId>cayenne-modeler-generic</artifactId>
+	<name>Cayenne Modeler Generic</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

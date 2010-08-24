@@ -141,7 +141,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>org.apache.cayenne</groupId>
-					<artifactId>cayenne-modeler-java</artifactId>
+					<artifactId>cayenne-modeler-generic</artifactId>
 					<version>${version}</version>
 				</dependency>
 			</dependencies>
