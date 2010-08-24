@@ -42,6 +42,7 @@ import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EmbeddableListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeAction;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CutAttributeAction;
@@ -59,7 +60,7 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
-public class EmbeddableAttributeTab extends JPanel implements 
+public class EmbeddableAttributeTab extends JPanel implements
         EmbeddableAttributeListener, EmbeddableDisplayListener, EmbeddableListener,
         ExistingSelectionProcessor {
 
@@ -79,17 +80,17 @@ public class EmbeddableAttributeTab extends JPanel implements
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
-        Application app = Application.getInstance();
+        ActionManager actionManager = Application.getInstance().getActionManager();
 
-        toolBar.add(app.getAction(CreateAttributeAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
         toolBar.addSeparator();
 
-        toolBar.add(app.getAction(RemoveAttributeAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(RemoveAttributeAction.class).buildButton());
         toolBar.addSeparator();
 
-        toolBar.add(app.getAction(CutAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CopyAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(CutAttributeAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CopyAttributeAction.class).buildButton());
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -99,17 +100,15 @@ public class EmbeddableAttributeTab extends JPanel implements
                 this.getClass(),
                 "embeddable/attributeTable");
 
-        /**
-         * Create and install a popup
-         */
+        // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
-        popup.add(app.getAction(RemoveAttributeAction.getActionName()).buildMenu());
+        popup.add(actionManager.getAction(RemoveAttributeAction.class).buildMenu());
 
         popup.addSeparator();
 
-        popup.add(app.getAction(CutAttributeAction.getActionName()).buildMenu());
-        popup.add(app.getAction(CopyAttributeAction.getActionName()).buildMenu());
-        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
+        popup.add(actionManager.getAction(CutAttributeAction.class).buildMenu());
+        popup.add(actionManager.getAction(CopyAttributeAction.class).buildMenu());
+        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
@@ -127,10 +126,10 @@ public class EmbeddableAttributeTab extends JPanel implements
             }
         });
 
-        mediator.getApplication().getActionManager().setupCCP(
+        mediator.getApplication().getActionManager().setupCutCopyPaste(
                 table,
-                CutAttributeAction.getActionName(),
-                CopyAttributeAction.getActionName());
+                CutAttributeAction.class,
+                CopyAttributeAction.class);
     }
 
     public void processExistingSelection(EventObject e) {
@@ -161,7 +160,7 @@ public class EmbeddableAttributeTab extends JPanel implements
                 mediator.getCurrentEmbeddable(),
                 attrs,
                 mediator.getCurrentDataMap(),
-                (DataChannelDescriptor)mediator.getProject().getRootNode());
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireEmbeddableAttributeDisplayEvent(ev);
     }
@@ -202,9 +201,9 @@ public class EmbeddableAttributeTab extends JPanel implements
     public void selectAttributes(EmbeddableAttribute[] embAttrs) {
         ModelerUtil.updateActions(
                 embAttrs.length,
-                RemoveAttributeAction.getActionName(),
-                CopyAttributeAction.getActionName(),
-                CutAttributeAction.getActionName());
+                RemoveAttributeAction.class,
+                CopyAttributeAction.class,
+                CutAttributeAction.class);
 
         EmbeddableAttributeTableModel model = (EmbeddableAttributeTableModel) table
                 .getModel();
@@ -247,17 +246,19 @@ public class EmbeddableAttributeTab extends JPanel implements
             rebuildTable(embeddable);
         }
     }
-    
+
     public void embeddableAdded(EmbeddableEvent e, DataMap map) {
     }
-    
+
     public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
     }
 
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
         if (e.getOldName() != null) {
-            ((Embeddable)map.getEmbeddable(e.getOldName())).setClassName(e.getEmbeddable().getClassName());
-            if(map.getEmbeddableMap().containsKey(e.getOldName())){
+            ((Embeddable) map.getEmbeddable(e.getOldName())).setClassName(e
+                    .getEmbeddable()
+                    .getClassName());
+            if (map.getEmbeddableMap().containsKey(e.getOldName())) {
                 map.removeEmbeddable(e.getOldName());
                 map.addEmbeddable(e.getEmbeddable());
             }

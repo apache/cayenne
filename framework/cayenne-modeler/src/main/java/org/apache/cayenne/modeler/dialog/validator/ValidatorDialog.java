@@ -109,7 +109,9 @@ public class ValidatorDialog extends CayenneDialog {
         problemsTable.setRowMargin(3);
         problemsTable.setCellSelectionEnabled(false);
         problemsTable.setRowSelectionAllowed(true);
-        problemsTable.setDefaultRenderer(ValidationFailure.class, new ValidationRenderer());
+        problemsTable.setDefaultRenderer(
+                ValidationFailure.class,
+                new ValidationRenderer());
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -159,10 +161,8 @@ public class ValidatorDialog extends CayenneDialog {
         refreshButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                Application
-                        .getInstance()
-                        .getAction(ValidateAction.getActionName())
-                        .actionPerformed(e);
+                Application.getInstance().getActionManager().getAction(
+                        ValidateAction.class).actionPerformed(e);
             }
         });
 

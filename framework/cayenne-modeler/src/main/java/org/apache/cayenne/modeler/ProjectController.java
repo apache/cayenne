@@ -1661,8 +1661,11 @@ public class ProjectController extends CayenneController {
         if (this.dirty != dirty) {
             this.dirty = dirty;
 
-            application.getAction(SaveAction.getActionName()).setEnabled(dirty);
-            application.getAction(RevertAction.getActionName()).setEnabled(dirty);
+            application.getActionManager().getAction(SaveAction.class).setEnabled(dirty);
+            application
+                    .getActionManager()
+                    .getAction(RevertAction.class)
+                    .setEnabled(dirty);
 
             if (dirty) {
                 ((CayenneModelerController) getParent()).projectModifiedAction();
@@ -1671,7 +1674,7 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-     * @return currently selecte entity listener class
+     * @return currently selected entity listener class
      */
     public String getCurrentListenerClass() {
         return currentState.listenerClass;

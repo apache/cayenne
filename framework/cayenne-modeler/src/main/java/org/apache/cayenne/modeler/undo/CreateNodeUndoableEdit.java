@@ -47,15 +47,13 @@ public class CreateNodeUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAction action = (RemoveAction) actionManager.getAction(RemoveAction
-                .getActionName());
+        RemoveAction action = actionManager.getAction(RemoveAction.class);
         action.removeDataNode(node);
     }
 
     public void redo() throws CannotRedoException {
         domain.getNodeDescriptors().add(node);
-        CreateNodeAction action = (CreateNodeAction) actionManager
-                .getAction(CreateNodeAction.getActionName());
+        CreateNodeAction action = actionManager.getAction(CreateNodeAction.class);
         action.createDataNode(node);
     }
 }

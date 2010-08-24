@@ -298,7 +298,7 @@ public class LogConsole extends CayenneController {
             clear();
         }
         
-        StringBuffer newText = new StringBuffer(FORMAT.format(new Date()))
+        StringBuilder newText = new StringBuilder(FORMAT.format(new Date()))
             .append(System.getProperty("line.separator"))
             .append(level.toUpperCase() + ": ");
         
@@ -325,8 +325,6 @@ public class LogConsole extends CayenneController {
         try {
             doc.insertString(doc.getLength(), newText.toString(), style);
 
-            //view.getLogView().setText(view.getLogView().getText() + newText);
-            
             if (autoScroll) {
                 view.getLogView().setCaretPosition(
                         doc.getLength() - 1);

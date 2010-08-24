@@ -39,6 +39,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
@@ -92,18 +93,18 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
     private void initView() {
 
         JToolBar toolBar = new JToolBar();
-        Application app = Application.getInstance();
-        toolBar.add(app.getAction(CreateObjEntityAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(DbEntitySyncAction.getActionName()).buildButton());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton());
+        toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton());
         toolBar.addSeparator();
 
-        toolBar.add(app.getAction(CreateAttributeAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
         toolBar
-                .add(app
-                        .getAction(CreateRelationshipAction.getActionName())
+                .add(actionManager
+                        .getAction(CreateRelationshipAction.class)
                         .buildButton());
         toolBar.addSeparator();
-        toolBar.add(app.getAction(ShowGraphEntityAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
 
         // create widgets
         name = new TextAdapter(new JTextField()) {

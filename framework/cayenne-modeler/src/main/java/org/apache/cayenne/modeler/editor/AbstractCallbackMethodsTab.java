@@ -141,7 +141,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      */
     protected CayenneAction getCreateCallbackMethodAction() {
         Application app = Application.getInstance();
-        return app.getAction(CreateCallbackMethodAction.ACTION_NAME);
+        return app.getActionManager().getAction(CreateCallbackMethodAction.class);
     }
 
     /**
@@ -149,8 +149,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      */
     protected AbstractRemoveCallbackMethodAction getRemoveCallbackMethodAction() {
         Application app = Application.getInstance();
-        return (AbstractRemoveCallbackMethodAction) app
-                .getAction(RemoveCallbackMethodAction.ACTION_NAME);
+        return app.getActionManager().getAction(RemoveCallbackMethodAction.class);
     }
 
     /**

@@ -47,7 +47,7 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
         this.dbEnt = dbEnt;
         this.dbRel = dbRel;
     }
-    
+
     @Override
     public String getPresentationName() {
         return "Create Relationship";
@@ -55,8 +55,8 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateRelationshipAction action = (CreateRelationshipAction) actionManager
-                .getAction(CreateRelationshipAction.getActionName());
+        CreateRelationshipAction action = actionManager
+                .getAction(CreateRelationshipAction.class);
 
         if (objEnt != null) {
             for (ObjRelationship rel : objectRel) {
@@ -73,8 +73,8 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveRelationshipAction action = (RemoveRelationshipAction) actionManager
-                .getAction(RemoveRelationshipAction.getActionName());
+        RemoveRelationshipAction action = actionManager
+                .getAction(RemoveRelationshipAction.class);
 
         if (objEnt != null) {
             action.removeObjRelationships(objEnt, objectRel);
@@ -82,13 +82,15 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
                     this,
                     objEnt,
                     objEnt.getDataMap(),
-                    (DataChannelDescriptor)controller.getProject().getRootNode()));
+                    (DataChannelDescriptor) controller.getProject().getRootNode()));
         }
 
         if (dbEnt != null) {
             action.removeDbRelationships(dbEnt, dbRel);
             controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(this, dbEnt, dbEnt
-                    .getDataMap(), (DataChannelDescriptor)controller.getProject().getRootNode()));
+                    .getDataMap(), (DataChannelDescriptor) controller
+                    .getProject()
+                    .getRootNode()));
         }
     }
 }

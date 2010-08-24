@@ -38,8 +38,6 @@ public class CreateDbEntityUndoableEdit extends CayenneUndoableEdit {
         return "Create DbEntity";
     }
 
-    
-
     private DataMap map;
     private DbEntity entity;
 
@@ -50,15 +48,13 @@ public class CreateDbEntityUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateDbEntityAction action = (CreateDbEntityAction) actionManager
-                .getAction(CreateDbEntityAction.getActionName());
+        CreateDbEntityAction action = actionManager.getAction(CreateDbEntityAction.class);
         action.createEntity(map, entity);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAction action = (RemoveAction) actionManager.getAction(RemoveAction
-                .getActionName());
+        RemoveAction action = actionManager.getAction(RemoveAction.class);
         action.removeDbEntity(map, entity);
     }
 }

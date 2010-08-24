@@ -30,58 +30,59 @@ import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 
 public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
 
-	private ObjEntity objEntity;
-	private ObjRelationship[] rels;
+    private ObjEntity objEntity;
+    private ObjRelationship[] rels;
 
-	private DbEntity dbEntity;
-	private DbRelationship[] dbRels;
+    private DbEntity dbEntity;
+    private DbRelationship[] dbRels;
 
-	public RemoveRelationshipUndoableEdit(ObjEntity objEntity,
-			ObjRelationship[] rels) {
-		super();
-		this.objEntity = objEntity;
-		this.rels = rels;
-	}
+    public RemoveRelationshipUndoableEdit(ObjEntity objEntity, ObjRelationship[] rels) {
+        super();
+        this.objEntity = objEntity;
+        this.rels = rels;
+    }
 
-	public RemoveRelationshipUndoableEdit(DbEntity dbEntity,
-			DbRelationship[] dbRels) {
-		super();
-		this.dbEntity = dbEntity;
-		this.dbRels = dbRels;
-	}
+    public RemoveRelationshipUndoableEdit(DbEntity dbEntity, DbRelationship[] dbRels) {
+        super();
+        this.dbEntity = dbEntity;
+        this.dbRels = dbRels;
+    }
 
-	@Override
-	public String getPresentationName() {
-		if (objEntity != null) {
-			return "Remove Obj Relationship";
-		} else {
-			return "Remove Db Relationship";
-		}
-	}
+    @Override
+    public String getPresentationName() {
+        if (objEntity != null) {
+            return "Remove Obj Relationship";
+        }
+        else {
+            return "Remove Db Relationship";
+        }
+    }
 
-	@Override
-	public void redo() throws CannotRedoException {
-		RemoveRelationshipAction action = (RemoveRelationshipAction) actionManager
-				.getAction(RemoveRelationshipAction.getActionName());
-		if (objEntity != null) {
-			action.removeObjRelationships(objEntity, rels);
-		} else {
-			action.removeDbRelationships(dbEntity, dbRels);
-		}
-	}
+    @Override
+    public void redo() throws CannotRedoException {
+        RemoveRelationshipAction action = actionManager
+                .getAction(RemoveRelationshipAction.class);
+        if (objEntity != null) {
+            action.removeObjRelationships(objEntity, rels);
+        }
+        else {
+            action.removeDbRelationships(dbEntity, dbRels);
+        }
+    }
 
-	@Override
-	public void undo() throws CannotUndoException {
-		CreateRelationshipAction action = (CreateRelationshipAction) actionManager
-				.getAction(CreateRelationshipAction.getActionName());
-		if (objEntity != null) {
-			for (ObjRelationship r : rels) {
-				action.createObjRelationship(objEntity, r);
-			}
-		} else {
-			for (DbRelationship dr : dbRels) {
-				action.createDbRelationship(dbEntity, dr);
-			}
-		}
-	}
+    @Override
+    public void undo() throws CannotUndoException {
+        CreateRelationshipAction action = actionManager
+                .getAction(CreateRelationshipAction.class);
+        if (objEntity != null) {
+            for (ObjRelationship r : rels) {
+                action.createObjRelationship(objEntity, r);
+            }
+        }
+        else {
+            for (DbRelationship dr : dbRels) {
+                action.createDbRelationship(dbEntity, dr);
+            }
+        }
+    }
 }

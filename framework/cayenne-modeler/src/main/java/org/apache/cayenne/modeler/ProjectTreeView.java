@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
@@ -88,6 +89,7 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.Project;
@@ -183,10 +185,10 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         mediator.addQueryListener(this);
         mediator.addQueryDisplayListener(this);
 
-        mediator.getApplication().getActionManager().setupCCP(
+        mediator.getApplication().getActionManager().setupCutCopyPaste(
                 this,
-                CutAction.getActionName(),
-                CopyAction.getActionName());
+                CutAction.class,
+                CopyAction.class);
     }
 
     private void initFromModel(Project project) {
@@ -927,23 +929,23 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     private JPopupMenu createJPopupMenu() {
         JPopupMenu popup = new JPopupMenu();
 
-        popup.add(buildMenu(CreateNodeAction.getActionName()));
-        popup.add(buildMenu(CreateDataMapAction.getActionName()));
+        popup.add(buildMenu(CreateNodeAction.class));
+        popup.add(buildMenu(CreateDataMapAction.class));
 
-        popup.add(buildMenu(CreateObjEntityAction.getActionName()));
-        popup.add(buildMenu(CreateEmbeddableAction.getActionName()));
-        popup.add(buildMenu(CreateDbEntityAction.getActionName()));
+        popup.add(buildMenu(CreateObjEntityAction.class));
+        popup.add(buildMenu(CreateEmbeddableAction.class));
+        popup.add(buildMenu(CreateDbEntityAction.class));
 
-        popup.add(buildMenu(CreateProcedureAction.getActionName()));
-        popup.add(buildMenu(CreateQueryAction.getActionName()));
+        popup.add(buildMenu(CreateProcedureAction.class));
+        popup.add(buildMenu(CreateQueryAction.class));
         popup.addSeparator();
-        popup.add(buildMenu(ObjEntitySyncAction.getActionName()));
+        popup.add(buildMenu(ObjEntitySyncAction.class));
         popup.addSeparator();
-        popup.add(buildMenu(RemoveAction.getActionName()));
+        popup.add(buildMenu(RemoveAction.class));
         popup.addSeparator();
-        popup.add(buildMenu(CutAction.getActionName()));
-        popup.add(buildMenu(CopyAction.getActionName()));
-        popup.add(buildMenu(PasteAction.getActionName()));
+        popup.add(buildMenu(CutAction.class));
+        popup.add(buildMenu(CopyAction.class));
+        popup.add(buildMenu(PasteAction.class));
 
         return popup;
     }
@@ -953,8 +955,12 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
      * 
      * @param key action key
      */
-    private JMenuItem buildMenu(String key) {
-        return mediator.getApplication().getAction(key).buildMenu();
+    private JMenuItem buildMenu(Class<? extends Action> actionType) {
+        CayenneAction action = (CayenneAction) mediator
+                .getApplication()
+                .getActionManager()
+                .getAction(actionType);
+        return action.buildMenu();
     }
 
     /**

@@ -16,31 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.undo;
+package org.apache.cayenne.modeler.init;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.DefaultActionManager;
+import org.apache.cayenne.modeler.init.platform.GenericPlatformInitializer;
+import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 
-public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
-    
-	protected ActionManager actionManager;
-	protected ProjectController controller;
-	
-	public CayenneUndoableEdit() {
-		this.actionManager = Application.getInstance().getActionManager();
-		this.controller = Application.getInstance().getFrameController().getProjectController();
-	}
+/**
+ * A DI module for bootstrapping CayenneModeler services.
+ */
+public class CayenneModelerModule implements Module {
 
-	@Override
-	public boolean canRedo() {
-		return true;
-	}
+    public void configure(Binder binder) {
 
-    @Override
-    public boolean canUndo() {
-        return true;
+        binder.bind(ActionManager.class).to(DefaultActionManager.class);
+        binder.bind(Application.class).to(Application.class);
+        binder.bind(PlatformInitializer.class).to(GenericPlatformInitializer.class);
     }
 }

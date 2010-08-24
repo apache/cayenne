@@ -28,36 +28,34 @@ import org.apache.cayenne.modeler.editor.CallbackType;
 
 public class CreateCallbackMethodUndoableEdit extends CayenneUndoableEdit {
 
-	
+    private CallbackMap map;
+    private CallbackType callbackType;
+    private String methodName;
 
-	private CallbackMap map;
-	private CallbackType callbackType;
-	private String methodName;
+    @Override
+    public String getPresentationName() {
+        return "Create Callback Method";
+    }
 
-	@Override
-	public String getPresentationName() {
-		return "Create Callback Method";
-	}
+    @Override
+    public void redo() throws CannotRedoException {
+        CreateCallbackMethodAction action = actionManager
+                .getAction(CreateCallbackMethodAction.class);
+        action.createCallbackMethod(map, callbackType, methodName);
+    }
 
-	@Override
-	public void redo() throws CannotRedoException {
-		CreateCallbackMethodAction action = (CreateCallbackMethodAction) actionManager
-				.getAction(CreateCallbackMethodAction.getActionName());
-		action.createCallbackMethod(map, callbackType, methodName);
-	}
+    @Override
+    public void undo() throws CannotUndoException {
+        RemoveCallbackMethodAction action = actionManager
+                .getAction(RemoveCallbackMethodAction.class);
+        action.removeCallbackMethod(map, callbackType, methodName);
+    }
 
-	@Override
-	public void undo() throws CannotUndoException {
-		RemoveCallbackMethodAction action = (RemoveCallbackMethodAction) actionManager
-				.getAction(RemoveCallbackMethodAction.getActionName());
-		action.removeCallbackMethod(map, callbackType, methodName);
-	}
-
-	public CreateCallbackMethodUndoableEdit(CallbackMap map,
-			CallbackType callbackType, String methodName) {
-		this.map = map;
-		this.callbackType = callbackType;
-		this.methodName = methodName;
-	}
+    public CreateCallbackMethodUndoableEdit(CallbackMap map, CallbackType callbackType,
+            String methodName) {
+        this.map = map;
+        this.callbackType = callbackType;
+        this.methodName = methodName;
+    }
 
 }

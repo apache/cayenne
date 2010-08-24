@@ -66,15 +66,18 @@ public class ProjectWatchdog extends FileWatchdog {
         if (project != null // project opened
                 && project.getConfigurationResource() != null) // not new project
         {
-            String projectPath = project.getConfigurationResource().getURL().getPath() + File.separator;
+            String projectPath = project.getConfigurationResource().getURL().getPath()
+                    + File.separator;
             addFile(projectPath);
 
-            Iterator<DataMap> it = ((DataChannelDescriptor)project.getRootNode()).getDataMaps().iterator();
+            Iterator<DataMap> it = ((DataChannelDescriptor) project.getRootNode())
+                    .getDataMaps()
+                    .iterator();
             while (it.hasNext()) {
                 DataMap dm = it.next();
                 addFile(dm.getConfigurationSource().getURL().getPath());
             }
-            
+
         }
 
         resumeWatching();
@@ -84,14 +87,17 @@ public class ProjectWatchdog extends FileWatchdog {
     protected void doOnChange(FileInfo fileInfo) {
         if (showConfirmation("One or more project files were changed by external program. "
                 + "Do you want to load the changes?")) {
-            /**
-             * Currently we are reloading all project
-             */
+
+            // Currently we are reloading all project
             if (mediator.getProject() != null) {
-                
-                File fileDirectory = new File(mediator.getProject().getConfigurationResource().getURL().getPath());
-                ((OpenProjectAction) Application.getInstance().getAction(
-                        OpenProjectAction.getActionName())).openProject(fileDirectory);
+
+                File fileDirectory = new File(mediator
+                        .getProject()
+                        .getConfigurationResource()
+                        .getURL()
+                        .getPath());
+                Application.getInstance().getActionManager().getAction(
+                        OpenProjectAction.class).openProject(fileDirectory);
             }
 
         }
@@ -101,15 +107,15 @@ public class ProjectWatchdog extends FileWatchdog {
 
     @Override
     protected void doOnRemove(FileInfo fileInfo) {
-        if (mediator.getProject() != null
-                /*&& fileInfo.getFile().equals(mediator.getProject().getMainFile()) */ ) {
+        if (mediator.getProject() != null) {
             FileDeletedDialog dialog = new FileDeletedDialog(Application.getFrame());
             dialog.show();
 
             if (dialog.shouldSave()) {
                 Application
                         .getInstance()
-                        .getAction(SaveAction.getActionName())
+                        .getActionManager()
+                        .getAction(SaveAction.class)
                         .performAction(null);
             }
             else if (dialog.shouldClose()) {

@@ -41,14 +41,13 @@ import org.apache.cayenne.query.Query;
 
 public class PasteUndoableEdit extends CayenneUndoableEdit {
 
-    
-
     private DataChannelDescriptor domain;
     private DataMap map;
     private Object where;
     private Object content;
 
-    public PasteUndoableEdit(DataChannelDescriptor domain, DataMap map, Object where, Object content) {
+    public PasteUndoableEdit(DataChannelDescriptor domain, DataMap map, Object where,
+            Object content) {
         this.domain = domain;
         this.map = map;
         this.where = where;
@@ -67,32 +66,32 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        PasteAction action = (PasteAction) actionManager.getAction(PasteAction
-                .getActionName());
+        PasteAction action = actionManager.getAction(PasteAction.class);
 
         action.paste(where, content, domain, map);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAttributeAction rAttributeAction = (RemoveAttributeAction) actionManager
-                .getAction(RemoveAttributeAction.getActionName());
+        RemoveAttributeAction rAttributeAction = actionManager
+                .getAction(RemoveAttributeAction.class);
 
-        RemoveAction rAction = (RemoveAction) actionManager.getAction(RemoveAction
-                .getActionName());
+        RemoveAction rAction = actionManager.getAction(RemoveAction.class);
 
-        RemoveRelationshipAction rRelationShipAction = (RemoveRelationshipAction) actionManager
-                .getAction(RemoveRelationshipAction.getActionName());
+        RemoveRelationshipAction rRelationShipAction = actionManager
+                .getAction(RemoveRelationshipAction.class);
 
-        RemoveProcedureParameterAction rProcedureParamAction = (RemoveProcedureParameterAction) actionManager
-                .getAction(RemoveProcedureParameterAction.getActionName());
+        RemoveProcedureParameterAction rProcedureParamAction = actionManager
+                .getAction(RemoveProcedureParameterAction.class);
 
         if (content instanceof DataMap) {
             if (where instanceof DataChannelDescriptor) {
                 rAction.removeDataMap((DataMap) content);
             }
             else if (where instanceof DataNodeDescriptor) {
-                rAction.removeDataMapFromDataNode((DataNodeDescriptor) where, (DataMap) content);
+                rAction.removeDataMapFromDataNode(
+                        (DataNodeDescriptor) where,
+                        (DataMap) content);
             }
         }
         else if (where instanceof DataMap) {

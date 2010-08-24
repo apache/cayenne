@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
@@ -50,6 +49,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyProcedureParameterAction;
 import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
 import org.apache.cayenne.modeler.action.CutProcedureParameterAction;
@@ -70,14 +70,9 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 /**
  */
-public class ProcedureParameterTab
-    extends JPanel
-    implements
-        ProcedureParameterListener,
-        ProcedureDisplayListener,
-        ExistingSelectionProcessor,
-        ActionListener {
-    
+public class ProcedureParameterTab extends JPanel implements ProcedureParameterListener,
+        ProcedureDisplayListener, ExistingSelectionProcessor, ActionListener {
+
     protected ProjectController eventController;
 
     protected CayenneTable table;
@@ -85,11 +80,10 @@ public class ProcedureParameterTab
     protected JButton removeParameterButton;
     protected JButton moveUp;
     protected JButton moveDown;
-    
+
     /**
-     * By now popup menu items are made similiar to toolbar button. 
-     * (i.e. all functionality is here)
-     * This should be probably refactored as Action.
+     * By now popup menu items are made similiar to toolbar button. (i.e. all
+     * functionality is here) This should be probably refactored as Action.
      */
     protected JMenuItem removeParameterMenu;
     protected JMenuItem moveUpMenu;
@@ -104,14 +98,15 @@ public class ProcedureParameterTab
         eventController.addProcedureParameterListener(this);
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
             public void valueChanged(ListSelectionEvent e) {
                 processExistingSelection(e);
             }
         });
-        
+
         moveDown.addActionListener(this);
         moveUp.addActionListener(this);
-        
+
         moveDownMenu.addActionListener(this);
         moveUpMenu.addActionListener(this);
     }
@@ -121,12 +116,14 @@ public class ProcedureParameterTab
 
         JToolBar toolBar = new JToolBar();
 
-        Application app = Application.getInstance();
-        toolBar.add(app.getAction(CreateProcedureParameterAction.getActionName()).buildButton());
-        removeParameterButton = app.getAction(RemoveProcedureParameterAction.getActionName()).buildButton();
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        toolBar.add(actionManager.getAction(
+                CreateProcedureParameterAction.class).buildButton());
+        removeParameterButton = actionManager.getAction(
+                RemoveProcedureParameterAction.class).buildButton();
         toolBar.add(removeParameterButton);
         toolBar.addSeparator();
-        
+
         Icon up = ModelerUtil.buildIcon("icon-move_up.gif");
         Icon down = ModelerUtil.buildIcon("icon-move_down.gif");
 
@@ -134,58 +131,66 @@ public class ProcedureParameterTab
         moveUp.setIcon(up);
         moveUp.setToolTipText("Move Parameter Up");
         toolBar.add(moveUp);
-        
+
         moveDown = new JButton();
         moveDown.setIcon(down);
         moveDown.setToolTipText("Move Parameter Down");
         toolBar.add(moveDown);
-        
+
         toolBar.addSeparator();
-        toolBar.add(app.getAction(CutProcedureParameterAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CopyProcedureParameterAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
-        
+        toolBar.add(actionManager
+                .getAction(CutProcedureParameterAction.class)
+                .buildButton());
+        toolBar.add(actionManager
+                .getAction(CopyProcedureParameterAction.class)
+                .buildButton());
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
+
         add(toolBar, BorderLayout.NORTH);
 
         // Create table with two columns and no rows.
         table = new CayenneTable();
-        
-        tablePreferences = new TableColumnPreferences(this.getClass(),"procedure/parameterTable");
-        
-        /**
-         * Create and install a popup
-         */
+
+        tablePreferences = new TableColumnPreferences(
+                this.getClass(),
+                "procedure/parameterTable");
+
+        // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
-        
-        removeParameterMenu = app.getAction(RemoveProcedureParameterAction.getActionName()).buildMenu(); 
-        
+
+        removeParameterMenu = actionManager.getAction(
+                RemoveProcedureParameterAction.class).buildMenu();
+
         popup.add(removeParameterMenu);
         popup.addSeparator();
-        
+
         moveUpMenu = new JMenuItem("Move Parameter Up", up);
         moveDownMenu = new JMenuItem("Move Parameter Down", down);
-        
+
         popup.add(moveUpMenu);
         popup.add(moveDownMenu);
-        
+
         popup.addSeparator();
-        popup.add(app.getAction(CutProcedureParameterAction.getActionName()).buildMenu());
-        popup.add(app.getAction(CopyProcedureParameterAction.getActionName()).buildMenu());
-        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
-        
+        popup.add(actionManager
+                .getAction(CutProcedureParameterAction.class)
+                .buildMenu());
+        popup.add(actionManager
+                .getAction(CopyProcedureParameterAction.class)
+                .buildMenu());
+        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
+
         TablePopupHandler.install(table, popup);
-        
+
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
-        
-        eventController.getApplication().getActionManager().setupCCP(table, 
-                CutProcedureParameterAction.getActionName(), 
-                CopyProcedureParameterAction
-                
-                .getActionName());
+
+        actionManager.setupCutCopyPaste(
+                table,
+                CutProcedureParameterAction.class,
+                CopyProcedureParameterAction.class);
     }
-    
+
     public void processExistingSelection(EventObject e) {
-        if (e instanceof ChangeEvent){
+        if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
 
@@ -197,12 +202,12 @@ public class ProcedureParameterTab
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
             enableRemoveButton = true;
-            ProcedureParameterTableModel model =
-                (ProcedureParameterTableModel) table.getModel();
-            
+            ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
+                    .getModel();
+
             int[] sel = table.getSelectedRows();
             parameters = new ProcedureParameter[sel.length];
-            
+
             for (int i = 0; i < sel.length; i++) {
                 parameters[i] = model.getParameter(sel[i]);
             }
@@ -213,7 +218,7 @@ public class ProcedureParameterTab
 
                 int rowCount = table.getRowCount();
                 if (rowCount > 1) {
-                    if (selectedRow >0) {
+                    if (selectedRow > 0) {
                         enableUp = true;
                     }
                     if (selectedRow < (rowCount - 1)) {
@@ -226,22 +231,21 @@ public class ProcedureParameterTab
         removeParameterButton.setEnabled(enableRemoveButton);
         moveUp.setEnabled(enableUp);
         moveDown.setEnabled(enableDown);
-        
+
         syncButtons();
 
-        ProcedureParameterDisplayEvent ppde =
-            new ProcedureParameterDisplayEvent(
+        ProcedureParameterDisplayEvent ppde = new ProcedureParameterDisplayEvent(
                 this,
                 parameters,
                 eventController.getCurrentProcedure(),
                 eventController.getCurrentDataMap(),
-                (DataChannelDescriptor)eventController.getProject().getRootNode());
+                (DataChannelDescriptor) eventController.getProject().getRootNode());
         eventController.fireProcedureParameterDisplayEvent(ppde);
     }
 
     /**
-      * Invoked when currently selected Procedure object is changed.
-      */
+     * Invoked when currently selected Procedure object is changed.
+     */
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
         Procedure procedure = e.getProcedure();
         if (procedure != null && e.isProcedureChanged()) {
@@ -253,53 +257,53 @@ public class ProcedureParameterTab
      * Selects a specified parameters.
      */
     public void selectParameters(ProcedureParameter[] parameters) {
-        ModelerUtil.updateActions(parameters.length,  
-                RemoveProcedureParameterAction.getActionName(),
-                CutProcedureParameterAction.getActionName(),
-                CopyProcedureParameterAction.getActionName());
+        ModelerUtil.updateActions(
+                parameters.length,
+                RemoveProcedureParameterAction.class,
+                CutProcedureParameterAction.class,
+                CopyProcedureParameterAction.class);
 
-        ProcedureParameterTableModel model =
-            (ProcedureParameterTableModel) table.getModel();
-        
+        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
+                .getModel();
+
         List listAttrs = model.getObjectList();
         int[] newSel = new int[parameters.length];
-        
+
         for (int i = 0; i < parameters.length; i++) {
             newSel[i] = listAttrs.indexOf(parameters[i]);
         }
-        
+
         table.select(newSel);
     }
 
     protected void rebuildTable(Procedure procedure) {
-        ProcedureParameterTableModel model =
-            new ProcedureParameterTableModel(procedure, eventController, this);
+        ProcedureParameterTableModel model = new ProcedureParameterTableModel(
+                procedure,
+                eventController,
+                this);
 
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
 
         // number column tweaking
-        TableColumn numberColumn =
-            table.getColumnModel().getColumn(
+        TableColumn numberColumn = table.getColumnModel().getColumn(
                 ProcedureParameterTableModel.PARAMETER_NUMBER);
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
         numberColumn.setCellRenderer(renderer);
 
-        TableColumn typesColumn =
-            table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_TYPE);
-        JComboBox typesEditor =
-            CayenneWidgetFactory.createComboBox(TypesMapping.getDatabaseTypes(), true);
+        TableColumn typesColumn = table.getColumnModel().getColumn(
+                ProcedureParameterTableModel.PARAMETER_TYPE);
+        JComboBox typesEditor = CayenneWidgetFactory.createComboBox(TypesMapping
+                .getDatabaseTypes(), true);
         AutoCompletion.enable(typesEditor);
         typesColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(typesEditor));
 
         // direction column tweaking
-        TableColumn directionColumn =
-            table.getColumnModel().getColumn(
+        TableColumn directionColumn = table.getColumnModel().getColumn(
                 ProcedureParameterTableModel.PARAMETER_DIRECTION);
-        JComboBox directionEditor =
-            CayenneWidgetFactory.createComboBox(
+        JComboBox directionEditor = CayenneWidgetFactory.createComboBox(
                 ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES,
                 false);
         directionEditor.setEditable(false);
@@ -307,7 +311,7 @@ public class ProcedureParameterTab
 
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
-        
+
         tablePreferences.bind(table, null, null, null);
     }
 
@@ -321,18 +325,18 @@ public class ProcedureParameterTab
     }
 
     public void procedureParameterRemoved(ProcedureParameterEvent e) {
-        ProcedureParameterTableModel model =
-            (ProcedureParameterTableModel) table.getModel();
+        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
+                .getModel();
         int ind = model.getObjectList().indexOf(e.getParameter());
         model.removeRow(e.getParameter());
         table.select(ind);
     }
 
     public void actionPerformed(ActionEvent e) {
-        ProcedureParameterTableModel model =
-            (ProcedureParameterTableModel) table.getModel();
+        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
+                .getModel();
         ProcedureParameter parameter = model.getParameter(table.getSelectedRow());
-        
+
         int index = -1;
 
         if (e.getSource() == moveUp || e.getSource() == moveUpMenu) {
@@ -344,20 +348,20 @@ public class ProcedureParameterTab
 
         if (index >= 0) {
             table.select(index);
-            
+
             // note that 'setCallParameters' is donw by copy internally
             parameter.getProcedure().setCallParameters(model.getObjectList());
-            eventController.fireProcedureEvent(
-                new ProcedureEvent(this, parameter.getProcedure(), MapEvent.CHANGE));
+            eventController.fireProcedureEvent(new ProcedureEvent(this, parameter
+                    .getProcedure(), MapEvent.CHANGE));
         }
     }
-    
+
     /**
      * Synchronizes state of toolbar and popup menu buttons
      */
     private void syncButtons() {
         removeParameterMenu.setEnabled(removeParameterButton.isEnabled());
         moveUpMenu.setEnabled(moveUp.isEnabled());
-        moveDownMenu.setEnabled(moveDown.isEnabled());   
+        moveDownMenu.setEnabled(moveDown.isEnabled());
     }
 }

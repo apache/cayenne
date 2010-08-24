@@ -68,9 +68,12 @@ public class CutProcedureParameterAction extends CutAction implements
     @Override
     public void performAction(ActionEvent e) {
         application
-                .getAction(CopyProcedureParameterAction.getActionName())
+                .getActionManager()
+                .getAction(CopyProcedureParameterAction.class)
                 .performAction(e);
-        ((RemoveAction) application.getAction(RemoveProcedureParameterAction
-                .getActionName())).performAction(e, false);
+        application
+                .getActionManager()
+                .getAction(RemoveProcedureParameterAction.class)
+                .performAction(e, false);
     }
 }

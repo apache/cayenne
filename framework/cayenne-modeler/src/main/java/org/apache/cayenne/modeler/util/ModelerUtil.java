@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -40,6 +41,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerConstants;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.MultipleObjectsAction;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -139,7 +141,9 @@ public final class ModelerUtil {
         return finalList;
     }
 
-    public static DataNodeDescriptor getNodeLinkedToMap(DataChannelDescriptor domain, DataMap map) {
+    public static DataNodeDescriptor getNodeLinkedToMap(
+            DataChannelDescriptor domain,
+            DataMap map) {
         Collection<DataNodeDescriptor> nodes = domain.getNodeDescriptors();
 
         // go via an iterator in an indexed loop, since
@@ -151,18 +155,23 @@ public final class ModelerUtil {
 
         return null;
     }
-    
+
     /**
      * Updates MultipleObjectActions' state, depending on number of selected objects
      * (attributes, rel etc.)
      */
-    public static void updateActions(int numSelected, String... actionNames) {
-        for (String actionName : actionNames) {
-            CayenneAction action = Application.getInstance().getAction(actionName);
+    public static void updateActions(int numSelected, Class<? extends Action>... actions) {
+        ActionManager actionManager = Application.getInstance().getActionManager();
+
+        for (Class<? extends Action> actionType : actions) {
+            Action action = actionManager.getAction(actionType);
 
             if (action instanceof MultipleObjectsAction) {
-                action.setEnabled(numSelected > 0);
-                action.setName(((MultipleObjectsAction) action).getActionName(numSelected > 1));
+
+                MultipleObjectsAction multiObjectAction = (MultipleObjectsAction) action;
+                multiObjectAction.setEnabled(numSelected > 0);
+                ((CayenneAction) multiObjectAction).setName(multiObjectAction
+                        .getActionName(numSelected > 1));
             }
         }
     }

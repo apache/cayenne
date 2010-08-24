@@ -16,31 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
+package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.ActionManager;
+import java.util.Collection;
 
-public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
-    
-	protected ActionManager actionManager;
-	protected ProjectController controller;
-	
-	public CayenneUndoableEdit() {
-		this.actionManager = Application.getInstance().getActionManager();
-		this.controller = Application.getInstance().getFrameController().getProjectController();
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.modeler.init.OSXCayenneModelerModule;
+
+/**
+ * Main class to start CayenneModeler on MacOSX.
+ */
+public class OSXMain extends Main {
+
+	/**
+	 * Main method that starts the CayenneModeler.
+	 */
+	public static void main(String[] args) {
+		try {
+			new OSXMain(args).launch();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
+	protected OSXMain(String[] args) {
+		super(args);
 	}
 
 	@Override
-	public boolean canRedo() {
-		return true;
+	protected Collection<Module> appendModules(Collection<Module> modules) {
+		modules = super.appendModules(modules);
+		modules.add(new OSXCayenneModelerModule());
+		return modules;
 	}
-
-    @Override
-    public boolean canUndo() {
-        return true;
-    }
 }

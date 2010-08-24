@@ -16,31 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.undo;
+package org.apache.cayenne.modeler.init.platform;
 
-import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.JFrame;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.ActionManager;
+public class GenericPlatformInitializer implements PlatformInitializer {
 
-public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
-    
-	protected ActionManager actionManager;
-	protected ProjectController controller;
-	
-	public CayenneUndoableEdit() {
-		this.actionManager = Application.getInstance().getActionManager();
-		this.controller = Application.getInstance().getFrameController().getProjectController();
-	}
+    /**
+     * Does nothing, leaving unchanged the default platform Look and Feel.
+     */
+    public void initLookAndFeel() {
+        // noop
+    }
 
-	@Override
-	public boolean canRedo() {
-		return true;
-	}
-
-    @Override
-    public boolean canUndo() {
-        return true;
+    /**
+     * Does nothing, leaving unchanged the default frame menus.
+     */
+    public void setupMenus(JFrame frame) {
+        // noop - keep all the default menus...
     }
 }

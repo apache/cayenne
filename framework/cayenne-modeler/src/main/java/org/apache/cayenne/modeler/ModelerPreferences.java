@@ -51,10 +51,6 @@ public class ModelerPreferences implements PreferenceChangeListener {
     /** List of the last 12 opened project files. */
     public static final int LAST_PROJ_FILES_SIZE = 12;
 
-    /** GUI layout */
-    public static final String EDITOR_LAFNAME = "lookAndFeel";
-    public static final String EDITOR_THEMENAME = "theme";
-
     /** Log file */
     public static final String EDITOR_LOGFILE_ENABLED = "logfileEnabled";
     public static final String EDITOR_LOGFILE = "logfile";

@@ -140,8 +140,8 @@ public class ImportEOModelAction extends CayenneAction {
         Map connection = (Map) eomodelIndex.get("connectionDictionary");
 
         if (adapter != null && connection != null) {
-            CreateNodeAction nodeBuilder = (CreateNodeAction) getApplication().getAction(
-                    CreateNodeAction.getActionName());
+            CreateNodeAction nodeBuilder = (CreateNodeAction) getApplication().getActionManager().getAction(
+                    CreateNodeAction.class);
 
             // this should make created node current, resulting in the new map being added
             // to the node automatically once it is loaded

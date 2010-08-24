@@ -91,10 +91,10 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
 
     private void updateUI() {
         CayenneAction undoAction = application.getActionManager().getAction(
-                UndoAction.getActionName());
+                UndoAction.class);
 
         CayenneAction redoAction = application.getActionManager().getAction(
-                RedoAction.getActionName());
+                RedoAction.class);
 
         undoAction.setEnabled(canUndo());
         redoAction.setEnabled(canRedo());

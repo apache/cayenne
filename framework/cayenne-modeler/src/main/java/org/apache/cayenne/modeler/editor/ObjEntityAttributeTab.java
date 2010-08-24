@@ -58,6 +58,7 @@ import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeAction;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CutAttributeAction;
@@ -100,9 +101,10 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
-        Application app = Application.getInstance();
-        toolBar.add(app.getAction(CreateAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(ObjEntitySyncAction.getActionName()).buildButton());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
+        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton());
         toolBar.addSeparator();
 
         Icon ico = ModelerUtil.buildIcon("icon-info.gif");
@@ -113,12 +115,12 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         toolBar.add(resolve);
 
         toolBar.addSeparator();
-        toolBar.add(app.getAction(RemoveAttributeAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(RemoveAttributeAction.class).buildButton());
 
         toolBar.addSeparator();
-        toolBar.add(app.getAction(CutAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CopyAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(CutAttributeAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CopyAttributeAction.class).buildButton());
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -129,16 +131,14 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                 ObjAttributeTableModel.class,
                 "objEntity/attributeTable");
 
-        /**
-         * Create and install a popup
-         */
+        // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
-        popup.add(app.getAction(RemoveAttributeAction.getActionName()).buildMenu());
+        popup.add(actionManager.getAction(RemoveAttributeAction.class).buildMenu());
 
         popup.addSeparator();
-        popup.add(app.getAction(CutAttributeAction.getActionName()).buildMenu());
-        popup.add(app.getAction(CopyAttributeAction.getActionName()).buildMenu());
-        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
+        popup.add(actionManager.getAction(CutAttributeAction.class).buildMenu());
+        popup.add(actionManager.getAction(CopyAttributeAction.class).buildMenu());
+        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
 
@@ -184,10 +184,11 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         resolve.addActionListener(resolver);
 
-        mediator.getApplication().getActionManager().setupCCP(
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        actionManager.setupCutCopyPaste(
                 table,
-                CutAttributeAction.getActionName(),
-                CopyAttributeAction.getActionName());
+                CutAttributeAction.class,
+                CopyAttributeAction.class);
     }
 
     public void initComboBoxes(ObjAttributeTableModel model) {
@@ -238,9 +239,9 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     public void selectAttributes(ObjAttribute[] attrs) {
         ModelerUtil.updateActions(
                 attrs.length,
-                RemoveAttributeAction.getActionName(),
-                CutAttributeAction.getActionName(),
-                CopyAttributeAction.getActionName());
+                RemoveAttributeAction.class,
+                CutAttributeAction.class,
+                CopyAttributeAction.class);
 
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 

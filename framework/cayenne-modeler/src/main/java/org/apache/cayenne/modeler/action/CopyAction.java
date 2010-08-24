@@ -49,6 +49,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * Action for copying entities, queries etc. into system buffer
  */
 public class CopyAction extends CayenneAction {
+
     public static String getActionName() {
         return "Copy";
     }
@@ -59,7 +60,7 @@ public class CopyAction extends CayenneAction {
     public CopyAction(Application application) {
         this(getActionName(), application);
     }
-    
+
     /**
      * Constructor for descendants
      */
@@ -71,10 +72,12 @@ public class CopyAction extends CayenneAction {
     public String getIconName() {
         return "icon-copy.gif";
     }
-    
+
     @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit
+                .getDefaultToolkit()
+                .getMenuShortcutKeyMask());
     }
 
     /**
@@ -83,32 +86,32 @@ public class CopyAction extends CayenneAction {
     @Override
     public void performAction(ActionEvent e) {
         ProjectController mediator = getProjectController();
-        
+
         Object content = copy(mediator);
-        
+
         if (content != null) {
             Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
             sysClip.setContents(new CayenneTransferable(content), null);
         }
-        
-        //update paste button
-        ((PasteAction) getApplication().getAction(PasteAction.getActionName())).updateState();
+
+        // update paste button
+        getApplication().getActionManager().getAction(PasteAction.class).updateState();
     }
-    
+
     /**
      * Detects selected objects and returns them
      */
     public Object copy(ProjectController mediator) {
         return mediator.getCurrentObject();
     }
-    
+
     /**
      * Prints an object in XML format to an output stream
      */
     protected void print(XMLEncoder encoder, XMLSerializable object) {
         object.encodeAsXML(encoder);
     }
-    
+
     /**
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
@@ -117,13 +120,19 @@ public class CopyAction extends CayenneAction {
         if (object == null) {
             return false;
         }
-        
-        if (object instanceof DataMap || object instanceof Query
-                || object instanceof DbEntity || object instanceof ObjEntity
-                || object instanceof Embeddable || object instanceof EmbeddableAttribute
-                || object instanceof DbAttribute || object instanceof DbRelationship
-                || object instanceof ObjAttribute || object instanceof ObjRelationship
-                || object instanceof Procedure || object instanceof ProcedureParameter) {
+
+        if (object instanceof DataMap
+                || object instanceof Query
+                || object instanceof DbEntity
+                || object instanceof ObjEntity
+                || object instanceof Embeddable
+                || object instanceof EmbeddableAttribute
+                || object instanceof DbAttribute
+                || object instanceof DbRelationship
+                || object instanceof ObjAttribute
+                || object instanceof ObjRelationship
+                || object instanceof Procedure
+                || object instanceof ProcedureParameter) {
             return true;
         }
 

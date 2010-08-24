@@ -58,6 +58,7 @@ import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyRelationshipAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.CutRelationshipAction;
@@ -82,7 +83,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Displays ObjRelationships for the edited ObjEntity.
- * 
  */
 public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjRelationshipListener, ExistingSelectionProcessor {
@@ -100,13 +100,12 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
 
     CayenneTable table;
     private TableColumnPreferences tablePreferences;
-    
+
     JButton resolve;
-    
+
     /**
-     * By now popup menu item is made similiar to toolbar button. 
-     * (i.e. all functionality is here)
-     * This should be probably refactored as Action.
+     * By now popup menu item is made similiar to toolbar button. (i.e. all functionality
+     * is here) This should be probably refactored as Action.
      */
     protected JMenuItem resolveMenu;
 
@@ -121,15 +120,15 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
-        Application app = Application.getInstance();
+        ActionManager actionManager = Application.getInstance().getActionManager();
         toolBar
-                .add(app
-                        .getAction(CreateRelationshipAction.getActionName())
+                .add(actionManager
+                        .getAction(CreateRelationshipAction.class)
                         .buildButton());
-        toolBar.add(app.getAction(ObjEntitySyncAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton());
 
         toolBar.addSeparator();
-        
+
         Icon ico = ModelerUtil.buildIcon("icon-info.gif");
 
         resolve = new JButton();
@@ -139,35 +138,40 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
 
         toolBar.addSeparator();
 
-        toolBar.add(app.getAction(RemoveRelationshipAction.getActionName()).buildButton());
-        
+        toolBar
+                .add(actionManager
+                        .getAction(RemoveRelationshipAction.class)
+                        .buildButton());
+
         toolBar.addSeparator();
-        toolBar.add(app.getAction(CutRelationshipAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CopyRelationshipAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
-        
+        toolBar.add(actionManager.getAction(CutRelationshipAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CopyRelationshipAction.class).buildButton());
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
+
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
-        
-        tablePreferences = new TableColumnPreferences(ObjRelationshipTableModel.class, "objEntity/relationshipTable");
-        
+
+        tablePreferences = new TableColumnPreferences(
+                ObjRelationshipTableModel.class,
+                "objEntity/relationshipTable");
+
         /**
          * Create and install a popup
          */
         resolveMenu = new JMenuItem("Database Mapping", ico);
-        
+
         JPopupMenu popup = new JPopupMenu();
         popup.add(resolveMenu);
-        popup.add(app.getAction(RemoveRelationshipAction.getActionName()).buildMenu());
-        
+        popup.add(actionManager.getAction(RemoveRelationshipAction.class).buildMenu());
+
         popup.addSeparator();
-        popup.add(app.getAction(CutRelationshipAction.getActionName()).buildMenu());
-        popup.add(app.getAction(CopyRelationshipAction.getActionName()).buildMenu());
-        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
-        
+        popup.add(actionManager.getAction(CutRelationshipAction.class).buildMenu());
+        popup.add(actionManager.getAction(CopyRelationshipAction.class).buildMenu());
+        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
+
         TablePopupHandler.install(table, popup);
 
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
@@ -190,7 +194,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                         .getModel();
                 new ObjRelationshipInfoController(mediator, model.getRelationship(row))
                         .startup();
-                
+
                 /**
                  * This is required for a table to be updated properly
                  */
@@ -202,7 +206,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 table.select(row);
             }
         };
-        
+
         resolve.addActionListener(resolver);
         resolveMenu.addActionListener(resolver);
 
@@ -212,29 +216,32 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 processExistingSelection(e);
             }
         });
-        
-        mediator.getApplication().getActionManager().setupCCP(table, 
-                CutRelationshipAction.getActionName(), CopyRelationshipAction.getActionName());
+
+        mediator.getApplication().getActionManager().setupCutCopyPaste(
+                table,
+                CutRelationshipAction.class,
+                CopyRelationshipAction.class);
     }
 
     /**
      * Selects a specified relationship in the relationships table.
      */
     public void selectRelationships(ObjRelationship[] rels) {
-        ModelerUtil.updateActions(rels.length,  
-                RemoveRelationshipAction.getActionName(),
-                CutRelationshipAction.getActionName(),
-                CopyRelationshipAction.getActionName());
+        ModelerUtil.updateActions(
+                rels.length,
+                RemoveRelationshipAction.class,
+                CutRelationshipAction.class,
+                CopyRelationshipAction.class);
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
 
         List listAttrs = model.getObjectList();
         int[] newSel = new int[rels.length];
-        
+
         for (int i = 0; i < rels.length; i++) {
             newSel[i] = listAttrs.indexOf(rels[i]);
         }
-        
+
         table.select(newSel);
     }
 
@@ -246,14 +253,14 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         if (table.getSelectedRow() >= 0) {
             ObjRelationshipTableModel model = (ObjRelationshipTableModel) table
                     .getModel();
-            
+
             int[] sel = table.getSelectedRows();
             rels = new ObjRelationship[sel.length];
-            
+
             for (int i = 0; i < sel.length; i++) {
                 rels[i] = model.getRelationship(sel[i]);
             }
-            
+
             resolve.setEnabled(true);
 
             // scroll table
@@ -262,11 +269,15 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         else {
             resolve.setEnabled(false);
         }
-        
+
         resolveMenu.setEnabled(resolve.isEnabled());
 
-        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rels, mediator
-                .getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
+        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(
+                this,
+                rels,
+                mediator.getCurrentObjEntity(),
+                mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireObjRelationshipDisplayEvent(ev);
     }
@@ -382,7 +393,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                     }
                     else
                         resolve.setEnabled(false);
-                    
+
                     resolveMenu.setEnabled(resolve.isEnabled());
                 }
             }
@@ -392,17 +403,18 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET);
+        TableColumn col = table.getColumnModel().getColumn(
+                ObjRelationshipTableModel.REL_TARGET);
         JComboBox targetCombo = CayenneWidgetFactory.createComboBox(
                 createObjEntityComboModel(),
                 false);
-        AutoCompletion.enable(targetCombo);        
-        
+        AutoCompletion.enable(targetCombo);
+
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity
                 .getDataMap()));
         targetCombo.setSelectedIndex(-1);
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
-        
+
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETERULE);
         JComboBox deleteRulesCombo = CayenneWidgetFactory.createComboBox(
                 deleteRules,
@@ -410,8 +422,14 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         deleteRulesCombo.setEditable(false);
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(deleteRulesCombo));
-        
-        tablePreferences.bind(table, null, null, null, ObjRelationshipTableModel.REL_NAME, true);
+
+        tablePreferences.bind(
+                table,
+                null,
+                null,
+                null,
+                ObjRelationshipTableModel.REL_NAME,
+                true);
     }
 
     class EntityRenderer extends StringRenderer {
@@ -435,7 +453,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                     hasFocus,
                     row,
                     column);
-            
+
             setIcon(CellRenderers.iconForObject(oldValue));
             return this;
         }

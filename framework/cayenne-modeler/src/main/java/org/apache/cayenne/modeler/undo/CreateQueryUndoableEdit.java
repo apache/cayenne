@@ -41,8 +41,7 @@ public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateQueryAction action = (CreateQueryAction) actionManager
-                .getAction(CreateQueryAction.getActionName());
+        CreateQueryAction action = actionManager.getAction(CreateQueryAction.class);
         action.createQuery(domain, map, query);
     }
 
@@ -53,10 +52,7 @@ public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-
-        RemoveAction action = (RemoveAction) actionManager.getAction(RemoveAction
-                .getActionName());
-
+        RemoveAction action = actionManager.getAction(RemoveAction.class);
         action.removeQuery(map, query);
     }
 

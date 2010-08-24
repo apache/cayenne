@@ -28,8 +28,6 @@ import org.apache.cayenne.modeler.action.RemoveAction;
 
 public class CreateProcedureUndoableEdit extends CayenneUndoableEdit {
 
-    
-
     private DataMap map;
     private Procedure procedure;
 
@@ -45,15 +43,14 @@ public class CreateProcedureUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateProcedureAction action = (CreateProcedureAction) actionManager
-                .getAction(CreateProcedureAction.getActionName());
+        CreateProcedureAction action = actionManager
+                .getAction(CreateProcedureAction.class);
         action.createProcedure(map, procedure);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAction action = (RemoveAction) actionManager.getAction(RemoveAction
-                .getActionName());
+        RemoveAction action = actionManager.getAction(RemoveAction.class);
         action.removeProcedure(map, procedure);
     }
 }

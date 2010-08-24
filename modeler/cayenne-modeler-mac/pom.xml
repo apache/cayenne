@@ -85,7 +85,7 @@
 					<name>CayenneModeler</name>
 					<longName>${version}</longName>
 					<destDir>target/modeler</destDir>
-					<mainClass>org.apache.cayenne.modeler.MacOSXMain</mainClass>
+					<mainClass>org.apache.cayenne.modeler.OSXMain</mainClass>
 					<icon>src/japplication/resources/CayenneModeler.icns</icon>
 					<os>mac</os>
 					<jvm>1.5+</jvm>

@@ -25,6 +25,7 @@ import org.apache.cayenne.map.EntityListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.AbstractRemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateCallbackMethodForListenerAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityListenerAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodForListenerAction;
@@ -36,13 +37,14 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * Tab for editing entity listeners of an ObjEntity
- *
+ * 
  * @version 1.0 Oct 28, 2007
  */
 public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab {
 
     /**
      * constructor
+     * 
      * @param mediator mediator instance
      */
     public ObjEntityCallbackListenersTab(ProjectController mediator) {
@@ -54,9 +56,12 @@ public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab 
      */
     protected CallbackMap getCallbackMap() {
         String listenerClass = (String) listenerClassCombo.getSelectedItem();
-        if (mediator.getCurrentObjEntity() != null &&
-                mediator.getCurrentObjEntity().getEntityListener(listenerClass) != null) {
-            return mediator.getCurrentObjEntity().getEntityListener(listenerClass).getCallbackMap();
+        if (mediator.getCurrentObjEntity() != null
+                && mediator.getCurrentObjEntity().getEntityListener(listenerClass) != null) {
+            return mediator
+                    .getCurrentObjEntity()
+                    .getEntityListener(listenerClass)
+                    .getCallbackMap();
         }
         return null;
     }
@@ -67,57 +72,59 @@ public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab 
     protected void initController() {
         super.initController();
 
-        mediator.addObjEntityDisplayListener(
-                new ObjEntityDisplayListener() {
-                    public void currentObjEntityChanged(EntityDisplayEvent e) {
-                        if (ObjEntityCallbackListenersTab.this.isVisible()) {
-                            rebuildListenerClassCombo(null);
-                            updateCallbackTypeCounters();
-                            mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
-                            rebuildTable();
-                        }
-                    }
+        mediator.addObjEntityDisplayListener(new ObjEntityDisplayListener() {
+
+            public void currentObjEntityChanged(EntityDisplayEvent e) {
+                if (ObjEntityCallbackListenersTab.this.isVisible()) {
+                    rebuildListenerClassCombo(null);
+                    updateCallbackTypeCounters();
+                    mediator.setCurrentCallbackType((CallbackType) callbackTypeCombo
+                            .getSelectedItem());
+                    rebuildTable();
                 }
-        );
+            }
+        });
     }
 
     /**
      * @return returns entity listeners list
      */
     protected List getEntityListeners() {
-        return mediator.getCurrentObjEntity() == null ? null :
-               mediator.getCurrentObjEntity().getEntityListeners();
+        return mediator.getCurrentObjEntity() == null ? null : mediator
+                .getCurrentObjEntity()
+                .getEntityListeners();
     }
 
     /**
      * @return create callback method action
      */
     protected CayenneAction getCreateCallbackMethodAction() {
-        Application app = Application.getInstance();
-        return app.getAction(CreateCallbackMethodForListenerAction.ACTION_NAME);
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        return actionManager.getAction(CreateCallbackMethodForListenerAction.class);
     }
-
 
     /**
      * @return remove callback method action
      */
     protected AbstractRemoveCallbackMethodAction getRemoveCallbackMethodAction() {
-        Application app = Application.getInstance();
-        return (AbstractRemoveCallbackMethodAction)app.getAction(RemoveCallbackMethodForListenerAction.ACTION_NAME);
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        return actionManager.getAction(RemoveCallbackMethodForListenerAction.class);
     }
 
     /**
      * @return action for removing entity listeners
      */
     protected CayenneAction getRemoveEntityListenerAction() {
-        return Application.getInstance().getAction(RemoveEntityListenerAction.getActionName());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        return actionManager.getAction(RemoveEntityListenerAction.class);
     }
 
     /**
      * @return action for creating entity listeners
      */
     public CayenneAction getCreateEntityListenerAction() {
-        return Application.getInstance().getAction(CreateObjEntityListenerAction.getActionName());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        return actionManager.getAction(CreateObjEntityListenerAction.class);
     }
 
     protected EntityListener getEntityListener(String listenerClass) {
@@ -126,7 +133,8 @@ public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab 
 
     @Override
     protected void initTablePreferences() {
-        tablePreferences = new TableColumnPreferences(this.getClass(),"objEntity/callbackTable");
+        tablePreferences = new TableColumnPreferences(
+                this.getClass(),
+                "objEntity/callbackTable");
     }
 }
-

@@ -42,6 +42,7 @@ import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.editor.EditorView;
+import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -59,13 +60,17 @@ public class CayenneModelerController extends CayenneController {
     protected ProjectController projectController;
 
     protected CayenneModelerFrame frame;
-    protected File initialProject;
 
-    public CayenneModelerController(Application application, File initialProject) {
+    public CayenneModelerController(Application application) {
         super(application);
 
-        this.initialProject = initialProject;
         this.frame = new CayenneModelerFrame(application.getActionManager());
+
+        application
+                .getInjector()
+                .getInstance(PlatformInitializer.class)
+                .setupMenus(frame);
+
         this.projectController = new ProjectController(this);
     }
 
@@ -99,8 +104,7 @@ public class CayenneModelerController extends CayenneController {
         frame.addWindowListener(new WindowAdapter() {
 
             public void windowClosing(WindowEvent e) {
-                ((ExitAction) getApplication().getAction(ExitAction.getActionName()))
-                        .exit();
+                getApplication().getActionManager().getAction(ExitAction.class).exit();
             }
         });
 
@@ -129,7 +133,7 @@ public class CayenneModelerController extends CayenneController {
         File transferFile = fileList.get(0);
 
         if (transferFile.isFile()) {
-            
+
             FileFilter filter = FileFilters.getApplicationFilter();
 
             if (filter.accept(transferFile)) {
@@ -137,10 +141,8 @@ public class CayenneModelerController extends CayenneController {
                         transferFile,
                         ActionEvent.ACTION_PERFORMED,
                         "OpenProject");
-                Application
-                        .getInstance()
-                        .getAction(OpenProjectAction.getActionName())
-                        .actionPerformed(e);
+                Application.getInstance().getActionManager().getAction(
+                        OpenProjectAction.class).actionPerformed(e);
                 return true;
             }
         }
@@ -151,13 +153,6 @@ public class CayenneModelerController extends CayenneController {
     public void startupAction() {
         initBindings();
         frame.setVisible(true);
-
-        // open project
-        if (initialProject != null) {
-            OpenProjectAction openAction = (OpenProjectAction) getApplication()
-                    .getAction(OpenProjectAction.getActionName());
-            openAction.openProject(initialProject);
-        }
     }
 
     public void projectModifiedAction() {

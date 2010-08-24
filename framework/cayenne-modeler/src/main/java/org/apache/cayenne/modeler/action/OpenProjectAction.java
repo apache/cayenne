@@ -43,8 +43,6 @@ import org.apache.cayenne.swing.control.FileMenuItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- */
 public class OpenProjectAction extends ProjectAction {
 
     private static Log logObj = LogFactory.getLog(OpenProjectAction.class);
@@ -55,9 +53,6 @@ public class OpenProjectAction extends ProjectAction {
         return "Open Project";
     }
 
-    /**
-     * Constructor for OpenProjectAction.
-     */
     public OpenProjectAction(Application application) {
         super(getActionName(), application);
         this.fileChooser = new ProjectOpener();
@@ -151,8 +146,9 @@ public class OpenProjectAction extends ProjectAction {
                 JOptionPane
                         .showMessageDialog(Application.getFrame(),
                         // TODO: andrus 05/02/2010 - this message shows intermediate
-                        // version of the project XML, not the Modeler code version that
-                        // can be used for upgrade
+                                // version of the project XML, not the Modeler code
+                                // version that
+                                // can be used for upgrade
                                 "Can't upgrade project. Open the project in the Modeler v."
                                         + md.getIntermediateUpgradeVersion()
                                         + " to do an intermediate upgrade before you can upgrade to v."

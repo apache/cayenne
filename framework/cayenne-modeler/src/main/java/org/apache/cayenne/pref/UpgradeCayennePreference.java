@@ -68,10 +68,6 @@ public class UpgradeCayennePreference extends PreferenceDecorator {
                                 ep.getBoolean(EDITOR_LOGFILE_ENABLED_OLD));
                         prefEditor.put(ModelerPreferences.EDITOR_LOGFILE, ep
                                 .getString(EDITOR_LOGFILE_OLD));
-                        prefEditor.put(ModelerPreferences.EDITOR_LAFNAME, ep
-                                .getString(EDITOR_LAFNAME_OLD));
-                        prefEditor.put(ModelerPreferences.EDITOR_THEMENAME, ep
-                                .getString(EDITOR_THEMENAME_OLD));
 
                         Preferences frefLastProjFiles = prefEditor.node(LAST_PROJ_FILES);
 

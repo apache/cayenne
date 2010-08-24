@@ -33,19 +33,16 @@ import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Module;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.dialog.pref.ClasspathPreferences;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
-import org.apache.cayenne.project.CayenneProjectModule;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.BindingFactory;
 import org.apache.cayenne.util.IDUtil;
@@ -72,13 +69,12 @@ public class Application {
     public static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
     public static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
 
-    protected static Application instance;
+    private static Application instance;
 
     protected FileClassLoadingService modelerClassLoader;
-    protected ActionManager actionManager;
+
     protected CayenneModelerController frameController;
 
-    protected File initialProject;
     protected String name;
 
     protected BindingFactory bindingFactory;
@@ -88,17 +84,19 @@ public class Application {
 
     protected CayenneProjectPreferences cayenneProjectPreferences;
 
-    // This is for OS X support
-    private boolean isQuittingApplication;
-
     protected CayennePreference cayennePreference;
 
+    @Inject
     protected Injector injector;
 
     private String newProjectTemporaryName;
 
     public static Application getInstance() {
         return instance;
+    }
+
+    public static void setInstance(Application instance) {
+        Application.instance = instance;
     }
 
     // static methods that should probably go away eventually...
@@ -120,15 +118,7 @@ public class Application {
         return newProjectTemporaryName;
     }
 
-    public Application(File initialProject) {
-        this.initialProject = initialProject;
-
-        Module projectModule = new CayenneProjectModule();
-        Module serverModule = new ServerModule("CayenneModeler");
-
-        this.injector = DIBootstrap.createInjector(projectModule, serverModule);
-
-        // configure startup settings
+    public Application() {
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
         this.cayennePreference = new CayennePreference();
@@ -159,17 +149,10 @@ public class Application {
     }
 
     /**
-     * Returns an action for key.
-     */
-    public CayenneAction getAction(String key) {
-        return getActionManager().getAction(key);
-    }
-
-    /**
      * Returns action controller.
      */
     public ActionManager getActionManager() {
-        return actionManager;
+        return injector.getInstance(ActionManager.class);
     }
 
     /**
@@ -204,13 +187,9 @@ public class Application {
         UIStrings.setPropertiesName(ModelerConstants.DEFAULT_MESSAGE_BUNDLE);
         ViewContext.clearThreadContext();
 
-        // init actions before the frame, as it will attempt to build menus out of
-        // actions.
-        this.actionManager = new ActionManager(this);
-        this.undoManager = new org.apache.cayenne.modeler.undo.CayenneUndoManager(this);
+        this.undoManager = new CayenneUndoManager(this);
 
-        // ...create main frame
-        this.frameController = new CayenneModelerController(this, initialProject);
+        this.frameController = new CayenneModelerController(this);
 
         // update Scope to work nicely with main frame
         ViewContext.setGlobalContext(new ModelerContext(frameController.getFrame()));
@@ -218,9 +197,7 @@ public class Application {
         // open up
         frameController.startupAction();
 
-        /**
-         * After prefs have been loaded, we can now show the console if needed
-         */
+        // After prefs have been loaded, we can now show the console if needed
         LogConsole.getInstance().showConsoleIfNeeded();
         getFrame().setVisible(true);
     }
@@ -395,13 +372,5 @@ public class Application {
         protected Window getDefaultParentWindow() {
             return frame;
         }
-    }
-
-    public boolean isQuittingApplication() {
-        return isQuittingApplication;
-    }
-
-    public void setQuittingApplication(boolean isQuittingApplication) {
-        this.isQuittingApplication = isQuittingApplication;
     }
 }

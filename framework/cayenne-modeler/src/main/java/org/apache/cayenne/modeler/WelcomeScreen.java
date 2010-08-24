@@ -50,8 +50,8 @@ import org.apache.cayenne.modeler.event.RecentFileListListener;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 /**
- * Welcome screen (CAY-894) is a panel shown when no project is open.
- * User can quickly create new project or open an existing one.
+ * Welcome screen (CAY-894) is a panel shown when no project is open. User can quickly
+ * create new project or open an existing one.
  */
 public class WelcomeScreen extends JPanel implements RecentFileListListener {
 
@@ -64,7 +64,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
      * Bottom color of gradient background
      */
     private static final Color BOTTOM_GRADIENT = new Color(230, 230, 230);
-    
+
     /**
      * List of recent projects
      */
@@ -94,14 +94,24 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
         buttonsPane.setOpaque(false);
 
         JButton newButton = createButton(newOutIcon, newOverIcon);
-        newButton.addActionListener(Application.getInstance().getAction(NewProjectAction.getActionName()));
-        
-        JLabel newLabel = new JLabel(NewProjectAction.getActionName(), SwingConstants.CENTER);
+        newButton.addActionListener(Application
+                .getInstance()
+                .getActionManager()
+                .getAction(NewProjectAction.class));
+
+        JLabel newLabel = new JLabel(
+                NewProjectAction.getActionName(),
+                SwingConstants.CENTER);
 
         JButton openButton = createButton(openOutIcon, openOverIcon);
-        openButton.addActionListener(Application.getInstance().getAction(OpenProjectAction.getActionName()));
-        
-        JLabel openLabel = new JLabel(OpenProjectAction.getActionName(), SwingConstants.CENTER);
+        openButton.addActionListener(Application
+                .getInstance()
+                .getActionManager()
+                .getAction(OpenProjectAction.class));
+
+        JLabel openLabel = new JLabel(
+                OpenProjectAction.getActionName(),
+                SwingConstants.CENTER);
 
         imageLabel.setLayout(new BorderLayout());
 
@@ -109,8 +119,10 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
         buttonsPane.add(newButton);
 
         newLabel.setLocation(newButton.getX()
-                + newButton.getWidth() / 2 - newLabel.getPreferredSize().width / 2, 
-                newButton.getY() + newButton.getHeight());
+                + newButton.getWidth()
+                / 2
+                - newLabel.getPreferredSize().width
+                / 2, newButton.getY() + newButton.getHeight());
         newLabel.setSize(newLabel.getPreferredSize());
         buttonsPane.add(newLabel);
 
@@ -118,27 +130,30 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
         buttonsPane.add(openButton);
 
         openLabel.setLocation(openButton.getX()
-                + openButton.getWidth() / 2 - openLabel.getPreferredSize().width / 2, 
-                openButton.getY() + openButton.getHeight());
+                + openButton.getWidth()
+                / 2
+                - openLabel.getPreferredSize().width
+                / 2, openButton.getY() + openButton.getHeight());
         openLabel.setSize(openLabel.getPreferredSize());
         buttonsPane.add(openLabel);
-        
+
         JLabel recents = new JLabel("Recent Projects:");
         recents.setLocation(207, newButton.getY());
         recents.setSize(recents.getPreferredSize());
         recents.setHorizontalTextPosition(10);
-        
+
         buttonsPane.add(recents);
-        
+
         recentsList = new JList();
         recentsList.setOpaque(false);
-        
+
         recentsList.setLocation(recents.getX(), recents.getY() + 2 * recents.getHeight());
-        recentsList.setSize(welcome.getIconWidth() - recentsList.getX() - 1, 
-                welcome.getIconHeight() - recentsList.getY());
-        
+        recentsList.setSize(welcome.getIconWidth() - recentsList.getX() - 1, welcome
+                .getIconHeight()
+                - recentsList.getY());
+
         recentsList.setCellRenderer(new RecentFileListRenderer(recentsList));
-        
+
         buttonsPane.add(recentsList);
 
         imageLabel.add(buttonsPane);
@@ -173,7 +188,8 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setPaint(new GradientPaint(
+        g2
+                .setPaint(new GradientPaint(
                         0,
                         0,
                         TOP_GRADIENT,
@@ -184,53 +200,60 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
 
         g2.dispose();
     }
-    
+
     public void recentFileListChanged() {
 
         final List<String> arr = ModelerPreferences.getLastProjFiles();
-        
-        recentsList.setModel(
-            new AbstractListModel() {
-                public int getSize() { return arr.size(); }
-                public Object getElementAt(int i) { return arr.get(i); }
-            });
+
+        recentsList.setModel(new AbstractListModel() {
+
+            public int getSize() {
+                return arr.size();
+            }
+
+            public Object getElementAt(int i) {
+                return arr.get(i);
+            }
+        });
     }
-    
+
     /**
-     * Renderer for the list of last files. Ignores the selection, instead paints
-     * with ROLLOVER_BACKGROUND (currently red) the row mouse is hovering over
+     * Renderer for the list of last files. Ignores the selection, instead paints with
+     * ROLLOVER_BACKGROUND (currently red) the row mouse is hovering over
      */
-    class RecentFileListRenderer extends DefaultListCellRenderer implements MouseInputListener {
+    class RecentFileListRenderer extends DefaultListCellRenderer implements
+            MouseInputListener {
+
         /**
          * Color for background of row mouse is over
          */
         final Color ROLLOVER_BACKGROUND = Color.RED;
-        
+
         /**
          * Color for foreground of row mouse is over
          */
         final Color ROLLOVER_FOREGROUND = Color.WHITE;
-        
+
         /**
          * List which is rendered
          */
         private JList list;
-        
+
         /**
          * Row mouse is over
          */
         private int rolloverRow;
-        
+
         public RecentFileListRenderer(JList list) {
             list.addMouseListener(this);
             list.addMouseMotionListener(this);
-            
+
             this.list = list;
             rolloverRow = -1;
-            
+
             setHorizontalTextPosition(10);
         }
-        
+
         @Override
         public Component getListCellRendererComponent(
                 JList list,
@@ -238,9 +261,9 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
                 int index,
                 boolean isSelected,
                 boolean cellHasFocus) {
-            //selection is ignored
+            // selection is ignored
             super.getListCellRendererComponent(list, value, index, false, false);
-            
+
             if (rolloverRow == index) {
                 setOpaque(true);
                 setForeground(ROLLOVER_FOREGROUND);
@@ -249,7 +272,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
             else {
                 setOpaque(false);
             }
-            
+
             return this;
         }
 
@@ -271,14 +294,15 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
         public void mouseReleased(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e) && rolloverRow != -1) {
                 File file = new File((String) list.getModel().getElementAt(rolloverRow));
-                
+
                 /**
                  * Fire an action with the file as source
                  */
-                Application.getInstance().getAction(OpenProjectAction.getActionName()).performAction(
+                Application.getInstance().getActionManager().getAction(
+                        OpenProjectAction.class).performAction(
                         new ActionEvent(file, 0, null));
-                
-                rolloverRow = -1; //clear selection
+
+                rolloverRow = -1; // clear selection
             }
         }
 
@@ -287,19 +311,20 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
 
         public void mouseMoved(MouseEvent e) {
             int newRow;
-            
+
             /**
-             * Check that a row boundary contains the mouse point, so that rolloverRow would
-             * be -1 if we are below last row
+             * Check that a row boundary contains the mouse point, so that rolloverRow
+             * would be -1 if we are below last row
              */
-            if (list.getModel().getSize() > 0 && 
-                    !list.getCellBounds(0, list.getModel().getSize() - 1).contains(e.getPoint())) {
+            if (list.getModel().getSize() > 0
+                    && !list.getCellBounds(0, list.getModel().getSize() - 1).contains(
+                            e.getPoint())) {
                 newRow = -1;
             }
             else {
-                newRow = list.locationToIndex(e.getPoint()); 
+                newRow = list.locationToIndex(e.getPoint());
             }
-            
+
             if (rolloverRow != newRow) {
                 rolloverRow = newRow;
                 list.repaint();

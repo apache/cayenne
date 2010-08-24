@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.Component;
@@ -40,9 +39,8 @@ import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
  * Tabbed panel for stored procedure editing.
  * 
  */
-public class ProcedureTabbedView
-    extends JTabbedPane
-    implements ProcedureDisplayListener, ProcedureParameterDisplayListener {
+public class ProcedureTabbedView extends JTabbedPane implements ProcedureDisplayListener,
+        ProcedureParameterDisplayListener {
 
     protected ProjectController eventController;
     protected ProcedureTab procedurePanel;
@@ -62,6 +60,7 @@ public class ProcedureTabbedView
         eventController.addProcedureDisplayListener(this);
         eventController.addProcedureParameterDisplayListener(this);
         this.addChangeListener(new ChangeListener() {
+
             public void stateChanged(ChangeEvent e) {
                 // find source view
                 Component selected = ProcedureTabbedView.this.getSelectedComponent();
@@ -78,8 +77,9 @@ public class ProcedureTabbedView
      * Invoked when currently selected Procedure object is changed.
      */
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
-        Application.getInstance().getAction(RemoveProcedureParameterAction.getActionName()).setEnabled(false);
-        
+        Application.getInstance().getActionManager().getAction(
+                RemoveProcedureParameterAction.class).setEnabled(false);
+
         if (e.getProcedure() == null)
             setVisible(false);
         else {
@@ -92,8 +92,8 @@ public class ProcedureTabbedView
 
     public void currentProcedureParameterChanged(ProcedureParameterDisplayEvent e) {
         ProcedureParameter[] parameters = e.getProcedureParameters();
-        
-        if(parameters.length > 0) {
+
+        if (parameters.length > 0) {
             procedureParameterPanel.selectParameters(parameters);
         }
     }

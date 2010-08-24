@@ -33,81 +33,82 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
 public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 
-	@Override
-	public boolean canRedo() {
-		return true;
-	}
+    @Override
+    public boolean canRedo() {
+        return true;
+    }
 
-	
-	@Override
-	public String getPresentationName() {
-		return "Create Attribute";
-	}
+    @Override
+    public String getPresentationName() {
+        return "Create Attribute";
+    }
 
-	private ObjEntity objEntity;
-	private ObjAttribute objAttr;
+    private ObjEntity objEntity;
+    private ObjAttribute objAttr;
 
-	private DataChannelDescriptor domain;
-	private DataMap dataMap;
+    private DataChannelDescriptor domain;
+    private DataMap dataMap;
 
-	private DbEntity dbEntity;
-	private DbAttribute dbAttr;
+    private DbEntity dbEntity;
+    private DbAttribute dbAttr;
 
-	@Override
-	public void redo() throws CannotRedoException {		
-		CreateAttributeAction action = (CreateAttributeAction) actionManager
-				.getAction(CreateAttributeAction.getActionName());
+    @Override
+    public void redo() throws CannotRedoException {
+        CreateAttributeAction action = actionManager
+                .getAction(CreateAttributeAction.class);
 
-		if (objEntity != null) {
-			action.createObjAttribute(dataMap, objEntity, objAttr);
-		}
+        if (objEntity != null) {
+            action.createObjAttribute(dataMap, objEntity, objAttr);
+        }
 
-		if (dbEntity != null) {
-			action.createDbAttribute(dataMap, dbEntity, dbAttr);
-		}
-	}
+        if (dbEntity != null) {
+            action.createDbAttribute(dataMap, dbEntity, dbAttr);
+        }
+    }
 
-	@Override
-	public void undo() throws CannotUndoException {		
-		RemoveAttributeAction action = (RemoveAttributeAction) actionManager
-				.getAction(RemoveAttributeAction.getActionName());
+    @Override
+    public void undo() throws CannotUndoException {
+        RemoveAttributeAction action = actionManager
+                .getAction(RemoveAttributeAction.class);
 
-		if (objEntity != null) {
-			action.removeObjAttributes(objEntity,
-					new ObjAttribute[] { objAttr });
-			
-			controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
-	                this,
-	                objEntity,
-	                dataMap,
-	                domain));
-		}
+        if (objEntity != null) {
+            action.removeObjAttributes(objEntity, new ObjAttribute[] {
+                objAttr
+            });
 
-		if (dbEntity != null) {
-			action.removeDbAttributes(dataMap, dbEntity,
-					new DbAttribute[] { dbAttr });
-			
-			controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(
-	                this,
-	                dbEntity,
-	                dataMap,
-	                domain));
-		}
-	}
+            controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+                    this,
+                    objEntity,
+                    dataMap,
+                    domain));
+        }
 
-	public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
-			ObjEntity objEntity, ObjAttribute attr) {
-		this.domain = domain;
-		this.dataMap = map;
-		this.objEntity = objEntity;
-		this.objAttr = attr;
-	}
+        if (dbEntity != null) {
+            action.removeDbAttributes(dataMap, dbEntity, new DbAttribute[] {
+                dbAttr
+            });
 
-	public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
-			DbEntity dbEntity, DbAttribute attr) {
-		this.domain = domain;
-		this.dataMap = map;
-		this.dbEntity = dbEntity;
-		this.dbAttr = attr;
-	}
+            controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(
+                    this,
+                    dbEntity,
+                    dataMap,
+                    domain));
+        }
+    }
+
+    public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
+            ObjEntity objEntity, ObjAttribute attr) {
+        this.domain = domain;
+        this.dataMap = map;
+        this.objEntity = objEntity;
+        this.objAttr = attr;
+    }
+
+    public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
+            DbEntity dbEntity, DbAttribute attr) {
+        this.domain = domain;
+        this.dataMap = map;
+        this.dbEntity = dbEntity;
+        this.dbAttr = attr;
+    }
 }

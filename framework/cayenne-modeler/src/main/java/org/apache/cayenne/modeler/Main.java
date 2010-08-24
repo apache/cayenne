@@ -20,54 +20,118 @@
 package org.apache.cayenne.modeler;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
-import org.apache.cayenne.modeler.util.CayenneUserDir;
+import org.apache.cayenne.modeler.init.CayenneModelerModule;
+import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.project.CayenneProjectModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticTheme;
-
 /**
  * Main class responsible for starting CayenneModeler.
- * 
- * @since 1.1
  */
 public class Main {
 
     private static Log logger = LogFactory.getLog(Main.class);
 
+    protected String[] args;
+
     /**
      * Main method that starts the CayenneModeler.
      */
     public static void main(String[] args) {
-        Main main = new Main();
-
-        // if configured, redirect all logging to the log file
-        main.configureLogging();
-
-        // check jdk version
-        if (!main.checkJDKVersion()) {
+        try {
+            new Main(args).launch();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
             System.exit(1);
         }
-
-        File projectFile = projectFileFromArgs(args);
-        main.runModeler(projectFile);
     }
 
-    protected static File projectFileFromArgs(String[] args) {
-        if (args.length == 1) {
+    protected Main(String[] args) {
+        this.args = args;
+    }
+
+    protected void launch() {
+        final Injector injector = DIBootstrap
+                .createInjector(appendModules(new ArrayList<Module>()));
+
+        logger.info("Starting CayenneModeler.");
+        logger.info("JRE v."
+                + System.getProperty("java.version")
+                + " at "
+                + System.getProperty("java.home"));
+
+        // init look and feel before starting any Swing classes...
+        injector.getInstance(PlatformInitializer.class).initLookAndFeel();
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+
+                Application application = injector.getInstance(Application.class);
+                Application.setInstance(application);
+                application.startup();
+
+                // start initial project AFTER the app startup, as we need Application
+                // preferences to be bootstrapped.
+
+                File project = initialProjectFromArgs();
+                if (project == null) {
+                    project = initialProjectFromPreferences();
+                }
+
+                if (project != null) {
+                    new OpenProjectAction(application).openProject(project);
+                }
+            }
+        });
+
+    }
+
+    protected Collection<Module> appendModules(Collection<Module> modules) {
+        modules.add(new ServerModule("CayenneModeler"));
+        modules.add(new CayenneProjectModule());
+        modules.add(new CayenneModelerModule());
+
+        return modules;
+    }
+
+    protected File initialProjectFromPreferences() {
+
+        Preferences autoLoadLastProject = Application.getInstance().getPreferencesNode(
+                GeneralPreferences.class,
+                "");
+
+        if ((autoLoadLastProject != null)
+                && autoLoadLastProject.getBoolean(
+                        GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE,
+                        false)) {
+
+            List<String> lastFiles = ModelerPreferences.getLastProjFiles();
+            if (!lastFiles.isEmpty()) {
+                return new File(lastFiles.get(0));
+            }
+        }
+
+        return null;
+    }
+
+    protected File initialProjectFromArgs() {
+        if (args != null && args.length == 1) {
             File f = new File(args[0]);
 
             if (f.isFile()
@@ -78,226 +142,5 @@ public class Main {
         }
 
         return null;
-    }
-
-    protected static File projectFileFromPrefs() {
-        // This must be run after the application has already been bootstrapped.
-        // Otherwise, the returned
-        // app instance will be null.
-
-        Preferences autoLoadPref = Application.getInstance().getPreferencesNode(
-                ClassGenerationAction.class,
-                "");
-
-        if ((autoLoadPref != null)
-                && (true == autoLoadPref.getBoolean(
-                        GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE,
-                        false))) {
-
-            List<String> arr = ModelerPreferences.getLastProjFiles();
-            if (arr.size() > 0) {
-                return new File((String) arr.get(0));
-            }
-        }
-        return null;
-    }
-
-    protected void runModeler(final File projectFile) {
-        logger.info("Starting CayenneModeler.");
-
-        // set up UI
-        configureLookAndFeel();
-
-        Application.instance = new Application(projectFile);
-
-        // start frame and load project from EventDispatchThread...
-        Runnable runnable = new Runnable() {
-
-            public void run() {
-                Application.instance.startup();
-
-                if (null == projectFile) {
-                    File projectFileFromPrefs = projectFileFromPrefs();
-
-                    if (null != projectFileFromPrefs) {
-                        OpenProjectAction action = new OpenProjectAction(
-                                Application.instance);
-                        action.openProject(projectFileFromPrefs);
-                    }
-                }
-            }
-        };
-
-        SwingUtilities.invokeLater(runnable);
-    }
-
-    protected boolean checkJDKVersion() {
-        try {
-            Class.forName("java.lang.StringBuilder");
-            return true;
-        }
-        catch (Exception ex) {
-            logger.fatal("CayenneModeler requires JDK 1.5.");
-            logger.fatal("Found : '"
-                    + System.getProperty("java.version")
-                    + "' at "
-                    + System.getProperty("java.home"));
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Unsupported JDK at "
-                            + System.getProperty("java.home")
-                            + ". Set JAVA_HOME to the JDK1.5 location.",
-                    "Unsupported JDK Version",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-    }
-
-    /**
-     * Configures Log4J appenders to perform logging to $HOME/.cayenne/modeler.log.
-     */
-    protected void configureLogging() {
-
-        // get preferences
-        Preferences prefs = ModelerPreferences.getEditorPreferences();
-
-        // check whether to set up logging to a file
-        boolean logfileEnabled = prefs.getBoolean(
-                ModelerPreferences.EDITOR_LOGFILE_ENABLED,
-                true);
-        prefs.put(ModelerPreferences.EDITOR_LOGFILE_ENABLED, String
-                .valueOf(logfileEnabled));
-
-        if (logfileEnabled) {
-            String defaultPath = getLogFile().getPath();
-            String logfilePath = prefs
-                    .get(ModelerPreferences.EDITOR_LOGFILE, defaultPath);
-            try {
-                // use logfile from preferences or default
-
-                File logfile = new File(logfilePath);
-
-                if (logfile != null) {
-                    if (!logfile.exists()) {
-                        // create dir path first
-                        File parent = logfile.getParentFile();
-                        if (parent != null) {
-                            parent.mkdirs();
-                        }
-
-                        if (!logfile.createNewFile()) {
-                            return;
-                        }
-                    }
-
-                    // remember working path
-                    prefs.put(ModelerPreferences.EDITOR_LOGFILE, logfilePath);
-                }
-            }
-            catch (IOException ioex) {
-                logger.warn("Error setting logging - " + logfilePath, ioex);
-            }
-        }
-    }
-
-    protected String getLookAndFeelName() {
-        Preferences prefs = ModelerPreferences.getEditorPreferences();
-        return prefs.get(
-                ModelerPreferences.EDITOR_LAFNAME,
-                ModelerConstants.DEFAULT_LAF_NAME);
-    }
-
-    protected String getThemeName() {
-        Preferences prefs = ModelerPreferences.getEditorPreferences();
-        return prefs.get(
-                ModelerPreferences.EDITOR_THEMENAME,
-                ModelerConstants.DEFAULT_THEME_NAME);
-    }
-
-    /**
-     * Set up the UI Look & Feel according to $HOME/.cayenne/modeler.preferences
-     */
-    protected void configureLookAndFeel() {
-        // get preferences
-        Preferences prefs = ModelerPreferences.getEditorPreferences();
-        String lfName = getLookAndFeelName();
-        String themeName = getThemeName();
-
-        try {
-            // only install theme if L&F is Plastic;
-            // bomb out if the L&F class cannot be found at all.
-            Class lf = Class.forName(lfName);
-            if (PlasticLookAndFeel.class.isAssignableFrom(lf)) {
-                PlasticTheme foundTheme = themeWithName(themeName);
-                if (foundTheme == null) {
-                    logger.warn("Could not set selected theme '"
-                            + themeName
-                            + "' - using default '"
-                            + ModelerConstants.DEFAULT_THEME_NAME
-                            + "'.");
-
-                    themeName = ModelerConstants.DEFAULT_THEME_NAME;
-                    foundTheme = themeWithName(themeName);
-                }
-
-                // try to configure theme
-                PlasticLookAndFeel.setMyCurrentTheme(foundTheme);
-            }
-
-            // try to set set L&F
-            UIManager.setLookAndFeel(lfName);
-        }
-        catch (Exception e) {
-            logger.warn("Could not set selected LookAndFeel '"
-                    + lfName
-                    + "' - using default '"
-                    + ModelerConstants.DEFAULT_LAF_NAME
-                    + "'.");
-
-            // re-try with defaults
-            lfName = ModelerConstants.DEFAULT_LAF_NAME;
-            themeName = ModelerConstants.DEFAULT_THEME_NAME;
-            PlasticTheme defaultTheme = themeWithName(themeName);
-            PlasticLookAndFeel.setMyCurrentTheme(defaultTheme);
-
-            try {
-                UIManager.setLookAndFeel(lfName);
-            }
-            catch (Exception retry) {
-                // give up, continue as-is
-            }
-        }
-        finally {
-            // remember L&F settings
-            prefs.put(ModelerPreferences.EDITOR_LAFNAME, UIManager
-                    .getLookAndFeel()
-                    .getClass()
-                    .getName());
-
-            prefs.put(ModelerPreferences.EDITOR_THEMENAME, themeName);
-        }
-    }
-
-    protected PlasticTheme themeWithName(String themeName) {
-        List availableThemes = PlasticLookAndFeel.getInstalledThemes();
-        for (Iterator i = availableThemes.iterator(); i.hasNext();) {
-            PlasticTheme aTheme = (PlasticTheme) i.next();
-            if (themeName.equals(aTheme.getName())) {
-                return aTheme;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns a file corresponding to $HOME/.cayenne/modeler.log
-     */
-    protected File getLogFile() {
-        if (!CayenneUserDir.getInstance().canWrite()) {
-            return null;
-        }
-
-        return CayenneUserDir.getInstance().resolveFile("modeler.log");
     }
 }

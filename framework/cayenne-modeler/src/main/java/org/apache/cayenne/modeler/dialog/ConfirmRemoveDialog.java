@@ -24,33 +24,39 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 
 /**
  * Used to confirm deleting items in the model.
- *
+ * 
  */
 public class ConfirmRemoveDialog {
+
     private boolean shouldDelete = true;
-    
+
     /**
      * If false, no question will be asked no matter what settings are
      */
     private boolean allowAsking;
-    
+
     public ConfirmRemoveDialog(boolean allowAsking) {
         this.allowAsking = allowAsking;
     }
-    
+
     private void showDialog(String name) {
 
         JCheckBox neverPromptAgainBox = new JCheckBox("Always delete without prompt.");
 
-        Object message[] = {String.format("Are you sure you would like to delete the %s?", name), neverPromptAgainBox};
+        Object message[] = {
+                String.format("Are you sure you would like to delete the %s?", name),
+                neverPromptAgainBox
+        };
 
-        JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+        JOptionPane pane = new JOptionPane(
+                message,
+                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.YES_NO_OPTION);
 
         JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Remove");
         dialog.setVisible(true);
@@ -58,24 +64,34 @@ public class ConfirmRemoveDialog {
         Object selectedValue = pane.getValue();
         shouldDelete = selectedValue.equals(JOptionPane.YES_OPTION);
 
-        // If the user clicks "no", we'll just ignore whatever's in the checkbox because it's non-sensical.
+        // If the user clicks "no", we'll just ignore whatever's in the checkbox because
+        // it's non-sensical.
         if (shouldDelete) {
-            Preferences pref = Application.getInstance().getPreferencesNode(ClassGenerationAction.class, "");
-            pref.putBoolean(GeneralPreferences.DELETE_PROMPT_PREFERENCE, neverPromptAgainBox.isSelected());
+            Preferences pref = Application.getInstance().getPreferencesNode(
+                    GeneralPreferences.class,
+                    "");
+            pref.putBoolean(
+                    GeneralPreferences.DELETE_PROMPT_PREFERENCE,
+                    neverPromptAgainBox.isSelected());
         }
     }
-    
+
     public boolean shouldDelete(String type, String name) {
         return shouldDelete(String.format("%s named '%s'?", type, name));
     }
 
     public boolean shouldDelete(String name) {
         if (allowAsking) {
-            
-            Preferences pref = Application.getInstance().getPreferencesNode(ClassGenerationAction.class, "");
+
+            Preferences pref = Application.getInstance().getPreferencesNode(
+                    GeneralPreferences.class,
+                    "");
 
             // See if the user has opted not to showDialog the delete dialog.
-            if ((pref == null) || (false == pref.getBoolean(GeneralPreferences.DELETE_PROMPT_PREFERENCE, false))) {
+            if ((pref == null)
+                    || !pref.getBoolean(
+                            GeneralPreferences.DELETE_PROMPT_PREFERENCE,
+                            false)) {
                 showDialog(name);
             }
         }

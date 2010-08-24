@@ -153,12 +153,15 @@ public abstract class GeneratorController extends CayenneController {
         generator.addEntities(entities);
         generator.addEmbeddables(getParentController().getSelectedEmbeddables());
         generator.addQueries(getParentController().getDataMap().getQueries());
-        
-        Preferences preferences = application.getPreferencesNode(ClassGenerationAction.class, "");
+
+        Preferences preferences = application.getPreferencesNode(
+                GeneralPreferences.class,
+                "");
 
         if (preferences != null) {
-            generator.setEncoding(preferences
-                    .get(GeneralPreferences.ENCODING_PREFERENCE, null));
+            generator.setEncoding(preferences.get(
+                    GeneralPreferences.ENCODING_PREFERENCE,
+                    null));
         }
 
         generator.setDestDir(outputDir);
@@ -542,7 +545,7 @@ public abstract class GeneratorController extends CayenneController {
                         return getParentController().getProblem(
                                 ((ObjEntity) object).getName()) == null;
                     }
-                    
+
                     if (object instanceof Embeddable) {
                         return getParentController().getProblem(
                                 ((Embeddable) object).getClassName()) == null;

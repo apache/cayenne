@@ -29,34 +29,31 @@ import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 
 public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
 
-	@Override
-	public String getPresentationName() {
-		return "Create DataMap";
-	}
+    @Override
+    public String getPresentationName() {
+        return "Create DataMap";
+    }
 
-	
+    private DataChannelDescriptor domain;
+    private DataMap map;
 
-	private DataChannelDescriptor domain;
-	private DataMap map;
+    public CreateDataMapUndoableEdit(DataChannelDescriptor domain, DataMap map) {
+        this.domain = domain;
+        this.map = map;
+    }
 
-	public CreateDataMapUndoableEdit(DataChannelDescriptor domain, DataMap map) {
-		this.domain = domain;
-		this.map = map;
-	}
+    @Override
+    public void redo() throws CannotRedoException {
+        CreateDataMapAction action = actionManager.getAction(CreateDataMapAction.class);
+        action.createDataMap(map);
+    }
 
-	@Override
-	public void redo() throws CannotRedoException {
-		CreateDataMapAction action = (CreateDataMapAction) actionManager
-				.getAction(CreateDataMapAction.getActionName());
-		action.createDataMap(map);
-	}
+    @Override
+    public void undo() throws CannotUndoException {
+        RemoveAction action = actionManager.getAction(RemoveAction.class);
 
-	@Override
-	public void undo() throws CannotUndoException {
-		RemoveAction action = (RemoveAction) actionManager.getAction(RemoveAction.getActionName());
-		
-		controller.fireDomainDisplayEvent(new DomainDisplayEvent(this, domain));
-		
-		action.removeDataMap(map);
-	}
+        controller.fireDomainDisplayEvent(new DomainDisplayEvent(this, domain));
+
+        action.removeDataMap(map);
+    }
 }

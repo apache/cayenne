@@ -32,6 +32,7 @@ import java.awt.event.KeyListener;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
@@ -45,6 +46,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import org.apache.cayenne.modeler.action.AboutAction;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.CopyAction;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
@@ -99,9 +101,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.OperatingSystem;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
 import org.apache.commons.logging.LogFactory;
 
@@ -165,8 +165,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     /**
      * Returns an action object associated with the key.
      */
-    private CayenneAction getAction(String key) {
-        return actionManager.getAction(key);
+    private <T extends Action> T getAction(Class<T> type) {
+        return actionManager.getAction(type);
     }
 
     protected void initMenus() {
@@ -178,71 +178,66 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         JMenu toolMenu = new JMenu("Tools");
         JMenu helpMenu = new JMenu("Help");
 
-        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
-            fileMenu.setMnemonic(KeyEvent.VK_F);
-            editMenu.setMnemonic(KeyEvent.VK_E);
-            projectMenu.setMnemonic(KeyEvent.VK_P);
-            toolMenu.setMnemonic(KeyEvent.VK_T);
-            helpMenu.setMnemonic(KeyEvent.VK_H);
-        }
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        editMenu.setMnemonic(KeyEvent.VK_E);
+        projectMenu.setMnemonic(KeyEvent.VK_P);
+        toolMenu.setMnemonic(KeyEvent.VK_T);
+        helpMenu.setMnemonic(KeyEvent.VK_H);
 
-        fileMenu.add(getAction(NewProjectAction.getActionName()).buildMenu());
-        fileMenu.add(getAction(OpenProjectAction.getActionName()).buildMenu());
-        fileMenu.add(getAction(ProjectAction.getActionName()).buildMenu());
-        fileMenu.add(getAction(ImportDataMapAction.getActionName()).buildMenu());
+        fileMenu.add(getAction(NewProjectAction.class).buildMenu());
+        fileMenu.add(getAction(OpenProjectAction.class).buildMenu());
+        fileMenu.add(getAction(ProjectAction.class).buildMenu());
+        fileMenu.add(getAction(ImportDataMapAction.class).buildMenu());
         fileMenu.addSeparator();
-        fileMenu.add(getAction(SaveAction.getActionName()).buildMenu());
-        fileMenu.add(getAction(SaveAsAction.getActionName()).buildMenu());
-        fileMenu.add(getAction(RevertAction.getActionName()).buildMenu());
+        fileMenu.add(getAction(SaveAction.class).buildMenu());
+        fileMenu.add(getAction(SaveAsAction.class).buildMenu());
+        fileMenu.add(getAction(RevertAction.class).buildMenu());
         fileMenu.addSeparator();
 
-        editMenu.add(getAction(UndoAction.getActionName()).buildMenu());
-        editMenu.add(getAction(RedoAction.getActionName()).buildMenu());
-        editMenu.add(getAction(CutAction.getActionName()).buildMenu());
-        editMenu.add(getAction(CopyAction.getActionName()).buildMenu());
-        editMenu.add(getAction(PasteAction.getActionName()).buildMenu());
+        editMenu.add(getAction(UndoAction.class).buildMenu());
+        editMenu.add(getAction(RedoAction.class).buildMenu());
+        editMenu.add(getAction(CutAction.class).buildMenu());
+        editMenu.add(getAction(CopyAction.class).buildMenu());
+        editMenu.add(getAction(PasteAction.class).buildMenu());
 
         recentFileMenu = new RecentFileMenu("Recent Projects");
         addRecentFileListListener(recentFileMenu);
         fileMenu.add(recentFileMenu);
 
-        // Mac OS X doesn't use File->Exit, it uses CayenneModeler->Quit (command-Q)
-        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
-            fileMenu.addSeparator();
-            fileMenu.add(getAction(ExitAction.getActionName()).buildMenu());
-        }
+        fileMenu.addSeparator();
+        fileMenu.add(getAction(ExitAction.class).buildMenu());
 
-        projectMenu.add(getAction(ValidateAction.getActionName()).buildMenu());
+        projectMenu.add(getAction(ValidateAction.class).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(getAction(CreateNodeAction.getActionName()).buildMenu());
-        projectMenu.add(getAction(CreateDataMapAction.getActionName()).buildMenu());
+        projectMenu.add(getAction(CreateNodeAction.class).buildMenu());
+        projectMenu.add(getAction(CreateDataMapAction.class).buildMenu());
 
-        projectMenu.add(getAction(CreateObjEntityAction.getActionName()).buildMenu());
-        projectMenu.add(getAction(CreateEmbeddableAction.getActionName()).buildMenu());
-        projectMenu.add(getAction(CreateDbEntityAction.getActionName()).buildMenu());
+        projectMenu.add(getAction(CreateObjEntityAction.class).buildMenu());
+        projectMenu.add(getAction(CreateEmbeddableAction.class).buildMenu());
+        projectMenu.add(getAction(CreateDbEntityAction.class).buildMenu());
 
-        projectMenu.add(getAction(CreateProcedureAction.getActionName()).buildMenu());
-        projectMenu.add(getAction(CreateQueryAction.getActionName()).buildMenu());
+        projectMenu.add(getAction(CreateProcedureAction.class).buildMenu());
+        projectMenu.add(getAction(CreateQueryAction.class).buildMenu());
 
         projectMenu.addSeparator();
-        projectMenu.add(getAction(ObjEntitySyncAction.getActionName()).buildMenu());
+        projectMenu.add(getAction(ObjEntitySyncAction.class).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(getAction(RemoveAction.getActionName()).buildMenu());
+        projectMenu.add(getAction(RemoveAction.class).buildMenu());
 
-        toolMenu.add(getAction(ImportDBAction.getActionName()).buildMenu());
-        toolMenu.add(getAction(InferRelationshipsAction.getActionName()).buildMenu());
-        toolMenu.add(getAction(ImportEOModelAction.getActionName()).buildMenu());
+        toolMenu.add(getAction(ImportDBAction.class).buildMenu());
+        toolMenu.add(getAction(InferRelationshipsAction.class).buildMenu());
+        toolMenu.add(getAction(ImportEOModelAction.class).buildMenu());
         toolMenu.addSeparator();
-        toolMenu.add(getAction(GenerateCodeAction.getActionName()).buildMenu());
-        toolMenu.add(getAction(GenerateDBAction.getActionName()).buildMenu());
-        toolMenu.add(getAction(MigrateAction.getActionName()).buildMenu());
+        toolMenu.add(getAction(GenerateCodeAction.class).buildMenu());
+        toolMenu.add(getAction(GenerateDBAction.class).buildMenu());
+        toolMenu.add(getAction(MigrateAction.class).buildMenu());
 
         /**
          * Menu for opening Log console
          */
         toolMenu.addSeparator();
 
-        logMenu = getAction(ShowLogConsoleAction.getActionName()).buildCheckBoxMenu();
+        logMenu = getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
 
         if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)
                 && LogConsole.getInstance().getConsoleProperty(
@@ -255,18 +250,11 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         updateLogConsoleMenu();
         toolMenu.add(logMenu);
 
-        // Mac OS X has it's own Preferences menu item under the application menu
-        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
-            toolMenu.addSeparator();
-            toolMenu.add(getAction(ConfigurePreferencesAction.getActionName())
-                    .buildMenu());
-        }
+        toolMenu.addSeparator();
+        toolMenu.add(getAction(ConfigurePreferencesAction.class).buildMenu());
 
-        // Mac OS X "About CayenneModeler" appears under the application menu, per Apple
-        // GUI standards
-        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X)
-            helpMenu.add(getAction(AboutAction.getActionName()).buildMenu());
-        helpMenu.add(getAction(DocumentationAction.getActionName()).buildMenu());
+        helpMenu.add(getAction(AboutAction.class).buildMenu());
+        helpMenu.add(getAction(DocumentationAction.class).buildMenu());
 
         JMenuBar menuBar = new JMenuBar();
 
@@ -360,44 +348,44 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     protected void initToolbar() {
         JToolBar toolBar = new JToolBar();
 
-        toolBar.add(getAction(NewProjectAction.getActionName()).buildButton());
-        toolBar.add(getAction(OpenProjectAction.getActionName()).buildButton());
-        toolBar.add(getAction(SaveAction.getActionName()).buildButton());
+        toolBar.add(getAction(NewProjectAction.class).buildButton());
+        toolBar.add(getAction(OpenProjectAction.class).buildButton());
+        toolBar.add(getAction(SaveAction.class).buildButton());
 
         toolBar.addSeparator();
-        toolBar.add(getAction(RemoveAction.getActionName()).buildButton());
-
-        toolBar.addSeparator();
-
-        toolBar.add(getAction(CutAction.getActionName()).buildButton());
-        toolBar.add(getAction(CopyAction.getActionName()).buildButton());
-        toolBar.add(getAction(PasteAction.getActionName()).buildButton());
+        toolBar.add(getAction(RemoveAction.class).buildButton());
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(UndoAction.getActionName()).buildButton());
-        toolBar.add(getAction(RedoAction.getActionName()).buildButton());
+        toolBar.add(getAction(CutAction.class).buildButton());
+        toolBar.add(getAction(CopyAction.class).buildButton());
+        toolBar.add(getAction(PasteAction.class).buildButton());
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateNodeAction.getActionName()).buildButton());
-        toolBar.add(getAction(CreateDataMapAction.getActionName()).buildButton());
+        toolBar.add(getAction(UndoAction.class).buildButton());
+        toolBar.add(getAction(RedoAction.class).buildButton());
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateDbEntityAction.getActionName()).buildButton());
-        toolBar.add(getAction(CreateProcedureAction.getActionName()).buildButton());
+        toolBar.add(getAction(CreateNodeAction.class).buildButton());
+        toolBar.add(getAction(CreateDataMapAction.class).buildButton());
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateObjEntityAction.getActionName()).buildButton());
-        toolBar.add(getAction(CreateEmbeddableAction.getActionName()).buildButton());
-        toolBar.add(getAction(CreateQueryAction.getActionName()).buildButton());
+        toolBar.add(getAction(CreateDbEntityAction.class).buildButton());
+        toolBar.add(getAction(CreateProcedureAction.class).buildButton());
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(NavigateBackwardAction.getActionName()).buildButton());
-        toolBar.add(getAction(NavigateForwardAction.getActionName()).buildButton());
+        toolBar.add(getAction(CreateObjEntityAction.class).buildButton());
+        toolBar.add(getAction(CreateEmbeddableAction.class).buildButton());
+        toolBar.add(getAction(CreateQueryAction.class).buildButton());
+
+        toolBar.addSeparator();
+
+        toolBar.add(getAction(NavigateBackwardAction.class).buildButton());
+        toolBar.add(getAction(NavigateForwardAction.class).buildButton());
 
         JPanel east = new JPanel(new BorderLayout()); // is used to place search feature
         // components the most right on a
@@ -418,7 +406,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
             }
 
         });
-        findField.setAction(getAction(FindAction.getActionName()));
+        findField.setAction(getAction(FindAction.class));
         JLabel findLabel = new JLabel("Search:");
         findLabel.setLabelFor(findField);
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
@@ -439,7 +427,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         },
                 AWTEvent.KEY_EVENT_MASK);
 
-        JPanel box = new JPanel(); // is used to place label and text field one after another
+        JPanel box = new JPanel(); // is used to place label and text field one after
+        // another
         box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
         box.add(findLabel);
         box.add(findField);
@@ -473,7 +462,9 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         actionManager.procedureSelected();
     }
 
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
+    public void currentObjectsChanged(
+            MultipleObjectsDisplayEvent e,
+            Application application) {
         actionManager.multipleObjectsSelected(e.getNodes(), application);
     }
 

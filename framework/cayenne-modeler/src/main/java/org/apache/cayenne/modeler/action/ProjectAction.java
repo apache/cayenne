@@ -69,9 +69,9 @@ public class ProjectAction extends CayenneAction {
         CayenneModelerController controller = Application
                 .getInstance()
                 .getFrameController();
-        
+
         application.getUndoManager().discardAllEdits();
-        
+
         controller.projectClosedAction();
 
         return true;
@@ -88,7 +88,6 @@ public class ProjectAction extends CayenneAction {
 
             if (dialog.shouldCancel()) {
                 // discard changes and DO NOT close
-                Application.getInstance().setQuittingApplication(false);
                 return false;
             }
             else if (dialog.shouldSave()) {
@@ -99,7 +98,8 @@ public class ProjectAction extends CayenneAction {
                         "SaveAll");
                 Application
                         .getInstance()
-                        .getAction(SaveAction.getActionName())
+                        .getActionManager()
+                        .getAction(SaveAction.class)
                         .actionPerformed(e);
                 if (projectController.isDirty()) {
                     // save was canceled... do not close

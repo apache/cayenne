@@ -30,6 +30,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
@@ -87,9 +88,10 @@ public class EmbeddableTabbedView extends JTabbedPane implements
 
     /** Reset the remove buttons */
     private void resetRemoveButtons() {
-        Application app = Application.getInstance();
-        app.getAction(RemoveAttributeAction.getActionName()).setEnabled(false);
-        app.getAction(RemoveCallbackMethodAction.getActionName()).setEnabled(false);
+        ActionManager actionManager = Application.getInstance().getActionManager();
+
+        actionManager.getAction(RemoveAttributeAction.class).setEnabled(false);
+        actionManager.getAction(RemoveCallbackMethodAction.class).setEnabled(false);
     }
 
     public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {

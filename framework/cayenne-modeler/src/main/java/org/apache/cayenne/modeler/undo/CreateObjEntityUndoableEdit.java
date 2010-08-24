@@ -28,8 +28,6 @@ import org.apache.cayenne.modeler.action.RemoveAction;
 
 public class CreateObjEntityUndoableEdit extends CayenneUndoableEdit {
 
-    
-
     private DataMap map;
     private ObjEntity objEntity;
 
@@ -50,18 +48,15 @@ public class CreateObjEntityUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateObjEntityAction action = (CreateObjEntityAction) actionManager
-                .getAction(CreateObjEntityAction.getActionName());
+        CreateObjEntityAction action = actionManager
+                .getAction(CreateObjEntityAction.class);
 
         action.createObjEntity(map, objEntity);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-
-        RemoveAction action = (RemoveAction) actionManager.getAction(RemoveAction
-                .getActionName());
-
+        RemoveAction action = actionManager.getAction(RemoveAction.class);
         action.removeObjEntity(map, objEntity);
     }
 }

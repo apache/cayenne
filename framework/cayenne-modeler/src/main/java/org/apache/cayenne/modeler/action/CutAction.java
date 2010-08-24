@@ -68,9 +68,10 @@ public class CutAction extends CayenneAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        application.getAction(CopyAction.getActionName()).performAction(e);
-        ((RemoveAction) application.getAction(RemoveAction.getActionName()))
-                .performAction(e, false);
+        application.getActionManager().getAction(CopyAction.class).performAction(e);
+        application.getActionManager().getAction(RemoveAction.class).performAction(
+                e,
+                false);
     }
 
     /**
@@ -78,6 +79,7 @@ public class CutAction extends CayenneAction {
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {
-        return application.getAction(CopyAction.getActionName()).enableForPath(object);
+        return application.getActionManager().getAction(CopyAction.class).enableForPath(
+                object);
     }
 }

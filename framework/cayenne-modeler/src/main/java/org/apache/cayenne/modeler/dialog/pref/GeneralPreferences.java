@@ -24,15 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
-/**
- */
 public class GeneralPreferences extends CayenneController {
 
     public static final String AUTO_LOAD_PROJECT_PREFERENCE = "autoLoadProject";
@@ -77,7 +74,7 @@ public class GeneralPreferences extends CayenneController {
 
     protected void initBindings() {
         // init model objects
-        preferences = application.getPreferencesNode(ClassGenerationAction.class, "");
+        preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 
         this.encoding = preferences.get(ENCODING_PREFERENCE, null);
 

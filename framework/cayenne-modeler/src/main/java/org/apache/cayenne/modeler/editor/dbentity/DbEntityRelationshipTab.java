@@ -52,6 +52,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyRelationshipAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
@@ -86,14 +87,13 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
     protected CayenneTable table;
     protected JButton resolve;
     private TableColumnPreferences tablePreferences;
-    
+
     /**
-     * By now popup menu item is made similiar to toolbar button. 
-     * (i.e. all functionality is here)
-     * This should be probably refactored as Action.
+     * By now popup menu item is made similiar to toolbar button. (i.e. all functionality
+     * is here) This should be probably refactored as Action.
      */
     protected JMenuItem resolveMenu;
-    
+
     /**
      * Combo to edit 'target' field
      */
@@ -107,14 +107,14 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         this.mediator.addDbRelationshipListener(this);
 
         init();
-        
+
         ActionListener resolver = new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 resolveRelationship();
             }
         };
-        
+
         resolve.addActionListener(resolver);
         resolveMenu.addActionListener(resolver);
     }
@@ -123,60 +123,68 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
-        Application app = Application.getInstance();
-        toolBar.add(app.getAction(CreateObjEntityAction.getActionName()).buildButton());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton());
         toolBar
-                .add(app
-                        .getAction(CreateRelationshipAction.getActionName())
+                .add(actionManager
+                        .getAction(CreateRelationshipAction.class)
                         .buildButton());
-        toolBar.add(app.getAction(DbEntitySyncAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton());
 
         toolBar.addSeparator();
 
         resolve = new JButton();
-        
+
         Icon ico = ModelerUtil.buildIcon("icon-info.gif");
-        
+
         resolve.setIcon(ico);
         resolve.setToolTipText("Database Mapping");
         toolBar.add(resolve);
 
         toolBar.addSeparator();
 
-        toolBar.add(app.getAction(RemoveRelationshipAction.getActionName()).buildButton());
-        
+        toolBar
+                .add(actionManager
+                        .getAction(RemoveRelationshipAction.class)
+                        .buildButton());
+
         toolBar.addSeparator();
-        toolBar.add(app.getAction(CutRelationshipAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CopyRelationshipAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
-        
+        toolBar.add(actionManager.getAction(CutRelationshipAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CopyRelationshipAction.class).buildButton());
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
+
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
-        table.setDefaultRenderer(DbEntity.class, CellRenderers.entityTableRendererWithIcons(mediator));
-        
-        tablePreferences = new TableColumnPreferences(DbRelationshipTableModel.class, "relationshipTable");
-        
+        table.setDefaultRenderer(DbEntity.class, CellRenderers
+                .entityTableRendererWithIcons(mediator));
+
+        tablePreferences = new TableColumnPreferences(
+                DbRelationshipTableModel.class,
+                "relationshipTable");
+
         /**
          * Create and install a popup
          */
         resolveMenu = new JMenuItem("Database Mapping", ico);
-        
+
         JPopupMenu popup = new JPopupMenu();
         popup.add(resolveMenu);
-        popup.add(app.getAction(RemoveRelationshipAction.getActionName()).buildMenu());
-        
+        popup.add(actionManager.getAction(RemoveRelationshipAction.class).buildMenu());
+
         popup.addSeparator();
-        popup.add(app.getAction(CutRelationshipAction.getActionName()).buildMenu());
-        popup.add(app.getAction(CopyRelationshipAction.getActionName()).buildMenu());
-        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
-        
+        popup.add(actionManager.getAction(CutRelationshipAction.class).buildMenu());
+        popup.add(actionManager.getAction(CopyRelationshipAction.class).buildMenu());
+        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
+
         TablePopupHandler.install(table, popup);
 
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
-        
-        mediator.getApplication().getActionManager().setupCCP(table, 
-                CutRelationshipAction.getActionName(), CopyRelationshipAction.getActionName());
+
+        actionManager.setupCutCopyPaste(
+                table,
+                CutRelationshipAction.class,
+                CopyRelationshipAction.class);
     }
 
     public void valueChanged(ListSelectionEvent e) {
@@ -197,20 +205,21 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
      * Selects a specified relationship in the relationships table.
      */
     public void selectRelationships(DbRelationship[] rels) {
-        ModelerUtil.updateActions(rels.length,  
-                RemoveRelationshipAction.getActionName(),
-                CutRelationshipAction.getActionName(),
-                CopyRelationshipAction.getActionName());
+        ModelerUtil.updateActions(
+                rels.length,
+                RemoveRelationshipAction.class,
+                CutRelationshipAction.class,
+                CopyRelationshipAction.class);
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-        
+
         List listAttrs = model.getObjectList();
         int[] newSel = new int[rels.length];
-        
+
         for (int i = 0; i < rels.length; i++) {
             newSel[i] = listAttrs.indexOf(rels[i]);
         }
-        
+
         table.select(newSel);
     }
 
@@ -218,18 +227,18 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
-        
+
         DbRelationship[] rels = new DbRelationship[0];
         if (table.getSelectedRow() >= 0) {
             DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-            
+
             int[] sel = table.getSelectedRows();
             rels = new DbRelationship[sel.length];
-            
+
             for (int i = 0; i < sel.length; i++) {
                 rels[i] = model.getRelationship(sel[i]);
             }
-            
+
             resolve.setEnabled(rels.length == 1 && rels[0].getTargetEntity() != null);
 
             if (sel.length == 1) {
@@ -239,11 +248,15 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         }
         else
             resolve.setEnabled(false);
-        
+
         resolveMenu.setEnabled(resolve.isEnabled());
 
-        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rels, mediator
-                .getCurrentDbEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
+        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(
+                this,
+                rels,
+                mediator.getCurrentDbEntity(),
+                mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireDbRelationshipDisplayEvent(ev);
     }
@@ -289,18 +302,26 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
-        
-        TableColumn col = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
-        
+
+        TableColumn col = table.getColumnModel().getColumn(
+                DbRelationshipTableModel.TARGET);
+
         targetCombo = CayenneWidgetFactory.createComboBox();
         AutoCompletion.enable(targetCombo);
-        
-        targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
+
+        targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity
+                .getDataMap()));
         targetCombo.setModel(createComboModel(entity));
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
         table.getSelectionModel().addListSelectionListener(this);
-        
-        tablePreferences.bind(table, null, null, null, DbRelationshipTableModel.NAME, true);
+
+        tablePreferences.bind(
+                table,
+                null,
+                null,
+                null,
+                DbRelationshipTableModel.NAME,
+                true);
     }
 
     public void dbEntityChanged(EntityEvent e) {

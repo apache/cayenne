@@ -38,6 +38,7 @@ import org.apache.cayenne.swing.control.FileMenuItem;
  * 
  */
 public class RecentFileMenu extends JMenu implements RecentFileListListener {
+
     /**
      * Constructor for RecentFileMenu.
      */
@@ -57,7 +58,7 @@ public class RecentFileMenu extends JMenu implements RecentFileListListener {
      * preferences.
      */
     public void rebuildFromPreferences() {
-  
+
         List<String> arr = ModelerPreferences.getLastProjFiles();
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
@@ -91,7 +92,8 @@ public class RecentFileMenu extends JMenu implements RecentFileListListener {
     }
 
     protected Action findAction() {
-        return Application.getInstance().getAction(OpenProjectAction.getActionName());
+        return Application.getInstance().getActionManager().getAction(
+                OpenProjectAction.class);
     }
 
     public void recentFileListChanged() {

@@ -34,6 +34,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
@@ -78,16 +79,17 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
     }
 
     /** Reset the remove buttons */
-    private void resetRemoveButtons(){
-        Application app = Application.getInstance();
-        app.getAction(RemoveAttributeAction.getActionName()).setEnabled(false);
-        app.getAction(RemoveRelationshipAction.getActionName()).setEnabled(false);
+    private void resetRemoveButtons() {
+        ActionManager actionManager = Application.getInstance().getActionManager();
+
+        actionManager.getAction(RemoveAttributeAction.class).setEnabled(false);
+        actionManager.getAction(RemoveRelationshipAction.class).setEnabled(false);
     }
-    
+
     /** Handle focus when tab changes. */
     public void stateChanged(ChangeEvent e) {
         resetRemoveButtons();
-        
+
         // find source view
         Component selected = getSelectedComponent();
         while (selected instanceof JScrollPane) {
@@ -107,7 +109,7 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
                 entityPanel.setVisible(true);
             }
         }
-        
+
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
     }
@@ -116,19 +118,19 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         if (e.getEntity() == null) {
             return;
         }
-        
+
         // update relationship selection
         Relationship[] rels = e.getRelationships();
         DbRelationship[] dbRels = new DbRelationship[rels.length];
-        
+
         System.arraycopy(rels, 0, dbRels, 0, rels.length);
-        
+
         // reset tab to relationship
         if (getSelectedComponent() != relationshipsPanel && dbRels.length > 0) {
             setSelectedComponent(relationshipsPanel);
             relationshipsPanel.setVisible(true);
         }
-        
+
         relationshipsPanel.selectRelationships(dbRels);
     }
 
@@ -139,14 +141,14 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         // update relationship selection
         Attribute[] attrs = e.getAttributes();
         DbAttribute[] dbAttrs = new DbAttribute[attrs.length];
-        
+
         System.arraycopy(attrs, 0, dbAttrs, 0, attrs.length);
-        
+
         if (getSelectedComponent() != attributesPanel && dbAttrs.length > 0) {
             setSelectedComponent(attributesPanel);
             attributesPanel.setVisible(true);
         }
-            
+
         attributesPanel.selectAttributes(dbAttrs);
     }
 }

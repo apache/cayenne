@@ -45,8 +45,8 @@ public class CreateEmbAttributeUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateAttributeAction action = (CreateAttributeAction) actionManager
-                .getAction(CreateAttributeAction.getActionName());
+        CreateAttributeAction action = actionManager
+                .getAction(CreateAttributeAction.class);
         for (EmbeddableAttribute attr : attrs) {
             action.createEmbAttribute(embeddable, attr);
         }
@@ -54,8 +54,8 @@ public class CreateEmbAttributeUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAttributeAction action = (RemoveAttributeAction) actionManager
-                .getAction(RemoveAttributeAction.getActionName());
+        RemoveAttributeAction action = actionManager
+                .getAction(RemoveAttributeAction.class);
         action.removeEmbeddableAttributes(embeddable, attrs);
     }
 }

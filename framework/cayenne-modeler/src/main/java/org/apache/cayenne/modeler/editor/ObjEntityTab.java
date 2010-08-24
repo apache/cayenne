@@ -47,6 +47,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
@@ -128,15 +129,16 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
-        Application app = Application.getInstance();
-        toolBar.add(app.getAction(ObjEntitySyncAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CreateAttributeAction.getActionName()).buildButton());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+
+        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
         toolBar
-                .add(app
-                        .getAction(CreateRelationshipAction.getActionName())
+                .add(actionManager
+                        .getAction(CreateRelationshipAction.class)
                         .buildButton());
         toolBar.addSeparator();
-        toolBar.add(app.getAction(ShowGraphEntityAction.getActionName()).buildButton());
+        toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets
@@ -171,7 +173,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         dbEntityCombo = CayenneWidgetFactory.createComboBox();
         superEntityCombo = CayenneWidgetFactory.createComboBox();
-        
+
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);
 
@@ -264,25 +266,31 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 // Change super-entity
                 CayenneMapEntry superEntity = (CayenneMapEntry) superEntityCombo
                         .getSelectedItem();
-                String name = (superEntity==null || superEntity == noInheritance) ? null : superEntity
-                        .getName();
+                String name = (superEntity == null || superEntity == noInheritance)
+                        ? null
+                        : superEntity.getName();
 
                 ObjEntity entity = mediator.getCurrentObjEntity();
 
                 if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
                     List<ObjAttribute> duplicateAttributes = null;
-                    if(name!=null){
+                    if (name != null) {
                         duplicateAttributes = getDuplicatedAttributes((ObjEntity) superEntity);
                     }
 
-                    if (duplicateAttributes!=null && duplicateAttributes.size() > 0) {
-                        DuplicatedAttributesDialog.showDialog(Application.getFrame(), duplicateAttributes, (ObjEntity) superEntity, entity);
-                        if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
+                    if (duplicateAttributes != null && duplicateAttributes.size() > 0) {
+                        DuplicatedAttributesDialog.showDialog(
+                                Application.getFrame(),
+                                duplicateAttributes,
+                                (ObjEntity) superEntity,
+                                entity);
+                        if (DuplicatedAttributesDialog.getResult().equals(
+                                DuplicatedAttributesDialog.CANCEL_RESULT)) {
                             superEntityCombo.setSelectedItem(entity.getSuperEntity());
                             superClassName.setText(entity.getSuperClassName());
                             return;
                         }
-                        
+
                     }
                     entity.setSuperEntityName(name);
 
@@ -295,7 +303,9 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                     // fire both EntityEvent and EntityDisplayEvent;
                     // the later is to update attribute and relationship display
 
-                    DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
+                    DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                            .getProject()
+                            .getRootNode();
                     DataMap map = mediator.getCurrentDataMap();
 
                     mediator.fireObjEntityEvent(new EntityEvent(this, entity));
@@ -314,7 +324,9 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 // Jump to DbEntity of the current ObjEntity
                 DbEntity entity = mediator.getCurrentObjEntity().getDbEntity();
                 if (entity != null) {
-                    DataChannelDescriptor dom = (DataChannelDescriptor)mediator.getProject().getRootNode();
+                    DataChannelDescriptor dom = (DataChannelDescriptor) mediator
+                            .getProject()
+                            .getRootNode();
                     mediator.fireDbEntityDisplayEvent(new EntityDisplayEvent(
                             this,
                             entity,
@@ -386,7 +398,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 }
             }
         });
-        
+
         isAbstract.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -413,7 +425,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         superClassName.setText(entity.getSuperClassName());
         className.setText(entity.getClassName());
         readOnly.setSelected(entity.isReadOnly());
-        
+
         isAbstract.setSelected(entity.isAbstract());
         serverOnly.setSelected(entity.isServerOnly());
         clientClassName.setText(entity.getClientClassName());
@@ -628,8 +640,11 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
     public void processExistingSelection(EventObject e) {
 
-        EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator
-                .getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
+        EntityDisplayEvent ede = new EntityDisplayEvent(
+                this,
+                mediator.getCurrentObjEntity(),
+                mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
         mediator.fireObjEntityDisplayEvent(ede);
     }
 
@@ -641,18 +656,18 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         initFromModel(entity);
     }
-    
+
     private List<ObjAttribute> getDuplicatedAttributes(ObjEntity superEntity) {
         List<ObjAttribute> result = new LinkedList<ObjAttribute>();
 
         ObjEntity entity = mediator.getCurrentObjEntity();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
-            if(superEntity.getAttribute(attribute.getName()) != null) {
+            if (superEntity.getAttribute(attribute.getName()) != null) {
                 result.add(attribute);
             }
         }
-        
+
         return result;
     }
 

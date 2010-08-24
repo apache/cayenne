@@ -26,12 +26,10 @@ import org.apache.cayenne.pref.RenamedPreferences;
 
 import java.awt.event.ActionEvent;
 
-/**
- */
 public class ExitAction extends ProjectAction {
 
     public static String getActionName() {
-    	return "Exit";
+        return "Exit";
     }
 
     /**
@@ -49,19 +47,19 @@ public class ExitAction extends ProjectAction {
         if (!checkSaveOnClose()) {
             return;
         }
-		
-		//stop logging before JVM shutdown to prevent hanging
-		LogConsole.getInstance().stopLogging();
 
-		RenamedPreferences.removeNewPreferences();
-		
-		// goodbye
+        // stop logging before JVM shutdown to prevent hanging
+        LogConsole.getInstance().stopLogging();
+
+        RenamedPreferences.removeNewPreferences();
+
+        // goodbye
         System.exit(0);
     }
 
     /**
-    * Always returns true.
-    */
+     * Always returns true.
+     */
     public boolean enableForPath(ConfigurationNode object) {
         return true;
     }

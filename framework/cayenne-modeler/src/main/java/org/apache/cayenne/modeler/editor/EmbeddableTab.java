@@ -36,6 +36,7 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
@@ -65,8 +66,8 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
-        Application app = Application.getInstance();
-        toolBar.add(app.getAction(CreateAttributeAction.getActionName()).buildButton());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 

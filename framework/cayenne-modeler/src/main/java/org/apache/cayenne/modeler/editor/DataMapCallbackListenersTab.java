@@ -34,17 +34,16 @@ import org.apache.cayenne.modeler.event.DataMapDisplayListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-
 /**
  * Tab for editing default entity listeners of a DataMap
- *
+ * 
  * @version 1.0 Oct 28, 2007
  */
 public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
 
-
     /**
      * Constructor
+     * 
      * @param mediator mediator instance
      */
     public DataMapCallbackListenersTab(ProjectController mediator) {
@@ -56,8 +55,10 @@ public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
      */
     protected CallbackMap getCallbackMap() {
         String listenerClass = (String) listenerClassCombo.getSelectedItem();
-        return listenerClass == null ? 
-               null : mediator.getCurrentDataMap().getDefaultEntityListener(listenerClass).getCallbackMap();
+        return listenerClass == null ? null : mediator
+                .getCurrentDataMap()
+                .getDefaultEntityListener(listenerClass)
+                .getCallbackMap();
     }
 
     /**
@@ -67,28 +68,28 @@ public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
         return mediator.getCurrentDataMap().getDefaultEntityListeners();
     }
 
-
     /**
      * init listeners
      */
     protected void initController() {
         super.initController();
-        mediator.addDataMapDisplayListener(
-                new DataMapDisplayListener() {
-                    /**
-                     * process DapaMap selection
-                     * @param e event
-                     */
-                    public void currentDataMapChanged(DataMapDisplayEvent e) {
-                        if (isVisible()) {
-                            rebuildListenerClassCombo(null);
-                            updateCallbackTypeCounters();
-                            mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
-                            rebuildTable();
-                        }
-                    }
+        mediator.addDataMapDisplayListener(new DataMapDisplayListener() {
+
+            /**
+             * process DapaMap selection
+             * 
+             * @param e event
+             */
+            public void currentDataMapChanged(DataMapDisplayEvent e) {
+                if (isVisible()) {
+                    rebuildListenerClassCombo(null);
+                    updateCallbackTypeCounters();
+                    mediator.setCurrentCallbackType((CallbackType) callbackTypeCombo
+                            .getSelectedItem());
+                    rebuildTable();
                 }
-        );
+            }
+        });
     }
 
     /**
@@ -96,7 +97,8 @@ public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
      */
     protected CayenneAction getCreateCallbackMethodAction() {
         Application app = Application.getInstance();
-        return app.getAction(CreateCallbackMethodForDataMapListenerAction.ACTION_NAME);
+        return app.getActionManager().getAction(
+                CreateCallbackMethodForDataMapListenerAction.class);
     }
 
     /**
@@ -104,22 +106,24 @@ public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
      */
     protected AbstractRemoveCallbackMethodAction getRemoveCallbackMethodAction() {
         Application app = Application.getInstance();
-        return (AbstractRemoveCallbackMethodAction) app.getAction(RemoveCallbackMethodForDataMapListenerAction.ACTION_NAME);
+        return app.getActionManager().getAction(
+                RemoveCallbackMethodForDataMapListenerAction.class);
     }
 
     /**
      * @return action for removing entity listeners
      */
     protected CayenneAction getRemoveEntityListenerAction() {
-        return Application.getInstance().getAction(RemoveEntityListenerForDataMapAction.getActionName());
+        return Application.getInstance().getActionManager().getAction(
+                RemoveEntityListenerForDataMapAction.class);
     }
-
 
     /**
      * @return action for creating entity listeners
      */
     public CayenneAction getCreateEntityListenerAction() {
-        return Application.getInstance().getAction(CreateDataMapEntityListenerAction.getActionName());
+        return Application.getInstance().getActionManager().getAction(
+                CreateDataMapEntityListenerAction.class);
     }
 
     protected EntityListener getEntityListener(String listenerClass) {
@@ -128,7 +132,8 @@ public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
 
     @Override
     protected void initTablePreferences() {
-        tablePreferences = new TableColumnPreferences(this.getClass(),"datamap/callbackTable");
+        tablePreferences = new TableColumnPreferences(
+                this.getClass(),
+                "datamap/callbackTable");
     }
 }
-

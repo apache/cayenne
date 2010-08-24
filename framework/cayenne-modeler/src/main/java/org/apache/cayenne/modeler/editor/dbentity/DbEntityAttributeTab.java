@@ -70,7 +70,7 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
     protected ProjectController mediator;
     protected CayenneTable table;
     private TableColumnPreferences tablePreferences;
-    
+
     public DbEntityAttributeTab(ProjectController temp_mediator) {
         super();
         mediator = temp_mediator;
@@ -86,44 +86,48 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         JToolBar toolBar = new JToolBar();
         Application app = Application.getInstance();
-        toolBar.add(app.getAction(CreateObjEntityAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CreateAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(DbEntitySyncAction.getActionName()).buildButton());
+        toolBar.add(app.getActionManager().getAction(CreateObjEntityAction.class).buildButton());
+        toolBar.add(app.getActionManager().getAction(CreateAttributeAction.class).buildButton());
+        toolBar.add(app.getActionManager().getAction(DbEntitySyncAction.class).buildButton());
 
         toolBar.addSeparator();
 
         toolBar.addSeparator();
-        toolBar.add(app.getAction(RemoveAttributeAction.getActionName()).buildButton());
-        
+        toolBar.add(app.getActionManager().getAction(RemoveAttributeAction.class).buildButton());
+
         toolBar.addSeparator();
-        toolBar.add(app.getAction(CutAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(CopyAttributeAction.getActionName()).buildButton());
-        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
+        toolBar.add(app.getActionManager().getAction(CutAttributeAction.class).buildButton());
+        toolBar.add(app.getActionManager().getAction(CopyAttributeAction.class).buildButton());
+        toolBar.add(app.getActionManager().getAction(PasteAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
-        
+
         // Create table with two columns and no rows.
         table = new CayenneTable();
-        
-        tablePreferences = new TableColumnPreferences(DbAttributeTableModel.class, "attributeTable");
-        
+
+        tablePreferences = new TableColumnPreferences(
+                DbAttributeTableModel.class,
+                "attributeTable");
+
         /**
          * Create and install a popup
          */
         JPopupMenu popup = new JPopupMenu();
-        popup.add(app.getAction(RemoveAttributeAction.getActionName()).buildMenu());
-        
+        popup.add(app.getActionManager().getAction(RemoveAttributeAction.class).buildMenu());
+
         popup.addSeparator();
-        popup.add(app.getAction(CutAttributeAction.getActionName()).buildMenu());
-        popup.add(app.getAction(CopyAttributeAction.getActionName()).buildMenu());
-        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
-        
+        popup.add(app.getActionManager().getAction(CutAttributeAction.class).buildMenu());
+        popup.add(app.getActionManager().getAction(CopyAttributeAction.class).buildMenu());
+        popup.add(app.getActionManager().getAction(PasteAction.class).buildMenu());
+
         TablePopupHandler.install(table, popup);
-        
+
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
-        
-        mediator.getApplication().getActionManager().setupCCP(table, 
-                CutAttributeAction.getActionName(), CopyAttributeAction.getActionName());
+
+        mediator.getApplication().getActionManager().setupCutCopyPaste(
+                table,
+                CutAttributeAction.class,
+                CopyAttributeAction.class);
     }
 
     public void valueChanged(ListSelectionEvent e) {
@@ -134,20 +138,21 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
      * Selects specified attributes.
      */
     public void selectAttributes(DbAttribute[] attrs) {
-        ModelerUtil.updateActions(attrs.length,  
-                RemoveAttributeAction.getActionName(),
-                CutAttributeAction.getActionName(),
-                CopyAttributeAction.getActionName());
+        ModelerUtil.updateActions(
+                attrs.length,
+                RemoveAttributeAction.class,
+                CutAttributeAction.class,
+                CopyAttributeAction.class);
 
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
-        
+
         List<?> listAttrs = model.getObjectList();
         int[] newSel = new int[attrs.length];
-        
+
         for (int i = 0; i < attrs.length; i++) {
             newSel[i] = listAttrs.indexOf(attrs[i]);
         }
-        
+
         table.select(newSel);
     }
 
@@ -155,29 +160,29 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
-            
+
         DbAttribute[] attrs = new DbAttribute[0];
         if (table.getSelectedRow() >= 0) {
-           DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
-           
-           int[] sel = table.getSelectedRows();
-           attrs = new DbAttribute[sel.length];
-           
-           for (int i = 0; i < sel.length; i++) {
-               attrs[i] = model.getAttribute(sel[i]);
-           }
-    
-           if (sel.length == 1) {
-               // scroll table
-               UIUtil.scrollToSelectedRow(table);
-           }
+            DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
+
+            int[] sel = table.getSelectedRows();
+            attrs = new DbAttribute[sel.length];
+
+            for (int i = 0; i < sel.length; i++) {
+                attrs[i] = model.getAttribute(sel[i]);
+            }
+
+            if (sel.length == 1) {
+                // scroll table
+                UIUtil.scrollToSelectedRow(table);
+            }
         }
         mediator.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(
-               this,
-               attrs,
-               mediator.getCurrentDbEntity(),
-               mediator.getCurrentDataMap(),
-               (DataChannelDescriptor)mediator.getProject().getRootNode()));
+                this,
+                attrs,
+                mediator.getCurrentDbEntity(),
+                mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode()));
     }
 
     public void dbAttributeChanged(AttributeEvent e) {
@@ -197,13 +202,12 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
     }
 
     public void currentDbEntityChanged(EntityDisplayEvent e) {
-        
+
         DbEntity entity = (DbEntity) e.getEntity();
         if (entity != null && e.isEntityChanged()) {
             rebuildTable(entity);
         }
-        
-        
+
         // if an entity was selected on a tree,
         // unselect currently selected row
         if (e.isUnselectAttributes()) {
@@ -217,21 +221,21 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
-        
+
         TableColumn col = table.getColumnModel().getColumn(model.typeColumnInd());
-                
+
         String[] types = TypesMapping.getDatabaseTypes();
         JComboBox comboBox = CayenneWidgetFactory.createComboBox(types, true);
-        
+
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
-        
+
         AutoCompletion.enable(comboBox);
-        
+
         col.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
 
         table.getSelectionModel().addListSelectionListener(this);
-        
+
         tablePreferences.bind(table, null, null, null, model.nameColumnInd(), true);
     }
 }

@@ -32,9 +32,7 @@ import org.apache.cayenne.project.Project;
  */
 public class RevertAction extends CayenneAction {
 
-    
-
-	public static String getActionName() {
+    public static String getActionName() {
         return "Revert";
     }
 
@@ -49,20 +47,24 @@ public class RevertAction extends CayenneAction {
             return;
         }
 
-       boolean isNew = project.getConfigurationResource() == null; 
-        
+        boolean isNew = project.getConfigurationResource() == null;
+
         CayenneModelerController controller = getApplication().getFrameController();
 
         // close ... don't use OpenProjectAction close method as it will ask for save, we
         // don't want that here
         controller.projectClosedAction();
 
-        File fileDirectory = new File(project.getConfigurationResource().getURL().getPath());
+        File fileDirectory = new File(project
+                .getConfigurationResource()
+                .getURL()
+                .getPath());
         // reopen existing
         if (!isNew && fileDirectory.isFile()) {
-            OpenProjectAction openAction = (OpenProjectAction) controller
+            OpenProjectAction openAction = controller
                     .getApplication()
-                    .getAction(OpenProjectAction.getActionName());
+                    .getActionManager()
+                    .getAction(OpenProjectAction.class);
             openAction.openProject(fileDirectory);
         }
         // create new
@@ -70,12 +72,10 @@ public class RevertAction extends CayenneAction {
             throw new CayenneRuntimeException("Only ApplicationProjects are supported.");
         }
         else {
-            controller
-                    .getApplication()
-                    .getAction(NewProjectAction.getActionName())
-                    .performAction(e);
+            controller.getApplication().getActionManager().getAction(
+                    NewProjectAction.class).performAction(e);
         }
-        
+
         application.getUndoManager().discardAllEdits();
     }
 }

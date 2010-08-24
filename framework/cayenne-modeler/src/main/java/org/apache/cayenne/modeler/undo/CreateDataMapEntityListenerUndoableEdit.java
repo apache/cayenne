@@ -26,13 +26,13 @@ import org.apache.cayenne.map.EntityListener;
 import org.apache.cayenne.modeler.action.CreateDataMapEntityListenerAction;
 import org.apache.cayenne.modeler.action.RemoveEntityListenerForDataMapAction;
 
-
 public class CreateDataMapEntityListenerUndoableEdit extends CayenneUndoableEdit {
 
     private DataMap dataMap;
     private EntityListener listener;
 
-    public CreateDataMapEntityListenerUndoableEdit(DataMap dataMap, EntityListener listener) {
+    public CreateDataMapEntityListenerUndoableEdit(DataMap dataMap,
+            EntityListener listener) {
         this.dataMap = dataMap;
         this.listener = listener;
     }
@@ -44,15 +44,15 @@ public class CreateDataMapEntityListenerUndoableEdit extends CayenneUndoableEdit
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateDataMapEntityListenerAction action = (CreateDataMapEntityListenerAction) actionManager
-                .getAction(CreateDataMapEntityListenerAction.getActionName());
+        CreateDataMapEntityListenerAction action = actionManager
+                .getAction(CreateDataMapEntityListenerAction.class);
         action.createMapListener(dataMap, listener);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveEntityListenerForDataMapAction action = (RemoveEntityListenerForDataMapAction) actionManager
-                .getAction(RemoveEntityListenerForDataMapAction.getActionName());
+        RemoveEntityListenerForDataMapAction action = actionManager
+                .getAction(RemoveEntityListenerForDataMapAction.class);
 
         action.removeEntityListener(dataMap, listener.getClassName());
     }

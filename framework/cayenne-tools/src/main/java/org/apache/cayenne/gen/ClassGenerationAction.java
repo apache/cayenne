@@ -41,9 +41,6 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.NullLogSystem;
 
-/**
- * @since 3.0
- */
 public class ClassGenerationAction {
     static final String TEMPLATES_DIR_NAME = "templates/v1_2/";
 

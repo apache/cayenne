@@ -71,8 +71,13 @@ public class CutAttributeAction extends CutAction implements MultipleObjectsActi
      */
     @Override
     public void performAction(ActionEvent e) {
-        application.getAction(CopyAttributeAction.getActionName()).performAction(e);
-        ((RemoveAction) application.getAction(RemoveAttributeAction.getActionName()))
+        application
+                .getActionManager()
+                .getAction(CopyAttributeAction.class)
+                .performAction(e);
+        application
+                .getActionManager()
+                .getAction(RemoveAttributeAction.class)
                 .performAction(e, false);
     }
 }

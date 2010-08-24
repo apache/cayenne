@@ -66,8 +66,13 @@ public class CutRelationshipAction extends CutAction implements MultipleObjectsA
      */
     @Override
     public void performAction(ActionEvent e) {
-        application.getAction(CopyRelationshipAction.getActionName()).performAction(e);
-        ((RemoveAction) application.getAction(RemoveRelationshipAction.getActionName()))
+        application
+                .getActionManager()
+                .getAction(CopyRelationshipAction.class)
+                .performAction(e);
+        application
+                .getActionManager()
+                .getAction(RemoveRelationshipAction.class)
                 .performAction(e, false);
     }
 }
