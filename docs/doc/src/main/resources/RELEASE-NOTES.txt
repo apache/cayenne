@@ -48,6 +48,7 @@ CAY-1439 ClassDescriptor refactoring - replacing returned iterators with collect
 CAY-1446 Remove DataContextFactory, replace it with DI-enabled ObjectContextFactory
 CAY-1447 Switch ROP client to dependency injection
 CAY-1474 Straightening CayenneModeler platform-specific builds
+CAY-1475 Move cayenne-modeler module out of framework/ and out of the assembly binary
 
 Bug Fixes Since 3.0:
 
