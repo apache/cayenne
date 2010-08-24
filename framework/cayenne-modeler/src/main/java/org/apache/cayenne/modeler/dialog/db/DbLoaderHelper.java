@@ -62,7 +62,9 @@ public class DbLoaderHelper {
 
     // TODO: this is a temp hack... need to delegate to DbAdapter, or configurable in
     // preferences...
-    private static final Collection EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
+    private static final Collection<String> EXCLUDED_TABLES = Arrays.asList(
+            "AUTO_PK_SUPPORT",
+            "auto_pk_support");
 
     static DbLoaderMergeDialog mergeDialog;
 
@@ -80,12 +82,12 @@ public class DbLoaderHelper {
     protected boolean loadProcedures;
     protected boolean meaningfulPk;
     protected String procedureNamePattern;
-    protected List schemas;
+    protected List<String> schemas;
 
     protected String loadStatusNote;
-    
+
     /**
-     * Obj Entities which were added to project during reverse engineering 
+     * ObjEntities which were added to project during reverse engineering
      */
     protected List<ObjEntity> addedObjEntities;
 
@@ -136,8 +138,9 @@ public class DbLoaderHelper {
         stoppingReverseEngineering = false;
 
         // load schemas...
-        LongRunningTask loadSchemasTask = new LoadSchemasTask(Application
-                .getFrame(), "Loading Schemas");
+        LongRunningTask loadSchemasTask = new LoadSchemasTask(
+                Application.getFrame(),
+                "Loading Schemas");
 
         loadSchemasTask.startAndWait();
 
@@ -176,12 +179,13 @@ public class DbLoaderHelper {
         this.meaningfulPk = dialog.isMeaningfulPk();
         this.procedureNamePattern = dialog.getProcedureNamePattern();
         this.addedObjEntities = new ArrayList<ObjEntity>();
-        
+
         this.loader.setNamingStrategy(dialog.getNamingStrategy());
 
         // load DataMap...
-        LongRunningTask loadDataMapTask = new LoadDataMapTask(Application
-                .getFrame(), "Reengineering DB");
+        LongRunningTask loadDataMapTask = new LoadDataMapTask(
+                Application.getFrame(),
+                "Reengineering DB");
         loadDataMapTask.startAndWait();
     }
 
@@ -191,8 +195,11 @@ public class DbLoaderHelper {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
-                JOptionPane.showMessageDialog(Application.getFrame(), th
-                        .getMessage(), message, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        Application.getFrame(),
+                        th.getMessage(),
+                        message,
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -240,8 +247,7 @@ public class DbLoaderHelper {
                 entity.getDataMap().removeDbEntity(entity.getName());
             }
             else if (existingMap) {
-                mediator
-                        .fireDbEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
+                mediator.fireDbEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
             }
         }
 
@@ -271,8 +277,10 @@ public class DbLoaderHelper {
             checkCanceled();
 
             if (existingMap) {
-                mediator.fireObjEntityEvent(new EntityEvent(Application
-                        .getFrame(), entity, MapEvent.REMOVE));
+                mediator.fireObjEntityEvent(new EntityEvent(
+                        Application.getFrame(),
+                        entity,
+                        MapEvent.REMOVE));
             }
         }
 
@@ -356,7 +364,9 @@ public class DbLoaderHelper {
 
             if (!existingMap) {
                 dataMap = (DataMap) NamedObjectFactory.createObject(DataMap.class, null);
-                dataMap.setName(NamedObjectFactory.createName(DataMap.class, (DataChannelDescriptor)mediator.getProject().getRootNode()));
+                dataMap.setName(NamedObjectFactory.createName(
+                        DataMap.class,
+                        (DataChannelDescriptor) mediator.getProject().getRootNode()));
                 dataMap.setDefaultSchema(schemaName);
             }
 
@@ -369,9 +379,9 @@ public class DbLoaderHelper {
             try {
                 loader.setCreatingMeaningfulPK(meaningfulPk);
                 loader.loadDataMapFromDB(schemaName, tableNamePattern, dataMap);
-                
+
                 /**
-                 * Update default rules for relationships 
+                 * Update default rules for relationships
                  */
                 for (ObjEntity addedObjEntity : addedObjEntities) {
                     DeleteRuleUpdater.updateObjEntity(addedObjEntity);
@@ -408,11 +418,10 @@ public class DbLoaderHelper {
                         Application.getFrame(),
                         dataMap,
                         MapEvent.CHANGE));
-                mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(
-                        Application.getFrame(),
-                        dataMap,
-                        (DataChannelDescriptor)mediator.getProject().getRootNode(),
-                        mediator.getCurrentDataNode()));
+                mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(Application
+                        .getFrame(), dataMap, (DataChannelDescriptor) mediator
+                        .getProject()
+                        .getRootNode(), mediator.getCurrentDataNode()));
             }
             else {
                 mediator.addDataMap(Application.getFrame(), dataMap);

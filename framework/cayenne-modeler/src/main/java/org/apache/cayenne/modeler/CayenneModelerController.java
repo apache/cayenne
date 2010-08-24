@@ -118,7 +118,7 @@ public class CayenneModelerController extends CayenneController {
     }
 
     private boolean processDropAction(Transferable transferable) {
-        List fileList;
+        List<File> fileList;
         try {
             fileList = (List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
         }
@@ -126,7 +126,7 @@ public class CayenneModelerController extends CayenneController {
             return false;
         }
 
-        File transferFile = (File) fileList.get(0);
+        File transferFile = fileList.get(0);
 
         if (transferFile.isFile()) {
             

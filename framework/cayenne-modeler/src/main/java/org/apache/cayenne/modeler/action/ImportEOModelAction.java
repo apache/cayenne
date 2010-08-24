@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.action;
 
 import java.awt.Component;
@@ -40,6 +39,7 @@ import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -77,7 +77,7 @@ public class ImportEOModelAction extends CayenneAction {
     public ImportEOModelAction(Application application) {
         super(getActionName(), application);
     }
-    
+
     public String getIconName() {
         return "icon-eomodel.gif";
     }
@@ -160,9 +160,9 @@ public class ImportEOModelAction extends CayenneAction {
                         (String) connection.get("driver"));
                 if (cayenneAdapter != null) {
                     try {
-                        Class adapterClass = getApplication()
+                        Class<DbAdapter> adapterClass = getApplication()
                                 .getClassLoadingService()
-                                .loadClass(cayenneAdapter);
+                                .loadClass(DbAdapter.class, cayenneAdapter);
                         node.setAdapterType(adapterClass.toString());
                     }
                     catch (Throwable ex) {
@@ -170,12 +170,12 @@ public class ImportEOModelAction extends CayenneAction {
                     }
                 }
 
-                node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
+                node
+                        .setDataSourceFactoryType(XMLPoolingDataSourceFactory.class
+                                .getName());
 
                 DataSourceInfo dsi = node.getDataSourceDescriptor();
-                
-                
-                
+
                 dsi.setDataSourceUrl(keyAsString(connection, "URL"));
                 dsi.setJdbcDriver(keyAsString(connection, "driver"));
                 dsi.setPassword(keyAsString(connection, "password"));
@@ -186,10 +186,15 @@ public class ImportEOModelAction extends CayenneAction {
             getProjectController().fireDataNodeEvent(
                     new DataNodeEvent(this, node, MapEvent.ADD));
             getProjectController().fireDataNodeDisplayEvent(
-                    new DataNodeDisplayEvent(this, (DataChannelDescriptor)getProjectController().getProject().getRootNode(), node));
+                    new DataNodeDisplayEvent(
+                            this,
+                            (DataChannelDescriptor) getProjectController()
+                                    .getProject()
+                                    .getRootNode(),
+                            node));
         }
     }
-    
+
     // CAY-246 - if user name or password is all numeric, it will
     // be returned as number, so we can't cast dictionary keys to String
     private String keyAsString(Map map, String key) {
@@ -258,9 +263,11 @@ public class ImportEOModelAction extends CayenneAction {
                 entityEvent.setId(MapEvent.REMOVE);
                 mediator.fireDbEntityEvent(entityEvent);
             }
-            
+
             // queries
-            Collection addedQueries = CollectionUtils.subtract(newQueries, originalQueries);
+            Collection addedQueries = CollectionUtils.subtract(
+                    newQueries,
+                    originalQueries);
             it = addedQueries.iterator();
             while (it.hasNext()) {
                 Query q = (Query) it.next();
@@ -269,22 +276,27 @@ public class ImportEOModelAction extends CayenneAction {
                 mediator.fireQueryEvent(queryEvent);
             }
 
-            Collection removedQueries = CollectionUtils.subtract(originalQueries, newQueries);
+            Collection removedQueries = CollectionUtils.subtract(
+                    originalQueries,
+                    newQueries);
             it = removedQueries.iterator();
             while (it.hasNext()) {
-            	Query q = (Query) it.next();
+                Query q = (Query) it.next();
                 queryEvent.setQuery(q);
                 queryEvent.setId(MapEvent.REMOVE);
                 mediator.fireQueryEvent(queryEvent);
             }
 
             mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(Application
-                    .getFrame(), map, (DataChannelDescriptor)mediator.getProject().getRootNode(), mediator
-                    .getCurrentDataNode()));
+                    .getFrame(), map, (DataChannelDescriptor) mediator
+                    .getProject()
+                    .getRootNode(), mediator.getCurrentDataNode()));
         }
         else {
             // fix DataMap name, as there maybe a map with the same name already
-            DataChannelDescriptor domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
+            DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                    .getProject()
+                    .getRootNode();
             map.setName(NamedObjectFactory.createName(DataMap.class, domain, map
                     .getName()));
 

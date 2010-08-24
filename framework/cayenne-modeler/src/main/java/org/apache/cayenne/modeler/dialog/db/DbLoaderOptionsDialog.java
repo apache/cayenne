@@ -54,6 +54,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * Dialog for selecting database reverse-engineering parameters.
  */
 public class DbLoaderOptionsDialog extends CayenneDialog {
+
     private static final Log logObj = LogFactory.getLog(DbLoaderOptionsDialog.class);
 
     public static final int CANCEL = 0;
@@ -68,20 +69,20 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     protected JLabel procedureLabel;
     protected JButton selectButton;
     protected JButton cancelButton;
-    
+
     /**
      * Combobox for naming strategy
      */
     protected JComboBox strategyCombo;
-    
+
     protected NamingStrategy strategy;
-    
+
     protected int choice;
 
     /**
      * Creates and initializes new ChooseSchemaDialog.
      */
-    public DbLoaderOptionsDialog(Collection schemas, String dbUserName,
+    public DbLoaderOptionsDialog(Collection<String> schemas, String dbUserName,
             boolean loadProcedures) {
         super(Application.getFrame(), "Reengineer DB Schema: Select Options");
 
@@ -105,7 +106,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         tableNamePatternField = new JTextField();
         procNamePatternField = new JTextField();
         loadProcedures = new JCheckBox();
-        meaningfulPk = new JCheckBox(); 
+        meaningfulPk = new JCheckBox();
         strategyCombo = new JComboBox();
         strategyCombo.setEditable(true);
 
@@ -121,8 +122,8 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         builder.append("Load Procedures:", loadProcedures);
         procedureLabel = builder.append("Procedure Name Pattern:", procNamePatternField);
         builder.append("Naming Strategy:", strategyCombo);
-        builder.append("Meaningful PK",meaningfulPk);
-        
+        builder.append("Meaningful PK", meaningfulPk);
+
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(selectButton);
@@ -167,8 +168,10 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         this.procNamePatternField.setText(DbLoader.WILDCARD);
         this.procNamePatternField.setEnabled(shouldLoadProcedures);
         this.procedureLabel.setEnabled(shouldLoadProcedures);
-        
-        Vector<String> arr = NamingStrategyPreferences.getInstance().getLastUsedStrategies();
+
+        Vector<String> arr = NamingStrategyPreferences
+                .getInstance()
+                .getLastUsedStrategies();
         strategyCombo.setModel(new DefaultComboBoxModel(arr));
 
         boolean showSchemaSelector = schemas != null && !schemas.isEmpty();
@@ -197,27 +200,34 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
 
     private void processSelect() {
         try {
-            ClassLoadingService classLoader = Application.getInstance().getClassLoadingService();
+            ClassLoadingService classLoader = Application
+                    .getInstance()
+                    .getClassLoadingService();
             String strategyClass = (String) strategyCombo.getSelectedItem();
-            
-            this.strategy = (NamingStrategy) classLoader.loadClass(strategyClass).newInstance();
-            
+
+            this.strategy = classLoader
+                    .loadClass(NamingStrategy.class, strategyClass)
+                    .newInstance();
+
             /**
              * Be user-friendly and update preferences with specified strategy
              */
-            NamingStrategyPreferences.getInstance().addToLastUsedStrategies(strategyClass);
+            NamingStrategyPreferences
+                    .getInstance()
+                    .addToLastUsedStrategies(strategyClass);
         }
         catch (Throwable th) {
             logObj.error("Error in " + getClass().getName(), th);
-     
-            JOptionPane.showMessageDialog(this,
+
+            JOptionPane.showMessageDialog(
+                    this,
                     "Naming Strategy Initialization Error: " + th.getMessage(),
                     "Naming Strategy Initialization Error",
                     JOptionPane.ERROR_MESSAGE);
-                    
+
             return;
         }
-        
+
         choice = SELECT;
         setVisible(false);
     }
@@ -246,7 +256,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     public boolean isLoadingProcedures() {
         return loadProcedures.isSelected();
     }
-    
+
     public boolean isMeaningfulPk() {
         return meaningfulPk.isSelected();
     }
@@ -258,7 +268,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         return "".equals(procNamePatternField.getText()) ? null : procNamePatternField
                 .getText();
     }
-    
+
     /**
      * Returns configured naming strategy
      */

@@ -72,7 +72,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
                     .getInstance()
                     .getClassLoadingService();
 
-            return (NamingStrategy) classLoader.loadClass(strategyClass).newInstance();
+            return classLoader.loadClass(NamingStrategy.class, strategyClass).newInstance();
         }
         catch (Throwable th) {
             logObj.error("Error in " + getClass().getName(), th);

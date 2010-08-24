@@ -284,8 +284,10 @@ public class DataSourcePreferences extends CayenneController {
                 classLoader.setPathFiles(CollectionUtils.collect(details, transformer));
             }
 
-            Class driverClass = classLoader.loadClass(currentDataSource.getJdbcDriver());
-            Driver driver = (Driver) driverClass.newInstance();
+            Class<Driver> driverClass = classLoader.loadClass(
+                    Driver.class,
+                    currentDataSource.getJdbcDriver());
+            Driver driver = driverClass.newInstance();
 
             // connect via Cayenne DriverDataSource - it addresses some driver issues...
             Connection c = new DriverDataSource(

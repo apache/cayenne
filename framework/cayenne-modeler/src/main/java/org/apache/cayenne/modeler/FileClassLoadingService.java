@@ -45,8 +45,9 @@ public class FileClassLoadingService implements ClassLoadingService {
     /**
      * Returns class for a given name, loading it if needed from configured locations.
      */
-    public synchronized Class loadClass(String className) throws ClassNotFoundException {
-        return nonNullClassLoader().loadClass(className);
+    @SuppressWarnings("all")
+    public synchronized <T> Class<T> loadClass(Class<T> interfaceType, String className) throws ClassNotFoundException {
+        return (Class<T>) nonNullClassLoader().loadClass(className);
     }
 
     /**

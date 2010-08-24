@@ -41,7 +41,7 @@ public class DBConnectionInfo extends CayennePreference {
     public static final String URL_PROPERTY = "url";
     public static final String USER_NAME_PROPERTY = "userName";
     private static final String DB_CONNECTION_INFO = "dbConnectionInfo";
-    
+
     public static final String ID_PK_COLUMN = "id";
 
     private String nodeName;
@@ -186,7 +186,7 @@ public class DBConnectionInfo extends CayennePreference {
         }
 
         try {
-            return (DbAdapter) classLoader.loadClass(adapterClassName).newInstance();
+            return classLoader.loadClass(DbAdapter.class, adapterClassName).newInstance();
         }
         catch (Throwable th) {
             th = Util.unwindException(th);
@@ -214,7 +214,7 @@ public class DBConnectionInfo extends CayennePreference {
         Driver driver;
 
         try {
-            driver = (Driver) classLoader.loadClass(getJdbcDriver()).newInstance();
+            driver = classLoader.loadClass(Driver.class, getJdbcDriver()).newInstance();
         }
         catch (Throwable th) {
             th = Util.unwindException(th);

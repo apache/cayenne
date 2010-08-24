@@ -39,7 +39,7 @@ public class ComponentGeometry extends CayennePreference {
     public static final String X_PROPERTY = "x";
     public static final String Y_PROPERTY = "y";
     
-    public ComponentGeometry(Class className, String path) {
+    public ComponentGeometry(Class<?> className, String path) {
         setCurrentNodeForPreference(className, path);
     };
     

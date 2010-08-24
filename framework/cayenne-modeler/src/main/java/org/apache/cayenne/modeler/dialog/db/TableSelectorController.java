@@ -30,7 +30,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project.Project;
@@ -51,7 +50,7 @@ public class TableSelectorController extends CayenneController {
     protected DbEntity table;
     protected List<DbEntity> tables;
     protected int permanentlyExcludedCount;
-    protected Map excludedTables;
+    protected Map<String, DbEntity> excludedTables;
     protected List<DbEntity> selectableTablesList;
 
     protected Map<String, String> validationMessages;
@@ -59,13 +58,11 @@ public class TableSelectorController extends CayenneController {
     public TableSelectorController(ProjectController parent) {
         super(parent);
         this.view = new TableSelectorView();
-        this.excludedTables = new HashMap();
-        this.selectableTablesList = new ArrayList();
+        this.excludedTables = new HashMap<String, DbEntity>();
+        this.selectableTablesList = new ArrayList<DbEntity>();
         this.validationMessages = new HashMap<String, String>();
         initController();
     }
-
-    // ----- properties -----
 
     public Component getView() {
         return view;
@@ -81,11 +78,11 @@ public class TableSelectorController extends CayenneController {
     /**
      * Returns DbEntities that are excluded from DB generation.
      */
-    public Collection getExcludedTables() {
+    public Collection<DbEntity> getExcludedTables() {
         return excludedTables.values();
     }
 
-    public List getTables() {
+    public List<DbEntity> getTables() {
         return tables;
     }
 
@@ -169,7 +166,7 @@ public class TableSelectorController extends CayenneController {
      * ValidationInfo objects describing the problems.
      */
     public void updateTables(DataMap dataMap) {
-        this.tables = new ArrayList(dataMap.getDbEntities());
+        this.tables = new ArrayList<DbEntity>(dataMap.getDbEntities());
 
         excludedTables.clear();
         validationMessages.clear();
@@ -190,19 +187,19 @@ public class TableSelectorController extends CayenneController {
         if (validationResult.getFailures().size() > 0) {
 
             for (ValidationFailure nextProblem : validationResult.getFailures()) {
-                Entity failedEntity = null;
+                DbEntity failedEntity = null;
 
                 if (nextProblem.getSource() instanceof DbAttribute) {
                     DbAttribute failedAttribute = (DbAttribute) nextProblem.getSource();
-                    failedEntity = failedAttribute.getEntity();
+                    failedEntity = (DbEntity) failedAttribute.getEntity();
                 }
                 else if (nextProblem.getSource() instanceof DbRelationship) {
                     DbRelationship failedRelationship = (DbRelationship) nextProblem
                             .getSource();
-                    failedEntity = failedRelationship.getSourceEntity();
+                    failedEntity = (DbEntity) failedRelationship.getSourceEntity();
                 }
                 else if (nextProblem.getSource() instanceof DbEntity) {
-                    failedEntity = (Entity) nextProblem.getSource();
+                    failedEntity = (DbEntity) nextProblem.getSource();
                 }
 
                 if (failedEntity == null) {
