@@ -19,10 +19,11 @@
 package org.apache.cayenne.modeler.dialog.validator;
 
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.map.ObjAttribute;
@@ -161,8 +162,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
     private void updateTable() {
         TableColumn actionColumn = attributesTable.getColumnModel().getColumn(DuplicatedAttributeTableModel.ACTION);
-        JComboBox actionsCombo = CayenneWidgetFactory.createComboBox(new String[]{DELETE_ACTION, RENAME_ACTION}, false);
-        actionColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(actionsCombo));
+        JComboBox actionsCombo = Application.getWidgetFactory().createComboBox(new String[]{DELETE_ACTION, RENAME_ACTION}, false);
+        actionColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(actionsCombo));
     }
 
     private void applyChanges() {

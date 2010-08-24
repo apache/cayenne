@@ -34,6 +34,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 
 /**
@@ -42,16 +43,16 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
  * 
  */
 public class CayenneTable extends JTable {
-    
+
     private SortButtonRenderer renderer = new SortButtonRenderer();
     protected TableHeaderSortingListener tableHeaderListener;
-    
+
     public CayenneTable() {
         super();
         this.setRowHeight(25);
         this.setRowMargin(3);
         JTableHeader header = getTableHeader();
-        tableHeaderListener = new TableHeaderSortingListener(header,renderer);
+        tableHeaderListener = new TableHeaderSortingListener(header, renderer);
         header.addMouseListener(tableHeaderListener);
         setSelectionModel(new CayenneListSelectionModel());
     }
@@ -75,8 +76,10 @@ public class CayenneTable extends JTable {
     protected void createDefaultEditors() {
         super.createDefaultEditors();
 
-        JTextField textField = CayenneWidgetFactory.createTextField(0);
-        final DefaultCellEditor textEditor = CayenneWidgetFactory.createCellEditor(textField);
+        JTextField textField = new JTextField(20);
+        final DefaultCellEditor textEditor = Application
+                .getWidgetFactory()
+                .createCellEditor(textField);
         textEditor.setClickCountToStart(1);
 
         setDefaultEditor(Object.class, textEditor);
@@ -119,10 +122,9 @@ public class CayenneTable extends JTable {
             getSelectionModel().setSelectionInterval(index, index);
         }
     }
-    
+
     /**
-     * Selects multiple rows at once. Fires not more than only one 
-     * ListSelectionEvent
+     * Selects multiple rows at once. Fires not more than only one ListSelectionEvent
      */
     public void select(int[] rows) {
         ((CayenneListSelectionModel) getSelectionModel()).setSelection(rows);
@@ -150,14 +152,15 @@ public class CayenneTable extends JTable {
         cancelEditing();
         super.tableChanged(e);
     }
-    
+
     /**
-     * ListSelectionModel for Cayenne table. Has a method to set multiple
-     * rows selection at once.
+     * ListSelectionModel for Cayenne table. Has a method to set multiple rows selection
+     * at once.
      */
     class CayenneListSelectionModel extends DefaultListSelectionModel {
+
         boolean fireForbidden = false;
-        
+
         /**
          * Selects selection on multiple rows at once. Fires no more than one
          * ListSelectionEvent
@@ -173,7 +176,7 @@ public class CayenneTable extends JTable {
                     break;
                 }
             }
-            
+
             if (!selectionChanged) {
                 for (int i = getMinSelectionIndex(); i < getMaxSelectionIndex(); i++) {
                     if (isSelectedIndex(i)) {
@@ -184,33 +187,33 @@ public class CayenneTable extends JTable {
                                 break;
                             }
                         }
-                        
-                        if(!inNewSelection) {
+
+                        if (!inNewSelection) {
                             selectionChanged = true;
                             break;
                         }
                     }
                 }
             }
-            
+
             if (!selectionChanged) {
                 return;
             }
-            
+
             fireForbidden = true;
-            
+
             clearSelection();
             for (int row : rows) {
                 if (row >= 0 && row < getRowCount()) {
                     addRowSelectionInterval(row, row);
                 }
             }
-            
+
             fireForbidden = false;
-            
+
             fireValueChanged(getValueIsAdjusting());
         }
-        
+
         @Override
         protected void fireValueChanged(int firstIndex, int lastIndex, boolean isAdjusting) {
             if (!fireForbidden) {
@@ -220,7 +223,10 @@ public class CayenneTable extends JTable {
     }
 
     public void sort(int column, boolean isAscend) {
-        tableHeaderListener.sortByDefinedColumn(convertColumnIndexToView(column), column, isAscend);
+        tableHeaderListener.sortByDefinedColumn(
+                convertColumnIndexToView(column),
+                column,
+                isAscend);
     }
 
     public void setSortPreferenceSaver(TableColumnPreferences tableColumnPreferences) {

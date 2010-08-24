@@ -36,8 +36,8 @@ import javax.swing.JTextField;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.CapsStrategy;
@@ -62,8 +62,7 @@ public class SQLTemplateMainTab extends JPanel {
     private static final String UPPER_CAPS_LABEL = "Force Upper Case";
 
     private static final CapsStrategy[] LABEL_CAPITALIZATION = {
-            CapsStrategy.DEFAULT, CapsStrategy.LOWER,
-            CapsStrategy.UPPER
+            CapsStrategy.DEFAULT, CapsStrategy.LOWER, CapsStrategy.UPPER
     };
 
     private static final Map<CapsStrategy, String> labelCapsLabels = new HashMap<CapsStrategy, String>();
@@ -216,7 +215,7 @@ public class SQLTemplateMainTab extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = CayenneWidgetFactory.createUndoableComboBox();
+            labelCase = Application.getWidgetFactory().createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(new ActionListener() {

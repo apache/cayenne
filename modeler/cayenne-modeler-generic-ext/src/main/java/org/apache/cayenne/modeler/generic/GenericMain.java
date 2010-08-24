@@ -16,39 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.modeler;
+package org.apache.cayenne.modeler.generic;
 
 import java.util.Collection;
 
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.init.OSXCayenneModelerModule;
+import org.apache.cayenne.modeler.Main;
 
-/**
- * Main class to start CayenneModeler on MacOSX.
- */
-public class OSXMain extends Main {
+public class GenericMain extends Main {
 
-	/**
-	 * Main method that starts the CayenneModeler.
-	 */
-	public static void main(String[] args) {
-		try {
-			new OSXMain(args).launch();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
+    /**
+     * Main method that starts the CayenneModeler.
+     */
+    public static void main(String[] args) {
+        try {
+            new GenericMain(args).launch();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
-	protected OSXMain(String[] args) {
-		super(args);
-	}
+    protected GenericMain(String[] args) {
+        super(args);
+    }
 
-	@Override
-	protected Collection<Module> appendModules(Collection<Module> modules) {
-		modules = super.appendModules(modules);
-		modules.add(new OSXCayenneModelerModule());
-		return modules;
-	}
+    @Override
+    protected Collection<Module> appendModules(Collection<Module> modules) {
+        modules = super.appendModules(modules);
+        modules.add(new GenericCayenneModelerModule());
+        return modules;
+    }
 }

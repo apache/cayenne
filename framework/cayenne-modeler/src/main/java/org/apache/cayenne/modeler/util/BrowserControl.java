@@ -23,19 +23,11 @@ import java.lang.reflect.Method;
 
 /**
  * Opens a URL in the system default browser.
- * 
  */
 public class BrowserControl {
 
-    // The default system browser under windows.
     private static final String WIN_PATH = "rundll32";
-    // The flag to display a url.
     private static final String WIN_FLAG = "url.dll,FileProtocolHandler";
-
-    // The default browser under unix.
-    // private static final String UNIX_PATH = "netscape";
-    // The flag to display a url.
-    // private static final String UNIX_FLAG = "-remote openURL";
 
     /**
      * Display a file in the system browser. If you want to display a file, you must
@@ -63,8 +55,12 @@ public class BrowserControl {
                         "netscape"
                 };
                 for (String browser : browsers) {
-                    if (Runtime.getRuntime().exec(new String[] {"which", browser}).waitFor() == 0) {
-                        Runtime.getRuntime().exec(new String[] {browser, url});
+                    if (Runtime.getRuntime().exec(new String[] {
+                            "which", browser
+                    }).waitFor() == 0) {
+                        Runtime.getRuntime().exec(new String[] {
+                                browser, url
+                        });
                         break;
                     }
                 }

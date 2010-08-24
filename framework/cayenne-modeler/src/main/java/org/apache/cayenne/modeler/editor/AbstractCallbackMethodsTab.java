@@ -56,7 +56,6 @@ import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,18 +95,20 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     /**
      * Dropdown for callback type selection. Contains fixed list of 7 callback types.
      */
-    protected JComboBox callbackTypeCombo = CayenneWidgetFactory.createComboBox(
-            new Object[] {
-                    new CallbackType(LifecycleEvent.POST_ADD, "post-add"),
-                    new CallbackType(LifecycleEvent.PRE_PERSIST, "pre-persist"),
-                    new CallbackType(LifecycleEvent.POST_PERSIST, "post-persist"),
-                    new CallbackType(LifecycleEvent.PRE_UPDATE, "pre-update"),
-                    new CallbackType(LifecycleEvent.POST_UPDATE, "post-update"),
-                    new CallbackType(LifecycleEvent.PRE_REMOVE, "pre-remove"),
-                    new CallbackType(LifecycleEvent.POST_REMOVE, "post-remove"),
-                    new CallbackType(LifecycleEvent.POST_LOAD, "post-load"),
-            },
-            false);
+    protected JComboBox callbackTypeCombo = Application
+            .getWidgetFactory()
+            .createComboBox(
+                    new Object[] {
+                            new CallbackType(LifecycleEvent.POST_ADD, "post-add"),
+                            new CallbackType(LifecycleEvent.PRE_PERSIST, "pre-persist"),
+                            new CallbackType(LifecycleEvent.POST_PERSIST, "post-persist"),
+                            new CallbackType(LifecycleEvent.PRE_UPDATE, "pre-update"),
+                            new CallbackType(LifecycleEvent.POST_UPDATE, "post-update"),
+                            new CallbackType(LifecycleEvent.PRE_REMOVE, "pre-remove"),
+                            new CallbackType(LifecycleEvent.POST_REMOVE, "post-remove"),
+                            new CallbackType(LifecycleEvent.POST_LOAD, "post-load"),
+                    },
+                    false);
 
     /**
      * constructor

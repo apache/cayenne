@@ -54,7 +54,6 @@ import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -180,10 +179,12 @@ public class EmbeddableAttributeTab extends JPanel implements
 
         TableColumn typeColumn = table.getColumnModel().getColumn(
                 EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(ModelerUtil
-                .getRegisteredTypeNames(), false);
+        JComboBox javaTypesCombo = Application.getWidgetFactory().createComboBox(
+                ModelerUtil.getRegisteredTypeNames(),
+                false);
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
+        typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
+                javaTypesCombo));
 
         tablePreferences.bind(
                 table,

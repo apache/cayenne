@@ -29,6 +29,7 @@ import java.util.Iterator;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Attribute;
@@ -36,24 +37,23 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
-import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * Model for the Object Entity attributes and for Obj to DB Attribute Mapping tables.
@@ -239,7 +239,8 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
             CayenneTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table, CayenneWidgetFactory
+        this.cellEditor = new CellEditorForAttributeTable(table, Application
+                .getWidgetFactory()
                 .createComboBox(nameAttr, true));
         this.table = table;
         return cellEditor;
@@ -269,7 +270,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             String newType = attribute.getType();
             String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
             Collection<String> registeredTypesList = Arrays.asList(registeredTypes);
-            
+
             if (oldType != null
                     && newType != null
                     && !(registeredTypesList.contains(oldType) == registeredTypesList
@@ -304,8 +305,11 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
                 mediator.fireObjEntityEvent(new EntityEvent(this, ent, MapEvent.CHANGE));
 
-                EntityDisplayEvent ev = new EntityDisplayEvent(this, mediator
-                        .getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
+                EntityDisplayEvent ev = new EntityDisplayEvent(
+                        this,
+                        mediator.getCurrentObjEntity(),
+                        mediator.getCurrentDataMap(),
+                        (DataChannelDescriptor) mediator.getProject().getRootNode());
 
                 mediator.fireObjEntityDisplayEvent(ev);
 
@@ -320,7 +324,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                         attributeNew,
                         mediator.getCurrentObjEntity(),
                         mediator.getCurrentDataMap(),
-                        (DataChannelDescriptor)mediator.getProject().getRootNode());
+                        (DataChannelDescriptor) mediator.getProject().getRootNode());
 
                 mediator.fireObjAttributeDisplayEvent(eventAttr);
             }
@@ -417,7 +421,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                 Collection<String> attributeComboForRow = new ArrayList<String>();
                 attributeComboForRow.addAll(nameAttr);
                 attributeComboForRow.add(getAttribute(i).getDbAttributePath());
-                JComboBox comboBoxForRow = CayenneWidgetFactory.createComboBox(
+                JComboBox comboBoxForRow = Application.getWidgetFactory().createComboBox(
                         attributeComboForRow,
                         true);
 

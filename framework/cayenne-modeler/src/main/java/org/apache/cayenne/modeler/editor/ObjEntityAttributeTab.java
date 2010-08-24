@@ -34,13 +34,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.ImageIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -72,7 +72,6 @@ import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -217,10 +216,12 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         TableColumn typeColumn = table.getColumnModel().getColumn(
                 ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
-        JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(typeNames
-                .toArray(), false);
+        JComboBox javaTypesCombo = Application.getWidgetFactory().createComboBox(
+                typeNames.toArray(),
+                false);
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
+        typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
+                javaTypesCombo));
 
         if (model.getEntity().getDbEntity() != null) {
             Collection<String> nameAttr = ModelerUtil.getDbAttributeNames(mediator, model

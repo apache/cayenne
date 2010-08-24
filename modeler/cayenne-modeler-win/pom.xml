@@ -61,6 +61,11 @@
 			<artifactId>cayenne-wocompat-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-modeler-generic-ext</artifactId>
+			<version>${version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -77,7 +82,7 @@
 					<name>CayenneModeler</name>
 					<longName>${version}</longName>
 					<destDir>target/modeler</destDir>
-					<mainClass>org.apache.cayenne.modeler.Main</mainClass>
+					<mainClass>org.apache.cayenne.modeler.generic.GenericMain</mainClass>
 					<icon>src/japplication/resources/CayenneModeler.ico</icon>
 					<os>windows</os>
 					<jvm>1.5+</jvm>

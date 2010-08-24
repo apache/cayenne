@@ -66,8 +66,10 @@ class EmbeddableValidator extends ConfigurationNodeValidator {
                     continue;
                 }
 
+                // note that lookuo below will return the same embeddable due to the
+                // shared namespace if not conflicts exist
                 Embeddable conflictingEmbeddable = nextMap.getEmbeddable(name);
-                if (conflictingEmbeddable != null) {
+                if (conflictingEmbeddable != null && conflictingEmbeddable != embeddable) {
                     addFailure(
                             validationResult,
                             embeddable,

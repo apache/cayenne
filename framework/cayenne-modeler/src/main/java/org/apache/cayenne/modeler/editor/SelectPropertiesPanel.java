@@ -36,8 +36,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -111,7 +111,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
             }
         };
 
-        cacheStrategy = CayenneWidgetFactory.createUndoableComboBox();
+        cacheStrategy = Application.getWidgetFactory().createUndoableComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
         cacheGroups = new TextAdapter(new JTextField()) {
 
@@ -141,26 +141,30 @@ public abstract class SelectPropertiesPanel extends JPanel {
      */
     public void initFromModel(Query query) {
         DefaultComboBoxModel cacheModel = new DefaultComboBoxModel(CACHE_POLICIES);
-        
+
         // TODO (andrey, 15/12/09)
-        //do not use metadata, as it triggers CDO class loading (CAY-1334)
-        //to avoid this evil hack, we need some common interface for SelectQuery, EJBQL
+        // do not use metadata, as it triggers CDO class loading (CAY-1334)
+        // to avoid this evil hack, we need some common interface for SelectQuery, EJBQL
         // & SQLTemplate, but 3.0 API is frozen now
-        QueryCacheStrategy selectedStrategy = (QueryCacheStrategy)
-            PropertyUtils.getProperty(query, "cacheStrategy");
+        QueryCacheStrategy selectedStrategy = (QueryCacheStrategy) PropertyUtils
+                .getProperty(query, "cacheStrategy");
 
         cacheModel.setSelectedItem(selectedStrategy != null
                 ? selectedStrategy
                 : QueryCacheStrategy.getDefaultStrategy());
         cacheStrategy.setModel(cacheModel);
 
-        String[] cacheGroupsArray = (String[]) PropertyUtils.getProperty(query, "cacheGroups");
+        String[] cacheGroupsArray = (String[]) PropertyUtils.getProperty(
+                query,
+                "cacheGroups");
         cacheGroups.setText(toCacheGroupsString(cacheGroupsArray));
         setCacheGroupsEnabled(selectedStrategy != null
                 && selectedStrategy != QueryCacheStrategy.NO_CACHE);
 
-        fetchOffset.setText(String.valueOf(PropertyUtils.getProperty(query, "fetchOffset")));
-        fetchLimit.setText(String.valueOf(PropertyUtils.getProperty(query, "fetchLimit")));
+        fetchOffset.setText(String.valueOf(PropertyUtils
+                .getProperty(query, "fetchOffset")));
+        fetchLimit
+                .setText(String.valueOf(PropertyUtils.getProperty(query, "fetchLimit")));
         pageSize.setText(String.valueOf(PropertyUtils.getProperty(query, "pageSize")));
     }
 

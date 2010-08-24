@@ -41,6 +41,7 @@ import org.apache.cayenne.modeler.dialog.pref.ClasspathPreferences;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.project.Project;
@@ -65,6 +66,8 @@ import org.scopemvc.view.swing.SwingView;
  * </ul>
  */
 public class Application {
+
+    public static final String DEFAULT_MESSAGE_BUNDLE = "org.apache.cayenne.modeler.cayennemodeler-strings";
 
     public static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
     public static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
@@ -97,6 +100,11 @@ public class Application {
 
     public static void setInstance(Application instance) {
         Application.instance = instance;
+    }
+
+    // TODO: must be injectable directly in components
+    public static WidgetFactory getWidgetFactory() {
+        return instance.getInjector().getInstance(WidgetFactory.class);
     }
 
     // static methods that should probably go away eventually...
@@ -184,7 +192,7 @@ public class Application {
 
         // TODO: this will go away if switch away from Scope
         // force Scope to use CayenneModeler properties
-        UIStrings.setPropertiesName(ModelerConstants.DEFAULT_MESSAGE_BUNDLE);
+        UIStrings.setPropertiesName(DEFAULT_MESSAGE_BUNDLE);
         ViewContext.clearThreadContext();
 
         this.undoManager = new CayenneUndoManager(this);

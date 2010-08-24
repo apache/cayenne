@@ -35,8 +35,8 @@ import javax.swing.table.TableModel;
 import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
@@ -165,7 +165,7 @@ public class MergerTokenSelectorController extends CayenneController {
         TableColumnModel columnModel = view.getTokens().getColumnModel();
         
         // dropdown for direction column
-        JComboBox directionCombo = CayenneWidgetFactory.createComboBox(dirs, false);
+        JComboBox directionCombo = Application.getWidgetFactory().createComboBox(dirs, false);
         directionCombo.setEditable(false);
         TableColumn directionColumn = columnModel.getColumn(
                 MergerTokenTableModel.COL_DIRECTION);

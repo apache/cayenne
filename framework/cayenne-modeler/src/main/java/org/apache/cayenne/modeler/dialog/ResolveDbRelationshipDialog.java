@@ -47,12 +47,10 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
@@ -112,8 +110,8 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
     private void initView() {
 
         // create widgets
-        name = CayenneWidgetFactory.createTextField(25);
-        reverseName = CayenneWidgetFactory.createTextField(25);
+        name = new JTextField(25);
+        reverseName = new JTextField(25);
 
         addButton = new JButton("Add");
         addButton.setEnabled(this.editable);
@@ -127,11 +125,10 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         cancelButton.setEnabled(this.editable);
 
         table = new AttributeTable();
-        
-        
+
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablePreferences = new TableColumnPreferences(getClass(), "dbentity/dbjoinTable");
-        
+
         // assemble
         getContentPane().setLayout(new BorderLayout());
 
@@ -193,21 +190,25 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         table.setModel(new DbJoinTableModel(relationship, getMediator(), this, true));
         TableColumn sourceColumn = table.getColumnModel().getColumn(
                 DbJoinTableModel.SOURCE);
-        JComboBox comboBox = CayenneWidgetFactory.createComboBox(ModelerUtil
-                .getDbAttributeNames(getMediator(), (DbEntity) relationship
-                        .getSourceEntity()), true);
+        JComboBox comboBox = Application.getWidgetFactory().createComboBox(
+                ModelerUtil.getDbAttributeNames(getMediator(), (DbEntity) relationship
+                        .getSourceEntity()),
+                true);
 
         AutoCompletion.enable(comboBox);
-        sourceColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
+        sourceColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
+                comboBox));
 
         TableColumn targetColumn = table.getColumnModel().getColumn(
                 DbJoinTableModel.TARGET);
-        comboBox = CayenneWidgetFactory.createComboBox(ModelerUtil.getDbAttributeNames(
-                getMediator(),
-                (DbEntity) relationship.getTargetEntity()), true);
+        comboBox = Application.getWidgetFactory().createComboBox(
+                ModelerUtil.getDbAttributeNames(getMediator(), (DbEntity) relationship
+                        .getTargetEntity()),
+                true);
         AutoCompletion.enable(comboBox);
 
-        targetColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
+        targetColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
+                comboBox));
 
         if (reverseRelationship != null) {
             reverseName.setText(reverseRelationship.getName());

@@ -31,19 +31,18 @@ import javax.swing.JLabel;
 
 import org.apache.cayenne.map.EntityListener;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityListenerEvent;
 import org.apache.cayenne.modeler.event.EntityListenerListener;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 
-
 /**
- * Base abstract class for editing callback mapping on listener class
- * Adds entity listener class processing logic
- *
+ * Base abstract class for editing callback mapping on listener class Adds entity listener
+ * class processing logic
+ * 
  * @version 1.0 Oct 29, 2007
  */
 public abstract class AbstractCallbackListenersTab extends AbstractCallbackMethodsTab {
@@ -55,6 +54,7 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
 
     /**
      * Constructor
+     * 
      * @param mediator mediator instance
      */
     protected AbstractCallbackListenersTab(ProjectController mediator) {
@@ -104,87 +104,83 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
         }
     }
 
-
     /**
      * init listeners
      */
     protected void initController() {
         super.initController();
-        addComponentListener(
-                new ComponentAdapter() {
-                    public void componentShown(ComponentEvent e) {
-                        rebuildListenerClassCombo(null);
-                        mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+        addComponentListener(new ComponentAdapter() {
+
+            public void componentShown(ComponentEvent e) {
+                rebuildListenerClassCombo(null);
+                mediator.setCurrentCallbackType((CallbackType) callbackTypeCombo
+                        .getSelectedItem());
+                updateCallbackTypeCounters();
+                rebuildTable();
+            }
+        });
+
+        listenerClassCombo.addItemListener(new ItemListener() {
+
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED && isVisible()) {
+                    // detect editing
+                    if (listenerClassCombo.getSelectedIndex() == -1
+                            && listenerClassCombo.getSelectedItem() != null) {
+                        processEditedListenerClassValue((String) listenerClassCombo
+                                .getSelectedItem());
+                    }
+                    else {
+                        // just celeection changed
+                        mediator.setCurrentListenerClass((String) listenerClassCombo
+                                .getSelectedItem());
                         updateCallbackTypeCounters();
                         rebuildTable();
                     }
                 }
-        );
+            }
+        });
 
+        mediator.addEntityListenerListener(new EntityListenerListener() {
 
-        listenerClassCombo.addItemListener(
-                new ItemListener() {
-                    public void itemStateChanged(ItemEvent e) {
-                        if (e.getStateChange() == ItemEvent.SELECTED && isVisible()) {
-                            //detect editing
-                            if (listenerClassCombo.getSelectedIndex() == -1 &&
-                                listenerClassCombo.getSelectedItem() != null) {
-                                processEditedListenerClassValue((String)listenerClassCombo.getSelectedItem());
-                            }
-                            else {
-                                //just celeection changed
-                                mediator.setCurrentListenerClass((String)listenerClassCombo.getSelectedItem());
-                                updateCallbackTypeCounters();
-                                rebuildTable();
-                            }
-                        }
-                    }
+            public void entityListenerAdded(EntityListenerEvent e) {
+                if (isVisible() && getCreateEntityListenerAction() == e.getSource()) {
+                    rebuildListenerClassCombo(e.getNewName());
+                    rebuildTable();
                 }
-        );
+            }
 
-        mediator.addEntityListenerListener(
-                new EntityListenerListener() {
-                    public void entityListenerAdded(EntityListenerEvent e) {
-                        if (isVisible() && getCreateEntityListenerAction() == e.getSource()) {
-                            rebuildListenerClassCombo(e.getNewName());
-                            rebuildTable();
-                        }
-                    }
-
-                    public void entityListenerChanged(EntityListenerEvent e) {
-                        if (isVisible() && e.getSource() == AbstractCallbackListenersTab.this) {
-                            rebuildListenerClassCombo(e.getNewName());
-                            rebuildTable();
-                        }
-                    }
-
-                    public void entityListenerRemoved(EntityListenerEvent e) {
-                        if (isVisible() && getRemoveEntityListenerAction() == e.getSource()) {
-                            rebuildListenerClassCombo(null);
-                            rebuildTable();
-                        }
-                    }
+            public void entityListenerChanged(EntityListenerEvent e) {
+                if (isVisible() && e.getSource() == AbstractCallbackListenersTab.this) {
+                    rebuildListenerClassCombo(e.getNewName());
+                    rebuildTable();
                 }
-        );
+            }
+
+            public void entityListenerRemoved(EntityListenerEvent e) {
+                if (isVisible() && getRemoveEntityListenerAction() == e.getSource()) {
+                    rebuildListenerClassCombo(null);
+                    rebuildTable();
+                }
+            }
+        });
     }
 
     /**
      * rebuils listener class selection dropdown content and fires selection event
-     *
+     * 
      * @param selectedListener listener to be selected after rebuild
      */
     protected void rebuildListenerClassCombo(String selectedListener) {
         List entityListeners = getEntityListeners();
         List listenerClasses = new ArrayList();
-        if (entityListeners !=  null) {
+        if (entityListeners != null) {
             for (EntityListener entityListener : getEntityListeners()) {
                 listenerClasses.add(entityListener.getClassName());
             }
         }
 
-        listenerClassCombo.setModel(
-                new DefaultComboBoxModel(listenerClasses.toArray())
-        );
+        listenerClassCombo.setModel(new DefaultComboBoxModel(listenerClasses.toArray()));
 
         getCreateCallbackMethodAction().setEnabled(listenerClasses.size() > 0);
 
@@ -197,19 +193,19 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
             listenerClassCombo.setSelectedItem(selectedListener);
         }
 
-        mediator.setCurrentListenerClass((String)listenerClassCombo.getSelectedItem());
+        mediator.setCurrentListenerClass((String) listenerClassCombo.getSelectedItem());
 
         getRemoveEntityListenerAction().setEnabled(listenerClasses.size() > 0);
         listenerClassCombo.setEnabled(listenerClasses.size() > 0);
     }
 
-
     /**
      * adds listener class dropdown to filter bar
+     * 
      * @param builder filter forms builder
      */
     protected void buildFilter(DefaultFormBuilder builder) {
-        listenerClassCombo = CayenneWidgetFactory.createComboBox();
+        listenerClassCombo = Application.getWidgetFactory().createComboBox();
         listenerClassCombo.setEditable(true);
         builder.append(new JLabel("Listener class:"), listenerClassCombo);
         builder.nextLine();

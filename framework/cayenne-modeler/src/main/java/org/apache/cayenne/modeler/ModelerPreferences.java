@@ -55,7 +55,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
     public static final String EDITOR_LOGFILE_ENABLED = "logfileEnabled";
     public static final String EDITOR_LOGFILE = "logfile";
 
-    /*
+    /**
      * Number of items in combobox visible without scrolling
      */
     public static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;

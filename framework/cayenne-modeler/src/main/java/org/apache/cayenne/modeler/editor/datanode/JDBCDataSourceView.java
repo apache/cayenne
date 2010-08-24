@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.JTextFieldUndoable;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -34,46 +34,35 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class JDBCDataSourceView extends JPanel {
 
-    protected JTextField     driver;
-    protected JTextField     url;
-    protected JTextField     userName;
+    protected JTextField driver;
+    protected JTextField url;
+    protected JTextField userName;
     protected JPasswordField password;
 
-    protected JTextField     minConnections;
-    protected JTextField     maxConnections;
-    protected JButton        syncWithLocal;
-
-
-
-
-
-
+    protected JTextField minConnections;
+    protected JTextField maxConnections;
+    protected JButton syncWithLocal;
 
     public JDBCDataSourceView() {
 
-        driver           = CayenneWidgetFactory.createUndoableTextField();
-        url              = CayenneWidgetFactory.createUndoableTextField();
-        userName         = CayenneWidgetFactory.createUndoableTextField();
-        password         = new JPasswordField();
-        minConnections   = CayenneWidgetFactory.createUndoableTextField(6);
-        maxConnections   = CayenneWidgetFactory.createUndoableTextField(6);
-        syncWithLocal    = new JButton("Sync with Local");
+        driver = new JTextFieldUndoable();
+        url = new JTextFieldUndoable();
+        userName = new JTextFieldUndoable();
+        password = new JPasswordField();
+        minConnections = new JTextFieldUndoable(6);
+        maxConnections = new JTextFieldUndoable(6);
+        syncWithLocal = new JButton("Sync with Local");
         syncWithLocal.setToolTipText("Update from local DataSource");
-
-
 
         // assemble
         CellConstraints cc = new CellConstraints();
-//        FormLayout layout = new FormLayout(
-//                "right:80dlu, 3dlu, fill:50dlu, 3dlu, fill:74dlu, 3dlu, fill:70dlu",
-//                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
-        FormLayout layout =
-          new FormLayout("right:80dlu, 3dlu, fill:50dlu, 3dlu, fill:74dlu, 3dlu, fill:70dlu", // Columns
-                         "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); // Rows
+        FormLayout layout = new FormLayout(
+                "right:80dlu, 3dlu, fill:50dlu, 3dlu, fill:74dlu, 3dlu, fill:70dlu", // Columns
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); // Rows
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
-        
+
         builder.addSeparator("JDBC Configuration", cc.xywh(1, 1, 7, 1));
         builder.addLabel("JDBC Driver:", cc.xy(1, 3));
         builder.add(driver, cc.xywh(3, 3, 5, 1));

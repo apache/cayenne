@@ -25,11 +25,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.BrowserControl;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
 public class DocumentationAction extends CayenneAction {
-
-    
 
     public final static String getActionName() {
         return "Documentation";

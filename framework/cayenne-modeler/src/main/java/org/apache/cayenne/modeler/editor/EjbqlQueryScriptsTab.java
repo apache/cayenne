@@ -34,12 +34,13 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
+import org.apache.cayenne.swing.components.textpane.syntax.EJBQLSyntaxConstant;
 import org.apache.cayenne.util.Util;
 
 public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
@@ -47,7 +48,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     protected ProjectController mediator;
     protected JCayenneTextPane scriptArea;
     private boolean updateDisabled;
-    protected EJBQLStatementValidator  ejbqlQueryValidator = new EJBQLStatementValidator();
+    protected EJBQLStatementValidator ejbqlQueryValidator = new EJBQLStatementValidator();
 
     public EjbqlQueryScriptsTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -62,10 +63,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     private void initView() {
 
-        scriptArea = CayenneWidgetFactory.createJEJBQLTextPane();
-         
+        scriptArea = new JUndoableCayenneTextPane(new EJBQLSyntaxConstant());
         scriptArea.getDocument().addDocumentListener(this);
-
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
 
             public void changedUpdate(DocumentEvent e) {
@@ -216,7 +215,9 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     void validateEJBQL() {
         PositionException positionException = ejbqlQueryValidator.validateEJBQL(
                 getQuery(),
-                new EntityResolver(((DataChannelDescriptor)mediator.getProject().getRootNode()).getDataMaps()));
+                new EntityResolver(((DataChannelDescriptor) mediator
+                        .getProject()
+                        .getRootNode()).getDataMaps()));
         if (positionException != null) {
             if (positionException.getBeginLine() != null
                     || positionException.getBeginColumn() != null
@@ -246,7 +247,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             super("ejbql-validation-thread");
             setDaemon(true);
         }
-        
+
         public void run() {
             running = true;
             while (running) {

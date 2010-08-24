@@ -42,10 +42,10 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 
 public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
@@ -148,7 +148,8 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
             Collection<String> nameAttr,
             CayenneTable table) {
         this.table = table;
-        this.cellEditor = new CellEditorForAttributeTable(table, CayenneWidgetFactory
+        this.cellEditor = new CellEditorForAttributeTable(table, Application
+                .getWidgetFactory()
                 .createComboBox(nameAttr, true));
         return cellEditor;
     }
@@ -200,8 +201,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
         if (currentEnt != null
                 && currentEnt.getAttributes() != null
                 && dbAttributeName != null) {
-            DbAttribute dbAttr = (DbAttribute) currentEnt
-                    .getAttribute(dbAttributeName);
+            DbAttribute dbAttr = (DbAttribute) currentEnt.getAttribute(dbAttributeName);
             if (dbAttr != null) {
                 return TypesMapping.getSqlNameByType(dbAttr.getType());
             }
@@ -234,7 +234,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
                 Collection<String> attributeComboForRow = new ArrayList<String>();
                 attributeComboForRow.addAll(nameAttr);
                 attributeComboForRow.add(embAt.getDbAttributeName());
-                JComboBox comboBoxForRow = CayenneWidgetFactory.createComboBox(
+                JComboBox comboBoxForRow = Application.getWidgetFactory().createComboBox(
                         attributeComboForRow,
                         true);
 
@@ -261,47 +261,47 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
 
     @Override
     public void sortByColumn(final int sortCol, boolean isAscent) {
-        Collections.sort(embeddableList, new Comparator<EmbeddableAttribute>(){
+        Collections.sort(embeddableList, new Comparator<EmbeddableAttribute>() {
 
-                    public int compare(EmbeddableAttribute o1, EmbeddableAttribute o2) {
-                        Integer compareObjAttributesVal = compareObjAttributes(o1, o2);
-                        if(compareObjAttributesVal!=null){
-                            return compareObjAttributesVal;
-                        }
-                        String valueToCompare1 = "";
-                        String valueToCompare2 = ""; 
-                        switch(sortCol){
-                            case OBJ_ATTRIBUTE:
-                                valueToCompare1=o1.getName();
-                                valueToCompare2=o2.getName();
-                                break;
-                            case OBJ_ATTRIBUTE_TYPE:
-                                valueToCompare1=o1.getType();
-                                valueToCompare2=o2.getType();
-                                break;
-                            case DB_ATTRIBUTE:
-                                valueToCompare1=o1.getDbAttributeName();
-                                valueToCompare2=o2.getDbAttributeName();
-                                break;
-                            case DB_ATTRIBUTE_TYPE:
-                                valueToCompare1=getDBAttrType(o1.getDbAttributeName());
-                                valueToCompare2=getDBAttrType(o2.getDbAttributeName());
-                                break;
-                        }
-                        
-                        return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)? 1 : valueToCompare1.compareTo(valueToCompare2);
-                    }
-                    
-                });
-        
-        if(!isAscent){
+            public int compare(EmbeddableAttribute o1, EmbeddableAttribute o2) {
+                Integer compareObjAttributesVal = compareObjAttributes(o1, o2);
+                if (compareObjAttributesVal != null) {
+                    return compareObjAttributesVal;
+                }
+                String valueToCompare1 = "";
+                String valueToCompare2 = "";
+                switch (sortCol) {
+                    case OBJ_ATTRIBUTE:
+                        valueToCompare1 = o1.getName();
+                        valueToCompare2 = o2.getName();
+                        break;
+                    case OBJ_ATTRIBUTE_TYPE:
+                        valueToCompare1 = o1.getType();
+                        valueToCompare2 = o2.getType();
+                        break;
+                    case DB_ATTRIBUTE:
+                        valueToCompare1 = o1.getDbAttributeName();
+                        valueToCompare2 = o2.getDbAttributeName();
+                        break;
+                    case DB_ATTRIBUTE_TYPE:
+                        valueToCompare1 = getDBAttrType(o1.getDbAttributeName());
+                        valueToCompare2 = getDBAttrType(o2.getDbAttributeName());
+                        break;
+                }
+
+                return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)
+                        ? 1
+                        : valueToCompare1.compareTo(valueToCompare2);
+            }
+
+        });
+
+        if (!isAscent) {
             Collections.reverse(embeddableList);
         }
-        
-            
-        
+
     }
-    
+
     private Integer compareObjAttributes(EmbeddableAttribute o1, EmbeddableAttribute o2) {
         if ((o1 == null && o2 == null) || o1 == o2) {
             return 0;
@@ -350,5 +350,5 @@ class BoxCellRenderer implements ListCellRenderer {
     public void setNotActiveColumn(int notActiveColumn) {
         this.notActiveColumn = notActiveColumn;
     }
-   
+
 }

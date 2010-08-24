@@ -39,8 +39,8 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
@@ -90,7 +90,7 @@ public class SelectQueryMainTab extends JPanel {
             }
         };
 
-        queryRoot = CayenneWidgetFactory.createComboBox();
+        queryRoot = Application.getWidgetFactory().createComboBox();
         AutoCompletion.enable(queryRoot);
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
 

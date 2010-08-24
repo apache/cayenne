@@ -34,8 +34,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.query.Query;
@@ -111,7 +111,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         dataObjects = new JCheckBox();
 
-        entities = CayenneWidgetFactory.createUndoableComboBox();
+        entities = Application.getWidgetFactory().createUndoableComboBox();
         entities.setRenderer(CellRenderers.listRendererWithIcons());
 
         this.setLayout(new BorderLayout());
@@ -124,7 +124,9 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
      */
     public void initFromModel(Query query) {
         super.initFromModel(query);
-        EntityResolver entRes = new EntityResolver(((DataChannelDescriptor)mediator.getProject().getRootNode()).getDataMaps());
+        EntityResolver entRes = new EntityResolver(((DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode()).getDataMaps());
         boolean fetchingDO = !query.getMetaData(entRes).isFetchingDataRows();
         dataObjects.setSelected(fetchingDO);
 

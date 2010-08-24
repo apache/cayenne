@@ -19,24 +19,13 @@
 
 package org.apache.cayenne.modeler;
 
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-
 /**
  * Defines constants used in the modeler.
- * 
  */
 public interface ModelerConstants {
 
     /** Defines path to the images. */
     public static final String RESOURCE_PATH = "org/apache/cayenne/modeler/images/";
 
-    public static final String DEFAULT_MESSAGE_BUNDLE = "org.apache.cayenne.modeler.cayennemodeler-strings";
-
     public static final String TITLE = "CayenneModeler";
-    public static final String DEFAULT_LAF_NAME = PlasticXPLookAndFeel.class.getName();
-
-    // note that previous default - "Desert Blue" theme doesn't support Chinese and
-    // Japanese chars
-    public static final String DEFAULT_THEME_NAME = "Sky Bluer";
-
 }

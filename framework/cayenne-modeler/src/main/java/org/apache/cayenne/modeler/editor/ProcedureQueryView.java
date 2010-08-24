@@ -37,10 +37,10 @@ import javax.swing.JTextField;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
@@ -60,14 +60,13 @@ import com.jgoodies.forms.layout.RowSpec;
 /**
  */
 public class ProcedureQueryView extends JPanel {
-    
+
     private static final String DEFAULT_CAPS_LABEL = "Database Default";
     private static final String LOWER_CAPS_LABEL = "Force Lower Case";
     private static final String UPPER_CAPS_LABEL = "Force Upper Case";
 
     private static final CapsStrategy[] LABEL_CAPITALIZATION = {
-            CapsStrategy.DEFAULT, CapsStrategy.LOWER,
-            CapsStrategy.UPPER
+            CapsStrategy.DEFAULT, CapsStrategy.LOWER, CapsStrategy.UPPER
     };
 
     private static final Map<CapsStrategy, String> labelCapsLabels = new HashMap<CapsStrategy, String>();
@@ -100,7 +99,7 @@ public class ProcedureQueryView extends JPanel {
             }
         };
 
-        queryRoot = CayenneWidgetFactory.createUndoableComboBox();
+        queryRoot = Application.getWidgetFactory().createUndoableComboBox();
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
@@ -158,7 +157,6 @@ public class ProcedureQueryView extends JPanel {
 
         ProcedureQuery procedureQuery = (ProcedureQuery) query;
 
-     
         properties.setEnabled(true);
         name.setText(procedureQuery.getName());
 
@@ -248,7 +246,7 @@ public class ProcedureQueryView extends JPanel {
             mediator.fireQueryEvent(new QueryEvent(this, procedureQuery));
         }
     }
-    
+
     final class LabelCapsRenderer extends DefaultListCellRenderer {
 
         public Component getListCellRendererComponent(
@@ -261,7 +259,7 @@ public class ProcedureQueryView extends JPanel {
             return super.getListCellRendererComponent(list, object, arg2, arg3, arg4);
         }
     }
-    
+
     final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel {
 
         private JComboBox labelCase;
@@ -271,7 +269,7 @@ public class ProcedureQueryView extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = CayenneWidgetFactory.createUndoableComboBox();
+            labelCase = Application.getWidgetFactory().createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(new ActionListener() {

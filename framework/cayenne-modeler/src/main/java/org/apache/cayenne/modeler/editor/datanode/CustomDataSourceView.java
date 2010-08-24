@@ -24,20 +24,18 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.JTextFieldUndoable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
- */
 public class CustomDataSourceView extends JPanel {
 
     protected JTextField locationHint;
 
     public CustomDataSourceView() {
 
-        locationHint = CayenneWidgetFactory.createUndoableTextField();
+        locationHint = new JTextFieldUndoable();
 
         // assemble
         FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");

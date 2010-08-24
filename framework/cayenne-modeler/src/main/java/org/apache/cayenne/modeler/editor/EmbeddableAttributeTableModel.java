@@ -25,10 +25,10 @@ import java.util.Comparator;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
@@ -51,7 +51,7 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
         this.embeddable = embeddable;
 
         // order using local comparator
-       // Collections.sort(objectList, new EmbeddableAttributeComparator());
+        // Collections.sort(objectList, new EmbeddableAttributeComparator());
     }
 
     public EmbeddableAttribute getEmbeddableAttribute(int row) {
@@ -67,15 +67,18 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
     @Override
     public void setUpdatedValueAt(Object value, int row, int col) {
         EmbeddableAttribute attribute = getEmbeddableAttribute(row);
-        EmbeddableAttributeEvent event = new EmbeddableAttributeEvent(eventSource, embeddable, attribute);
+        EmbeddableAttributeEvent event = new EmbeddableAttributeEvent(
+                eventSource,
+                embeddable,
+                attribute);
         String path = null;
         Collection<String> nameAttr = null;
-        
+
         if (col == OBJ_ATTRIBUTE) {
             event.setOldName(attribute.getName());
             ProjectUtil.setEmbeddableAttributeName(attribute, value != null ? value
-             .toString()
-             .trim() : null);
+                    .toString()
+                    .trim() : null);
 
             fireTableCellUpdated(row, col);
         }
@@ -87,7 +90,7 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
             attribute.setDbAttributeName(value != null ? value.toString() : null);
             fireTableCellUpdated(row, col);
         }
-        
+
         mediator.fireEmbeddableAttributeEvent(event);
     }
 
@@ -125,10 +128,12 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
         }
     }
 
-    public CellEditorForAttributeTable setCellEditor(Collection<String> nameAttr, CayenneTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table, CayenneWidgetFactory.createComboBox(
-                nameAttr,
-                true));
+    public CellEditorForAttributeTable setCellEditor(
+            Collection<String> nameAttr,
+            CayenneTable table) {
+        this.cellEditor = new CellEditorForAttributeTable(table, Application
+                .getWidgetFactory()
+                .createComboBox(nameAttr, true));
         return cellEditor;
     }
 
@@ -164,7 +169,7 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
 
     @Override
     public void sortByColumn(int sortCol, boolean isAscent) {
-        switch(sortCol){
+        switch (sortCol) {
             case OBJ_ATTRIBUTE:
                 sortByElementProperty("name", isAscent);
                 break;

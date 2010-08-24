@@ -29,8 +29,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.JTextFieldUndoable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -52,13 +53,13 @@ public class MainDataNodeView extends JPanel {
     public MainDataNodeView(final ProjectController projectController) {
 
         // create widgets
-        this.dataNodeName = CayenneWidgetFactory.createUndoableTextField();
+        this.dataNodeName = new JTextFieldUndoable();
 
-        this.factories = CayenneWidgetFactory.createUndoableComboBox();
+        this.factories = Application.getWidgetFactory().createUndoableComboBox();
 
-        this.localDataSources = CayenneWidgetFactory.createUndoableComboBox();
+        this.localDataSources = Application.getWidgetFactory().createUndoableComboBox();
 
-        this.schemaUpdateStrategy = CayenneWidgetFactory.createUndoableComboBox();
+        this.schemaUpdateStrategy = Application.getWidgetFactory().createUndoableComboBox();
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
 

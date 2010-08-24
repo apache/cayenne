@@ -62,7 +62,6 @@ import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneCellEditor;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -117,8 +116,9 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         JToolBar toolBar = new JToolBar();
 
         ActionManager actionManager = Application.getInstance().getActionManager();
-        toolBar.add(actionManager.getAction(
-                CreateProcedureParameterAction.class).buildButton());
+        toolBar.add(actionManager
+                .getAction(CreateProcedureParameterAction.class)
+                .buildButton());
         removeParameterButton = actionManager.getAction(
                 RemoveProcedureParameterAction.class).buildButton();
         toolBar.add(removeParameterButton);
@@ -171,12 +171,11 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         popup.add(moveDownMenu);
 
         popup.addSeparator();
-        popup.add(actionManager
-                .getAction(CutProcedureParameterAction.class)
-                .buildMenu());
-        popup.add(actionManager
-                .getAction(CopyProcedureParameterAction.class)
-                .buildMenu());
+        popup.add(actionManager.getAction(CutProcedureParameterAction.class).buildMenu());
+        popup
+                .add(actionManager
+                        .getAction(CopyProcedureParameterAction.class)
+                        .buildMenu());
         popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
@@ -295,15 +294,17 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         TableColumn typesColumn = table.getColumnModel().getColumn(
                 ProcedureParameterTableModel.PARAMETER_TYPE);
-        JComboBox typesEditor = CayenneWidgetFactory.createComboBox(TypesMapping
-                .getDatabaseTypes(), true);
+        JComboBox typesEditor = Application.getWidgetFactory().createComboBox(
+                TypesMapping.getDatabaseTypes(),
+                true);
         AutoCompletion.enable(typesEditor);
-        typesColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(typesEditor));
+        typesColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
+                typesEditor));
 
         // direction column tweaking
         TableColumn directionColumn = table.getColumnModel().getColumn(
                 ProcedureParameterTableModel.PARAMETER_DIRECTION);
-        JComboBox directionEditor = CayenneWidgetFactory.createComboBox(
+        JComboBox directionEditor = Application.getWidgetFactory().createComboBox(
                 ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES,
                 false);
         directionEditor.setEditable(false);

@@ -42,8 +42,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
@@ -139,7 +139,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
         keys.add(0, DEFAULT_LABEL);
         scripts.setModel(new DefaultComboBoxModel(keys.toArray()));
         
-        scriptArea = CayenneWidgetFactory.createJEditTextArea();
+        scriptArea = Application.getWidgetFactory().createJEditTextArea();
         
         scriptArea.setTokenMarker(SQL_TEMPLATE_MARKER);
         scriptArea.getDocument().addDocumentListener(this);

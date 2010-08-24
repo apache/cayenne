@@ -23,17 +23,17 @@ import javax.swing.event.UndoableEditListener;
 
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 
-class JTextFieldUndoable extends JTextField {
+public class JTextFieldUndoable extends JTextField {
     
     private UndoableEditListener undoListener;
 
-    JTextFieldUndoable() {
+    public JTextFieldUndoable() {
         super();
         this.undoListener = new JTextFieldUndoListener(this);
         this.getDocument().addUndoableEditListener(this.undoListener);
     }
     
-    JTextFieldUndoable(int size) {
+    public JTextFieldUndoable(int size) {
         super(size);
         this.undoListener = new JTextFieldUndoListener(this);
         this.getDocument().addUndoableEditListener(this.undoListener);

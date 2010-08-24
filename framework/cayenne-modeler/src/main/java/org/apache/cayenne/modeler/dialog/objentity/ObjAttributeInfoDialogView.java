@@ -38,11 +38,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.editor.dbentity.DbAttributeTableModel;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -94,7 +93,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.currentPathLabel = new JLabel();
         this.sourceEntityLabel = new JLabel();
 
-        this.type = CayenneWidgetFactory.createComboBox(ModelerUtil
+        this.type = Application.getWidgetFactory().createComboBox(ModelerUtil
                 .getRegisteredTypeNames(), false);
         AutoCompletion.enable(type, false, true);
         type.getRenderer();

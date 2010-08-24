@@ -24,11 +24,11 @@ import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
 
-class JCayenneTextPaneUndoable extends JCayenneTextPane {
+public class JUndoableCayenneTextPane extends JCayenneTextPane {
 
     private UndoableEditListener undoListener;
 
-    JCayenneTextPaneUndoable(SyntaxConstant syntaxConstant) {
+    public JUndoableCayenneTextPane(SyntaxConstant syntaxConstant) {
         super(syntaxConstant);
 
         this.undoListener = new JTextFieldUndoListener(this.getPane());

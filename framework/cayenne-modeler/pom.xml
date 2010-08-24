@@ -70,11 +70,6 @@
 
 		<dependency>
 			<groupId>jgoodies</groupId>
-			<artifactId>looks</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>jgoodies</groupId>
 			<artifactId>forms</artifactId>
 		</dependency>
 

@@ -72,7 +72,6 @@ import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -405,7 +404,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
 
         TableColumn col = table.getColumnModel().getColumn(
                 ObjRelationshipTableModel.REL_TARGET);
-        JComboBox targetCombo = CayenneWidgetFactory.createComboBox(
+        JComboBox targetCombo = Application.getWidgetFactory().createComboBox(
                 createObjEntityComboModel(),
                 false);
         AutoCompletion.enable(targetCombo);
@@ -413,15 +412,16 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity
                 .getDataMap()));
         targetCombo.setSelectedIndex(-1);
-        col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
+        col.setCellEditor(Application.getWidgetFactory().createCellEditor(targetCombo));
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETERULE);
-        JComboBox deleteRulesCombo = CayenneWidgetFactory.createComboBox(
+        JComboBox deleteRulesCombo = Application.getWidgetFactory().createComboBox(
                 deleteRules,
                 false);
         deleteRulesCombo.setEditable(false);
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
-        col.setCellEditor(CayenneWidgetFactory.createCellEditor(deleteRulesCombo));
+        col.setCellEditor(Application.getWidgetFactory().createCellEditor(
+                deleteRulesCombo));
 
         tablePreferences.bind(
                 table,

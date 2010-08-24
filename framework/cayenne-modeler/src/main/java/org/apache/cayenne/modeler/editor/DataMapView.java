@@ -32,10 +32,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
@@ -47,7 +47,6 @@ import org.apache.cayenne.modeler.dialog.datamap.SuperclassUpdateController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.DataMapDisplayListener;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
@@ -105,7 +104,7 @@ public class DataMapView extends JPanel {
         };
 
         location = new JLabel();
-        nodeSelector = CayenneWidgetFactory.createUndoableComboBox();
+        nodeSelector = Application.getWidgetFactory().createUndoableComboBox();
         nodeSelector.setRenderer(CellRenderers.listRendererWithIcons());
 
         updateDefaultSchema = new JButton("Update...");

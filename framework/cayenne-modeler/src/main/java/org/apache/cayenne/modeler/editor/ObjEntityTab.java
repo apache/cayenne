@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
@@ -56,7 +58,6 @@ import org.apache.cayenne.modeler.dialog.validator.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
@@ -171,8 +172,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         };
 
-        dbEntityCombo = CayenneWidgetFactory.createComboBox();
-        superEntityCombo = CayenneWidgetFactory.createComboBox();
+        dbEntityCombo = Application.getWidgetFactory().createComboBox();
+        superEntityCombo = Application.getWidgetFactory().createComboBox();
 
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);
@@ -182,8 +183,15 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         excludeSuperclassListeners = new JCheckBox();
         excludeDefaultListeners = new JCheckBox();
 
-        tableLabel = CayenneWidgetFactory.createLabelButton("Table/View:");
-        syncWithDbEntityButton = CayenneWidgetFactory.createButton("Sync w/DbEntity");
+        // borderless clickable button used as a label
+        tableLabel = new JButton("Table/View:");
+        tableLabel.setBorderPainted(false);
+        tableLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        tableLabel.setFocusPainted(false);
+        tableLabel.setMargin(new Insets(0, 0, 0, 0));
+        tableLabel.setBorder(null);
+
+        syncWithDbEntityButton = new JButton("Sync w/DbEntity");
         syncWithDbEntityButton.setIcon(ModelerUtil.buildIcon("icon-sync.gif"));
         syncWithDbEntityButton.setToolTipText("Sync this ObjEntity with its DBEntity");
 

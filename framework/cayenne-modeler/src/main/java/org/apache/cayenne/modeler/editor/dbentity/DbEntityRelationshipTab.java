@@ -68,7 +68,6 @@ import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -306,13 +305,13 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         TableColumn col = table.getColumnModel().getColumn(
                 DbRelationshipTableModel.TARGET);
 
-        targetCombo = CayenneWidgetFactory.createComboBox();
+        targetCombo = Application.getWidgetFactory().createComboBox();
         AutoCompletion.enable(targetCombo);
 
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity
                 .getDataMap()));
         targetCombo.setModel(createComboModel(entity));
-        col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
+        col.setCellEditor(Application.getWidgetFactory().createCellEditor(targetCombo));
         table.getSelectionModel().addListSelectionListener(this);
 
         tablePreferences.bind(

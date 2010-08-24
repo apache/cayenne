@@ -25,6 +25,8 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DefaultActionManager;
 import org.apache.cayenne.modeler.init.platform.GenericPlatformInitializer;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
+import org.apache.cayenne.modeler.util.WidgetFactory;
 
 /**
  * A DI module for bootstrapping CayenneModeler services.
@@ -36,5 +38,6 @@ public class CayenneModelerModule implements Module {
         binder.bind(ActionManager.class).to(DefaultActionManager.class);
         binder.bind(Application.class).to(Application.class);
         binder.bind(PlatformInitializer.class).to(GenericPlatformInitializer.class);
+        binder.bind(WidgetFactory.class).to(DefaultWidgetFactory.class);
     }
 }

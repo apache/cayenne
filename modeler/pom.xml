@@ -49,6 +49,7 @@
 		<profile>
 			<id>generic</id>
 			<modules>
+				<module>cayenne-modeler-generic-ext</module>
 				<module>cayenne-modeler-java</module>
 			</modules>
 		</profile>
@@ -62,6 +63,7 @@
 		<profile>
 			<id>windows</id>
 			<modules>
+				<module>cayenne-modeler-generic-ext</module>
 				<module>cayenne-modeler-win</module>
 			</modules>
 		</profile>

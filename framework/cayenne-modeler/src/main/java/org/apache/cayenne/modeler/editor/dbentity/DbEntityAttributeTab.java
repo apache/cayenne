@@ -54,7 +54,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -86,18 +86,36 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         JToolBar toolBar = new JToolBar();
         Application app = Application.getInstance();
-        toolBar.add(app.getActionManager().getAction(CreateObjEntityAction.class).buildButton());
-        toolBar.add(app.getActionManager().getAction(CreateAttributeAction.class).buildButton());
-        toolBar.add(app.getActionManager().getAction(DbEntitySyncAction.class).buildButton());
+        toolBar.add(app
+                .getActionManager()
+                .getAction(CreateObjEntityAction.class)
+                .buildButton());
+        toolBar.add(app
+                .getActionManager()
+                .getAction(CreateAttributeAction.class)
+                .buildButton());
+        toolBar.add(app
+                .getActionManager()
+                .getAction(DbEntitySyncAction.class)
+                .buildButton());
 
         toolBar.addSeparator();
 
         toolBar.addSeparator();
-        toolBar.add(app.getActionManager().getAction(RemoveAttributeAction.class).buildButton());
+        toolBar.add(app
+                .getActionManager()
+                .getAction(RemoveAttributeAction.class)
+                .buildButton());
 
         toolBar.addSeparator();
-        toolBar.add(app.getActionManager().getAction(CutAttributeAction.class).buildButton());
-        toolBar.add(app.getActionManager().getAction(CopyAttributeAction.class).buildButton());
+        toolBar.add(app
+                .getActionManager()
+                .getAction(CutAttributeAction.class)
+                .buildButton());
+        toolBar.add(app
+                .getActionManager()
+                .getAction(CopyAttributeAction.class)
+                .buildButton());
         toolBar.add(app.getActionManager().getAction(PasteAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
@@ -113,11 +131,18 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
          * Create and install a popup
          */
         JPopupMenu popup = new JPopupMenu();
-        popup.add(app.getActionManager().getAction(RemoveAttributeAction.class).buildMenu());
+        popup.add(app
+                .getActionManager()
+                .getAction(RemoveAttributeAction.class)
+                .buildMenu());
 
         popup.addSeparator();
         popup.add(app.getActionManager().getAction(CutAttributeAction.class).buildMenu());
-        popup.add(app.getActionManager().getAction(CopyAttributeAction.class).buildMenu());
+        popup
+                .add(app
+                        .getActionManager()
+                        .getAction(CopyAttributeAction.class)
+                        .buildMenu());
         popup.add(app.getActionManager().getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
@@ -225,14 +250,14 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         TableColumn col = table.getColumnModel().getColumn(model.typeColumnInd());
 
         String[] types = TypesMapping.getDatabaseTypes();
-        JComboBox comboBox = CayenneWidgetFactory.createComboBox(types, true);
+        JComboBox comboBox = Application.getWidgetFactory().createComboBox(types, true);
 
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
 
         AutoCompletion.enable(comboBox);
 
-        col.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
+        col.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));
 
         table.getSelectionModel().addListSelectionListener(this);
 
