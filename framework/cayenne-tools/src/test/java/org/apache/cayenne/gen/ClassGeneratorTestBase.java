@@ -21,14 +21,15 @@ package org.apache.cayenne.gen;
 
 import java.io.StringWriter;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.unit.BasicCase;
 
 /**
  * Superclass of ClassGenerator tests.
  * @deprecated since 3.0
  */
-public abstract class ClassGeneratorTestBase extends BasicCase {
+public abstract class ClassGeneratorTestBase extends TestCase {
 
     protected ClassGenerator cgen;
 

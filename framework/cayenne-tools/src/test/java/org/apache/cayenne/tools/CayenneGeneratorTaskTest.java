@@ -25,19 +25,20 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import org.apache.cayenne.unit.BasicCase;
-import org.apache.cayenne.unit.CayenneResources;
+import junit.framework.TestCase;
+
+import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 
-public class CayenneGeneratorTaskTest extends BasicCase {
+public class CayenneGeneratorTaskTest extends TestCase {
 
     private static final Perl5Util regexUtil = new Perl5Util();
     private static final Project project = new Project();
-    private static final File baseDir = CayenneResources.getResources().getTestDir();
+    private static final File baseDir = FileUtil.baseTestDirectory();
     private static final File map = new File(baseDir, "antmap.xml");
     private static final File mapEmbeddables = new File(baseDir, "antmap-embeddables.xml");
     private static final File template = new File(baseDir, "velotemplate.vm");
@@ -83,7 +84,7 @@ public class CayenneGeneratorTaskTest extends BasicCase {
     public void testSingleClassesCustTemplate() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "single-classes-custtempl");
-        assertTrue(mapDir.mkdirs());
+        assertTrue(mapDir.mkdirs()); 
 
         // setup task
         task.setDestDir(mapDir);

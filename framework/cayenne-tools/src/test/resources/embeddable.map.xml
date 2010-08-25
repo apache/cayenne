@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+  project-version="3.0.0.1">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.embeddable"/>
+	<embeddable className="org.apache.cayenne.testdo.embeddable.Embeddable1">
+		<embeddable-attribute name="embedded10" type="java.lang.String" db-attribute-name="EMBEDDED10"/>
+		<embeddable-attribute name="embedded20" type="java.lang.String" db-attribute-name="EMBEDDED20"/>
+	</embeddable>
+	<db-entity name="EMBED_ENTITY1">
+		<db-attribute name="EMBEDDED10" type="VARCHAR" length="100"/>
+		<db-attribute name="EMBEDDED20" type="VARCHAR" length="100"/>
+		<db-attribute name="EMBEDDED30" type="VARCHAR" length="100"/>
+		<db-attribute name="EMBEDDED40" type="VARCHAR" length="100"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<obj-entity name="EmbedEntity1" className="org.apache.cayenne.testdo.embeddable.EmbedEntity1" dbEntityName="EMBED_ENTITY1">
+		<embedded-attribute name="embedded1" type="org.apache.cayenne.testdo.embeddable.Embeddable1"/>
+		<embedded-attribute name="embedded2" type="org.apache.cayenne.testdo.embeddable.Embeddable1">
+			<embeddable-attribute-override name="embedded10" db-attribute-path="EMBEDDED30"/>
+			<embeddable-attribute-override name="embedded20" db-attribute-path="EMBEDDED40"/>
+		</embedded-attribute>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+</data-map>
