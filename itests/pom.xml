@@ -37,7 +37,7 @@
     <packaging>pom</packaging>
     
     <modules>
-      <module>cayenne-di-stack</module>
+      <module>cayenne-runtime-itest</module>
     </modules>
 	<build>
 		<plugins>
