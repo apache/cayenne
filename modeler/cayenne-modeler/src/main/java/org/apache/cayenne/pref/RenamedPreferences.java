@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-/*
+/**
  * use for preferences where in preference's node path contains dependence from name dataChanelDescriptor, 
  * dataNodeDescriptor, dataMap etc.
  */

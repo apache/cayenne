@@ -87,12 +87,6 @@ public class ProjectUtil {
         }
     }
 
-    public static void setDataDomainName(
-            DataChannelDescriptor domain,
-            String newName) {
-        domain.setName(newName);
-    }
-
     public static void setDataNodeName(DataChannelDescriptor domain, DataNodeDescriptor node, String newName) {
         node.setName(newName);
     }

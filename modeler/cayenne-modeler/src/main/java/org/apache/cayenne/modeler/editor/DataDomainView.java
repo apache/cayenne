@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.datadomain.CacheSyncConfigController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.util.Util;
@@ -331,26 +330,29 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     }
 
     void setDomainName(String newName) {
-        if (newName == null || newName.trim().length() == 0) {
-            throw new ValidationException("Enter name for DataDomain");
-        }
 
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()
                 .getRootNode();
+
+        if (Util.nullSafeEquals(dataChannelDescriptor.getName(), newName)) {
+            return;
+        }
+
+        if (newName == null || newName.trim().length() == 0) {
+            throw new ValidationException("Enter name for DataDomain");
+        }
+
         Preferences prefs = projectController.getPreferenceForDataDomain();
 
         DomainEvent e = new DomainEvent(
                 this,
                 dataChannelDescriptor,
                 dataChannelDescriptor.getName());
-        ProjectUtil.setDataDomainName(dataChannelDescriptor, newName);
+        dataChannelDescriptor.setName(newName);
 
-        // copy all old preference to new preferences
-        Preferences oldPref = prefs;
-        RenamedPreferences.copyPreferences(newName, oldPref);
-
+        RenamedPreferences.copyPreferences(newName, prefs);
         projectController.fireDomainEvent(e);
     }
 
