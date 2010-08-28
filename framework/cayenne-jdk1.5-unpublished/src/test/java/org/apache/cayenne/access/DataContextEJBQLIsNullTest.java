@@ -21,21 +21,69 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLIsNullTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLIsNullTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+    }
+
+    private void createTwoPaintings() throws Exception {
+        tPainting.insert(33001, null, "A", null);
+        tPainting.insert(33002, null, "B", 2000);
+    }
+
+    private void createTwoPaintingsAndOneArtist() throws Exception {
+        tArtist.insert(33001, "A");
+        tPainting.insert(33001, null, "A", null);
+        tPainting.insert(33003, 33001, "C", 500);
+    }
 
     public void testCompareToNull() throws Exception {
-        // the query below can blow up on FrontBase. See CAY-819 for details.
 
-        if (!getAccessStackAdapter().supportsEqualNullSyntax()) {
+        // the query below can blow up on FrontBase. See CAY-819 for details.
+        if (!accessStackAdapter.supportsEqualNullSyntax()) {
             return;
         }
 
-        deleteTestData();
-        createTestData("prepare");
+        createTwoPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice = :x";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
@@ -43,87 +91,85 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
 
         // unlike SelectQuery or SQLTemplate, EJBQL nulls are handled just like SQL.
 
-        // note that some databases (notable Sybase) actually allow = NULL comparison,
+        // note that some databases (notably Sybase) actually allow = NULL comparison,
         // most do not; per JPA spec the result is undefined.. so we can't make any
         // assertions about the result. Just making sure the query doesn't blow up
-        createDataContext().performQuery(query1);
+        context.performQuery(query1);
     }
-    
+
     public void testCompareToNull2() throws Exception {
-        if (!getAccessStackAdapter().supportsEqualNullSyntax()) {
+
+        if (!accessStackAdapter.supportsEqualNullSyntax()) {
             return;
         }
 
-        deleteTestData();
-        createTestData("prepare");
+        createTwoPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist.artistName = :x";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
         query1.setParameter("x", null);
 
-         createDataContext().performQuery(query1);
+        context.performQuery(query1);
     }
-    
+
     public void testCompareToNull3() throws Exception {
-        if (!getAccessStackAdapter().supportsEqualNullSyntax()) {
+        if (!accessStackAdapter.supportsEqualNullSyntax()) {
             return;
         }
 
-        deleteTestData();
-        createTestData("prepare");
+        createTwoPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE :x = p.toArtist.artistName";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
         query1.setParameter("x", null);
 
-         createDataContext().performQuery(query1);
+        context.performQuery(query1);
     }
 
-    
     public void testIsNull() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+
+        createTwoPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice IS NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results = createDataContext().performQuery(query1);
+        List<?> results = context.performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
     public void testIsNotNull() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+
+        createTwoPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice IS NOT NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results = createDataContext().performQuery(query1);
+        List<?> results = context.performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33002, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
     public void testToOneIsNull() throws Exception {
-        deleteTestData();
-        createTestData("testToOneIsNull");
+
+        createTwoPaintingsAndOneArtist();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist IS NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results = createDataContext().performQuery(query1);
+        List<?> results = context.performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
     public void testToOneIsNotNull() throws Exception {
-        deleteTestData();
-        createTestData("testToOneIsNull");
+
+        createTwoPaintingsAndOneArtist();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist IS NOT NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results = createDataContext().performQuery(query1);
+        List<?> results = context.performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
