@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockInterface1;
 

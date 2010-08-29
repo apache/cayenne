@@ -230,7 +230,7 @@ public abstract class NamedObjectFactory {
 
             if (namingContext instanceof DataDomain) {
                 DataDomain domain = (DataDomain) namingContext;
-                return domain.getMap(name) != null;
+                return domain.getDataMap(name) != null;
             }
 
             if (namingContext instanceof DataChannelDescriptor) {

@@ -20,12 +20,12 @@ package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.server.ServerRuntimeCase;
-import org.apache.cayenne.configuration.server.RuntimeName;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.itest.di_stack.Table1;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 
@@ -41,21 +41,48 @@ public class ServerRuntimeIntegrationTest extends ServerRuntimeCase {
 		DataDomain domain1 = runtime.getDataDomain();
 		assertNotNull(domain1);
 
+		EventManager eventManager1 = domain1.getEventManager();
+		assertNotNull(eventManager1);
+
+		EntitySorter sorter1 = domain1.getEntitySorter();
+		assertNotNull(sorter1);
+
 		DataDomain domain2 = runtime.getDataDomain();
 		assertNotNull(domain2);
 
+		EventManager eventManager2 = domain2.getEventManager();
+		assertNotNull(eventManager2);
+
+		EntitySorter sorter2 = domain2.getEntitySorter();
+		assertNotNull(sorter2);
+
 		assertSame(domain1, domain2);
+		assertSame(eventManager1, eventManager2);
+		assertSame(sorter1, sorter2);
 	}
 
-	public void testNewContext_notSingleton() {
+	public void testContext_notSingleton() {
 
 		ObjectContext context1 = runtime.getContext();
 		assertNotNull(context1);
+		assertTrue(context1 instanceof DataContext);
+
+		DataDomain domain1 = (DataDomain) context1.getChannel();
+		EventManager eventManager1 = domain1.getEventManager();
+		EntitySorter sorter1 = domain1.getEntitySorter();
 
 		ObjectContext context2 = runtime.getContext();
 		assertNotNull(context2);
+		assertTrue(context2 instanceof DataContext);
+		DataDomain domain2 = (DataDomain) context2.getChannel();
+		EventManager eventManager2 = domain2.getEventManager();
+		EntitySorter sorter2 = domain2.getEntitySorter();
 
 		assertNotSame(context1, context2);
+
+		assertSame(domain1, domain2);
+		assertSame(eventManager1, eventManager2);
+		assertSame(sorter1, sorter2);
 	}
 
 	public void testNewContext_separateObjects() throws Exception {
@@ -77,7 +104,6 @@ public class ServerRuntimeIntegrationTest extends ServerRuntimeCase {
 		assertEquals("Abc", o1.getName());
 		assertNotSame(o1, o2);
 		assertEquals(o1.getObjectId(), o2.getObjectId());
-
 	}
 
 	public void testShutdown() throws Exception {

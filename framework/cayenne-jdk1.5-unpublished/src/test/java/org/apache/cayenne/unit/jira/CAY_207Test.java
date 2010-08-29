@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.unit.jira;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -31,7 +27,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.inherit.Manager;
 import org.apache.cayenne.unit.PeopleCase;
 
@@ -172,7 +167,7 @@ public class CAY_207Test extends PeopleCase {
         prepareDataMap();
 
         DataDomain domain = getDomain();
-        DataNode node = domain.lookupDataNode(domain.getMap("people"));
+        DataNode node = domain.lookupDataNode(domain.getDataMap("people"));
         domain.removeDataNode(node.getName());
 
         node.addDataMap(testMap);
@@ -185,8 +180,8 @@ public class CAY_207Test extends PeopleCase {
 
     protected void cleanup(DataContext context) {
         DataDomain domain = getDomain();
-        domain.removeMap(testMap.getName());
-        DataNode node = domain.lookupDataNode(domain.getMap("people"));
+        domain.removeDataMap(testMap.getName());
+        DataNode node = domain.lookupDataNode(domain.getDataMap("people"));
 
         ExtendedTypeMap map = node.getAdapter().getExtendedTypes();
         map.unregisterType(CAY_207String1.class.getName());

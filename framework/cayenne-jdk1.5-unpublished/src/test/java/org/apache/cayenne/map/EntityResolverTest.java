@@ -42,7 +42,7 @@ public class EntityResolverTest extends CayenneCase {
                 .getResources()
                 .getAccessStack("GenericStack");
 
-        DataMap generic = stack.getDataDomain().getMap("generic");
+        DataMap generic = stack.getDataDomain().getDataMap("generic");
         EntityResolver resolver = new EntityResolver(Collections.singleton(generic));
 
         ObjEntity g1 = resolver.getObjEntity("Generic1");

@@ -28,7 +28,7 @@ import org.apache.cayenne.unit.CayenneCase;
 public class OracleAdapterTest extends CayenneCase {
 
     public void testUpdatesLOBColumns() throws Exception {
-        DataMap map = getDomain().getMap("testmap");
+        DataMap map = getDomain().getDataMap("testmap");
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
                 .getDbEntity("BLOB_TEST"), 1)));
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map

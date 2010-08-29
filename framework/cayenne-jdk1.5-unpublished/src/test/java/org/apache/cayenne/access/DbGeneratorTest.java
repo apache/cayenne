@@ -35,7 +35,7 @@ public class DbGeneratorTest extends CayenneCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        gen = new DbGenerator(getNode().getAdapter(), getDomain().getMap("testmap"));
+        gen = new DbGenerator(getNode().getAdapter(), getDomain().getDataMap("testmap"));
     }
 
     public void testAdapter() throws Exception {
@@ -43,7 +43,7 @@ public class DbGeneratorTest extends CayenneCase {
     }
 
     public void testPkFilteringLogic() throws Exception {
-        DataMap map = getDomain().getMap("testmap");
+        DataMap map = getDomain().getDataMap("testmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
         DbEntity exhibit = map.getDbEntity("EXHIBIT");
 

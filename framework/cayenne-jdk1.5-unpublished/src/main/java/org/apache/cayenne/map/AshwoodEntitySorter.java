@@ -70,11 +70,16 @@ public class AshwoodEntitySorter implements EntitySorter {
     // used for lazy initialization
     protected boolean dirty;
 
-    public AshwoodEntitySorter(Collection<DataMap> dataMaps) {
+    public AshwoodEntitySorter() {
         tableComparator = new TableComparator();
         dbEntityComparator = new DbEntityComparator();
         objEntityComparator = new ObjEntityComparator();
+        dirty = true;
+        dataMaps = Collections.EMPTY_LIST;
+    }
 
+    public AshwoodEntitySorter(Collection<DataMap> dataMaps) {
+        this();
         setDataMaps(dataMaps);
     }
 

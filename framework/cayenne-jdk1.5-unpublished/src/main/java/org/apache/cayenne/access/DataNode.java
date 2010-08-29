@@ -34,10 +34,8 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -54,11 +52,6 @@ public class DataNode implements QueryEngine {
     protected String schemaUpdateStrategyName;
     protected EntityResolver entityResolver;
     protected SchemaUpdateStrategy schemaUpdateStrategy;
-
-    /**
-     * @deprecated since 3.1 EntitySorter is located at the DataDomain level.
-     */
-    protected EntitySorter entitySorter;
     protected Map<String, DataMap> dataMaps;
 
     TransactionDataSource readThroughDataSource;
@@ -108,11 +101,6 @@ public class DataNode implements QueryEngine {
         this.name = name;
         this.dataMaps = new HashMap<String, DataMap>();
         this.readThroughDataSource = new TransactionDataSource();
-
-        // since 1.2 we always implement entity sorting, regardless of the underlying DB
-        // as the right order is needed for deferred PK propagation (and maybe other
-        // things too?)
-        this.entitySorter = new AshwoodEntitySorter(Collections.EMPTY_LIST);
     }
 
     /**
@@ -167,8 +155,6 @@ public class DataNode implements QueryEngine {
         for (DataMap map : dataMaps) {
             this.dataMaps.put(map.getName(), map);
         }
-
-        entitySorter.setDataMaps(dataMaps);
     }
 
     /**
@@ -176,15 +162,10 @@ public class DataNode implements QueryEngine {
      */
     public void addDataMap(DataMap map) {
         this.dataMaps.put(map.getName(), map);
-
-        entitySorter.setDataMaps(getDataMaps());
     }
 
     public void removeDataMap(String mapName) {
-        DataMap map = dataMaps.remove(mapName);
-        if (map != null) {
-            entitySorter.setDataMaps(getDataMaps());
-        }
+        dataMaps.remove(mapName);
     }
 
     /**
@@ -315,25 +296,6 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Returns EntitySorter used by the DataNode.
-     * 
-     * @deprecated since 3.1 EntitySorter only exists at the DataDomain level.
-     */
-    public EntitySorter getEntitySorter() {
-        return entitySorter;
-    }
-
-    /**
-     * Sets an EntitySorter that is used to order objects on commit.
-     * 
-     * @since 1.2
-     * @deprecated since 3.1 EntitySorter only exists at the DataDomain level.
-     */
-    public void setEntitySorter(EntitySorter entitySorter) {
-        this.entitySorter = entitySorter;
-    }
-
-    /**
      * Tries to close JDBC connections opened by this node's data source.
      */
     public synchronized void shutdown() {
@@ -361,7 +323,7 @@ public class DataNode implements QueryEngine {
                 schemaUpdateStrategy.updateSchema(DataNode.this);
             }
             Transaction t = Transaction.getThreadTransaction();
-            
+
             if (t != null) {
                 String key = CONNECTION_RESOURCE_PREFIX + name;
                 Connection c = t.getConnection(key);
@@ -377,7 +339,6 @@ public class DataNode implements QueryEngine {
                 return new TransactionConnectionDecorator(c);
             }
 
-           
             return dataSource.getConnection();
         }
 

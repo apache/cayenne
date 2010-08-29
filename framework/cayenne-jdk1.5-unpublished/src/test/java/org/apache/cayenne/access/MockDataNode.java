@@ -30,7 +30,6 @@ import javax.sql.DataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 
 public class MockDataNode extends DataNode {
@@ -150,14 +149,6 @@ public class MockDataNode extends DataNode {
         return node.getEntityResolver();
     }
 
-    /**
-     * @deprecated since 3.1
-     */
-    @Override
-    public EntitySorter getEntitySorter() {
-        return node.getEntitySorter();
-    }
-
     @Override
     public String getName() {
         return node.getName();
@@ -196,11 +187,6 @@ public class MockDataNode extends DataNode {
     @Override
     public void setEntityResolver(EntityResolver entityResolver) {
         node.setEntityResolver(entityResolver);
-    }
-
-    @Override
-    public void setEntitySorter(EntitySorter entitySorter) {
-        node.setEntitySorter(entitySorter);
     }
 
     @Override

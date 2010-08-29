@@ -34,6 +34,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -46,7 +47,7 @@ import org.xml.sax.InputSource;
 
 public class MergeCase extends CayenneCase {
 
-    protected DataDomain dom;
+    protected DataDomain domain;
     protected DataNode node;
     protected DataMap map;
 
@@ -83,7 +84,7 @@ public class MergeCase extends CayenneCase {
         
         // clone DataMap by saving and loading from XML as to avoid modifying shared test
         // DataMap
-        DataMap originalMap = getDomain().getMap("testmap");
+        DataMap originalMap = getDomain().getDataMap("testmap");
         StringWriter out = new StringWriter();
         PrintWriter outWriter = new PrintWriter(out);
         originalMap.encodeAsXML(outWriter);
@@ -100,8 +101,9 @@ public class MergeCase extends CayenneCase {
         node.setDataSource(orgNode.getDataSource());
         node.addDataMap(map);
         
-        dom = new DataDomain("mergetestdomain");
-        dom.addNode(node);
+        domain = new DataDomain("mergetestdomain");
+        domain.setEntitySorter(new AshwoodEntitySorter());
+        domain.addNode(node);
 
         filterDataMap(node, map);
 
@@ -258,7 +260,7 @@ public class MergeCase extends CayenneCase {
     
     @Override
     protected DataContext createDataContext() {
-        return dom.createDataContext();
+        return domain.createDataContext();
     }
 
     @Override

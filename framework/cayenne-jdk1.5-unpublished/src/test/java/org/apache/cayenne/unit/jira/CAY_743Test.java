@@ -37,8 +37,8 @@ public class CAY_743Test extends TestCase {
         DataDomain domain = injector.getInstance(DataDomain.class);
         assertEquals(2, domain.getDataMaps().size());
 
-        DataMap m1 = domain.getMap("map1");
-        DataMap m2 = domain.getMap("map2");
+        DataMap m1 = domain.getDataMap("map1");
+        DataMap m2 = domain.getDataMap("map2");
 
         ObjEntity oe11 = m1.getObjEntity("Entity11");
         ObjEntity oe12 = m1.getObjEntity("Entity12");

@@ -45,7 +45,7 @@ public class DataDomainTest extends CayenneCase {
         assertEquals("tst_name", domain.getName());
     }
 
-    public void testNodes() throws java.lang.Exception {
+    public void testNodes() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         assertEquals(0, domain.getDataNodes().size());
         domain.addNode(new DataNode("1"));
@@ -54,26 +54,26 @@ public class DataDomainTest extends CayenneCase {
         assertEquals(2, domain.getDataNodes().size());
     }
 
-    public void testNodeMaps() throws java.lang.Exception {
+    public void testNodeMaps() throws Exception {
         DataDomain domain = new DataDomain("dom1");
-        assertNull(domain.getMap("map"));
+        assertNull(domain.getDataMap("map"));
 
         DataNode node = new DataNode("1");
         node.addDataMap(new DataMap("map"));
 
         domain.addNode(node);
-        assertNotNull(domain.getMap("map"));
+        assertNotNull(domain.getDataMap("map"));
     }
 
-    public void testMaps() throws java.lang.Exception {
+    public void testMaps() throws Exception {
         DataDomain d1 = new DataDomain("dom1");
 
         DataMap m1 = new DataMap("m1");
-        d1.addMap(m1);
-        assertSame(m1, d1.getMap(m1.getName()));
+        d1.addDataMap(m1);
+        assertSame(m1, d1.getDataMap(m1.getName()));
 
-        d1.removeMap(m1.getName());
-        assertNull(d1.getMap(m1.getName()));
+        d1.removeDataMap(m1.getName());
+        assertNull(d1.getDataMap(m1.getName()));
     }
 
     public void testReindexNodes() throws Exception {
@@ -102,7 +102,7 @@ public class DataDomainTest extends CayenneCase {
         ObjEntity entity = new ObjEntity("TestEntity");
         map.addObjEntity(entity);
 
-        domain.addMap(map);
+        domain.addDataMap(map);
 
         assertSame(entity, resolver.getObjEntity("TestEntity"));
     }

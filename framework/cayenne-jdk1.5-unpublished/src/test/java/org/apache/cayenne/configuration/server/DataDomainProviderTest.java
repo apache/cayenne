@@ -54,7 +54,9 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
+import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResource;
@@ -117,6 +119,7 @@ public class DataDomainProviderTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(EventManager.class).toInstance(eventManager);
+                binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
                 binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(RuntimeProperties.class).toInstance(testProperties);
                 binder.bind(ConfigurationNameMapper.class).to(

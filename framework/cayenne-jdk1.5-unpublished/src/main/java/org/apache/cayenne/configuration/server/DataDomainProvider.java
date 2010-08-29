@@ -36,7 +36,9 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.commons.logging.Log;
@@ -149,12 +151,14 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         DataChannelDescriptor descriptor = tree.getRootNode();
         DataDomain dataDomain = createDataDomain(descriptor.getName());
-        injector.injectMembers(dataDomain);
+        
+        dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
+        dataDomain.setEventManager(injector.getInstance(EventManager.class));
 
         dataDomain.initWithProperties(descriptor.getProperties());
 
         for (DataMap dataMap : descriptor.getDataMaps()) {
-            dataDomain.addMap(dataMap);
+            dataDomain.addDataMap(dataMap);
         }
 
         for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
@@ -193,7 +197,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
             // DataMaps
             for (String dataMapName : nodeDescriptor.getDataMapNames()) {
-                dataNode.addDataMap(dataDomain.getMap(dataMapName));
+                dataNode.addDataMap(dataDomain.getDataMap(dataMapName));
             }
 
             dataDomain.addNode(dataNode);

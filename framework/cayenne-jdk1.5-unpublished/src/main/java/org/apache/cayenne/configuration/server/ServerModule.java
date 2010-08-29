@@ -50,6 +50,8 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.map.AshwoodEntitySorter;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 
@@ -133,5 +135,9 @@ public class ServerModule implements Module {
 
         // a default DBAdapterFactory used to load custom and automatic DbAdapters
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+
+        // binding AshwoodEntitySorter without scope, as this is a stateful object and is
+        // configured by the owning domain
+        binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
     }
 }

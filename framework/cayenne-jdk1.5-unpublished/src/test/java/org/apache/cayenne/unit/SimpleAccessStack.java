@@ -42,6 +42,7 @@ import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.event.DefaultEventManager;
+import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -75,6 +76,8 @@ public class SimpleAccessStack implements AccessStack {
         this.resources = resources;
         this.domain = new UnitTestDomain("domain");
         domain.setEventManager(new DefaultEventManager(2));
+        domain.setEntitySorter(new AshwoodEntitySorter());
+        
         for (DataMap map : maps) {
             initNode(map);
         }

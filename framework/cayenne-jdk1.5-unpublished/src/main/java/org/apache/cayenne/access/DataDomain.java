@@ -36,11 +36,9 @@ import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
@@ -100,7 +98,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * @since 1.2
      */
-    @Inject
     protected EventManager eventManager;
 
     /**
@@ -158,22 +155,10 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 3.1
      */
     public EntitySorter getEntitySorter() {
-
-        if (entitySorter == null) {
-            synchronized (this) {
-                if (entitySorter == null) {
-                    entitySorter = new AshwoodEntitySorter(getDataMaps());
-                }
-            }
-        }
-
         return entitySorter;
     }
 
     /**
-     * Exists as a backdoor to override domain sorter until the sorter API is moved from
-     * DataNode.
-     * 
      * @since 3.1
      */
     public void setEntitySorter(EntitySorter entitySorter) {
@@ -427,23 +412,54 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
     }
 
-    /** Registers new DataMap with this domain. */
+    /**
+     * Registers new DataMap with this domain.
+     * 
+     * @deprecated since 3.1 use a more consistently named {@link #addDataMap(DataMap)}.
+     */
     public void addMap(DataMap map) {
-        getEntityResolver().addDataMap(map);
-        entitySorter = null;
+        addDataMap(map);
     }
 
-    /** Returns DataMap matching <code>name</code> parameter. */
+    public void addDataMap(DataMap dataMap) {
+        getEntityResolver().addDataMap(dataMap);
+        refreshEntitySorter();
+    }
+
+    /**
+     * Returns DataMap matching <code>name</code> parameter.
+     * 
+     * @deprecated since 3.1 use a more consistently named {@link #getDataMap(String)}.
+     */
     public DataMap getMap(String mapName) {
+        return getEntityResolver().getDataMap(mapName);
+    }
+
+    /**
+     * @since 3.1
+     */
+    public DataMap getDataMap(String mapName) {
         return getEntityResolver().getDataMap(mapName);
     }
 
     /**
      * Removes named DataMap from this DataDomain and any underlying DataNodes that
      * include it.
+     * 
+     * @deprecated since 3.1 use a more consistently named {@link #removeDataMap(String)}.
      */
-    public synchronized void removeMap(String mapName) {
-        DataMap map = getMap(mapName);
+    public void removeMap(String mapName) {
+        removeDataMap(mapName);
+    }
+
+    /**
+     * Removes named DataMap from this DataDomain and any underlying DataNodes that
+     * include it.
+     * 
+     * @since 3.1
+     */
+    public synchronized void removeDataMap(String mapName) {
+        DataMap map = getDataMap(mapName);
         if (map == null) {
             return;
         }
@@ -455,10 +471,10 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         // remove from EntityResolver
         getEntityResolver().removeDataMap(map);
-        entitySorter = null;
 
         // reindex nodes to remove references on removed map entities
         reindexNodes();
+        refreshEntitySorter();
     }
 
     /**
@@ -524,15 +540,13 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         // add node to name->node map
         nodes.put(node.getName(), node);
-        node.setEntityResolver(this.getEntityResolver());
+        node.setEntityResolver(getEntityResolver());
 
         // add node to "ent name->node" map
         for (DataMap map : node.getDataMaps()) {
-            this.addMap(map);
-            this.nodesByDataMapName.put(map.getName(), node);
+            addDataMap(map);
+            nodesByDataMapName.put(map.getName(), node);
         }
-
-        entitySorter = null;
     }
 
     /**
@@ -604,7 +618,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         for (DataNode node : getDataNodes()) {
             for (DataMap map : node.getDataMaps()) {
-                addMap(map);
+                addDataMap(map);
                 nodesByDataMapName.put(map.getName(), node);
             }
         }
@@ -900,5 +914,11 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public BatchQueryBuilderFactory getQueryBuilderFactory() {
         return queryBuilderFactory;
+    }
+    
+    void refreshEntitySorter() {
+        if(entitySorter != null) {
+            entitySorter.setDataMaps(getDataMaps());
+        }
     }
 }
