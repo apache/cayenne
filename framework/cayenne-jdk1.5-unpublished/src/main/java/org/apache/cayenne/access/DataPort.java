@@ -29,7 +29,9 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
+import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
@@ -100,7 +102,8 @@ public class DataPort {
 
         // sort entities for insertion
         List sorted = new ArrayList(entities);
-        destinationNode.getEntitySorter().sortDbEntities(sorted, false);
+        EntitySorter sorter = new AshwoodEntitySorter(destinationNode.getDataMaps());
+        sorter.sortDbEntities(sorted, false);
 
         if (cleaningDestination) {
             // reverse insertion order for deletion

@@ -55,6 +55,9 @@ public class DataNode implements QueryEngine {
     protected EntityResolver entityResolver;
     protected SchemaUpdateStrategy schemaUpdateStrategy;
 
+    /**
+     * @deprecated since 3.1 EntitySorter is located at the DataDomain level.
+     */
     protected EntitySorter entitySorter;
     protected Map<String, DataMap> dataMaps;
 
@@ -313,6 +316,8 @@ public class DataNode implements QueryEngine {
 
     /**
      * Returns EntitySorter used by the DataNode.
+     * 
+     * @deprecated since 3.1 EntitySorter only exists at the DataDomain level.
      */
     public EntitySorter getEntitySorter() {
         return entitySorter;
@@ -322,6 +327,7 @@ public class DataNode implements QueryEngine {
      * Sets an EntitySorter that is used to order objects on commit.
      * 
      * @since 1.2
+     * @deprecated since 3.1 EntitySorter only exists at the DataDomain level.
      */
     public void setEntitySorter(EntitySorter entitySorter) {
         this.entitySorter = entitySorter;

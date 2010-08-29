@@ -39,11 +39,13 @@ import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.logging.Log;
@@ -566,9 +568,8 @@ public class DbGenerator {
 
         // sort table list
         if (tables.size() > 1) {
-            DataNode node = new DataNode("temp");
-            node.addDataMap(map);
-            node.getEntitySorter().sortDbEntities(tables, false);
+            EntitySorter sorter = new AshwoodEntitySorter(Collections.singleton(map));
+            sorter.sortDbEntities(tables, false);
         }
 
         this.dbEntitiesInInsertOrder = tables;

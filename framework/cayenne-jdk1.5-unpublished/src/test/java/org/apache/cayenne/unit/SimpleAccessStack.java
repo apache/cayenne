@@ -29,13 +29,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.access.QueryLogger;
@@ -86,11 +84,7 @@ public class SimpleAccessStack implements AccessStack {
         return resources.getAccessStackAdapter(node.getAdapter().getClass().getName());
     }
 
-    protected DataDomain getDomain() {
-        return domain;
-    }
-
-    protected void initNode(DataMap map) throws Exception {
+    private void initNode(DataMap map) throws Exception {
         DataNode node = resources.newDataNode(map.getName());
 
         // setup test extended types
@@ -176,19 +170,19 @@ public class SimpleAccessStack implements AccessStack {
      * Helper method that orders DbEntities to satisfy referential constraints and returns
      * an ordered list.
      */
-    protected List dbEntitiesInInsertOrder(DataNode node, DataMap map) {
-        List entities = new ArrayList(map.getDbEntities());
+    private List<DbEntity> dbEntitiesInInsertOrder(DataNode node, DataMap map) {
+        List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
 
-        // filter varios unsupported tests...
+        // filter various unsupported tests...
 
         // LOBs
         boolean excludeLOB = !getAdapter(node).supportsLobs();
         boolean excludeBinPK = !getAdapter(node).supportsBinaryPK();
         if (excludeLOB || excludeBinPK) {
-            Iterator it = entities.iterator();
-            List filtered = new ArrayList();
-            while (it.hasNext()) {
-                DbEntity ent = (DbEntity) it.next();
+
+            List<DbEntity> filtered = new ArrayList<DbEntity>();
+
+            for (DbEntity ent : entities) {
 
                 // check for LOB attributes
                 if (excludeLOB) {
@@ -236,14 +230,14 @@ public class SimpleAccessStack implements AccessStack {
             entities = filtered;
         }
 
-        node.getEntitySorter().sortDbEntities(entities, false);
+        domain.getEntitySorter().sortDbEntities(entities, false);
         return entities;
     }
 
-    protected void deleteTestData(DataNode node, DataMap map) throws Exception {
+    private void deleteTestData(DataNode node, DataMap map) throws Exception {
 
         Connection conn = node.getDataSource().getConnection();
-        List list = this.dbEntitiesInInsertOrder(node, map);
+        List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
@@ -251,9 +245,9 @@ public class SimpleAccessStack implements AccessStack {
 
             Statement stmt = conn.createStatement();
 
-            ListIterator it = list.listIterator(list.size());
+            ListIterator<DbEntity> it = list.listIterator(list.size());
             while (it.hasPrevious()) {
-                DbEntity ent = (DbEntity) it.previous();
+                DbEntity ent = it.previous();
 
                 boolean status;
                 if (ent.getDataMap() != null
@@ -297,14 +291,14 @@ public class SimpleAccessStack implements AccessStack {
         }
     }
 
-    protected void dropSchema(DataNode node, DataMap map) throws Exception {
+    private void dropSchema(DataNode node, DataMap map) throws Exception {
         Connection conn = node.getDataSource().getConnection();
-        List list = dbEntitiesInInsertOrder(node, map);
+        List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
 
         try {
             DatabaseMetaData md = conn.getMetaData();
             ResultSet tables = md.getTables(null, null, "%", null);
-            List allTables = new ArrayList();
+            List<String> allTables = new ArrayList<String>();
 
             while (tables.next()) {
                 // 'toUpperCase' is needed since most databases
@@ -321,9 +315,9 @@ public class SimpleAccessStack implements AccessStack {
             // drop all tables in the map
             Statement stmt = conn.createStatement();
 
-            ListIterator it = list.listIterator(list.size());
+            ListIterator<DbEntity> it = list.listIterator(list.size());
             while (it.hasPrevious()) {
-                DbEntity ent = (DbEntity) it.previous();
+                DbEntity ent = it.previous();
                 if (!allTables.contains(ent.getName().toUpperCase())) {
                     continue;
                 }
@@ -349,25 +343,24 @@ public class SimpleAccessStack implements AccessStack {
 
     }
 
-    protected void dropPKSupport(DataNode node, DataMap map) throws Exception {
-        List filteredEntities = dbEntitiesInInsertOrder(node, map);
+    private void dropPKSupport(DataNode node, DataMap map) throws Exception {
+        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(node, map);
         node.getAdapter().getPkGenerator().dropAutoPk(node, filteredEntities);
     }
 
-    protected void createPKSupport(DataNode node, DataMap map) throws Exception {
-        List filteredEntities = dbEntitiesInInsertOrder(node, map);
+    private void createPKSupport(DataNode node, DataMap map) throws Exception {
+        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(node, map);
         node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
     }
 
-    protected void createSchema(DataNode node, DataMap map) throws Exception {
+    private void createSchema(DataNode node, DataMap map) throws Exception {
         Connection conn = node.getDataSource().getConnection();
 
         try {
             getAdapter(node).willCreateTables(conn, map);
             Statement stmt = conn.createStatement();
-            Iterator it = tableCreateQueries(node, map);
-            while (it.hasNext()) {
-                String query = (String) it.next();
+
+            for (String query : tableCreateQueries(node, map)) {
                 QueryLogger.logQuery(query, Collections.EMPTY_LIST);
                 stmt.execute(query);
             }
@@ -381,33 +374,29 @@ public class SimpleAccessStack implements AccessStack {
     /**
      * Returns iterator of preprocessed table create queries.
      */
-    protected Iterator tableCreateQueries(DataNode node, DataMap map) throws Exception {
+    private Collection<String> tableCreateQueries(DataNode node, DataMap map)
+            throws Exception {
         DbAdapter adapter = node.getAdapter();
-        DbGenerator gen = new DbGenerator(adapter, map, null, getDomain());
+        DbGenerator gen = new DbGenerator(adapter, map, null, domain);
 
-        List orderedEnts = dbEntitiesInInsertOrder(node, map);
-        List queries = new ArrayList();
+        List<DbEntity> orderedEnts = dbEntitiesInInsertOrder(node, map);
+        List<String> queries = new ArrayList<String>();
 
         // table definitions
-        Iterator it = orderedEnts.iterator();
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
+        for (DbEntity ent : orderedEnts) {
             queries.add(adapter.createTable(ent));
         }
 
         // FK constraints
-
-        it = orderedEnts.iterator();
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
+        for (DbEntity ent : orderedEnts) {
             if (!getAdapter(node).supportsFKConstraints(ent)) {
                 continue;
             }
 
-            List qs = gen.createConstraintsQueries(ent);
+            List<String> qs = gen.createConstraintsQueries(ent);
             queries.addAll(qs);
         }
 
-        return queries.iterator();
+        return queries;
     }
 }

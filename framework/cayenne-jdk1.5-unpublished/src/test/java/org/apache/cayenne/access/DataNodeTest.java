@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntitySorter;
 
 public class DataNodeTest extends TestCase {
 
@@ -62,22 +61,16 @@ public class DataNodeTest extends TestCase {
     public void testAdapter() throws Exception {
         DataNode node = new DataNode();
 
-        // entity sorter should have been created ... and since 1.2 shouldn't change no
-        // matter what adapter we use.
-        EntitySorter sorter = node.getEntitySorter();
-        assertNotNull(sorter);
         assertNull(node.getAdapter());
 
         JdbcAdapter a1 = new JdbcAdapter();
         node.setAdapter(a1);
 
         assertSame(a1, node.getAdapter());
-        assertSame(sorter, node.getEntitySorter());
 
         JdbcAdapter a2 = new JdbcAdapter();
         node.setAdapter(a2);
 
         assertSame(a2, node.getAdapter());
-        assertSame(sorter, node.getEntitySorter());
     }
 }

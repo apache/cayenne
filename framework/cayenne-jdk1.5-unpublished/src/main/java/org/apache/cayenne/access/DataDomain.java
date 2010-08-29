@@ -106,7 +106,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * @since 1.2
      */
-    EntitySorter entitySorter;
+    protected EntitySorter entitySorter;
 
     /**
      * @since 3.0
@@ -155,25 +155,14 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * @since 1.2
+     * @since 3.1
      */
-    // TODO: andrus, 4/12/2006 - after 1.2 API freeze is over, replace DataNode
-    // EntitySorter with this one ... maybe even make it a part of server-side
-    // EntityResolver?
-    EntitySorter getEntitySorter() {
+    public EntitySorter getEntitySorter() {
 
         if (entitySorter == null) {
             synchronized (this) {
                 if (entitySorter == null) {
-
-                    // backwards compatibility mode... only possible in a single-node case
-                    // see TODO above
-                    if (nodes.size() == 1) {
-                        entitySorter = nodes.values().iterator().next().getEntitySorter();
-                    }
-                    else {
-                        entitySorter = new AshwoodEntitySorter(getDataMaps());
-                    }
+                    entitySorter = new AshwoodEntitySorter(getDataMaps());
                 }
             }
         }
@@ -185,9 +174,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Exists as a backdoor to override domain sorter until the sorter API is moved from
      * DataNode.
      * 
-     * @since 1.2
+     * @since 3.1
      */
-    void setEntitySorter(EntitySorter entitySorter) {
+    public void setEntitySorter(EntitySorter entitySorter) {
         this.entitySorter = entitySorter;
     }
 

@@ -150,6 +150,9 @@ public class MockDataNode extends DataNode {
         return node.getEntityResolver();
     }
 
+    /**
+     * @deprecated since 3.1
+     */
     @Override
     public EntitySorter getEntitySorter() {
         return node.getEntitySorter();
