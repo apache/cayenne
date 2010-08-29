@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
@@ -35,32 +35,74 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CayenneTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+    protected TableHelper tCompoundPKTest;
+    protected TableHelper tCharPKTest;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("COMPOUND_PK_TEST");
+        dbHelper.deleteAll("CHAR_PK_TEST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
+
+        tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
+
+        tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
+        tCharPKTest.setColumns("PK_COL", "OTHER_COL");
+    }
+
+    private void createOneCompoundPK() throws Exception {
+        tCompoundPKTest.insert("PK1", "PK2", "BBB");
+    }
+
+    private void createOneCharPK() throws Exception {
+        tCharPKTest.insert("CPK", "AAAA");
+    }
+
+    private void createOneArtist() throws Exception {
+        tArtist.insert(33002, "artist2");
+    }
+
+    private void createTwoArtists() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
     }
 
     public void testReadNestedProperty_ToMany() throws Exception {
 
-        TableHelper artistHelper = new TableHelper(getDbHelper(), "ARTIST");
-        artistHelper.setColumns("ARTIST_ID", "ARTIST_NAME");
-        artistHelper.insert(1, "a");
+        tArtist.insert(1, "a");
+        tPainting.insert(1, 1, "a1");
+        tPainting.insert(2, 1, "a2");
 
-        TableHelper paintingHelper = new TableHelper(getDbHelper(), "PAINTING");
-        paintingHelper.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
-        paintingHelper.insert(1, 1, "a1");
-        paintingHelper.insert(2, 1, "a2");
-
-        Artist a = Cayenne.objectForPK(createDataContext(), Artist.class, 1);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
         Collection<String> titles = (Collection<String>) Cayenne.readNestedProperty(
                 a,
                 "paintingArray.paintingTitle");
@@ -68,18 +110,17 @@ public class CayenneTest extends CayenneCase {
         assertEquals(2, titles.size());
         assertTrue(titles.contains("a1"));
         assertTrue(titles.contains("a2"));
-        
+
         int size = (Integer) Cayenne.readNestedProperty(a, "paintingArray.@size");
         assertEquals(2, size);
     }
 
     public void testScalarObjectForQuery() throws Exception {
-        createTestData("testScalarObjectForQuery");
-        DataContext context = createDataContext();
+        createTwoArtists();
 
         String sql = "SELECT count(1) AS X FROM ARTIST";
 
-        DataMap map = getDomain().getMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
@@ -100,8 +141,7 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testScalarObjectForQuery2() throws Exception {
-        createTestData("testScalarObjectForQuery");
-        DataContext context = createDataContext();
+        createTwoArtists();
 
         String ejbql = "SELECT count(a) from Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -114,8 +154,7 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForQuery() throws Exception {
-        createTestData("testObjectForPKInt");
-        DataContext context = createDataContext();
+        createOneArtist();
 
         ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, new Integer(
                 33002));
@@ -130,7 +169,6 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForQueryNoObject() throws Exception {
-        DataContext context = createDataContext();
 
         ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, new Integer(
                 44001));
@@ -140,8 +178,7 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testNoObjectForPK() throws Exception {
-        createTestData("testObjectForPKInt");
-        DataContext context = createDataContext();
+        createOneArtist();
 
         // use bogus non-existent PK
         Object object = Cayenne.objectForPK(context, Artist.class, 44001);
@@ -149,8 +186,6 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForPKTemporary() throws Exception {
-
-        DataContext context = createDataContext();
 
         Persistent o1 = context.newObject(Artist.class);
         Persistent o2 = context.newObject(Artist.class);
@@ -171,13 +206,12 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForPKObjectId() throws Exception {
-        createTestData("testObjectForPKInt");
-        DataContext context = createDataContext();
+        createOneArtist();
 
         Object object = Cayenne.objectForPK(context, new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
-                new Integer(33002)));
+                33002));
 
         assertNotNull(object);
         assertTrue(object instanceof Artist);
@@ -185,8 +219,7 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForPKClassInt() throws Exception {
-        createTestData("testObjectForPKInt");
-        DataContext context = createDataContext();
+        createOneArtist();
 
         Object object = Cayenne.objectForPK(context, Artist.class, 33002);
 
@@ -196,8 +229,7 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForPKEntityInt() throws Exception {
-        createTestData("testObjectForPKInt");
-        DataContext context = createDataContext();
+        createOneArtist();
 
         Object object = Cayenne.objectForPK(context, "Artist", 33002);
 
@@ -207,10 +239,11 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForPKClassMap() throws Exception {
-        createTestData("testObjectForPKInt");
-        DataContext context = createDataContext();
+        createOneArtist();
 
-        Map pk = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, new Integer(33002));
+        Map<String, Integer> pk = Collections.singletonMap(
+                Artist.ARTIST_ID_PK_COLUMN,
+                new Integer(33002));
         Object object = Cayenne.objectForPK(context, Artist.class, pk);
 
         assertNotNull(object);
@@ -219,10 +252,9 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testObjectForPKEntityMapCompound() throws Exception {
-        createTestData("testObjectForPKCompound");
-        DataContext context = createDataContext();
+        createOneCompoundPK();
 
-        Map pk = new HashMap();
+        Map<String, Object> pk = new HashMap<String, Object>();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
         Object object = Cayenne.objectForPK(context, CompoundPkTestEntity.class, pk);
@@ -233,14 +265,14 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testCompoundPKForObject() throws Exception {
-        createTestData("testCompoundPKForObject");
+        createOneCompoundPK();
 
-        DataContext context = createDataContext();
-        List objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+        List<?> objects = context
+                .performQuery(new SelectQuery(CompoundPkTestEntity.class));
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        Map pk = Cayenne.compoundPKForObject(object);
+        Map<String, Object> pk = Cayenne.compoundPKForObject(object);
         assertNotNull(pk);
         assertEquals(2, pk.size());
         assertEquals("PK1", pk.get(CompoundPkTestEntity.KEY1_PK_COLUMN));
@@ -248,10 +280,10 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testIntPKForObjectFailureForCompound() throws Exception {
-        createTestData("testCompoundPKForObject");
+        createOneCompoundPK();
 
-        DataContext context = createDataContext();
-        List objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+        List<?> objects = context
+                .performQuery(new SelectQuery(CompoundPkTestEntity.class));
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
@@ -260,15 +292,14 @@ public class CayenneTest extends CayenneCase {
             fail("intPKForObject must fail for compound key");
         }
         catch (CayenneRuntimeException ex) {
-
+            // expected
         }
     }
 
     public void testIntPKForObjectFailureForNonNumeric() throws Exception {
-        createTestData("testIntPKForObjectNonNumeric");
+        createOneCharPK();
 
-        DataContext context = createDataContext();
-        List objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
+        List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
@@ -282,10 +313,10 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testPKForObjectFailureForCompound() throws Exception {
-        createTestData("testCompoundPKForObject");
+        createOneCompoundPK();
 
-        DataContext context = createDataContext();
-        List objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+        List<?> objects = context
+                .performQuery(new SelectQuery(CompoundPkTestEntity.class));
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
@@ -299,32 +330,29 @@ public class CayenneTest extends CayenneCase {
     }
 
     public void testIntPKForObject() throws Exception {
-        createTestData("testIntPKForObject");
+        createOneArtist();
 
-        DataContext context = createDataContext();
-        List objects = context.performQuery(new SelectQuery(Artist.class));
+        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        assertEquals(33001, Cayenne.intPKForObject(object));
+        assertEquals(33002, Cayenne.intPKForObject(object));
     }
 
     public void testPKForObject() throws Exception {
-        createTestData("testIntPKForObject");
+        createOneArtist();
 
-        DataContext context = createDataContext();
-        List objects = context.performQuery(new SelectQuery(Artist.class));
+        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        assertEquals(new Long(33001), Cayenne.pkForObject(object));
+        assertEquals(new Long(33002), Cayenne.pkForObject(object));
     }
 
     public void testIntPKForObjectNonNumeric() throws Exception {
-        createTestData("testIntPKForObjectNonNumeric");
+        createOneCharPK();
 
-        DataContext context = createDataContext();
-        List objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
+        List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 

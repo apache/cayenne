@@ -52,8 +52,7 @@ public class DataContextEJBQLIsNullTest extends ServerCase {
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-
+        
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
