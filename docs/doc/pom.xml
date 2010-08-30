@@ -71,11 +71,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.objectstyle.ashwood</groupId>
-			<artifactId>ashwood</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>resin-hessian</artifactId>
 		</dependency>

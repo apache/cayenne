@@ -61,7 +61,6 @@
 			<includes>
 				<include>commons-collections:commons-collections</include>
 				<include>commons-logging:commons-logging</include>
-				<include>org.objectstyle.ashwood:ashwood</include>
 				<include>org.apache.velocity:velocity</include>
 				<include>foundrylogic.vpp:vpp</include>
 			</includes>

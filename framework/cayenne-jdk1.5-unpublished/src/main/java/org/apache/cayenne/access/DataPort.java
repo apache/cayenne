@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
-import org.apache.cayenne.map.AshwoodEntitySorter;
+import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.InsertBatchQuery;

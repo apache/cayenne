@@ -17,17 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map;
+package org.apache.cayenne.ashwood;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.ashwood.AshwoodEntitySorter;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
 import org.apache.cayenne.unit.RelationshipCase;
 
-/**
- */
 public class AshwoodEntitySorterTest extends RelationshipCase {
 
     protected AshwoodEntitySorter sorter;

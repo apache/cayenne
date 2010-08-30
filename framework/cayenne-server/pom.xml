@@ -60,10 +60,6 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.objectstyle.ashwood</groupId>
-			<artifactId>ashwood</artifactId>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

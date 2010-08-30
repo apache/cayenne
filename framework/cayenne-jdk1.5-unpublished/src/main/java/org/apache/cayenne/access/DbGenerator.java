@@ -34,12 +34,12 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.AshwoodEntitySorter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;

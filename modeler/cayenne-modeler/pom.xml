@@ -64,11 +64,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.objectstyle.ashwood</groupId>
-			<artifactId>ashwood</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>jgoodies</groupId>
 			<artifactId>forms</artifactId>
 		</dependency>
