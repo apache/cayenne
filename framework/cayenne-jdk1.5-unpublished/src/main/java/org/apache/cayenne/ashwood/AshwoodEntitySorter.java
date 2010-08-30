@@ -63,7 +63,6 @@ public class AshwoodEntitySorter implements EntitySorter {
 
     protected Collection<DataMap> dataMaps;
     protected Map<DbEntity, Table> dbEntityToTableMap;
-    protected Digraph<Collection<Table>, List<ForeignKey>> contractedReferentialDigraph;
     protected Map<Table, ComponentRecord> components;
     protected Map<DbEntity, List<DbRelationship>> reflexiveDbEntities;
 
@@ -71,8 +70,7 @@ public class AshwoodEntitySorter implements EntitySorter {
     protected DbEntityComparator dbEntityComparator;
     protected ObjEntityComparator objEntityComparator;
 
-    // used for lazy initialization
-    protected boolean dirty;
+    private volatile boolean dirty;
 
     public AshwoodEntitySorter() {
         tableComparator = new TableComparator();
@@ -88,12 +86,28 @@ public class AshwoodEntitySorter implements EntitySorter {
     }
 
     /**
-     * Reindexes internal sorter.
+     * Reindexes internal sorter in a thread-safe manner.
      */
-    protected synchronized void _indexSorter() {
-        if (!dirty) {
-            return;
+    protected void indexSorter() {
+
+        // correct double check locking per Joshua Bloch
+        // http://java.sun.com/developer/technicalArticles/Interviews/bloch_effective_08_qa.html
+        // (maybe we should use something like CountDownLatch or a Cyclic barrier
+        // instead?)
+
+        boolean localDirty = dirty;
+        if (localDirty) {
+            synchronized (this) {
+                localDirty = dirty;
+                if (localDirty) {
+                    doIndexSorter();
+                    dirty = false;
+                }
+            }
         }
+    }
+
+    private void doIndexSorter() {
 
         Collection<Table> tables = new ArrayList<Table>(64);
         dbEntityToTableMap = new HashMap<DbEntity, Table>(64);
@@ -112,15 +126,17 @@ public class AshwoodEntitySorter implements EntitySorter {
         Digraph<Table, List<ForeignKey>> referentialDigraph = new MapDigraph<Table, List<ForeignKey>>();
         DbUtils.buildReferentialDigraph(referentialDigraph, tables);
 
-        StrongConnection contractor = new StrongConnection(referentialDigraph);
+        StrongConnection<Table, List<ForeignKey>> contractor = new StrongConnection<Table, List<ForeignKey>>(
+                referentialDigraph);
 
-        contractedReferentialDigraph = new MapDigraph<Collection<Table>, List<ForeignKey>>();
+        Digraph<Collection<Table>, Collection<List<ForeignKey>>> contractedReferentialDigraph = new MapDigraph<Collection<Table>, Collection<List<ForeignKey>>>();
         contractor.contract(contractedReferentialDigraph);
 
-        IndegreeTopologicalSort<Collection<Table>, List<ForeignKey>> sorter = new IndegreeTopologicalSort<Collection<Table>, List<ForeignKey>>(
+        IndegreeTopologicalSort<Collection<Table>> sorter = new IndegreeTopologicalSort<Collection<Table>>(
                 contractedReferentialDigraph);
 
-        components = new HashMap(contractedReferentialDigraph.order());
+        components = new HashMap<Table, ComponentRecord>(contractedReferentialDigraph
+                .order());
         int componentIndex = 0;
         while (sorter.hasNext()) {
             Collection<Table> component = sorter.next();
@@ -130,36 +146,34 @@ public class AshwoodEntitySorter implements EntitySorter {
                 components.put(table, rec);
             }
         }
-
-        // clear dirty flag
-        this.dirty = false;
     }
 
     /**
      * @since 1.1
      */
-    public synchronized void setDataMaps(Collection<DataMap> dataMaps) {
-        this.dirty = true;
+    public void setDataMaps(Collection<DataMap> dataMaps) {
         this.dataMaps = dataMaps != null ? dataMaps : Collections.EMPTY_LIST;
+        this.dirty = true;
     }
 
     public void sortDbEntities(List<DbEntity> dbEntities, boolean deleteOrder) {
-        _indexSorter();
+        indexSorter();
         Collections.sort(dbEntities, getDbEntityComparator(deleteOrder));
     }
 
     public void sortObjEntities(List<ObjEntity> objEntities, boolean deleteOrder) {
-        _indexSorter();
+        indexSorter();
         Collections.sort(objEntities, getObjEntityComparator(deleteOrder));
     }
 
     public void sortObjectsForEntity(
             ObjEntity objEntity,
-            List objects,
+            List<?> objects,
             boolean deleteOrder) {
 
-        // don't forget to index the sorter
-        _indexSorter();
+        indexSorter();
+
+        List<Persistent> persistent = (List<Persistent>) objects;
 
         DbEntity dbEntity = objEntity.getDbEntity();
 
@@ -168,12 +182,13 @@ public class AshwoodEntitySorter implements EntitySorter {
             return;
         }
 
-        int size = objects.size();
+        int size = persistent.size();
         if (size == 0) {
             return;
         }
 
-        EntityResolver resolver = ((Persistent) objects.get(0))
+        EntityResolver resolver = persistent
+                .get(0)
                 .getObjectContext()
                 .getEntityResolver();
         ClassDescriptor descriptor = resolver.getClassDescriptor(objEntity.getName());
@@ -187,9 +202,9 @@ public class AshwoodEntitySorter implements EntitySorter {
             reflexiveRelNames[i] = (objRel != null ? objRel.getName() : null);
         }
 
-        List<Object> sorted = new ArrayList<Object>(size);
+        List<Persistent> sorted = new ArrayList<Persistent>(size);
 
-        Digraph objectDependencyGraph = new MapDigraph();
+        Digraph<Persistent, Boolean> objectDependencyGraph = new MapDigraph<Persistent, Boolean>();
         Object[] masters = new Object[reflexiveRelNames.length];
         for (int i = 0; i < size; i++) {
             Persistent current = (Persistent) objects.get(i);
@@ -224,7 +239,7 @@ public class AshwoodEntitySorter implements EntitySorter {
                     continue;
                 }
 
-                Object masterCandidate = objects.get(j);
+                Persistent masterCandidate = persistent.get(j);
                 for (Object master : masters) {
                     if (masterCandidate.equals(master)) {
                         objectDependencyGraph.putArc(
@@ -237,11 +252,11 @@ public class AshwoodEntitySorter implements EntitySorter {
             }
         }
 
-        IndegreeTopologicalSort sorter = new IndegreeTopologicalSort(
+        IndegreeTopologicalSort<Persistent> sorter = new IndegreeTopologicalSort<Persistent>(
                 objectDependencyGraph);
 
         while (sorter.hasNext()) {
-            Object o = sorter.next();
+            Persistent o = sorter.next();
             if (o == null)
                 throw new CayenneRuntimeException("Sorting objects for "
                         + objEntity.getClassName()
@@ -252,11 +267,11 @@ public class AshwoodEntitySorter implements EntitySorter {
         // since API requires sorting within the same array,
         // simply replace all objects with objects in the right order...
         // may come up with something cleaner later
-        objects.clear();
-        objects.addAll(sorted);
+        persistent.clear();
+        persistent.addAll(sorted);
 
         if (deleteOrder) {
-            Collections.reverse(objects);
+            Collections.reverse(persistent);
         }
     }
 
@@ -330,8 +345,8 @@ public class AshwoodEntitySorter implements EntitySorter {
         return (id != null) ? context.localObject(id, null) : null;
     }
 
-    protected Comparator getDbEntityComparator(boolean dependantFirst) {
-        Comparator c = dbEntityComparator;
+    protected Comparator<DbEntity> getDbEntityComparator(boolean dependantFirst) {
+        Comparator<DbEntity> c = dbEntityComparator;
         if (dependantFirst) {
             c = new ReverseComparator(c);
         }
@@ -392,8 +407,8 @@ public class AshwoodEntitySorter implements EntitySorter {
             else if (t2 == null)
                 result = 1;
             else {
-                ComponentRecord rec1 = (ComponentRecord) components.get(t1);
-                ComponentRecord rec2 = (ComponentRecord) components.get(t2);
+                ComponentRecord rec1 = components.get(t1);
+                ComponentRecord rec2 = components.get(t2);
                 int index1 = rec1.index;
                 int index2 = rec2.index;
                 result = (index1 > index2 ? 1 : (index1 < index2 ? -1 : 0));

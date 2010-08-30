@@ -65,7 +65,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,11 +73,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.TruePredicate;
 
-public class StrongConnection<E> extends Algorithm<Collection<E>> {
+public class StrongConnection<E, V> extends Algorithm<Collection<E>> {
 
-    private DigraphIteration digraph;
-    private DigraphIteration reverseDigraph;
-    private DigraphIteration filteredDigraph;
+    private DigraphIteration<E, V> digraph;
+    private DigraphIteration<E, V> reverseDigraph;
+    private DigraphIteration<E, V> filteredDigraph;
     private DepthFirstStampSearch directDfs;
     private DepthFirstSearch reverseDfs;
     private Set seen = new HashSet();
@@ -86,7 +85,7 @@ public class StrongConnection<E> extends Algorithm<Collection<E>> {
     private ArrayStack dfsStack = new ArrayStack();
     private DFSSeenVerticesPredicate reverseDFSFilter = new DFSSeenVerticesPredicate();
 
-    public StrongConnection(DigraphIteration digraph) {
+    public StrongConnection(DigraphIteration<E, V> digraph) {
         this.digraph = digraph;
         filteredDigraph = new FilterIteration(
                 digraph,
@@ -100,10 +99,12 @@ public class StrongConnection<E> extends Algorithm<Collection<E>> {
         runDirectDFS();
     }
 
+    @Override
     public boolean hasNext() {
         return !dfsStack.isEmpty();
     }
 
+    @Override
     public Collection<E> next() {
         Collection component = buildStronglyConnectedComponent();
         if (dfsStack.isEmpty())
@@ -111,38 +112,41 @@ public class StrongConnection<E> extends Algorithm<Collection<E>> {
         return component;
     }
 
-    public Digraph contract(Digraph contractedDigraph) {
-        List components = new ArrayList();
+    public Digraph<Collection<E>, Collection<V>> contract(Digraph<Collection<E>, Collection<V>> contractedDigraph) {
+
+        Collection<Collection<E>> components = new ArrayList<Collection<E>>();
         CollectionUtils.addAll(components, this);
-        Map memberToComponent = new HashMap();
-        for (Iterator i = components.iterator(); i.hasNext();) {
-            Collection c = (Collection) i.next();
-            for (Iterator j = c.iterator(); j.hasNext();)
-                memberToComponent.put(j.next(), c);
+
+        Map<E, Collection<E>> memberToComponent = new HashMap<E, Collection<E>>();
+
+        for (Collection<E> c : components) {
+            for (E e : c) {
+                memberToComponent.put(e, c);
+            }
         }
-        for (Iterator i = components.iterator(); i.hasNext();) {
-            Collection origin = (Collection) i.next();
+
+        for (Collection<E> origin : components) {
+
             contractedDigraph.addVertex(origin);
-            for (Iterator j = origin.iterator(); j.hasNext();) {
-                Object member = j.next();
-                for (ArcIterator k = digraph.outgoingIterator(member); k.hasNext();) {
-                    Object arc = k.next();
-                    Object dst = k.getDestination();
+
+            for (E member : origin) {
+
+                for (ArcIterator<E, V> k = digraph.outgoingIterator(member); k.hasNext();) {
+                    V arc = k.next();
+                    E dst = k.getDestination();
                     if (origin.contains(dst))
                         continue;
-                    Collection destination = (Collection) memberToComponent.get(dst);
+                    Collection<E> destination = memberToComponent.get(dst);
 
-                    Collection contractedArc = (Collection) contractedDigraph.getArc(
-                            origin,
-                            destination);
+                    Collection<V> contractedArc = contractedDigraph.getArc(origin, destination);
                     if (contractedArc == null) {
                         contractedArc = Collections.singletonList(arc);
                         contractedDigraph.putArc(origin, destination, contractedArc);
                     }
                     else {
                         if (contractedArc.size() == 1) {
-                            Collection tmp = contractedArc;
-                            contractedArc = new ArrayList<E>();
+                            Collection<V> tmp = contractedArc;
+                            contractedArc = new ArrayList<V>();
                             contractedArc.addAll(tmp);
                             contractedDigraph.putArc(origin, destination, contractedArc);
                         }
@@ -156,10 +160,6 @@ public class StrongConnection<E> extends Algorithm<Collection<E>> {
     }
 
     private Object nextDFSRoot() {
-        /*
-         * while (vertexIterator.hasNext()) { Object vertex = vertexIterator.next(); if
-         * (!seen.contains(vertex)) return vertex; } return null;
-         */
         return (vertexIterator.hasNext() ? vertexIterator.next() : null);
     }
 

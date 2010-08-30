@@ -66,14 +66,14 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-public class IndegreeTopologicalSort<E, V> extends Algorithm<E> {
+public class IndegreeTopologicalSort<E> extends Algorithm<E> {
 
-    private Digraph<E, V> digraph;
+    private Digraph<E, ?> digraph;
     private List<E> vertices = new LinkedList<E>();
     private Map<E, InDegree> inDegrees = new HashMap<E, InDegree>();
     private ListIterator<E> current;
 
-    public IndegreeTopologicalSort(Digraph<E, V> digraph) {
+    public IndegreeTopologicalSort(Digraph<E, ?> digraph) {
         this.digraph = digraph;
         for (Iterator<E> i = digraph.vertexIterator(); i.hasNext();) {
             E vertex = i.next();
@@ -110,7 +110,7 @@ public class IndegreeTopologicalSort<E, V> extends Algorithm<E> {
     }
 
     private void removeVertex(E vertex) {
-        for (ArcIterator<E, V> i = digraph.outgoingIterator(vertex); i.hasNext();) {
+        for (ArcIterator<E, ?> i = digraph.outgoingIterator(vertex); i.hasNext();) {
             i.next();
             E dst = i.getDestination();
             InDegree indegree = inDegrees.get(dst);
