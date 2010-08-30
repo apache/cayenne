@@ -102,7 +102,8 @@ public class DataPort {
 
         // sort entities for insertion
         List sorted = new ArrayList(entities);
-        EntitySorter sorter = new AshwoodEntitySorter(destinationNode.getDataMaps());
+        EntitySorter sorter = new AshwoodEntitySorter();
+        sorter.setDataMaps(destinationNode.getDataMaps());
         sorter.sortDbEntities(sorted, false);
 
         if (cleaningDestination) {

@@ -568,7 +568,8 @@ public class DbGenerator {
 
         // sort table list
         if (tables.size() > 1) {
-            EntitySorter sorter = new AshwoodEntitySorter(Collections.singleton(map));
+            EntitySorter sorter = new AshwoodEntitySorter();
+            sorter.setDataMaps(Collections.singleton(map));
             sorter.sortDbEntities(tables, false);
         }
 

@@ -49,6 +49,7 @@ CAY-1446 Remove DataContextFactory, replace it with DI-enabled ObjectContextFact
 CAY-1447 Switch ROP client to dependency injection
 CAY-1474 Straightening CayenneModeler platform-specific builds
 CAY-1475 Move cayenne-modeler module out of framework/ and out of the assembly binary
+CAY-1479 EntitySorter refactoring: make it DI-based, internalize Ashowood lib
 
 Bug Fixes Since 3.0:
 

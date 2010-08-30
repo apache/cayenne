@@ -62,6 +62,9 @@ package org.apache.cayenne.ashwood.graph;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * @since 3.1
+ */
 public interface ArcIterator<E, V> extends Iterator<V> {
 
     @SuppressWarnings("all")

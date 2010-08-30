@@ -33,9 +33,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.ashwood.dbutil.DbUtils;
-import org.apache.cayenne.ashwood.dbutil.ForeignKey;
-import org.apache.cayenne.ashwood.dbutil.Table;
 import org.apache.cayenne.ashwood.graph.Digraph;
 import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
 import org.apache.cayenne.ashwood.graph.MapDigraph;
@@ -62,24 +59,25 @@ import org.apache.commons.collections.comparators.ReverseComparator;
 public class AshwoodEntitySorter implements EntitySorter {
 
     protected Collection<DataMap> dataMaps;
-    protected Map<DbEntity, Table> dbEntityToTableMap;
-    protected Map<Table, ComponentRecord> components;
+    protected Map<DbEntity, ComponentRecord> components;
     protected Map<DbEntity, List<DbRelationship>> reflexiveDbEntities;
 
-    protected TableComparator tableComparator;
     protected DbEntityComparator dbEntityComparator;
     protected ObjEntityComparator objEntityComparator;
 
     private volatile boolean dirty;
 
     public AshwoodEntitySorter() {
-        tableComparator = new TableComparator();
         dbEntityComparator = new DbEntityComparator();
         objEntityComparator = new ObjEntityComparator();
-        dirty = true;
         dataMaps = Collections.EMPTY_LIST;
+        dirty = true;
     }
 
+    /**
+     * @deprecated since 3.1. Use {@link #AshwoodEntitySorter()} constructor together with
+     *             {@link #setDataMaps(Collection)} instead.
+     */
     public AshwoodEntitySorter(Collection<DataMap> dataMaps) {
         this();
         setDataMaps(dataMaps);
@@ -109,43 +107,80 @@ public class AshwoodEntitySorter implements EntitySorter {
 
     private void doIndexSorter() {
 
-        Collection<Table> tables = new ArrayList<Table>(64);
-        dbEntityToTableMap = new HashMap<DbEntity, Table>(64);
-        reflexiveDbEntities = new HashMap<DbEntity, List<DbRelationship>>(32);
+        Map<DbEntity, List<DbRelationship>> reflexiveDbEntities = new HashMap<DbEntity, List<DbRelationship>>(
+                32);
 
+        Digraph<DbEntity, List<DbAttribute>> referentialDigraph = new MapDigraph<DbEntity, List<DbAttribute>>();
+
+        Map<String, DbEntity> tableMap = new HashMap<String, DbEntity>();
         for (DataMap map : dataMaps) {
             for (DbEntity entity : map.getDbEntities()) {
-                Table table = new Table(entity.getCatalog(), entity.getSchema(), entity
-                        .getName());
-                fillInMetadata(table, entity);
-                dbEntityToTableMap.put(entity, table);
-                tables.add(table);
+                tableMap.put(entity.getFullyQualifiedName(), entity);
+                referentialDigraph.addVertex(entity);
             }
         }
 
-        Digraph<Table, List<ForeignKey>> referentialDigraph = new MapDigraph<Table, List<ForeignKey>>();
-        DbUtils.buildReferentialDigraph(referentialDigraph, tables);
+        for (DbEntity destination : tableMap.values()) {
+            for (DbRelationship candidate : destination.getRelationships()) {
+                if ((!candidate.isToMany() && !candidate.isToDependentPK())
+                        || candidate.isToMasterPK()) {
+                    DbEntity origin = (DbEntity) candidate.getTargetEntity();
+                    boolean newReflexive = destination.equals(origin);
 
-        StrongConnection<Table, List<ForeignKey>> contractor = new StrongConnection<Table, List<ForeignKey>>(
+                    for (DbJoin join : candidate.getJoins()) {
+                        DbAttribute targetAttribute = join.getTarget();
+                        if (targetAttribute.isPrimaryKey()) {
+
+                            if (newReflexive) {
+                                List<DbRelationship> reflexiveRels = reflexiveDbEntities
+                                        .get(destination);
+                                if (reflexiveRels == null) {
+                                    reflexiveRels = new ArrayList<DbRelationship>(1);
+                                    reflexiveDbEntities.put(destination, reflexiveRels);
+                                }
+                                reflexiveRels.add(candidate);
+                                newReflexive = false;
+                            }
+
+                            List<DbAttribute> fks = referentialDigraph.getArc(
+                                    origin,
+                                    destination);
+                            if (fks == null) {
+                                fks = new ArrayList<DbAttribute>();
+                                referentialDigraph.putArc(origin, destination, fks);
+                            }
+
+                            fks.add(targetAttribute);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        StrongConnection<DbEntity, List<DbAttribute>> contractor = new StrongConnection<DbEntity, List<DbAttribute>>(
                 referentialDigraph);
 
-        Digraph<Collection<Table>, Collection<List<ForeignKey>>> contractedReferentialDigraph = new MapDigraph<Collection<Table>, Collection<List<ForeignKey>>>();
+        Digraph<Collection<DbEntity>, Collection<List<DbAttribute>>> contractedReferentialDigraph = new MapDigraph<Collection<DbEntity>, Collection<List<DbAttribute>>>();
         contractor.contract(contractedReferentialDigraph);
 
-        IndegreeTopologicalSort<Collection<Table>> sorter = new IndegreeTopologicalSort<Collection<Table>>(
+        IndegreeTopologicalSort<Collection<DbEntity>> sorter = new IndegreeTopologicalSort<Collection<DbEntity>>(
                 contractedReferentialDigraph);
 
-        components = new HashMap<Table, ComponentRecord>(contractedReferentialDigraph
-                .order());
+        Map<DbEntity, ComponentRecord> components = new HashMap<DbEntity, ComponentRecord>(
+                contractedReferentialDigraph.order());
         int componentIndex = 0;
         while (sorter.hasNext()) {
-            Collection<Table> component = sorter.next();
+            Collection<DbEntity> component = sorter.next();
             ComponentRecord rec = new ComponentRecord(componentIndex++, component);
 
-            for (Table table : component) {
+            for (DbEntity table : component) {
                 components.put(table, rec);
             }
         }
+
+        this.reflexiveDbEntities = reflexiveDbEntities;
+        this.components = components;
     }
 
     /**
@@ -275,44 +310,6 @@ public class AshwoodEntitySorter implements EntitySorter {
         }
     }
 
-    protected void fillInMetadata(Table table, DbEntity entity) {
-        // in this case quite a dummy
-        short keySequence = 1;
-
-        for (DbRelationship candidate : entity.getRelationships()) {
-            if ((!candidate.isToMany() && !candidate.isToDependentPK())
-                    || candidate.isToMasterPK()) {
-                DbEntity target = (DbEntity) candidate.getTargetEntity();
-                boolean newReflexive = entity.equals(target);
-
-                for (DbJoin join : candidate.getJoins()) {
-                    DbAttribute targetAttribute = join.getTarget();
-                    if (targetAttribute.isPrimaryKey()) {
-                        ForeignKey fk = new ForeignKey();
-                        fk.setPkTableCatalog(target.getCatalog());
-                        fk.setPkTableSchema(target.getSchema());
-                        fk.setPkTableName(target.getName());
-                        fk.setPkColumnName(targetAttribute.getName());
-                        fk.setColumnName(join.getSourceName());
-                        fk.setKeySequence(keySequence++);
-                        table.addForeignKey(fk);
-
-                        if (newReflexive) {
-                            List<DbRelationship> reflexiveRels = reflexiveDbEntities
-                                    .get(entity);
-                            if (reflexiveRels == null) {
-                                reflexiveRels = new ArrayList<DbRelationship>(1);
-                                reflexiveDbEntities.put(entity, reflexiveRels);
-                            }
-                            reflexiveRels.add(candidate);
-                            newReflexive = false;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     protected Object findReflexiveMaster(
             Persistent object,
             ObjRelationship toOneRel,
@@ -361,27 +358,8 @@ public class AshwoodEntitySorter implements EntitySorter {
         return c;
     }
 
-    protected Table getTable(DbEntity dbEntity) {
-        return (dbEntity != null) ? dbEntityToTableMap.get(dbEntity) : null;
-    }
-
-    protected Table getTable(ObjEntity objEntity) {
-        return getTable(objEntity.getDbEntity());
-    }
-
     protected boolean isReflexive(DbEntity metadata) {
         return reflexiveDbEntities.containsKey(metadata);
-    }
-
-    private final class DbEntityComparator implements Comparator<DbEntity> {
-
-        public int compare(DbEntity o1, DbEntity o2) {
-            if (o1 == o2)
-                return 0;
-            Table t1 = getTable(o1);
-            Table t2 = getTable(o2);
-            return tableComparator.compare(t1, t2);
-        }
     }
 
     private final class ObjEntityComparator implements Comparator<ObjEntity> {
@@ -389,15 +367,15 @@ public class AshwoodEntitySorter implements EntitySorter {
         public int compare(ObjEntity o1, ObjEntity o2) {
             if (o1 == o2)
                 return 0;
-            Table t1 = getTable(o1);
-            Table t2 = getTable(o2);
-            return tableComparator.compare(t1, t2);
+            DbEntity t1 = o1.getDbEntity();
+            DbEntity t2 = o2.getDbEntity();
+            return dbEntityComparator.compare(t1, t2);
         }
     }
 
-    private final class TableComparator implements Comparator<Table> {
+    private final class DbEntityComparator implements Comparator<DbEntity> {
 
-        public int compare(Table t1, Table t2) {
+        public int compare(DbEntity t1, DbEntity t2) {
             int result = 0;
 
             if (t1 == t2)

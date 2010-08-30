@@ -60,26 +60,30 @@
 package org.apache.cayenne.ashwood.graph;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.collections.ArrayStack;
 
-public class DepthFirstSearch<E> extends Algorithm<E> {
+/**
+ * @since 3.1
+ */
+public class DepthFirstSearch<E> implements Iterator<E> {
 
-    protected DigraphIteration factory;
-    protected Object firstVertex;
+    protected DigraphIteration<E, ?> factory;
+    protected E firstVertex;
 
     protected ArrayStack stack = new ArrayStack();
-    protected Set seen = new HashSet();
+    protected Set<E> seen = new HashSet<E>();
 
-    public DepthFirstSearch(DigraphIteration factory, Object firstVertex) {
+    public DepthFirstSearch(DigraphIteration<E, ?> factory, E firstVertex) {
         this.factory = factory;
         this.firstVertex = firstVertex;
         stack.push(factory.outgoingIterator(firstVertex));
         seen.add(firstVertex);
     }
 
-    public void reset(Object newFirstVertex) {
+    public void reset(E newFirstVertex) {
         stack.clear();
         seen.clear();
         firstVertex = newFirstVertex;
@@ -92,15 +96,19 @@ public class DepthFirstSearch<E> extends Algorithm<E> {
     }
 
     public E next() {
-        ArcIterator i = (ArcIterator) stack.pop();
+        ArcIterator<E, ?> i = (ArcIterator<E, ?>) stack.pop();
         Object origin = i.getOrigin();
         while (i.hasNext()) {
             i.next();
-            // origin = i.getOrigin();
-            Object dst = i.getDestination();
-            if (seen.add(dst))
+            E dst = i.getDestination();
+            if (seen.add(dst)) {
                 stack.push(factory.outgoingIterator(dst));
+            }
         }
         return (E) origin;
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException("Method remove() not supported.");
     }
 }

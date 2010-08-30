@@ -59,103 +59,63 @@
  */
 package org.apache.cayenne.ashwood.graph;
 
-import java.util.Map;
+/**
+ * @since 3.1
+ */
+public class DepthFirstStampSearch<E> extends DepthFirstSearch<E> {
 
-public class DepthFirstStampSearch extends DepthFirstSearch {
-  public static final int UNDEFINED_STAMP = -1;
-  public static final int GROW_DEPTH_STAMP = 0;
-  public static final int GROW_BREADTH_STAMP = 1;
-  public static final int SHRINK_STAMP = 2;
-  public static final int LEAF_STAMP = 3;
+    public static final int UNDEFINED_STAMP = -1;
+    public static final int GROW_DEPTH_STAMP = 0;
+    public static final int GROW_BREADTH_STAMP = 1;
+    public static final int SHRINK_STAMP = 2;
+    public static final int LEAF_STAMP = 3;
 
-  private int stamp = UNDEFINED_STAMP;
+    private int stamp = UNDEFINED_STAMP;
 
-  public DepthFirstStampSearch(DigraphIteration factory, Object firstVertex) {
-    super(factory, firstVertex);
-  }
+    public DepthFirstStampSearch(DigraphIteration<E, ?> factory, E firstVertex) {
+        super(factory, firstVertex);
+    }
 
-  public int getStamp() {
-    return stamp;
-  }
+    public int getStamp() {
+        return stamp;
+    }
 
-  public Object next() {
-    ArcIterator i = (ArcIterator)stack.peek();
-    Object origin = i.getOrigin();
-    Object dst = i.getDestination();
-    if (dst == null) {
-      if (i.hasNext()) {
-        i.next();
-        dst = i.getDestination();
-      } else {
-        stack.pop();
-        //shrink
-        stamp = LEAF_STAMP;
+    @Override
+    public E next() {
+        ArcIterator<E, ?> i = (ArcIterator<E, ?>) stack.peek();
+        E origin = i.getOrigin();
+        E dst = i.getDestination();
+        if (dst == null) {
+            if (i.hasNext()) {
+                i.next();
+                dst = i.getDestination();
+            }
+            else {
+                stack.pop();
+                // shrink
+                stamp = LEAF_STAMP;
+                return origin;
+            }
+        }
+        if (seen.add(dst)) {
+            stack.push(factory.outgoingIterator(dst));
+            // grow depth
+            stamp = GROW_DEPTH_STAMP;
+            if (i.hasNext())
+                i.next();
+        }
+        else {
+            if (i.hasNext()) {
+                i.next();
+                // grow breadth
+                stamp = GROW_BREADTH_STAMP;
+            }
+            else {
+                stack.pop();
+                // shrink
+                stamp = SHRINK_STAMP;
+            }
+        }
         return origin;
-      }
     }
-    if (seen.add(dst)) {
-      stack.push(factory.outgoingIterator(dst));
-      //grow depth
-      stamp = GROW_DEPTH_STAMP;
-      if (i.hasNext()) i.next();
-    }
-    else {
-      if (i.hasNext()) {
-        i.next();
-        //grow breadth
-        stamp = GROW_BREADTH_STAMP;
-      } else {
-        stack.pop();
-        //shrink
-        stamp = SHRINK_STAMP;
-      }
-    }
-    return origin;
-  }
-
-  public Map traverse(Map orders) {
-    int preOrder = 0;
-    int postOrder = 0;
-    while (hasNext()) {
-      Object vertex = next();
-      int stamp = getStamp();
-      if (stamp == SHRINK_STAMP) {
-        postOrder++;
-        OrderPair pair = (OrderPair)orders.get(vertex);
-        if (pair == null) {
-          preOrder++;
-          orders.put(vertex, new OrderPair(preOrder, postOrder));
-        } else pair.postOrder = postOrder;
-      } else if (stamp == LEAF_STAMP) {
-        preOrder++;
-        postOrder++;
-        orders.put(vertex, new OrderPair(preOrder, postOrder));
-      } else if (!orders.containsKey(vertex)) {
-        preOrder++;
-        orders.put(vertex, new OrderPair(preOrder, -1));
-      }
-    }
-    return orders;
-  }
-
-  public static class OrderPair {
-    private int preOrder;
-    private int postOrder;
-
-    public OrderPair(int preOrder, int postOrder) {
-      this.preOrder = preOrder;
-      this.postOrder = postOrder;
-    }
-
-    public int getPreOrder() {
-      return preOrder;
-    }
-    public int getPostOrder() {
-      return postOrder;
-    }
-
-    public String toString() {
-      return "(" + preOrder + ", " + postOrder + ")";
-    }
-  }
 }

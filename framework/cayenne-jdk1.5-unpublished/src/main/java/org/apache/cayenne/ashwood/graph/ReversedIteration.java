@@ -59,49 +59,61 @@
  */
 package org.apache.cayenne.ashwood.graph;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
-public class ReversedIteration implements DigraphIteration, Serializable {
-  private DigraphIteration wrappedIteration;
+/**
+ * @since 3.1
+ */
+public class ReversedIteration<E, V> implements DigraphIteration<E, V> {
 
-  public ReversedIteration(DigraphIteration wrappedIteration) {
-    this.wrappedIteration = wrappedIteration;
-  }
-  public Iterator vertexIterator() {
-    return wrappedIteration.vertexIterator();
-  }
-  public ArcIterator arcIterator() {
-    return new ReversedArcIterator(wrappedIteration.arcIterator());
-  }
-  public ArcIterator outgoingIterator(Object vertex) {
-    return new ReversedArcIterator(wrappedIteration.incomingIterator(vertex));
-  }
-  public ArcIterator incomingIterator(Object vertex) {
-    return new ReversedArcIterator(wrappedIteration.outgoingIterator(vertex));
-  }
+    private DigraphIteration<E, V> wrappedIteration;
 
-  public static class ReversedArcIterator implements ArcIterator {
-    private ArcIterator wrappedIterator;
-
-    public ReversedArcIterator(ArcIterator wrappedIterator) {
-      ReversedArcIterator.this.wrappedIterator = wrappedIterator;
+    public ReversedIteration(DigraphIteration<E, V> wrappedIteration) {
+        this.wrappedIteration = wrappedIteration;
     }
 
-    public Object getOrigin() {
-      return wrappedIterator.getDestination();
+    public Iterator<E> vertexIterator() {
+        return wrappedIteration.vertexIterator();
     }
-    public Object getDestination() {
-      return wrappedIterator.getOrigin();
+
+    public ArcIterator<E, V> arcIterator() {
+        return new ReversedArcIterator<E, V>(wrappedIteration.arcIterator());
     }
-    public boolean hasNext() {
-      return wrappedIterator.hasNext();
+
+    public ArcIterator<E, V> outgoingIterator(E vertex) {
+        return new ReversedArcIterator<E, V>(wrappedIteration.incomingIterator(vertex));
     }
-    public Object next() {
-      return wrappedIterator.next();
+
+    public ArcIterator<E, V> incomingIterator(E vertex) {
+        return new ReversedArcIterator<E, V>(wrappedIteration.outgoingIterator(vertex));
     }
-    public void remove() {
-      wrappedIterator.remove();
+
+    public static class ReversedArcIterator<S, T> implements ArcIterator<S, T> {
+
+        private ArcIterator<S, T> wrappedIterator;
+
+        public ReversedArcIterator(ArcIterator<S, T> wrappedIterator) {
+            ReversedArcIterator.this.wrappedIterator = wrappedIterator;
+        }
+
+        public S getOrigin() {
+            return wrappedIterator.getDestination();
+        }
+
+        public S getDestination() {
+            return wrappedIterator.getOrigin();
+        }
+
+        public boolean hasNext() {
+            return wrappedIterator.hasNext();
+        }
+
+        public T next() {
+            return wrappedIterator.next();
+        }
+
+        public void remove() {
+            wrappedIterator.remove();
+        }
     }
-  }
 }

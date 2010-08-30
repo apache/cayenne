@@ -62,20 +62,24 @@ package org.apache.cayenne.ashwood.graph;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.functors.TruePredicate;
-import org.apache.commons.collections.iterators.AbstractIteratorDecorator;
 
-public class FilterArcIterator extends AbstractIteratorDecorator implements ArcIterator {
+/**
+ * @since 3.1
+ */
+public class FilterArcIterator<E, V> implements ArcIterator<E, V> {
 
+    private ArcIterator<E, V> iterator;
     private Predicate acceptOrigin, acceptDestination;
     private Predicate acceptArc;
 
-    private Object nextArc, nextOrigin, nextDst;
+    private E nextOrigin, nextDst;
+    private V nextArc;
     private boolean nextObjectSet = false;
 
-    public FilterArcIterator(ArcIterator iterator, Predicate acceptOrigin,
+    public FilterArcIterator(ArcIterator<E, V> iterator, Predicate acceptOrigin,
             Predicate acceptDestination, Predicate acceptArc) {
-        super(iterator);
+
+        this.iterator = iterator;
         this.acceptOrigin = acceptOrigin;
         this.acceptDestination = acceptDestination;
         this.acceptArc = acceptArc;
@@ -87,20 +91,11 @@ public class FilterArcIterator extends AbstractIteratorDecorator implements ArcI
             nextDst = null;
     }
 
-    public FilterArcIterator(ArcIterator iterator, Predicate acceptVertex,
-            Predicate acceptArc) {
-        this(iterator, acceptVertex, acceptVertex, acceptArc);
-    }
-
-    public FilterArcIterator(ArcIterator iterator, Predicate acceptVertex) {
-        this(iterator, acceptVertex, acceptVertex, TruePredicate.INSTANCE);
-    }
-
-    public Object getOrigin() {
+    public E getOrigin() {
         return nextOrigin;
     }
 
-    public Object getDestination() {
+    public E getDestination() {
         return nextDst;
     }
 
@@ -113,7 +108,7 @@ public class FilterArcIterator extends AbstractIteratorDecorator implements ArcI
         }
     }
 
-    public Object next() {
+    public V next() {
         if (!nextObjectSet) {
             if (!setNextObject()) {
                 throw new NoSuchElementException();
@@ -128,11 +123,11 @@ public class FilterArcIterator extends AbstractIteratorDecorator implements ArcI
     }
 
     private boolean setNextObject() {
-        ArcIterator iterator = (ArcIterator) getIterator();
+
         while (iterator.hasNext()) {
-            Object arc = iterator.next();
-            Object origin = iterator.getOrigin();
-            Object dst = iterator.getDestination();
+            V arc = iterator.next();
+            E origin = iterator.getOrigin();
+            E dst = iterator.getDestination();
             if (acceptOrigin.evaluate(origin)
                     && acceptArc.evaluate(arc)
                     && acceptDestination.evaluate(dst)) {

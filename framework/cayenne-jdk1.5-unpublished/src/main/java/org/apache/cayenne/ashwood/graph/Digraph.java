@@ -61,6 +61,9 @@ package org.apache.cayenne.ashwood.graph;
 
 import java.util.Collection;
 
+/**
+ * @since 3.1
+ */
 public interface Digraph<E, V> extends DigraphIteration<E, V> {
 
     boolean addVertex(E vertex);

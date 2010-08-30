@@ -61,6 +61,9 @@ package org.apache.cayenne.ashwood.graph;
 
 import java.util.Iterator;
 
+/**
+ * @since 3.1
+ */
 public interface DigraphIteration<E, V> {
 
     Iterator<E> vertexIterator();

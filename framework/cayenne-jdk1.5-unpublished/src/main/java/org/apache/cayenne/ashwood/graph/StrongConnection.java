@@ -73,46 +73,52 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.TruePredicate;
 
-public class StrongConnection<E, V> extends Algorithm<Collection<E>> {
+/**
+ * @since 3.1
+ */
+public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 
     private DigraphIteration<E, V> digraph;
     private DigraphIteration<E, V> reverseDigraph;
     private DigraphIteration<E, V> filteredDigraph;
-    private DepthFirstStampSearch directDfs;
-    private DepthFirstSearch reverseDfs;
-    private Set seen = new HashSet();
-    private Iterator vertexIterator;
+    private DepthFirstStampSearch<E> directDfs;
+    private DepthFirstSearch<E> reverseDfs;
+    private Set<E> seen = new HashSet<E>();
+    private Iterator<E> vertexIterator;
     private ArrayStack dfsStack = new ArrayStack();
     private DFSSeenVerticesPredicate reverseDFSFilter = new DFSSeenVerticesPredicate();
 
     public StrongConnection(DigraphIteration<E, V> digraph) {
         this.digraph = digraph;
-        filteredDigraph = new FilterIteration(
+        filteredDigraph = new FilterIteration<E, V>(
                 digraph,
                 new NotSeenPredicate(),
                 TruePredicate.INSTANCE);
-        reverseDigraph = new FilterIteration(
-                new ReversedIteration(digraph),
+        reverseDigraph = new FilterIteration<E, V>(
+                new ReversedIteration<E, V>(digraph),
                 reverseDFSFilter,
                 TruePredicate.INSTANCE);
         vertexIterator = filteredDigraph.vertexIterator();
         runDirectDFS();
     }
 
-    @Override
     public boolean hasNext() {
         return !dfsStack.isEmpty();
     }
 
-    @Override
     public Collection<E> next() {
-        Collection component = buildStronglyConnectedComponent();
+        Collection<E> component = buildStronglyConnectedComponent();
         if (dfsStack.isEmpty())
             runDirectDFS();
         return component;
     }
 
-    public Digraph<Collection<E>, Collection<V>> contract(Digraph<Collection<E>, Collection<V>> contractedDigraph) {
+    public void remove() {
+        throw new UnsupportedOperationException("Method remove() not supported.");
+    }
+
+    public Digraph<Collection<E>, Collection<V>> contract(
+            Digraph<Collection<E>, Collection<V>> contractedDigraph) {
 
         Collection<Collection<E>> components = new ArrayList<Collection<E>>();
         CollectionUtils.addAll(components, this);
@@ -138,7 +144,9 @@ public class StrongConnection<E, V> extends Algorithm<Collection<E>> {
                         continue;
                     Collection<E> destination = memberToComponent.get(dst);
 
-                    Collection<V> contractedArc = contractedDigraph.getArc(origin, destination);
+                    Collection<V> contractedArc = contractedDigraph.getArc(
+                            origin,
+                            destination);
                     if (contractedArc == null) {
                         contractedArc = Collections.singletonList(arc);
                         contractedDigraph.putArc(origin, destination, contractedArc);
@@ -159,22 +167,22 @@ public class StrongConnection<E, V> extends Algorithm<Collection<E>> {
         return contractedDigraph;
     }
 
-    private Object nextDFSRoot() {
-        return (vertexIterator.hasNext() ? vertexIterator.next() : null);
+    private E nextDFSRoot() {
+        return vertexIterator.hasNext() ? vertexIterator.next() : null;
     }
 
     private boolean runDirectDFS() {
         dfsStack.clear();
         reverseDFSFilter.seenVertices.clear();
-        Object root = nextDFSRoot();
+        E root = nextDFSRoot();
         if (root == null)
             return false;
         if (directDfs == null)
-            directDfs = new DepthFirstStampSearch(filteredDigraph, root);
+            directDfs = new DepthFirstStampSearch<E>(filteredDigraph, root);
         else
             directDfs.reset(root);
         int stamp;
-        Object vertex;
+        E vertex;
         while (directDfs.hasNext()) {
             vertex = directDfs.next();
             stamp = directDfs.getStamp();
@@ -190,19 +198,19 @@ public class StrongConnection<E, V> extends Algorithm<Collection<E>> {
         return true;
     }
 
-    private Collection buildStronglyConnectedComponent() {
-        Object root = dfsStack.pop();
-        Collection component = Collections.singletonList(root);
+    private Collection<E> buildStronglyConnectedComponent() {
+        E root = (E) dfsStack.pop();
+        Collection<E> component = Collections.singletonList(root);
         boolean singleton = true;
         if (reverseDfs == null)
-            reverseDfs = new DepthFirstSearch(reverseDigraph, root);
+            reverseDfs = new DepthFirstSearch<E>(reverseDigraph, root);
         else
             reverseDfs.reset(root);
         while (reverseDfs.hasNext()) {
-            Object vertex = reverseDfs.next();
+            E vertex = reverseDfs.next();
             if (vertex != root) {
                 if (singleton) {
-                    Collection tmp = component;
+                    Collection<E> tmp = component;
                     component = new ArrayList<E>();
                     component.addAll(tmp);
                     singleton = false;
@@ -217,7 +225,7 @@ public class StrongConnection<E, V> extends Algorithm<Collection<E>> {
 
     private class DFSSeenVerticesPredicate implements Predicate {
 
-        private Set seenVertices = new HashSet();
+        private Set<E> seenVertices = new HashSet<E>();
 
         public boolean evaluate(Object vertex) {
             return seenVertices.contains(vertex);

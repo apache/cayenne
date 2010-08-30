@@ -65,6 +65,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * @since 3.1
+ */
 public class MapDigraph<E, V> implements Digraph<E, V> {
 
     private Map<E, Map<E, V>> graph;

@@ -66,7 +66,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-public class IndegreeTopologicalSort<E> extends Algorithm<E> {
+/**
+ * @since 3.1
+ */
+public class IndegreeTopologicalSort<E> implements Iterator<E> {
 
     private Digraph<E, ?> digraph;
     private List<E> vertices = new LinkedList<E>();
@@ -83,12 +86,10 @@ public class IndegreeTopologicalSort<E> extends Algorithm<E> {
         current = vertices.listIterator();
     }
 
-    @Override
     public boolean hasNext() {
         return !vertices.isEmpty();
     }
 
-    @Override
     public E next() {
         boolean progress = true;
         while (hasNext()) {
@@ -116,6 +117,10 @@ public class IndegreeTopologicalSort<E> extends Algorithm<E> {
             InDegree indegree = inDegrees.get(dst);
             indegree.value--;
         }
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException("Method remove() not supported.");
     }
 
     private static class InDegree {
