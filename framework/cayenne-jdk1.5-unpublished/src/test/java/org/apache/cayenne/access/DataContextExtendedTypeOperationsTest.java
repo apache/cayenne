@@ -20,25 +20,35 @@ package org.apache.cayenne.access;
 
 import java.util.Arrays;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.testmap.StringET1;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextExtendedTypeOperationsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextExtendedTypeOperationsTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("EXTENDED_TYPE_TEST");
     }
 
     public void testStoreExtendedType() {
-        ExtendedTypeEntity e1 = createDataContext().newObject(ExtendedTypeEntity.class);
+        ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
         e1.getObjectContext().commitChanges();
 
@@ -51,7 +61,7 @@ public class DataContextExtendedTypeOperationsTest extends CayenneCase {
     }
 
     public void testInExpressionExtendedTypeArray() {
-        ExtendedTypeEntity e1 = createDataContext().newObject(ExtendedTypeEntity.class);
+        ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
 
         ExtendedTypeEntity e2 = e1.getObjectContext().newObject(ExtendedTypeEntity.class);
@@ -64,13 +74,14 @@ public class DataContextExtendedTypeOperationsTest extends CayenneCase {
 
         Expression in = ExpressionFactory.inExp(
                 ExtendedTypeEntity.NAME_PROPERTY,
-                new StringET1("X"), new StringET1("Y"));
+                new StringET1("X"),
+                new StringET1("Y"));
         SelectQuery query = new SelectQuery(ExtendedTypeEntity.class, in);
         assertEquals(2, e1.getObjectContext().performQuery(query).size());
     }
 
     public void testInExpressionExtendedTypeList() {
-        ExtendedTypeEntity e1 = createDataContext().newObject(ExtendedTypeEntity.class);
+        ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
 
         ExtendedTypeEntity e2 = e1.getObjectContext().newObject(ExtendedTypeEntity.class);

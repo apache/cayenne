@@ -28,8 +28,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.MultiContextCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
-/**
- */
 public class DataContextDelegateSharedCacheTest extends MultiContextCase {
 
     protected Artist artist;

@@ -21,12 +21,30 @@ package org.apache.cayenne.access;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class TransactionThreadTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class TransactionThreadTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+    }
 
     public void testThreadConnectionReuseOnSelect() throws Exception {
 
@@ -38,12 +56,12 @@ public class TransactionThreadTest extends CayenneCase {
         try {
 
             SelectQuery q1 = new SelectQuery(Artist.class);
-            createDataContext().performQuery(q1);
+            context.performQuery(q1);
             assertEquals(1, delegate.connectionCount);
 
             // delegate will fail if the second query opens a new connection
             SelectQuery q2 = new SelectQuery(Artist.class);
-            createDataContext().performQuery(q2);
+            context.performQuery(q2);
 
         }
         finally {
@@ -53,9 +71,8 @@ public class TransactionThreadTest extends CayenneCase {
     }
 
     public void testThreadConnectionReuseOnQueryFromWillCommit() throws Exception {
-        deleteTestData();
 
-        Artist a = createDataContext().newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("aaa");
 
         Delegate delegate = new Delegate() {
@@ -67,24 +84,22 @@ public class TransactionThreadTest extends CayenneCase {
                 SQLTemplate template = new SQLTemplate(
                         Artist.class,
                         "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'bbb')");
-                createDataContext().performNonSelectingQuery(template);
+                context.performNonSelectingQuery(template);
 
                 return true;
             }
         };
 
-        getDomain().setTransactionDelegate(delegate);
+        context.getParentDataDomain().setTransactionDelegate(delegate);
 
         try {
             a.getObjectContext().commitChanges();
         }
         finally {
-            getDomain().setTransactionDelegate(null);
+            context.getParentDataDomain().setTransactionDelegate(null);
         }
 
-        assertEquals(2, createDataContext()
-                .performQuery(new SelectQuery(Artist.class))
-                .size());
+        assertEquals(2, context.performQuery(new SelectQuery(Artist.class)).size());
     }
 
     class Delegate implements TransactionDelegate {

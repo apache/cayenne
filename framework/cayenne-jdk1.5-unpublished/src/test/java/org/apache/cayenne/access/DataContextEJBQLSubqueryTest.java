@@ -24,24 +24,65 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLSubqueryTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLSubqueryTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tArtist;
+    private TableHelper tPainting;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+    }
+
+    private void createTwoArtistsFourPaintings() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tPainting.insert(33001, 33001, "P1", 3000);
+        tPainting.insert(33002, 33001, "P2", 4000);
+        tPainting.insert(33003, null, "P1", 5000);
+        tPainting.insert(33004, null, "P4", 6000);
     }
 
     public void testSubqueryNoQualifier() throws Exception {
-        if (!getAccessStackAdapter().supportsAllAnySome()) {
+        if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }
 
-        createTestData("prepare");
+        createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT DISTINCT p FROM Painting p"
                 + " WHERE p.estimatedPrice = ALL ("
@@ -49,11 +90,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -63,7 +104,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
 
     public void testDifferentEntity() throws Exception {
-        createTestData("prepare");
+        createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT a FROM Artist a"
                 + " WHERE EXISTS ("
@@ -72,11 +113,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -88,7 +129,7 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
 
     public void testExists() throws Exception {
-        createTestData("prepare");
+        createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT p FROM Painting p"
                 + " WHERE EXISTS ("
@@ -98,11 +139,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -113,11 +154,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
 
     public void testAll() throws Exception {
-        if (!getAccessStackAdapter().supportsAllAnySome()) {
+        if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }
 
-        createTestData("prepare");
+        createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT p FROM Painting p"
                 + " WHERE p.estimatedPrice > ALL ("
@@ -126,11 +167,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -141,11 +182,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
 
     public void testAny() throws Exception {
-        if (!getAccessStackAdapter().supportsAllAnySome()) {
+        if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }
 
-        createTestData("prepare");
+        createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT p FROM Painting p"
                 + " WHERE p.estimatedPrice > ANY ("
@@ -154,11 +195,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(3, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -170,11 +211,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
 
     public void testSome() throws Exception {
-        if (!getAccessStackAdapter().supportsAllAnySome()) {
+        if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }
 
-        createTestData("prepare");
+        createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT p FROM Painting p"
                 + " WHERE p.estimatedPrice > SOME ("
@@ -183,11 +224,11 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(3, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = Cayenne.pkForObject((Persistent) it.next());
             ids.add(id);

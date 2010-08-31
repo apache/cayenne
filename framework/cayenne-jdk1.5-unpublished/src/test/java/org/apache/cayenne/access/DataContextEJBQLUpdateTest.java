@@ -24,23 +24,73 @@ import java.util.Map;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLUpdateTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLUpdateTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tArtist;
+    private TableHelper tPainting;
+    private TableHelper tCompoundPk;
+    private TableHelper tCompoundFk;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("COMPOUND_FK_TEST");
+        dbHelper.deleteAll("COMPOUND_PK_TEST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+
+        tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPk.setColumns("KEY1", "KEY2");
+
+        tCompoundFk = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
+        tCompoundFk.setColumns("PKEY", "F_KEY1", "F_KEY2");
+    }
+
+    private void createThreeArtistsTwoPaintings() throws Exception {
+        tArtist.insert(33001, "AA1");
+        tArtist.insert(33002, "AA2");
+        tArtist.insert(33003, "BB1");
+        tPainting.insert(33001, 33001, "P1", 3000);
+        tPainting.insert(33002, 33002, "P2", 5000);
+    }
+
+    private void createTwoCompoundPKTwoFK() throws Exception {
+        tCompoundPk.insert("a1", "a2");
+        tCompoundPk.insert("b1", "b2");
+        tCompoundFk.insert(33001, "a1", "a2");
+        tCompoundFk.insert(33002, "b1", "b2");
     }
 
     public void testUpdateQualifier() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createDataContext();
+        createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
@@ -63,9 +113,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     }
 
     public void testUpdateNoQualifierString() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createDataContext();
+        createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
@@ -88,9 +136,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     }
 
     public void testUpdateNoQualifierNull() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createDataContext();
+        createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is not null");
@@ -113,36 +159,33 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     }
 
     // This fails until we implement arithmetic exps
-    
-//    public void testUpdateNoQualifierArithmeticExpression() throws Exception {
-//        createTestData("prepare");
-//
-//        ObjectContext context = createDataContext();
-//
-//        EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
-//                + "WHERE p.paintingTitle is NULL or p.estimatedPrice <= 5000");
-//
-//        Object notUpdated = Cayenne.objectForQuery(context, check);
-//        assertEquals(new Long(2l), notUpdated);
-//
-//        String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = p.estimatedPrice * 2";
-//        EJBQLQuery query = new EJBQLQuery(ejbql);
-//
-//        QueryResponse result = context.performGenericQuery(query);
-//
-//        int[] count = result.firstUpdateCount();
-//        assertNotNull(count);
-//        assertEquals(1, count.length);
-//        assertEquals(2, count[0]);
-//
-//        notUpdated = Cayenne.objectForQuery(context, check);
-//        assertEquals(new Long(0l), notUpdated);
-//    }
+
+    // public void testUpdateNoQualifierArithmeticExpression() throws Exception {
+    // createThreeArtistsTwoPaintings();
+    //
+    //
+    // EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
+    // + "WHERE p.paintingTitle is NULL or p.estimatedPrice <= 5000");
+    //
+    // Object notUpdated = Cayenne.objectForQuery(context, check);
+    // assertEquals(new Long(2l), notUpdated);
+    //
+    // String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = p.estimatedPrice * 2";
+    // EJBQLQuery query = new EJBQLQuery(ejbql);
+    //
+    // QueryResponse result = context.performGenericQuery(query);
+    //
+    // int[] count = result.firstUpdateCount();
+    // assertNotNull(count);
+    // assertEquals(1, count.length);
+    // assertEquals(2, count[0]);
+    //
+    // notUpdated = Cayenne.objectForQuery(context, check);
+    // assertEquals(new Long(0l), notUpdated);
+    // }
 
     public void testUpdateNoQualifierMultipleItems() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createDataContext();
+        createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1");
@@ -165,9 +208,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     }
 
     public void testUpdateNoQualifierDecimal() throws Exception {
-        createTestData("prepare");
-
-        ObjectContext context = createDataContext();
+        createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1.1");
@@ -191,17 +232,13 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
 
     public void testUpdateNoQualifierBoolean() throws Exception {
 
-        ObjectContext context = createDataContext();
-        BooleanTestEntity o1 = context
-                .newObject(BooleanTestEntity.class);
+        BooleanTestEntity o1 = context.newObject(BooleanTestEntity.class);
         o1.setBooleanColumn(Boolean.TRUE);
 
-        BooleanTestEntity o2 = context
-                .newObject(BooleanTestEntity.class);
+        BooleanTestEntity o2 = context.newObject(BooleanTestEntity.class);
         o2.setBooleanColumn(Boolean.FALSE);
 
-        BooleanTestEntity o3 = context
-                .newObject(BooleanTestEntity.class);
+        BooleanTestEntity o3 = context.newObject(BooleanTestEntity.class);
         o3.setBooleanColumn(Boolean.FALSE);
 
         context.commitChanges();
@@ -227,11 +264,9 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     }
 
     public void testUpdateNoQualifierToOne() throws Exception {
-        createTestData("prepare");
+        createThreeArtistsTwoPaintings();
 
-        ObjectContext context = createDataContext();
-        Artist object = Cayenne
-                .objectForPK(context, Artist.class, 33003);
+        Artist object = Cayenne.objectForPK(context, Artist.class, 33003);
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.toArtist <> :artist");
@@ -256,9 +291,8 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     }
 
     public void testUpdateNoQualifierToOneCompoundPK() throws Exception {
-        createTestData("prepareCompound");
+        createTwoCompoundPKTwoFK();
 
-        ObjectContext context = createDataContext();
         Map<String, String> key1 = new HashMap<String, String>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");

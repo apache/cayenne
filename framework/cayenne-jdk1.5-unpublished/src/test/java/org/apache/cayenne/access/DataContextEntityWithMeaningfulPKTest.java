@@ -23,31 +23,38 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.MeaningfulPKDep;
 import org.apache.cayenne.testdo.testmap.MeaningfulPKTest1;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataContextEntityWithMeaningfulPKTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEntityWithMeaningfulPKTest extends ServerCase {
 
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private ServerRuntime runtime;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
     }
 
     public void testInsertWithMeaningfulPK() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
-        obj.setPkAttribute(new Integer(1000));
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
         ObjectIdQuery q = new ObjectIdQuery(new ObjectId(
@@ -58,8 +65,7 @@ public class DataContextEntityWithMeaningfulPKTest extends CayenneCase {
     }
 
     public void testGeneratedKey() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
 
@@ -100,7 +106,7 @@ public class DataContextEntityWithMeaningfulPKTest extends CayenneCase {
         context.commitChanges();
 
         // must be able to resolve to-many relationship
-        context = createDataContext();
+        ObjectContext context = runtime.getContext();
         List objects = context.performQuery(new SelectQuery(MeaningfulPKTest1.class));
         assertEquals(1, objects.size());
         obj = (MeaningfulPKTest1) objects.get(0);

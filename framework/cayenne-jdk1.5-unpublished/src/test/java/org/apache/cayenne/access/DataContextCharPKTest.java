@@ -26,8 +26,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
 public class DataContextCharPKTest extends CayenneCase {
 
     protected DataContext ctxt;
@@ -52,7 +50,7 @@ public class DataContextCharPKTest extends CayenneCase {
 
         q.setFetchingDataRows(true);
 
-        List rows = ctxt.performQuery(q);
+        List<?> rows = ctxt.performQuery(q);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         Map row = (Map) rows.get(0);
@@ -84,7 +82,7 @@ public class DataContextCharPKTest extends CayenneCase {
                 "SELECT * FROM CHAR_PK_TEST");
         q.setFetchingDataRows(true);
 
-        List rows = ctxt.performQuery(q);
+        List<?> rows = ctxt.performQuery(q);
         assertNotNull(rows);
         assertEquals(0, rows.size());
     }
@@ -103,7 +101,7 @@ public class DataContextCharPKTest extends CayenneCase {
                 "SELECT * FROM CHAR_PK_TEST");
         q.setFetchingDataRows(true);
 
-        List rows = ctxt.performQuery(q);
+        List<?> rows = ctxt.performQuery(q);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         Map row = (Map) rows.get(0);

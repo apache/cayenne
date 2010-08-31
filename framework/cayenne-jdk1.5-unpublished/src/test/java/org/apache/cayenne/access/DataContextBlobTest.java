@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.util.List;
@@ -27,8 +26,6 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.BlobTestEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
 public class DataContextBlobTest extends CayenneCase {
 
     protected DataContext ctxt;
@@ -92,7 +89,7 @@ public class DataContextBlobTest extends CayenneCase {
 
         // read the BLOB in the new context
         DataContext ctxt2 = createDataContext();
-        List objects2 = ctxt2.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects2 = ctxt2.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -104,7 +101,7 @@ public class DataContextBlobTest extends CayenneCase {
 
         // read into yet another context and check for changes
         DataContext ctxt3 = createDataContext();
-        List objects3 = ctxt3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects3 = ctxt3.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
@@ -127,7 +124,7 @@ public class DataContextBlobTest extends CayenneCase {
 
         // read the CLOB in the new context
         DataContext ctxt2 = createDataContext();
-        List objects2 = ctxt2.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects2 = ctxt2.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -142,7 +139,7 @@ public class DataContextBlobTest extends CayenneCase {
 
         // read into yet another context and check for changes
         DataContext ctxt3 = createDataContext();
-        List objects3 = ctxt3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects3 = ctxt3.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);

@@ -32,6 +32,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
@@ -118,7 +119,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List objects = context.performQuery(query);
+        final List<?> objects = context.performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -126,17 +127,15 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
 
                 assertEquals(2, objects.size());
 
-                Iterator it = objects.iterator();
+                Iterator<?> it = objects.iterator();
                 while (it.hasNext()) {
                     Artist a = (Artist) it.next();
-                    List list = a.getPaintingArray();
+                    List<Painting> list = a.getPaintingArray();
 
                     assertNotNull(list);
                     assertFalse(((ValueHolder) list).isFault());
 
-                    Iterator children = list.iterator();
-                    while (children.hasNext()) {
-                        Painting p = (Painting) children.next();
+                    for (Painting p : list) {
                         assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
                         // make sure properties are not null..
                         assertNotNull(p.getPaintingTitle());
@@ -155,7 +154,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List objects = context.performQuery(query);
+        final List<?> objects = context.performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -210,7 +209,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List objects = context.performQuery(query);
+        final List<?> objects = context.performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -232,7 +231,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List objects = context.performQuery(query);
+        final List<?> objects = context.performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -267,7 +266,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
                 Gallery g1 = (Gallery) firstRow[2];
                 assertEquals("gallery1", g1.getGalleryName());
 
-                List exibits = g1.getExhibitArray();
+                List<Exhibit> exibits = g1.getExhibitArray();
 
                 assertNotNull(exibits);
                 assertFalse(((ValueHolder) exibits).isFault());
@@ -311,7 +310,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List objects = context.performQuery(query);
+        final List<?> objects = context.performQuery(query);
         queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
@@ -345,7 +344,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
                 Gallery g1 = (Gallery) row[2];
                 assertEquals("gallery1", g1.getGalleryName());
 
-                List exibits = g1.getExhibitArray();
+                List<?> exibits = g1.getExhibitArray();
 
                 assertNotNull(exibits);
                 assertFalse(((ValueHolder) exibits).isFault());

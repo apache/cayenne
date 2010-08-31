@@ -21,20 +21,73 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLOrderByTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextEJBQLOrderByTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "ARTIST_ID",
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE");
+    }
+
+    private void createThreePaintings() throws Exception {
+        tPainting.insert(33001, null, "A", 3000);
+        tPainting.insert(33002, null, "B", 2000);
+        tPainting.insert(33003, null, "C", 1000);
+    }
+
+    private void createFourPaintings() throws Exception {
+        tPainting.insert(33001, null, "A", 3000);
+        tPainting.insert(33002, null, "B", 2000);
+        tPainting.insert(33003, null, "C", 1000);
+        tPainting.insert(33004, null, "C", 500);
+    }
+    
+    private void createTwoArtistsTwoPaintings() throws Exception {
+        tArtist.insert(33001, "A");
+        tArtist.insert(33002, "B");
+        tPainting.insert(33005, 33001, "C", 500);
+        tPainting.insert(33006, 33002, "C", 500);
+    }
 
     public void testOrderByDefault() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+
+        createThreePaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results1 = createDataContext().performQuery(query1);
+        List<?> results1 = context.performQuery(query1);
         assertEquals(3, results1.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -44,7 +97,7 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List results2 = createDataContext().performQuery(query2);
+        List<?> results2 = context.performQuery(query2);
         assertEquals(3, results2.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -53,13 +106,13 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
     }
 
     public void testOrderByAsc() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+
+        createThreePaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle ASC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results1 = createDataContext().performQuery(query1);
+        List<?> results1 = context.performQuery(query1);
         assertEquals(3, results1.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -69,7 +122,7 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice ASC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List results2 = createDataContext().performQuery(query2);
+        List<?> results2 = context.performQuery(query2);
         assertEquals(3, results2.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -78,13 +131,12 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
     }
 
     public void testOrderByDesc() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+        createThreePaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle DESC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results1 = createDataContext().performQuery(query1);
+        List<?> results1 = context.performQuery(query1);
         assertEquals(3, results1.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -94,7 +146,7 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice DESC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List results2 = createDataContext().performQuery(query2);
+        List<?> results2 = context.performQuery(query2);
         assertEquals(3, results2.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -103,13 +155,12 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
     }
 
     public void testOrderByQualified() throws Exception {
-        deleteTestData();
-        createTestData("prepare");
+        createThreePaintings();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice > 1000 ORDER BY p.paintingTitle ASC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results1 = createDataContext().performQuery(query1);
+        List<?> results1 = context.performQuery(query1);
         assertEquals(2, results1.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -118,7 +169,7 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         String ejbql2 = "SELECT p FROM Painting p WHERE p.estimatedPrice > 1000 ORDER BY p.estimatedPrice ASC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List results2 = createDataContext().performQuery(query2);
+        List<?> results2 = context.performQuery(query2);
         assertEquals(2, results2.size());
 
         assertEquals(33002, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -126,13 +177,12 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
     }
 
     public void testOrderByMultiple() throws Exception {
-        deleteTestData();
-        createTestData("testOrderByMultiple");
+        createFourPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle DESC, p.estimatedPrice DESC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results1 = createDataContext().performQuery(query1);
+        List<?> results1 = context.performQuery(query1);
         assertEquals(4, results1.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -140,15 +190,14 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         assertEquals(33002, Cayenne.intPKForObject((Persistent) results1.get(2)));
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(3)));
     }
-    
+
     public void testOrderByPath() throws Exception {
-        deleteTestData();
-        createTestData("testOrderByPath");
+        createTwoArtistsTwoPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.toArtist.artistName ASC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List results1 = createDataContext().performQuery(query1);
+        List<?> results1 = context.performQuery(query1);
         assertEquals(2, results1.size());
 
         assertEquals(33005, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -157,7 +206,7 @@ public class DataContextEJBQLOrderByTest extends CayenneCase {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.toArtist.artistName DESC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List results2 = createDataContext().performQuery(query2);
+        List<?> results2 = context.performQuery(query2);
         assertEquals(2, results2.size());
 
         assertEquals(33006, Cayenne.intPKForObject((Persistent) results2.get(0)));

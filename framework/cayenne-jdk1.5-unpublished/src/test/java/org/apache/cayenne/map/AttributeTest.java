@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-public class AttributeTest extends CayenneCase {
+public class AttributeTest extends TestCase {
 
     public void testName() throws Exception {
         Attribute a = new MockAttribute();

@@ -22,30 +22,58 @@ package org.apache.cayenne.ashwood;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class AshwoodEntitySorterTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class AshwoodEntitySorterTest extends ServerCase {
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected ObjectContext context;
+
+    protected TableHelper tRelationshipHelper;
+    protected TableHelper tReflexiveAndToOne;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
+        dbHelper.deleteAll("RELATIONSHIP_HELPER");
+
+        tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
+        tRelationshipHelper.setColumns("RELATIONSHIP_HELPER_ID", "NAME");
+
+        tReflexiveAndToOne = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
+        tReflexiveAndToOne.setColumns(
+                "REFLEXIVE_AND_TO_ONE_ID",
+                "PARENT_ID",
+                "RELATIONSHIP_HELPER_ID",
+                "NAME");
     }
 
     public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {
-        createTestData("testSortObjectsForEntityDeletedWithFaults");
 
+        tRelationshipHelper.insert(1, "rh1");
+        tReflexiveAndToOne.insert(1, null, 1, "r1");
+        tReflexiveAndToOne.insert(2, 1, 1, "r2");
+        tReflexiveAndToOne.insert(3, 2, 1, "r3");
+        
         AshwoodEntitySorter sorter = new AshwoodEntitySorter();
-        sorter.setDataMaps(getDomain().getDataMaps());
+        sorter.setDataMaps(context.getEntityResolver().getDataMaps());
 
-        ObjEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+        ObjEntity entity = context.getEntityResolver().lookupObjEntity(
                 ReflexiveAndToOne.class);
 
-        List<?> objects = createDataContext().performQuery(
-                new SelectQuery(ReflexiveAndToOne.class));
+        List<?> objects = context.performQuery(new SelectQuery(ReflexiveAndToOne.class));
         Collections.shuffle(objects);
         assertEquals(3, objects.size());
 

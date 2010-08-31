@@ -21,13 +21,19 @@ package org.apache.cayenne.access;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class UserTransactionTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class UserTransactionTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
 
     public void testCommit() throws Exception {
-        DataContext context = createDataContext();
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
