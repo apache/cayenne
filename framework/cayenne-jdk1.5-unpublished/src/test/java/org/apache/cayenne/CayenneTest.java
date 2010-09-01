@@ -62,6 +62,7 @@ public class CayenneTest extends ServerCase {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("COMPOUND_PK_TEST");
         dbHelper.deleteAll("CHAR_PK_TEST");

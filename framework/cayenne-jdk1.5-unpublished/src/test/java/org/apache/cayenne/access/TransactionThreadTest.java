@@ -43,6 +43,7 @@ public class TransactionThreadTest extends ServerCase {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
     }
 
