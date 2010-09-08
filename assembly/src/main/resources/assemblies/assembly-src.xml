@@ -28,6 +28,7 @@
 			<directory>../</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
+				<exclude>eclipse/**</exclude>
 				<exclude>**/target/**</exclude>
 				<exclude>**/derby.log</exclude>
 			</excludes>
