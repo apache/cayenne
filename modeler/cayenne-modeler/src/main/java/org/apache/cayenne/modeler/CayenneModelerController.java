@@ -169,6 +169,7 @@ public class CayenneModelerController extends CayenneController {
 
     public void projectSavedAction() {
         projectController.setDirty(false);
+        projectController.updateProjectControllerPreferences();
         updateStatus("Project saved...");
         frame.setTitle(ModelerConstants.TITLE
                 + " - "

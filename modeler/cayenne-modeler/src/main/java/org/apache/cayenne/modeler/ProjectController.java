@@ -340,26 +340,7 @@ public class ProjectController extends CayenneController {
             throw new CayenneRuntimeException("No Project selected");
         }
         if (projectControllerPreferences == null) {
-            String key = getProject().getConfigurationResource() == null ? new String(
-                    IDUtil.pseudoUniqueByteSequence16()) : project
-                    .getConfigurationResource()
-                    .getURL()
-                    .getPath();
-
-            projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
-
-            if (key.trim().length() > 0) {
-                if (key.contains(".xml")) {
-                    projectControllerPreferences = projectControllerPreferences
-                            .node(projectControllerPreferences.absolutePath()
-                                    + key.replace(".xml", ""));
-                }
-                else {
-                    projectControllerPreferences = projectControllerPreferences.node(
-                            projectControllerPreferences.absolutePath()).node(
-                            getApplication().getNewProjectTemporaryName());
-                }
-            }
+            updateProjectControllerPreferences();
         }
 
         return projectControllerPreferences;
@@ -1914,5 +1895,28 @@ public class ProjectController extends CayenneController {
             embs.addAll(it.next().getEmbeddables());
         }
         return embs;
+    }
+
+    public void updateProjectControllerPreferences() {
+        String key = getProject().getConfigurationResource() == null ? new String(IDUtil
+                .pseudoUniqueByteSequence16()) : project
+                .getConfigurationResource()
+                .getURL()
+                .getPath();
+
+        projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
+
+        if (key.trim().length() > 0) {
+            if (key.contains(".xml")) {
+                projectControllerPreferences = projectControllerPreferences
+                        .node(projectControllerPreferences.absolutePath()
+                                + key.replace(".xml", ""));
+            }
+            else {
+                projectControllerPreferences = projectControllerPreferences.node(
+                        projectControllerPreferences.absolutePath()).node(
+                        getApplication().getNewProjectTemporaryName());
+            }
+        }
     }
 }
