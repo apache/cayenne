@@ -55,10 +55,6 @@ import org.apache.cayenne.merge.MergerFactory;
  */
 public class DB2Adapter extends JdbcAdapter {
 
-    public DB2Adapter() {
-        setSupportsGeneratedKeys(true);
-    }
-    
     /**
      * Creates a DB2 specific PK Generator.
      */
