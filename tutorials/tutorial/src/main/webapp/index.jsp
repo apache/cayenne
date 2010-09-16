@@ -44,7 +44,7 @@
         <% } else { 
         	for(Artist a : artists) {
         %>
-        <p><a href="detail.jsp?id=<%=DataObjectUtils.intPKForObject(a)%>"> <%=a.getName()%> </a></p>
+        <p><a href="detail.jsp?id=<%=Cayenne.intPKForObject(a)%>"> <%=a.getName()%> </a></p>
         <%
             }
             } %>

@@ -18,28 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.tutorial.persistent.client;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.cayenne.CayenneContext;
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.rop.client.ClientModule;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.remote.hessian.HessianConnection;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		ClientConnection connection = new HessianConnection(
-				"http://localhost:8080/tutorial/cayenne-service",
-				"cayenne-user", "secret", null);
-		DataChannel channel = new ClientChannel(connection);
-		ObjectContext context = new CayenneContext(channel);
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put(ClientModule.ROP_SERVICE_URL,
+				"http://localhost:8080/tutorial/cayenne-service");
+		properties.put(ClientModule.ROP_SERVICE_USER_NAME, "cayenne-user");
+		properties.put(ClientModule.ROP_SERVICE_PASSWORD, "secret");
+
+		ClientRuntime runtime = new ClientRuntime(properties);
+
+		ObjectContext context = runtime.getContext();
 
 		newObjectsTutorial(context);
 		selectTutorial(context);
@@ -89,7 +92,7 @@ public class Main {
 		Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
 				"Pablo Picasso");
 		SelectQuery selectToDelete = new SelectQuery(Artist.class, qualifier);
-		Artist picasso = (Artist) DataObjectUtils.objectForQuery(context,
+		Artist picasso = (Artist) Cayenne.objectForQuery(context,
 				selectToDelete);
 
 		if (picasso != null) {

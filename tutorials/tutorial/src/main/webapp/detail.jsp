@@ -31,7 +31,7 @@
     // find artist for id
     Artist artist = null;
     if(id != null && id.trim().length() > 0) {
-        artist = DataObjectUtils.objectForPK(context, Artist.class, Integer.parseInt(id));
+        artist = Cayenne.objectForPK(context, Artist.class, Integer.parseInt(id));
     }
 
     if("POST".equals(request.getMethod())) {
