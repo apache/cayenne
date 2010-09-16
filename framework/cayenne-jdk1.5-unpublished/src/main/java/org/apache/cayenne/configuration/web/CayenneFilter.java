@@ -36,7 +36,7 @@ import org.apache.cayenne.di.Module;
 
 /**
  * A filter that creates a Cayenne server runtime, possibly including custom modules. By
- * default runtime includes {@link ServerModule} and {@link CayenneWebModule}. Any
+ * default runtime includes {@link ServerModule} and {@link WebModule}. Any
  * custom modules are loaded after the two standard ones to allow custom service
  * overrides. Filter initialization parameters:
  * <ul>
@@ -67,11 +67,12 @@ public class CayenneFilter implements Filter {
         WebConfiguration configAdapter = new WebConfiguration(config);
 
         String configurationLocation = configAdapter.getConfigurationLocation();
-        Collection<Module> modules = configAdapter.createModules(new CayenneWebModule());
+        Collection<Module> modules = configAdapter.createModules(new WebModule());
 
         ServerRuntime runtime = new ServerRuntime(
                 configurationLocation,
                 modules);
+        
         WebUtil.setCayenneRuntime(config.getServletContext(), runtime);
     }
 

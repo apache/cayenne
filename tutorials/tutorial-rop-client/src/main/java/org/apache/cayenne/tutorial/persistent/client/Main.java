@@ -36,7 +36,7 @@ public class Main {
 
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put(ClientModule.ROP_SERVICE_URL,
-				"http://localhost:8080/tutorial/cayenne-service");
+				"http://localhost:8080/tutorial-rop-server/cayenne-service");
 		properties.put(ClientModule.ROP_SERVICE_USER_NAME, "cayenne-user");
 		properties.put(ClientModule.ROP_SERVICE_PASSWORD, "secret");
 

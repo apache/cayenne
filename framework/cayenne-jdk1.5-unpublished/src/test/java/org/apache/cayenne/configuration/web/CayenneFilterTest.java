@@ -95,7 +95,7 @@ public class CayenneFilterTest extends TestCase {
                 RuntimeProperties.class).get(ServerModule.CONFIGURATION_LOCATION));
         assertEquals(2, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof ServerModule);
-        assertTrue(runtime.getModules()[1] instanceof CayenneWebModule);
+        assertTrue(runtime.getModules()[1] instanceof WebModule);
 
         RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
         assertTrue(handler instanceof SessionContextRequestHandler);
@@ -121,7 +121,7 @@ public class CayenneFilterTest extends TestCase {
         assertEquals(4, runtime.getModules().length);
 
         assertTrue(runtime.getModules()[0] instanceof ServerModule);
-        assertTrue(runtime.getModules()[1] instanceof CayenneWebModule);
+        assertTrue(runtime.getModules()[1] instanceof WebModule);
         assertTrue(runtime.getModules()[2] instanceof MockModule1);
         assertTrue(runtime.getModules()[3] instanceof MockModule2);
 

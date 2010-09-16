@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 
@@ -47,6 +48,8 @@ public class SessionContextRequestHandler implements RequestHandler {
             .getName()
             + ".SESSION_CONTEXT";
 
+    // using injector to lookup services instead of injecting them directly for lazy
+    // startup and "late binding"
     @Inject
     private Injector injector;
 
@@ -65,7 +68,9 @@ public class SessionContextRequestHandler implements RequestHandler {
                 context = (ObjectContext) session.getAttribute(SESSION_CONTEXT_KEY);
 
                 if (context == null) {
-                    context = injector.getInstance(ObjectContext.class);
+                    context = injector
+                            .getInstance(ObjectContextFactory.class)
+                            .createContext();
                     session.setAttribute(SESSION_CONTEXT_KEY, context);
                 }
             }

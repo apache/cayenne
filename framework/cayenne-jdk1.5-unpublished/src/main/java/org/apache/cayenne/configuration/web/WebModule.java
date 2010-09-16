@@ -18,20 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.spi.DefaultInjector;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
 
-import junit.framework.TestCase;
+/**
+ * @since 3.1
+ */
+public class WebModule implements Module {
 
-public class CayenneWebModuleTest extends TestCase {
-
-    public void testBind_Scopes() {
-
-        Injector injector = new DefaultInjector(new CayenneWebModule());
-        RequestHandler handler = injector.getInstance(RequestHandler.class);
-        assertTrue(handler instanceof SessionContextRequestHandler);
-
-        RequestHandler handler1 = injector.getInstance(RequestHandler.class);
-        assertNotSame("Incorrect singleton scope for request handler", handler, handler1);
+    public void configure(Binder binder) {
+        binder
+                .bind(RequestHandler.class)
+                .to(SessionContextRequestHandler.class)
+                .withoutScope();
     }
 }

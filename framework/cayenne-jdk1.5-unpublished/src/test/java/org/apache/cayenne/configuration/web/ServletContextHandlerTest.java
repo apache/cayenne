@@ -25,6 +25,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.MockDataChannel;
 import org.apache.cayenne.MockObjectContext;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -41,11 +42,19 @@ public class ServletContextHandlerTest extends TestCase {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder
-                        .bind(ObjectContext.class)
-                        .to(MockObjectContext.class)
-                        .withoutScope();
+
                 binder.bind(DataChannel.class).to(MockDataChannel.class);
+                binder.bind(ObjectContextFactory.class).toInstance(
+                        new ObjectContextFactory() {
+
+                            public ObjectContext createContext(DataChannel parent) {
+                                return new MockObjectContext();
+                            }
+
+                            public ObjectContext createContext() {
+                                return new MockObjectContext();
+                            }
+                        });
             }
         };
         Injector injector = DIBootstrap.createInjector(module);
