@@ -36,7 +36,6 @@ import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
-import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
@@ -175,7 +174,7 @@ public class OracleAdapter extends JdbcAdapter {
         super.configureExtendedTypes(map);
 
         // create specially configured CharType handler
-        map.registerType(new CharType(true, true));
+        map.registerType(new OracleCharType());
 
         // create specially configured ByteArrayType handler
         map.registerType(new ByteArrayType(true, true));
