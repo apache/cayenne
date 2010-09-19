@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.trans;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTObjPath;
@@ -39,6 +41,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
 
@@ -372,11 +375,50 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         }
     }
 
-    public void objectNode(Object leaf, Expression parentNode) {
+    private boolean tryAppendConst(String path, Expression parentNode) throws IOException {
 
+        if (path.length() < 3) {
+            return false;
+        }
+
+        int lastDot = path.lastIndexOf('.');
+        if (lastDot <= 0 || lastDot == path.length() - 1) {
+            return false;
+        }
+
+        String constName = path.substring(lastDot + 1);
+        String className = path.substring(0, lastDot);
+        
+        Object constValue;
+        try {
+            Class<?> klass = Util.getJavaClass(className);
+            Field constField = klass.getField(constName);
+            constValue = constField.get(null);
+        }
+        catch (ClassNotFoundException e) {
+            return false;
+        }
+        catch (NoSuchFieldException e) {
+            return false;
+        }
+        catch (IllegalAccessException e) {
+            throw new ExpressionException("Can't access const field", e);
+        }
+        appendLiteral(constValue, paramsDbType(parentNode), parentNode);
+        return true;
+    }
+
+    private void appendObjPathOrConst(Object leaf, Expression parentNode)
+            throws IOException {
+        if (!(leaf instanceof String && tryAppendConst((String) leaf, parentNode))) {
+            appendObjPath(parentNode);
+        }
+    }
+
+    public void objectNode(Object leaf, Expression parentNode) {
         try {
             if (parentNode.getType() == Expression.OBJ_PATH) {
-                appendObjPath(parentNode);
+                appendObjPathOrConst(leaf, parentNode);
             }
             else if (parentNode.getType() == Expression.DB_PATH) {
                 appendDbPath(parentNode);

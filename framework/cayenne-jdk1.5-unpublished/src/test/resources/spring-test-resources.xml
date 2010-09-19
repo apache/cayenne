@@ -112,6 +112,9 @@
     <bean id="InheritanceVerticalMap" class="org.apache.cayenne.unit.DataMapFactory">
         <constructor-arg><value>inheritance-vertical.map.xml</value></constructor-arg>
     </bean>
+    <bean id="ConstMap" class="org.apache.cayenne.unit.DataMapFactory">
+        <constructor-arg><value>const.map.xml</value></constructor-arg>
+    </bean>
     
 	
 	<!-- ======================================= -->
@@ -195,6 +198,7 @@
                 <ref bean="QuoteMap"/>
 				<ref bean="InheritanceSingleTable1Map"/>
 				<ref bean="InheritanceVerticalMap"/>
+				<ref bean="ConstMap"/>
 			</list>
 		</constructor-arg>
 	</bean>
