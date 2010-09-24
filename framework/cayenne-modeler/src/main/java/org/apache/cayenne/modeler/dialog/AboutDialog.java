@@ -67,6 +67,10 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
      */
     static synchronized String getInfoString() {
         if (infoString == null) {
+            double maxMemory = (double) Runtime.getRuntime().maxMemory() / 1024 / 1024;
+            double totalMemory = (double) Runtime.getRuntime().totalMemory() / 1024 / 1024;
+            double freeMemory = (double) Runtime.getRuntime().freeMemory() / 1024 / 1024;
+            
             StringBuffer buffer = new StringBuffer();
             buffer.append("<html>");
             buffer.append("<font size='-1' face='Arial,Helvetica'>");
@@ -76,6 +80,10 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
             buffer.append("<font size='-2' face='Arial,Helvetica'>");
             buffer.append("<br>JVM: " + System.getProperty("java.vm.name") + " " + 
                     System.getProperty("java.version"));
+            buffer.append(String.format(
+                    "<br>Memory: used %.2f MB, max %.2f MB",
+                    totalMemory - freeMemory,
+                    maxMemory));
             
             String version = LocalizedStringsHandler.getString("cayenne.version");
             if (version != null) {
