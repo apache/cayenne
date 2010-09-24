@@ -60,6 +60,13 @@ CAY-1364 SQL server don't support notations float(a, b)
 CAY-1430 Problems with TINYINT type mapping
 
 ----------------------------------
+Release: 3.0.2
+Date: 
+----------------------------------
+
+CAY-1485 Memory information for about dialog
+
+----------------------------------
 Release: 3.0.1
 Date: 
 ----------------------------------
