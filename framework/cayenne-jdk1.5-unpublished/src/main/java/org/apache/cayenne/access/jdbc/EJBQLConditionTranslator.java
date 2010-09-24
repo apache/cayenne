@@ -32,6 +32,7 @@ import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.AggregateConditionNode;
+import org.apache.cayenne.ejbql.parser.EJBQLConstant;
 import org.apache.cayenne.ejbql.parser.EJBQLDecimalLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLEquals;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
@@ -685,6 +686,18 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
 
     @Override
+    public boolean visitConst(EJBQLExpression expression) {
+        Object constValue = ((EJBQLConstant) expression).getValue();
+        String constBoundName = context.bindParameter(constValue);
+        context.append(" #bind($").append(constBoundName).append(")");
+
+        if (constValue instanceof Enum<?>) {
+            processEnumParameter(expression, constBoundName, (Enum<?>) constValue);
+        }
+        return true;
+    }
+
+    @Override
     public boolean visitIntegerLiteral(EJBQLIntegerLiteral expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -810,6 +823,60 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    private AttributeProperty getParentExpressionLastPathChildAttribute(
+            EJBQLExpression expression) {
+        Node parent = ((SimpleNode) expression).jjtGetParent();
+        EJBQLPathAnaliserTranslator translator = new EJBQLPathAnaliserTranslator(context);
+        parent.visit(translator);
+        translator.visitPath(parent, parent.getChildrenCount());
+
+        String id = translator.idPath;
+        if (id != null) {
+            ClassDescriptor descriptor = context.getEntityDescriptor(id);
+            if (descriptor == null) {
+                throw new EJBQLException("Unmapped id variable: " + id);
+            }
+            String pathChunk = translator.lastPathComponent;
+            Property property = descriptor.getProperty(pathChunk);
+            if (property instanceof AttributeProperty) {
+                return (AttributeProperty) property;
+            }
+        }
+        return null;
+    }
+
+    private Integer getParentExpressionSqlType(EJBQLExpression expression) {
+        AttributeProperty lastPathAttribute = getParentExpressionLastPathChildAttribute(expression);
+        return lastPathAttribute == null ? null : lastPathAttribute
+                .getAttribute()
+                .getDbAttribute()
+                .getType();
+    }
+
+    private String getParentExpressionSqlTypeName(EJBQLExpression expression) {
+        AttributeProperty lastPathAttribute = getParentExpressionLastPathChildAttribute(expression);
+        if (lastPathAttribute != null) {
+            String atrType = lastPathAttribute.getAttribute().getType();
+            return TypesMapping.getSqlNameByType(TypesMapping.getSqlTypeByJava(atrType));
+        }
+        return null;
+    }
+
+    private void processEnumParameter(
+            EJBQLExpression expression,
+            String boundName,
+            Enum<?> value) {
+        context.pushMarker("@processEnumParameter", true);
+        Integer sqlType = getParentExpressionSqlType(expression);
+        if (sqlType != null && TypesMapping.isNumeric(sqlType)) {
+            context.rebindParameter(boundName, value.ordinal());
+        }
+        else {
+            context.rebindParameter(boundName, value.name());
+        }
+        context.popMarker();
+    }
+
     private void processParameter(String boundName, EJBQLExpression expression) {
         Object object = context.getBoundParameter(boundName);
 
@@ -838,38 +905,13 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         if (object != null) {
             context.append(" #bind($").append(boundName).append(")");
+            if (object instanceof Enum<?>) {
+                processEnumParameter(expression, boundName, (Enum<?>) object);
+            }
         }
         else {
-
-            String type = null;
-            Node parent = ((SimpleNode) expression).jjtGetParent();
-
             context.pushMarker("@processParameter", true);
-
-            EJBQLPathAnaliserTranslator translator = new EJBQLPathAnaliserTranslator(
-                    context);
-            parent.visit(translator);
-            translator.visitPath(parent, parent.getChildrenCount());
-
-            String id = translator.idPath;
-            if (id != null) {
-
-                ClassDescriptor descriptor = context.getEntityDescriptor(id);
-                if (descriptor == null) {
-                    throw new EJBQLException("Unmapped id variable: " + id);
-                }
-                String pathChunk = translator.lastPathComponent;
-
-                Property property = descriptor.getProperty(pathChunk);
-                if (property instanceof AttributeProperty) {
-                    String atrType = ((AttributeProperty) property)
-                            .getAttribute()
-                            .getType();
-
-                    type = TypesMapping.getSqlNameByType(TypesMapping
-                            .getSqlTypeByJava(atrType));
-                }
-            }
+            String type = getParentExpressionSqlTypeName(expression);
             context.popMarker();
 
             if (type == null) {

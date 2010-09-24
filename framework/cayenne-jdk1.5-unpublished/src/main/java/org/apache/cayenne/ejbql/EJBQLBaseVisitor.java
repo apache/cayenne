@@ -299,6 +299,10 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
+    public boolean visitConst(EJBQLExpression expression) {
+        return continueFlag;
+    }
+
     public boolean visitPatternValue(EJBQLExpression expression) {
         return continueFlag;
     }

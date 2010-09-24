@@ -376,33 +376,15 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     }
 
     private boolean tryAppendConst(String path, Expression parentNode) throws IOException {
-
-        if (path.length() < 3) {
-            return false;
-        }
-
-        int lastDot = path.lastIndexOf('.');
-        if (lastDot <= 0 || lastDot == path.length() - 1) {
-            return false;
-        }
-
-        String constName = path.substring(lastDot + 1);
-        String className = path.substring(0, lastDot);
-        
         Object constValue;
         try {
-            Class<?> klass = Util.getJavaClass(className);
-            Field constField = klass.getField(constName);
-            constValue = constField.get(null);
-        }
-        catch (ClassNotFoundException e) {
-            return false;
-        }
-        catch (NoSuchFieldException e) {
-            return false;
+            constValue = Util.getClassFieldValue(path);
         }
         catch (IllegalAccessException e) {
             throw new ExpressionException("Can't access const field", e);
+        }
+        if (constValue == null) {
+            return false;
         }
         appendLiteral(constValue, paramsDbType(parentNode), parentNode);
         return true;

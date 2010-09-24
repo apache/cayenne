@@ -47,6 +47,7 @@ import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.util.Util;
 
 /**
  * Produces an {@link EJBQLCompiledExpression} out of an EJBQL expression tree.
@@ -66,6 +67,7 @@ class Compiler {
     private Collection<EJBQLPath> paths;
     private EJBQLExpressionVisitor fromItemVisitor;
     private EJBQLExpressionVisitor joinVisitor;
+    private EJBQLExpressionVisitor constTransformVisitor;
     private EJBQLExpressionVisitor pathVisitor;
     private EJBQLExpressionVisitor rootDescriptorVisitor;
     private List<Object> resultComponents;
@@ -80,6 +82,7 @@ class Compiler {
         this.fromItemVisitor = new FromItemVisitor();
         this.joinVisitor = new JoinVisitor();
         this.pathVisitor = new PathVisitor();
+        this.constTransformVisitor = new ConstTransformVisitor();
     }
 
     CompiledExpression compile(String source, EJBQLExpression parsed) {
@@ -441,6 +444,7 @@ class Compiler {
 
         @Override
         public boolean visitWhere(EJBQLExpression expression) {
+            expression.visit(constTransformVisitor);
             expression.visit(pathVisitor);
 
             // continue with children as there may be subselects with their own id
@@ -580,6 +584,37 @@ class Compiler {
             }
 
             return true;
+        }
+    }
+
+    class ConstTransformVisitor extends EJBQLBaseVisitor {
+
+        @Override
+        public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
+            EJBQLPath pathExpression = (EJBQLPath) expression;
+            String path = pathExpression.getAbsolutePath();
+            Object constValue;
+            try {
+                constValue = Util.getClassFieldValue(path);
+            }
+            catch (IllegalAccessException e) {
+                throw new EJBQLException("Can't access const field", e);
+            }
+            if (constValue != null) {
+                transformNode(pathExpression, path, constValue);
+            }
+            return false;
+        }
+
+        private void transformNode(
+                EJBQLPath pathExpression,
+                String path,
+                Object constValue) {
+            EJBQLConstant constantExpression = new EJBQLConstant(
+                    pathExpression,
+                    path,
+                    constValue);
+            pathExpression.getParent().replaceChild(pathExpression, constantExpression);
         }
     }
 
