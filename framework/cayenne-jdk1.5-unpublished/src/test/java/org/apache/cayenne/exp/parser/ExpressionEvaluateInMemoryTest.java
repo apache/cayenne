@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testdo.consttest.Const1Type;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
@@ -58,6 +59,13 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
         TestBean b2 = new TestBean();
         b2.setProperty2(-3);
         assertEquals(new Integer(-3), node.evaluate(b2));
+    }
+
+    public void testEvaluateOBJ_PATH_EnumConstant() {
+        ASTObjPath node = new ASTObjPath(
+                "org.apache.cayenne.testdo.consttest.Const1Type.ADMIN");
+
+        assertEquals(Const1Type.ADMIN, node.evaluate(new Artist()));
     }
 
     public void testEvaluateOBJ_PATH_ObjEntity() throws Exception {

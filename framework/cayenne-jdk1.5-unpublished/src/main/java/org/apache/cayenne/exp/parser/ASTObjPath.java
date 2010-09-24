@@ -24,13 +24,16 @@ import java.io.PrintWriter;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class ASTObjPath extends ASTPath {
+
     private static final Log logObj = LogFactory.getLog(ASTObjPath.class);
 
     /**
@@ -51,6 +54,15 @@ public class ASTObjPath extends ASTPath {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
+        try {
+            Object constValue = Util.getClassFieldValue(path);
+            if (constValue != null) {
+                return constValue;
+            }
+        }
+        catch (IllegalAccessException e) {
+            throw new ExpressionException("Can't access const field", e);
+        }
         return (o instanceof DataObject)
                 ? ((DataObject) o).readNestedProperty(path)
                 : (o instanceof Entity) ? evaluateEntityNode((Entity) o) : PropertyUtils
