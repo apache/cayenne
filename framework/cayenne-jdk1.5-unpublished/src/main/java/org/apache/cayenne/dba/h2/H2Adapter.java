@@ -20,16 +20,28 @@
 package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.merge.MergerFactory;
 
 /**
  * @since 3.0
  */
 public class H2Adapter extends JdbcAdapter {
-	
+    public H2Adapter() {
+        setSupportsGeneratedKeys(true);
+    }
+
     @Override
     public MergerFactory mergerFactory() {
         return new H2MergerFactory();
     }
 
+    @Override
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        super.createTableAppendColumn(sqlBuffer, column);
+
+        if (column.isGenerated()) {
+            sqlBuffer.append(" AUTO_INCREMENT");
+        }
+    }
 }
