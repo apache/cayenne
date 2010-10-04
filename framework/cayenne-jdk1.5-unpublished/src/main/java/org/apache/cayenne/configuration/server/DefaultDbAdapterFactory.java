@@ -34,6 +34,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * A factory of DbAdapters that either loads user-provided adapter or guesses the adapter
@@ -44,6 +45,9 @@ import org.apache.cayenne.di.Provider;
 public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     public static final String DETECTORS_LIST = "org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors";
+
+    @Inject
+    protected JdbcEventLogger jdbcEventLogger;
 
     @Inject
     protected AdhocObjectFactory objectFactory;
@@ -113,7 +117,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
             DbAdapter adapter = detector.createAdapter(metaData);
 
             if (adapter != null) {
-                QueryLogger.log("Detected and installed adapter: "
+                jdbcEventLogger.log("Detected and installed adapter: "
                         + adapter.getClass().getName());
                 return adapter;
             }
@@ -123,7 +127,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
     }
 
     protected DbAdapter defaultAdapter() {
-        QueryLogger.log("Failed to detect database type, using generic adapter");
+        jdbcEventLogger.log("Failed to detect database type, using generic adapter");
         return new JdbcAdapter();
     }
 }

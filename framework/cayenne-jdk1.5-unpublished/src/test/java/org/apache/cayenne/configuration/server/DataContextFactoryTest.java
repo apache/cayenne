@@ -28,6 +28,8 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
+import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 public class DataContextFactoryTest extends TestCase {
 
@@ -41,6 +43,7 @@ public class DataContextFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(DataDomain.class).toInstance(domain);
                 binder.bind(EventManager.class).toInstance(eventManager);
             }
@@ -67,6 +70,7 @@ public class DataContextFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(DataDomain.class).toInstance(domain);
                 binder.bind(EventManager.class).toInstance(eventManager);
             }

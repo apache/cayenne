@@ -36,9 +36,11 @@ import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.configuration.ObjectContextFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
@@ -70,6 +72,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 3.0
      */
     public static final String QUERY_CACHE_FACTORY_PROPERTY = "cayenne.DataDomain.queryCacheFactory";
+
+    @Inject
+    protected JdbcEventLogger jdbcEventLogger;
 
     /** Stores mapping of data nodes to DataNode name keys. */
     protected Map<String, DataNode> nodes = Collections
@@ -847,7 +852,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                     // although we don't expect an exception here, print the stack, as
                     // there have been some Cayenne bugs already (CAY-557) that were
                     // masked by this 'catch' clause.
-                    QueryLogger.logQueryError(rollbackEx);
+                    jdbcEventLogger.logQueryError(rollbackEx);
                 }
             }
         }

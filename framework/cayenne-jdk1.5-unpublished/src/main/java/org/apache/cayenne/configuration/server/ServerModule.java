@@ -20,6 +20,7 @@ package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
@@ -51,6 +52,8 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -79,6 +82,10 @@ public class ServerModule implements Module {
         binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP).put(
                 ServerModule.CONFIGURATION_LOCATION,
                 configurationLocation);
+
+        CommonsJdbcEventLogger logger = new CommonsJdbcEventLogger();
+        QueryLogger.setLogger(logger);
+        binder.bind(JdbcEventLogger.class).toInstance(logger);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically

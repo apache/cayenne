@@ -20,49 +20,35 @@
 package org.apache.cayenne.access;
 
 import java.lang.reflect.Array;
-import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.IDUtil;
-import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
- * QueryLogger is intended to log special events that happen whenever Cayenne interacts
- * with a database. This includes execution of generated SQL statements, result counts,
- * connection events, etc. Normally QueryLogger methods are not invoked directly by the .
- * Rather it is a single logging point used by the framework.
- * <p>
- * Internally QueryLogger uses commons-logging at the "info" level.
- * </p>
+ * A static wrapper around {@link JdbcEventLogger}.
+ * 
+ * @deprecated since 3.1 replaced by injectable {@link JdbcEventLogger}.
  */
+@Deprecated
 public class QueryLogger {
 
-    private static final Log logObj = LogFactory.getLog(QueryLogger.class);
+    private static final int TRIM_VALUES_THRESHOLD = 30;
 
-    public static final int TRIM_VALUES_THRESHOLD = 30;
+    private static JdbcEventLogger logger = new CommonsJdbcEventLogger();
 
-    private static boolean useQueryFormatting = false;
-
-    static {
-        // here we are enabling QueryFormatter
-        String useFormattingProp = System.getProperty("cayenne.query.formatting");
-        if ("TRUE".equalsIgnoreCase(useFormattingProp)) {
-            useQueryFormatting = true;
-        }
+    public static void setLogger(JdbcEventLogger logger) {
+        QueryLogger.logger = logger;
     }
 
-    /**
-     * @since 1.2
-     */
-    @SuppressWarnings("unchecked")
-    static ThreadLocal logLevel = new ThreadLocal();
+    public static JdbcEventLogger getLogger() {
+        return logger;
+    }
 
     /**
      * Appends SQL literal for the specified object to the buffer. This is a utility
@@ -73,6 +59,7 @@ public class QueryLogger {
      * @param object object to be transformed to SQL literal.
      */
     public static void sqlLiteralForObject(StringBuffer buffer, Object object) {
+
         if (object == null) {
             buffer.append("NULL");
         }
@@ -139,7 +126,7 @@ public class QueryLogger {
             }
             else
                 buffer.append(((Enum<?>) object).ordinal()); // FIXME -- this isn't quite
-                                                             // right
+            // right
         }
         else if (object instanceof ParameterBinding) {
             sqlLiteralForObject(buffer, ((ParameterBinding) object).getValue());
@@ -171,15 +158,14 @@ public class QueryLogger {
             buffer.append(object.getClass().getName()).append("@").append(
                     System.identityHashCode(object));
         }
+
     }
 
     /**
      * @since 1.2 logs an arbitrary message using logging level setup for QueryLogger.
      */
     public static void log(String message) {
-        if (message != null) {
-            logObj.info(message);
-        }
+        logger.log(message);
     }
 
     /**
@@ -188,26 +174,14 @@ public class QueryLogger {
      * @since 1.2
      */
     public static void logConnect(String dataSource) {
-        if (isLoggable()) {
-            logObj.info("Connecting. JNDI path: " + dataSource);
-        }
+        logger.logConnect(dataSource);
     }
 
     /**
      * @since 1.2
      */
     public static void logConnect(String url, String userName, String password) {
-
-        if (isLoggable()) {
-            StringBuilder buf = new StringBuilder("Opening connection: ");
-
-            // append URL on the same line to make log somewhat grep-friendly
-            buf.append(url);
-            buf.append("\n\tLogin: ").append(userName);
-            buf.append("\n\tPassword: *******");
-
-            logObj.info(buf.toString());
-        }
+        logger.logConnect(url, userName, password);
     }
 
     /**
@@ -216,127 +190,35 @@ public class QueryLogger {
      * @since 1.2
      */
     public static void logPoolCreated(DataSourceInfo dsi) {
-        if (isLoggable()) {
-            StringBuilder buf = new StringBuilder("Created connection pool: ");
-
-            if (dsi != null) {
-                // append URL on the same line to make log somewhat grep-friendly
-                buf.append(dsi.getDataSourceUrl());
-
-                if (dsi.getAdapterClassName() != null) {
-                    buf.append("\n\tCayenne DbAdapter: ").append(
-                            dsi.getAdapterClassName());
-                }
-
-                buf.append("\n\tDriver class: ").append(dsi.getJdbcDriver());
-
-                if (dsi.getMinConnections() >= 0) {
-                    buf.append("\n\tMin. connections in the pool: ").append(
-                            dsi.getMinConnections());
-                }
-                if (dsi.getMaxConnections() >= 0) {
-                    buf.append("\n\tMax. connections in the pool: ").append(
-                            dsi.getMaxConnections());
-                }
-            }
-            else {
-                buf.append(" pool information unavailable");
-            }
-
-            logObj.info(buf.toString());
-        }
+        logger.logPoolCreated(dsi);
     }
 
     /**
      * @since 1.2
      */
     public static void logConnectSuccess() {
-        logObj.info("+++ Connecting: SUCCESS.");
+        logger.logConnectSuccess();
     }
 
     /**
      * @since 1.2
      */
     public static void logConnectFailure(Throwable th) {
-        logObj.info("*** Connecting: FAILURE.", th);
+        logger.logConnectFailure(th);
     }
 
     /**
      * @since 3.0
      */
     public static void logGeneratedKey(DbAttribute attribute, Object value) {
-        if (isLoggable()) {
-            String entity = attribute.getEntity().getName();
-            String key = attribute.getName();
-
-            logObj.info("Generated PK: " + entity + "." + key + " = " + value);
-        }
-    }
-
-    private static void buildLog(
-            StringBuffer buffer,
-            String prefix,
-            String postfix,
-            List<DbAttribute> attributes,
-            List<?> parameters,
-            boolean isInserting) {
-        if (parameters != null && parameters.size() > 0) {
-            DbAttribute attribute = null;
-            Iterator<DbAttribute> attributeIterator = null;
-            int position = 0;
-
-            if (attributes != null)
-                attributeIterator = attributes.iterator();
-
-            for (Object parameter : parameters) {
-                // If at the beginning, output the prefix, otherwise a separator.
-                if (position++ == 0)
-                    buffer.append(prefix);
-                else
-                    buffer.append(", ");
-
-                // Find the next attribute and SKIP generated attributes. Only
-                // skip when logging inserts, though. Should show previously
-                // generated keys on DELETE, UPDATE, or SELECT.
-                while (attributeIterator != null && attributeIterator.hasNext()) {
-                    attribute = attributeIterator.next();
-
-                    if (isInserting == false || attribute.isGenerated() == false)
-                        break;
-                }
-
-                buffer.append(position);
-
-                if (attribute != null) {
-                    buffer.append("->");
-                    buffer.append(attribute.getName());
-                }
-
-                buffer.append(":");
-                sqlLiteralForObject(buffer, parameter);
-            }
-
-            buffer.append(postfix);
-        }
-    }
-
-    private static boolean isInserting(String query) {
-        if (query == null || query.length() == 0)
-            return false;
-
-        char firstCharacter = query.charAt(0);
-
-        if (firstCharacter == 'I' || firstCharacter == 'i')
-            return true;
-        else
-            return false;
+        logger.logGeneratedKey(attribute, value);
     }
 
     /**
      * @since 1.2
      */
     public static void logQuery(String queryStr, List<?> params) {
-        logQuery(queryStr, null, params, -1);
+        logger.logQuery(queryStr, params);
     }
 
     /**
@@ -353,18 +235,7 @@ public class QueryLogger {
             List<DbAttribute> attrs,
             List<?> params,
             long time) {
-        if (isLoggable()) {
-            StringBuffer buf = new StringBuffer((useQueryFormatting) ? QueryFormatter
-                    .formatQuery(queryStr) : queryStr);
-            buildLog(buf, " [bind: ", "]", attrs, params, isInserting(queryStr));
-
-            // log preparation time only if it is something significant
-            if (time > 5) {
-                buf.append(" - prepared in ").append(time).append(" ms.");
-            }
-
-            logObj.info(buf.toString());
-        }
+        logger.logQuery(queryStr, attrs, params, time);
     }
 
     /**
@@ -375,12 +246,7 @@ public class QueryLogger {
             List<DbAttribute> attrs,
             List<Object> parameters,
             boolean isInserting) {
-        String prefix = "[" + label + ": ";
-        if (isLoggable() && parameters.size() > 0) {
-            StringBuffer buf = new StringBuffer();
-            buildLog(buf, prefix, "]", attrs, parameters, isInserting);
-            logObj.info(buf.toString());
-        }
+        logger.logQueryParameters(label, attrs, parameters, isInserting);
     }
 
     /**
@@ -394,94 +260,49 @@ public class QueryLogger {
      * @since 1.2
      */
     public static void logSelectCount(int count, long time) {
-        if (isLoggable()) {
-            StringBuilder buf = new StringBuilder();
-
-            if (count == 1) {
-                buf.append("=== returned 1 row.");
-            }
-            else {
-                buf.append("=== returned ").append(count).append(" rows.");
-            }
-
-            if (time >= 0) {
-                buf.append(" - took ").append(time).append(" ms.");
-            }
-
-            logObj.info(buf.toString());
-        }
+        logger.logSelectCount(count, time);
     }
 
     /**
      * @since 1.2
      */
     public static void logUpdateCount(int count) {
-        if (isLoggable()) {
-
-            if (count < 0) {
-                logObj.info("=== updated ? rows");
-            }
-            else {
-                String countStr = (count == 1) ? "=== updated 1 row." : "=== updated "
-                        + count
-                        + " rows.";
-                logObj.info(countStr);
-            }
-        }
+        logger.logUpdateCount(count);
     }
 
     /**
      * @since 1.2
      */
     public static void logBeginTransaction(String transactionLabel) {
-        logObj.info("--- " + transactionLabel);
+        logger.logBeginTransaction(transactionLabel);
     }
 
     /**
      * @since 1.2
      */
     public static void logCommitTransaction(String transactionLabel) {
-        logObj.info("+++ " + transactionLabel);
+        logger.logCommitTransaction(transactionLabel);
     }
 
     /**
      * @since 1.2
      */
     public static void logRollbackTransaction(String transactionLabel) {
-        logObj.info("*** " + transactionLabel);
+        logger.logRollbackTransaction(transactionLabel);
     }
 
     /**
      * @since 1.2
      */
     public static void logQueryError(Throwable th) {
-        if (isLoggable()) {
-            if (th != null) {
-                th = Util.unwindException(th);
-            }
-
-            logObj.info("*** error.", th);
-
-            if (th instanceof SQLException) {
-                SQLException sqlException = ((SQLException) th).getNextException();
-                while (sqlException != null) {
-                    logObj.info("*** nested SQL error.", sqlException);
-                    sqlException = sqlException.getNextException();
-                }
-            }
-        }
+        logger.logQueryError(th);
     }
 
     /**
      * @since 1.2
      */
     public static void logQueryStart(int count) {
-        if (isLoggable()) {
-            String countStr = (count == 1) ? "--- will run 1 query." : "--- will run "
-                    + count
-                    + " queries.";
-            logObj.info(countStr);
-        }
+        logger.logQueryStart(count);
     }
 
     /**
@@ -491,6 +312,6 @@ public class QueryLogger {
      * @since 1.2
      */
     public static boolean isLoggable() {
-        return logObj.isInfoEnabled();
+        return logger.isLoggable();
     }
 }

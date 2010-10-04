@@ -23,11 +23,14 @@ import javax.sql.DataSource;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
@@ -52,6 +55,8 @@ public class ServerCaseModule implements Module {
         // instances complete with their own DI injectors, independent from the
         // unit test injector. ServerRuntime injector contents are customized
         // inside ServerRuntimeProvider.
+
+        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // singleton objects
         binder.bind(UnitTestLifecycleManager.class).toInstance(
