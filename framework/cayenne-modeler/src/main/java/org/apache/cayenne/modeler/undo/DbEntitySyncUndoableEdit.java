@@ -85,7 +85,7 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
         public MeaningfulFKsUndoableEdit(ObjEntity entity, Collection<DbAttribute> dbAttrs) {
             for (DbAttribute da : dbAttrs) {
                 ObjAttribute oa = entity.getAttributeForDbAttribute(da);
-                while (oa != null) {
+                if (oa != null) {
                     addEdit(new RemoveAttributeUndoableEdit(
                             domain,
                             map,
@@ -93,7 +93,6 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
                             new ObjAttribute[] {
                                 oa
                             }));
-                    oa = entity.getAttributeForDbAttribute(da);
                 }
             }
         }
