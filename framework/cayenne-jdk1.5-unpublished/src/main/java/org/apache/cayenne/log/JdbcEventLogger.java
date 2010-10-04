@@ -75,8 +75,6 @@ public interface JdbcEventLogger {
 
     void logQueryError(Throwable th);
 
-    void logQueryStart(int count);
-
     /**
      * Returns true if current thread default log level is high enough to generate output.
      */

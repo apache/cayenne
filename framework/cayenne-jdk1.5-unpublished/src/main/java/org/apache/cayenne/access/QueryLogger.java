@@ -302,7 +302,12 @@ public class QueryLogger {
      * @since 1.2
      */
     public static void logQueryStart(int count) {
-        logger.logQueryStart(count);
+        if (isLoggable()) {
+            String countStr = (count == 1) ? "--- will run 1 query." : "--- will run "
+                    + count
+                    + " queries.";
+            logger.log(countStr);
+        }
     }
 
     /**

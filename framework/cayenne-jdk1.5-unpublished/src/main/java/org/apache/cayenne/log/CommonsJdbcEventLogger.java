@@ -376,15 +376,6 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
-    public void logQueryStart(int count) {
-        if (isLoggable()) {
-            String countStr = (count == 1) ? "--- will run 1 query." : "--- will run "
-                    + count
-                    + " queries.";
-            logger.info(countStr);
-        }
-    }
-
     public boolean isLoggable() {
         return logger.isInfoEnabled();
     }

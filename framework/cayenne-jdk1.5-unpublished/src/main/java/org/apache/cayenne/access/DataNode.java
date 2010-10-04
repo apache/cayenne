@@ -219,8 +219,6 @@ public class DataNode implements QueryEngine {
                             + listSize);
         }
 
-        QueryLogger.logQueryStart(listSize);
-
         // do this meaningless inexpensive operation to trigger AutoAdapter lazy
         // initialization before opening a connection. Otherwise we may end up with two
         // connections open simultaneously, possibly hitting connection pool upper limit.
