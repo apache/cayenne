@@ -30,6 +30,8 @@ import org.apache.cayenne.reflect.PropertyUtils;
 /**
  * Factory to create JavaGroupsBridge instances. If JavaGroups library is not installed
  * this factory will return a noop EventBridge as a failover mechanism.
+ *
+ * For further information about JavaGroups consult the <a href="http://www.jgroups.org/">documentation</a>.
  * 
  * @since 1.1
  */
@@ -42,9 +44,7 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
     public static final String MCAST_PORT_PROPERTY = "cayenne.JavaGroupsBridge.mcast.port";
 
     /**
-     * Defines a property for JavaGroups XML configuration file. Example file can be found
-     * at <a
-     * href="http://www.filip.net/javagroups/javagroups-protocol.xml">http://www.filip.net/javagroups/javagroups-protocol.xml</a>.
+     * Defines a property for JavaGroups XML configuration file.
      */
     public static final String JGROUPS_CONFIG_URL_PROPERTY = "javagroupsbridge.config.url";
 
