@@ -33,6 +33,7 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
+import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -183,6 +184,23 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         }
     }
 
+    /**
+     * Emulates the situation when flattened attribute has unusual(long) name,
+     *  that puts this attribute property to the top of PersistentDescriptor.declaredProperties map,
+     *  {@link PersistentDescriptor}[105]
+     *  
+     *  That forced an error during the building of the SelectQuery statement, CAY-1484
+     *  
+     */
+    public void testSelectCompoundLongNames() throws Exception {
+        populateTables();
+        SelectQuery query = new SelectQuery(CompoundPaintingLongNames.class);
+         // the error was thrown on query execution
+        List<?> objects = context.performQuery(query);
+        assertNotNull(objects);
+    }
+
+    
     public void testSelectEJQBQL() throws Exception {
         populateTables();
         EJBQLQuery query = new EJBQLQuery(

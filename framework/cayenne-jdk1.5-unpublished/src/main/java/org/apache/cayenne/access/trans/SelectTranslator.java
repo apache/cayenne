@@ -364,6 +364,8 @@ public class SelectTranslator extends QueryAssembler {
             }
 
             private void visitRelationship(ArcProperty property) {
+                resetJoinStack();
+                
                 ObjRelationship rel = property.getRelationship();
                 DbRelationship dbRel = rel.getDbRelationships().get(0);
 

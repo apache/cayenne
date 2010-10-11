@@ -366,6 +366,14 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
+	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" clientClassName="test.client.CompoundPaintingLongNames" dbEntityName="PAINTING" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="artistLongName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="galleryLongName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>
+		<obj-attribute name="paintingDescription" type="java.lang.String" db-attribute-path="PAINTING_DESCRIPTION"/>
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+		<obj-attribute name="textLongReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
+	</obj-entity>
 	<obj-entity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.testmap.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
 		<obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
 		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
@@ -648,6 +656,10 @@
 	<obj-relationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<obj-relationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
 	<obj-relationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
+	<obj-relationship name="toArtist" source="CompoundPaintingLongNames" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="toArtist1" source="CompoundPaintingLongNames" target="ROArtist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="toGallery" source="CompoundPaintingLongNames" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
+	<obj-relationship name="toPaintingInfo" source="CompoundPaintingLongNames" target="PaintingInfo" deleteRule="Nullify" db-relationship-path="toPaintingInfo"/>
 	<obj-relationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" db-relationship-path="compoundFkArray"/>
 	<obj-relationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
 	<obj-relationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
