@@ -52,6 +52,7 @@ CAY-1474 Straightening CayenneModeler platform-specific builds
 CAY-1475 Move cayenne-modeler module out of framework/ and out of the assembly binary
 CAY-1479 EntitySorter refactoring: make it DI-based, internalize Ashowood lib
 CAY-1486 Switch QueryLogger to a DI-managed object
+CAY-1491 Add AUTO_INCREMENT primary key support for H2.
 
 Bug Fixes Since 3.0:
 
