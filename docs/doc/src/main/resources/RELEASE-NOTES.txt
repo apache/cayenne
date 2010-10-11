@@ -71,6 +71,7 @@ Bug Fixes Since 3.0.1:
 
 CAY-1485 Memory information for about dialog
 CAY-1488 OutOfMemory when selecting "Remove Foreign Keys Mapped as Object Attributes"
+CAY-1484 Flattened attribute queries are incorrectly generated
 
 ----------------------------------
 Release: 3.0.1
