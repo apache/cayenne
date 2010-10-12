@@ -244,6 +244,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			generator.addEntities(filterAction.getFilteredEntities(dataMap));
 			generator.addEmbeddables(filterAction
 					.getFilteredEmbeddables(dataMap));
+			generator.addQueries(dataMap.getQueries());
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
