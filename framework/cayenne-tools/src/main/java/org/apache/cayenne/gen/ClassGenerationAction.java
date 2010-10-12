@@ -541,8 +541,11 @@ public class ClassGenerationAction {
     }
 
     public void addQueries(Collection<Query> queries) {
-        if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP || 
-                artifactsGenerationMode == ArtifactsGenerationMode.ALL ) {
+        if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP
+                || artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
+
+            // TODO: andrus 10.12.2010 - why not also check for empty query list?? Or
+            // create a better API for enabling DataMapArtifact
             if (queries != null) {
                 artifacts.add(new DataMapArtifact(dataMap, queries));
             }
@@ -574,17 +577,14 @@ public class ClassGenerationAction {
     }
 
     public void setArtifactsGenerationMode(String mode) {
-        if (ArtifactsGenerationMode.ENTITY.getLabel()
-                .equalsIgnoreCase(mode)){
-        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
-        } else {
-            if (ArtifactsGenerationMode.DATAMAP.getLabel()
-                .equalsIgnoreCase(mode)){
-                this.artifactsGenerationMode = ArtifactsGenerationMode.DATAMAP;
-            } else {
-                this.artifactsGenerationMode = ArtifactsGenerationMode.ALL;
-            }
+        if (ArtifactsGenerationMode.ENTITY.getLabel().equalsIgnoreCase(mode)) {
+            this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
         }
-                
+        else if (ArtifactsGenerationMode.DATAMAP.getLabel().equalsIgnoreCase(mode)) {
+            this.artifactsGenerationMode = ArtifactsGenerationMode.DATAMAP;
+        }
+        else {
+            this.artifactsGenerationMode = ArtifactsGenerationMode.ALL;
+        }
     }
 }
