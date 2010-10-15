@@ -93,7 +93,14 @@
 			<artifactId>vpp</artifactId>
 			<scope>compile</scope>
 		</dependency>
-
+		
+		<dependency>
+      		<groupId>org.apache.maven.shared</groupId>
+      		<artifactId>maven-plugin-testing-harness</artifactId>
+      		<version>1.0-beta-1</version>
+      		<scope>test</scope>
+    	</dependency>
+    
 	</dependencies>
 	<build>
 		<plugins>

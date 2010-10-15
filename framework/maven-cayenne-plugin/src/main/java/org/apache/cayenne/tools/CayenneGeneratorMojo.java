@@ -90,17 +90,17 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Entities (expressed as a perl5 regex) to exclude from template
 	 * generation. (Default is to include all entities in the DataMap).
 	 * 
-	 * @parameter expression="${cgen.excludeEntitiesPattern}"
+	 * @parameter expression="${cgen.excludeEntities}"
 	 */
-	private String excludeEntitiesPattern;
+	private String excludeEntities;
 
 	/**
 	 * Entities (expressed as a perl5 regex) to include in template generation.
 	 * (Default is to include all entities in the DataMap).
 	 * 
-	 * @parameter expression="${cgen.includeEntitiesPattern}"
+	 * @parameter expression="${cgen.includeEntities}"
 	 */
-	private String includeEntitiesPattern;
+	private String includeEntities;
 
 	/**
 	 * If set to <code>true</code>, will generate subclass/superclass pairs,
@@ -230,7 +230,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
 		filterAction.setClient(client);
 		filterAction.setNameFilter(new NamePatternMatcher(logger,
-				includeEntitiesPattern, excludeEntitiesPattern));
+				includeEntities, excludeEntities));
 
 		try {
 			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
@@ -242,8 +242,10 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(dataMap);
 			generator.addEntities(filterAction.getFilteredEntities(dataMap));
-			generator.addEmbeddables(filterAction
-					.getFilteredEmbeddables(dataMap));
+			//ksenia khailenko 15.10.2010
+			//TODO add the "includeEmbeddables" and "excludeEmbeddables" attributes
+			generator.addEmbeddables(dataMap.getEmbeddables());
+			//TODO add the "includeQueries" and "excludeQueries" attributes
 			generator.addQueries(dataMap.getQueries());
 			generator.execute();
 		} catch (Exception e) {
