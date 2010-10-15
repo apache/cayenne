@@ -237,7 +237,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
         /**
          * List which is rendered
          */
-        private JList list;
+        private final JList list;
 
         /**
          * Row mouse is over
@@ -251,7 +251,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
             this.list = list;
             rolloverRow = -1;
 
-            setHorizontalTextPosition(10);
+            setHorizontalTextPosition(SwingConstants.LEADING);
         }
 
         @Override
@@ -268,6 +268,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
                 setOpaque(true);
                 setForeground(ROLLOVER_FOREGROUND);
                 setBackground(ROLLOVER_BACKGROUND);
+                setToolTipText(getText());
             }
             else {
                 setOpaque(false);
