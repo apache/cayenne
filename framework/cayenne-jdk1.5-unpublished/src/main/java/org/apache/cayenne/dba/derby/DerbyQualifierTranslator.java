@@ -50,7 +50,6 @@ public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
                 && (parent instanceof ASTEqual || parent instanceof ASTNotEqual)
                 && dbAttr.getType() == Types.CLOB
                 && parent.getOperandCount() == 2
-                && parent.getOperand(1) != null
                 && parent.getOperand(1) instanceof String) {
             Integer size = parent.getOperand(1).toString().length() + 1;
 
