@@ -20,7 +20,6 @@ package org.apache.cayenne.dba.derby;
 
 import java.io.IOException;
 import java.sql.Types;
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
@@ -51,15 +50,11 @@ public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
                 && (parent instanceof ASTEqual || parent instanceof ASTNotEqual)
                 && dbAttr.getType() == Types.CLOB
                 && parent.getOperandCount() == 2
+                && parent.getOperand(1) != null
                 && parent.getOperand(1) instanceof String) {
             Integer size = parent.getOperand(1).toString().length() + 1;
 
-            try {
-                out.append("CAST(");
-            }
-            catch (IOException ioex) {
-                throw new CayenneRuntimeException("Error appending content", ioex);
-            }
+            out.append("CAST(");
             super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
             out.append(" AS VARCHAR(" + size + "))");
         }

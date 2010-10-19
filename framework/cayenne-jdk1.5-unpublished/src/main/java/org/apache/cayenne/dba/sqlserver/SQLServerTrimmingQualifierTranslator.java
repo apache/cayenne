@@ -23,7 +23,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
@@ -61,28 +60,20 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
                 && (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
 
         if (likeCI) {
-            try {
-                out.append("CAST(");
-            }
-            catch (IOException ioex) {
-                throw new CayenneRuntimeException("Error appending content", ioex);
-            }
+            out.append("CAST(");
         }
 
         super.processColumn(dbAttr);
 
         if (likeCI) {
-            try {
-                out.append(" AS NVARCHAR(MAX))");
-            }
-            catch (IOException ioex) {
-                throw new CayenneRuntimeException("Error appending content", ioex);
-            }
+            out.append(" AS NVARCHAR(MAX))");
         }
     }
-    
+
     @Override
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {
+    protected void processColumnWithQuoteSqlIdentifiers(
+            DbAttribute dbAttr,
+            Expression pathExp) throws IOException {
         Expression node = peek(1);
 
         boolean likeCI = node != null
@@ -90,23 +81,13 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
                 && (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
 
         if (likeCI) {
-            try {
-                out.append("CAST(");
-            }
-            catch (IOException ioex) {
-                throw new CayenneRuntimeException("Error appending content", ioex);
-            }
+            out.append("CAST(");
         }
 
         super.processColumnWithQuoteSqlIdentifiers(dbAttr, node);
 
         if (likeCI) {
-            try {
-                out.append(" AS NVARCHAR(MAX))");
-            }
-            catch (IOException ioex) {
-                throw new CayenneRuntimeException("Error appending content", ioex);
-            }
+            out.append(" AS NVARCHAR(MAX))");
         }
     }
 
