@@ -281,6 +281,38 @@ public class SelectQueryTest extends SelectQueryBase {
         assertEquals(_clobCount, objects.size());
     }
 
+    public void testSelectEqualsClob() throws Exception {
+        if (!getAccessStackAdapter().supportsCaseSensitiveLike()) {
+            return;
+        }
+
+        query.setRoot(ClobTestEntity.class);
+        Expression qual = ExpressionFactory.matchExp("clobCol", "clob1");
+        query.setQualifier(qual);
+        performQuery();
+
+        // check query results
+        List objects = opObserver.rowsForQuery(query);
+        assertEquals(1, objects.size());
+
+    }
+
+    public void testSelectNotEqualsClob() throws Exception {
+        if (!getAccessStackAdapter().supportsCaseSensitiveLike()) {
+            return;
+        }
+
+        query.setRoot(ClobTestEntity.class);
+        Expression qual = ExpressionFactory.noMatchExp("clobCol", "clob1");
+        query.setQualifier(qual);
+        performQuery();
+
+        // check query results
+        List objects = opObserver.rowsForQuery(query);
+        assertEquals(1, objects.size());
+
+    }
+
     public void testSelectIn() throws Exception {
         query.setRoot(Artist.class);
         Expression qual = Expression.fromString("artistName in ('artist1', 'artist2')");
