@@ -216,7 +216,7 @@ public abstract class QueryAssemblerHelper {
                                 joinSplitAlias);
                     }
                     else if (pathPart instanceof DbAttribute) {
-                        processColumnWithQuoteSqlIdentifiers((DbAttribute) pathPart);
+                        processColumnWithQuoteSqlIdentifiers((DbAttribute) pathPart, pathExp);
                     }
                 }
 
@@ -279,7 +279,7 @@ public abstract class QueryAssemblerHelper {
                 }
             }
             else {
-                processColumnWithQuoteSqlIdentifiers(component.getAttribute());
+                processColumnWithQuoteSqlIdentifiers(component.getAttribute(), pathExp);
             }
         }
     }
@@ -290,7 +290,7 @@ public abstract class QueryAssemblerHelper {
         out.append(dbAttr.getAliasedName(alias));
     }
 
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr)
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp)
             throws IOException {
 
         String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler

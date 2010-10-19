@@ -295,7 +295,29 @@ public class SelectQueryTest extends ServerCase {
             assertEquals(2, objects.size());
         }
     }
-
+    
+    public void testSelectEqualsClob() throws Exception {
+        if (accessStackAdapter.supportsLobs()) {
+            createClobDataSet();
+            SelectQuery query = new SelectQuery(ClobTestEntity.class);
+            Expression qual = ExpressionFactory.matchExp("clobCol", "clob1");
+            query.setQualifier(qual);
+            List objects = context.performQuery(query);
+            assertEquals(1, objects.size());
+        }
+    }
+    
+    public void testSelectNotEqualsClob() throws Exception {
+        if (accessStackAdapter.supportsLobs()) {
+            createClobDataSet();
+            SelectQuery query = new SelectQuery(ClobTestEntity.class);
+            Expression qual = ExpressionFactory.noMatchExp("clobCol", "clob1");
+            query.setQualifier(qual);
+            List objects = context.performQuery(query);
+            assertEquals(1, objects.size());
+        }
+    }
+    
     public void testSelectIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);

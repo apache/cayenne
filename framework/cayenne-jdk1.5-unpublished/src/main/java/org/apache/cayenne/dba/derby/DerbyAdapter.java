@@ -186,7 +186,7 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new TrimmingQualifierTranslator(queryAssembler, "RTRIM");
+        return new DerbyQualifierTranslator(queryAssembler, "RTRIM");
     }
     
     @Override

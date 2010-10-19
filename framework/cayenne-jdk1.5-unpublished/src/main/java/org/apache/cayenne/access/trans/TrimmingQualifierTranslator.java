@@ -22,6 +22,7 @@ package org.apache.cayenne.access.trans;
 import java.io.IOException;
 import java.sql.Types;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -60,15 +61,15 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
      * Adds special handling of CHAR columns.
      */
     @Override
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr) throws IOException {
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {
         
         if (dbAttr.getType() == Types.CHAR) {
             out.append(trimFunction).append("(");
-            super.processColumnWithQuoteSqlIdentifiers(dbAttr);
+            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
             out.append(')');
         }
         else {
-            super.processColumnWithQuoteSqlIdentifiers(dbAttr);
+            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
         }                 
     }
 

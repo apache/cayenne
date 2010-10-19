@@ -82,7 +82,7 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
     }
     
     @Override
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr) throws IOException {
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {
         Expression node = peek(1);
 
         boolean likeCI = node != null
@@ -98,7 +98,7 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
             }
         }
 
-        super.processColumnWithQuoteSqlIdentifiers(dbAttr);
+        super.processColumnWithQuoteSqlIdentifiers(dbAttr, node);
 
         if (likeCI) {
             try {

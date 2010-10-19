@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.trans;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
