@@ -88,13 +88,7 @@ public abstract class ObjectContextQueryAction {
             if (interceptRelationshipQuery() != DONE) {
                 if (interceptRefreshQuery() != DONE) {
                     if (interceptLocalCache() != DONE) {
-                        // when changing the flow below, make sure to update
-                        // 'getCacheObjectFactory' method that mimics the interceptors
-                        // below 'interceptLocalCache'. See comment in an inner class
-                        // factory in this method...
-                        if (interceptPaginatedQuery() != DONE) {
-                            runQuery();
-                        }
+                        executePostCache();
                     }
                 }
             }
@@ -102,6 +96,14 @@ public abstract class ObjectContextQueryAction {
 
         interceptObjectConversion();
         return response;
+    }
+
+    private void executePostCache() {
+        if (interceptInternalQuery() != DONE) {
+            if (interceptPaginatedQuery() != DONE) {
+                runQuery();
+            }
+        }
     }
 
     /**
@@ -148,6 +150,10 @@ public abstract class ObjectContextQueryAction {
             response = childResponse;
         }
 
+    }
+
+    protected boolean interceptInternalQuery() {
+        return !DONE;
     }
 
     protected boolean interceptOIDQuery() {
@@ -317,12 +323,7 @@ public abstract class ObjectContextQueryAction {
         return new QueryCacheEntryFactory() {
 
             public Object createObject() {
-                // must follow the same logic as 'execute' below locla cache interceptor
-                // method... reuse that code somehow???
-                if (interceptPaginatedQuery() != DONE) {
-                    runQuery();
-                }
-
+                executePostCache();
                 return response.firstList();
             }
         };

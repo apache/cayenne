@@ -42,9 +42,28 @@ import org.apache.cayenne.util.ObjectContextQueryAction;
  */
 class DataContextQueryAction extends ObjectContextQueryAction {
 
+    protected DataContext actingDataContext;
+
     public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext,
             Query query) {
         super(actingContext, targetContext, query);
+        actingDataContext = actingContext;
+    }
+
+    @Override
+    protected boolean interceptInternalQuery() {
+        return interceptObjectFromDataRowsQuery();
+    }
+
+    private boolean interceptObjectFromDataRowsQuery() {
+        if (query instanceof ObjectsFromDataRowsQuery) {
+            ObjectsFromDataRowsQuery objectsFromDataRowsQuery = (ObjectsFromDataRowsQuery) query;
+            response = new ListResponse(actingDataContext.objectsFromDataRows(
+                    objectsFromDataRowsQuery.getDescriptor(),
+                    objectsFromDataRowsQuery.getDataRows()));
+            return DONE;
+        }
+        return !DONE;
     }
 
     /**

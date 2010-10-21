@@ -19,11 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -475,5 +477,25 @@ public class NestedDataContextReadTest extends CayenneCase {
         finally {
             unblockQueries();
         }
+    }
+
+    public void testObjectFromDataRow() throws Exception {
+        deleteTestData();
+
+        DataContext context = createDataContext();
+        DataContext childContext = (DataContext) context.createChildContext();
+
+        DataRow row = new DataRow(8);
+        row.put("ARTIST_ID", 5l);
+        row.put("ARTIST_NAME", "A");
+        row.put("DATE_OF_BIRTH", new Date());
+
+        Artist artist = childContext.objectFromDataRow(Artist.class, row, true);
+        assertNotNull(artist);
+        assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
+        assertSame(childContext, artist.getObjectContext());
+        Object parentArtist = context.getObjectStore().getNode(artist.getObjectId());
+        assertNotNull(parentArtist);
+        assertNotSame(artist, parentArtist);
     }
 }
