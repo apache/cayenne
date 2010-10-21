@@ -709,7 +709,7 @@
 				<dependency>
 					<groupId>com.h2database</groupId>
 					<artifactId>h2</artifactId>
-					<version>1.1.119</version>
+					<version>1.2.144</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
