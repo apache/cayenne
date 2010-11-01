@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -150,10 +149,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = ctxt.objectFromDataRow(
-                Artist.class,
-                uppercaseConverter(artistRow),
-                false);
+        Artist a = ctxt.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
@@ -179,10 +175,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = ctxt.objectFromDataRow(
-                Artist.class,
-                uppercaseConverter(artistRow),
-                false);
+        Artist a = ctxt.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
@@ -210,10 +203,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = ctxt.objectFromDataRow(
-                Artist.class,
-                uppercaseConverter(artistRow),
-                false);
+        Artist a = ctxt.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
@@ -239,7 +229,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
 
         assertEquals(2, artists.size());
     }
-    
+
     public void testFetchOffset() throws Exception {
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
@@ -263,27 +253,27 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
-        
+
         // create an artist with painting in the database
         createArtist(1000.0);
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        
+
         q.setColumnNamesCapitalization(CapsStrategy.LOWER);
         q.addParameter("aName", "An Artist");
         List<DataRow> artists = runProcedureSelect(q);
-        
+
         ProcedureQuery q1 = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        
+
         q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
         q1.addParameter("aName", "An Artist");
         List<DataRow> artists1 = runProcedureSelect(q1);
-        
+
         assertTrue(artists.get(0).containsKey("date_of_birth"));
         assertFalse(artists.get(0).containsKey("DATE_OF_BIRTH"));
-        
+
         assertFalse(artists1.get(0).containsKey("date_of_birth"));
         assertTrue(artists1.get(0).containsKey("DATE_OF_BIRTH"));
-        
+
     }
 
     public void testOutParams() throws Exception {

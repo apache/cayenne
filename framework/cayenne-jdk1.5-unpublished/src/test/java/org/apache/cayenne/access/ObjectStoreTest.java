@@ -65,7 +65,7 @@ public class ObjectStoreTest extends CayenneCase {
         row.put("ARTIST_ID", new Integer(1));
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        DataObject object = context.objectFromDataRow(Artist.class, row, false);
+        DataObject object = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = object.getObjectId();
 
         // insert object into the ObjectStore

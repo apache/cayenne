@@ -108,10 +108,7 @@ public class EJBQLQueryTest extends CayenneCase {
 
         assertTrue(row instanceof DataRow);
 
-        Artist artist = (Artist) createDataContext().objectFromDataRow(
-                "Artist",
-                (DataRow) row,
-                true);
+        Artist artist = (Artist) createDataContext().objectFromDataRow("Artist", (DataRow) row);
         assertEquals(artistName, artist.getArtistName());
     }
 
@@ -196,8 +193,8 @@ public class EJBQLQueryTest extends CayenneCase {
 
         insertPaintValue();
         DataContext contex = createDataContext();
-        
-        String ejbql = "SELECT p.toArtist FROM Painting p"; 
+
+        String ejbql = "SELECT p.toArtist FROM Painting p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
         List result = contex.performQuery(query);
@@ -207,8 +204,8 @@ public class EJBQLQueryTest extends CayenneCase {
 
         assertEquals(Artist.class, result.get(0).getClass());
 
-        
-        String ejbql2 = "SELECT p.toArtist, p FROM Painting p"; 
+
+        String ejbql2 = "SELECT p.toArtist, p FROM Painting p";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
         List result2 = contex.performQuery(query2);
@@ -216,11 +213,11 @@ public class EJBQLQueryTest extends CayenneCase {
         assertNotNull(result2);
         assertEquals(2, result2.size());
         assertEquals(2, ((Object[])result2.get(0)).length);
-        
+
         assertEquals(Artist.class,((Object[])result2.get(0))[0].getClass());
         assertEquals(Painting.class,((Object[])result2.get(0))[1].getClass());
-        
-        String ejbql3 = "SELECT p.toArtist, p.paintingTitle FROM Painting p"; 
+
+        String ejbql3 = "SELECT p.toArtist, p.paintingTitle FROM Painting p";
         EJBQLQuery query3 = new EJBQLQuery(ejbql3);
 
         List result3 = contex.performQuery(query3);
@@ -228,7 +225,7 @@ public class EJBQLQueryTest extends CayenneCase {
         assertNotNull(result3);
         assertEquals(2, result3.size());
         assertEquals(2, ((Object[])result3.get(0)).length);
-        
+
         assertEquals(Artist.class,((Object[])result3.get(0))[0].getClass());
         assertEquals(String.class,((Object[])result3.get(0))[1].getClass());
     }
@@ -265,45 +262,45 @@ public class EJBQLQueryTest extends CayenneCase {
 
         assertEquals(w.getBuffer().toString(), s.toString());
     }
-    
+
     public void testNullParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x");
         query.setParameter("x", null);
         createDataContext().performQuery(query);
     }
-    
+
     public void testNullNotEqualsParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist<>:x");
         query.setParameter("x", null);
         createDataContext().performQuery(query);
     }
-    
+
     public void testNullPositionalParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=?1");
         query.setParameter(1, null);
         createDataContext().performQuery(query);
     }
-    
+
     public void testNullAndNotNullParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x OR p.toArtist.artistName=:b");
         query.setParameter("x", null);
         query.setParameter("b", "Y");
         createDataContext().performQuery(query);
     }
-    
+
     public void testJoinToJoined() {
         ObjectContext context = createDataContext();
-        
+
         EJBQLQuery query = new EJBQLQuery(
             "select g from Gallery g inner join g.paintingArray p where p.toArtist.artistName like '%a%'");
         context.performQuery(query);
     }
-    
-    
-    
+
+
+
     public void testJoinAndCount() {
         ObjectContext context = createDataContext();
-        
+
         EJBQLQuery query = new EJBQLQuery(
             "select count(p) from Painting p where p.toGallery.galleryName LIKE '%a%' AND (" +
             "p.paintingTitle like '%a%' or " +
@@ -311,7 +308,7 @@ public class EJBQLQueryTest extends CayenneCase {
             ")");
         context.performQuery(query);
     }
-    
+
 //    SELECT COUNT(p) from Product p where p.vsCatalog.id = 1 and
 //    (
 //    p.displayName like '%rimadyl%'
@@ -321,65 +318,65 @@ public class EJBQLQueryTest extends CayenneCase {
 //    or p.longdescription2 like '%rimadyl%'
 //    or p.manufacturerPartNumber like '%rimadyl%'
 //    or p.partNumber like '%rimadyl%'
-//    ) 
-    
+//    )
+
     public void testRelationshipWhereClause() throws Exception {
         deleteTestData();
         ObjectContext context = createDataContext();
-        
+
         Artist a = context.newObject(Artist.class);
         a.setArtistName("a");
         Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("p");
         p.setToArtist(a);
         context.commitChanges();
-        
+
         EJBQLQuery query = new EJBQLQuery(
             "select p from Painting p where p.toArtist=:a");
         query.setParameter("a", a);
-        
+
         List<Painting> paintings = context.performQuery(query);
         assertEquals(1, paintings.size());
         assertSame(p, paintings.get(0));
     }
-    
+
     public void testRelationshipWhereClause2() throws Exception {
         ObjectContext context = createDataContext();
-        
+
         Expression exp = ExpressionFactory.matchExp(Painting.TO_GALLERY_PROPERTY, null);
         EJBQLQuery query = new EJBQLQuery("select p.toArtist from Painting p where " + exp.toEJBQL("p"));
-    
+
         context.performQuery(query);
     }
-    
+
     public void testOrBrackets() throws Exception {
         deleteTestData();
         ObjectContext context = createDataContext();
-        
+
         Artist a = context.newObject(Artist.class);
         a.setArtistName("testOrBrackets");
         context.commitChanges();
-        
+
         //this query is equivalent to (false and (false or true)) and
         //should always return 0 rows
         EJBQLQuery query = new EJBQLQuery("select a from Artist a " +
     		"where a.artistName <> a.artistName and " +
     		"(a.artistName <> a.artistName or a.artistName = a.artistName)");
         assertEquals(context.performQuery(query).size(), 0);
-        
+
         //on the other hand, the following is equivalent to (false and false) or true) and
         //should return >0 rows
         query = new EJBQLQuery("select a from Artist a " +
             "where a.artistName <> a.artistName and " +
             "a.artistName <> a.artistName or a.artistName = a.artistName");
         assertTrue(context.performQuery(query).size() > 0);
-        
+
         //checking brackets around not
         query = new EJBQLQuery("select a from Artist a " +
             "where not(a.artistName <> a.artistName and " +
             "a.artistName <> a.artistName or a.artistName = a.artistName)");
         assertEquals(context.performQuery(query).size(), 0);
-        
+
         //not is first to process
         query = new EJBQLQuery("select a from Artist a " +
                 "where not a.artistName <> a.artistName or " +

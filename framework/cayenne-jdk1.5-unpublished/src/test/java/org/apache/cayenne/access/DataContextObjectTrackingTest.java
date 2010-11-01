@@ -35,7 +35,7 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Tests objects registration in DataContext, transferring objects between contexts and
  * such.
- * 
+ *
  */
 public class DataContextObjectTrackingTest extends CayenneCase {
 
@@ -47,7 +47,7 @@ public class DataContextObjectTrackingTest extends CayenneCase {
         row.put("ARTIST_ID", new Integer(1));
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        DataObject obj = context.objectFromDataRow(Artist.class, row, false);
+        DataObject obj = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = obj.getObjectId();
 
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
@@ -70,7 +70,7 @@ public class DataContextObjectTrackingTest extends CayenneCase {
         row.put("ARTIST_ID", new Integer(1));
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        DataObject obj = context.objectFromDataRow(Artist.class, row, false);
+        DataObject obj = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = obj.getObjectId();
 
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());

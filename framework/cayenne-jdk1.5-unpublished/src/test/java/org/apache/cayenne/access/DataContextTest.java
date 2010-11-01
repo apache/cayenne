@@ -405,9 +405,9 @@ public class DataContextTest extends ServerCase {
     }
 
     public void testPerformNonSelectingQueryCounts2() throws Exception {
-        
+
         createArtistsDataSet();
-        
+
         SQLTemplate query = new SQLTemplate(
                 Painting.class,
                 "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
@@ -612,7 +612,7 @@ public class DataContextTest extends ServerCase {
                 DataRow row = (DataRow) it.nextRow();
 
                 // try instantiating an object and fetching its relationships
-                Artist artist = context.objectFromDataRow(Artist.class, row, false);
+                Artist artist = context.objectFromDataRow(Artist.class, row);
                 List<?> paintings = artist.getPaintingArray();
                 assertNotNull(paintings);
                 assertEquals("Expected one painting for artist: " + artist, 1, paintings
@@ -665,7 +665,7 @@ public class DataContextTest extends ServerCase {
         row.put("ARTIST_ID", new Integer(1));
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        DataObject object = context.objectFromDataRow(Artist.class, row, false);
+        DataObject object = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = object.getObjectId();
 
         // insert object into the ObjectStore

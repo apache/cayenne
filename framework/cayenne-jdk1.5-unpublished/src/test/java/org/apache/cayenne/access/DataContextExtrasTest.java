@@ -130,7 +130,7 @@ public class DataContextExtrasTest extends CayenneCase {
         DataContext context = createDataContext();
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(100000));
-        DataObject obj = context.objectFromDataRow(Artist.class, row, false);
+        DataObject obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getGraphManager().registeredNodes().contains(obj));
         assertEquals(PersistenceState.HOLLOW, obj.getPersistenceState());
@@ -143,7 +143,7 @@ public class DataContextExtrasTest extends CayenneCase {
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(100001));
         row.put("ARTIST_NAME", "ArtistXYZ");
-        DataObject obj = context.objectFromDataRow(Artist.class, row, false);
+        DataObject obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getGraphManager().registeredNodes().contains(obj));
         assertEquals(PersistenceState.HOLLOW, obj.getPersistenceState());
@@ -156,7 +156,7 @@ public class DataContextExtrasTest extends CayenneCase {
         row.put("ARTIST_ID", new Integer(123456));
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        Artist obj = context.objectFromDataRow(Artist.class, row, false);
+        Artist obj = context.objectFromDataRow(Artist.class, row);
 
         assertTrue(context.getGraphManager().registeredNodes().contains(obj));
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
