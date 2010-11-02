@@ -68,6 +68,10 @@ Release: 3.0.2
 Date: 
 ----------------------------------
 
+Improvements Sice 3.0.1
+
+CAY-1500 MySQL JDBC Batching
+
 Bug Fixes Since 3.0.1:
 
 CAY-1484 Flattened attribute queries are incorrectly generated

@@ -81,6 +81,7 @@ public class MySQLAdapter extends JdbcAdapter {
         // init defaults
         this.storageEngine = DEFAULT_STORAGE_ENGINE;
 
+        setSupportsBatchUpdates(true);
         setSupportsFkConstraints(true);
         setSupportsUniqueConstraints(true);
         setSupportsGeneratedKeys(true);
