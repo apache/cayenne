@@ -53,6 +53,7 @@ CAY-1475 Move cayenne-modeler module out of framework/ and out of the assembly b
 CAY-1479 EntitySorter refactoring: make it DI-based, internalize Ashowood lib
 CAY-1486 Switch QueryLogger to a DI-managed object
 CAY-1491 Add AUTO_INCREMENT primary key support for H2.
+CAY-1497 Cayenne tools integration tests
 CAY-1499 Deprecate DataContext.objectFromDataRow methods with unused "refresh" parameters.
 
 Bug Fixes Since 3.0:
