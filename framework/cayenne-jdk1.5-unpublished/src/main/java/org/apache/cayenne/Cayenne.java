@@ -36,7 +36,6 @@ import org.apache.cayenne.reflect.PropertyUtils;
 
 /**
  * Various utils for processing persistent objects and their properties
- * 
  * <p>
  * <i>DataObjects and Primary Keys: All methods that allow to extract primary key values
  * or use primary keys to find objects are provided for convenience. Still the author's
@@ -49,7 +48,7 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * @since 3.1 its predecessor was called DataObjectUtils
  */
 public final class Cayenne {
-    
+
     /**
      * A special property denoting a size of the to-many collection, when encountered at
      * the end of the path</p>
@@ -57,28 +56,32 @@ public final class Cayenne {
     final static String PROPERTY_COLLECTION_SIZE = "@size";
 
     /**
-     * Returns mapped ObjEntity for object. If an object is transient or is not
-     * mapped returns null.
+     * Returns mapped ObjEntity for object. If an object is transient or is not mapped
+     * returns null.
      */
     public static ObjEntity getObjEntity(Persistent p) {
-        return (p.getObjectContext() != null) ? p.getObjectContext()
+        return (p.getObjectContext() != null) ? p
+                .getObjectContext()
                 .getEntityResolver()
                 .lookupObjEntity(p) : null;
     }
-    
+
     /**
-     * Returns class descriptor for the object, <code>null</code> if the object is
-     * transient or descriptor was not found
+     * Returns class descriptor for the object or null if the object is not registered
+     * with an ObjectContext or descriptor was not found.
      */
     public static ClassDescriptor getClassDescriptor(Persistent object) {
-        if (object.getPersistenceState() == PersistenceState.TRANSIENT) {
+
+        ObjectContext context = object.getObjectContext();
+
+        if (context == null) {
             return null;
-         }
-         
-         return object.getObjectContext().getEntityResolver().getClassDescriptor(
-                 object.getObjectId().getEntityName());
+        }
+
+        return context.getEntityResolver().getClassDescriptor(
+                object.getObjectId().getEntityName());
     }
-    
+
     /**
      * Returns property descriptor for specified property.
      * 
@@ -91,8 +94,8 @@ public final class Cayenne {
             return null;
         }
         return descriptor.getProperty(properyName);
-    }   
-    
+    }
+
     /**
      * Returns a value of the property identified by a property path. Supports reading
      * both mapped and unmapped properties. Unmapped properties are accessed in a manner
@@ -109,7 +112,8 @@ public final class Cayenne {
      * </p>
      * <ul>
      * <li>Read this object property:<br>
-     * <code>String name = (String)CayenneUtils.readNestedProperty(artist, "name");</code><br>
+     * <code>String name = (String)CayenneUtils.readNestedProperty(artist, "name");</code>
+     * <br>
      * <br>
      * </li>
      * <li>Read an object related to this object:<br>
@@ -167,9 +171,9 @@ public final class Cayenne {
                     tokenIndex);
         }
         else if (property instanceof Collection) {
-            
+
             Collection<?> collection = (Collection) property;
-            
+
             if (tokenIndex < tokenizedPath.length - 1) {
                 if (tokenizedPath[tokenIndex + 1].equals(PROPERTY_COLLECTION_SIZE)) {
                     return collection.size();
@@ -248,21 +252,21 @@ public final class Cayenne {
             // side effect - resolves HOLLOW object
             return property.readProperty(p);
         }
-        
-        //handling non-persistent property
+
+        // handling non-persistent property
         Object result = null;
         if (p instanceof DataObject) {
             result = ((DataObject) p).readPropertyDirectly(propertyName);
         }
-        
+
         if (result != null) {
             return result;
         }
-     
-        //there is still a change to return a property via introspection
+
+        // there is still a change to return a property via introspection
         return PropertyUtils.getProperty(p, propertyName);
     }
-    
+
     /**
      * Returns an int primary key value for a persistent object. Only works for single
      * column numeric primary keys. If an object is transient or has an ObjectId that can
@@ -364,9 +368,8 @@ public final class Cayenne {
             ObjectContext context,
             Class<T> dataObjectClass,
             int pk) {
-        return (T) objectForPK(
-                context,
-                buildId(context, dataObjectClass, Integer.valueOf(pk)));
+        return (T) objectForPK(context, buildId(context, dataObjectClass, Integer
+                .valueOf(pk)));
     }
 
     /**
@@ -473,10 +476,7 @@ public final class Cayenne {
      * @throws CayenneRuntimeException if more than one object matched ObjectId.
      */
     public static Object objectForPK(ObjectContext context, ObjectId id) {
-        return objectForQuery(context, new ObjectIdQuery(
-                id,
-                false,
-                ObjectIdQuery.CACHE));
+        return objectForQuery(context, new ObjectIdQuery(id, false, ObjectIdQuery.CACHE));
     }
 
     /**
@@ -549,6 +549,7 @@ public final class Cayenne {
         String attr = pkAttributes.iterator().next();
         return new ObjectId(entity.getName(), attr, pk);
     }
-    
-    private Cayenne() {}
+
+    private Cayenne() {
+    }
 }
