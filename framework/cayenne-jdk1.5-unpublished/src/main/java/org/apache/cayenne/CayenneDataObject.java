@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.conf.Configuration;
@@ -111,57 +110,77 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     public Object readNestedProperty(String path) {
-        return readNestedProperty(this, path, tokenizePath(path), 0, 0);
-    }
-    
-    /**
-     * Recursively resolves nested property path 
-     */
-    private static Object readNestedProperty(CayenneDataObject dataObject, 
-        String path, String[] tokenizedPath, int tokenIndex, int pathIndex) {
         
-        Object property = dataObject.readSimpleProperty(tokenizedPath[tokenIndex]);
-
-        if (tokenIndex == tokenizedPath.length - 1) { //last component
-            return property;
+        if ((null == path) || (0 == path.length())) {
+            throw new IllegalArgumentException(
+                    "the path must be supplied in order to lookup a nested property");
         }
-        
-        pathIndex += tokenizedPath[tokenIndex].length() + 1;
+
+        int dotIndex = path.indexOf('.');
+
+        if (0 == dotIndex) {
+            throw new IllegalArgumentException(
+                    "the path is invalid because it starts with a period character");
+        }
+
+        if (dotIndex == path.length() - 1) {
+            throw new IllegalArgumentException(
+                    "the path is invalid because it ends with a period character");
+        }
+
+        if (-1 == dotIndex) {
+            return readSimpleProperty(path);
+        }
+
+        String path0 = path.substring(0, dotIndex);
+        String pathRemainder = path.substring(dotIndex + 1);
+
+        // this is copied from the old code where the placement of a plus
+        // character at the end of a segment of a property path would
+        // simply strip out the plus. I am not entirely sure why this is
+        // done. See unit test 'testReadNestedPropertyToManyInMiddle1'.
+
+        if ('+' == path0.charAt(path0.length() - 1)) {
+            path0 = path0.substring(0, path0.length() - 1);
+        }
+
+        Object property = readSimpleProperty(path0);
+
         if (property == null) {
             return null;
         }
-        else if (property instanceof CayenneDataObject) {
-            return readNestedProperty((CayenneDataObject) property, path, tokenizedPath, tokenIndex + 1,
-                tokenIndex);
+        else if (property instanceof DataObject) {
+            DataObject cdo = (DataObject) property;
+            return cdo.readNestedProperty(pathRemainder);
         }
         else if (property instanceof Collection) {
-        
-        	// CAY-1402
-        	// This is back-ported from 3.1's trunk and from the Cayenne utility
-        	// object.  This will allow people to put @size at the end of a property
-        	// path and be able to find out the size of a relationship.
-        
+
+            // CAY-1402
+            // This is back-ported from 3.1's trunk and from the Cayenne utility
+            // object. This will allow people to put @size at the end of a property
+            // path and be able to find out the size of a relationship.
+
             Collection<?> collection = (Collection) property;
-            
-            if (tokenIndex < tokenizedPath.length - 1) {
-                if (tokenizedPath[tokenIndex + 1].equals(PROPERTY_COLLECTION_SIZE)) {
-                    return collection.size();
-                }
-            }
-        
+
+            if (pathRemainder.equals(PROPERTY_COLLECTION_SIZE))
+                return new Integer(collection.size());
+
             /**
              * Support for collection property in the middle of the path
              */
-            Collection<Object> result = property instanceof List ?
-                    new ArrayList<Object>() : new HashSet<Object>() ;
+            Collection<Object> result = property instanceof List
+                    ? new ArrayList<Object>()
+                    : new HashSet<Object>();
             for (Object obj : (Collection<?>) property) {
                 if (obj instanceof CayenneDataObject) {
-                    Object rest = readNestedProperty((CayenneDataObject) obj, path, tokenizedPath, 
-                            tokenIndex + 1, tokenIndex);
+                    CayenneDataObject cdo = (CayenneDataObject) obj;
+                    Object rest = cdo.readNestedProperty(pathRemainder);
+
                     if (rest instanceof Collection) {
                         /**
-                         * We don't want nested collections.
-                         * E.g. readNestedProperty("paintingArray.paintingTitle") should return List<String>
+                         * We don't want nested collections. E.g.
+                         * readNestedProperty("paintingArray.paintingTitle") should return
+                         * List<String>
                          */
                         result.addAll((Collection<?>) rest);
                     }
@@ -174,42 +193,12 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         }
         else {
             // read the rest of the path via introspection
-            return PropertyUtils.getProperty(property, path.substring(pathIndex));
+            return PropertyUtils.getProperty(property, pathRemainder);
         }
-    }
-
-    private static final String[] tokenizePath(String path) {
-        if (path == null) {
-            throw new NullPointerException("Null property path.");
-        }
-
-        if (path.length() == 0) {
-            throw new IllegalArgumentException("Empty property path.");
-        }
-
-        // take a shortcut for simple properties
-        if (!path.contains(".")) {
-            return new String[] {
-                path
-            };
-        }
-
-        StringTokenizer tokens = new StringTokenizer(path, ".");
-        int length = tokens.countTokens();
-        String[] tokenized = new String[length];
-        for (int i = 0; i < length; i++) {
-            String temp = tokens.nextToken();
-            if(temp.endsWith("+")){
-                tokenized[i] = temp.substring(0, temp.length() - 1);
-            }
-            else{
-                tokenized[i] = temp;
-            }
-        }
-        return tokenized;
     }
 
     private final Object readSimpleProperty(String property) {
+                
         // side effect - resolves HOLLOW object
         Object object = readProperty(property);
 
