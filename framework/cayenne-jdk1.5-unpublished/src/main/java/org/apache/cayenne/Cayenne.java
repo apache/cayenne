@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -112,159 +111,125 @@ public final class Cayenne {
      * </p>
      * <ul>
      * <li>Read this object property:<br>
-     * <code>String name = (String)CayenneUtils.readNestedProperty(artist, "name");</code>
-     * <br>
+     * <code>String name = (String)Cayenne.readNestedProperty(artist, "name");</code><br>
      * <br>
      * </li>
      * <li>Read an object related to this object:<br>
-     * <code>Gallery g = (Gallery)CayenneUtils.readNestedProperty(paintingInfo, "toPainting.toGallery");</code>
+     * <code>Gallery g = (Gallery)Cayenne.readNestedProperty(paintingInfo, "toPainting.toGallery");</code>
      * <br>
      * <br>
      * </li>
      * <li>Read a property of an object related to this object: <br>
-     * <code>String name = (String)CayenneUtils.readNestedProperty(painting, "toArtist.artistName");</code>
+     * <code>String name = (String)Cayenne.readNestedProperty(painting, "toArtist.artistName");</code>
      * <br>
      * <br>
      * </li>
      * <li>Read to-many relationship list:<br>
-     * <code>List exhibits = (List)CayenneUtils.readNestedProperty(painting, "toGallery.exhibitArray");</code>
+     * <code>List exhibits = (List)Cayenne.readNestedProperty(painting, "toGallery.exhibitArray");</code>
      * <br>
      * <br>
      * </li>
      * <li>Read to-many relationship in the middle of the path:<br>
-     * <code>List<String> names = (List<String>)CayenneUtils.readNestedProperty(artist, "paintingArray.paintingName");</code>
+     * <code>List<String> names = (List<String>)Cayenne.readNestedProperty(artist, "paintingArray.paintingName");</code>
      * <br>
      * <br>
      * </li>
      * </ul>
      */
-    public static Object readNestedProperty(Persistent p, String path) {
-        return readNestedProperty(p, path, tokenizePath(path), 0, 0);
-    }
+    public static Object readNestedProperty(Object o, String path) {
 
-    /**
-     * Recursively resolves nested property path
-     */
-    private static Object readNestedProperty(
-            Persistent p,
-            String path,
-            String[] tokenizedPath,
-            int tokenIndex,
-            int pathIndex) {
-
-        Object property = readSimpleProperty(p, tokenizedPath[tokenIndex]);
-
-        if (tokenIndex == tokenizedPath.length - 1) { // last component
-            return property;
-        }
-
-        pathIndex += tokenizedPath[tokenIndex].length() + 1;
-        if (property == null) {
+        if (o == null) {
             return null;
         }
-        else if (property instanceof Persistent) {
-            return readNestedProperty(
-                    (Persistent) property,
-                    path,
-                    tokenizedPath,
-                    tokenIndex + 1,
-                    tokenIndex);
+        else if (o instanceof DataObject) {
+            return ((DataObject) o).readNestedProperty(path);
         }
-        else if (property instanceof Collection) {
+        else if (o instanceof Collection<?>) {
 
-            Collection<?> collection = (Collection) property;
+            // This allows people to put @size at the end of a property
+            // path and be able to find out the size of a relationship.
 
-            if (tokenIndex < tokenizedPath.length - 1) {
-                if (tokenizedPath[tokenIndex + 1].equals(PROPERTY_COLLECTION_SIZE)) {
-                    return collection.size();
-                }
+            Collection<?> collection = (Collection<?>) o;
+
+            if (path.equals(PROPERTY_COLLECTION_SIZE)) {
+                return collection.size();
             }
 
             // Support for collection property in the middle of the path
-            Collection<Object> result = property instanceof List
+            Collection<Object> result = o instanceof List<?>
                     ? new ArrayList<Object>()
                     : new HashSet<Object>();
-            for (Object object : collection) {
-                if (object instanceof CayenneDataObject) {
 
-                    Object tail = readNestedProperty(
-                            (CayenneDataObject) object,
-                            path,
-                            tokenizedPath,
-                            tokenIndex + 1,
-                            tokenIndex);
+            for (Object item : collection) {
+                if (item instanceof DataObject) {
+                    DataObject cdo = (DataObject) item;
+                    Object rest = cdo.readNestedProperty(path);
 
-                    if (tail instanceof Collection) {
+                    if (rest instanceof Collection<?>) {
 
                         // We don't want nested collections. E.g.
-                        // readNestedProperty("paintingArray.paintingTitle")
-                        // should return List<String>
-                        result.addAll((Collection<?>) tail);
+                        // readNestedProperty("paintingArray.paintingTitle") should return
+                        // List<String>
+                        result.addAll((Collection<?>) rest);
                     }
                     else {
-                        result.add(tail);
+                        result.add(rest);
                     }
                 }
             }
+
             return result;
         }
-        else {
-            // read the rest of the path via introspection
-            return PropertyUtils.getProperty(property, path.substring(pathIndex));
+
+        if ((null == path) || (0 == path.length())) {
+            throw new IllegalArgumentException(
+                    "the path must be supplied in order to lookup a nested property");
         }
+
+        int dotIndex = path.indexOf('.');
+
+        if (0 == dotIndex) {
+            throw new IllegalArgumentException(
+                    "the path is invalid because it starts with a period character");
+        }
+
+        if (dotIndex == path.length() - 1) {
+            throw new IllegalArgumentException(
+                    "the path is invalid because it ends with a period character");
+        }
+
+        if (-1 == dotIndex) {
+            return readSimpleProperty(o, path);
+        }
+
+        String path0 = path.substring(0, dotIndex);
+        String pathRemainder = path.substring(dotIndex + 1);
+
+        // this is copied from the old code where the placement of a plus
+        // character at the end of a segment of a property path would
+        // simply strip out the plus. I am not entirely sure why this is
+        // done. See unit test 'testReadNestedPropertyToManyInMiddle1'.
+
+        if ('+' == path0.charAt(path0.length() - 1)) {
+            path0 = path0.substring(0, path0.length() - 1);
+        }
+
+        Object property = readSimpleProperty(o, path0);
+        return readNestedProperty(property, pathRemainder);
     }
 
-    private static final String[] tokenizePath(String path) {
-        if (path == null) {
-            throw new NullPointerException("Null property path.");
-        }
+    private static final Object readSimpleProperty(Object o, String propertyName) {
+        if (o instanceof Persistent) {
 
-        if (path.length() == 0) {
-            throw new IllegalArgumentException("Empty property path.");
-        }
+            Property property = getProperty((Persistent) o, propertyName);
 
-        // take a shortcut for simple properties
-        if (!path.contains(".")) {
-            return new String[] {
-                path
-            };
-        }
-
-        StringTokenizer tokens = new StringTokenizer(path, ".");
-        int length = tokens.countTokens();
-        String[] tokenized = new String[length];
-        for (int i = 0; i < length; i++) {
-            String temp = tokens.nextToken();
-            if (temp.endsWith("+")) {
-                tokenized[i] = temp.substring(0, temp.length() - 1);
+            if (property != null) {
+                return property.readProperty(o);
             }
-            else {
-                tokenized[i] = temp;
-            }
-        }
-        return tokenized;
-    }
-
-    private static final Object readSimpleProperty(Persistent p, String propertyName) {
-        Property property = getProperty(p, propertyName);
-
-        if (property != null) {
-            // side effect - resolves HOLLOW object
-            return property.readProperty(p);
         }
 
         // handling non-persistent property
-        Object result = null;
-        if (p instanceof DataObject) {
-            result = ((DataObject) p).readPropertyDirectly(propertyName);
-        }
-
-        if (result != null) {
-            return result;
-        }
-
-        // there is still a change to return a property via introspection
-        return PropertyUtils.getProperty(p, propertyName);
+        return PropertyUtils.getProperty(o, propertyName);
     }
 
     /**

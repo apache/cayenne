@@ -37,6 +37,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -108,7 +109,65 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * @since 1.0.5
      */
     public Object readNestedProperty(String path) {
-        return Cayenne.readNestedProperty(this, path);
+
+        if ((null == path) || (0 == path.length())) {
+            throw new IllegalArgumentException(
+                    "the path must be supplied in order to lookup a nested property");
+        }
+
+        int dotIndex = path.indexOf('.');
+
+        if (0 == dotIndex) {
+            throw new IllegalArgumentException(
+                    "the path is invalid because it starts with a period character");
+        }
+
+        if (dotIndex == path.length() - 1) {
+            throw new IllegalArgumentException(
+                    "the path is invalid because it ends with a period character");
+        }
+
+        if (-1 == dotIndex) {
+            return readSimpleProperty(path);
+        }
+
+        String path0 = path.substring(0, dotIndex);
+        String pathRemainder = path.substring(dotIndex + 1);
+
+        // this is copied from the old code where the placement of a plus
+        // character at the end of a segment of a property path would
+        // simply strip out the plus. I am not entirely sure why this is
+        // done. See unit test 'testReadNestedPropertyToManyInMiddle1'.
+
+        if ('+' == path0.charAt(path0.length() - 1)) {
+            path0 = path0.substring(0, path0.length() - 1);
+        }
+
+        Object property = readSimpleProperty(path0);
+
+        if (property == null) {
+            return null;
+        }
+        else if (property instanceof DataObject) {
+            return ((DataObject) property).readNestedProperty(pathRemainder);
+        }
+        else {
+            return Cayenne.readNestedProperty(property, pathRemainder);
+        }
+    }
+
+    private final Object readSimpleProperty(String property) {
+
+        // side effect - resolves HOLLOW object
+        Object object = readProperty(property);
+
+        // if a null value is returned, there is still a chance to
+        // find a non-persistent property via reflection
+        if (object == null && !values.containsKey(property)) {
+            object = PropertyUtils.getProperty(this, property);
+        }
+
+        return object;
     }
 
     public Object readProperty(String propertyName) {
