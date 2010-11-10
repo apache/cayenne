@@ -86,6 +86,13 @@ class ObjectResolver {
                 : new NoInheritanceStrategy();
     }
 
+    PrefetchProcessorNode synchronizedRootResultNodeFromDataRows(
+            List<? extends DataRow> rows) {
+        PrefetchProcessorNode rootNode = new PrefetchProcessorNode(null, null);
+        rootNode.setObjects(synchronizedObjectsFromDataRows(rows));
+        return rootNode;
+    }
+
     /**
      * Properly synchronized version of 'objectsFromDataRows'.
      */
