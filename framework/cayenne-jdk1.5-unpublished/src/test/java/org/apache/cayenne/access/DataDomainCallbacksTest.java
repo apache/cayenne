@@ -219,6 +219,81 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertTrue(a1.isPostRemoved());
         assertSame(a1, listener2.getPublicCalledbackEntity());
     }
+    
+    public void testPostRemove_UpdatedDeleted() {
+
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        ObjectContext context = createDataContext();
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        context.commitChanges();
+
+        MockCallingBackListener listener1 = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_REMOVE,
+                Artist.class,
+                listener1,
+                "publicCallback");
+
+        MockCallingBackListener listener2 = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_UPDATE,
+                Artist.class,
+                listener2,
+                "publicCallback");
+
+
+        // change before removing
+        a1.setArtistName("YY");
+        context.deleteObject(a1);
+        context.commitChanges();
+
+        assertNull(listener2.getPublicCalledbackEntity());
+        assertSame(a1, listener1.getPublicCalledbackEntity());
+    }
+    
+    public void testPostRemove_InsertedUpdatedDeleted() {
+
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        ObjectContext context = createDataContext();
+
+        MockCallingBackListener listener0 = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_PERSIST,
+                Artist.class,
+                listener0,
+                "publicCallback");
+        
+        MockCallingBackListener listener1 = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_REMOVE,
+                Artist.class,
+                listener1,
+                "publicCallback");
+
+        MockCallingBackListener listener2 = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_UPDATE,
+                Artist.class,
+                listener2,
+                "publicCallback");
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        context.deleteObject(a1);
+        context.commitChanges();
+
+        assertNull(listener0.getPublicCalledbackEntity());
+        assertNull(listener1.getPublicCalledbackEntity());
+        assertNull(listener2.getPublicCalledbackEntity());
+    }
 
     public void testPostPersist() {
 

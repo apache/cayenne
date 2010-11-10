@@ -82,6 +82,7 @@ CAY-1488 OutOfMemory when selecting "Remove Foreign Keys Mapped as Object Attrib
 CAY-1489 NPE using DataContext.objectFromDataRow for a nested context
 CAY-1490 Maven cgen: all and datamap modes can not be activated
 CAY-1496 Problem in derby: comparison operators are not supported on Clob object values.
+CAY-1505 Callbacks: POST_UPDATE is called on updated removed object, instead of POST_REMOVE
 
 ----------------------------------
 Release: 3.0.1

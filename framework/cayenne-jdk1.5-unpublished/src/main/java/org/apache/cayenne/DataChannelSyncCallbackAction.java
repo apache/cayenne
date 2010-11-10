@@ -20,8 +20,8 @@ package org.apache.cayenne;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
@@ -30,10 +30,14 @@ import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
- * @since 3.0
- * note: made public in 3.1 to be used in all tiers
+ * @since 3.1
  */
+// note: made public in 3.1 to be used in all tiers
 public abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
+
+    static enum Op {
+        INSERT, UPDATE, DELETE
+    }
 
     public static DataChannelSyncCallbackAction getCallbackAction(
             LifecycleCallbackRegistry callbackRegistry,
@@ -56,7 +60,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     Collection updated;
     Collection persisted;
     Collection removed;
-    private Set<Object> seenIds;
+    private Map<Object, Op> seenIds;
     private GraphManager graphManager;
 
     DataChannelSyncCallbackAction(LifecycleCallbackRegistry callbackRegistry,
@@ -66,7 +70,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
         this.graphManager = graphManager;
 
         if (hasListeners()) {
-            this.seenIds = new HashSet<Object>();
+            this.seenIds = new HashMap<Object, Op>();
             changes.apply(this);
         }
     }
@@ -84,13 +88,14 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     }
 
     public void nodeCreated(Object nodeId) {
-        if (seenIds.add(nodeId)) {
+        Op op = seenIds.put(nodeId, Op.INSERT);
+        if (op == null) {
 
             Object node = graphManager.getNode(nodeId);
             if (node != null) {
 
                 if (persisted == null) {
-                    persisted = new ArrayList();
+                    persisted = new ArrayList<Object>();
                 }
 
                 persisted.add(node);
@@ -99,16 +104,26 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     }
 
     public void nodeRemoved(Object nodeId) {
-        if (seenIds.add(nodeId)) {
+        Op op = seenIds.put(nodeId, Op.DELETE);
+        
+        // the node may have been updated prior to delete
+        if (op != Op.DELETE) {
 
             Object node = graphManager.getNode(nodeId);
             if (node != null) {
 
                 if (removed == null) {
-                    removed = new ArrayList();
+                    removed = new ArrayList<Object>();
                 }
 
                 removed.add(node);
+
+                if (op == Op.UPDATE) {
+                    updated.remove(node);
+                }
+
+                // don't care about preceding Op.INSERT, as NEW -> DELETED objects are
+                // purged from the change log upstream and we don't see them here
             }
         }
     }
@@ -135,13 +150,15 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     }
 
     private void nodeUpdated(Object nodeId) {
-        if (seenIds.add(nodeId)) {
+        Op op = seenIds.put(nodeId, Op.UPDATE);
+        
+        if (op == null) {
 
             Object node = graphManager.getNode(nodeId);
             if (node != null) {
 
                 if (updated == null) {
-                    updated = new ArrayList();
+                    updated = new ArrayList<Object>();
                 }
 
                 updated.add(node);
