@@ -21,7 +21,6 @@ package org.apache.cayenne.reflect;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.Persistent;
@@ -87,7 +86,7 @@ class LifecycleCallbackEventHandler {
      * Registers a callback method to be invoked on an entity class instances when a
      * lifecycle event occurs.
      */
-    void addListener(Class entityClass, String methodName) {
+    void addListener(Class<?> entityClass, String methodName) {
         addCallback(entityClass, new CallbackOnEntity(entityClass, methodName));
     }
 
@@ -95,7 +94,7 @@ class LifecycleCallbackEventHandler {
      * Registers callback method to be invoked on a provided non-entity object when a
      * lifecycle event occurs.
      */
-    void addListener(Class entityClass, Object listener, String methodName) {
+    void addListener(Class<?> entityClass, Object listener, String methodName) {
         CallbackOnListener callback = new CallbackOnListener(
                 listener,
                 methodName,
@@ -106,7 +105,7 @@ class LifecycleCallbackEventHandler {
     /**
      * Registers a callback object to be invoked when a lifecycle event occurs.
      */
-    private void addCallback(Class entityClass, AbstractCallback callback) {
+    private void addCallback(Class<?> entityClass, AbstractCallback callback) {
         Collection<AbstractCallback> entityListeners = listeners.get(entityClass.getName());
 
         if (entityListeners == null) {
@@ -137,22 +136,9 @@ class LifecycleCallbackEventHandler {
     /**
      * Invokes callbacks for a collection of entity objects.
      */
-    void performCallbacks(Collection objects) {
-        Iterator it = objects.iterator();
-
-        while (it.hasNext()) {
-            
-            // TODO: andrus, 10/23/2007 - aggregate queries can return Object[] results
-            // that are mixed Persistent and scalars... need to unwrap those... for now
-            // simply check for non-persistent first result and bail out...
-
-            Object object = it.next();
-            if (object instanceof Persistent) {
-                performCallbacks((Persistent) object);
-            }
-            else {
-                break;
-            }
+    void performCallbacks(Collection<?> objects) {
+        for (Object object : objects) {
+            performCallbacks((Persistent) object);
         }
     }
 
@@ -160,7 +146,7 @@ class LifecycleCallbackEventHandler {
      * Invokes callbacks for the class hierarchy, starting from the most generic
      * superclass.
      */
-    private void performCallbacks(Persistent object, Class callbackEntityClass) {
+    private void performCallbacks(Persistent object, Class<?> callbackEntityClass) {
 
         if (callbackEntityClass == null || Object.class.equals(callbackEntityClass)) {
             return;

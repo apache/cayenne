@@ -22,6 +22,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -104,6 +105,33 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertNull(listener.getPublicCalledbackEntity());
 
         a1.getArtistName();
+        assertEquals(1, a1.getPostLoaded());
+        assertSame(a1, listener.getPublicCalledbackEntity());
+    }
+
+    public void testPostLoad_MixedResult() throws Exception {
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        ObjectContext context = createDataContext();
+
+        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        MockCallingBackListener listener = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_LOAD,
+                Artist.class,
+                listener,
+                "publicCallback");
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        context.commitChanges();
+        assertEquals(0, a1.getPostLoaded());
+        assertNull(listener.getPublicCalledbackEntity());
+
+        EJBQLQuery q = new EJBQLQuery("select a, a.artistName from Artist a");
+        context.performQuery(q);
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
@@ -219,7 +247,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertTrue(a1.isPostRemoved());
         assertSame(a1, listener2.getPublicCalledbackEntity());
     }
-    
+
     public void testPostRemove_UpdatedDeleted() {
 
         LifecycleCallbackRegistry registry = getDomain()
@@ -246,7 +274,6 @@ public class DataDomainCallbacksTest extends CayenneCase {
                 listener2,
                 "publicCallback");
 
-
         // change before removing
         a1.setArtistName("YY");
         context.deleteObject(a1);
@@ -255,7 +282,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertNull(listener2.getPublicCalledbackEntity());
         assertSame(a1, listener1.getPublicCalledbackEntity());
     }
-    
+
     public void testPostRemove_InsertedUpdatedDeleted() {
 
         LifecycleCallbackRegistry registry = getDomain()
@@ -270,7 +297,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
                 Artist.class,
                 listener0,
                 "publicCallback");
-        
+
         MockCallingBackListener listener1 = new MockCallingBackListener();
         registry.addListener(
                 LifecycleEvent.POST_REMOVE,
