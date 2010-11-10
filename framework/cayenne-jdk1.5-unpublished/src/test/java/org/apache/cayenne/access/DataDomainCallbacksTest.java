@@ -20,12 +20,15 @@ package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataDomainCallbacksTest extends CayenneCase {
@@ -70,15 +73,6 @@ public class DataDomainCallbacksTest extends CayenneCase {
         a1.resetCallbackFlags();
         listener.reset();
 
-        // TODO: andrus, 9/21/2006 - this fails as "postLoad" is called when query
-        // refresh flag is set to false and object is already there.
-        // q.setRefreshingObjects(false);
-        //        
-        // assertFalse(a1.isPostLoaded());
-        // context.performQuery(q);
-        // assertFalse(a1.isPostLoaded());
-        // assertNull(listener.getPublicCalledbackEntity());
-
         // post load must be called on rollback...
         a1.resetCallbackFlags();
         listener.reset();
@@ -108,7 +102,109 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 
-    public void testPreUpdate() {
+    public void testPostLoad_MixedResult() throws Exception {
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        ObjectContext context = createDataContext();
+
+        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        MockCallingBackListener listener = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_LOAD,
+                Artist.class,
+                listener,
+                "publicCallback");
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        context.commitChanges();
+        assertEquals(0, a1.getPostLoaded());
+        assertNull(listener.getPublicCalledbackEntity());
+
+        EJBQLQuery q = new EJBQLQuery("select a, a.artistName from Artist a");
+        context.performQuery(q);
+        assertEquals(1, a1.getPostLoaded());
+        assertSame(a1, listener.getPublicCalledbackEntity());
+    }
+
+    public void testPostLoad_Relationship() throws Exception {
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        ObjectContext context = createDataContext();
+
+        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        MockCallingBackListener listener = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_LOAD,
+                Artist.class,
+                listener,
+                "publicCallback");
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        Painting p1 = context.newObject(Painting.class);
+        p1.setToArtist(a1);
+        p1.setPaintingTitle("XXX");
+        context.commitChanges();
+
+        // reset context and read related object
+        context = createDataContext();
+
+        SelectQuery q = new SelectQuery(Painting.class);
+        p1 = (Painting) context.performQuery(q).get(0);
+
+        // this should be a hollow object, so no callback just yet
+        a1 = p1.getToArtist();
+        assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
+        assertEquals(0, a1.getPostLoaded());
+        assertNull(listener.getPublicCalledbackEntity());
+
+        a1.getArtistName();
+        assertEquals(1, a1.getPostLoaded());
+        assertSame(a1, listener.getPublicCalledbackEntity());
+    }
+
+    public void testPostLoad_Prefetch() throws Exception {
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        ObjectContext context = createDataContext();
+
+        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        MockCallingBackListener listener = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_LOAD,
+                Artist.class,
+                listener,
+                "publicCallback");
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        Painting p1 = context.newObject(Painting.class);
+        p1.setToArtist(a1);
+        p1.setPaintingTitle("XXX");
+        context.commitChanges();
+
+        // reset context and read related object
+        context = createDataContext();
+
+        SelectQuery q = new SelectQuery(Painting.class);
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+        p1 = (Painting) context.performQuery(q).get(0);
+
+        // artist is prefetched here, and a callback must have been invoked
+        a1 = p1.getToArtist();
+        assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
+        assertEquals(1, a1.getPostLoaded());
+        assertSame(a1, listener.getPublicCalledbackEntity());
+    }
+
+   public void testPreUpdate() {
 
         LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
