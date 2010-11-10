@@ -561,26 +561,26 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         abstract void convert(List<T> mainRows);
 
-        protected List<Persistent> toObjects(
+        protected PrefetchProcessorNode toResultsTree(
                 ClassDescriptor descriptor,
                 PrefetchTreeNode prefetchTree,
                 List<DataRow> normalizedRows) {
-            List<Persistent> objects;
 
             // take a shortcut when no prefetches exist...
             if (prefetchTree == null) {
-                objects = new ObjectResolver(context, descriptor, metadata
+                return new ObjectResolver(context, descriptor, metadata
                         .isRefreshingObjects())
-                        .synchronizedObjectsFromDataRows(normalizedRows);
+                        .synchronizedRootResultNodeFromDataRows(normalizedRows);
             }
             else {
-                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata);
-                objects = resolver.synchronizedObjectsFromDataRows(
+                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
+                        context,
+                        metadata);
+                return resolver.synchronizedRootResultNodeFromDataRows(
                         prefetchTree,
                         normalizedRows,
                         prefetchResultsByPath);
             }
-            return objects;
         }
 
         protected void updateResponse(List sourceObjects, List targetObjects) {
@@ -594,6 +594,24 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 throw new IllegalStateException("Unknown response object: " + response);
             }
         }
+
+        protected void performPostLoadCallbacks(
+                PrefetchProcessorNode node,
+                LifecycleCallbackRegistry callbackRegistry) {
+
+            if (node.hasChildren()) {
+                for (PrefetchTreeNode child : node.getChildren()) {
+                    performPostLoadCallbacks(
+                            (PrefetchProcessorNode) child,
+                            callbackRegistry);
+                }
+            }
+
+            List<Persistent> objects = node.getObjects();
+            if (objects != null) {
+                callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+            }
+        }
     }
 
     class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow> {
@@ -604,8 +622,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             ClassDescriptor descriptor = metadata.getClassDescriptor();
             PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
 
-            List<Persistent> objects = toObjects(descriptor, prefetchTree, mainRows);
-            updateResponse(mainRows, objects);
+            PrefetchProcessorNode node = toResultsTree(descriptor, prefetchTree, mainRows);
+            List<Persistent> objects = node.getObjects();
+            updateResponse(mainRows, objects != null
+                    ? objects
+                    : new ArrayList<Persistent>(1));
 
             // apply POST_LOAD callback
             LifecycleCallbackRegistry callbackRegistry = context
@@ -613,7 +634,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     .getCallbackRegistry();
 
             if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+                performPostLoadCallbacks(node, callbackRegistry);
             }
         }
     }
@@ -628,7 +649,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     class MixedConversionStrategy extends ObjectConversionStrategy<Object[]> {
 
-        protected List<Persistent> toObjects(
+        protected PrefetchProcessorNode toResultsTree(
                 ClassDescriptor descriptor,
                 PrefetchTreeNode prefetchTree,
                 List<Object[]> rows,
@@ -639,7 +660,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             for (int i = 0; i < len; i++) {
                 rowsColumn.add((DataRow) rows.get(i)[position]);
             }
-            List<Persistent> objects;
+
             if (prefetchTree != null) {
                 PrefetchTreeNode prefetchTreeNode = null;
                 for (PrefetchTreeNode prefetch : prefetchTree.getChildren()) {
@@ -655,22 +676,23 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 }
                 prefetchTree = prefetchTreeNode;
             }
+
             if (prefetchTree == null) {
-                objects = new ObjectResolver(context, descriptor, metadata
+                return new ObjectResolver(context, descriptor, metadata
                         .isRefreshingObjects())
-                        .synchronizedObjectsFromDataRows(rowsColumn);
+                        .synchronizedRootResultNodeFromDataRows(rowsColumn);
             }
             else {
                 HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
                         context,
                         metadata,
-                        descriptor, true);
-                objects = resolver.synchronizedObjectsFromDataRows(
+                        descriptor,
+                        true);
+                return resolver.synchronizedRootResultNodeFromDataRows(
                         prefetchTree,
                         rowsColumn,
                         prefetchResultsByPath);
             }
-            return objects;
         }
 
         @Override
@@ -680,44 +702,47 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             List<Object> rsMapping = metadata.getResultSetMapping();
             int width = rsMapping.size();
+
             // no conversions needed for scalar positions; reuse Object[]'s to fill them
             // with resolved objects
-            List<List<?>> resultLists = new ArrayList<List<?>>(width);
+            List<PrefetchProcessorNode> segmentNodes = new ArrayList<PrefetchProcessorNode>(width);
             for (int i = 0; i < width; i++) {
 
                 if (rsMapping.get(i) instanceof EntityResultSegment) {
                     EntityResultSegment entitySegment = (EntityResultSegment) rsMapping
                             .get(i);
-                    List<Persistent> nextResult = toObjects(entitySegment
-                            .getClassDescriptor(), metadata.getPrefetchTree() , mainRows, i);
+                    PrefetchProcessorNode nextResult = toResultsTree(
+                            entitySegment.getClassDescriptor(),
+                            metadata.getPrefetchTree(),
+                            mainRows,
+                            i);
+
+                    segmentNodes.add(nextResult);
                     
-                    resultLists.add(nextResult);
-                    
+                    List<Persistent> objects = nextResult.getObjects();
+
                     for (int j = 0; j < rowsLen; j++) {
                         Object[] row = mainRows.get(j);
-                        row[i] = nextResult.get(j);
+                        row[i] = objects.get(j);
                     }
                 }
             }
             Set<List<?>> seen = new HashSet(mainRows.size());
             Iterator<Object[]> it = mainRows.iterator();
             while (it.hasNext()) {
-                
                 if (!seen.add(Arrays.asList(it.next()))) {
                     it.remove();
-                    
                 }
-                
             }
-            
+
             // invoke callbacks now that all objects are resolved...
             LifecycleCallbackRegistry callbackRegistry = context
                     .getEntityResolver()
                     .getCallbackRegistry();
 
             if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                for (List<?> list : resultLists) {
-                    callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, list);
+                for (PrefetchProcessorNode node : segmentNodes) {
+                    performPostLoadCallbacks(node, callbackRegistry);
                 }
             }
         }

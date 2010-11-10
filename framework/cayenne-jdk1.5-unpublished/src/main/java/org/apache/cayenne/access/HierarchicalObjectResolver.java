@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +62,7 @@ class HierarchicalObjectResolver {
     /**
      * Properly synchronized version of 'resolveObjectTree'.
      */
-    List synchronizedObjectsFromDataRows(
+    PrefetchProcessorNode synchronizedRootResultNodeFromDataRows(
             PrefetchTreeNode tree,
             List mainResultRows,
             Map extraResultsByPath) {
@@ -75,7 +74,7 @@ class HierarchicalObjectResolver {
         }
     }
 
-    private List resolveObjectTree(
+    private PrefetchProcessorNode resolveObjectTree(
             PrefetchTreeNode tree,
             List mainResultRows,
             Map extraResultsByPath) {
@@ -94,9 +93,7 @@ class HierarchicalObjectResolver {
         // connect related objects
         decoratedTree.traverse(new PostProcessor());
 
-        return decoratedTree.getObjects() != null
-                ? decoratedTree.getObjects()
-                : new ArrayList(1);
+        return decoratedTree;
     }
 
     final class DisjointProcessor implements PrefetchProcessor {
