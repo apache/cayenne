@@ -1188,7 +1188,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.2
      */
-    public void registerNode(Object nodeId, Object nodeObject) {
+    public synchronized void registerNode(Object nodeId, Object nodeObject) {
         objectMap.put(nodeId, nodeObject);
 
         if (newObjectsMap != null) {
