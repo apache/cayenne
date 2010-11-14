@@ -1,0 +1,112 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Guide to 3.1 Features</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Guide to 3.1 Features</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Overview/Database Support/index.html">Database Support</a></li>
+<li><a href="../../../Documentation/Overview/License/index.html">License</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 3.1 Features/index.html">Guide to 3.1 Features</a><ul>
+<li><a href="../../../Documentation/Overview/Guide to 3.1 Features/Dependency Injection Container/index.html">Dependency Injection Container</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 1.2 Features/index.html">Guide to 1.2 Features</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 1.1 Features/index.html">Guide to 1.1 Features</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>This page highlights the new features and changes introduced in 3.1 release. It is a high-level overview and as such is by no means complete. Consult RELEASE-NOTES.txt file included in each release for the full list of changes, and UPGRADE.txt for the upgrade instructions.</p>
+
+<ul>
+	<li><a href="#Guideto3.1Features-DistributionContentsStructure">Distribution Contents Structure</a></li>
+	<li><a href="#Guideto3.1Features-CayenneConfiguration">Cayenne Configuration</a></li>
+	<li><a href="#Guideto3.1Features-FrameworkAPI">Framework API</a></li>
+	<li><a href="#Guideto3.1Features-CayenneModeler">CayenneModeler</a></li>
+</ul>
+
+
+<h2><a name="Guideto3.1Features-DistributionContentsStructure"></a>Distribution Contents Structure</h2>
+
+<p>Cayenne distribution is made leaner and more modular:</p>
+
+<ul>
+	<li><tt>"cayenne-modeler.jar"</tt> is no longer included in the "lib" folder, as it is no longer used for loading local JNDI overrides. Of course "CayenneModeler-the-app" is still included.</li>
+	<li>Ashwood library used for commit operation sorting is no longer a third-party dependency. Instead a small subset of the relevant Ashwood classes got included in Cayenne core.</li>
+	<li>The following helper modules are split away from Cayenne core: <tt>"cayenne-project"</tt> and <tt>"cayenne-wocompat"</tt>. They are bundled in CayenneModeler, and are available from the source distribution. They are not included as standalone jars in the binary distribution.</li>
+</ul>
+
+
+<h2><a name="Guideto3.1Features-CayenneConfiguration"></a>Cayenne Configuration</h2>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>The new DI-based bootstrap and configuration approach is not API-compatible with earlier versions of Cayenne. Make sure you read the UPGRADE.txt file for instructions how to upgrade the existing projects.</td></tr></table></div>
+
+<h3><a name="Guideto3.1Features-DependencyInjectionContainer"></a>Dependency Injection Container</h3>
+
+<p>Cayenne 3.1 runtime stack is built around the ideas of Dependency Injection (DI), making it extremely flexible and easy to extend. It bundles a small, flexible annotations-based <a href="../../../Documentation/Overview/Guide to 3.1 Features/Dependency Injection Container/index.html" title="Dependency Injection Container">DI</a> to configure its services. The idea behind Cayenne DI is to provide DI services and extension points to Cayenne, but do not interfere with other DI containers that may be present in the application. I.e. it is invisible to the users who do not care about advanced Cayenne customization.</p>
+
+<h3><a name="Guideto3.1Features-BootstrappingCayenneinVariousEnvironments"></a>Bootstrapping Cayenne in Various Environments</h3>
+
+<p><em>TODO... For now read the UPGRADE.txt file and check the tutorials source code for bootstrap examples.</em> Here is a simple example of starting a server-side Cayenne stack:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>ServerRuntime runtime = new ServerRuntime("cayenne-UntitledDomain.xml");</pre>
+</div></div>
+
+<h3><a name="Guideto3.1Features-ConfiguringLocalDataSources%2CRemovalofJNDIHack"></a>Configuring Local DataSources, Removal of JNDI Hack</h3>
+
+<p>Cayenne 3.1 provides a property-based mechanism to override Modeler DataSource definitions, regardless of whether they are driver configurations, JNDI, DBCP, etc. A quick configuration example is shown below:</p>
+
+<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+<pre>-Dcayenne.jdbc.driver=com.mysql.jdbc.Driver -Dcayenne.jdbc.url=jdbc:mysql://localhost/mydb \
+-Dcayenne.jdbc.username=user -Dcayenne.jdbc.password=password</pre>
+</div></div>
+
+<p>For more details and configuration options see javadocs of <tt>org.apache.cayenne.configuration.server.PropertyDataSourceFactory</tt>. </p>
+
+<p>This feature supersedes what was formerly known as "JNDI hack", i.e. JNDI DataSource failover load strategy based on CayenneModeler preferences database. The problem with JNDI hack was unstable and frequently corrupted preferences database, and the need to include hsqldb and cayenne-modeler jars in the runtime. </p>
+
+<h2><a name="Guideto3.1Features-FrameworkAPI"></a>Framework API</h2>
+
+<p><em>TODO... See UPGRADE.txt for the list of changes</em></p>
+
+<h2><a name="Guideto3.1Features-CayenneModeler"></a>CayenneModeler</h2>
+
+<h3><a name="Guideto3.1Features-JavaPreferencesAPI"></a>Java Preferences API</h3>
+
+<p>We got rid of HSQLDB-based preferences storage, and are using standard Java Preferences API for the Modeler preferences. This solved a long-standing stability issue with Modeler preferences. So no more lost user preferences.</p>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2010 Apache Software Foundation
+  </div>
+
+</body>
+</html>
