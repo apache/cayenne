@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../../../Documentation/Cayenne Guide/Design/index.html">Design</a><ul>
 <li><a href="../../../../../Documentation/Cayenne Guide/Design/Cayenne Contract/index.html">Cayenne Contract</a></li>
 <li><a href="../../../../../Documentation/Cayenne Guide/Design/Persistent Object Lifecycle/index.html">Persistent Object Lifecycle</a></li>
@@ -67,14 +67,14 @@
 </div>
 <div id="ConfluenceContent"><p><a href="../../../../../Documentation/Cayenne Guide/Design/Runtime Components/DataNode/index.html" title="DataNode">DataNode</a> obtains connections via a <tt>javax.sql.DataSource</tt>. If an application is deployed in a J2EE container, DataSource is normally provided by container <a href="../../../../../Documentation/Cayenne Guide/Deployment/Using JNDI/index.html" title="Using JNDI">via JNDI</a>. For standalone applications (or if you don't want to use JNDI) Cayenne provides its own DataSource that includes connection pooling features. Whenever you select <tt>org.apache.cayenne.conf.DriverDataSourceFactory</tt> in the Modeler, you are choosing to use Cayenne DataSource. </p>
 
-<p>Cayenne DataSource implementation is located in the <tt>org.apache.cayenne.conn</tt> package and is fully independent from the rest of the framework. Since Cayenne DataSource is chosen automatically, users rarely need to know more details. One notable exception are applications requiring users to interactively <a href="http://cwiki.apache.org/CAY/setting-database-connection.html" rel="nofollow">enter database login information</a>. In this case you can write your own DataSource wrapper, and internally instantiate Cayenne DataSource (<tt>org.apache.cayenne.conn.PoolManager</tt>) after the user provides login and password.</p>
+<p>Cayenne DataSource implementation is located in the <tt>org.apache.cayenne.conn</tt> package and is fully independent from the rest of the framework. Since Cayenne DataSource is chosen automatically, users rarely need to know more details. One notable exception are applications requiring users to interactively <a href="http://cwiki.apache.org/CAY/setting-database-connection.html" class="external-link" rel="nofollow">enter database login information</a>. In this case you can write your own DataSource wrapper, and internally instantiate Cayenne DataSource (<tt>org.apache.cayenne.conn.PoolManager</tt>) after the user provides login and password.</p>
 </div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

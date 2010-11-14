@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a><ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Design/Cayenne Contract/index.html">Cayenne Contract</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Design/Persistent Object Lifecycle/index.html">Persistent Object Lifecycle</a></li>
@@ -59,6 +59,7 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="PrimaryKeyGeneration-PrimaryKeyGeneration"></a>Primary Key Generation</h2>
 <p>Depending on the type of persistent objects and the database design, primary key values can be handled in a few different ways. A decision to use one or another technique will affect how the mapping is done. Here is a summary of possible scenarios. Each one is described below in details.</p>
+<div class='table-wrap'>
 <table class='confluenceTable'><tbody>
 <tr>
 <th class='confluenceTh'>&nbsp;</th>
@@ -91,6 +92,8 @@
 <td class='confluenceTd'>No</td>
 </tr>
 </tbody></table>
+</div>
+
 
 <h3><a name="PrimaryKeyGeneration-MeaningfulPrimaryKey"></a>Meaningful Primary Key</h3>
 
@@ -103,7 +106,7 @@
 <h3><a name="PrimaryKeyGeneration-PrimaryKeyProvidedbyDatabaseonINSERT"></a>Primary Key Provided by Database on INSERT</h3>
 
 <p>Sometimes databases have their own proprietary mechanism to generate a primary key when a new row is inserted. This feature is called "auto increment" or "identity column". Cayenne supports such primary keys out of the box. For this mechanism to be invoked, the DbEntity primary key generation must be marked as "Database-Generated" in the Modeler. Currently MySQL and SQLServer adapters have this feature turned on by default.<br/>
-<img src="Picture 1.png" align="absmiddle" border="0" /></p>
+<span class="image-wrap" style=""><img src="Picture+1.png?version=1&amp;modificationDate=1249017293000" style="border: 0px solid black" /></span></p>
 
 <h3><a name="PrimaryKeyGeneration-CayenneGeneratedPrimaryKey"></a>Cayenne Generated Primary Key</h3>
 
@@ -135,7 +138,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

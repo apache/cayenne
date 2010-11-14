@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
 <li><a href="../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
@@ -60,7 +60,7 @@
 <div id="ConfluenceContent"><h2><a name="DataContext-DataContext"></a>DataContext</h2>
 <p>In most applications <tt>org.apache.cayenne.access.DataContext</tt> is the main user access point to all Cayenne functionality. It provides query execution facilities as well as object state management functions. Applications rarely directly deal with access or mapping objects beyond DataContext.</p>
 
-<p>One of the important features of DataContext is that it isolates changes made in a user session from other users. With this in mind, DataContext normally has a session scope. "Session" can have different meanings in different types of applications. Good example is an HttpSession in a web application. Each one of HttpSessions will normally need a single instance of DataContext.</p>
+<p>One of the important features of DataContext is that it isolates changes made in a user session from other users. With this in mind, DataContext normally has a session scope. "Session" can have different meanings in different types of applications. Good example is an HttpSession in a web application. In fact a DataContext is often bound to HttpSession and is reused between requests for the same user.</p>
 
 <h3><a name="DataContext-Sections"></a>Sections</h3>
 
@@ -80,7 +80,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

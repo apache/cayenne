@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
 <li><a href="../../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
 <li><a href="../../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
@@ -69,7 +69,7 @@
 </div>
 <div id="ConfluenceContent"><p>SQLTemplate's internal SQL string is a dynamic script that is processed at runtime to generate PreparedStatement SQL code. Dynamic nature of SQLTemplate makes possible a few important things - it allows to bind parameters on the fly; it provides a way to pass extra information to Cayenne that is not included in the SQL text; it supports including/excluding chunks of SQL depending on runtime parameters.</p>
 
-<p>Scripting of SQL strings is done using <a href="http://velocity.apache.org" rel="nofollow">Apache Velocity</a>. Velocity was chosen primarily for its concise template language (no XML tags within SQL!) that doesn't conflict with the SQL syntax. When creating dynamic SQL template, all standard Velocity directives are available, including <tt>#set</tt>, <tt>#foreach</tt>, <tt>#if</tt>. However due to the nature of the SQL and the need to integrate it with Cayenne runtime, only a few Cayenne custom directives are normally used. These directives (<tt>#bind</tt>..., <tt>#result</tt>, <tt>#chain</tt>, <tt>#chunk</tt>) are described below.</p>
+<p>Scripting of SQL strings is done using <a href="http://velocity.apache.org" class="external-link" rel="nofollow">Apache Velocity</a>. Velocity was chosen primarily for its concise template language (no XML tags within SQL!) that doesn't conflict with the SQL syntax. When creating dynamic SQL template, all standard Velocity directives are available, including <tt>#set</tt>, <tt>#foreach</tt>, <tt>#if</tt>. However due to the nature of the SQL and the need to integrate it with Cayenne runtime, only a few Cayenne custom directives are normally used. These directives (<tt>#bind</tt>..., <tt>#result</tt>, <tt>#chain</tt>, <tt>#chunk</tt>) are described below.</p>
 <div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Directive Syntax Note</b><br />Velocity directives start with pound sign (#) and have their parameters separated by space, not comma. E.g. <tt>#bind('SOMESTRING' 'VARCHAR')</tt>.</td></tr></table></div>
 
 <h3><a name="ScriptingSQLTemplate-NamedParameters"></a>Named Parameters</h3>
@@ -305,7 +305,7 @@ SQLTemplate select = <span class="code-keyword">new</span> SQLTemplate(Artist.cl
   <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

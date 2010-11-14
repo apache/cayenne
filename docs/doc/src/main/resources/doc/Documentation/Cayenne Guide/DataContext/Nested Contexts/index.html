@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a><ul>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/Obtaining DataContext/index.html">Obtaining DataContext</a></li>
@@ -65,13 +65,13 @@
 
 <p>Same thing is true when ObjectContext is used via ROP. Committing changes to a nested ROP ObjectContext (CayenneContext) locally will not result in sending data to a server.</p>
 
-<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>ROP</b><br /><p>Nested contexts are available in Cayenne ROP (three tier) only from version 3.0M6.</p></td></tr></table></div> 
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>ROP</b><br />Nested contexts are available in Cayenne ROP (three tier) only from version 3.0M6.</td></tr></table></div> 
 
 <p>Nested contexts are useful in many situations, such as nested UI dialogs, complicated workflows, etc.</p>
 
 <h3><a name="NestedContexts-CreatingNestedContexts"></a>Creating Nested Contexts</h3>
 
-<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Deprecation</b><br /><p>Since 3.0M6 a new method, <tt>ObjectContext.createChildContext()</tt> was introduced, so <tt>DataContext.createChildDataContext()</tt> is now deprecated. Please update your code properly.</p></td></tr></table></div> 
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Deprecation</b><br />Since 3.0M6 a new method, <tt>ObjectContext.createChildContext()</tt> was introduced, so <tt>DataContext.createChildDataContext()</tt> is now deprecated. Please update your code properly.</td></tr></table></div> 
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">ObjectContext parent = ...
@@ -116,7 +116,7 @@ ObjectContext child = context.createChildContext();</pre>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

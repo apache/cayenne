@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
@@ -47,7 +47,6 @@
 <li><a href="../../../Documentation/Cayenne Guide/Deployment/Customizing Configuration/index.html">Customizing Configuration</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Deployment/DBCPDataSourceFactory/index.html">DBCPDataSourceFactory</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Deployment/Using JNDI/index.html">Using JNDI</a></li>
-<li><a href="../../../Documentation/Cayenne Guide/Deployment/Deployment with Ant/index.html">Deployment with Ant</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html">Configuring Logging</a></li>
 </ul>
 </li>
@@ -60,7 +59,7 @@
 
 <p>Cayenne application deployment is about configuring the application so that at runtime it can find a main project file (cayenne.xml) and associated resources, such as DataMap and DataNode XML files.</p>
 
-<p>The central point in Cayenne deployment is the <a href="http://incubator.apache.org/cayenne/2_0/api/cayenne/org/apache/cayenne/conf/Configuration.html" rel="nofollow">Configuration</a> class. It locates and loads all the mapping and configuration information required for Cayenne at runtime. By default Configuration uses a singleton model, i.e. normally there is only one instance of Configuration (or a subclass) that exists in the application. This shared instance can be accessed in the following way:</p>
+<p>The central point in Cayenne deployment is the <a href="http://incubator.apache.org/cayenne/2_0/api/cayenne/org/apache/cayenne/conf/Configuration.html" class="external-link" rel="nofollow">Configuration</a> class. It locates and loads all the mapping and configuration information required for Cayenne at runtime. By default Configuration uses a singleton model, i.e. normally there is only one instance of Configuration (or a subclass) that exists in the application. This shared instance can be accessed in the following way:</p>
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.conf.Configuration;
 <span class="code-keyword">import</span> org.apache.cayenne.access.DataDomain;
@@ -79,7 +78,6 @@ DataDomain domain = conf.getDomain();
 	<li><a href="../../../Documentation/Cayenne Guide/Deployment/Customizing Configuration/index.html" title="Customizing Configuration">Customizing Configuration</a></li>
 	<li><a href="../../../Documentation/Cayenne Guide/Deployment/DBCPDataSourceFactory/index.html" title="DBCPDataSourceFactory">DBCPDataSourceFactory</a></li>
 	<li><a href="../../../Documentation/Cayenne Guide/Deployment/Using JNDI/index.html" title="Using JNDI">Using JNDI</a></li>
-	<li><a href="../../../Documentation/Cayenne Guide/Deployment/Deployment with Ant/index.html" title="Deployment with Ant">Deployment with Ant</a></li>
 	<li><a href="../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html" title="Configuring Logging">Configuring Logging</a></li>
 </ol>
 
@@ -89,7 +87,7 @@ DataDomain domain = conf.getDomain();
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

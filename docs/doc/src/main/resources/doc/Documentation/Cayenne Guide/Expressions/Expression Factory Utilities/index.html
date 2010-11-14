@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
@@ -57,32 +57,19 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>Sometimes there is a need to build an expression by combining other existing expressions. Also quiet often it is desirable to use strongly typed API instead of interpreted string expressions. The following sections describe <a href="http://cayenne.apache.org/doc/api/org/apache/cayenne/exp/ExpressionFactory.html" rel="nofollow">ExpressionFactory</a> and <a href="http://cayenne.apache.org/doc/api/org/apache/cayenne/exp/Expression.html" rel="nofollow">Expression</a> methods that allow to construct expressions step by step via API calls.</p>
+<div id="ConfluenceContent"><p>Sometimes there is a need to build an expression by combining other existing expressions. Also quiet often it is desirable to use strongly typed API instead of interpreted string expressions. The following sections describe <a href="http://cayenne.apache.org/doc/api/org/apache/cayenne/exp/ExpressionFactory.html" class="external-link" rel="nofollow">ExpressionFactory</a> and <a href="http://cayenne.apache.org/doc/api/org/apache/cayenne/exp/Expression.html" class="external-link" rel="nofollow">Expression</a> methods that allow to construct expressions step by step via API calls.</p>
 
 <h3><a name="ExpressionFactoryUtilities-Path%2FValueExpressions"></a>Path/Value Expressions</h3>
 
 <p>The most simple expressions are the ones that match an object property path with a value or a list of values. ExpressionFactory provides a set of methods to build such "path/value" expressions:</p>
 <ul>
 	<li>public static Expression <b>matchExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>noMatchExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>matchDbExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>lessExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>lessOrEqualExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>greaterExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>greaterOrEqualExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>inExp</b>(String pathSpec, Object[] values)</li>
-	<li>public static Expression <b>inExp</b>(String pathSpec, java.util.List values)</li>
-	<li>public static Expression <b>betweenExp</b>(String pathSpec, Object value1, Object value2)</li>
-	<li>public static Expression <b>likeExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>likeIgnoreCaseExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>notInExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>notBetweenExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>notLikeExp</b>(String pathSpec, Object value)</li>
-	<li>public static Expression <b>notLikeIgnoreCaseExp</b>(String pathSpec, Object value)</li>
+	<li>public static Expression <b>noMatchExp</b>(String pathSpec, Object value),</li>
+	<li>etc.. <em>(check JavaDocs of ExpressionFactory for all available factory methods)</em></li>
 </ul>
 
 
-<p>As was mentioned <a href="../../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">earlier</a>, the type of a second Object argument depends on the type of property path points to. It is important to mention that paths that end with a relationship name (both to-one and to-many) can be matched against DataObjects, thus removing the need to know PK or FK values when building expressions. This behavior is not specific to ExpressionFactory, it works the same way with Expression.fromString(..) as well.</p>
+<p>As was mentioned <a href="../../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">earlier</a>, the type of a second Object argument depends on the type of property path points to. It is important to mention that paths that end with a relationship name (both to-one and to-many) can be matched against Persistent objects, thus absolving you from the need to know a PK or FK when building expressions. This behavior is not specific to ExpressionFactory, it works the same way with Expression.fromString(..) as well.</p>
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java"><span class="code-keyword">import</span> org.apache.cayenne.exp.Expression;
 <span class="code-keyword">import</span> org.apache.cayenne.exp.ExpressionFactory;
@@ -93,8 +80,7 @@
 </span>
 Artist a = ...;
 Expression qual = ExpressionFactory.matchExp(<span class="code-quote">"toArtist"</span>, a);
-SelectQuery select = <span class="code-keyword">new</span> SelectQuery(Painting.class, qual);
-</pre>
+SelectQuery select = <span class="code-keyword">new</span> SelectQuery(Painting.class, qual);</pre>
 </div></div>
 
 <h3><a name="ExpressionFactoryUtilities-ChainingExpressions"></a>Chaining Expressions</h3>
@@ -153,21 +139,34 @@ SelectQuery select = <span class="code-keyword">new</span> SelectQuery(Artist.cl
 
 <p>Example of creating complex expressions:</p>
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
-<pre class="code-java">HashMap map = <span class="code-keyword">new</span> HashMap();
+<pre class="code-java">Map map = <span class="code-keyword">new</span> HashMap();
 map.put(<span class="code-quote">"login"</span>, <span class="code-quote">"joeuser"</span>);
 map.put(<span class="code-quote">"password"</span>, <span class="code-quote">"secret"</span>);
 
 <span class="code-comment">// the last parameter refers to the operation inside each key/value pair. 
 </span>
-Expression qual = ExpressionFactory.matchAllExp(map, Expression.EQUAL_TO);
-</pre>
-</div></div></div>
+Expression qual = ExpressionFactory.matchAllExp(map, Expression.EQUAL_TO);</pre>
+</div></div>
+
+<h3><a name="ExpressionFactoryUtilities-SplitExpressionswith%7B%7BmatchAllExp%28%29%7D%7D"></a>Split Expressions with <tt>matchAllExp()</tt></h3>
+
+<p>As <a href="../../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">discussed</a> earlier, Cayenne supports "aliases" in path Expressions, allowing to control how SQL joins are generated if the same path is encountered more than once in the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases to "split" match paths into individual joins if needed:</p>
+
+<ul>
+	<li>Expression <b>matchAllExp</b>(String path, Collection values)</li>
+	<li>Expression <b>matchAllExp</b>(String path, Object... values)</li>
+</ul>
+
+
+<p>"Path" argument to both of these methods can use a split character (a pipe symbol '|') instead of dot to indicate that relationship following a path should be split into a separate set of joins, one per collection value. There can only be one split at most in any given path. Split must always precede a relationship. E.g. <tt>"|exhibits.paintings"</tt>, <tt>"exhibits|paintings"</tt>, etc. Internally Cayenne would generate distinct aliases for each of the split expressions, forcing separate joins.</p>
+
+</div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

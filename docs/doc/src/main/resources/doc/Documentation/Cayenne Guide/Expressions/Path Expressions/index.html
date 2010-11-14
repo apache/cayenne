@@ -31,7 +31,7 @@
 <ul>
 <li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Tutorial/index.html">Tutorial</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
@@ -66,23 +66,25 @@
 <ul>
 	<li>"db:" an optional prefix indicating the the following path is a DB path.</li>
 	<li>"segment" - a name of a relationship or an attribute in the path. Path must have at least one segment; segments are separated by dot (".").</li>
-	<li>"+" - OUTER JOIN indicator: a plus sign at the end of a segment name indicates that when a JOIN is created for the path, it must be an OUTER JOIN.</li>
+	<li>"+" - LEFT OUTER JOIN indicator: a plus sign at the end of a segment name indicates that when a JOIN is created for the path, it will be a LEFT OUTER JOIN.</li>
 </ul>
 
 
 <h3><a name="PathExpressions-ObjectPathExpressions"></a>Object Path Expressions</h3>
+
 <p>An Object Path Expression is a property navigation path. Such path is represented by a String made of dot-separated names of properties of a Java Bean class. E.g. a path expression "toArtist.artistName" is a valid property path for a Painting class, pointing to the name of the Artist who created a given Painting. A few more examples:</p>
 
 <ul>
 	<li><tt>paintingTitle</tt> Can be used to navigate to the value of "paintingTitle" property of the Painting class.</li>
-	<li><tt>toArtist.exhibitArray.closingDate</tt> Can be used to navigate to a closing date of any of the exhibits of a Painting's Artist object.</li>
-	<li><tt>toArtist.exhibitArray+.closingDate</tt> Same with an OUTER JOIN on exhibits</li>
+	<li><tt>toArtist.exhibitArray.closingDate</tt> Can be used to navigate to a closing date of any of the exhibits of a Painting's Artist object. When used in a query, it means "find all paintings by any artist who has an exhibition closing on date x".</li>
+	<li><tt>toArtist.exhibitArray+.closingDate</tt> When used in a query, artists who have a NULL relation to exhibits (that is, who have no exhibits) will not be excluded from the query. So, "find all paintings by any artist who has an exhibition closing on date x, and also find all paintings by artists with no exhibitions".</li>
 </ul>
 
 
 <div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>What Does 'navigation' Means</b><br />The term "navigation" in the description above could mean different things depending on the context. For instance, when evaluating an expression in memory, "navigating" an object path would simply return the value of a corresponding object property. When the same expression is used in a select query qualifier, it resolves to the name of a table column used in a WHERE clause of a generated SQL statement.</td></tr></table></div>
 
 <h3><a name="PathExpressions-DatabasePathExpressions"></a>Database Path Expressions</h3>
+
 <p>Database Path Expressions provide an easy way to navigate through DB table joins. Instead of complex join semantics such expressions utilize the names of DbRelationships defined in Cayenne DataMap. Translating the above object path examples into the DB realm, database path expressions might look like this:</p>
 
 <ul>
@@ -93,15 +95,43 @@
 
 <p>Though database path expressions are widely used by Cayenne framework internally, they are rarely used in applications. Although there are a few cases when their explicit use is justified.</p>
 
-<h3><a name="PathExpressions-MatchingPathExpressions"></a>Matching Path Expressions</h3>
+<h3><a name="PathExpressions-AliasesinPathExpressions"></a>Aliases in Path Expressions</h3>
 
-<p>As described in the following chapters a path expression is usually matched against some value (see for example <a href="../../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html" title="Expression Factory Utilities">ExpressionFactory API</a> - the first argument to each method is a path, and a second - an Object value that is matched against the path). Such value type must be compatible with the type of the property pointed to by the path. E.g. toArtist.artistName can only be matched against a String, and toArtist - against instances of Artist. </p></div>
+<p>When Cayenne is performing a database query which uses more than one path expression with common elements, those expressions will be merged automatically. This improves database query speed and simplifies the SQL, but when your path expression is one-to-many it may not give you what you expect.</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Expression e1 = ExpressionFactory.like(<span class="code-quote">"toArtist.exhibitArray.title"</span>, <span class="code-quote">"foo"</span>);
+Expression e2 = ExpressionFactory.like(<span class="code-quote">"toArtist.exhibitArray.title"</span>, <span class="code-quote">"bar"</span>);
+Expression e = e1.andExp(e2);
+q = <span class="code-keyword">new</span> SelectQuery(Painting.class, e);
+</pre>
+</div></div>
+
+<p>This will always give you no results because the query will look for exhibits which are titled 'foo' AND 'bar'. Of course there is no exhibit which has both names.</p>
+
+
+<p>Cayenne supports "aliases" in path Expressions to solve this.</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Expression e1 = ExpressionFactory.like(<span class="code-quote">"exhibitAlias1.title"</span>, <span class="code-quote">"foo"</span>);
+Expression e2 = ExpressionFactory.like(<span class="code-quote">"exhibitAlias2.title"</span>, <span class="code-quote">"bar"</span>);
+Expression e = e1.andExp(e2);
+q = <span class="code-keyword">new</span> SelectQuery(Painting.class, e);
+q.aliasPathSplits(<span class="code-quote">"toArtist.exhibitArray.title"</span>, <span class="code-quote">"exhibitAlias1"</span>, <span class="code-quote">"exhibitAlias2"</span>);
+</pre>
+</div></div>
+
+<p>That last command tells the select query how to interpret the alias. Because the aliases are different, the SQL generated will have two completely separate set of joins. In other words you will "find all paintings by any artist who has at least one exhibition titled 'foo' and at least one exhibition titled 'bar'". This is called a "split path".</p>
+
+<h3><a name="PathExpressions-UsingPathExpressions"></a>Using Path Expressions</h3>
+
+<p>On their own path expressions are just strings. You'll want to create an <a href="../../../../Documentation/Cayenne Guide/Expressions/Building Expressions/index.html" title="Building Expressions">Expression </a> to do something useful.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>
