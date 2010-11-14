@@ -8,6 +8,14 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.1 M2
+Date: 
+----------------------------------
+Changes/New Features Since 3.1M1:
+
+CAY-1508 Support for DataChannel filters
+
+----------------------------------
 Release: 3.1 M1
 Date: 
 ----------------------------------
