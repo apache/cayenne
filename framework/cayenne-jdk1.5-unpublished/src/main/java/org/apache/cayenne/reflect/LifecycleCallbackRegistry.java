@@ -18,12 +18,32 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.annotation.PostAdd;
+import org.apache.cayenne.annotation.PostLoad;
+import org.apache.cayenne.annotation.PostPersist;
+import org.apache.cayenne.annotation.PostRemove;
+import org.apache.cayenne.annotation.PostUpdate;
+import org.apache.cayenne.annotation.PrePersist;
+import org.apache.cayenne.annotation.PreRemove;
+import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.util.Util;
 
 /**
  * A registry of lifecycle callbacks for all callback event types. Valid event types are
@@ -33,16 +53,27 @@ import org.apache.cayenne.map.LifecycleEvent;
  */
 public class LifecycleCallbackRegistry {
 
+    private EntityResolver entityResolver;
     private LifecycleCallbackEventHandler[] eventCallbacks;
+    private Map<String, AnnotationReader> annotationsMap;
+    private Map<String, Collection<Class<?>>> entitiesByAnnotation;
 
     /**
      * Creates an empty callback registry.
      */
     public LifecycleCallbackRegistry(EntityResolver resolver) {
-        eventCallbacks = new LifecycleCallbackEventHandler[LifecycleEvent.values().length];
+
+        this.entityResolver = resolver;
+
+        // initialize callbacks map in constructor to avoid synchronization issues
+        // downstream.
+        this.eventCallbacks = new LifecycleCallbackEventHandler[LifecycleEvent.values().length];
         for (int i = 0; i < eventCallbacks.length; i++) {
             eventCallbacks[i] = new LifecycleCallbackEventHandler(resolver);
         }
+
+        // other "static" lookup maps are initialized on-demand
+        this.entitiesByAnnotation = new ConcurrentHashMap<String, Collection<Class<?>>>();
     }
 
     /**
@@ -129,6 +160,46 @@ public class LifecycleCallbackRegistry {
     }
 
     /**
+     * Adds a listener, mapping its methods to events based on annotations.
+     * 
+     * @since 3.1
+     */
+    public void addListener(Object listener) {
+        if (listener == null) {
+            throw new NullPointerException("Null listener");
+        }
+
+        for (Method m : listener.getClass().getDeclaredMethods()) {
+
+            for (Annotation a : m.getAnnotations()) {
+                AnnotationReader reader = getAnnotationsMap().get(
+                        a.annotationType().getName());
+
+                if (reader != null) {
+
+                    Set<Class<?>> types = new HashSet<Class<?>>();
+                    for (Class<?> type : reader.entities(a)) {
+                        // TODO: ignoring entity subclasses? whenever we add those, take
+                        // into account "exlcudeSuperclassListeners" flag
+                        types.add(type);
+                    }
+
+                    for (Class<? extends Annotation> type : reader.entityAnnotations(a)) {
+                        types.addAll(getAnnotatedEntities(type));
+                    }
+
+                    for (Class<?> type : types) {
+                        eventCallbacks[reader.eventType().ordinal()].addListener(
+                                type,
+                                listener,
+                                m);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Invokes callbacks of a specific type for a given entity object.
      */
     public void performCallbacks(LifecycleEvent type, Persistent object) {
@@ -140,5 +211,204 @@ public class LifecycleCallbackRegistry {
      */
     public void performCallbacks(LifecycleEvent type, Collection<?> objects) {
         eventCallbacks[type.ordinal()].performCallbacks(objects);
+    }
+
+    private Map<String, AnnotationReader> getAnnotationsMap() {
+        if (annotationsMap == null) {
+
+            Map<String, AnnotationReader> annotationsMap = new HashMap<String, AnnotationReader>();
+            annotationsMap.put(PostAdd.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.POST_ADD;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PostAdd) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PostAdd) a).value();
+                }
+            });
+
+            annotationsMap.put(PrePersist.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.PRE_PERSIST;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PrePersist) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PrePersist) a).value();
+                }
+            });
+
+            annotationsMap.put(PreRemove.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.PRE_REMOVE;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PreRemove) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PreRemove) a).value();
+                }
+            });
+
+            annotationsMap.put(PreUpdate.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.PRE_UPDATE;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PreUpdate) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PreUpdate) a).value();
+                }
+            });
+
+            annotationsMap.put(PostLoad.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.POST_LOAD;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PostLoad) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PostLoad) a).value();
+                }
+            });
+
+            annotationsMap.put(PostPersist.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.POST_PERSIST;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PostPersist) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PostPersist) a).value();
+                }
+            });
+
+            annotationsMap.put(PostUpdate.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.POST_UPDATE;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PostUpdate) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PostUpdate) a).value();
+                }
+            });
+
+            annotationsMap.put(PostRemove.class.getName(), new AnnotationReader() {
+
+                @Override
+                LifecycleEvent eventType() {
+                    return LifecycleEvent.POST_REMOVE;
+                }
+
+                @Override
+                Class<? extends Annotation>[] entityAnnotations(Annotation a) {
+                    return ((PostRemove) a).entityAnnotations();
+                }
+
+                @Override
+                Class<?>[] entities(Annotation a) {
+                    return ((PostRemove) a).value();
+                }
+            });
+
+            this.annotationsMap = annotationsMap;
+        }
+
+        return annotationsMap;
+    }
+
+    private Collection<Class<?>> getAnnotatedEntities(Class<? extends Annotation> type) {
+
+        Collection<Class<?>> entities = entitiesByAnnotation.get(type.getName());
+
+        if (entities == null) {
+            entities = new ArrayList<Class<?>>();
+
+            boolean inherited = type.isAnnotationPresent(Inherited.class);
+            for (ObjEntity entity : entityResolver.getObjEntities()) {
+                Class<?> entityType;
+                try {
+                    entityType = Util.getJavaClass(entity.getClassName());
+                }
+                catch (ClassNotFoundException e) {
+                    throw new CayenneRuntimeException("Class not found: "
+                            + entity.getClassName(), e);
+                }
+
+                Class<?> entityTypeOrSupertype = entityType;
+                do {
+                    if (entityTypeOrSupertype.isAnnotationPresent(type)) {
+                        entities.add(entityType);
+                        break;
+                    }
+
+                    entityTypeOrSupertype = entityTypeOrSupertype.getSuperclass();
+
+                } while (inherited && entityTypeOrSupertype != null);
+            }
+
+            entitiesByAnnotation.put(type.getName(), entities);
+        }
+
+        return entities;
+    }
+
+    abstract class AnnotationReader {
+
+        abstract LifecycleEvent eventType();
+
+        abstract Class<?>[] entities(Annotation a);
+
+        abstract Class<? extends Annotation>[] entityAnnotations(Annotation a);
     }
 }

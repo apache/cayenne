@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.testmap;
 
+import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.testdo.testmap.auto._Artist;
 import org.apache.cayenne.unit.util.ValidationDelegate;
 import org.apache.cayenne.validation.ValidationResult;
 
+@Tag1
 public class Artist extends _Artist {
 
     protected transient ValidationDelegate validationDelegate;

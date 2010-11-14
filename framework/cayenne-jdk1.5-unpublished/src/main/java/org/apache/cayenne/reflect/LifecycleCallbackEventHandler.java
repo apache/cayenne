@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -102,11 +103,20 @@ class LifecycleCallbackEventHandler {
         addCallback(entityClass, callback);
     }
 
+    void addListener(Class<?> entityClass, Object listener, Method method) {
+        CallbackOnListener callback = new CallbackOnListener(
+                listener,
+                method,
+                entityClass);
+        addCallback(entityClass, callback);
+    }
+
     /**
      * Registers a callback object to be invoked when a lifecycle event occurs.
      */
     private void addCallback(Class<?> entityClass, AbstractCallback callback) {
-        Collection<AbstractCallback> entityListeners = listeners.get(entityClass.getName());
+        Collection<AbstractCallback> entityListeners = listeners.get(entityClass
+                .getName());
 
         if (entityListeners == null) {
             entityListeners = new ArrayList<AbstractCallback>(3);

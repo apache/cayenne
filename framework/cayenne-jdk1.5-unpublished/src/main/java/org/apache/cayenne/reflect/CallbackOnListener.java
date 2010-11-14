@@ -52,6 +52,22 @@ class CallbackOnListener extends AbstractCallback {
         this.listener = listener;
     }
 
+    CallbackOnListener(Object listener, Method method, Class<?> entityType)
+            throws IllegalArgumentException {
+
+        if (listener == null) {
+            throw new IllegalArgumentException("Null listener");
+        }
+
+        if (!verifyMethod(method, entityType)) {
+            throw new IllegalArgumentException("Invalid annotated listener method: "
+                    + method.getName());
+        }
+
+        this.callbackMethod = method;
+        this.listener = listener;
+    }
+
     @Override
     public void performCallback(Object entity) {
         try {
@@ -73,28 +89,33 @@ class CallbackOnListener extends AbstractCallback {
                 + callbackMethod.getName();
     }
 
+    private boolean verifyMethod(Method method, Class<?> entityType) {
+        // must be non-static, void, with a single arg assignable to entity type
+        // JPA spec also requires it to be non-final, but we don't care
+        int modifiers = method.getModifiers();
+        Class<?>[] parameters = method.getParameterTypes();
+        if (!Modifier.isStatic(modifiers)
+                && Void.TYPE.isAssignableFrom(method.getReturnType())
+                && parameters.length == 1
+                && parameters[0].isAssignableFrom(entityType)) {
+
+            if (!Util.isAccessible(method)) {
+                method.setAccessible(true);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private Method findMethod(Class<?> objectClass, String methodName, Class<?> entityType)
             throws IllegalArgumentException {
 
         Method[] methods = objectClass.getDeclaredMethods();
         for (Method method : methods) {
-            if (methodName.equals(method.getName())) {
-
-                // must be non-static, void, with a single arg assignable to entity type
-                // JPA spec also requires it to be non-final, but we don't care
-                int modifiers = method.getModifiers();
-                Class<?>[] parameters = method.getParameterTypes();
-                if (!Modifier.isStatic(modifiers)
-                        && Void.TYPE.isAssignableFrom(method.getReturnType())
-                        && parameters.length == 1
-                        && parameters[0].isAssignableFrom(entityType)) {
-
-                    if (!Util.isAccessible(method)) {
-                        method.setAccessible(true);
-                    }
-
-                    return method;
-                }
+            if (methodName.equals(method.getName()) && verifyMethod(method, entityType)) {
+                return method;
             }
         }
 
