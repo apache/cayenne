@@ -34,7 +34,7 @@
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Installation/index.html">Remote Object Persistence Installation</a><ul>
 </ul>
 </li>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Quick Start/index.html">Remote Object Persistence Quick Start</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Tutorial/index.html">Remote Object Persistence Tutorial</a></li>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/index.html">Remote Object Persistence Coding Server</a></li>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Client/index.html">Remote Object Persistence Coding Client</a></li>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html">Remote Object Persistence CWS Deployment</a></li>
@@ -51,26 +51,33 @@
 
 <h3><a name="RemoteObjectPersistenceInstallation-ServerJarFiles"></a>Server Jar Files</h3>
 
-<p>Cayenne web service is no different from a regular Cayenne application, so it requires <b><tt>cayenne-server.jar</tt></b> and all standard dependencies. One additional required third party library is <b><tt>hessian.jar</tt></b>, version 3.1.6, which is included in "lib/third-party" or can be downloaded from <a href="http://www.caucho.com/hessian/" rel="nofollow">http://www.caucho.com/hessian/</a>.</p>
-
-<h3><a name="RemoteObjectPersistenceInstallation-ClientJarFiles"></a>Client Jar Files</h3>
-
-<p>On the client <b><tt>cayenne-client.jar</tt></b> is needed. This is a stripped down version of Cayenne runtime. The following third party dependencies are needed (all included in "lib/third-party" directory of the distribution):</p>
+<p>Cayenne web service is no different from a regular Cayenne application, so it requires <b><tt>cayenne-server.jar</tt></b> and all standard dependencies. The only additional required third-party library is Hessian:</p>
 
 <ul>
-	<li><a href="http://jakarta.apache.org/commons/logging/" rel="nofollow">Apache Commons Logging</a>, version 1.1.</li>
-	<li><a href="http://jakarta.apache.org/commons/collections" rel="nofollow">Apache Commons Collections</a>, version 3.1.</li>
-	<li><a href="http://www.caucho.com/hessian/" rel="nofollow">Hessian Library</a>, version 3.1.6.</li>
+	<li><a href="http://www.caucho.com/hessian/" class="external-link" rel="nofollow">Hessian Library</a>, version 3.1.6.</li>
 </ul>
 
 
-<p>Note that there can be issues with running different versions of Hessian on the client and server since the Hessian protocols sometimes change between even minor releases. We recommend you keep them matched or look at the Hessian source to decide whether you might have compatibility issues.</p></div>
+<h3><a name="RemoteObjectPersistenceInstallation-ClientJarFiles"></a>Client Jar Files</h3>
+
+<p>On the client <b><tt>cayenne-client.jar</tt></b> is needed. This is a stripped-down version of Cayenne runtime. The following third party dependencies are needed (all included in "lib/third-party" directory of the distribution, except for hessian):</p>
+
+<ul>
+	<li><a href="http://jakarta.apache.org/commons/logging/" class="external-link" rel="nofollow">Apache Commons Logging</a>, version 1.1.</li>
+	<li><a href="http://jakarta.apache.org/commons/collections" class="external-link" rel="nofollow">Apache Commons Collections</a>, version 3.1.</li>
+	<li><a href="http://www.caucho.com/hessian/" class="external-link" rel="nofollow">Hessian Library</a>, version 3.1.6.</li>
+</ul>
+
+
+<p>Note that there can be issues with running different versions of Hessian on the client and server since the Hessian protocols sometimes change between even minor releases. We recommend you keep them matched or look at the Hessian source to decide whether you might have compatibility issues.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Hessian Versions</b><br />Cayenne 3.0 works correctly with Hessian 3.0.x and 3.1.x. Hessian 4.0.2 has a <a href="http://maillist.caucho.com/pipermail/hessian-interest/2009-December/000842.html" class="external-link" rel="nofollow">bug</a> that stops ROP. Hessian 3.2.x is binary incompatible with other versions and cannot be used.</td></tr></table></div> </div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

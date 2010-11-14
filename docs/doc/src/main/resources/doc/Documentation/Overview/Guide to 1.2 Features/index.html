@@ -31,6 +31,7 @@
 <ul>
 <li><a href="../../../Documentation/Overview/Database Support/index.html">Database Support</a></li>
 <li><a href="../../../Documentation/Overview/License/index.html">License</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 3.1 Features/index.html">Guide to 3.1 Features</a></li>
 <li><a href="../../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a></li>
 <li><a href="../../../Documentation/Overview/Guide to 1.2 Features/index.html">Guide to 1.2 Features</a><ul>
 </ul>
@@ -123,7 +124,7 @@
 	<li>New adapter for Ingres</li>
 	<li>MySQL adapter is improved to support referential integrity constraints for InnoDB tables.</li>
 	<li>Adapter Auto Detection. Users no longer need to specify DbAdapter in the Modeler. All standard adapters are "guessed" by Cayenne in runtime using database metadata. Only custom adapters need to be set explicitly, using the new "Adapter" tab in the DataNode Editor panel. This simplifies configuration, makes deployment more transparent, and allows Cayenne to dynamically tweak adapter settings depending on the underlying database version and runtime parameters.</li>
-	<li><a href="http://objectstyle.org/cayenne/userguide/access-stack/extended-types.html" rel="nofollow">Extended type mechanism</a> now allows mapping a persistent property as an interface. This can be achieved via ExtendedTypeFactory API. A custom <tt>ExtendedTypeFactory</tt> is registered in a manner similar to ExtendedType with adapter's <tt>ExtendedTypeMap</tt>: <tt>extendedTypeMap.addFactory(myFactory)</tt>. Cayenne already takes advantage of this API by providing a factory that handles an arbitrary JDK 1.5 Enum via reflection.</li>
+	<li><a href="http://objectstyle.org/cayenne/userguide/access-stack/extended-types.html" class="external-link" rel="nofollow">Extended type mechanism</a> now allows mapping a persistent property as an interface. This can be achieved via ExtendedTypeFactory API. A custom <tt>ExtendedTypeFactory</tt> is registered in a manner similar to ExtendedType with adapter's <tt>ExtendedTypeMap</tt>: <tt>extendedTypeMap.addFactory(myFactory)</tt>. Cayenne already takes advantage of this API by providing a factory that handles an arbitrary JDK 1.5 Enum via reflection.</li>
 </ul>
 
 
@@ -145,7 +146,7 @@
 </ul>
 
 
-<h4><a name="Guideto1.2Features-XMLSerializationCAY%3AXMLSerialization"></a><a href="http://cwiki.apache.org/confluence/confluence/display/CAY/XML+Serialization" title="XML Serialization">XML Serialization</a></h4>
+<h4><a name="Guideto1.2Features-XMLSerializationCAY%3AXMLSerialization"></a><a href="https://cwiki.apache.org/confluence/confluence/display/CAY/XML%20Serialization" title="XML Serialization">XML Serialization</a></h4>
 
 <p>A new package <tt>org.objectstyle.cayenne.xml</tt> provides a way to encode arbitrary Java objects to XML and decode them from XML. It allows a great degree of control over the XML structure, thus simplifying integration with third party XML message systems. M5 features the first usable release of this feature. However there may be more changes in the course of 1.2.</p>
 
@@ -198,7 +199,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

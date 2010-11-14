@@ -31,6 +31,7 @@
 <ul>
 <li><a href="../../../Documentation/Overview/Database Support/index.html">Database Support</a></li>
 <li><a href="../../../Documentation/Overview/License/index.html">License</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 3.1 Features/index.html">Guide to 3.1 Features</a></li>
 <li><a href="../../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a><ul>
 </ul>
 </li>
@@ -38,11 +39,10 @@
 <li><a href="../../../Documentation/Overview/Guide to 1.1 Features/index.html">Guide to 1.1 Features</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>This page highlights the new features and changes introduced in 3.0 release, roughly corresponding to the latest released milestone. It is a high level overview and as such is by no means complete. Consult RELEASE-NOTES.txt file included in each release for the full list of changes.</p>
+<div id="ConfluenceContent"><p>This page highlights the new features and changes introduced in 3.0 release. It is a high level overview and as such is by no means complete. Consult RELEASE-NOTES.txt file included in each release for the full list of changes, and UPGRADE.txt for the upgrade instructions.</p>
 
 <ul>
 	<li><a href="#Guideto3.0Features-DistributionContentsStructure">Distribution Contents Structure</a></li>
-	<li><a href="#Guideto3.0Features-CayenneJPAProvider">Cayenne JPA Provider</a></li>
 	<li><a href="#Guideto3.0Features-ObjectRelationalMapping">Object Relational Mapping</a></li>
 	<li><a href="#Guideto3.0Features-CayennePersistenceAPI">Cayenne Persistence API</a></li>
 	<li><a href="#Guideto3.0Features-RemoteObjectPersistence">Remote Object Persistence</a></li>
@@ -61,10 +61,6 @@
 </ul>
 
 
-<h2><a name="Guideto3.0Features-CayenneJPAProvider"></a>Cayenne JPA Provider</h2>
-
-<p><em>Note that Cayenne JPA provider work has been frozen and it IS NOT included in 3.0. If you have further questions or would like to give a hand with the JPA work, please send a note to <a href="http://cayenne.apache.org/mailing-lists.html" rel="nofollow">developer mailing list</a>.</em></p>
-
 <h2><a name="Guideto3.0Features-ObjectRelationalMapping"></a>Object Relational Mapping</h2>
 
 <h3><a name="Guideto3.0Features-KilledDerivedDbEntityConcept"></a>Killed DerivedDbEntity Concept </h3>
@@ -73,15 +69,19 @@
 
 <h3><a name="Guideto3.0Features-DataMapDTDReplacedwithSchema"></a>DataMap DTD Replaced with Schema</h3>
 
-<p>A schema is now available <a href="http://cayenne.apache.org/schema/3.0/modelMap.html" rel="nofollow">here</a> for the DataMap XML format.</p>
+<p>A schema is now available <a href="http://cayenne.apache.org/schema/3.0/modelMap.html" class="external-link" rel="nofollow">here</a> for the DataMap XML format.</p>
 
 <h3><a name="Guideto3.0Features-Embeddables"></a>Embeddables</h3>
 
-<p>Added a new mapping artifact - Embeddable, that allows to map composite objects to a single table. </p>
+<p>Added a new mapping artifact - <a href="../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Embeddables/index.html" title="Modeling Embeddables">Embeddable</a>, that allows to map composite objects to a single table. </p>
 
 <h3><a name="Guideto3.0Features-FlattenedAttributes"></a>Flattened Attributes</h3>
 
-<p>Just like with "flattened" relationships, now there is a way to map an ObjAttribute that spans one or more DbRelationships and is mapped to a column of a joined table.</p>
+<p>Just like with "flattened" relationships, now there is a way to map an ObjAttribute that spans one or more DbRelationships and is mapped to a column of a joined table. An important use of flattened attributes is vertical inheritance mapping, as described below.</p>
+
+<h3><a name="Guideto3.0Features-VerticalInheritance"></a>Vertical Inheritance</h3>
+
+<p>Adding flattened attributes to subclasses in a single-table mapping gives us another powerful way to map inheritance - "vertical inheritance mapping", described in more details <a href="../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Inheritance/Modeling Vertical Inheritance/index.html" title="Modeling Vertical Inheritance">here</a>.</p>
 
 <h3><a name="Guideto3.0Features-PersistingPrimitivesandaNumberofOtherSimpleProperties"></a>Persisting Primitives and a Number of Other Simple Properties</h3>
 
@@ -102,10 +102,9 @@
 
 <h2><a name="Guideto3.0Features-CayennePersistenceAPI"></a>Cayenne Persistence API</h2>
 
-<h3><a name="Guideto3.0Features-Java5Migration"></a>Java 5 Migration</h3>
+<h3><a name="Guideto3.0Features-Java5Required"></a>Java 5 Required</h3>
 
-<p>Cayenne now requires Java 5 or newer to run. This allowed us to start using generics, enums and other Java 5 features.</p>
-
+<p>Cayenne now requires Java 5 or newer to run. This allowed us to start providing generics-based API, enums and other Java 5 features.</p>
 
 <h3><a name="Guideto3.0Features-ObjectContext"></a>ObjectContext</h3>
 
@@ -125,7 +124,14 @@
 
 <ul>
 	<li><a href="../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Advanced SQLTemplate/index.html" title="Advanced SQLTemplate">Significantly simplified</a> the process for fetching DataObjects (vs. DataRows) via a SQLTemplate query with <tt>'setColumnNamesCapitalization'</tt> method.</li>
-	<li>Added support for <a href="../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/SQLTemplate Result Mapping/index.html" title="SQLTemplate Result Mapping">fetching scalar and mixed scalar/object results</a> using <tt>SQLResultSetMapping</tt>.</li>
+	<li>Added support for <a href="../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/SQLTemplate Result Mapping/index.html" title="SQLTemplate Result Mapping">fetching scalar and mixed scalar/object results</a> using <tt>SQLResult</tt>.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-SelectQueryImprovements"></a>SelectQuery Improvements</h3>
+
+<ul>
+	<li>Added support for "path splits". Splits allow to control how the joins are generated for the overlapping path expressions. By default a group of overlapping qualifier paths will produce a single join. To "split" that into separate joins, Cayenne allows to use "aliases" in path expressions, and then bind them to the actual pathes using <tt>"SelectQuery.addPathSplitAliases(String path, String... aliases)</tt>.</li>
 </ul>
 
 
@@ -158,6 +164,7 @@
 <ul>
 	<li>Added missing DB expressions to ExpressionFactory.</li>
 	<li><a href="../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">Added support</a> for OUTER JOINS</li>
+	<li><a href="../../../Documentation/Cayenne Guide/Expressions/Expression Factory Utilities/index.html" title="Expression Factory Utilities">Added support</a> for split expressions (see <tt>"ExpressionFactory.matchAllExp(String path, Object... values)"</tt> and <tt>"ExpressionFactory.matchAllExp(String path, Collection values)"</tt>). This is also related to the qualifier splits for SelectQuery described above.</li>
 	<li>Added support for matching against TRUE and FALSE.</li>
 </ul>
 
@@ -166,8 +173,8 @@
 
 <ul>
 	<li>Added support for "long" primary keys (vs. "int" PK used previously)</li>
-	<li>Added adapter for <a href="http://www.sqlite.org/" rel="nofollow">SQLite</a> database.</li>
-	<li>Added adapter for <a href="http://www.h2database.com/" rel="nofollow">H2</a> database.</li>
+	<li>Added adapter for <a href="http://www.sqlite.org/" class="external-link" rel="nofollow">SQLite</a> database.</li>
+	<li>Added adapter for <a href="http://www.h2database.com/" class="external-link" rel="nofollow">H2</a> database.</li>
 	<li>Added stored procedure support on MySQL.</li>
 	<li>Changed default table type on MySQL to InnoDB, added MySQL FK constraints support in the Modeler.</li>
 	<li>Turned on update query batching on SQL Server and Derby.</li>
@@ -225,13 +232,13 @@
 	<li>Reopen Last Project on Startup</li>
 	<li>Added progress/log view</li>
 	<li>Added SQL syntax highlighting.</li>
-	<li>Added EJBQL Query mapping capabilities, with synatx highlighting.</li>
+	<li>Added EJBQL Query mapping capabilities, with syntax highlighting.</li>
 	<li>Added support for quoting of SQL Identifiers</li>
 	<li>The Modeler can be <a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html" title="maven2-modeler">started from Maven</a></li>
 	<li>Added "Infer Relationships" operation to automatically create DbRelationships based on PK/FK naming conventions.</li>
 	<li>Added support for mapping Embeddable objects.</li>
+	<li>Added undo/redo support</li>
 </ul>
-
 
 
 <h2><a name="Guideto3.0Features-DeploymentandRuntime"></a>Deployment and Runtime</h2>
@@ -284,7 +291,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>
