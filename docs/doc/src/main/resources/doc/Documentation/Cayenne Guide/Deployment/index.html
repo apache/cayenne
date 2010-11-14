@@ -57,6 +57,8 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="Deployment-Deployment"></a>Deployment</h2>
 
+<div class='panelMacro'><table class='warningMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>TODO... This section and all subsections will have to be rewritten for 3.1, which is using DI-based configuration</td></tr></table></div>
+
 <p>Cayenne application deployment is about configuring the application so that at runtime it can find a main project file (cayenne.xml) and associated resources, such as DataMap and DataNode XML files.</p>
 
 <p>The central point in Cayenne deployment is the <a href="http://incubator.apache.org/cayenne/2_0/api/cayenne/org/apache/cayenne/conf/Configuration.html" class="external-link" rel="nofollow">Configuration</a> class. It locates and loads all the mapping and configuration information required for Cayenne at runtime. By default Configuration uses a singleton model, i.e. normally there is only one instance of Configuration (or a subclass) that exists in the application. This shared instance can be accessed in the following way:</p>
