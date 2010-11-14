@@ -52,25 +52,25 @@
 <div id="ConfluenceContent"><h3><a name="GeneralNavigation-GeneralNavigation"></a>General Navigation</h3>
 
 
-<p>CayenneModeler supports executing commands via its main menu and a button toolbar. Currently Modeler DOES NOT support contextual menus that open on right-click. All of the toolbar buttons have corresponding items in the menu that perform exact same operation (plus there are operations that are available via the menu only). If an item or a button action can not be performed in a given context an item is visually disabled.</p>
+<p>CayenneModeler supports executing commands via its main menu, a button toolbar and contextual menus that open on right-click. All of the toolbar buttons have corresponding items in the menu that perform the exact same operation (plus there are operations that are available via the menu only). If an item or a button action can not be performed in a given context an item is visually disabled.</p>
 
 <h4><a name="GeneralNavigation-Toolbars"></a>Toolbars</h4>
 
 <p>There is a main toolbar shown below, and a number of object-specific toolbars.</p>
 
-<p><img src="toolbar-main.jpg" align="absmiddle" border="0" /></p>
+<p><span class="image-wrap" style=""><img src="modeler-toolbar.png?version=1&amp;modificationDate=1261941412000" style="border: 0px solid black" /></span></p>
 
 <p>The following is a quick reference of the toolbar button functions.</p>
 
-<h5><a name="GeneralNavigation-Project%3A%21iconnew.gif%21%21iconopen.gif%21%21iconsave.gif%21"></a>Project: <img src="icon-new.gif" align="absmiddle" border="0" /> <img src="icon-open.gif" align="absmiddle" border="0" /> <img src="icon-save.gif" align="absmiddle" border="0" /></h5>
+<h5><a name="GeneralNavigation-Project%3A%21iconnew.gif%21%21iconopen.gif%21%21iconsave.gif%21"></a>Project: <span class="image-wrap" style=""><img src="icon-new.gif?version=2&amp;modificationDate=1152907573000" style="border: 0px solid black" /></span> <span class="image-wrap" style=""><img src="icon-open.gif?version=2&amp;modificationDate=1152907655000" style="border: 0px solid black" /></span> <span class="image-wrap" style=""><img src="icon-save.gif?version=2&amp;modificationDate=1152907655000" style="border: 0px solid black" /></span></h5>
 
-<p>Cayenne Project is a logical deployment unit, that consists of a main project file (called cayenne.xml) and zero or more DataNode (<b>.driver.xml) and DataMap (</b>.map.xml) XML files. Currently CayenneModeler supports a single project per running Modeler instance, however multiple instances of Modeler can be started to edit multiple projects at the same time.</p>
+<p>Cayenne Project is a logical deployment unit, that consists of a main project file (called <tt>cayenne.xml</tt>) and zero or more DataNode (<tt>&#42;.driver.xml</tt>) and DataMap (<tt>&#42;.map.xml</tt>) XML files. Currently CayenneModeler supports a single project per running Modeler instance, however multiple instances of Modeler can be started to edit multiple projects at the same time.</p>
 
-<h5><a name="GeneralNavigation-DataDomain%3A%21icondom.gif%21"></a>DataDomain: <img src="icon-dom.gif" align="absmiddle" border="0" />  </h5>
+<h5><a name="GeneralNavigation-DataDomain%3A%21icondom.gif%21"></a>DataDomain: <span class="image-wrap" style=""><img src="icon-dom.gif?version=2&amp;modificationDate=1152907631000" style="border: 0px solid black" /></span>  </h5>
 
 <p>Each DataDomain is an abstraction of a logical data source, possibly spreading multiple physical databases. cayenne.xml file lists DataDomains present in the project. Most projects will contain only a single domain. DataDomain button creates a new DataDomain in the currently open project. </p>
 
-<h5><a name="GeneralNavigation-DataNode%3A%21iconnode.gif%21"></a>DataNode: <img src="icon-node.gif" align="absmiddle" border="0" /></h5>
+<h5><a name="GeneralNavigation-DataNode%3A%21iconnode.gif%21"></a>DataNode: <span class="image-wrap" style=""><img src="icon-node.gif?version=2&amp;modificationDate=1152907655000" style="border: 0px solid black" /></span></h5>
 
 <p>DataNode is an object that corresponds to a single physical data source, normally a database. Currently there are two types of DataNodes: </p>
 
@@ -82,29 +82,31 @@
 
 <p>DataNode references zero or more DataMaps defined under DataDomain. </p>
 
-<h5><a name="GeneralNavigation-DataMap%3A%21icondatamap.gif%21"></a>DataMap: <img src="icon-datamap.gif" align="absmiddle" border="0" /></h5>
+<h5><a name="GeneralNavigation-DataMap%3A%21icondatamap.gif%21"></a>DataMap: <span class="image-wrap" style=""><img src="icon-datamap.gif?version=2&amp;modificationDate=1152907631000" style="border: 0px solid black" /></span></h5>
 
 <p>DataMap is a collection of Object/Relational mapping information linking Java object layer with the relational database. DataMaps are created within DataDomains and can be later linked to DataNodes. </p>
 
-<h5><a name="GeneralNavigation-Entities%3A%21icondbentity.gif%21%21iconderiveddbentity.gif%21%21iconobjentity.gif%21"></a>Entities: <img src="icon-dbentity.gif" align="absmiddle" border="0" /> <img src="icon-derived-dbentity.gif" align="absmiddle" border="0" /> <img src="icon-objentity.gif" align="absmiddle" border="0" /></h5>
+<h5><a name="GeneralNavigation-Entities%3A%21icondbentity.gif%21%21iconobjentity.gif%21"></a>Entities: <span class="image-wrap" style=""><img src="icon-dbentity.gif?version=2&amp;modificationDate=1152907573000" style="border: 0px solid black" /></span> <span class="image-wrap" style=""><img src="icon-objentity.gif?version=2&amp;modificationDate=1152907631000" style="border: 0px solid black" /></span></h5>
 
-<p>There are two types of entities in Cayenne DataMaps: ObjEntities, reflecting the structure of the object layer, and DbEntities that describe database tables and views. In other words, ObjEntity is a descriptor of a persistent Java class, and DbEntity is a descriptor of a database table or view. Each ObjEntity is based on a DbEntity, but there can be DbEntities that do not have a corresponding ObjEntity. </p>
+<p>There are two types of entities in Cayenne DataMaps: ObjEntities, reflecting the structure of the object layer, and DbEntities that describe database tables and views. In other words, ObjEntity is a descriptor of a persistent Java class, and DbEntity is a descriptor of a database table or view. Each ObjEntity is based on a DbEntity, but there can be DbEntities that do not have a corresponding ObjEntity.</p>
 
-<p>There is a special kind of DbEntity - DerivedDbEntity - that has limited capabilities of defining "virtual" database views. DerivedDbEntity is deprecated in version 3.0 and should be avoided. Try using <a href="../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Scripting SQLTemplate/index.html" title="Scripting SQLTemplate">Scripting SQLTemplate</a> instead.</p>
+<h5><a name="GeneralNavigation-Embeddables%3A%21iconembeddable.gif%21"></a>Embeddables: <span class="image-wrap" style=""><img src="icon-embeddable.gif?version=1&amp;modificationDate=1261941412000" style="border: 0px solid black" /></span></h5>
 
-<h5><a name="GeneralNavigation-Procedures%3A%21iconstoredprocedure.gif%21"></a>Procedures: <img src="icon-stored-procedure.gif" align="absmiddle" border="0" /></h5>
+<p>Embeddables are the special kind of mapping objects that allow to map parts of a DB table as a separate object, allowing to use composition within entities.</p>
 
-<p>Procedure is a decriptor of a database stored procedure. It can be created in the modeler and later invoked using ProcedureQuery. Note that not all databases support stored procedures. </p>
+<h5><a name="GeneralNavigation-Procedures%3A%21iconstoredprocedure.gif%21"></a>Procedures: <span class="image-wrap" style=""><img src="icon-stored-procedure.gif?version=2&amp;modificationDate=1152907573000" style="border: 0px solid black" /></span></h5>
 
-<h5><a name="GeneralNavigation-Query%3A%21iconquery.gif%21"></a>Query: <img src="icon-query.gif" align="absmiddle" border="0" /></h5>
+<p>Procedure is a descriptor of a database stored procedure. It can be created in the modeler and later invoked using ProcedureQuery. Note that not all databases support stored procedures. </p>
 
-<p>Cayenne allows to store queries in the DataMap. There are three types of Cayenne queries that can be created in the Modeler - object select query, raw SQL query, and procedure query.</p></div>
+<h5><a name="GeneralNavigation-Query%3A%21iconquery.gif%21"></a>Query: <span class="image-wrap" style=""><img src="icon-query.gif?version=2&amp;modificationDate=1152907631000" style="border: 0px solid black" /></span></h5>
+
+<p>Cayenne allows to store queries in the DataMap. There are 4 types of Cayenne queries that can be created in the Modeler - object select query, raw SQL query, procedure query and EJBQL query.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

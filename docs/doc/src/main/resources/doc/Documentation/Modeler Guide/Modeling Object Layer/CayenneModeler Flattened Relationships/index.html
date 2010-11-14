@@ -35,9 +35,9 @@
 <li><a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/index.html">Common Modeling Tasks</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Database Layer/index.html">Modeling Database Layer</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/index.html">Modeling Object Layer</a><ul>
-<li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Inheritance overview/index.html">Inheritance overview</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling ObjEntities/index.html">Modeling ObjEntities</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Inheritance/index.html">Modeling Inheritance</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Embeddables/index.html">Modeling Embeddables</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Enumerations/index.html">Modeling Enumerations</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Many-to-Many Relationships/index.html">Many-to-Many Relationships</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/CayenneModeler Flattened Relationships/index.html">CayenneModeler Flattened Relationships</a><ul>
@@ -56,18 +56,19 @@
 </div>
 <div id="ConfluenceContent"><h3><a name="CayenneModelerFlattenedRelationships-FlattenedRelationships"></a>Flattened Relationships</h3>
 
-<p>ObjRelationships that map to more than a single DbRelationship are called "flattened".</p>
+<p>ObjRelationships that map to more than a single DbRelationship are called <tt>"flattened"</tt>.</p>
 
 <p>The most common case for using flattened relationships is modeling many-to-many relationships with a join table. E.g. ARTIST DbEntity has to-many relationship to ARTIST_EXHIBIT; ARTIST_EXHIBIT in turn has a to-one relationship to EXHIBIT DbEntity. We can create a single ObjRelationship from Artist ObjEntity to Exhibit ObjEntity that spawns two DbRelationships. This will be a to-many relationship. Lets say it is called "exhibitArray". Generated class file for Artist would contain a getExhibitArray() method returning a list of Exhibits for a given artist instance. An obvious advantage of having a flattened relationship in this case is to avoid mapping a join table as an object, meaningless in the context of the object model.</p>
 
 <p>Flattened relationships work across any combination of to-one and to-many DbRelationships. If all the relationships are to-one, then the resulting flattened relationship is also to-one. If there is at least one to-many, the result is to-many as well.</p>
-<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Read-Only Note</b><br /><p>Most of flattened relationships are treated as read-only by Cayenne. Only one (the most commonly used) type is read/write. It is many-to-many (n:m) flattened relationships with a single join table.</p></td></tr></table></div>
-<p>To map an ObjRelationship to a chain of DbRelationships, select ObjRelationship table row and click "Edit Relationship" button in the bottom right. "ObjRelationship Inspector" dialog will appear.</p>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Read-Only Note</b><br />Most of flattened relationships are treated as read-only by Cayenne. Only one (the most commonly used) type is read/write. It is many-to-many (n:m) flattened relationships with a single join table.</td></tr></table></div>
 
-<p><img src="objrelationship-path-selection.jpg" align="absmiddle" border="0" /></p>
+<p>To map an ObjRelationship to a chain of DbRelationships, select ObjRelationship table row and click "Edit Relationship" button in the bottom right. "ObjRelationship Inspector" dialog will appear. The dialog contains a DbRelationship navigator, allowing to map regular as well as flattened relationships:</p>
 
-<p>The dialog contains a DbRelationship table. Clicking on each row in this table will show valid choices of DbRelationships. Once you add a "chain" component, another row automatically opens below, so you can build a chain of arbitrary length.</p>
-<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Join Table Tip</b><br /><p>If you flatten across a join table and this join table was mapped to an ObjEntity (and a correspoding Java class), such ObjEntity can be deleted, as it is no longer needed. Underlying DbEntity must be preserved.</p></td></tr></table></div>
+<p><span class="image-wrap" style=""><img src="modeler-flattenedrelationship.png?version=1&amp;modificationDate=1261944346000" style="border: 0px solid black" /></span></p>
+
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Join Table Tip</b><br />If you flatten across a join table and this join table was mapped to an ObjEntity (and a correspoding Java class), such ObjEntity can be deleted, as it is no longer needed. Underlying DbEntity must be preserved.</td></tr></table></div>
 
 <p>Further information about flattened relationships can be <a href="../../../../Documentation/Cayenne Guide/DataObjects/Flattened Relationships/index.html" title="Flattened Relationships">found here</a>.</p></div>
 </div>
@@ -75,7 +76,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

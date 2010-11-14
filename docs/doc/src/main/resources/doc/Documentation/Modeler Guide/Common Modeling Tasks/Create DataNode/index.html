@@ -58,11 +58,11 @@
 
 <p><b>Create DataNode.</b> DataNodes are created under parent DataDomains. To create a DataNode, select one of the DataDomains on the left-hand side, and then select "<tt>Project -&gt; Create DataNode</tt>" menu item or click on "New DataNode" icon. A new DataNode will be created under the selected domain. After the DataNode is created, you can assign it any name you want instead of the default "[DomainName]Node".  </p>
 
-<p><img src="datanode.jpg" align="absmiddle" border="0" /></p>
+<p><span class="image-wrap" style=""><img src="datanode.jpg?version=1&amp;modificationDate=1140459376000" style="border: 0px solid black" /></span></p>
 
 <p><b>Configure DB Adapter.</b> As mentioned <a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/DbAdapter/index.html" title="DbAdapter">in Cayenne User Guide</a>, RDBMS engines sometimes require special handling outside of standard JDBC scope. Cayenne abstracts it via database-specific adapters. An adapter must be selected from a "DB adapter" dropdown, regardless what type of DataSource factory (see below) is used . Standard adapters distributed with Cayenne (including a generic JDBCAdapter) are listed in the dropdown. If you created your own adapter, type the full class name of a class that implements DbAdapter interface instead. </p>
 
-<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Hint</b><br /><p>If entering custom DbAdapter results in Modeler showing a warning, it is likely a CLASSPATH issue. In this case you will need to setup the location of compiled custom adapter classes in "Tools &gt; Preferences &gt; ClassPath".</p></td></tr></table></div>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Hint</b><br />If entering custom DbAdapter results in Modeler showing a warning, it is likely a CLASSPATH issue. In this case you will need to setup the location of compiled custom adapter classes in "Tools &gt; Preferences &gt; ClassPath".</td></tr></table></div>
 
 <p><b>Select Local DataSource.</b> This is an optional, though recommended step. A "Local DataSource" dropdown allows to create an association between a DataNode and a <a href="../../../../Documentation/Modeler Guide/Preferences Panel/Local DataSources/index.html" title="Local DataSources">previously configured DataSources</a>. Such association is transparently stored as one of the preferences and does not affect your project XML files. This is a good way to separate database connection info stored in a given Cayenne project (i.e. deployment information) from local preferred connection settings. Also it allows to connect using JNDI DataNodes.</p>
 
@@ -74,7 +74,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>

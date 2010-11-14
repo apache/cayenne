@@ -53,7 +53,7 @@
 
 <p>"Cache Configuration" panel allows to configure a max number of objects in the shared LRU cache. By default it is set to 10000, which is appropriate for most applications. It is up to the user whether to change this parameter, however we advise to set it to a value to be higher than an estimated max. number of objects committed in a single transaction.</p>
 
-<p><img src="cache-size.png" align="absmiddle" border="0" /></p>
+<p><span class="image-wrap" style=""><img src="cache-size.png?version=1&amp;modificationDate=1183886870000" style="border: 0px solid black" /></span></p>
 
 <h2><a name="ConfiguringCachingBehavior-CacheSharing"></a>Cache Sharing</h2>
 
@@ -70,20 +70,76 @@
 
 <h3><a name="ConfiguringCachingBehavior-CrossVMCacheSharingConfiguration"></a>Cross-VM Cache Sharing Configuration</h3>
 
-
 <p>Configuration that allows to notify other applications about changes made by an application and to listen for such changes made by others. This type of configuration incurs the most overhead, because it will constantly send and receive synchronization messages, but it is also the most powerful configuration. Cayenne currently supports the use of JMS and JavaGroups frameworks for synchronization, and also allows users to create their own transport mechanism. </p>
 
-<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>Cayenne distribution archive does not include JavaGroups or JMS libraries. Those must be downloaded and installed separately. However until deployment phase, Cayenne does not require those libraries to be installed. </p></td></tr></table></div>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Cayenne distribution does not include JavaGroups or JMS libraries. Those must be downloaded and installed separately. However until deployment phase, Cayenne does not require those libraries to be installed.</td></tr></table></div>
 
 <p>To configure distributed cache sharing, check "Remote Change Notifications" checkbox, and click "Configure" button to select and configure the type of transport to use.</p>
 
-<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>Synchronization is only done between remote DataDomains with the same name. Note that for JavaGroups configuration, a combination of multicast address and port must be unique for each DataDomain name.</p></td></tr></table></div>
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Synchronization is only done between remote DataDomains with the same name. Note that for JavaGroups configuration, a combination of multicast address and port must be unique for each DataDomain name.</td></tr></table></div>
 
 <h3><a name="ConfiguringCachingBehavior-ChoosingJavaGroupsoverJMS"></a>Choosing JavaGroups over JMS</h3>
 
 <p>JavaGroups is the most portable and flexible mechanism. At the minimum, JMS setup requires a JMS server running, and subjects for each of the DataDomains to be configured. JavaGroups is peer-to-peer library that is embedded into applications. Default configuration provided by CayenneModeler will work out of the box, provided that IP multicast is enabled on the network. </p>
 
 <p>The conclusion is that using JMS is probably most appropriate when deploying within J2EE containers that already support this service, while JavaGroups can be used in almost any environment.</p>
+
+<h3><a name="ConfiguringCachingBehavior-ExampleJMSChangeNotificationConfiguration"></a>Example JMS Change Notification Configuration</h3>
+
+<p>This example shows how the JMS change notification configuration looks for a Cayenne servlet running in the <a href="http://www.eclipse.org/jetty" class="external-link" rel="nofollow">Jetty</a> servlet container.  The example uses the <a href="http://activemq.apache.org/" class="external-link" rel="nofollow">Apache ActiveMQ</a> messaging broker.</p>
+
+<p>It is assumed that the Jetty deployment has been configured to "look in" <tt>$JETTYHOME/lib/ext</tt>.  Also assumed is that the Jetty deployment is configured to support JNDI.  Both of these configurations can be achieved by editing the following line in the <tt>start.ini</tt> to have the <tt>ext</tt> and <tt>plus</tt> values;</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">OPTIONS=Server,jmx,resources,websocket,ext,plus
+</pre>
+</div></div>
+
+<p>The use of ActiveMQ assumes that the necessary client ActiveMQ "driver jar files" from the ActiveMQ distribution have been installed into the <tt>$JETTYHOME/lib/ext</tt> directory in the Jetty deployment.</p>
+
+<p>In this example, the ficticious Cayenne "Data Domain Name" is called "foo".  In the Cayenne modeller, the "Remote Change Notifications" is checked and the "Connection Factory Name" is set to <tt>jms/footopicconnectionfactory</tt>.</p>
+
+<p>The following would appear in the <tt>$JETTYHOME/etc/jetty.xml</tt> file;</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">&lt;New class=<span class="code-quote">"org.eclipse.jetty.plus.jndi.Resource"</span>&gt;
+&lt;Arg&gt;&lt;/Arg&gt;
+&lt;Arg&gt;jms/footopicconnectionfactory&lt;/Arg&gt;
+&lt;Arg&gt;
+ &lt;New class=<span class="code-quote">"org.apache.activemq.ActiveMQConnectionFactory"</span>&gt;
+  &lt;Arg&gt;tcp:<span class="code-comment">//msg01.foo.co.nz:61616&lt;/Arg&gt;
+</span> &lt;/New&gt;
+&lt;/Arg&gt;
+&lt;/New&gt;
+
+&lt;New class=<span class="code-quote">"org.eclipse.jetty.plus.jndi.Resource"</span>&gt;
+&lt;Arg&gt;org_apache_cayenne_access_DataRowStore_foo&lt;/Arg&gt;
+&lt;Arg&gt;
+  &lt;New class=<span class="code-quote">"org.apache.activemq.command.ActiveMQTopic"</span>&gt;
+   &lt;Arg&gt;foochangenotificationtopic&lt;/Arg&gt;
+  &lt;/New&gt;
+&lt;/Arg&gt;
+&lt;/New&gt;
+</pre>
+</div></div>
+
+<p>That following would appear in the servlet's <tt>web.xml</tt> deployment descriptor file;</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">&lt;resource-ref&gt; 
+&lt;res-ref-name&gt;jms/footopicconnectionfactory&lt;/res-ref-name&gt; 
+&lt;res-type&gt;javax.jms.TopicConnectionFactory&lt;/res-type&gt; 
+&lt;res-auth&gt;Container&lt;/res-auth&gt; 
+&lt;/resource-ref&gt;
+
+&lt;resource-env-ref&gt; 
+&lt;resource-env-ref-name&gt;org_apache_cayenne_access_DataRowStore_foo&lt;/resource-env-ref-name&gt; 
+&lt;resource-env-ref-type&gt;javax.jms.Topic&lt;/resource-env-ref-type&gt;
+&lt;/resource-env-ref&gt;
+</pre>
+</div></div>
+
+<p>This configuration should enable change notification to function.</p>
 
 <h2><a name="ConfiguringCachingBehavior-Moreaboutcaching"></a>More about caching</h2>
 
@@ -93,7 +149,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2008 Apache Software Foundation
+    Copyright &copy;2001-2010 Apache Software Foundation
   </div>
 
 </body>
