@@ -118,6 +118,7 @@ public class DataDomainProviderTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bindList(DataDomainProvider.FILTERS_LIST);
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
                 binder.bind(ResourceLocator.class).toInstance(locator);

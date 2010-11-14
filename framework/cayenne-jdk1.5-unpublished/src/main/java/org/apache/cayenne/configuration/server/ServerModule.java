@@ -104,6 +104,9 @@ public class ServerModule implements Module {
                 .add(new OracleSniffer())
                 .add(new PostgresSniffer())
                 .add(new MySQLSniffer());
+        
+        // configure an empty filter chain
+        binder.bindList(DataDomainProvider.FILTERS_LIST);
 
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ConfigurationNameMapper.class).to(

@@ -23,11 +23,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelFilter;
+import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataChannelSyncCallbackAction;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
@@ -73,8 +76,16 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public static final String QUERY_CACHE_FACTORY_PROPERTY = "cayenne.DataDomain.queryCacheFactory";
 
+    /**
+     * @since 3.1
+     */
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
+
+    /**
+     * @since 3.1
+     */
+    protected List<DataChannelFilter> filters;
 
     /** Stores mapping of data nodes to DataNode name keys. */
     protected Map<String, DataNode> nodes = Collections
@@ -713,14 +724,21 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @since 1.2
      */
-    public QueryResponse onQuery(final ObjectContext context, final Query query) {
+    public QueryResponse onQuery(final ObjectContext originatingContext, final Query query) {
         checkStopped();
 
+        return new DataDomainQueryFilterChain().onQuery(originatingContext, query);
+    }
+
+    QueryResponse onQueryNoFilters(
+            final ObjectContext originatingContext,
+            final Query query) {
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
-        // just the DB operation for better performance ... query action will start a
-        // transaction itself when and if needed
-        return new DataDomainQueryAction(context, DataDomain.this, query).execute();
+        // just the DB operation for better performance ... query action will
+        // start a transaction itself when and if needed
+        return new DataDomainQueryAction(originatingContext, DataDomain.this, query)
+                .execute();
     }
 
     /**
@@ -746,6 +764,16 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         checkStopped();
 
+        return new DataDomainSyncFilterChain().onSync(
+                originatingContext,
+                changes,
+                syncType);
+    }
+
+    GraphDiff onSyncNoFilters(
+            final ObjectContext originatingContext,
+            final GraphDiff changes,
+            int syncType) {
         DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
                 .getCallbackAction(
                         getEntityResolver().getCallbackRegistry(),
@@ -920,10 +948,79 @@ public class DataDomain implements QueryEngine, DataChannel {
     public BatchQueryBuilderFactory getQueryBuilderFactory() {
         return queryBuilderFactory;
     }
-    
+
     void refreshEntitySorter() {
-        if(entitySorter != null) {
+        if (entitySorter != null) {
             entitySorter.setDataMaps(getDataMaps());
+        }
+    }
+
+    /**
+     * @since 3.1
+     */
+    public List<DataChannelFilter> getFilters() {
+        return filters;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setFilters(List<DataChannelFilter> filters) {
+        this.filters = filters;
+    }
+
+    abstract class DataDomainFilterChain implements DataChannelFilterChain {
+
+        private int i;
+
+        DataDomainFilterChain() {
+            i = filters != null ? filters.size() : 0;
+        }
+
+        DataChannelFilter nextFilter() {
+            // filters are ordered innermost to outermost
+            i--;
+            return i >= 0 ? filters.get(i) : null;
+        }
+    }
+
+    final class DataDomainQueryFilterChain extends DataDomainFilterChain {
+
+        public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+
+            DataChannelFilter filter = nextFilter();
+            return (filter != null)
+                    ? filter.onQuery(originatingContext, query, this)
+                    : onQueryNoFilters(originatingContext, query);
+        }
+
+        public GraphDiff onSync(
+                ObjectContext originatingContext,
+                GraphDiff changes,
+                int syncType) {
+            throw new UnsupportedOperationException(
+                    "It is illegal to call 'onSync' inside 'onQuery' chain");
+        }
+    }
+
+    final class DataDomainSyncFilterChain extends DataDomainFilterChain {
+
+        public GraphDiff onSync(
+                final ObjectContext originatingContext,
+                final GraphDiff changes,
+                int syncType) {
+
+            DataChannelFilter filter = nextFilter();
+            return (filter != null) ? filter.onSync(
+                    originatingContext,
+                    changes,
+                    syncType,
+                    this) : onSyncNoFilters(originatingContext, changes, syncType);
+        }
+
+        public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+            throw new UnsupportedOperationException(
+                    "It is illegal to call 'onQuery' inside 'onSync' chain");
         }
     }
 }

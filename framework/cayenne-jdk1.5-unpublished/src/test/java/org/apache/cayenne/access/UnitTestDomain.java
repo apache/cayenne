@@ -59,8 +59,8 @@ public class UnitTestDomain extends DataDomain {
     }
 
     @Override
-    public QueryResponse onQuery(ObjectContext context, Query query) {
-        return new UnitTestDomainQueryAction(context, this, query).execute();
+    QueryResponse onQueryNoFilters(ObjectContext originatingContext, Query query) {
+        return new UnitTestDomainQueryAction(originatingContext, this, query).execute();
     }
 
     @Override

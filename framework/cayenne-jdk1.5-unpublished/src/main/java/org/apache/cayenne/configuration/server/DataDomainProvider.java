@@ -19,11 +19,13 @@
 package org.apache.cayenne.configuration.server;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
@@ -54,6 +56,11 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     private static Log logger = LogFactory.getLog(DataDomainProvider.class);
 
+    /**
+     * A DI key for the list storing DataDomain filters.
+     */
+    public static final String FILTERS_LIST = "org.apache.cayenne.configuration.server.DataDomainProvider.filters";
+
     @Inject
     protected ResourceLocator resourceLocator;
 
@@ -75,6 +82,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected AdhocObjectFactory objectFactory;
 
+    @Inject(FILTERS_LIST)
+    protected List<DataChannelFilter> filters;
+
     @Inject
     protected Injector injector;
 
@@ -91,7 +101,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
                     .getMessage());
         }
     }
-    
+
     protected DataDomain createDataDomain(String name) {
         return new DataDomain(name);
     }
@@ -151,7 +161,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         DataChannelDescriptor descriptor = tree.getRootNode();
         DataDomain dataDomain = createDataDomain(descriptor.getName());
-        
+
         dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
         dataDomain.setEventManager(injector.getInstance(EventManager.class));
 
@@ -202,6 +212,12 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
             dataDomain.addNode(dataNode);
         }
+
+        for (DataChannelFilter filter : filters) {
+            filter.init(dataDomain);
+        }
+
+        dataDomain.setFilters(filters);
 
         return dataDomain;
     }

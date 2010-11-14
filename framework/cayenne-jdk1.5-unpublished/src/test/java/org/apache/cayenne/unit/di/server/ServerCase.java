@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.DICase;
 
