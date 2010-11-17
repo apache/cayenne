@@ -16,6 +16,10 @@ Changes/New Features Since 3.1M1:
 CAY-1508 Support for DataChannel filters
 CAY-1509 Lifecycle event annotations support
 
+Bug Fixes Since 3.1M1:
+
+CAY-1511 Problem in db2: comparison operators are not supported on Clob object values.
+
 ----------------------------------
 Release: 3.1 M1
 Date: 
