@@ -27,6 +27,9 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTEqual;
+import org.apache.cayenne.exp.parser.ASTNotEqual;
+import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -95,6 +98,34 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
             }
 
             out.append(")");
+        }
+    }
+    
+    @Override
+    protected void processColumnWithQuoteSqlIdentifiers(
+            DbAttribute dbAttr,
+            Expression pathExp) throws IOException {
+
+        SimpleNode parent = null;
+        if (pathExp instanceof SimpleNode) {
+            parent = (SimpleNode) ((SimpleNode) pathExp).jjtGetParent();
+        }
+
+        // problem in db2 : Comparisons between CLOB and CLOB are not supported.
+        // we need do it by casting the Clob to VARCHAR.
+        if (parent != null
+                && (parent instanceof ASTEqual || parent instanceof ASTNotEqual)
+                && dbAttr.getType() == Types.CLOB
+                && parent.getOperandCount() == 2
+                && parent.getOperand(1) instanceof String) {
+            Integer size = parent.getOperand(1).toString().length() + 1;
+
+            out.append("CAST(");
+            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+            out.append(" AS VARCHAR(" + size + "))");
+        }
+        else {
+            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
         }
     }
 }
