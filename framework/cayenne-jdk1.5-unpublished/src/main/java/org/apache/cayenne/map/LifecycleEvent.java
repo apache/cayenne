@@ -19,7 +19,8 @@
 package org.apache.cayenne.map;
 
 /**
- * Defines possible object lifecycle events for which callbacks are supported.
+ * Defines possible entity object lifecycle events. Cayenne notifies registered listeners
+ * and entity callback methods when such events occur during the object lifecycle.
  * 
  * @since 3.0
  */

@@ -30,7 +30,7 @@ import org.apache.cayenne.map.LifecycleEvent;
 
 /**
  * An annotation to place on the entity event listener method to receive
- * {@link LifecycleEvent#POST_ADD} events.
+ * {@link LifecycleEvent#POST_LOAD} events.
  * 
  * @since 3.1
  */
@@ -40,7 +40,14 @@ import org.apache.cayenne.map.LifecycleEvent;
 @Inherited
 public @interface PostLoad {
 
+    /**
+     * An array of entity classes that a listener method should be associated with.
+     */
     Class<?>[] value() default {};
 
+    /**
+     * An array of custom annotation types. When such annotation is used on an entity
+     * class, such entity will be associated with the annotated listener method.
+     */
     Class<? extends Annotation>[] entityAnnotations() default {};
 }

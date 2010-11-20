@@ -26,7 +26,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.cayenne.map.LifecycleEvent;
+
 /**
+ * An annotation to place on the entity event listener method to receive
+ * {@link LifecycleEvent#POST_REMOVE} events.
+ * 
  * @since 3.1
  */
 @Target(ElementType.METHOD)
@@ -35,7 +40,14 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface PostRemove {
 
+    /**
+     * An array of entity classes that a listener method should be associated with.
+     */
     Class<?>[] value() default {};
 
+    /**
+     * An array of custom annotation types. When such annotation is used on an entity
+     * class, such entity will be associated with the annotated listener method.
+     */
     Class<? extends Annotation>[] entityAnnotations() default {};
 }

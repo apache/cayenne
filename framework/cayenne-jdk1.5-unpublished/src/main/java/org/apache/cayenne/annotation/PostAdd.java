@@ -40,7 +40,14 @@ import org.apache.cayenne.map.LifecycleEvent;
 @Inherited
 public @interface PostAdd {
 
+    /**
+     * An array of entity classes that a listener method should be associated with.
+     */
     Class<?>[] value() default {};
 
+    /**
+     * An array of custom annotation types. When such annotation is used on an entity
+     * class, such entity will be associated with the annotated listener method.
+     */
     Class<? extends Annotation>[] entityAnnotations() default {};
 }
