@@ -57,6 +57,28 @@ public class LifecycleCallbackRegistryTest extends ServerCase {
         context.newObject(Painting.class);
         assertEquals("e:Painting;", listener.getAndReset());
     }
+
+    public void testAddListener_PostAdd_InheritedListenerMethods() {
+        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
+                .getEntityResolver());
+
+        context.getEntityResolver().setCallbackRegistry(registry);
+
+        PostAddListenerSubclass listener = new PostAddListenerSubclass();
+        registry.addListener(listener);
+
+        context.newObject(Gallery.class);
+        assertEquals("e:Gallery;", listener.getAndReset());
+
+        context.newObject(Artist.class);
+        assertEquals("a:Artist;", listener.getAndReset());
+
+        context.newObject(Exhibit.class);
+        assertEquals("", listener.getAndReset());
+
+        context.newObject(Painting.class);
+        assertEquals("e:Painting;", listener.getAndReset());
+    }
 }
 
 class PostAddListener {
@@ -80,4 +102,8 @@ class PostAddListener {
         callbackBuffer = new StringBuilder();
         return v;
     }
+}
+
+class PostAddListenerSubclass extends PostAddListener {
+
 }

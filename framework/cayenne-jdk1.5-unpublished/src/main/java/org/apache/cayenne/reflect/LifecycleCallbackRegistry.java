@@ -169,34 +169,41 @@ public class LifecycleCallbackRegistry {
             throw new NullPointerException("Null listener");
         }
 
-        for (Method m : listener.getClass().getDeclaredMethods()) {
+        Class<?> listenerType = listener.getClass();
+        do {
+            for (Method m : listenerType.getDeclaredMethods()) {
 
-            for (Annotation a : m.getAnnotations()) {
-                AnnotationReader reader = getAnnotationsMap().get(
-                        a.annotationType().getName());
+                for (Annotation a : m.getAnnotations()) {
+                    AnnotationReader reader = getAnnotationsMap().get(
+                            a.annotationType().getName());
 
-                if (reader != null) {
+                    if (reader != null) {
 
-                    Set<Class<?>> types = new HashSet<Class<?>>();
-                    for (Class<?> type : reader.entities(a)) {
-                        // TODO: ignoring entity subclasses? whenever we add those, take
-                        // into account "exlcudeSuperclassListeners" flag
-                        types.add(type);
-                    }
+                        Set<Class<?>> types = new HashSet<Class<?>>();
+                        for (Class<?> type : reader.entities(a)) {
+                            // TODO: ignoring entity subclasses? whenever we add those,
+                            // take
+                            // into account "exlcudeSuperclassListeners" flag
+                            types.add(type);
+                        }
 
-                    for (Class<? extends Annotation> type : reader.entityAnnotations(a)) {
-                        types.addAll(getAnnotatedEntities(type));
-                    }
+                        for (Class<? extends Annotation> type : reader
+                                .entityAnnotations(a)) {
+                            types.addAll(getAnnotatedEntities(type));
+                        }
 
-                    for (Class<?> type : types) {
-                        eventCallbacks[reader.eventType().ordinal()].addListener(
-                                type,
-                                listener,
-                                m);
+                        for (Class<?> type : types) {
+                            eventCallbacks[reader.eventType().ordinal()].addListener(
+                                    type,
+                                    listener,
+                                    m);
+                        }
                     }
                 }
             }
-        }
+
+            listenerType = listenerType.getSuperclass();
+        } while (listenerType != null && !listenerType.equals(Object.class));
     }
 
     /**
