@@ -83,12 +83,6 @@
 		</dependency>
 
         <dependency>
-            <groupId>org.apache.cayenne.unpublished</groupId>
-            <artifactId>cayenne-project-unpublished</artifactId>
-            <version>${version}</version>
-        </dependency>
-
-        <dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-tools</artifactId>
 			<version>${version}</version>
