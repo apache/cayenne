@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
@@ -138,6 +139,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Creates a DataDomain and assigns it a name.
      */
     public DataDomain(String name) {
+        this.filters = new CopyOnWriteArrayList<DataChannelFilter>();
         setName(name);
         resetProperties();
     }
@@ -150,6 +152,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @param properties A Map containing domain configuration properties.
      */
     public DataDomain(String name, Map properties) {
+        this.filters = new CopyOnWriteArrayList<DataChannelFilter>();
         setName(name);
         initWithProperties(properties);
     }
@@ -956,17 +959,17 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
+     * Returns a list of filters registered with this DataDomain. The returned list allows
+     * concurrent modifications, so if a caller needs to add or remove a filter, he may
+     * use add/remove methods on the returned list.
+     * <p>
+     * Filter ordering note: filters are applied in reverse order of their occurrence in
+     * the filter list. I.e. the last filter in the list called first in the chain.
+     * 
      * @since 3.1
      */
     public List<DataChannelFilter> getFilters() {
         return filters;
-    }
-
-    /**
-     * @since 3.1
-     */
-    public void setFilters(List<DataChannelFilter> filters) {
-        this.filters = filters;
     }
 
     abstract class DataDomainFilterChain implements DataChannelFilterChain {
