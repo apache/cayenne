@@ -959,9 +959,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns a list of filters registered with this DataDomain. The returned list allows
-     * concurrent modifications, so if a caller needs to add or remove a filter, he may
-     * use add/remove methods on the returned list.
+     * Returns an unmodifiable list of filters registered with this DataDomain.
      * <p>
      * Filter ordering note: filters are applied in reverse order of their occurrence in
      * the filter list. I.e. the last filter in the list called first in the chain.
@@ -969,7 +967,26 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 3.1
      */
     public List<DataChannelFilter> getFilters() {
-        return filters;
+        return Collections.unmodifiableList(filters);
+    }
+
+    /**
+     * Adds a new filter, calling its 'init' method.
+     * 
+     * @since 3.1
+     */
+    public void addFilter(DataChannelFilter filter) {
+        filter.init(this);
+        filters.add(filter);
+    }
+
+    /**
+     * Removes a filter from the filter chain.
+     * 
+     * @since 3.1
+     */
+    public void removeFilter(DataChannelFilter filter) {
+        filters.remove(filter);
     }
 
     abstract class DataDomainFilterChain implements DataChannelFilterChain {

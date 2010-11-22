@@ -214,8 +214,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         for (DataChannelFilter filter : filters) {
-            filter.init(dataDomain);
-            dataDomain.getFilters().add(filter);
+            dataDomain.addFilter(filter);
         }
 
         return dataDomain;
