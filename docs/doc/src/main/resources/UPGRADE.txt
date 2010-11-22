@@ -37,7 +37,7 @@ application.
   ObjectContext context = cayenneRuntime.getContext();
 
 * No static configuration singleton: Cayenne 3.1 completely gets rid of a (previously 
-  optional, but widely used) "Configuiration.sharedConfiguration" singleton. This 
+  optional, but widely used) "Configuration.sharedConfiguration" singleton. This 
   change was done to acknowledge the fact that single configuration per application 
   is just a special case, and generally user can instantiate as many configurations 
   (or ServerRuntime's in 3.1 terms) as appropriate. This however means that the 
