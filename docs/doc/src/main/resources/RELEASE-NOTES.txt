@@ -7,6 +7,7 @@ http://cayenne.apache.org/
 To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
+
 ----------------------------------
 Release: 3.1 M2
 Date: 
@@ -19,6 +20,7 @@ CAY-1509 Lifecycle event annotations support
 Bug Fixes Since 3.1M1:
 
 CAY-1511 Problem in db2: comparison operators are not supported on Clob object values.
+CAY-1515 runtime relationships are not initialized
 
 ----------------------------------
 Release: 3.1 M1

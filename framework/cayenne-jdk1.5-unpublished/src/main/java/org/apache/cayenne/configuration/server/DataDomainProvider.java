@@ -170,6 +170,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
         for (DataMap dataMap : descriptor.getDataMaps()) {
             dataDomain.addDataMap(dataMap);
         }
+        
+        dataDomain.getEntityResolver().applyDBLayerDefaults();
+        dataDomain.getEntityResolver().applyObjectLayerDefaults();
 
         for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
             DataNode dataNode = new DataNode(nodeDescriptor.getName());
