@@ -66,6 +66,14 @@ class LifecycleCallbackEventHandler {
         listeners.clear();
         defaultListeners.clear();
     }
+    
+    int defaultListenersSize() {
+        return defaultListeners.size();
+    }
+    
+    int listenersSize() {
+        return listeners.size();
+    }
 
     /**
      * Registers a callback method to be invoked on a provided non-entity object when a

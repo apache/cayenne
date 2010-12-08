@@ -20,7 +20,6 @@ package org.apache.cayenne.reflect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -219,6 +218,11 @@ public class LifecycleCallbackRegistry {
         eventCallbacks[type.ordinal()].performCallbacks(objects);
     }
 
+    // used by unit tests to poke inside the registry
+    LifecycleCallbackEventHandler getHandler(LifecycleEvent type) {
+        return eventCallbacks[type.ordinal()];
+    }
+
     private Map<String, AnnotationReader> getAnnotationsMap() {
         if (annotationsMap == null) {
 
@@ -373,12 +377,16 @@ public class LifecycleCallbackRegistry {
         return annotationsMap;
     }
 
-    private Collection<Class<?>> getAnnotatedEntities(Class<? extends Annotation> type) {
+    private Collection<Class<?>> getAnnotatedEntities(
+            Class<? extends Annotation> annotationType) {
 
-        Collection<Class<?>> entities = entitiesByAnnotation.get(type.getName());
+        Collection<Class<?>> entities = entitiesByAnnotation
+                .get(annotationType.getName());
 
         if (entities == null) {
-            entities = new ArrayList<Class<?>>();
+
+            // ensure no dupes
+            entities = new HashSet<Class<?>>();
 
             for (ObjEntity entity : entityResolver.getObjEntities()) {
                 Class<?> entityType;
@@ -389,13 +397,31 @@ public class LifecycleCallbackRegistry {
                     throw new CayenneRuntimeException("Class not found: "
                             + entity.getClassName(), e);
                 }
-                
-                if (entityType.isAnnotationPresent(type)) {
-                    entities.add(entityType);
+
+                // ensure that we don't register the same callback for multiple
+                // classes in the same hierarchy, so find the topmost type using a given
+                // annotation and register it once
+
+                // TODO: This ignores "excludeSuperclassListeners" setting, which is
+                // not possible with annotations anyways
+
+                while (entityType != null
+                        && entityType.isAnnotationPresent(annotationType)) {
+
+                    Class<?> superType = entityType.getSuperclass();
+
+                    if (superType == null
+                            || !superType.isAnnotationPresent(annotationType)) {
+                        entities.add(entityType);
+                        break;
+                    }
+
+                    entityType = superType;
                 }
+
             }
 
-            entitiesByAnnotation.put(type.getName(), entities);
+            entitiesByAnnotation.put(annotationType.getName(), entities);
         }
 
         return entities;

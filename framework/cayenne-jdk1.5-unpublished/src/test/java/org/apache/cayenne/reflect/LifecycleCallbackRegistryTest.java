@@ -22,6 +22,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -45,6 +46,8 @@ public class LifecycleCallbackRegistryTest extends ServerCase {
         PostAddListener listener = new PostAddListener();
         registry.addListener(listener);
 
+        assertEquals(3, registry.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());
 
@@ -67,6 +70,8 @@ public class LifecycleCallbackRegistryTest extends ServerCase {
         PostAddListenerSubclass listener = new PostAddListenerSubclass();
         registry.addListener(listener);
 
+        assertEquals(3, registry.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());
 
@@ -79,6 +84,7 @@ public class LifecycleCallbackRegistryTest extends ServerCase {
         context.newObject(Painting.class);
         assertEquals("e:Painting;", listener.getAndReset());
     }
+
 }
 
 class PostAddListener {
