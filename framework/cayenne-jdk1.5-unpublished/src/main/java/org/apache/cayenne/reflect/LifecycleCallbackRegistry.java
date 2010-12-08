@@ -19,7 +19,6 @@
 package org.apache.cayenne.reflect;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Inherited;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -381,7 +380,6 @@ public class LifecycleCallbackRegistry {
         if (entities == null) {
             entities = new ArrayList<Class<?>>();
 
-            boolean inherited = type.isAnnotationPresent(Inherited.class);
             for (ObjEntity entity : entityResolver.getObjEntities()) {
                 Class<?> entityType;
                 try {
@@ -391,17 +389,10 @@ public class LifecycleCallbackRegistry {
                     throw new CayenneRuntimeException("Class not found: "
                             + entity.getClassName(), e);
                 }
-
-                Class<?> entityTypeOrSupertype = entityType;
-                do {
-                    if (entityTypeOrSupertype.isAnnotationPresent(type)) {
-                        entities.add(entityType);
-                        break;
-                    }
-
-                    entityTypeOrSupertype = entityTypeOrSupertype.getSuperclass();
-
-                } while (inherited && entityTypeOrSupertype != null);
+                
+                if (entityType.isAnnotationPresent(type)) {
+                    entities.add(entityType);
+                }
             }
 
             entitiesByAnnotation.put(type.getName(), entities);
