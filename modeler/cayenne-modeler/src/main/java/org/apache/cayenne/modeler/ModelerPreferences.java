@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.PreferenceChangeEvent;
@@ -88,13 +89,21 @@ public class ModelerPreferences implements PreferenceChangeListener {
         try {
             keys = filesPrefs.keys();
         }
+        
         catch (BackingStoreException e) {
             logObj.warn("Error reading preferences file.", e);
         }
         if (keys != null) {
             int len = keys.length;
+            
+            ArrayList<Integer> keysInteger = new ArrayList<Integer>();
             for (int i = 0; i < len; i++) {
-                arrayLastProjFiles.add(filesPrefs.get(keys[i], ""));
+                keysInteger.add(new Integer(i));
+            }
+            Collections.sort(keysInteger);
+            
+            for (int i = 0; i < len; i++) {
+                arrayLastProjFiles.add(filesPrefs.get(keysInteger.get(i).toString(), ""));
             }
         }
         return arrayLastProjFiles;
