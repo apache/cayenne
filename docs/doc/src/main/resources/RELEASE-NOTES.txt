@@ -21,6 +21,7 @@ Bug Fixes Since 3.1M1:
 
 CAY-1511 Problem in db2: comparison operators are not supported on Clob object values.
 CAY-1515 runtime relationships are not initialized
+CAY-1517 CayenneModeler - recent projects ordering is random
 
 ----------------------------------
 Release: 3.1 M1
