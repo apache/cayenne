@@ -23,6 +23,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.KeyStroke;
 import javax.swing.undo.CompoundEdit;
@@ -227,6 +228,15 @@ public class RemoveAction extends CayenneAction {
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getDataMaps().remove(map);
+        
+        Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
+        while(iterator.hasNext()){
+            DataNodeDescriptor node = iterator.next();
+            if(node.getDataMapNames().contains(map.getName())){
+                removeDataMapFromDataNode(node, map);
+            }
+        }
+       
         mediator.fireDataMapEvent(e);
     }
 
