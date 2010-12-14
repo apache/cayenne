@@ -21,6 +21,7 @@ Bug Fixes Since 3.1M1:
 
 CAY-1511 Problem in db2: comparison operators are not supported on Clob object values.
 CAY-1515 runtime relationships are not initialized
+CAY-1516 CayenneModeler - DataMap deletion doesn't delete DataMap XML
 CAY-1517 CayenneModeler - recent projects ordering is random
 
 ----------------------------------
