@@ -23,8 +23,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -52,11 +56,13 @@ public class QuotedIdentifiersTest extends ServerCase {
 
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");
+        quoteAdress.setGroup("324");
 
         Quote_Person quote_Person = context.newObject(Quote_Person.class);
         quote_Person.setSalary(10000);
         quote_Person.setName("Arcadi");
-
+        quote_Person.setGroup("107324");
+        
         context.commitChanges();
 
         SelectQuery q = new SelectQuery(QuoteAdress.class);
@@ -73,8 +79,10 @@ public class QuotedIdentifiersTest extends ServerCase {
         Quote_Person quote_Person2 = context.newObject(Quote_Person.class);
         quote_Person2.setSalary(100);
         quote_Person2.setName("Name");
+        quote_Person2.setGroup("1111");
         quote_Person2.setDAte(new Date());
-
+        quote_Person2.setAddress_Rel(quoteAdress);
+        
         context.commitChanges();
 
         DbEntity entity = context
@@ -97,6 +105,38 @@ public class QuotedIdentifiersTest extends ServerCase {
         SelectQuery qQuote_Person2 = new SelectQuery(Quote_Person.class);
         List objects4 = context.performQuery(qQuote_Person2);
         assertEquals(2, objects4.size());
+        
+        SelectQuery qQuote_Person3 = new SelectQuery(Quote_Person.class, ExpressionFactory.matchExp(
+                "salary",100));
+        List objects5 = context.performQuery(qQuote_Person3);
+        assertEquals(1, objects5.size());
+        
+        SelectQuery qQuote_Person4 = new SelectQuery(Quote_Person.class, ExpressionFactory.matchExp(
+                "group","107324"));
+        List objects6 = context.performQuery(qQuote_Person4);
+        assertEquals(1, objects6.size());
+        
+        SelectQuery quoteAdress1 = new SelectQuery(QuoteAdress.class, ExpressionFactory.matchExp(
+                "group","324"));
+        List objects7 = context.performQuery(quoteAdress1);
+        assertEquals(1, objects7.size());
+        
+        ObjectIdQuery queryObjectId = new ObjectIdQuery(new ObjectId(
+                "QuoteAdress",
+                QuoteAdress.GROUP_PROPERTY,
+                "324"));
+        
+        List objects8 = context.performQuery(queryObjectId);
+        assertEquals(1, objects8.size());
+        
+        ObjectIdQuery queryObjectId2 = new ObjectIdQuery(new ObjectId(
+                "Quote_Person", "GROUP", "1111"));
+        List objects9 = context.performQuery(queryObjectId2);
+        assertEquals(1, objects9.size());
+        
+        RelationshipQuery relationshipQuery = new RelationshipQuery(quote_Person2.getObjectId(), "address_Rel");
+        List objects10 = context.performQuery(relationshipQuery);
+        assertEquals(1, objects10.size());
+        
     }
-
 }

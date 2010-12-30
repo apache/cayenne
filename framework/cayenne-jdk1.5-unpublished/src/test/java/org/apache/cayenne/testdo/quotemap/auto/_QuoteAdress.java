@@ -11,14 +11,22 @@ import org.apache.cayenne.CayenneDataObject;
 public abstract class _QuoteAdress extends CayenneDataObject {
 
     public static final String CITY_PROPERTY = "city";
+    public static final String GROUP_PROPERTY = "group";
 
-    public static final String ADRES_ID_PK_COLUMN = "ADRES ID";
+    public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS ID";
 
     public void setCity(String city) {
         writeProperty("city", city);
     }
     public String getCity() {
         return (String)readProperty("city");
+    }
+
+    public void setGroup(String group) {
+        writeProperty("group", group);
+    }
+    public String getGroup() {
+        return (String)readProperty("group");
     }
 
 }
