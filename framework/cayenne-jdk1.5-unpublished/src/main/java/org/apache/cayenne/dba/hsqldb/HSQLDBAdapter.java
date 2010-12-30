@@ -112,7 +112,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
         StringBuilder buf = new StringBuilder();
 
-        buf.append("ALTER TABLE ").append(context.quoteString(srcName));
+        buf.append("ALTER TABLE ").append(srcName);
         buf.append(" ADD CONSTRAINT ");
 
         buf.append(context.quoteString(getSchemaName(source)));
