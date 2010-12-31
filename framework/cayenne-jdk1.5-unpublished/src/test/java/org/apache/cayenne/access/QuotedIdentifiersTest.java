@@ -62,6 +62,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         quote_Person.setSalary(10000);
         quote_Person.setName("Arcadi");
         quote_Person.setGroup("107324");
+        quote_Person.setAddress_Rel(quoteAdress);
         
         context.commitChanges();
 
@@ -81,7 +82,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         quote_Person2.setName("Name");
         quote_Person2.setGroup("1111");
         quote_Person2.setDAte(new Date());
-        quote_Person2.setAddress_Rel(quoteAdress);
+        quote_Person2.setAddress_Rel(quoteAdress2);
         
         context.commitChanges();
 
