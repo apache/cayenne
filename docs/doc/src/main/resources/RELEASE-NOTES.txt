@@ -102,6 +102,7 @@ CAY-1490 Maven cgen: all and datamap modes can not be activated
 CAY-1496 Problem in derby: comparison operators are not supported on Clob object values.
 CAY-1503 POST_LOAD is not called on prefetched objects
 CAY-1505 Callbacks: POST_UPDATE is called on updated removed object, instead of POST_REMOVE
+CAY-1506 Reserverd words mapping in WHERE clause
 
 ----------------------------------
 Release: 3.0.1
