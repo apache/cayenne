@@ -280,9 +280,7 @@ public abstract class QueryAssemblerHelper {
     }
 
     protected void processColumn(DbAttribute dbAttr) throws IOException {
-        String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler
-                .getCurrentAlias() : null;
-        out.append(dbAttr.getAliasedName(alias));
+        processColumnWithQuoteSqlIdentifiers(dbAttr, null);
     }
     
     protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {

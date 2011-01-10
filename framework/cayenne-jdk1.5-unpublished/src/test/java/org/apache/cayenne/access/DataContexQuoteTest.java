@@ -22,7 +22,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
@@ -31,78 +35,115 @@ import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
 
+public class DataContexQuoteTest extends CayenneCase {
 
-
-public class DataContexQuoteTest extends CayenneCase{
     private DataContext context;
 
     @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(QUOTEMAP_ACCESS_STACK);
     }
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
         context = createDataContext();
     }
-    
+
     public void testPrefetchQuote() throws Exception {
-        
-        // work with tables QuoteAdress and Quote_Person. 
-        // In this table parameter quoteSqlIdentifiers = true. 
-        
+
+        // work with tables QuoteAdress and Quote_Person.
+        // In this table parameter quoteSqlIdentifiers = true.
+
         QuoteAdress quoteAdress = (QuoteAdress) context.newObject("QuoteAdress");
         quoteAdress.setCity("city");
-        
+        quoteAdress.setGroup("324");
+
         Quote_Person quote_Person = (Quote_Person) context.newObject("Quote_Person");
         quote_Person.setSalary(10000);
         quote_Person.setName("Arcadi");
-        
+        quote_Person.setGroup("107324");
+        quote_Person.setAddressRel(quoteAdress);
+
         context.commitChanges();
-        
+
         SelectQuery q = new SelectQuery(QuoteAdress.class);
         List objects = context.performQuery(q);
         assertEquals(1, objects.size());
-        
-        
+
         SelectQuery qQuote_Person = new SelectQuery(Quote_Person.class);
         List objects2 = context.performQuery(qQuote_Person);
         assertEquals(1, objects2.size());
-        
+
         QuoteAdress quoteAdress2 = (QuoteAdress) context.newObject("QuoteAdress");
         quoteAdress2.setCity("city2");
-        
+
         Quote_Person quote_Person2 = (Quote_Person) context.newObject("Quote_Person");
         quote_Person2.setSalary(100);
         quote_Person2.setName("Name");
+        quote_Person2.setGroup("1111");
         quote_Person2.setDAte(new Date());
         
+        quote_Person2.setAddressRel(quoteAdress2);
+
         context.commitChanges();
-        
+
         DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
                 QuoteAdress.class).getDbEntity();
-        List idAttributes = Collections.singletonList(entity
-                    .getAttribute("City"));
-        List updatedAttributes = Collections.singletonList(entity
-                    .getAttribute("City"));
+        List idAttributes = Collections.singletonList(entity.getAttribute("City"));
+        List updatedAttributes = Collections.singletonList(entity.getAttribute("City"));
 
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(
-                    entity,
-                    idAttributes,
-                    updatedAttributes,
-                    null,
-                    1);
-        
+                entity,
+                idAttributes,
+                updatedAttributes,
+                null,
+                1);
+
         List objects3 = context.performQuery(updateQuery);
         assertEquals(0, objects3.size());
-  
+
         SelectQuery qQuote_Person2 = new SelectQuery(Quote_Person.class);
         List objects4 = context.performQuery(qQuote_Person);
         assertEquals(2, objects4.size());
- 
-        
+
+        SelectQuery qQuote_Person3 = new SelectQuery(
+                Quote_Person.class,
+                ExpressionFactory.matchExp("salary", 100));
+        List objects5 = context.performQuery(qQuote_Person3);
+        assertEquals(1, objects5.size());
+
+        SelectQuery qQuote_Person4 = new SelectQuery(
+                Quote_Person.class,
+                ExpressionFactory.matchExp("group", "107324"));
+        List objects6 = context.performQuery(qQuote_Person4);
+        assertEquals(1, objects6.size());
+
+        SelectQuery quoteAdress1 = new SelectQuery(QuoteAdress.class, ExpressionFactory
+                .matchExp("group", "324"));
+        List objects7 = context.performQuery(quoteAdress1);
+        assertEquals(1, objects7.size());
+
+        ObjectIdQuery queryObjectId = new ObjectIdQuery(new ObjectId(
+                "QuoteAdress",
+                QuoteAdress.GROUP_PROPERTY,
+                "324"));
+
+        List objects8 = context.performQuery(queryObjectId);
+        assertEquals(1, objects8.size());
+
+        ObjectIdQuery queryObjectId2 = new ObjectIdQuery(new ObjectId(
+                "Quote_Person",
+                "GROUP",
+                "1111"));
+        List objects9 = context.performQuery(queryObjectId2);
+        assertEquals(1, objects9.size());
+
+        RelationshipQuery relationshipQuery = new RelationshipQuery(quote_Person2
+                .getObjectId(), "addressRel");
+        List objects10 = context.performQuery(relationshipQuery);
+        assertEquals(1, objects10.size());
     }
 
 }

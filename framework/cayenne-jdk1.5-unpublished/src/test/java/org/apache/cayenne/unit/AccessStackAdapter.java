@@ -47,7 +47,6 @@ import org.apache.commons.logging.LogFactory;
  * databases support different feature sets that need to be tested differently. Many
  * things implemented in subclasses may become future candidates for inclusion in the
  * corresponding adapter code.
- * 
  */
 public class AccessStackAdapter {
 
@@ -97,13 +96,21 @@ public class AccessStackAdapter {
             }
 
             Object tableName = entry.getKey();
+            DbEntity entity = map.getDbEntity(tableName.toString());
+            if (entity == null) {
+                continue;
+            }
+            boolean status = entity.getDataMap() != null
+                    && entity.getDataMap().isQuotingSQLIdentifiers();
+            QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+
             for (String constraint : constraints) {
                 StringBuilder drop = new StringBuilder();
-                drop
-                        .append("ALTER TABLE ")
-                        .append(tableName)
-                        .append(" DROP CONSTRAINT ")
-                        .append(constraint);
+
+                drop.append("ALTER TABLE ")
+                .append(strategy.quoteFullyQualifiedName(entity))
+                .append(" DROP CONSTRAINT ")
+                .append(constraint);
                 executeDDL(conn, drop.toString());
             }
         }
@@ -125,7 +132,6 @@ public class AccessStackAdapter {
     public void createdTables(Connection con, DataMap map) throws Exception {
 
     }
-    
 
     public boolean supportsStoredProcedures() {
         return false;
@@ -301,6 +307,10 @@ public class AccessStackAdapter {
             if (entity == null) {
                 continue;
             }
+            boolean status = entity.getDataMap() != null
+            && entity.getDataMap().isQuotingSQLIdentifiers();
+            QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+
 
             // Get all constraints for the table
             ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity
@@ -318,7 +328,7 @@ public class AccessStackAdapter {
                             constraintMap.put(fkTable, constraints);
                         }
 
-                        constraints.add(fk);
+                        constraints.add(strategy.quoteString(fk));
                     }
                 }
             }
@@ -333,7 +343,7 @@ public class AccessStackAdapter {
     public QuotingStrategy getQuotingStrategy(boolean status) {
         return adapter.getQuotingStrategy(status);
     }
-    
+
     public boolean supportsNullBoolean() {
         return true;
     }
