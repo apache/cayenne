@@ -34,7 +34,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.net.URI;
@@ -737,38 +736,6 @@ public class Util {
             }
 
             return Class.forName("[L" + className + ";", true, classLoader);
-        }
-    }
-
-    /**
-     * Returns constant field value by fully qualified path.
-     * 
-     * @return Field value or {@code null} if class or field specified in path was not
-     *         found.
-     * @since 3.1
-     */
-    public static Object getClassFieldValue(String path) throws IllegalAccessException {
-        if (path.length() < 3) {
-            return null;
-        }
-
-        int lastDot = path.lastIndexOf('.');
-        if (lastDot <= 0 || lastDot == path.length() - 1) {
-            return null;
-        }
-
-        String constName = path.substring(lastDot + 1);
-        String className = path.substring(0, lastDot);
-        try {
-            Class<?> klass = getJavaClass(className);
-            Field constField = klass.getField(constName);
-            return constField.get(null);
-        }
-        catch (ClassNotFoundException e) {
-            return null;
-        }
-        catch (NoSuchFieldException e) {
-            return null;
         }
     }
 

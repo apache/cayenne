@@ -92,18 +92,6 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
         return jjtGetNumChildren();
     }
 
-    public void replaceChild(SimpleNode oldChild, SimpleNode newChild) {
-        for (int i = 0; i < children.length; i++) {
-            if (children[i] == oldChild) {
-                children[i] = newChild;
-            }
-        }
-    }
-
-    public SimpleNode getParent() {
-        return parent;
-    }
-
     public String getName() {
         String className = getClass().getName();
         int i = className.lastIndexOf("EJBQL");
