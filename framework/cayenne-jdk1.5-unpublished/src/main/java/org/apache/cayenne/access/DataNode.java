@@ -164,6 +164,10 @@ public class DataNode implements QueryEngine {
         this.dataMaps.put(map.getName(), map);
     }
 
+    public void removeDataMap(DataMap map) {
+        removeDataMap(map.getName());
+    }
+  
     public void removeDataMap(String mapName) {
         dataMaps.remove(mapName);
     }
