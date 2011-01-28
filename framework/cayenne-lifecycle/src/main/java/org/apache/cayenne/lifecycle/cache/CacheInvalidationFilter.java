@@ -38,6 +38,8 @@ import org.apache.cayenne.query.Query;
 /**
  * A {@link DataChannelFilter} that invalidates cache groups defined for mapped entities
  * via {@link CacheGroups} annotations.
+ * 
+ * @since 3.1
  */
 public class CacheInvalidationFilter implements DataChannelFilter {
 

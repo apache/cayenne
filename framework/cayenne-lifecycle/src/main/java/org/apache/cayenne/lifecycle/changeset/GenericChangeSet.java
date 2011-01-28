@@ -34,6 +34,8 @@ import org.apache.cayenne.graph.GraphDiff;
  * Synchronization note: While this class is thread safe, but is not generally intended
  * for use in multi-threaded manner. It is common to use it within a single transaction
  * thread.
+ * 
+ * @since 3.1
  */
 public class GenericChangeSet implements ChangeSet {
 

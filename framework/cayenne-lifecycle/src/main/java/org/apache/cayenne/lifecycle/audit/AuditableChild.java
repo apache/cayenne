@@ -29,6 +29,8 @@ import java.lang.annotation.Target;
  * A built-in annotation used to tag an object that is not auditable on its own, but whose
  * changes should be tracked together with changes of another ("parent") object. This
  * annotation allows to group changes in a closely related subtree of objects.
+ * 
+ * @since 3.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

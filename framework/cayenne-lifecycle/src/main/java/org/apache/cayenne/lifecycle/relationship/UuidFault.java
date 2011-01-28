@@ -21,6 +21,9 @@ package org.apache.cayenne.lifecycle.relationship;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
 
+/**
+ * @since 3.1
+ */
 class UuidFault extends Fault {
 
     private String uuid;

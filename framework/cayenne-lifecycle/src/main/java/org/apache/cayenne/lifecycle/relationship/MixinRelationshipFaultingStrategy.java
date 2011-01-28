@@ -22,10 +22,12 @@ import org.apache.cayenne.DataObject;
 
 /**
  * An abstract strategy for resolving mixin relationships.
+ * 
+ * @since 3.1
  */
 public interface MixinRelationshipFaultingStrategy {
 
-	void afterObjectLoaded(DataObject object);
+    void afterObjectLoaded(DataObject object);
 
-	void afterQuery();
+    void afterQuery();
 }

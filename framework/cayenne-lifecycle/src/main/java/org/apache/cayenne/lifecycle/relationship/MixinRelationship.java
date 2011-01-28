@@ -30,6 +30,8 @@ import java.lang.annotation.Target;
  * attached. When a mixin is modeled via its own set of entities, this annotation is
  * placed on a "mixin" entity class, telling Cayenne to inject related entity object in a
  * mixin entity, resolved based on the object UUID "FK".
+ * 
+ * @since 3.1
  */
 @Target( {
     ElementType.TYPE

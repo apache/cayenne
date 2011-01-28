@@ -20,8 +20,10 @@ package org.apache.cayenne.lifecycle.audit;
 
 /**
  * An enum of auditable operations.
+ * 
+ * @since 3.1
  */
 public enum AuditableOperation {
 
-	INSERT, UPDATE, DELETE;
+    INSERT, UPDATE, DELETE;
 }

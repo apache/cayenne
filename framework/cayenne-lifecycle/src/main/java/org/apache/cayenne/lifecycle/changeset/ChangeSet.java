@@ -28,6 +28,8 @@ import org.apache.cayenne.graph.GraphDiff;
  * stage. The changes are presented in a more usable form compared to the internal Cayenne
  * representation as {@link GraphDiff}. One or more changes to the same property of the
  * same object are all combined in a single {@link PropertyChange} instance.
+ * 
+ * @since 3.1
  */
 public interface ChangeSet {
 

@@ -39,6 +39,8 @@ import org.apache.cayenne.query.SelectQuery;
 
 /**
  * Provides lazy faulting functionality for a map of objects identified by UUID.
+ * 
+ * @since 3.1
  */
 class UuidBatchFault {
 

@@ -38,6 +38,8 @@ import org.apache.cayenne.util.Util;
 
 /**
  * An object to encode/decode persistent objects UUIDs.
+ * 
+ * @since 3.1
  */
 public class UuidCoder {
 

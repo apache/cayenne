@@ -26,18 +26,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A built-in mixin annotation that results in a UUID property being injected
- * into annotated DataObject.
+ * A built-in mixin annotation that results in a UUID property being injected into
+ * annotated DataObject.
+ * 
+ * @since 3.1
  */
-@Target( { ElementType.TYPE })
+@Target( {
+    ElementType.TYPE
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 public @interface Referenceable {
 
-	/**
-	 * A name of UUID property injected into a DataObject, making it
-	 * referenceable.
-	 */
-	public final String UUID_PROPERTY = "cayenne:uuid";
+    /**
+     * A name of UUID property injected into a DataObject, making it referenceable.
+     */
+    public final String UUID_PROPERTY = "cayenne:uuid";
 }

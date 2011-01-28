@@ -32,6 +32,8 @@ import org.apache.cayenne.query.Query;
  * within the scope of the filter
  * {@link #onSync(ObjectContext, GraphDiff, int, DataChannelFilterChain)} method. The
  * filter is intended to be used by pre-commit and post-commit listeners.
+ * 
+ * @since 3.1
  */
 public class ChangeSetFilter implements DataChannelFilter {
 

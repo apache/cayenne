@@ -30,47 +30,54 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
 /**
- * A {@link DataChannelFilter} that implements mixin relationships faulting
- * functionality.
+ * A {@link DataChannelFilter} that implements mixin relationships faulting functionality.
+ * 
+ * @since 3.1
  */
 public class MixinRelationshipFilter implements DataChannelFilter {
 
-	private MixinRelationshipFaultingStrategy faultingStrategy;
+    private MixinRelationshipFaultingStrategy faultingStrategy;
 
-	@Override
-	public void init(DataChannel channel) {
-		this.faultingStrategy = createFaultingStrategy();
-	}
+    @Override
+    public void init(DataChannel channel) {
+        this.faultingStrategy = createFaultingStrategy();
+    }
 
-	protected MixinRelationshipFaultingStrategy createFaultingStrategy() {
-		return new MixinRelationshipBatchFaultingStrategy();
-	}
+    protected MixinRelationshipFaultingStrategy createFaultingStrategy() {
+        return new MixinRelationshipBatchFaultingStrategy();
+    }
 
-	@Override
-	public GraphDiff onSync(ObjectContext context, GraphDiff diff,
-			int syncType, DataChannelFilterChain chain) {
-		// noop for now
-		return chain.onSync(context, diff, syncType);
-	}
+    @Override
+    public GraphDiff onSync(
+            ObjectContext context,
+            GraphDiff diff,
+            int syncType,
+            DataChannelFilterChain chain) {
+        // noop for now
+        return chain.onSync(context, diff, syncType);
+    }
 
-	@Override
-	public QueryResponse onQuery(ObjectContext context, Query query,
-			DataChannelFilterChain chain) {
+    @Override
+    public QueryResponse onQuery(
+            ObjectContext context,
+            Query query,
+            DataChannelFilterChain chain) {
 
-		try {
-			return chain.onQuery(context, query);
-		} finally {
-			faultingStrategy.afterQuery();
-		}
-	}
+        try {
+            return chain.onQuery(context, query);
+        }
+        finally {
+            faultingStrategy.afterQuery();
+        }
+    }
 
-	/**
-	 * A lifecycle callback method that delegates object post load event
-	 * processing to the underlying faulting strategy.
-	 */
-	@PostLoad(entityAnnotations = MixinRelationship.class)
-	@PostPersist(entityAnnotations = MixinRelationship.class)
-	void postLoad(DataObject object) {
-		faultingStrategy.afterObjectLoaded(object);
-	}
+    /**
+     * A lifecycle callback method that delegates object post load event processing to the
+     * underlying faulting strategy.
+     */
+    @PostLoad(entityAnnotations = MixinRelationship.class)
+    @PostPersist(entityAnnotations = MixinRelationship.class)
+    void postLoad(DataObject object) {
+        faultingStrategy.afterObjectLoaded(object);
+    }
 }

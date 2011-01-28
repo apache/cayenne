@@ -20,6 +20,9 @@ package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.DataObject;
 
+/**
+ * @since 3.1
+ */
 public class MixinRelationshipBatchFaultingStrategy implements
         MixinRelationshipFaultingStrategy {
 
@@ -76,7 +79,7 @@ public class MixinRelationshipBatchFaultingStrategy implements
 
         // TODO: I guess we'll need to cache this metadata for performance if we are to
         // support inheritance lookups, etc.
-        
+
         return annotation.value();
     }
 }

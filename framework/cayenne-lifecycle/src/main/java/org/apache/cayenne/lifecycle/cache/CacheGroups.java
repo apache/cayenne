@@ -28,6 +28,8 @@ import java.lang.annotation.Target;
 /**
  * A built-in annotation that provides declarative cache management for persistent
  * objects.
+ * 
+ * @since 3.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

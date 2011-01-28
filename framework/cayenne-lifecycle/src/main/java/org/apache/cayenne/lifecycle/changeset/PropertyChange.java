@@ -20,6 +20,8 @@ package org.apache.cayenne.lifecycle.changeset;
 
 /**
  * A change to a single object property.
+ * 
+ * @since 3.1
  */
 public class PropertyChange {
 

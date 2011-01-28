@@ -31,6 +31,8 @@ import org.apache.cayenne.lifecycle.ref.Referenceable;
  * A built-in annotation that adds auditable behavior to DataObjects. All Auditable
  * objects must be also tagged with {@link Referenceable} annotation, as audit records are
  * based on UUIDs.
+ * 
+ * @since 3.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
