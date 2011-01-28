@@ -26,6 +26,8 @@ import org.apache.cayenne.annotation.PostUpdate;
 /**
  * A superclass of application specific handlers of the {@link Auditable} mixin that
  * provides basic needed callbacks.
+ * 
+ * @since 3.1
  */
 public abstract class AbstractAuditableHandler {
 
