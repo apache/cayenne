@@ -17,6 +17,7 @@ Changes/New Features Since 3.1M1:
 CAY-1508 Support for DataChannel filters
 CAY-1509 Lifecycle event annotations support
 CAY-1532 Import cayenne-lifecycle from sandbox
+CAY-1533 Deprecate org.apache.cayenne.xml
 
 Bug Fixes Since 3.1M1:
 

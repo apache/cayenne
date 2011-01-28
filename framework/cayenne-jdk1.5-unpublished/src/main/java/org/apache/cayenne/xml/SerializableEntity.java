@@ -30,6 +30,12 @@ import org.w3c.dom.Element;
  * A flyweight wrapper for serializing with XML mapping. This object is NOT thread-safe.
  * 
  * @since 1.2
+ * @deprecated since 3.1 this XML serialization package is deprecated and will be removed
+ *             in the following releases. It has a number of functional and performance
+ *             limitations that make it impossible to evolve further. A replacement may be
+ *             provided in an undefined future. For now we recommend the users to
+ *             implement XML serialization of persistent objects based JAXB, XStream or
+ *             other similar frameworks.
  */
 class SerializableEntity implements XMLSerializable {
 
@@ -67,15 +73,16 @@ class SerializableEntity implements XMLSerializable {
                 while (it.hasNext()) {
                     encodeObject(encoder, it.next(), false);
                 }
-                
+
                 // Make sure we pop the node we just pushed -- needed for fix to CAY-597.
                 encoder.pop();
             }
         }
         else {
             encodeObject(encoder, this.object, true);
-            
-            // Needed for fix to CAY-597.  This makes sure we get back to the appropriate level in the DOM, rather than constantly re-rooting the tree.
+
+            // Needed for fix to CAY-597. This makes sure we get back to the appropriate
+            // level in the DOM, rather than constantly re-rooting the tree.
             encoder.pop();
         }
     }

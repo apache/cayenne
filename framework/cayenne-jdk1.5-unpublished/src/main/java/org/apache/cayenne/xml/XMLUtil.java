@@ -38,11 +38,17 @@ import org.w3c.dom.NodeList;
  * Static utility methods to work with DOM trees.
  * 
  * @since 1.2
+ * @deprecated since 3.1 this XML serialization package is deprecated and will be removed
+ *             in the following releases. It has a number of functional and performance
+ *             limitations that make it impossible to evolve further. A replacement may be
+ *             provided in an undefined future. For now we recommend the users to
+ *             implement XML serialization of persistent objects based JAXB, XStream or
+ *             other similar frameworks.
  */
 class XMLUtil {
-    
+
     // note that per CAY-792, to be locale-safe the format must not contain literal parts
-    static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss zzz"; 
+    static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss zzz";
 
     static DocumentBuilderFactory sharedFactory;
 
@@ -123,8 +129,9 @@ class XMLUtil {
      * Returns all elements among the direct children that have a matching name.
      */
     static List<Element> getChildren(Node node, final String name) {
-        
+
         Predicate p = new Predicate() {
+
             public boolean evaluate(Object object) {
                 if (object instanceof Element) {
                     Element e = (Element) object;
@@ -143,7 +150,7 @@ class XMLUtil {
     static List<Element> getChildren(Node node) {
         NodeList list = node.getChildNodes();
         int len = list.getLength();
-        
+
         List<Element> children = new ArrayList<Element>(len);
         for (int i = 0; i < len; i++) {
             Node child = list.item(i);

@@ -39,6 +39,12 @@ import org.w3c.dom.NamedNodeMap;
  * objects based upon the schema given by the map file.
  * 
  * @since 1.2
+ * @deprecated since 3.1 this XML serialization package is deprecated and will be removed
+ *             in the following releases. It has a number of functional and performance
+ *             limitations that make it impossible to evolve further. A replacement may be
+ *             provided in an undefined future. For now we recommend the users to
+ *             implement XML serialization of persistent objects based JAXB, XStream or
+ *             other similar frameworks.
  */
 final class XMLMappingDescriptor {
 
@@ -97,14 +103,15 @@ final class XMLMappingDescriptor {
      * @return The decoded object.
      * @throws CayenneRuntimeException
      */
-    Object decode(Element xml, ObjectContext objectContext) throws CayenneRuntimeException {
+    Object decode(Element xml, ObjectContext objectContext)
+            throws CayenneRuntimeException {
 
         // TODO: Add an error check to make sure the mapping file actually is for this
         // data file.
 
         // Store a local copy of the data context.
         this.objectContext = objectContext;
-        
+
         // Create the object to be returned.
         Object ret = createObject(rootEntity.getDescriptor(), xml);
 
@@ -232,8 +239,9 @@ final class XMLMappingDescriptor {
             throw new CayenneRuntimeException("Error creating instance of class "
                     + className, ex);
         }
-        
-        // If a data context has been supplied by the user, then register the data object with the context.
+
+        // If a data context has been supplied by the user, then register the data object
+        // with the context.
         if ((null != objectContext) && (object instanceof Persistent)) {
             objectContext.registerNewObject(object);
         }
@@ -241,7 +249,8 @@ final class XMLMappingDescriptor {
         NamedNodeMap attributes = objectData.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
             Attr attribute = (Attr) attributes.item(i);
-            String propertyName = getPropertyMappingName(entityMapping, attribute.getName());
+            String propertyName = getPropertyMappingName(entityMapping, attribute
+                    .getName());
 
             if (propertyName != null) {
                 PropertyUtils.setProperty(object, propertyName, attribute.getValue());

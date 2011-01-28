@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.xml;
 
 import java.io.Reader;
@@ -46,6 +45,12 @@ import org.xml.sax.InputSource;
  * XMLDecoder is used to decode XML into objects.
  * 
  * @since 1.2
+ * @deprecated since 3.1 this XML serialization package is deprecated and will be removed
+ *             in the following releases. It has a number of functional and performance
+ *             limitations that make it impossible to evolve further. A replacement may be
+ *             provided in an undefined future. For now we recommend the users to
+ *             implement XML serialization of persistent objects based JAXB, XStream or
+ *             other similar frameworks.
  */
 public class XMLDecoder {
 
@@ -223,23 +228,28 @@ public class XMLDecoder {
             // If the object implements XMLSerializable, delegate decoding to the class's
             // implementation of decodeFromXML().
             if (XMLSerializable.class.isAssignableFrom(objectClass)) {
-                // Fix for decoding 1-to-1 relationships between the same class type, per CAY-597.
-                // If we don't re-root the tree, the decoder goes into an infinite loop.  In particular,
-                // if R1 -> R2, when it decodes R1, it will attempt to decode R2, but without re-rooting,
-                // the decoder tries to decode R1 again, think it's decoding R2, because R1 is the first
-                // element of that type found in the XML doc with the true root of the doc.
+                // Fix for decoding 1-to-1 relationships between the same class type, per
+                // CAY-597.
+                // If we don't re-root the tree, the decoder goes into an infinite loop.
+                // In particular,
+                // if R1 -> R2, when it decodes R1, it will attempt to decode R2, but
+                // without re-rooting,
+                // the decoder tries to decode R1 again, think it's decoding R2, because
+                // R1 is the first
+                // element of that type found in the XML doc with the true root of the
+                // doc.
                 Element oldRoot = root;
                 root = child;
-                
+
                 XMLSerializable ret = (XMLSerializable) objectClass.newInstance();
                 ret.decodeFromXML(this);
 
                 // Restore the root when we're done decoding the child.
                 root = oldRoot;
-                
+
                 return ret;
             }
-            
+
             String text = XMLUtil.getText(child);
 
             // handle dates using hardcoded format....
@@ -249,12 +259,13 @@ public class XMLDecoder {
                 }
                 catch (ParseException e) {
                     // handle pre-3.0 default data format for backwards compatibilty
-                    
+
                     try {
-                        return new SimpleDateFormat("E MMM dd hh:mm:ss z yyyy").parse(text);
+                        return new SimpleDateFormat("E MMM dd hh:mm:ss z yyyy")
+                                .parse(text);
                     }
                     catch (ParseException eOld) {
-                        
+
                         // rethrow the original exception
                         throw e;
                     }
@@ -367,14 +378,16 @@ public class XMLDecoder {
      * @return A List of all the decoded objects.
      * @throws CayenneRuntimeException
      */
-    protected Collection<Object> decodeCollection(Element xml) throws CayenneRuntimeException {
+    protected Collection<Object> decodeCollection(Element xml)
+            throws CayenneRuntimeException {
 
         Collection<Object> ret;
         try {
             String parentClass = ((Element) xml.getParentNode()).getAttribute("type");
             Object property = Class.forName(parentClass).newInstance();
-            Collection<Object> c = (Collection<Object>) PropertyUtils.getProperty(property, xml
-                    .getNodeName());
+            Collection<Object> c = (Collection<Object>) PropertyUtils.getProperty(
+                    property,
+                    xml.getNodeName());
 
             ret = c.getClass().newInstance();
         }
@@ -449,8 +462,10 @@ public class XMLDecoder {
      * @return The list of decoded DataObjects.
      * @throws CayenneRuntimeException
      */
-    public static List<Object> decodeList(Reader xml, String mappingUrl, ObjectContext objectContext)
-            throws CayenneRuntimeException {
+    public static List<Object> decodeList(
+            Reader xml,
+            String mappingUrl,
+            ObjectContext objectContext) throws CayenneRuntimeException {
 
         XMLDecoder decoder = new XMLDecoder(objectContext);
         Element listRoot = parse(xml).getDocumentElement();

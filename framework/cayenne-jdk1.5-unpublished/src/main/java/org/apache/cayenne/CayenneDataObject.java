@@ -676,6 +676,12 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * Encodes object to XML using provided encoder.
      * 
      * @since 1.2
+     * @deprecated since 3.1 this XML serialization package is deprecated and will be
+     *             removed in the following releases. It has a number of functional and
+     *             performance limitations that make it impossible to evolve further. A
+     *             replacement may be provided in an undefined future. For now we
+     *             recommend the users to implement XML serialization of persistent
+     *             objects based JAXB, XStream or other similar frameworks.
      */
     public void encodeAsXML(XMLEncoder encoder) {
         EntityResolver er = getObjectContext().getEntityResolver();
@@ -690,6 +696,14 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
         }
     }
 
+    /**
+     * @deprecated since 3.1 this XML serialization package is deprecated and will be
+     *             removed in the following releases. It has a number of functional and
+     *             performance limitations that make it impossible to evolve further. A
+     *             replacement may be provided in an undefined future. For now we
+     *             recommend the users to implement XML serialization of persistent
+     *             objects based JAXB, XStream or other similar frameworks.
+     */
     public void decodeFromXML(XMLDecoder decoder) {
 
         DataChannel channel = BaseContext.getThreadDeserializationChannel();
