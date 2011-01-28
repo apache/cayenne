@@ -16,25 +16,25 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>org.apache.cayenne.unpublished</groupId>
-            <artifactId>cayenne-legal-unpublished</artifactId>
-            <version>${version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cayenne.unpublished</groupId>
-            <artifactId>cayenne-jdk1.5-unpublished</artifactId>
-            <version>${version}</version>
-            <scope>provided</scope>
-        </dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-legal-unpublished</artifactId>
+			<version>${version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
+			<version>${version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-server</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -53,26 +53,26 @@
 				</executions>
 			</plugin>
 			<plugin>
-                <artifactId>maven-remote-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/classes
-                            </outputDirectory>
-                            <resourceBundles>
-                                <resourceBundle>
-                                    org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
-                                </resourceBundle>
-                            </resourceBundles>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>process-resources</phase>
+						<configuration>
+							<outputDirectory>
+								${project.build.directory}/classes
+							</outputDirectory>
+							<resourceBundles>
+								<resourceBundle>
+									org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
+								</resourceBundle>
+							</resourceBundles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
