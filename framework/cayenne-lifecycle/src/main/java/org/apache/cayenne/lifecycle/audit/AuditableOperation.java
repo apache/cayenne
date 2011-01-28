@@ -1,4 +1,4 @@
-package org.apache.cayenne.mixin.audit;
+package org.apache.cayenne.lifecycle.audit;
 
 /**
  * An enum of auditable operations.

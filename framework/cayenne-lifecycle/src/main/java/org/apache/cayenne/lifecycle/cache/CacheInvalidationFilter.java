@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.cache;
+package org.apache.cayenne.lifecycle.cache;
 
 import java.util.Collection;
 import java.util.HashSet;

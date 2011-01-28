@@ -16,23 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.relationship;
+package org.apache.cayenne.lifecycle.cache;
 
-import org.apache.cayenne.Fault;
-import org.apache.cayenne.Persistent;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-class UuidFault extends Fault {
+/**
+ * A built-in annotation that provides declarative cache management for persistent
+ * objects.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface CacheGroups {
 
-    private String uuid;
-    private UuidBatchFault batchFault;
-
-    UuidFault(UuidBatchFault batchFault, String uuid) {
-        this.batchFault = batchFault;
-        this.uuid = uuid;
-    }
-
-    @Override
-    public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        return uuid != null ? batchFault.getObjects().get(uuid) : null;
-    }
+    /**
+     * Defines one or more cache group names associated with the tagged entity.
+     */
+    String[] value();
 }

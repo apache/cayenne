@@ -28,6 +28,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.lifecycle.uuid.UuidCoder;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;

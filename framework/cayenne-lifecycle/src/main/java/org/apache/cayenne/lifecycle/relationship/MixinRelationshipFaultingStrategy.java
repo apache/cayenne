@@ -16,27 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.cache;
+package org.apache.cayenne.lifecycle.relationship;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.cayenne.DataObject;
 
 /**
- * A built-in annotation that provides declarative cache management for persistent
- * objects.
+ * An abstract strategy for resolving mixin relationships.
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface CacheGroups {
+public interface MixinRelationshipFaultingStrategy {
 
-    /**
-     * Defines one or more cache group names associated with the tagged entity.
-     */
-    String[] value();
+	void afterObjectLoaded(DataObject object);
+
+	void afterQuery();
 }

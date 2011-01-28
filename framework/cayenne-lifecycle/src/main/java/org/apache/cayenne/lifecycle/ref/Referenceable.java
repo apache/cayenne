@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.audit;
+package org.apache.cayenne.lifecycle.ref;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,17 +25,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.apache.cayenne.mixin.ref.Referenceable;
-
 /**
- * A built-in annotation that adds auditable behavior to DataObjects. All Auditable
- * objects must be also tagged with {@link Referenceable} annotation, as audit records are
- * based on UUIDs.
+ * A built-in mixin annotation that results in a UUID property being injected
+ * into annotated DataObject.
  */
-@Target(ElementType.TYPE)
+@Target( { ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface Auditable {
+public @interface Referenceable {
 
+	/**
+	 * A name of UUID property injected into a DataObject, making it
+	 * referenceable.
+	 */
+	public final String UUID_PROPERTY = "cayenne:uuid";
 }

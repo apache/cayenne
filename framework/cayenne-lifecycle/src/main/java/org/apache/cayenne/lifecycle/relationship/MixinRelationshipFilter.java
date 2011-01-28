@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.relationship;
+package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;

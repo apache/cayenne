@@ -1,4 +1,4 @@
-package org.apache.cayenne.mixin.audit;
+package org.apache.cayenne.lifecycle.audit;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

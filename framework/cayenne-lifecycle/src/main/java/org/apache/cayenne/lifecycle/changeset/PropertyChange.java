@@ -16,16 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.relationship;
-
-import org.apache.cayenne.DataObject;
+package org.apache.cayenne.lifecycle.changeset;
 
 /**
- * An abstract strategy for resolving mixin relationships.
+ * A change to a single object property.
  */
-public interface MixinRelationshipFaultingStrategy {
+public class PropertyChange {
 
-	void afterObjectLoaded(DataObject object);
+    private String propertyName;
+    private Object oldValue;
+    private Object newValue;
 
-	void afterQuery();
+    PropertyChange(String propertyName, Object oldValue) {
+        this.propertyName = propertyName;
+        this.oldValue = oldValue;
+    }
+
+    public Object getOldValue() {
+        return oldValue;
+    }
+
+    public Object getNewValue() {
+        return newValue;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    void setNewValue(Object newValue) {
+        this.newValue = newValue;
+    }
 }

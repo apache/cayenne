@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.audit;
+package org.apache.cayenne.lifecycle.audit;
 
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.annotation.PostPersist;

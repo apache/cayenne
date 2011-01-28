@@ -16,26 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.changeset;
+package org.apache.cayenne.lifecycle.ref;
 
-import java.util.Map;
+class ReferenceableBatchFaultMap {
 
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.graph.GraphDiff;
-
-/**
- * Represents a set of changes to persistent objects corresponding to a certain lifecycle
- * stage. The changes are presented in a more usable form compared to the internal Cayenne
- * representation as {@link GraphDiff}. One or more changes to the same property of the
- * same object are all combined in a single {@link PropertyChange} instance.
- */
-public interface ChangeSet {
-
-    public static final String OBJECT_ID_PROPERTY_NAME = "cayenne:objectId";
-
-    /**
-     * Returns a map of changes for a given object in its context, keyed by property name.
-     * If the object is unchanged, an empty map is returned.
-     */
-    Map<String, PropertyChange> getChanges(Persistent object);
 }

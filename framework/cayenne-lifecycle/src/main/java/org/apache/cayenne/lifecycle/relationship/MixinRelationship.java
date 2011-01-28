@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.ref;
+package org.apache.cayenne.lifecycle.relationship;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -26,18 +26,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A built-in mixin annotation that results in a UUID property being injected
- * into annotated DataObject.
+ * Allows to tag a relationship from a mixin entity to another entity that has this mixin
+ * attached. When a mixin is modeled via its own set of entities, this annotation is
+ * placed on a "mixin" entity class, telling Cayenne to inject related entity object in a
+ * mixin entity, resolved based on the object UUID "FK".
  */
-@Target( { ElementType.TYPE })
+@Target( {
+    ElementType.TYPE
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface Referenceable {
+public @interface MixinRelationship {
 
-	/**
-	 * A name of UUID property injected into a DataObject, making it
-	 * referenceable.
-	 */
-	public final String UUID_PROPERTY = "cayenne:uuid";
+    /**
+     * Returns the name of the property of the mixin entity that is a UUID "FK" to any of
+     * the entities implementing the mixin.
+     */
+    String value() default "";
 }

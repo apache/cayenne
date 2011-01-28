@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.ref;
+package org.apache.cayenne.lifecycle.ref;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,9 +27,9 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
+import org.apache.cayenne.lifecycle.uuid.UuidCoder;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.mixin.uuid.UuidCoder;
 
 /**
  * A {@link MixinHandler} that injects {@link Referenceable#UUID_PROPERTY} into

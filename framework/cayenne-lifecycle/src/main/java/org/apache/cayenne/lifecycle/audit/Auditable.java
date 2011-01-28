@@ -16,8 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mixin.ref;
+package org.apache.cayenne.lifecycle.audit;
 
-class ReferenceableBatchFaultMap {
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.apache.cayenne.lifecycle.ref.Referenceable;
+
+/**
+ * A built-in annotation that adds auditable behavior to DataObjects. All Auditable
+ * objects must be also tagged with {@link Referenceable} annotation, as audit records are
+ * based on UUIDs.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface Auditable {
 
 }
