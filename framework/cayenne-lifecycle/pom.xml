@@ -5,34 +5,75 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>3.1M1</version>
+		<version>3.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>cayenne-mixin</artifactId>
-	<version>3.1.0.13</version>
-	<name>Library: cayenne-mixin</name>
+	<artifactId>cayenne-lifecycle</artifactId>
+	<name>Library: cayenne-lifecycle</name>
 	<packaging>jar</packaging>
-	<properties>
-		<cayenne.version>3.1-SNAPSHOT</cayenne.version>
-		<mockito.version>1.8.5</mockito.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
 		<dependency>
+            <groupId>org.apache.cayenne.unpublished</groupId>
+            <artifactId>cayenne-legal-unpublished</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cayenne.unpublished</groupId>
+            <artifactId>cayenne-jdk1.5-unpublished</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-server</artifactId>
-			<version>${cayenne.version}</version>
+			<version>${version}</version>
 		</dependency>
 		<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-all</artifactId>
-				<version>${mockito.version}</version>
-				<scope>test</scope>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>bundle-source-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/classes
+                            </outputDirectory>
+                            <resourceBundles>
+                                <resourceBundle>
+                                    org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
+                                </resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>

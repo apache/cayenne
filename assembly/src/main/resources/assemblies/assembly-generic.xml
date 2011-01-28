@@ -53,6 +53,7 @@
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-client</include>
 				<include>org.apache.cayenne:cayenne-tools</include>
+				<include>org.apache.cayenne:cayenne-lifecycle</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>

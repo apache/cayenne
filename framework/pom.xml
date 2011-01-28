@@ -56,6 +56,7 @@
 				<module>cayenne-server</module>
 				<module>cayenne-client</module>
 				<module>cayenne-tools</module>
+				<module>cayenne-lifecycle</module>
 				<module>maven-cayenne-plugin</module>
 			</modules>
 		</profile>
@@ -74,6 +75,7 @@
 				<module>cayenne-server</module>
 				<module>cayenne-client</module>
 				<module>cayenne-tools</module>
+				<module>cayenne-lifecycle</module>
 				<module>maven-cayenne-plugin</module>
 			</modules>
 		</profile>
