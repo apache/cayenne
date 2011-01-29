@@ -60,7 +60,7 @@ class AuditableAggregator {
         }
     }
 
-    void postCommit() {
+    void postSync() {
         for (Entry<Object, AuditableOperation> op : ops.entrySet()) {
             delegate.audit(op.getKey(), op.getValue());
         }

@@ -38,11 +38,12 @@ import org.apache.cayenne.query.Query;
  */
 public class AuditableFilter implements DataChannelFilter {
 
-    private final ThreadLocal<AuditableAggregator> aggregator = new ThreadLocal<AuditableAggregator>();
+    private ThreadLocal<AuditableAggregator> aggregator;
     protected AuditableProcessor processor;
 
     public AuditableFilter(AuditableProcessor processor) {
         this.processor = processor;
+        this.aggregator = new ThreadLocal<AuditableAggregator>();
     }
 
     public void init(DataChannel channel) {
@@ -66,10 +67,19 @@ public class AuditableFilter implements DataChannelFilter {
             GraphDiff response = filterChain
                     .onSync(originatingContext, changes, syncType);
 
+            postSync();
+
             return response;
         }
         finally {
             aggregator.set(null);
+        }
+    }
+
+    void postSync() {
+        AuditableAggregator aggregator = this.aggregator.get();
+        if (aggregator != null) {
+            aggregator.postSync();
         }
     }
 

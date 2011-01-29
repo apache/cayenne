@@ -39,6 +39,7 @@ public class AuditableFilterTest extends TestCase {
         AuditableFilter filter = new AuditableFilter(processor);
         Object audited = new Object();
         filter.insertAudit(audited);
+        filter.postSync();
 
         verify(processor).audit(audited, AuditableOperation.INSERT);
     }
@@ -49,6 +50,7 @@ public class AuditableFilterTest extends TestCase {
         AuditableFilter filter = new AuditableFilter(processor);
         Object audited = new Object();
         filter.deleteAudit(audited);
+        filter.postSync();
 
         verify(processor).audit(audited, AuditableOperation.DELETE);
     }
@@ -59,6 +61,7 @@ public class AuditableFilterTest extends TestCase {
         AuditableFilter filter = new AuditableFilter(processor);
         Object audited = new Object();
         filter.updateAudit(audited);
+        filter.postSync();
 
         verify(processor).audit(audited, AuditableOperation.UPDATE);
     }
@@ -72,6 +75,7 @@ public class AuditableFilterTest extends TestCase {
         DataObject audited = new MockAuditableChild();
         audited.writeProperty("parent", auditedParent);
         filter.updateAuditChild(audited);
+        filter.postSync();
 
         verify(processor).audit(auditedParent, AuditableOperation.UPDATE);
     }
