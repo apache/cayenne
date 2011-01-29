@@ -32,9 +32,9 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * A {@link MixinHandler} that injects {@link Referenceable#UUID_PROPERTY} into
- * DataObjects and provides methods to lookup objects by UUID, as well as read UUID of the
- * existing objects.
+ * A lifecycle handler that injects {@link Referenceable#UUID_PROPERTY} into DataObjects
+ * and provides methods to lookup objects by UUID, as well as read UUID of the existing
+ * objects.
  * 
  * @since 3.1
  */

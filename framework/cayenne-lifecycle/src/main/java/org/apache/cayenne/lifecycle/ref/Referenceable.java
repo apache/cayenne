@@ -26,8 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A built-in mixin annotation that results in a UUID property being injected into
- * annotated DataObject.
+ * A built-in annotation that results in a UUID property being injected into annotated
+ * DataObject.
  * 
  * @since 3.1
  */
