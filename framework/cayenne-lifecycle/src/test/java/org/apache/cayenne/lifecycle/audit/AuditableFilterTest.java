@@ -20,9 +20,16 @@ package org.apache.cayenne.lifecycle.audit;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
 
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataObject;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.graph.GraphDiff;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class AuditableFilterTest extends TestCase {
 
@@ -33,7 +40,7 @@ public class AuditableFilterTest extends TestCase {
         Object audited = new Object();
         filter.insertAudit(audited);
 
-        verify(processor).audit(audited, audited, AuditableOperation.INSERT);
+        verify(processor).audit(audited, AuditableOperation.INSERT);
     }
 
     public void testDeleteAudit() {
@@ -43,7 +50,7 @@ public class AuditableFilterTest extends TestCase {
         Object audited = new Object();
         filter.deleteAudit(audited);
 
-        verify(processor).audit(audited, audited, AuditableOperation.DELETE);
+        verify(processor).audit(audited, AuditableOperation.DELETE);
     }
 
     public void testUpdateAudit() {
@@ -53,7 +60,7 @@ public class AuditableFilterTest extends TestCase {
         Object audited = new Object();
         filter.updateAudit(audited);
 
-        verify(processor).audit(audited, audited, AuditableOperation.UPDATE);
+        verify(processor).audit(audited, AuditableOperation.UPDATE);
     }
 
     public void testUpdateAuditChild() {
@@ -66,6 +73,57 @@ public class AuditableFilterTest extends TestCase {
         audited.writeProperty("parent", auditedParent);
         filter.updateAuditChild(audited);
 
-        verify(processor).audit(auditedParent, audited, AuditableOperation.UPDATE);
+        verify(processor).audit(auditedParent, AuditableOperation.UPDATE);
+    }
+
+    public void testOnSyncPassThrough() {
+        AuditableProcessor processor = mock(AuditableProcessor.class);
+
+        AuditableFilter filter = new AuditableFilter(processor);
+        ObjectContext context = mock(ObjectContext.class);
+        GraphDiff changes = mock(GraphDiff.class);
+
+        DataChannelFilterChain chain = mock(DataChannelFilterChain.class);
+
+        filter.onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC, chain);
+        verify(chain).onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC);
+
+        filter.onSync(context, changes, DataChannel.ROLLBACK_CASCADE_SYNC, chain);
+        verify(chain).onSync(context, changes, DataChannel.ROLLBACK_CASCADE_SYNC);
+    }
+
+    public void testOnSyncAuditEventsCollapse() {
+        AuditableProcessor processor = mock(AuditableProcessor.class);
+
+        final AuditableFilter filter = new AuditableFilter(processor);
+        ObjectContext context = mock(ObjectContext.class);
+        GraphDiff changes = mock(GraphDiff.class);
+
+        final Object auditedParent1 = new Object();
+        final DataObject audited11 = new MockAuditableChild();
+        audited11.writeProperty("parent", auditedParent1);
+        final DataObject audited12 = new MockAuditableChild();
+        audited12.writeProperty("parent", auditedParent1);
+        final DataObject audited13 = new MockAuditableChild();
+        audited13.writeProperty("parent", auditedParent1);
+
+        DataChannelFilterChain chain = mock(DataChannelFilterChain.class);
+        when(chain.onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC)).thenAnswer(
+                new Answer<GraphDiff>() {
+
+                    @Override
+                    public GraphDiff answer(InvocationOnMock invocation) throws Throwable {
+                        filter.updateAudit(auditedParent1);
+                        filter.updateAuditChild(audited11);
+                        filter.updateAuditChild(audited12);
+                        filter.updateAuditChild(audited13);
+                        return mock(GraphDiff.class);
+                    }
+                });
+
+        filter.onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC, chain);
+
+        verify(chain).onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC);
+        verify(processor).audit(auditedParent1, AuditableOperation.UPDATE);
     }
 }

@@ -19,7 +19,7 @@
 package org.apache.cayenne.lifecycle.audit;
 
 /**
- * An enum of auditable operations.
+ * An enum of possible operations that can be audited.
  * 
  * @since 3.1
  */

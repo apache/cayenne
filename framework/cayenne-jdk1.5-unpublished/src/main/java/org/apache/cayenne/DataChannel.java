@@ -43,7 +43,7 @@ public interface DataChannel {
     /**
      * A synchronization type that results in changes from an ObjectContext to be recorded
      * in the parent DataChannel. If the parent is itself an ObjectContext, it is expected
-     * to send its own sync message to its parent DataChannel to cascade sycnhronization
+     * to send its own sync message to its parent DataChannel to cascade synchronization
      * all the way down the stack.
      */
     public static final int FLUSH_CASCADE_SYNC = 2;
@@ -78,8 +78,8 @@ public interface DataChannel {
     EntityResolver getEntityResolver();
 
     /**
-     * Executes a query, using provided <em>context</em> to register persistent objects
-     * if query returns any objects.
+     * Executes a query, using provided <em>context</em> to register persistent objects if
+     * query returns any objects.
      * 
      * @param originatingContext an ObjectContext that originated the query, used to
      *            register result objects.
@@ -91,6 +91,7 @@ public interface DataChannel {
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff
      * that describes changes to objects made on the receiving end as a result of
      * syncronization.
+     * 
      * @param originatingContext an ObjectContext that initiated the sync. Can be null.
      * @param changes diff from the context that initiated the sync.
      * @param syncType One of {@link #FLUSH_NOCASCADE_SYNC}, {@link #FLUSH_CASCADE_SYNC},

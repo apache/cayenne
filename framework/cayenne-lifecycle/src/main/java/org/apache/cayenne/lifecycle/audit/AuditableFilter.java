@@ -38,6 +38,7 @@ import org.apache.cayenne.query.Query;
  */
 public class AuditableFilter implements DataChannelFilter {
 
+    private final ThreadLocal<AuditableAggregator> aggregator = new ThreadLocal<AuditableAggregator>();
     protected AuditableProcessor processor;
 
     public AuditableFilter(AuditableProcessor processor) {
@@ -63,22 +64,41 @@ public class AuditableFilter implements DataChannelFilter {
             GraphDiff changes,
             int syncType,
             DataChannelFilterChain filterChain) {
-        return filterChain.onSync(originatingContext, changes, syncType);
+
+        try {
+            GraphDiff response = filterChain
+                    .onSync(originatingContext, changes, syncType);
+
+            return response;
+        }
+        finally {
+            aggregator.set(null);
+        }
+    }
+
+    private AuditableAggregator getAggregator() {
+        AuditableAggregator aggregator = this.aggregator.get();
+        if (aggregator == null) {
+            aggregator = new AuditableAggregator(processor);
+            this.aggregator.set(aggregator);
+        }
+
+        return aggregator;
     }
 
     @PostPersist(entityAnnotations = Auditable.class)
     void insertAudit(Object object) {
-        processor.audit(object, object, AuditableOperation.INSERT);
+        getAggregator().audit(object, AuditableOperation.INSERT);
     }
 
     @PostRemove(entityAnnotations = Auditable.class)
     void deleteAudit(Object object) {
-        processor.audit(object, object, AuditableOperation.DELETE);
+        getAggregator().audit(object, AuditableOperation.DELETE);
     }
 
     @PostUpdate(entityAnnotations = Auditable.class)
     void updateAudit(Object object) {
-        processor.audit(object, object, AuditableOperation.UPDATE);
+        getAggregator().audit(object, AuditableOperation.UPDATE);
     }
 
     // only catching child updates... child insert/delete presumably causes an event on
@@ -90,10 +110,10 @@ public class AuditableFilter implements DataChannelFilter {
         Object parent = getParent(object);
 
         if (parent != null) {
-            processor.audit(parent, object, AuditableOperation.UPDATE);
+            updateAudit(parent);
         }
         else {
-            // at least og this fact... shouldn't normally happen, but I can imagine
+            // TODO: maybe log this fact... shouldn't normally happen, but I can imagine
             // certain combinations of object graphs, disconnected relationships, delete
             // rules, etc. may cause this
         }
@@ -118,7 +138,6 @@ public class AuditableFilter implements DataChannelFilter {
             throw new IllegalArgumentException("No 'AuditableChild' annotation found");
         }
 
-        // support for nested paths
         return dataObject.readNestedProperty(annotation.value());
     }
 }
