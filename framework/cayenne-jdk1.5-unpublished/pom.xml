@@ -155,24 +155,42 @@
 						Commented out expression executions, as exp/parser package is not
 						properly setup - it stores generated parser in SVN in
 						src/main/java. So the executions below are used for manual
-						generation
+						generation TODO: make it a profile.
 					-->
-					<!--
-						<execution> <id>jjtree-exp</id> <phase>generate-sources</phase>
-						<configuration> <sourceDirectory>
-						${basedir}/src/main/jjtree/org/apache/cayenne/exp/parser
-						</sourceDirectory> <outputDirectory>
-						${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
-						</outputDirectory> <buildNodeFiles>false</buildNodeFiles>
-						</configuration> <goals> <goal>jjtree</goal> </goals> </execution>
-						<execution> <id>javacc-exp</id> <phase>generate-sources</phase>
-						<configuration> <sourceDirectory>
-						${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
-						</sourceDirectory> <outputDirectory>
-						${project.build.directory}/generated-sources/javacc/org/apache/cayenne/exp/parser
-						</outputDirectory> </configuration> <goals> <goal>javacc</goal>
-						</goals> </execution>
-					-->
+					<!-- 
+					<execution>
+						<id>jjtree-exp</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceDirectory>
+								${basedir}/src/main/jjtree/org/apache/cayenne/exp/parser
+						</sourceDirectory>
+							<outputDirectory>
+								${basedir}/src/main/java
+						</outputDirectory>
+							<buildNodeFiles>true</buildNodeFiles>
+						</configuration>
+						<goals>
+							<goal>jjtree</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>javacc-exp</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<buildParser>true</buildParser>
+							<sourceDirectory>
+								${basedir}/src/main/java
+						</sourceDirectory>
+							<outputDirectory>
+								${basedir}/src/main/java
+						</outputDirectory>
+						</configuration>
+						<goals>
+							<goal>javacc</goal>
+						</goals>
+					</execution>
+ -->
 				</executions>
 			</plugin>
 			<plugin>
@@ -213,17 +231,17 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.cayenne.build-tools</groupId>
 				<artifactId>maven-cayenne-build-plugin</artifactId>

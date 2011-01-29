@@ -31,39 +31,39 @@ public interface ExpressionParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int NULL = 31;
+  int NULL = 32;
   /** RegularExpression Id. */
-  int TRUE = 32;
+  int TRUE = 33;
   /** RegularExpression Id. */
-  int FALSE = 33;
+  int FALSE = 34;
   /** RegularExpression Id. */
-  int PROPERTY_PATH = 34;
+  int PROPERTY_PATH = 35;
   /** RegularExpression Id. */
-  int IDENTIFIER = 35;
+  int IDENTIFIER = 36;
   /** RegularExpression Id. */
-  int LETTER = 36;
+  int LETTER = 37;
   /** RegularExpression Id. */
-  int DIGIT = 37;
+  int DIGIT = 38;
   /** RegularExpression Id. */
-  int ESC = 40;
+  int ESC = 41;
   /** RegularExpression Id. */
-  int SINGLE_QUOTED_STRING = 42;
+  int SINGLE_QUOTED_STRING = 43;
   /** RegularExpression Id. */
-  int STRING_ESC = 43;
+  int STRING_ESC = 44;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTED_STRING = 45;
+  int DOUBLE_QUOTED_STRING = 46;
   /** RegularExpression Id. */
-  int INT_LITERAL = 46;
+  int INT_LITERAL = 47;
   /** RegularExpression Id. */
-  int FLOAT_LITERAL = 47;
+  int FLOAT_LITERAL = 48;
   /** RegularExpression Id. */
-  int DEC_FLT = 48;
+  int DEC_FLT = 49;
   /** RegularExpression Id. */
-  int DEC_DIGITS = 49;
+  int DEC_DIGITS = 50;
   /** RegularExpression Id. */
-  int EXPONENT = 50;
+  int EXPONENT = 51;
   /** RegularExpression Id. */
-  int FLT_SUFF = 51;
+  int FLT_SUFF = 52;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -101,6 +101,7 @@ public interface ExpressionParserConstants {
     "\"$\"",
     "\"obj:\"",
     "\"db:\"",
+    "\"enum:\"",
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",
@@ -115,10 +116,10 @@ public interface ExpressionParserConstants {
     "\"\\\'\"",
     "\"\\\"\"",
     "<ESC>",
-    "<token of kind 41>",
+    "<token of kind 42>",
     "\"\\\'\"",
     "<STRING_ESC>",
-    "<token of kind 44>",
+    "<token of kind 45>",
     "\"\\\"\"",
     "<INT_LITERAL>",
     "<FLOAT_LITERAL>",

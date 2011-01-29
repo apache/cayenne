@@ -28,8 +28,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.testdo.testmap.Artist;
 
-/**
- */
 public class ExpressionTest extends TestCase {
 
     public void testFromStringLong() {
@@ -49,6 +47,41 @@ public class ExpressionTest extends TestCase {
 
         Expression e4 = Expression.fromString("db:object.path+");
         assertEquals(Expression.DB_PATH, e4.getType());
+    }
+
+    public void testFromStringScalar() {
+        Expression e1 = Expression.fromString("a = 'abc'");
+        assertEquals("abc", e1.getOperand(1));
+    }
+
+    public void testFromStringEnum() {
+        Expression e1 = Expression
+                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.ONE");
+        assertEquals(ExpEnum1.ONE, e1.getOperand(1));
+
+        Expression e2 = Expression
+                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
+        assertEquals(ExpEnum1.TWO, e2.getOperand(1));
+
+        Expression e3 = Expression
+                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
+        assertEquals(ExpEnum1.THREE, e3.getOperand(1));
+
+        try {
+            Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.BOGUS");
+            fail("Didn't throw on bad enum");
+        }
+        catch (ExpressionException e) {
+            // expected
+        }
+
+        try {
+            Expression.fromString("a = enum:BOGUS");
+            fail("Didn't throw on bad enum");
+        }
+        catch (ExpressionException e) {
+            // expected
+        }
     }
 
     public void testExpWithParametersNullHandling_CAY847() {
@@ -107,9 +140,9 @@ public class ExpressionTest extends TestCase {
 
         assertEquals("x.artistName in ('a', 'b', 'c')", ejbql);
     }
-    
+
     public void testEncodeAsEJBQL_PersistentParamater() {
-        
+
         Artist a = new Artist();
         ObjectId aId = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         a.setObjectId(aId);
@@ -125,7 +158,7 @@ public class ExpressionTest extends TestCase {
 
         assertEquals("x.artist = 1", ejbql);
     }
-    
+
     public void testEncodeAsEJBQLNotEquals() {
 
         Expression e = Expression.fromString("artistName != 'bla'");
