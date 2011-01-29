@@ -18,26 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.cayenne.CayenneDataObject;
 
-import org.apache.cayenne.lifecycle.ref.Referenceable;
-
-/**
- * An annotation that adds auditable behavior to DataObjects. All Auditable objects must
- * be also tagged with {@link Referenceable} annotation, as audit records are based on
- * UUIDs.
- * 
- * @since 3.1
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface Auditable {
+@AuditableChild("parent")
+public class MockAuditableChild extends CayenneDataObject {
 
 }

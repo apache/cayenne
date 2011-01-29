@@ -18,26 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.apache.cayenne.lifecycle.ref.Referenceable;
-
 /**
- * An annotation that adds auditable behavior to DataObjects. All Auditable objects must
- * be also tagged with {@link Referenceable} annotation, as audit records are based on
- * UUIDs.
+ * A superclass of application specific handlers of the {@link Auditable} mixin that
+ * provides basic needed callbacks.
  * 
  * @since 3.1
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface Auditable {
+public interface AuditableProcessor {
 
+    /**
+     * A method called by {@link AuditableFilter} that should audit records as appropriate
+     * in a given application. Implementors may insert audit records in DB, log a message,
+     * etc.
+     * 
+     * @param auditRoot the root auditable object. This is the object that is either
+     *            annotated with {@link Auditable} or pointed to by another object
+     *            annotated with {@link AuditableChild}.
+     * @param auditSource an object that generated this audit event.
+     * @param operation a type of object change.
+     */
+    void audit(Object auditRoot, Object auditSource, AuditableOperation operation);
 }

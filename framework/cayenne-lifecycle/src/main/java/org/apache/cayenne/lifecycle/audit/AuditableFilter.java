@@ -18,41 +18,67 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelFilter;
+import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataObject;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostRemove;
 import org.apache.cayenne.annotation.PostUpdate;
+import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.query.Query;
 
 /**
- * A superclass of application specific handlers of the {@link Auditable} mixin that
- * provides basic needed callbacks.
+ * A {@link DataChannelFilter} that enables audit of entities annotated with
+ * {@link Auditable} and {@link AuditableChild}.
  * 
  * @since 3.1
  */
-public abstract class AbstractAuditableHandler {
+public class AuditableFilter implements DataChannelFilter {
 
-    /**
-     * A worker method that creates audit records, as appropriate in a given application.
-     * Subclasses may insert audit records, log a message, etc.
-     */
-    protected abstract void audit(
-            Object auditRoot,
-            Object auditSource,
-            AuditableOperation operation);
+    protected AuditableProcessor processor;
+
+    public AuditableFilter(AuditableProcessor processor) {
+        this.processor = processor;
+    }
+
+    @Override
+    public void init(DataChannel channel) {
+        // noop
+    }
+
+    @Override
+    public QueryResponse onQuery(
+            ObjectContext originatingContext,
+            Query query,
+            DataChannelFilterChain filterChain) {
+        return filterChain.onQuery(originatingContext, query);
+    }
+
+    @Override
+    public GraphDiff onSync(
+            ObjectContext originatingContext,
+            GraphDiff changes,
+            int syncType,
+            DataChannelFilterChain filterChain) {
+        return filterChain.onSync(originatingContext, changes, syncType);
+    }
 
     @PostPersist(entityAnnotations = Auditable.class)
     void insertAudit(Object object) {
-        audit(object, object, AuditableOperation.INSERT);
+        processor.audit(object, object, AuditableOperation.INSERT);
     }
 
     @PostRemove(entityAnnotations = Auditable.class)
     void deleteAudit(Object object) {
-        audit(object, object, AuditableOperation.DELETE);
+        processor.audit(object, object, AuditableOperation.DELETE);
     }
 
     @PostUpdate(entityAnnotations = Auditable.class)
     void updateAudit(Object object) {
-        audit(object, object, AuditableOperation.UPDATE);
+        processor.audit(object, object, AuditableOperation.UPDATE);
     }
 
     // only catching child updates... child insert/delete presumably causes an event on
@@ -64,7 +90,7 @@ public abstract class AbstractAuditableHandler {
         Object parent = getParent(object);
 
         if (parent != null) {
-            audit(parent, object, AuditableOperation.UPDATE);
+            processor.audit(parent, object, AuditableOperation.UPDATE);
         }
         else {
             // at least og this fact... shouldn't normally happen, but I can imagine
