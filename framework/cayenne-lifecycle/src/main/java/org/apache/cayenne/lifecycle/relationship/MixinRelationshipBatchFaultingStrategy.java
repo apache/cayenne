@@ -32,7 +32,6 @@ public class MixinRelationshipBatchFaultingStrategy implements
         this.batchFaultHolder = new ThreadLocal<UuidBatchFault>();
     }
 
-    @Override
     public void afterObjectLoaded(DataObject object) {
 
         UuidBatchFault batchFault = batchFaultHolder.get();
@@ -56,7 +55,6 @@ public class MixinRelationshipBatchFaultingStrategy implements
         }
     }
 
-    @Override
     public void afterQuery() {
         batchFaultHolder.set(null);
     }

@@ -43,12 +43,10 @@ public class ChangeSetFilter implements DataChannelFilter {
         return PRE_COMMIT_CHANGE_SET.get();
     }
 
-    @Override
     public void init(DataChannel channel) {
         // noop..
     }
 
-    @Override
     public QueryResponse onQuery(
             ObjectContext originatingContext,
             Query query,
@@ -56,7 +54,6 @@ public class ChangeSetFilter implements DataChannelFilter {
         return filterChain.onQuery(originatingContext, query);
     }
 
-    @Override
     public GraphDiff onSync(
             ObjectContext originatingContext,
             GraphDiff changes,

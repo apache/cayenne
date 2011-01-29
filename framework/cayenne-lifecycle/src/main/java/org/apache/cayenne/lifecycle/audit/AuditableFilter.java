@@ -45,12 +45,10 @@ public class AuditableFilter implements DataChannelFilter {
         this.processor = processor;
     }
 
-    @Override
     public void init(DataChannel channel) {
         // noop
     }
 
-    @Override
     public QueryResponse onQuery(
             ObjectContext originatingContext,
             Query query,
@@ -58,7 +56,6 @@ public class AuditableFilter implements DataChannelFilter {
         return filterChain.onQuery(originatingContext, query);
     }
 
-    @Override
     public GraphDiff onSync(
             ObjectContext originatingContext,
             GraphDiff changes,

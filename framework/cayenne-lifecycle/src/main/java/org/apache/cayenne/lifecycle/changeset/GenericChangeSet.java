@@ -46,7 +46,6 @@ public class GenericChangeSet implements ChangeSet {
         this.diff = diff;
     }
 
-    @Override
     public Map<String, PropertyChange> getChanges(Persistent object) {
         Map<String, PropertyChange> changes = getChanges().get(object.getObjectId());
         return changes != null ? changes : Collections.EMPTY_MAP;
@@ -89,31 +88,26 @@ public class GenericChangeSet implements ChangeSet {
                 return change;
             }
 
-            @Override
             public void nodeRemoved(Object nodeId) {
                 // noop, don't care, we'll still track the changes for deleted objects.
             }
 
-            @Override
             public void nodeCreated(Object nodeId) {
                 // noop (??)
             }
 
-            @Override
             public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
                 // record the fact of relationship change... TODO: analyze relationship
                 // semantics and record changset values
                 getChange(nodeId, (String) arcId, null);
             }
 
-            @Override
             public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
                 // record the fact of relationship change... TODO: analyze relationship
                 // semantics and record changset values
                 getChange(nodeId, (String) arcId, null);
             }
 
-            @Override
             public void nodePropertyChanged(
                     Object nodeId,
                     String property,
@@ -122,7 +116,6 @@ public class GenericChangeSet implements ChangeSet {
                 getChange(nodeId, property, oldValue).setNewValue(newValue);
             }
 
-            @Override
             public void nodeIdChanged(Object nodeId, Object newId) {
 
                 // store the same change set under old and new ids to allow lookup before

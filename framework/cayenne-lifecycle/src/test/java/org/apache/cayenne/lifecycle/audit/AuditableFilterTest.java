@@ -111,7 +111,6 @@ public class AuditableFilterTest extends TestCase {
         when(chain.onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC)).thenAnswer(
                 new Answer<GraphDiff>() {
 
-                    @Override
                     public GraphDiff answer(InvocationOnMock invocation) throws Throwable {
                         filter.updateAudit(auditedParent1);
                         filter.updateAuditChild(audited11);

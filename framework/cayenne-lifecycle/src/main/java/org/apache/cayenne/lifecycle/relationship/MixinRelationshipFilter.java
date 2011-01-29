@@ -38,7 +38,6 @@ public class MixinRelationshipFilter implements DataChannelFilter {
 
     private MixinRelationshipFaultingStrategy faultingStrategy;
 
-    @Override
     public void init(DataChannel channel) {
         this.faultingStrategy = createFaultingStrategy();
     }
@@ -47,7 +46,6 @@ public class MixinRelationshipFilter implements DataChannelFilter {
         return new MixinRelationshipBatchFaultingStrategy();
     }
 
-    @Override
     public GraphDiff onSync(
             ObjectContext context,
             GraphDiff diff,
@@ -57,7 +55,6 @@ public class MixinRelationshipFilter implements DataChannelFilter {
         return chain.onSync(context, diff, syncType);
     }
 
-    @Override
     public QueryResponse onQuery(
             ObjectContext context,
             Query query,
