@@ -18,12 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
+import org.apache.cayenne.cache.MapQueryCacheProvider;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
@@ -49,6 +52,7 @@ import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
@@ -104,7 +108,7 @@ public class ServerModule implements Module {
                 .add(new OracleSniffer())
                 .add(new PostgresSniffer())
                 .add(new MySQLSniffer());
-        
+
         // configure an empty filter chain
         binder.bindList(DataDomainProvider.FILTERS_LIST);
 
@@ -113,6 +117,12 @@ public class ServerModule implements Module {
                 DefaultConfigurationNameMapper.class);
 
         binder.bind(EventManager.class).to(DefaultEventManager.class);
+
+        binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
+        binder
+                .bind(Key.get(QueryCache.class, BaseContext.QUERY_CACHE_INJECTION_KEY))
+                .toProvider(MapQueryCacheProvider.class)
+                .withoutScope();
 
         // a service to provide the main stack DataDomain
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);

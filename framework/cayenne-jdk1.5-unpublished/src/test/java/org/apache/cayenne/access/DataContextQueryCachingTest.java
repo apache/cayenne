@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.cache.MapQueryCache;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
@@ -32,13 +34,20 @@ import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextQueryCachingTest extends CayenneCase {
 
+    protected QueryCache oldCache;
     protected DataContext context;
 
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
-
+        oldCache = getDomain().getQueryCache();
+        getDomain().setQueryCache(new MapQueryCache(50));
         context = createDataContextWithSharedCache(true);
+        context.setQueryCache(new MapQueryCache(50));
+    }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        getDomain().setQueryCache(oldCache);
     }
 
     public void testLocalCacheDataRowsRefresh() throws Exception {

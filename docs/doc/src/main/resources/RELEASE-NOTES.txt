@@ -14,6 +14,7 @@ Date:
 ----------------------------------
 Changes/New Features Since 3.1M1:
 
+CAY-1445 DI-based QueryCacheFactory
 CAY-1508 Support for DataChannel filters
 CAY-1509 Lifecycle event annotations support
 CAY-1532 Import cayenne-lifecycle from sandbox

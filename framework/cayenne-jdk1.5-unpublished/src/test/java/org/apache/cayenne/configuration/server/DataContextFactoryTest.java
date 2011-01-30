@@ -20,11 +20,15 @@ package org.apache.cayenne.configuration.server;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.cache.MapQueryCache;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
@@ -46,6 +50,13 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(DataDomain.class).toInstance(domain);
                 binder.bind(EventManager.class).toInstance(eventManager);
+                binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
+                binder
+                        .bind(
+                                Key.get(
+                                        QueryCache.class,
+                                        BaseContext.QUERY_CACHE_INJECTION_KEY))
+                        .toInstance(new MapQueryCache(5));
             }
         };
 
@@ -73,6 +84,13 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(DataDomain.class).toInstance(domain);
                 binder.bind(EventManager.class).toInstance(eventManager);
+                binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
+                binder
+                        .bind(
+                                Key.get(
+                                        QueryCache.class,
+                                        BaseContext.QUERY_CACHE_INJECTION_KEY))
+                        .toInstance(new MapQueryCache(5));
             }
         };
 

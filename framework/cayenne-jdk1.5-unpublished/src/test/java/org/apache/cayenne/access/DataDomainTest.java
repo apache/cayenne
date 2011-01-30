@@ -23,11 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.cache.MapQueryCacheFactory;
-import org.apache.cayenne.cache.MockQueryCache;
-import org.apache.cayenne.cache.MockQueryCacheFactory;
-import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -171,27 +166,6 @@ public class DataDomainTest extends CayenneCase {
 
         Transaction transaction = domain.createTransaction();
         assertTrue(transaction instanceof ExternalTransaction);
-    }
-
-    public void testQueryCache() {
-        DataDomain domain = new DataDomain("X");
-        QueryCache cache = domain.getQueryCache();
-        assertNotNull(cache);
-    }
-
-    public void testQueryCacheFactory() {
-        DataDomain domain = new DataDomain("X");
-        QueryCacheFactory qcFactory = domain.getQueryCacheFactory();
-        assertNotNull(qcFactory);
-        assertTrue(qcFactory instanceof MapQueryCacheFactory);
-
-        domain = new DataDomain("Y");
-        MockQueryCacheFactory f2 = new MockQueryCacheFactory();
-        domain.setQueryCacheFactory(f2);
-        assertSame(f2, domain.getQueryCacheFactory());
-        if (!(domain.getQueryCache() instanceof MockQueryCache)) {
-            fail("Unknown query cache created: " + domain.getQueryCache());
-        }
     }
 
     public void testShutdown() {

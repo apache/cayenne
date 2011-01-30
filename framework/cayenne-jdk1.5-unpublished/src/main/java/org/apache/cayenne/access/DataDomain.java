@@ -36,10 +36,10 @@ import org.apache.cayenne.DataChannelSyncCallbackAction;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -121,7 +121,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 3.1
      */
     @Inject
-    protected Provider<QueryCache> queryCacheProvider;
+    protected QueryCache queryCache;
 
     protected boolean stopped;
 
@@ -560,6 +560,10 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         DataContext context = new DataContext(this, new ObjectStore(snapshotCache));
 
+        if (queryCache != null) {
+            context.setQueryCache(new NestedQueryCache(queryCache));
+        }
+
         context.setValidatingObjectsOnCommit(isValidatingObjectsOnCommit());
         return context;
     }
@@ -859,7 +863,11 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 3.0
      */
     public QueryCache getQueryCache() {
-        return queryCacheProvider.get();
+        return queryCache;
+    }
+
+    public void setQueryCache(QueryCache queryCache) {
+        this.queryCache = queryCache;
     }
 
     /**

@@ -18,21 +18,34 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import java.util.Map;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
 /**
- * A factory for the OSCache factory. "/oscache.properties" file is read to load the
- * standard OSCache properties and also extra properties
- * 
- * @since 3.0
+ * @since 3.1
  */
-public class OSQueryCacheFactory implements QueryCacheFactory {
+public class MapQueryCacheProvider implements Provider<QueryCache> {
 
-    /**
-     * Creates QueryCache, ignoring provided properties, and reading data from
-     * "oscache.properties" file instead.
-     */
-    public QueryCache getQueryCache(Map<String, String> properties) {
-        return new OSQueryCache();
+    public static final String CACHE_SIZE_PROPERTY = "cayenne.MapQueryCacheFactory.cacheSize";
+
+    protected RuntimeProperties properties;
+
+    public MapQueryCacheProvider(@Inject RuntimeProperties properties) {
+        this.properties = properties;
+    }
+
+    public QueryCache get() throws ConfigurationException {
+
+        return new QueryCacheLazyInitializationProxy(new Provider<QueryCache>() {
+
+            public QueryCache get() throws ConfigurationException {
+                int size = properties.getInt(
+                        CACHE_SIZE_PROPERTY,
+                        MapQueryCache.DEFAULT_CACHE_SIZE);
+                return new MapQueryCache(size);
+            }
+        });
     }
 }

@@ -20,11 +20,15 @@ package org.apache.cayenne.configuration.rop.client;
 
 import java.util.Map;
 
+import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.cache.MapQueryCacheProvider;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
@@ -69,6 +73,10 @@ public class ClientModule implements Module {
         binder.bind(EventManager.class).to(DefaultEventManager.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(DataChannel.class).toProvider(ClientChannelProvider.class);
+        binder
+                .bind(Key.get(QueryCache.class, BaseContext.QUERY_CACHE_INJECTION_KEY))
+                .toProvider(MapQueryCacheProvider.class)
+                .withoutScope();
     }
 
 }

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -53,7 +52,7 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  */
 public abstract class BaseContext implements ObjectContext, DataChannel {
 
-    protected static final String QUERY_CACHE_INJECTION_KEY = "local";
+    public static final String QUERY_CACHE_INJECTION_KEY = "local";
 
     /**
      * A holder of a ObjectContext bound to the current thread.
@@ -93,8 +92,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     // transient variables that should be reinitialized on deserialization from the
     // registry
     protected transient DataChannel channel;
-
-    @Inject(QUERY_CACHE_INJECTION_KEY)
     protected transient QueryCache queryCache;
 
     /**

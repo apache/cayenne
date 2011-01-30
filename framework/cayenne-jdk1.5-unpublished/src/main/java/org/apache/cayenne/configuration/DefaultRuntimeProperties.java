@@ -54,6 +54,21 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
         return properties.get(key);
     }
 
+    public int getInt(String key, int defaultValue) {
+        String string = get(key);
+        if (string == null) {
+            return defaultValue;
+        }
+
+        try {
+            return Integer.parseInt(string);
+        }
+        catch (NumberFormatException e) {
+            // incorrect property format, should we rethrow?
+            return defaultValue;
+        }
+    }
+
     public boolean getBoolean(String key, boolean defaultValue) {
         String string = get(key);
         return string != null ? "true".equalsIgnoreCase(string) : defaultValue;

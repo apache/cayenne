@@ -18,68 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.cache.OSQueryCacheFactory;
+import org.apache.cayenne.cache.OSQueryCache;
 
 public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingTest {
 
+    // runs super tests with a different setup...
     @Override
-    public void testLocalCacheDataObjectsRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testLocalCacheDataObjectsRefresh();
-            }
-        });
+    protected void setUp() throws Exception {
+        oldCache = getDomain().getQueryCache();
+        getDomain().setQueryCache(new OSQueryCache());
+        context = createDataContextWithSharedCache(true);
+        context.setQueryCache(new OSQueryCache());
     }
-
-    @Override
-    public void testLocalCacheDataRowsRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super.testLocalCacheDataRowsRefresh();
-            }
-        });
-    }
-
-    @Override
-    public void testLocalCacheRefreshObjectsRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testLocalCacheRefreshObjectsRefresh();
-            }
-        });
-    }
-
-    @Override
-    public void testSharedCacheDataRowsRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super.testSharedCacheDataRowsRefresh();
-            }
-        });
-    }
-
-    private void runTest(TestRun test) throws Exception {
-        context.setQueryCache(null);
-        getDomain().setQueryCacheFactory(new OSQueryCacheFactory());
-        getDomain().queryCache = null;
-        try {
-            test.execute();
-        }
-        finally {
-            getDomain().setQueryCacheFactory(null);
-            getDomain().queryCache = null;
-        }
-    }
-
-    interface TestRun {
-
-        void execute() throws Exception;
-    }
-
 }

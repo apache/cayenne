@@ -21,6 +21,7 @@ package org.apache.cayenne.remote;
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.unit.AccessStack;
@@ -73,7 +74,9 @@ public abstract class RemoteCayenneCase extends CayenneCase {
                 // TODO: replace with container managed ClientCase.
                 new DefaultEventManager(0),
                 false);
-        return new CayenneContext(channel, true, true);
+        CayenneContext context = new CayenneContext(channel, true, true);
+        context.setQueryCache(new MapQueryCache(10));
+        return context;
     }
 
     @Override
