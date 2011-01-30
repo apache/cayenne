@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -52,6 +52,8 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  * @since 3.0
  */
 public abstract class BaseContext implements ObjectContext, DataChannel {
+
+    protected static final String QUERY_CACHE_INJECTION_KEY = "local";
 
     /**
      * A holder of a ObjectContext bound to the current thread.
@@ -88,10 +90,12 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         threadObjectContext.set(context);
     }
 
-    // if we are to pass the context around, channel should be left alone and
-    // reinjected later if needed
+    // transient variables that should be reinitialized on deserialization from the
+    // registry
     protected transient DataChannel channel;
-    protected QueryCache queryCache;
+
+    @Inject(QUERY_CACHE_INJECTION_KEY)
+    protected transient QueryCache queryCache;
 
     /**
      * Graph action that handles property changes
@@ -258,20 +262,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     public abstract Collection<?> uncommittedObjects();
 
-    /**
-     * Returns {@link QueryCache}, creating it on the fly if needed.
-     */
     public QueryCache getQueryCache() {
-        if (queryCache == null) {
-            synchronized (this) {
-                if (queryCache == null) {
-                    // TODO: andrus, 7/27/2006 - figure out the factory stuff like we have
-                    // in DataContext
-                    queryCache = new MapQueryCache();
-                }
-            }
-        }
-
         return queryCache;
     }
 

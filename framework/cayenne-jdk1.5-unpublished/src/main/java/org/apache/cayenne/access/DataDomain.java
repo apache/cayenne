@@ -36,11 +36,10 @@ import org.apache.cayenne.DataChannelSyncCallbackAction;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
-import org.apache.cayenne.cache.MapQueryCacheFactory;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -71,13 +70,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     public static final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
 
     /**
-     * Defines a property name for storing optional {@link QueryCacheFactory}.
-     * 
-     * @since 3.0
-     */
-    public static final String QUERY_CACHE_FACTORY_PROPERTY = "cayenne.DataDomain.queryCacheFactory";
-
-    /**
      * @since 3.1
      */
     @Inject
@@ -104,7 +96,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
     protected TransactionDelegate transactionDelegate;
-    protected QueryCacheFactory queryCacheFactory;
     protected String name;
 
     // these are initialized from properties...
@@ -123,9 +114,14 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected EntitySorter entitySorter;
 
     /**
-     * @since 3.0
+     * An injected provider of {@link QueryCache}. Note that QueryCache is not injected
+     * directly to ensure lazy initialization (e.g. it may never be used and should not be
+     * instantiated).
+     * 
+     * @since 3.1
      */
-    protected QueryCache queryCache;
+    @Inject
+    protected Provider<QueryCache> queryCacheProvider;
 
     protected boolean stopped;
 
@@ -217,8 +213,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         String usingExternalTransactions = localMap
                 .get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
 
-        String queryCacheFactoryName = localMap.get(QUERY_CACHE_FACTORY_PROPERTY);
-
         // init ivars from properties
         this.sharedCacheEnabled = (sharedCacheEnabled != null) ? "true"
                 .equalsIgnoreCase(sharedCacheEnabled) : SHARED_CACHE_ENABLED_DEFAULT;
@@ -228,41 +222,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         this.usingExternalTransactions = (usingExternalTransactions != null)
                 ? "true".equalsIgnoreCase(usingExternalTransactions)
                 : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
-
-        if (queryCacheFactoryName != null) {
-            queryCacheFactory = createInstance(
-                    queryCacheFactoryName,
-                    QueryCacheFactory.class);
-        }
-        else {
-            queryCacheFactory = null;
-        }
-    }
-
-    private <T> T createInstance(String className, Class<T> implementedInterface) {
-        Class<?> aClass;
-        try {
-            aClass = Class.forName(className, true, Thread
-                    .currentThread()
-                    .getContextClassLoader());
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException("Error loading '" + className + "'", e);
-        }
-
-        if (!implementedInterface.isAssignableFrom(aClass)) {
-            throw new CayenneRuntimeException("Failed to load '"
-                    + className
-                    + "' - it is expected to implement "
-                    + implementedInterface);
-        }
-
-        try {
-            return (T) aClass.newInstance();
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException("Error instantiating " + className, e);
-        }
     }
 
     /**
@@ -895,47 +854,12 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns a non-null {@link QueryCacheFactory}.
-     * 
-     * @since 3.0
-     */
-    public QueryCacheFactory getQueryCacheFactory() {
-        return queryCacheFactory != null ? queryCacheFactory : new MapQueryCacheFactory();
-    }
-
-    /**
-     * @since 3.0
-     */
-    public void setQueryCacheFactory(QueryCacheFactory queryCacheFactory) {
-        this.queryCacheFactory = queryCacheFactory;
-    }
-
-    /**
-     * Returns shared {@link QueryCache} used by this DataDomain, creating it on the fly
-     * if needed. Uses factory obtained via {@link #getQueryCacheFactory()} to initialize
-     * the cache for the first time. This domain properties are passed to the
-     * {@link QueryCacheFactory#getQueryCache(Map)} method.
+     * Returns shared {@link QueryCache} used by this DataDomain.
      * 
      * @since 3.0
      */
     public QueryCache getQueryCache() {
-
-        if (queryCache == null) {
-            synchronized (this) {
-                if (queryCache == null) {
-                    queryCache = getQueryCacheFactory().getQueryCache(getProperties());
-                }
-            }
-        }
-
-        return queryCache;
-    }
-
-    /**
-     * @since 3.0
-     */
-    QueryCache getQueryCacheInternal() {
-        return queryCache;
+        return queryCacheProvider.get();
     }
 
     /**

@@ -43,9 +43,9 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -113,29 +113,6 @@ public class DataContext extends BaseContext implements DataChannel {
             this.usingSharedSnaphsotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
         }
-    }
-
-    /**
-     * Returns {@link QueryCache} used by this DataContext, creating it on the fly if
-     * needed. Uses parent DataDomain {@link QueryCacheFactory} to initialize the cache
-     * for the first time, passing parent DataDomain's properties.
-     * 
-     * @since 3.0
-     */
-    @Override
-    public QueryCache getQueryCache() {
-        if (queryCache == null) {
-            synchronized (this) {
-                if (queryCache == null) {
-
-                    DataDomain domain = getParentDataDomain();
-                    queryCache = domain.getQueryCacheFactory().getQueryCache(
-                            domain.getProperties());
-                }
-            }
-        }
-
-        return queryCache;
     }
 
     /**
@@ -1147,6 +1124,9 @@ public class DataContext extends BaseContext implements DataChannel {
     private void readObject(ObjectInputStream in) throws IOException,
             ClassNotFoundException {
 
+        // TODO: most of this should be in the superclass, especially the code connecting
+        // super transient ivars
+
         // 1. read non-transient properties
         in.defaultReadObject();
 
@@ -1163,6 +1143,9 @@ public class DataContext extends BaseContext implements DataChannel {
         Injector injector = CayenneRuntime.getThreadInjector();
         if (injector != null) {
             setChannel(injector.getInstance(DataChannel.class));
+            setQueryCache(injector.getInstance(Key.get(
+                    QueryCache.class,
+                    QUERY_CACHE_INJECTION_KEY)));
         }
         else {
             // throw?
