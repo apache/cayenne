@@ -19,12 +19,17 @@
 
 package org.apache.cayenne.access;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
@@ -33,13 +38,15 @@ public class DataContextSerializationTest extends CayenneCase {
 
     @Override
     protected void setUp() throws Exception {
-        BaseContext.bindThreadDeserializationChannel(getDomain());
+        Injector injector = mock(Injector.class);
+        when(injector.getInstance(DataChannel.class)).thenReturn(getDomain());
+        CayenneRuntime.bindThreadInjector(injector);
         deleteTestData();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        BaseContext.bindThreadDeserializationChannel(null);
+        CayenneRuntime.bindThreadInjector(null);
         super.tearDown();
     }
 

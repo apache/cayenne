@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -706,13 +708,15 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      */
     public void decodeFromXML(XMLDecoder decoder) {
 
-        DataChannel channel = BaseContext.getThreadDeserializationChannel();
-        if (channel == null) {
-            throw new IllegalStateException(
-                    "Can't perform deserialization - no DataChannel bound to the current thread.");
+        Injector injector = CayenneRuntime.getThreadInjector();
+        if (injector == null) {
+            throw new IllegalStateException("Can't perform deserialization - "
+                    + "no Injector bound to the current thread.");
         }
 
-        EntityResolver resolver = channel.getEntityResolver();
+        EntityResolver resolver = injector
+                .getInstance(DataChannel.class)
+                .getEntityResolver();
         ObjEntity objectEntity = resolver.lookupObjEntity(getClass());
 
         for (final ObjAttribute att : objectEntity.getDeclaredAttributes()) {

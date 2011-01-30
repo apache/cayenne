@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.cayenne.BaseContext;
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -35,7 +35,7 @@ import org.apache.cayenne.di.Injector;
  * {@link ObjectContext} in a web session and binds it to request thread. Note that using
  * this handler would force {@link HttpSession} creation, that may not be desirable in
  * many cases. Also session-bound context may result in a race condition with two user
- * requests updating the same periststent objects in parallel.
+ * requests updating the same persistent objects in parallel.
  * <p>
  * User applications in most cases should provide a custom RequestHandler that implements
  * a smarter app-specific strategy for providing ObjectContext.
@@ -55,8 +55,7 @@ public class SessionContextRequestHandler implements RequestHandler {
 
     public void requestStart(ServletRequest request, ServletResponse response) {
 
-        BaseContext.bindThreadDeserializationChannel(injector
-                .getInstance(DataChannel.class));
+        CayenneRuntime.bindThreadInjector(injector);
 
         if (request instanceof HttpServletRequest) {
 
@@ -80,7 +79,7 @@ public class SessionContextRequestHandler implements RequestHandler {
     }
 
     public void requestEnd(ServletRequest request, ServletResponse response) {
-        BaseContext.bindThreadDeserializationChannel(null);
+        CayenneRuntime.bindThreadInjector(null);
         BaseContext.bindThreadObjectContext(null);
     }
 

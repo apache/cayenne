@@ -32,20 +32,4 @@ public class BaseContextTest extends TestCase {
         assertNotNull(properties);
         assertSame(properties, context.getUserProperties());
     }
-
-    public void testBindThreadDeserializationChannel() {
-
-        assertNull(BaseContext.getThreadDeserializationChannel());
-
-        try {
-            DataChannel channel = new MockDataChannel();
-            BaseContext.bindThreadDeserializationChannel(channel);
-            assertSame(channel, BaseContext.getThreadDeserializationChannel());
-        }
-        finally {
-            BaseContext.bindThreadDeserializationChannel(null);
-        }
-
-        assertNull(BaseContext.getThreadDeserializationChannel());
-    }
 }

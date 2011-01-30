@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.web.CayenneFilter;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -62,14 +61,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<ObjectContext>();
 
     /**
-     * A holder of a DataChannel bound to the current thread. Used mainly for proper
-     * contexts and objects deserialization.
-     * 
-     * @since 3.1
-     */
-    protected static final ThreadLocal<DataChannel> threadDeserializationChannel = new ThreadLocal<DataChannel>();
-
-    /**
      * Returns the ObjectContext bound to the current thread.
      * 
      * @since 3.0
@@ -95,33 +86,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      */
     public static void bindThreadObjectContext(ObjectContext context) {
         threadObjectContext.set(context);
-    }
-
-    /**
-     * Binds a DataChannel to the current thread that should be used for deserializing of
-     * ObjectContexts. An ObjectContext implementation may call
-     * {@link #getThreadDeserializationChannel()} from its deserialization method to
-     * attach to the currently active channel.
-     * <p>
-     * {@link CayenneFilter} will automatically bind the right channel to each request
-     * thread. If you are not using CayenneFilter, your application is responsible for
-     * calling this method at appropriate points of the lifecycle.
-     * 
-     * @since 3.1
-     */
-    public static void bindThreadDeserializationChannel(DataChannel dataChannel) {
-        threadDeserializationChannel.set(dataChannel);
-    }
-
-    /**
-     * Returns the DataChannel bound to the current thread. May return null if none is
-     * bound (unlike {@link #getThreadObjectContext()} that throws if a context is not
-     * bound).
-     * 
-     * @since 3.1
-     */
-    public static DataChannel getThreadDeserializationChannel() {
-        return threadDeserializationChannel.get();
     }
 
     // if we are to pass the context around, channel should be left alone and

@@ -19,6 +19,7 @@ CAY-1509 Lifecycle event annotations support
 CAY-1532 Import cayenne-lifecycle from sandbox
 CAY-1533 Deprecate org.apache.cayenne.xml
 CAY-1534 cayenne-lifecycle: implement AuditableFilter
+CAY-1536 Expand deserialization context to provide Injector object instead of just a DataChannel.
 
 Bug Fixes Since 3.1M1:
 

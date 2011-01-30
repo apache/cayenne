@@ -19,8 +19,13 @@
 
 package org.apache.cayenne.unit;
 
-import org.apache.cayenne.BaseContext;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -47,7 +52,11 @@ public abstract class MultiContextCase extends CayenneCase {
     protected DataContext mirrorDataContext(DataContext context) throws Exception {
 
         DataContext mirror;
-        BaseContext.bindThreadDeserializationChannel(getDomain());
+        
+        Injector injector = mock(Injector.class);
+        when(injector.getInstance(DataChannel.class)).thenReturn(getDomain());
+        CayenneRuntime.bindThreadInjector(injector);
+        
         try {
             mirror = (DataContext) Util.cloneViaSerialization(context);
 
@@ -55,7 +64,7 @@ public abstract class MultiContextCase extends CayenneCase {
             mirror.getChannel();
         }
         finally {
-            BaseContext.bindThreadDeserializationChannel(null);
+            CayenneRuntime.bindThreadInjector(null);
         }
 
         assertNotSame(context, mirror);

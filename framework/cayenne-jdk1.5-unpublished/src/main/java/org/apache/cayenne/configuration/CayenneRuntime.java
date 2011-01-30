@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.web.CayenneFilter;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -37,6 +38,38 @@ import org.apache.cayenne.di.Module;
  * @since 3.1
  */
 public abstract class CayenneRuntime {
+
+    /**
+     * A holder of an Injector bound to the current thread. Used mainly to allow
+     * serializable contexts to attach to correct Cayenne stack on deserialization.
+     * 
+     * @since 3.1
+     */
+    protected static final ThreadLocal<Injector> threadInjector = new ThreadLocal<Injector>();
+
+    /**
+     * Binds a DI {@link Injector} bound to the current thread. It is primarily intended
+     * for deserialization of ObjectContexts.
+     * <p>
+     * {@link CayenneFilter} will automatically bind the right injector to each request
+     * thread. If you are not using CayenneFilter, your application is responsible for
+     * calling this method at appropriate points of the lifecycle.
+     * 
+     * @since 3.1
+     */
+    public static void bindThreadInjector(Injector injector) {
+        threadInjector.set(injector);
+    }
+
+    /**
+     * Returns the {@link Injector} bound to the current thread. Will return null if none
+     * is bound.
+     * 
+     * @since 3.1
+     */
+    public static Injector getThreadInjector() {
+        return threadInjector.get();
+    }
 
     protected Injector injector;
     protected Module[] modules;
