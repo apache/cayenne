@@ -333,7 +333,7 @@ public class Util {
     /**
      * Creates Serializable object copy using serialization/deserialization.
      */
-    public static Object cloneViaSerialization(Serializable obj) throws Exception {
+    public static <T extends Serializable> T cloneViaSerialization(T object) throws Exception {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
             @Override
@@ -343,17 +343,17 @@ public class Util {
         };
 
         ObjectOutputStream out = new ObjectOutputStream(bytes);
-        out.writeObject(obj);
+        out.writeObject(object);
         out.close();
 
         ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes
                 .toByteArray()));
-        Object objCopy = in.readObject();
+        T copy = (T) in.readObject();
 
         // no need to close the stream - we created it and now will be throwing away...
         // in.close();
 
-        return objCopy;
+        return copy;
     }
 
     /**

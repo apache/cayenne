@@ -47,8 +47,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
         DataContext context = createDataContextWithSharedCache(true);
 
-        DataContext deserializedContext = (DataContext) Util
-                .cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
 
         assertNotNull(deserializedContext.getEntityResolver());
         assertSame(context.getEntityResolver(), deserializedContext.getEntityResolver());
@@ -58,8 +57,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
         DataContext context = createDataContextWithSharedCache(true);
 
-        DataContext deserializedContext = (DataContext) Util
-                .cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
 
         assertNotNull(deserializedContext.getChannel());
         assertSame(context.getChannel(), deserializedContext.getChannel());
@@ -69,8 +67,7 @@ public class DataContextSerializationTest extends CayenneCase {
         DataContext context = createDataContextWithSharedCache(true);
         ObjectContext child = context.createChildContext();
 
-        ObjectContext deserializedContext = (ObjectContext) Util
-                .cloneViaSerialization(child);
+        ObjectContext deserializedContext = Util.cloneViaSerialization(child);
 
         assertNotNull(deserializedContext.getChannel());
         assertNotNull(deserializedContext.getEntityResolver());
@@ -82,8 +79,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
         DataContext context = createDataContextWithSharedCache(true);
 
-        DataContext deserializedContext = (DataContext) Util
-                .cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
 
         assertNotSame(context, deserializedContext);
         assertNotSame(context.getObjectStore(), deserializedContext.getObjectStore());
@@ -115,8 +111,7 @@ public class DataContextSerializationTest extends CayenneCase {
                 .getObjectStore()
                 .getDataRowCache());
 
-        DataContext deserializedContext = (DataContext) Util
-                .cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
 
         assertNotSame(context, deserializedContext);
         assertNotSame(context.getObjectStore(), deserializedContext.getObjectStore());
@@ -146,8 +141,7 @@ public class DataContextSerializationTest extends CayenneCase {
         artist.setArtistName("artist1");
         assertNotNull(artist.getObjectId());
 
-        DataContext deserializedContext = (DataContext) Util
-                .cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
         assertSame(context.getParentDataDomain(), deserializedContext
                 .getParentDataDomain());
 
@@ -173,8 +167,7 @@ public class DataContextSerializationTest extends CayenneCase {
         assertNotNull(artist.getObjectId());
         context.commitChanges();
 
-        DataContext deserializedContext = (DataContext) Util
-                .cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
 
         assertSame(context.getParentDataDomain(), deserializedContext
                 .getParentDataDomain());
@@ -209,8 +202,7 @@ public class DataContextSerializationTest extends CayenneCase {
         context.commitChanges();
         artist.setArtistName("artist2");
 
-        DataContext deserializedContext = (DataContext) Util
-                .cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
 
         assertSame(context.getParentDataDomain(), deserializedContext
                 .getParentDataDomain());
