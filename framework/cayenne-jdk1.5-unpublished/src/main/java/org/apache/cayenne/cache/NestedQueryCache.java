@@ -70,7 +70,7 @@ public class NestedQueryCache implements QueryCache {
      * Clears the underlying shared cache.
      */
     public void clear() {
-        delegate.clear();
+        throw new UnsupportedOperationException("Can't clear a subset of shared cache");
     }
 
     @SuppressWarnings("unchecked")
