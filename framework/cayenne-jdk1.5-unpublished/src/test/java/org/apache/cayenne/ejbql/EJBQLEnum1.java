@@ -18,24 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import org.apache.cayenne.unit.CayenneCase;
+public enum EJBQLEnum1 {
 
-public class EJBQLExpressionTest extends CayenneCase {
-
-    public void testDbPath() {
-
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-
-        EJBQLExpression select = parser
-                .parse("select p from Painting p WHERE db:p.toArtist.ARTIST_NAME = 'a'");
-        assertNotNull(select);
-    }
-
-    public void testEnumPath() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-
-        EJBQLExpression select = parser
-                .parse("select p from Painting p WHERE p.toArtist.ARTIST_NAME = enum:org.apache.cayenne.ejbql.EJBQLEnum1.X");
-        assertNotNull(select);
-    }
+    X, Y, Z
 }

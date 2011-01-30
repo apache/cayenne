@@ -62,14 +62,22 @@ public abstract class SimpleNode extends Expression implements Node {
 
         // encode only ObjectId for Persistent, ensure that the order of keys is
         // predictable....
+
+        // TODO: should we use UUID here?
         if (scalar instanceof Persistent) {
             ObjectId id = ((Persistent) scalar).getObjectId();
-            if (id != null) {
-                scalar = id;
-            }
+            Object encode = (id != null) ? id : scalar;
+            encodeAsEscapedString(pw, String.valueOf(encode));
+        }
+        else if (scalar instanceof Enum<?>) {
+            Enum<?> e = (Enum<?>) scalar;
+            pw.print("enum:");
+            pw.print(e.getClass().getName() + "." + e.name());
+        }
+        else {
+            encodeAsEscapedString(pw, String.valueOf(scalar));
         }
 
-        encodeAsEscapedString(pw, String.valueOf(scalar));
         if (quote) {
             pw.print(quoteChar);
         }
@@ -130,9 +138,10 @@ public abstract class SimpleNode extends Expression implements Node {
     }
 
     protected abstract String getExpressionOperator(int index);
-    
+
     /**
-     * Returns operator for ebjql statements, which can differ for Cayenne expression operator
+     * Returns operator for ebjql statements, which can differ for Cayenne expression
+     * operator
      */
     protected String getEJBQLExpressionOperator(int index) {
         return getExpressionOperator(index);
@@ -319,8 +328,8 @@ public abstract class SimpleNode extends Expression implements Node {
     }
 
     protected Object evaluateChild(int index, Object o) throws Exception {
-    	SimpleNode node = (SimpleNode) jjtGetChild(index);
-    	return node != null ? node.evaluate(o) : null;
+        SimpleNode node = (SimpleNode) jjtGetChild(index);
+        return node != null ? node.evaluate(o) : null;
     }
 
     @Override
@@ -360,7 +369,7 @@ public abstract class SimpleNode extends Expression implements Node {
             pw.print(')');
         }
     }
-    
+
     /**
      * Encodes child of this node with specified index to EJBQL
      */
@@ -371,7 +380,7 @@ public abstract class SimpleNode extends Expression implements Node {
                 pw.print(getEJBQLExpressionOperator(i));
                 pw.print(' ');
             }
-    
+
             if (children[i] == null) {
                 pw.print("null");
             }

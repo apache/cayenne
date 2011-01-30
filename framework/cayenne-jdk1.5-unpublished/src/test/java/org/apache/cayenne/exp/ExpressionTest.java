@@ -172,4 +172,44 @@ public class ExpressionTest extends TestCase {
 
         assertEquals("x.artistName <> 'bla'", ejbql);
     }
+
+    public void testEncodeAsEJBQL_Enum() {
+
+        Expression e = Expression
+                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e.encodeAsEJBQL(pw, "x");
+        pw.close();
+        buffer.flush();
+        String ejbql = buffer.toString();
+
+        assertEquals("x.a = enum:org.apache.cayenne.exp.ExpEnum1.THREE", ejbql);
+    }
+
+    public void testEncodeAsString_StringLiteral() {
+        Expression e1 = Expression.fromString("a = 'abc'");
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e1.encodeAsString(pw);
+        pw.close();
+        buffer.flush();
+
+        assertEquals("a = \"abc\"", buffer.toString());
+    }
+
+    public void testEncodeAsString_Enum() {
+        Expression e1 = Expression
+                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e1.encodeAsString(pw);
+        pw.close();
+        buffer.flush();
+
+        assertEquals("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO", buffer.toString());
+    }
 }

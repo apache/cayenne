@@ -933,7 +933,7 @@ void enum_primary() : { }
 
 void enum_literal() : { }
 {
-	path()
+	"enum:" path()
 }
 
 
