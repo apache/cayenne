@@ -42,7 +42,7 @@
         <dependency>
 			<groupId>org.apache.cayenne.build-tools</groupId>
 			<artifactId>cayenne-test-utilities</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -81,21 +81,21 @@
         <dependency>
             <groupId>org.apache.cayenne.unpublished</groupId>
             <artifactId>cayenne-legal-unpublished</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.cayenne.unpublished</groupId>
             <artifactId>cayenne-jdk1.5-unpublished</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>org.apache.cayenne.unpublished</groupId>
             <artifactId>cayenne-project-unpublished</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -127,7 +127,7 @@
                             </outputDirectory>
                             <resourceBundles>
                                 <resourceBundle>
-                                    org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
+                                    org.apache.cayenne.unpublished:cayenne-legal-unpublished:${project.version}
                                 </resourceBundle>
                             </resourceBundles>
                         </configuration>
