@@ -38,12 +38,12 @@ import org.apache.cayenne.query.Query;
  */
 public class AuditableFilter implements DataChannelFilter {
 
-    private ThreadLocal<AuditableAggregator> aggregator;
+    private ThreadLocal<AuditableAggregator> threadAggregator;
     protected AuditableProcessor processor;
 
     public AuditableFilter(AuditableProcessor processor) {
         this.processor = processor;
-        this.aggregator = new ThreadLocal<AuditableAggregator>();
+        this.threadAggregator = new ThreadLocal<AuditableAggregator>();
     }
 
     public void init(DataChannel channel) {
@@ -63,31 +63,38 @@ public class AuditableFilter implements DataChannelFilter {
             int syncType,
             DataChannelFilterChain filterChain) {
 
+        GraphDiff response;
+
         try {
-            GraphDiff response = filterChain
-                    .onSync(originatingContext, changes, syncType);
-
-            postSync();
-
-            return response;
+            response = filterChain.onSync(originatingContext, changes, syncType);
+            if (syncType == DataChannel.FLUSH_CASCADE_SYNC
+                    || syncType == DataChannel.FLUSH_NOCASCADE_SYNC) {
+                postSync();
+            }
         }
         finally {
-            aggregator.set(null);
+            threadAggregator.set(null);
         }
+
+        return response;
     }
 
     void postSync() {
-        AuditableAggregator aggregator = this.aggregator.get();
+        AuditableAggregator aggregator = threadAggregator.get();
         if (aggregator != null) {
+            // must reset thread aggregator before processing the audit operations
+            // to avoid an endless processing loop if audit processor commits
+            // something
+            threadAggregator.set(null);
             aggregator.postSync();
         }
     }
 
     private AuditableAggregator getAggregator() {
-        AuditableAggregator aggregator = this.aggregator.get();
+        AuditableAggregator aggregator = threadAggregator.get();
         if (aggregator == null) {
             aggregator = new AuditableAggregator(processor);
-            this.aggregator.set(aggregator);
+            threadAggregator.set(aggregator);
         }
 
         return aggregator;
