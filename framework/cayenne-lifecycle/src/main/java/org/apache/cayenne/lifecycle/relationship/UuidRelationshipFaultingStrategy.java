@@ -21,11 +21,11 @@ package org.apache.cayenne.lifecycle.relationship;
 import org.apache.cayenne.DataObject;
 
 /**
- * An abstract strategy for resolving mixin relationships.
+ * An abstract strategy for resolving UUID relationships.
  * 
  * @since 3.1
  */
-public interface MixinRelationshipFaultingStrategy {
+public interface UuidRelationshipFaultingStrategy {
 
     void afterObjectLoaded(DataObject object);
 

@@ -26,10 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows to tag a relationship from a mixin entity to another entity that has this mixin
- * attached. When a mixin is modeled via its own set of entities, this annotation is
- * placed on a "mixin" entity class, telling Cayenne to inject related entity object in a
- * mixin entity, resolved based on the object UUID "FK".
+ * Defines a "virtual" read-only to-one relationship based on an FK that is a UUID. This
+ * way a related object can be of any entity type.
  * 
  * @since 3.1
  */
@@ -39,11 +37,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface MixinRelationship {
+public @interface UuidRelationship {
 
     /**
-     * Returns the name of the property of the mixin entity that is a UUID "FK" to any of
-     * the entities implementing the mixin.
+     * Returns the name of the property of the source entity of the relationship that
+     * stores a UUID "FK" of a related entity.
      */
     String value() default "";
 }

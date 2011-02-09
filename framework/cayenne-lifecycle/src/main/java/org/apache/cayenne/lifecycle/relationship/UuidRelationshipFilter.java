@@ -30,20 +30,20 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
 /**
- * A {@link DataChannelFilter} that implements mixin relationships faulting functionality.
+ * A {@link DataChannelFilter} that implements UUID relationships read functionality.
  * 
  * @since 3.1
  */
-public class MixinRelationshipFilter implements DataChannelFilter {
+public class UuidRelationshipFilter implements DataChannelFilter {
 
-    private MixinRelationshipFaultingStrategy faultingStrategy;
+    private UuidRelationshipFaultingStrategy faultingStrategy;
 
     public void init(DataChannel channel) {
         this.faultingStrategy = createFaultingStrategy();
     }
 
-    protected MixinRelationshipFaultingStrategy createFaultingStrategy() {
-        return new MixinRelationshipBatchFaultingStrategy();
+    protected UuidRelationshipFaultingStrategy createFaultingStrategy() {
+        return new UuidRelationshipBatchFaultingStrategy();
     }
 
     public GraphDiff onSync(
@@ -72,8 +72,8 @@ public class MixinRelationshipFilter implements DataChannelFilter {
      * A lifecycle callback method that delegates object post load event processing to the
      * underlying faulting strategy.
      */
-    @PostLoad(entityAnnotations = MixinRelationship.class)
-    @PostPersist(entityAnnotations = MixinRelationship.class)
+    @PostLoad(entityAnnotations = UuidRelationship.class)
+    @PostPersist(entityAnnotations = UuidRelationship.class)
     void postLoad(DataObject object) {
         faultingStrategy.afterObjectLoaded(object);
     }

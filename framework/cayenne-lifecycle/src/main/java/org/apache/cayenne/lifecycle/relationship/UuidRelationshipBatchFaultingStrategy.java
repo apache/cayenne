@@ -21,14 +21,17 @@ package org.apache.cayenne.lifecycle.relationship;
 import org.apache.cayenne.DataObject;
 
 /**
+ * A faulting strategy that does batch-faulting of related objects whenever a first UUID
+ * relationship is accessed.
+ * 
  * @since 3.1
  */
-public class MixinRelationshipBatchFaultingStrategy implements
-        MixinRelationshipFaultingStrategy {
+public class UuidRelationshipBatchFaultingStrategy implements
+        UuidRelationshipFaultingStrategy {
 
     private ThreadLocal<UuidBatchFault> batchFaultHolder;
 
-    public MixinRelationshipBatchFaultingStrategy() {
+    public UuidRelationshipBatchFaultingStrategy() {
         this.batchFaultHolder = new ThreadLocal<UuidBatchFault>();
     }
 
@@ -65,8 +68,8 @@ public class MixinRelationshipBatchFaultingStrategy implements
 
     String uuidPropertyName(DataObject object) {
 
-        MixinRelationship annotation = object.getClass().getAnnotation(
-                MixinRelationship.class);
+        UuidRelationship annotation = object.getClass().getAnnotation(
+                UuidRelationship.class);
 
         // TODO: look it up in the superclasses??
         if (annotation == null) {
