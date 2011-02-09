@@ -73,10 +73,20 @@ public class AuditableFilter implements DataChannelFilter {
             }
         }
         finally {
-            threadAggregator.set(null);
+            cleanupPostSync();
         }
 
         return response;
+    }
+
+    /**
+     * A method called at the end of every
+     * {@link #onSync(ObjectContext, GraphDiff, int, DataChannelFilterChain)} invocation.
+     * This implementation uses it for cleaning up thread-local state of the filter.
+     * Subclasses may override it to do their own cleanup, and are expected to call super.
+     */
+    protected void cleanupPostSync() {
+        threadAggregator.set(null);
     }
 
     void postSync() {
