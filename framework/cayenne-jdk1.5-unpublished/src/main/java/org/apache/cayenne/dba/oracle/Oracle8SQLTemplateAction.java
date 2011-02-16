@@ -95,7 +95,9 @@ class Oracle8SQLTemplateAction extends SQLTemplateAction {
             // end - code different from super
         }
         finally {
-            statement.close();
+            if (!iteratedResult) {
+                statement.close();
+            }
         }
     }
 }
