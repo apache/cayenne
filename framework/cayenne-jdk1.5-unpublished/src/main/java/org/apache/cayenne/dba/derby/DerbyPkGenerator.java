@@ -58,9 +58,10 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
         }
 
         Connection c = node.getDataSource().getConnection();
+        PreparedStatement select = null;
 
         try {
-            PreparedStatement select = c.prepareStatement(
+            select = c.prepareStatement(
                     SELECT_QUERY,
                     ResultSet.TYPE_FORWARD_ONLY,
                     ResultSet.CONCUR_UPDATABLE);
@@ -91,6 +92,9 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
             return nextId;
         }
         finally {
+            if (select != null) {
+                select.close();
+            }
             c.close();
         }
     }

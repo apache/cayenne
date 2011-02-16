@@ -74,19 +74,25 @@ public class SaveAsImageAction extends CayenneAction {
         int status = chooser.showSaveDialog(Application.getFrame());
         if (status == JFileChooser.APPROVE_OPTION) {
             lastDir.updateFromChooser(chooser);
-            try {
-                String path = chooser.getSelectedFile().getPath();
-                if (!path.endsWith("." + ext)) {
-                    path += "." + ext;
-                }
-                
+            
+            String path = chooser.getSelectedFile().getPath();
+            if (!path.endsWith("." + ext)) {
+                path += "." + ext;
+            }
+            
+            try {                
                 OutputStream out = new FileOutputStream(path);
                 
                 JGraph graph = dataDomainGraphTab.getGraph();
                 BufferedImage img = graph.getImage(null, 0);
-                ImageIO.write(img, ext, out);
-                out.flush();
-                out.close();
+                
+                try {
+                    ImageIO.write(img, ext, out);
+                    out.flush();
+                }
+                finally {
+                    out.close();
+                }
             }
             catch (IOException ex) {
                 logObj.error("Could not save image", ex);

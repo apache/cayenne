@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
@@ -48,21 +49,27 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
 
         List<String> schemas = new ArrayList<String>();
         DatabaseMetaData md = null;
+        Connection connection = null;
         try {
-            Connection connection = dataNode.getDataSource().getConnection();
-            md = connection.getMetaData();
-            ResultSet rs = md.getSchemas();
-
+            connection = dataNode.getDataSource().getConnection();
+            
             try {
-                while (rs.next()) {
-                    String schemaName = rs.getString(1);
-                    schemas.add(schemaName);
+                md = connection.getMetaData();
+                ResultSet rs = md.getSchemas();
+    
+                try {
+                    while (rs.next()) {
+                        String schemaName = rs.getString(1);
+                        schemas.add(schemaName);
+                    }
+                }
+                finally {
+                    rs.close();
                 }
             }
             finally {
-                rs.close();
+                connection.close();
             }
-            connection.close();
             analyzer.analyzeSchemas(schemas, md);
         }
         catch (Exception e) {

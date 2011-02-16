@@ -91,9 +91,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             // end - code different from super
         }
         finally {
-            if (!iteratedResult) {
-                statement.close();
-            }
+            statement.close();
         }
     }
 

@@ -68,7 +68,16 @@ public class SelectAction extends BaseSQLAction {
 
         SelectTranslator translator = createTranslator(connection);
         PreparedStatement prepStmt = translator.createStatement();
-        ResultSet rs = prepStmt.executeQuery();
+        ResultSet rs;
+        
+        // need to run in try-catch block to close statement properly if exception happens
+        try {
+            rs = prepStmt.executeQuery();
+        }
+        catch (Exception ex) {
+            prepStmt.close();
+            throw ex;
+        }
         QueryMetadata md = query.getMetaData(getEntityResolver());
         RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(
                 translator.getResultColumns()).getDescriptor(

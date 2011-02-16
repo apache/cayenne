@@ -197,9 +197,7 @@ public class SQLTemplateAction implements SQLAction {
             }
         }
         finally {
-            if (!iteratedResult) {
-                statement.close();
-            }
+            statement.close();
         }
     }
 
