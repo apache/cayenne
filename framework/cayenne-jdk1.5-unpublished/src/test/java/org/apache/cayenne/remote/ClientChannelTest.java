@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.remote;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,16 +45,32 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.GenericResponse;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class ClientChannelTest extends CayenneCase {
 
     public void testOnQuerySelect() {
+
         final MockPersistentObject o1 = new MockPersistentObject();
         ObjectId oid1 = new ObjectId("test_entity");
         o1.setObjectId(oid1);
 
-        MockClientConnection connection = new MockClientConnection(new GenericResponse(
-                Arrays.asList(o1)));
+        ClientConnection connection = mock(ClientConnection.class);
+        when(connection.sendMessage((ClientMessage) any())).thenAnswer(
+                new Answer<Object>() {
+
+                    public Object answer(InvocationOnMock invocation) {
+                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
+
+                        if (arg instanceof BootstrapMessage) {
+                            return new EntityResolver();
+                        }
+                        else {
+                            return new GenericResponse(Arrays.asList(o1));
+                        }
+                    }
+                });
 
         ClientChannel channel = new ClientChannel(
                 connection,
@@ -146,7 +166,8 @@ public class ClientChannelTest extends CayenneCase {
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
                 Arrays.asList(o2)));
 
-        ClientChannel channel = new ClientChannel(connection,
+        ClientChannel channel = new ClientChannel(
+                connection,
                 false,
                 new MockEventManager(),
                 false);
@@ -189,10 +210,7 @@ public class ClientChannelTest extends CayenneCase {
 
         // default constructor must fail
         try {
-            new ClientChannel(connection,
-                    false,
-                    new MockEventManager(),
-                    false);
+            new ClientChannel(connection, false, new MockEventManager(), false);
             fail("Channel didn't throw on broken EventBridge");
         }
         catch (CayenneRuntimeException e) {

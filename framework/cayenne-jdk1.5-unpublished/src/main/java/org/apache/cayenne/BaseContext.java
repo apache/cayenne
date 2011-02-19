@@ -96,6 +96,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     // registry
     protected transient DataChannel channel;
     protected transient QueryCache queryCache;
+    protected transient EntityResolver entityResolver;
 
     /**
      * Graph action that handles property changes
@@ -129,7 +130,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      *         it was already attached.
      * @since 3.1
      */
-    protected boolean attachIfNeeded() {
+    protected boolean attachToRuntimeIfNeeded() {
         if (channel != null) {
             return false;
         }
@@ -140,12 +141,37 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                     + "Null injector returned from CayenneRuntime.getThreadInjector()");
         }
 
-        setChannel(injector.getInstance(DataChannel.class));
+        attachToRuntime(injector);
+        return true;
+    }
+
+    /**
+     * Attaches this context to the Cayenne runtime whose Injector is passed as an
+     * argument to this method.
+     * 
+     * @since 3.1
+     */
+    protected void attachToRuntime(Injector injector) {
+        attachToChannel(injector.getInstance(DataChannel.class));
+
         setQueryCache(injector.getInstance(Key.get(
                 QueryCache.class,
                 QUERY_CACHE_INJECTION_KEY)));
+    }
 
-        return true;
+    /**
+     * Initializes a DataChannel for this context, setting internal state using
+     * information from the
+     * 
+     * @since 3.1
+     */
+    protected void attachToChannel(DataChannel channel) {
+        if (channel == null) {
+            throw new NullPointerException("Null channel");
+        }
+
+        setChannel(channel);
+        setEntityResolver(channel.getEntityResolver());
     }
 
     public abstract void commitChanges();
@@ -155,17 +181,30 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     public abstract Collection<?> deletedObjects();
 
     public DataChannel getChannel() {
+        attachToRuntimeIfNeeded();
         return channel;
     }
-    
+
     /**
+     * Sets a new DataChannel for this context.
+     * 
      * @since 3.1
      */
     public void setChannel(DataChannel channel) {
         this.channel = channel;
     }
 
-    public abstract EntityResolver getEntityResolver();
+    public EntityResolver getEntityResolver() {
+        attachToRuntimeIfNeeded();
+        return entityResolver;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
 
     public abstract GraphManager getGraphManager();
 
@@ -303,6 +342,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     public abstract Collection<?> uncommittedObjects();
 
     public QueryCache getQueryCache() {
+        attachToRuntimeIfNeeded();
         return queryCache;
     }
 

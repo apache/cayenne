@@ -29,7 +29,6 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -45,8 +44,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * @since 1.2
  */
 public class CayenneContext extends BaseContext {
-
-    protected EntityResolver entityResolver;
 
     CayenneContextGraphManager graphManager;
 
@@ -75,39 +72,36 @@ public class CayenneContext extends BaseContext {
     public CayenneContext(DataChannel channel, boolean changeEventsEnabled,
             boolean lifecyleEventsEnabled) {
 
-        this.graphManager = new CayenneContextGraphManager(
+        graphManager = new CayenneContextGraphManager(
                 this,
                 changeEventsEnabled,
                 lifecyleEventsEnabled);
 
-        setChannel(channel);
+        if (channel != null) {
+            attachToChannel(channel);
+        }
     }
 
     /**
-     * Sets the context channel, setting up a listener for channel events.
+     * @since 3.1
      */
     @Override
-    public void setChannel(DataChannel channel) {
-        if (this.channel != channel) {
+    protected void attachToChannel(DataChannel channel) {
+        super.attachToChannel(channel);
 
-            if (this.mergeHandler != null) {
-                this.mergeHandler.active = false;
-                this.mergeHandler = null;
-            }
+        if (mergeHandler != null) {
+            mergeHandler.active = false;
+            mergeHandler = null;
+        }
 
-            this.channel = channel;
+        EventManager eventManager = channel.getEventManager();
+        if (eventManager != null) {
+            mergeHandler = new CayenneContextMergeHandler(this);
 
-            EventManager eventManager = (channel != null)
-                    ? channel.getEventManager()
-                    : null;
-            if (eventManager != null) {
-                this.mergeHandler = new CayenneContextMergeHandler(this);
-
-                // listen to our channel events...
-                // note that we must reset listener on channel switch, as there is no
-                // guarantee that a new channel uses the same EventManager.
-                EventUtil.listenForChannelEvents(channel, mergeHandler);
-            }
+            // listen to our channel events...
+            // note that we must reset listener on channel switch, as there is no
+            // guarantee that a new channel uses the same EventManager.
+            EventUtil.listenForChannelEvents(channel, mergeHandler);
         }
     }
 
@@ -128,29 +122,6 @@ public class CayenneContext extends BaseContext {
      */
     public boolean isLifecycleEventsEnabled() {
         return graphManager.lifecycleEventsEnabled;
-    }
-
-    /**
-     * Returns an EntityResolver that provides mapping information needed for
-     * CayenneContext operation. If EntityResolver is not set, this method would obtain
-     * and cache one from the underlying DataChannel.
-     */
-    @Override
-    public EntityResolver getEntityResolver() {
-        // load entity resolver on demand
-        if (entityResolver == null) {
-            synchronized (this) {
-                if (entityResolver == null) {
-                    setEntityResolver(channel.getEntityResolver());
-                }
-            }
-        }
-
-        return entityResolver;
-    }
-
-    public void setEntityResolver(EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
     }
 
     @Override
@@ -488,7 +459,7 @@ public class CayenneContext extends BaseContext {
 
         // TODO: This method should be deprecated and child context should be created via
         // DI with all proper injection, so won't have to guess how to handle query cache.
- if (queryCache != null) {
+        if (queryCache != null) {
             child.setQueryCache(new NestedQueryCache(queryCache));
         }
 

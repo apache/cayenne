@@ -119,6 +119,34 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertEquals(0, serverContext.getQueryCache().size());
     }
 
+    public void testAddToList() throws Exception {
+
+        ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
+        ClientMtTable2 t2 = clientContext.newObject(ClientMtTable2.class);
+
+        t1.addToTable2Array(t2);
+        assertEquals(1, t1.getTable2Array().size());
+        assertSame(t1, t2.getTable1());
+
+        // do it again to make sure action can handle series of changes
+        ClientMtTable1 t3 = clientContext.newObject(ClientMtTable1.class);
+        ClientMtTable2 t4 = clientContext.newObject(ClientMtTable2.class);
+
+        t3.addToTable2Array(t4);
+        assertEquals(1, t3.getTable2Array().size());
+        assertSame(t3, t4.getTable1());
+    }
+
+    public void testSetValueHolder() throws Exception {
+
+        ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
+        ClientMtTable2 t2 = clientContext.newObject(ClientMtTable2.class);
+
+        t2.setTable1(t1);
+        assertEquals(1, t1.getTable2Array().size());
+        assertSame(t1, t2.getTable1());
+    }
+
     public void testPostAddCallback() throws Exception {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel

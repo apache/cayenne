@@ -50,7 +50,6 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -79,10 +78,6 @@ public class DataContext extends BaseContext implements DataChannel {
     protected boolean validatingObjectsOnCommit;
     protected ObjectStore objectStore;
 
-    // note that entity resolver is initialized from the parent channel the first time it
-    // is accessed, and later cached in the context
-    protected transient EntityResolver entityResolver;
-
     protected transient DataContextMergeHandler mergeHandler;
 
     /**
@@ -98,8 +93,10 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 1.2
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
-        // use a setter to properly initialize EntityResolver
-        setChannel(channel);
+
+        if (channel != null) {
+            attachToChannel(channel);
+        }
 
         // inject self as parent context
         if (objectStore != null) {
@@ -137,45 +134,34 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @since 1.2
+     * @since 3.1
      */
     @Override
-    public void setChannel(DataChannel channel) {
-        if (this.channel != channel) {
+    protected void attachToChannel(DataChannel channel) {
 
-            if (this.mergeHandler != null) {
-                this.mergeHandler.setActive(false);
-            }
+        super.attachToChannel(channel);
 
-            this.entityResolver = null;
-            this.mergeHandler = null;
+        if (mergeHandler != null) {
+            mergeHandler.setActive(false);
+            mergeHandler = null;
+        }
 
-            this.channel = channel;
+        EventManager eventManager = channel.getEventManager();
 
-            if (channel != null) {
+        if (eventManager != null) {
+            mergeHandler = new DataContextMergeHandler(this);
 
-                // cache entity resolver, as we have no idea how expensive it is to query
-                // it on the channel every time
-                this.entityResolver = channel.getEntityResolver();
+            // listen to our channel events...
+            // note that we must reset listener on channel switch, as there is no
+            // guarantee that a new channel uses the same EventManager.
+            EventUtil.listenForChannelEvents(channel, mergeHandler);
+        }
 
-                EventManager eventManager = channel.getEventManager();
+        if (!usingSharedSnaphsotCache && getObjectStore() != null) {
+            DataRowStore cache = getObjectStore().getDataRowCache();
 
-                if (eventManager != null) {
-                    this.mergeHandler = new DataContextMergeHandler(this);
-
-                    // listen to our channel events...
-                    // note that we must reset listener on channel switch, as there is no
-                    // guarantee that a new channel uses the same EventManager.
-                    EventUtil.listenForChannelEvents(channel, mergeHandler);
-                }
-
-                if (!usingSharedSnaphsotCache && getObjectStore() != null) {
-                    DataRowStore cache = getObjectStore().getDataRowCache();
-
-                    if (cache != null) {
-                        cache.setEventManager(eventManager);
-                    }
-                }
+            if (cache != null) {
+                cache.setEventManager(eventManager);
             }
         }
     }
@@ -190,6 +176,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 1.1
      */
     public DataDomain getParentDataDomain() {
+        attachToRuntimeIfNeeded();
 
         if (channel == null) {
             return null;
@@ -1063,15 +1050,6 @@ public class DataContext extends BaseContext implements DataChannel {
         NamedQuery query = new NamedQuery(queryName, parameters);
         query.setForceNoCache(expireCachedLists);
         return performQuery(query);
-    }
-
-    /**
-     * Returns EntityResolver. EntityResolver can be null if DataContext has not been
-     * attached to an DataChannel.
-     */
-    @Override
-    public EntityResolver getEntityResolver() {
-        return entityResolver;
     }
 
     /**

@@ -19,6 +19,10 @@
 
 package org.apache.cayenne;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,13 +41,17 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.remote.BootstrapMessage;
 import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.MockClientConnection;
+import org.apache.cayenne.remote.ClientConnection;
+import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.GenericResponse;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextTest extends ClientCase {
@@ -57,7 +65,7 @@ public class CayenneContextTest extends ClientCase {
 
         // test default property parameters
         assertNotNull(context.getGraphManager());
-        assertNull(context.getChannel());
+        assertNull(context.channel);
 
         MockDataChannel channel = new MockDataChannel();
         context.setChannel(channel);
@@ -66,7 +74,8 @@ public class CayenneContextTest extends ClientCase {
 
     public void testLocalObject() {
 
-        MockDataChannel channel = new MockDataChannel();
+        DataChannel channel = mock(DataChannel.class);
+
         CayenneContext src = new CayenneContext(channel);
         src
                 .setEntityResolver(serverContext
@@ -291,8 +300,22 @@ public class CayenneContextTest extends ClientCase {
         inflated.setObjectId(gid);
         inflated.setGlobalAttribute1("abc");
 
-        MockClientConnection connection = new MockClientConnection(new GenericResponse(
-                Arrays.asList(inflated)));
+        ClientConnection connection = mock(ClientConnection.class);
+        when(connection.sendMessage((ClientMessage) any())).thenAnswer(
+                new Answer<Object>() {
+
+                    public Object answer(InvocationOnMock invocation) {
+                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
+
+                        if (arg instanceof BootstrapMessage) {
+                            return new EntityResolver();
+                        }
+                        else {
+                            return new GenericResponse(Arrays.asList(inflated));
+                        }
+                    }
+                });
+
         ClientChannel channel = new ClientChannel(
                 connection,
                 false,
@@ -341,8 +364,21 @@ public class CayenneContextTest extends ClientCase {
         inflated.setObjectId(gid);
         inflated.setGlobalAttribute1("abc");
 
-        MockClientConnection connection = new MockClientConnection(new GenericResponse(
-                Arrays.asList(inflated)));
+        ClientConnection connection = mock(ClientConnection.class);
+        when(connection.sendMessage((ClientMessage) any())).thenAnswer(
+                new Answer<Object>() {
+
+                    public Object answer(InvocationOnMock invocation) {
+                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
+
+                        if (arg instanceof BootstrapMessage) {
+                            return new EntityResolver();
+                        }
+                        else {
+                            return new GenericResponse(Arrays.asList(inflated));
+                        }
+                    }
+                });
         ClientChannel channel = new ClientChannel(
                 connection,
                 false,

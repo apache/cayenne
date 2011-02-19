@@ -43,7 +43,7 @@ public class BaseContextTest extends TestCase {
         assertSame(properties, context.getUserProperties());
     }
 
-    public void testAttachIfNeeded() {
+    public void testAttachToRuntimeIfNeeded() {
 
         final DataChannel channel = mock(DataChannel.class);
         final QueryCache cache = mock(QueryCache.class);
@@ -70,26 +70,26 @@ public class BaseContextTest extends TestCase {
 
             CayenneRuntime.bindThreadInjector(injector);
 
-            assertTrue(context.attachIfNeeded());
+            assertTrue(context.attachToRuntimeIfNeeded());
             assertSame(channel, context.channel);
             assertSame(cache, context.queryCache);
 
-            assertFalse(context.attachIfNeeded());
-            assertFalse(context.attachIfNeeded());
+            assertFalse(context.attachToRuntimeIfNeeded());
+            assertFalse(context.attachToRuntimeIfNeeded());
         }
         finally {
             CayenneRuntime.bindThreadInjector(oldInjector);
         }
     }
 
-    public void testAttachIfNeeded_NoStack() {
+    public void testAttachToRuntimeIfNeeded_NoStack() {
 
         BaseContext context = new MockBaseContext();
         assertNull(context.channel);
         assertNull(context.queryCache);
 
         try {
-            context.attachIfNeeded();
+            context.attachToRuntimeIfNeeded();
             fail("No thread stack, must have thrown");
         }
         catch (CayenneRuntimeException e) {
