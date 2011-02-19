@@ -27,15 +27,17 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
-
 /**
- * <p>Basic JNDI object factory that creates an instance of
- * <code>PoolManager</code> that has been configured based on the
- * <code>RefAddr</code> values of the specified <code>Reference</code>.</p>
- *
- * <p>Here is a sample Tomcat 4.x configuration that sets this class
- * as a default factory for javax.sql.DataSource objects:</p>
-<code><pre>
+ * <p>
+ * Basic JNDI object factory that creates an instance of <code>PoolManager</code> that has
+ * been configured based on the <code>RefAddr</code> values of the specified
+ * <code>Reference</code>.
+ * </p>
+ * <p>
+ * Here is a sample Tomcat 4.x configuration that sets this class as a default factory for
+ * javax.sql.DataSource objects:
+ * </p>
+ * <code><pre>
 &lt;ResourceParams name="jdbc/mydb"&gt;
     &lt;parameter&gt;
         &lt;name&gt;factory&lt;/name&gt;
@@ -73,39 +75,47 @@ import javax.naming.spi.ObjectFactory;
     &lt;/parameter>
 &lt;/ResourceParams>
 </pre></code>
- *
- * <p>After ContainerPoolFactory was configured to be used within the container 
- * (see above for Tomcat example), you can reference your "jdbc/mydb" DataSource in
- * web application deployment descriptor like that (per Servlet Specification): </p>
+ * <p>
+ * After ContainerPoolFactory was configured to be used within the container (see above
+ * for Tomcat example), you can reference your "jdbc/mydb" DataSource in web application
+ * deployment descriptor like that (per Servlet Specification):
+ * </p>
  *<code><pre>
 &lt;resource-ref>
     &lt;es-ref-name>jdbc/mydb&lt;/res-ref-name>
     &lt;res-type>javax.sql.DataSource&lt;/res-type>
     &lt;res-auth>Container&lt;/res-auth>
 &lt;/resource-ref>
-</pre></code> 
- *
+</pre></code>
+ * 
+ * @deprecated since 3.1. This class does not belong in Cayenne, as Cayenne no longer
+ *             attempts to provide appserver pieces. End users should not need this class
+ *             and should use their container's preferred approach to map a DataSource
+ *             instead.
  */
 public class ContainerPoolFactory implements ObjectFactory {
 
     /**
-     * <p>Creates and returns a new <code>PoolManager</code> instance.  If no
-     * instance can be created, returns <code>null</code> instead.</p>
-     *
-     * @param obj The possibly null object containing location or
-     *  reference information that can be used in creating an object
+     * <p>
+     * Creates and returns a new <code>PoolManager</code> instance. If no instance can be
+     * created, returns <code>null</code> instead.
+     * </p>
+     * 
+     * @param obj The possibly null object containing location or reference information
+     *            that can be used in creating an object
      * @param name The name of this object relative to <code>nameCtx</code>
-     * @param nameCtx The context relative to which the <code>name</code>
-     *  parameter is specified, or <code>null</code> if <code>name</code>
-     *  is relative to the default initial context
-     * @param environment The possibly null environment that is used in
-     *  creating this object
-     *
+     * @param nameCtx The context relative to which the <code>name</code> parameter is
+     *            specified, or <code>null</code> if <code>name</code> is relative to the
+     *            default initial context
+     * @param environment The possibly null environment that is used in creating this
+     *            object
      * @exception Exception if an exception occurs creating the instance
      */
-    public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                                    Hashtable environment)
-    throws Exception {
+    public Object getObjectInstance(
+            Object obj,
+            Name name,
+            Context nameCtx,
+            Hashtable environment) throws Exception {
         // We only know how to deal with <code>javax.naming.Reference</code>s
         // that specify a class name of "javax.sql.DataSource"
         if ((obj == null) || !(obj instanceof Reference)) {
@@ -126,23 +136,21 @@ public class ContainerPoolFactory implements ObjectFactory {
         int max = 1;
         String username = null;
         String password = null;
-        
+
         ra = ref.get("min");
         if (ra != null) {
             min = Integer.parseInt(ra.getContent().toString());
         }
-        
+
         ra = ref.get("max");
         if (ra != null) {
             max = Integer.parseInt(ra.getContent().toString());
         }
 
-
         ra = ref.get("driver");
         if (ra != null) {
             driver = ra.getContent().toString();
         }
-
 
         ra = ref.get("password");
         if (ra != null) {
@@ -162,4 +170,3 @@ public class ContainerPoolFactory implements ObjectFactory {
         return new PoolManager(driver, url, min, max, username, password);
     }
 }
-
