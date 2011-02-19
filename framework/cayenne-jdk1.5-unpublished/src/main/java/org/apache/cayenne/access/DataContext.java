@@ -43,10 +43,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.NestedQueryCache;
-import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Key;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -143,6 +139,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * @since 1.2
      */
+    @Override
     public void setChannel(DataChannel channel) {
         if (this.channel != channel) {
 
@@ -1134,44 +1131,33 @@ public class DataContext extends BaseContext implements DataChannel {
         // TODO: most of this should be in the superclass, especially the code connecting
         // super transient ivars
 
-        // 1. read non-transient properties
+        // read non-transient properties
         in.defaultReadObject();
 
-        // 2. Deserialize local snapshots cache
+        // deserialize local snapshots cache
         if (!isUsingSharedSnapshotCache()) {
             DataRowStore cache = (DataRowStore) in.readObject();
             objectStore.setDataRowCache(cache);
         }
 
-        // 3. set parent channel
-        // call a channel setter to ensure EntityResolver is extracted from channel
-        // call it after DataRowCache is deserialized to avoid incorrect DataRowCache lazy
-        // creation
-        Injector injector = CayenneRuntime.getThreadInjector();
-        if (injector != null) {
-            setChannel(injector.getInstance(DataChannel.class));
-            setQueryCache(injector.getInstance(Key.get(
-                    QueryCache.class,
-                    QUERY_CACHE_INJECTION_KEY)));
-        }
-        else {
-            // throw?
-        }
-
-        // CayenneDataObjects have a transient datacontext
+        // CayenneDataObjects have a transient DataContext
         // because at deserialize time the datacontext may need to be different
         // than the one at serialize time (for programmer defined reasons).
-        // So, when a dataobject is resurrected because it's datacontext was
-        // serialized, it will then set the objects datacontext to the correctone
-        // If deserialized "otherwise", it will not have a datacontext (good)
+        // So, when a DataObject is resurrected because it's DataContext was
+        // serialized, it will then set the objects DataContext to the correct one
+        // If deserialized "otherwise", it will not have a DataContext.
 
         synchronized (getObjectStore()) {
-            Iterator it = objectStore.getObjectIterator();
+            Iterator<?> it = objectStore.getObjectIterator();
             while (it.hasNext()) {
                 Persistent object = (Persistent) it.next();
                 object.setObjectContext(this);
             }
         }
+
+        // ... deferring initialization of transient properties of this context till first
+        // access, so that it can attach to Cayenne runtime using appropriate thread
+        // injector.
     }
 
     /**

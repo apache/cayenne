@@ -86,6 +86,7 @@ public class CayenneContext extends BaseContext {
     /**
      * Sets the context channel, setting up a listener for channel events.
      */
+    @Override
     public void setChannel(DataChannel channel) {
         if (this.channel != channel) {
 

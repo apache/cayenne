@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -112,6 +115,39 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         graphAction = new ObjectContextGraphAction(this);
     }
 
+    /**
+     * Checks whether this context is attached to Cayenne runtime stack and if not,
+     * attempts to attach itself to the runtime using Injector returned from the call to
+     * {@link CayenneRuntime#getThreadInjector()}. If thread Injector is not available and
+     * the context is not attached, throws CayenneRuntimeException.
+     * <p>
+     * This method is called internally by the context before access to transient
+     * variables to allow the context to attach to the stack lazily following
+     * deserialization.
+     * 
+     * @return true if the context successfully attached to the thread runtime, false - if
+     *         it was already attached.
+     * @since 3.1
+     */
+    protected boolean attachIfNeeded() {
+        if (channel != null) {
+            return false;
+        }
+
+        Injector injector = CayenneRuntime.getThreadInjector();
+        if (injector == null) {
+            throw new CayenneRuntimeException("Can't attach to Cayenne runtime. "
+                    + "Null injector returned from CayenneRuntime.getThreadInjector()");
+        }
+
+        setChannel(injector.getInstance(DataChannel.class));
+        setQueryCache(injector.getInstance(Key.get(
+                QueryCache.class,
+                QUERY_CACHE_INJECTION_KEY)));
+
+        return true;
+    }
+
     public abstract void commitChanges();
 
     public abstract void commitChangesToParent();
@@ -120,6 +156,13 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     public DataChannel getChannel() {
         return channel;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public void setChannel(DataChannel channel) {
+        this.channel = channel;
     }
 
     public abstract EntityResolver getEntityResolver();

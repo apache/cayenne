@@ -18,9 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Map;
 
 import junit.framework.TestCase;
+
+import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.Module;
 
 public class BaseContextTest extends TestCase {
 
@@ -31,5 +41,59 @@ public class BaseContextTest extends TestCase {
         Map<String, Object> properties = context.getUserProperties();
         assertNotNull(properties);
         assertSame(properties, context.getUserProperties());
+    }
+
+    public void testAttachIfNeeded() {
+
+        final DataChannel channel = mock(DataChannel.class);
+        final QueryCache cache = mock(QueryCache.class);
+
+        Module testModule = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(DataChannel.class).toInstance(channel);
+                Key<QueryCache> cacheKey = Key.get(
+                        QueryCache.class,
+                        BaseContext.QUERY_CACHE_INJECTION_KEY);
+                binder.bind(cacheKey).toInstance(cache);
+            }
+        };
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+
+        BaseContext context = new MockBaseContext();
+        assertNull(context.channel);
+        assertNull(context.queryCache);
+
+        Injector oldInjector = CayenneRuntime.getThreadInjector();
+        try {
+
+            CayenneRuntime.bindThreadInjector(injector);
+
+            assertTrue(context.attachIfNeeded());
+            assertSame(channel, context.channel);
+            assertSame(cache, context.queryCache);
+
+            assertFalse(context.attachIfNeeded());
+            assertFalse(context.attachIfNeeded());
+        }
+        finally {
+            CayenneRuntime.bindThreadInjector(oldInjector);
+        }
+    }
+
+    public void testAttachIfNeeded_NoStack() {
+
+        BaseContext context = new MockBaseContext();
+        assertNull(context.channel);
+        assertNull(context.queryCache);
+
+        try {
+            context.attachIfNeeded();
+            fail("No thread stack, must have thrown");
+        }
+        catch (CayenneRuntimeException e) {
+            // expected
+        }
     }
 }
