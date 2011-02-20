@@ -31,6 +31,7 @@ CAY-1517 CayenneModeler - recent projects ordering is random
 CAY-1519 Application deadlock trying to guess static constant fields
 CAY-1528 Undo CAY-1213
 CAY-1529 Cayenne should support enum types in qualifier statements/expression handling
+CAY-1542 DI container is not shutting down Cayenne-managed connection pool
 
 ----------------------------------
 Release: 3.1 M1
