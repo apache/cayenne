@@ -22,7 +22,7 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Provider;
 
 /**
- * A provider that provides scoping for other provoders.
+ * A provider that provides scoping for other providers.
  * 
  * @since 3.1
  */

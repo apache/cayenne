@@ -35,7 +35,6 @@ import javax.sql.PooledConnection;
 /**
  * PoolManager is a pooling DataSource impementation. Internally to obtain connections
  * PoolManager uses either a JDBC driver or another pooling datasource.
- * 
  */
 public class PoolManager implements DataSource, ConnectionEventListener {
 
@@ -168,8 +167,22 @@ public class PoolManager implements DataSource, ConnectionEventListener {
         return connection;
     }
 
-    /** Closes all existing connections, removes them from the pool. */
+    /**
+     * Closes all existing connections, removes them from the pool.
+     * 
+     * @deprecated since 3.1 replaced with {@link #shutdown()} method for naming
+     *             consistency.
+     */
     public void dispose() throws SQLException {
+        shutdown();
+    }
+
+    /**
+     * Closes all existing connections, drains the pool and stops the maintenance thread.
+     * 
+     * @since 3.1
+     */
+    public void shutdown() throws SQLException {
         synchronized (this) {
             // clean connections from the pool
             ListIterator<PooledConnection> unusedIterator = unusedPool.listIterator();
@@ -199,7 +212,8 @@ public class PoolManager implements DataSource, ConnectionEventListener {
 
     protected void disposeOfMaintenanceThread() {
         if (poolMaintenanceThread != null) {
-            this.poolMaintenanceThread.dispose();
+            poolMaintenanceThread.shutdown();
+            poolMaintenanceThread = null;
         }
     }
 
@@ -484,8 +498,8 @@ public class PoolManager implements DataSource, ConnectionEventListener {
 
     static class PoolMaintenanceThread extends Thread {
 
-        protected boolean shouldDie;
-        protected PoolManager pool;
+        private boolean shouldDie;
+        private PoolManager pool;
 
         PoolMaintenanceThread(PoolManager pool) {
             super.setName("PoolManagerCleanup-" + pool.hashCode());
@@ -531,9 +545,9 @@ public class PoolManager implements DataSource, ConnectionEventListener {
         }
 
         /**
-         * Stops the thread.
+         * Stops the maintenance thread.
          */
-        public void dispose() {
+        void shutdown() {
             shouldDie = true;
             interrupt();
         }

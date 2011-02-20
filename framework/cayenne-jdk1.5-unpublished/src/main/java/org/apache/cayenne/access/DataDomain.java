@@ -651,15 +651,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     public void shutdown() {
         if (!stopped) {
             if (sharedSnapshotCache != null) {
-                this.sharedSnapshotCache.shutdown();
-            }
-
-            for (DataNode node : getDataNodes()) {
-                try {
-                    node.shutdown();
-                }
-                catch (Exception ex) {
-                }
+                sharedSnapshotCache.shutdown();
             }
 
             stopped = true;

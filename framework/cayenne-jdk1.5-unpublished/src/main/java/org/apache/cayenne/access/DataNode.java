@@ -32,7 +32,6 @@ import javax.sql.DataSource;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -167,7 +166,7 @@ public class DataNode implements QueryEngine {
     public void removeDataMap(DataMap map) {
         removeDataMap(map.getName());
     }
-  
+
     public void removeDataMap(String mapName) {
         dataMaps.remove(mapName);
     }
@@ -298,20 +297,11 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Tries to close JDBC connections opened by this node's data source.
+     * @deprecated since 3.1 does nothing as pool shutdown is performed by the DI
+     *             container.
      */
-    public synchronized void shutdown() {
-        try {
-            // TODO: theoretically someone maybe using our PoolManager as a container
-            // mapped DataSource, so we should use some other logic to determine whether
-            // this is a DataNode-managed DS.
-            if (dataSource instanceof PoolManager) {
-                ((PoolManager) dataSource).dispose();
-                dataSource = null;
-            }
-        }
-        catch (SQLException ex) {
-        }
+    public void shutdown() {
+        // noop
     }
 
     // a read-through DataSource that ensures returning the same connection within
