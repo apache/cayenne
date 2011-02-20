@@ -32,6 +32,8 @@ import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.sql.PooledConnection;
 
+import org.apache.cayenne.di.BeforeScopeEnd;
+
 /**
  * PoolManager is a pooling DataSource impementation. Internally to obtain connections
  * PoolManager uses either a JDBC driver or another pooling datasource.
@@ -182,6 +184,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
      * 
      * @since 3.1
      */
+    @BeforeScopeEnd
     public void shutdown() throws SQLException {
         synchronized (this) {
             // clean connections from the pool

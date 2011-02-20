@@ -650,11 +650,17 @@ public class DataDomain implements QueryEngine, DataChannel {
     @BeforeScopeEnd
     public void shutdown() {
         if (!stopped) {
+            stopped = true;
+
             if (sharedSnapshotCache != null) {
                 sharedSnapshotCache.shutdown();
             }
 
-            stopped = true;
+            // deprecated - noop code for backwards compatibility as DataNode shutdown is
+            // no longer needed
+            for (DataNode node : getDataNodes()) {
+                node.shutdown();
+            }
         }
     }
 

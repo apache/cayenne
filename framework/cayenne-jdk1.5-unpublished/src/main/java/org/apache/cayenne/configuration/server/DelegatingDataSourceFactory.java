@@ -18,13 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.spi.ScopeEventBinding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,8 +58,48 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     @Inject
     protected RuntimeProperties properties;
 
+    protected Map<DataSource, ScopeEventBinding> managedDataSources;
+
+    public DelegatingDataSourceFactory() {
+        managedDataSources = new ConcurrentHashMap<DataSource, ScopeEventBinding>();
+    }
+
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
-        return getDataSourceFactory(nodeDescriptor).getDataSource(nodeDescriptor);
+        DataSource dataSource = getDataSourceFactory(nodeDescriptor).getDataSource(
+                nodeDescriptor);
+        attachToScope(dataSource);
+        return dataSource;
+    }
+
+    @BeforeScopeEnd
+    public void shutdown() {
+        for (ScopeEventBinding binding : managedDataSources.values()) {
+            binding.onScopeEvent();
+        }
+
+        managedDataSources.clear();
+    }
+
+    /**
+     * Ensure that DataSource implementations returned from this factory receive
+     * {@link BeforeScopeEnd} events.
+     */
+    protected void attachToScope(DataSource dataSource) {
+
+        // no real thread-safety here, just checking to speed up processing... in the
+        // worst case we'll replace event binding for the same pool with an equivalent one
+        if (!managedDataSources.containsKey(dataSource)) {
+
+            Class<BeforeScopeEnd> annotationType = BeforeScopeEnd.class;
+            for (Method method : dataSource.getClass().getMethods()) {
+
+                if (method.isAnnotationPresent(annotationType)) {
+                    managedDataSources.put(dataSource, new ScopeEventBinding(
+                            dataSource,
+                            method));
+                }
+            }
+        }
     }
 
     protected DataSourceFactory getDataSourceFactory(DataNodeDescriptor nodeDescriptor) {
