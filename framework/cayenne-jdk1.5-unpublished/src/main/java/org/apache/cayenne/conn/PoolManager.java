@@ -535,6 +535,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
          */
         public void dispose() {
             shouldDie = true;
+            interrupt();
         }
     }
 
