@@ -337,7 +337,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
 
     /**
      * Returns connection from the pool using internal values of user name and password.
-     * Eqivalent to calling:
+     * Equivalent to calling:
      * <p>
      * <code>ds.getConnection(ds.getUserName(), ds.getPassword())</code>
      * </p>
