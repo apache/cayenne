@@ -91,12 +91,19 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         if (!managedDataSources.containsKey(dataSource)) {
 
             Class<BeforeScopeEnd> annotationType = BeforeScopeEnd.class;
+
+            // note that checking for class directly prevents wrapping... will wait till
+            // Java6/JDBC4 upgrade to check for wrappers
             for (Method method : dataSource.getClass().getMethods()) {
 
                 if (method.isAnnotationPresent(annotationType)) {
                     managedDataSources.put(dataSource, new ScopeEventBinding(
                             dataSource,
                             method));
+
+                    // no need to look further as we are supporting only a single scope
+                    // method
+                    break;
                 }
             }
         }
