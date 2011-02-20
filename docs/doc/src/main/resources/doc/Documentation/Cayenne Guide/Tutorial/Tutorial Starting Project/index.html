@@ -62,10 +62,10 @@
 </div>
 <div id="ConfluenceContent"><p>The goal of this section is to create a new Java project in Eclipse containing a basic Cayenne mapping. It presents an introduction to CayenneModeler GUI tool, showing how to create the initial mapping objects: DataDomain, DataNode, DataMap.</p>
 
-<h3><a name="TutorialStartingProject-CreateanewProjectinEclipse"></a>Create a new Project in Eclipse</h3>
+<h3><a name="TutorialStartingProject-CreateanewProjectinEclipse"></a>Create a new Project in Eclipse </h3>
 
 <p>In Eclipse select <tt>"File &gt; New &gt; Other..."</tt> and then <tt>"Maven &gt; Maven Project"</tt>. Click "Next". On the following screen check "Create a simple project" checkbox and click "Next" again. In the dialog shown on the screenshot below, fill the "Group Id" and "Artifact Id" fields and click "Finish". <br/>
-<span class="image-wrap" style=""><img src="tutorial-eclipse-project.png?version=1&amp;modificationDate=1289713366735" style="border: 0px solid black" /></span></p>
+<span class="image-wrap" style=""><img src="tutorial-eclipse-project.png?version=1&amp;modificationDate=1289713366000" style="border: 0px solid black" /></span></p>
 
 <p>Now you should have a new empty project in the Eclipse workspace. Check that the project Java compiler settings are correct. Rightclick on the "tutorial" project, select <tt>"Properties &gt; Java Compiler"</tt> and ensure that "Compiler compliance level" is at least "1.5" (some versions of Maven plugin seem to be setting it to 1.4 by default).</p>
 
@@ -77,7 +77,7 @@
 
 <p>Download the latest release <a href="http://cayenne.apache.org/download.html" class="external-link" rel="nofollow">from here</a>. Unpack the distribution somewhere in the file system and start CayenneModeler, following <a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html" title="Running CayenneModeler">platform-specific instructions</a>. On most platforms it is done simply by doubleclicking the Modeler icon. The welcome screen of the Modeler looks like this:</p>
 
-<p><span class="image-wrap" style=""><img src="modeler-started.png?version=1&amp;modificationDate=1289713364249" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="modeler-started.png?version=1&amp;modificationDate=1289713364000" style="border: 0px solid black" /></span></p>
 
 <h3><a name="TutorialStartingProject-CreateaNewMappingProjectinCayenneModeler"></a>Create a New Mapping Project in CayenneModeler</h3>
 
@@ -99,7 +99,7 @@
 
 <p>Also you will need to change "Schema Update Strategy". Select <tt>"org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy"</tt> from the dropdown, so that Cayenne creates a new schema on Derby based on the ORM mapping when the application starts.</p>
 
-<p><span class="image-wrap" style=""><img src="base-datanode.png?version=1&amp;modificationDate=1289713359050" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="base-datanode.png?version=1&amp;modificationDate=1289713359000" style="border: 0px solid black" /></span></p>
 
 
 <h3><a name="TutorialStartingProject-CreateaDataMap"></a>Create a DataMap</h3>
@@ -108,13 +108,13 @@
 
 <p>You can leave all the DataMap defaults unchanged except for one - "Java Package". Enter "org.example.cayenne.persistent". This name will later be used for all persistent classes.</p>
 
-<p><span class="image-wrap" style=""><img src="base-datamap.png?version=1&amp;modificationDate=1289713358895" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="base-datamap.png?version=1&amp;modificationDate=1289713358000" style="border: 0px solid black" /></span></p>
 
 <h3><a name="TutorialStartingProject-SavetheProject"></a>Save the Project</h3>
 
 <p>Before you proceed with the actual mapping, let's save the project. Click on "Save" button in the toolbar and navigate to the <tt>"tutorial"</tt> Eclipse project folder that was created earlier in this section and its <tt>"src/main/resources"</tt> subfolder and save the project there. Now go back to Eclipse, right click on "tutorial" project and select "Refresh", you will see three Cayenne XML files.</p>
 
-<p><span class="image-wrap" style=""><img src="eclipse-xmlfiles.png?version=1&amp;modificationDate=1289713363197" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="eclipse-xmlfiles.png?version=1&amp;modificationDate=1289713363000" style="border: 0px solid black" /></span></p>
 
 <p>Note that the location of the XML files is not coincidental. Cayenne runtime looks for <tt>"cayenne.xml"</tt> file in the application CLASSPATH and <tt>"src/main/resources"</tt> folder should already be a "class folder" in Eclipse for our project (and is also a standard location that Maven would copy to a jar file, if we were using Maven from command-line).</p>
 

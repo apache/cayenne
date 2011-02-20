@@ -98,7 +98,7 @@
 
 <p>Now let's check the entity class pairs. Each one is made of a superclass (e.g. <em>Artist) and a subclass (e.g. Artist). You <b>should not</b> modify the superclasses whose names start with "</em>" (underscore), as they will be replaced on subsequent generator runs. Instead all custom logic should be placed in the subclasses in <tt>"org.example.cayenne.persistent"</tt> package - those will never be overwritten by the class generator.</p>
 
-<p><span class="image-wrap" style=""><img src="eclipse-generatedclasses.png?version=1&amp;modificationDate=1289712337909" style="border: 0px solid black" /></span></p>
+<p><span class="image-wrap" style=""><img src="eclipse-generatedclasses.png?version=1&amp;modificationDate=1289712337000" style="border: 0px solid black" /></span></p>
 
 
 <div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Class Generation Hint</b><br />Often you'd start by generating classes from the Modeler, but at the later stages of the project the generation is usually automated either via <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/cgen/index.html" title="cgen">Ant cgen task</a> or <a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html" title="maven2-cgen">Maven cgen mojo</a>. All three methods are interchangeable, however Ant and Maven methods would ensure that you never forget to regenerate classes on mapping changes, as they are integrated into the build cycle.</td></tr></table></div>

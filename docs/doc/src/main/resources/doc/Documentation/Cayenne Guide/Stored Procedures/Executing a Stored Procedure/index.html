@@ -54,36 +54,34 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
-<h3><a name="ExecutingaStoredProcedure-UsingQueryResponsetoProcessComplexResults"></a>Using QueryResponse to Process Complex Results</h3>
+<div id="ConfluenceContent"><h3><a name="ExecutingaStoredProcedure-UsingQueryResponsetoProcessComplexResults"></a>Using QueryResponse to Process Complex Results</h3>
 
 <p>Previous chapter showed how to select a single set of data rows using a ProcedureQuery. In a more general case stored procedures can return multiple sets of data, either as ResultSets or via OUT parameters, execute update/delete/insert queries, etc. To collect the results of execution of such stored procedure, you need to run a query using context's <tt>"performGenericQuery"</tt> method and inspect returned QueryResponse.</p>
 
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
-<pre class="code-java">DataContext ctxt;
+<pre class="code-java">DataContext context;
 
 <span class="code-comment">// <span class="code-quote">"my_procedure"</span> is a name of a stored procedure,
 </span><span class="code-comment">// that must exist in the DataMap
 </span>ProcedureQuery query = <span class="code-keyword">new</span> ProcedureQuery(<span class="code-quote">"my_procedure"</span>);
 
 <span class="code-comment">// Set <span class="code-quote">"IN"</span> parameter values
-</span>query.addParam(<span class="code-quote">"parameter1"</span>, <span class="code-quote">"abc"</span>);
-query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-keyword">new</span> <span class="code-object">Integer</span>(3000));
+</span>query.addParameter(<span class="code-quote">"parameter1"</span>, <span class="code-quote">"abc"</span>);
+query.addParameter(<span class="code-quote">"parameter2"</span>, <span class="code-keyword">new</span> <span class="code-object">Integer</span>(3000));
 
 <span class="code-comment">// run query
-</span>QueryResponse result = ctxt.performGenericQuery(query);
+</span>QueryResponse result = context.performGenericQuery(query);
 
 <span class="code-comment">// check the results
-</span>Iterator it = rowSets.iterator();
-<span class="code-keyword">while</span>(result.next()) {
-     <span class="code-keyword">if</span> (result.isList()) {
-          List list = result.currentList();
-          <span class="code-comment">// ...
+</span><span class="code-keyword">for</span> (result.reset(); result.next();) {
+     <span class="code-keyword">if</span> (response.isList()) {
+         List list = result.currentList();
+         <span class="code-comment">// ...
 </span>     }
-     <span class="code-keyword">else</span> {
-          <span class="code-object">int</span>[] updateCounts = result.currentUpdateCount();
-          <span class="code-comment">// ...
+    <span class="code-keyword">else</span> {
+         <span class="code-object">int</span>[] updateCounts = result.currentUpdateCount();
+         <span class="code-comment">// ...
 </span>     }
 }
 </pre>
@@ -94,18 +92,18 @@ query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-k
 <p>Stored Procedure can return data back to the application as ResultSets or via OUT parameters. To simplify the processing of the query output, QueryResponse treats OUT parameters as if it was a separate ResultSet. If a stored procedure declares any OUT or INOUT parameters, QueryResponse will contain their returned values in the very first result list:</p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
-<pre class="code-java">DataContext ctxt;
+<pre class="code-java">DataContext context;
 
 <span class="code-comment">// <span class="code-quote">"my_procedure"</span> is a name of a stored procedure,
 </span><span class="code-comment">// that must exist in the DataMap
 </span>ProcedureQuery query = <span class="code-keyword">new</span> ProcedureQuery(<span class="code-quote">"my_procedure"</span>);
 
 <span class="code-comment">// Set <span class="code-quote">"IN"</span> parameter values
-</span>query.addParam(<span class="code-quote">"paramter1"</span>, <span class="code-quote">"abc"</span>);
-query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-keyword">new</span> <span class="code-object">Integer</span>(3000));
+</span>query.addParameter(<span class="code-quote">"paramter1"</span>, <span class="code-quote">"abc"</span>);
+query.addParameter(<span class="code-quote">"parameter2"</span>, <span class="code-keyword">new</span> <span class="code-object">Integer</span>(3000));
 
 <span class="code-comment">// run query
-</span>QueryResponse result = ctxt.performGenericQuery(query);
+</span>QueryResponse result = context.performGenericQuery(query);
 
 <span class="code-comment">// read OUT parameters
 </span>List outList = result.firstList();

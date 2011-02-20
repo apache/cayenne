@@ -146,17 +146,17 @@ cayenne.group.artists.cron = 10 1 * * *
 
 <div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JMSBroadcastingListener
-# other JMS paramaters go here...</pre>
+# other JMS parameters go here...</pre>
 </div></div>
 
 <div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener
-# other JavaGroups paramaters go here...</pre>
+# other JavaGroups parameters go here...</pre>
 </div></div>
 
 <h3><a name="QueryResultCaching-QueryCacheConclusions"></a>Query Cache Conclusions</h3>
 
-<p>The consequence of consistently using caching strategies and coming up with reasonable set of ache groups is that many applications no longer has to cache fetched lists explicitly. Re-running a query with a one of the caching strategies (especially with "LOCAL_CACHE") becomes an extremely fast operation. Also the code becomes cleaner, as the state is stored in Cayenne, not in the application code. One possible exception from this rule is when the application needs to access the same list between requests, regardless of whether it is stale or not. </p>
+<p>The consequence of consistently using caching strategies and coming up with a reasonable set of cache groups is that applications no longer have to cache fetched lists explicitly. Re-running a query with a one of the caching strategies (especially with "LOCAL_CACHE") becomes an extremely fast operation. Also the code becomes cleaner, as the state is stored in Cayenne, not in the application code. One possible exception from this rule is when an application needs to access the same list between requests, regardless of whether it is stale or not. </p>
 
 </div>
 </div>
