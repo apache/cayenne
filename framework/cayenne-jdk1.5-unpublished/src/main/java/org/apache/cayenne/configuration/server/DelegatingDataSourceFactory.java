@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -26,27 +28,31 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A {@link DataSourceFactoryLoader} that loads factories explicitly configured in the
- * {@link DataNodeDescriptor}. If the factory class is not explicitly configured, and the
- * descriptor has a configuration resource attached to it,
- * {@link XMLPoolingDataSourceFactory} is returned.
+ * A {@link DataSourceFactory} that delegates DataSource creation to another factory,
+ * which is determined dynamically per DataNodeDescriptor. The delegate class may be
+ * explicitly defined in the {@link DataNodeDescriptor}. If not, and if the descriptor has
+ * a configuration resource attached to it, {@link XMLPoolingDataSourceFactory} is used.
  * <p>
  * If the environment contains properties <em>cayenne.jdbc.url.domain_name.node_name</em>
  * (or <em>cayenne.jdbc.url</em>) and <em>cayenne.jdbc.driver.domain_name.node_name</em>
- * (or <em>cayenne.jdbc.driver</em>), any DataSourceFactory configured in the project is
- * ignored, and the {@link PropertyDataSourceFactory} is returned.
+ * (or <em>cayenne.jdbc.driver</em>), any DataSourceFactory configured in the
+ * DataNodeDescriptor is ignored, and the {@link PropertyDataSourceFactory} is used.
  * 
  * @since 3.1
  */
-public class DefaultDataSourceFactoryLoader implements DataSourceFactoryLoader {
+public class DelegatingDataSourceFactory implements DataSourceFactory {
 
     private static final Log logger = LogFactory
-            .getLog(DefaultDataSourceFactoryLoader.class);
+            .getLog(DelegatingDataSourceFactory.class);
 
     @Inject
     protected AdhocObjectFactory objectFactory;
 
-    public DataSourceFactory getDataSourceFactory(DataNodeDescriptor nodeDescriptor) {
+    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+        return getDataSourceFactory(nodeDescriptor).getDataSource(nodeDescriptor);
+    }
+
+    protected DataSourceFactory getDataSourceFactory(DataNodeDescriptor nodeDescriptor) {
         String typeName = null;
 
         if (shouldConfigureDataSourceFromProperties(nodeDescriptor)) {

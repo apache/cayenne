@@ -145,9 +145,10 @@ public class ServerModule implements Module {
         // a global properties object
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 
-        // a service to load DataSourceFactories
-        binder.bind(DataSourceFactoryLoader.class).to(
-                DefaultDataSourceFactoryLoader.class);
+        // a service to load DataSourceFactories. DelegatingDataSourceFactory will attempt
+        // to find the actual worker factory dynamically on each call depending on
+        // DataNodeDescriptor data and the environment
+        binder.bind(DataSourceFactory.class).to(DelegatingDataSourceFactory.class);
 
         // a default SchemaUpdateStrategy (used when no explicit strategy is specified in
         // XML)

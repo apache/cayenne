@@ -29,7 +29,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory1;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.DefaultDataSourceFactoryLoader;
+import org.apache.cayenne.configuration.server.DelegatingDataSourceFactory;
 import org.apache.cayenne.configuration.server.PropertyDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -58,7 +58,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
         Injector injector = DIBootstrap.createInjector(testModule);
 
-        DefaultDataSourceFactoryLoader factoryLoader = new DefaultDataSourceFactoryLoader();
+        DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory();
         injector.injectMembers(factoryLoader);
 
         DataSourceFactory factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
@@ -82,7 +82,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
         Injector injector = DIBootstrap.createInjector(testModule);
 
-        DefaultDataSourceFactoryLoader factoryLoader = new DefaultDataSourceFactoryLoader();
+        DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory();
         injector.injectMembers(factoryLoader);
 
         DataSourceFactory factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
@@ -117,7 +117,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
         properties.put(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY, "x");
         properties.put(PropertyDataSourceFactory.JDBC_URL_PROPERTY, "y");
-        DefaultDataSourceFactoryLoader factoryLoader = new DefaultDataSourceFactoryLoader() {
+        DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory() {
 
             @Override
             protected String getProperty(String key) {

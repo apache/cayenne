@@ -44,8 +44,6 @@ import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
-import org.apache.cayenne.configuration.mock.MockDataSourceFactoryLoader;
-import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.MockDbAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
@@ -143,8 +141,8 @@ public class DataDomainProviderTest extends TestCase {
                     }
                 });
 
-                binder.bind(DataSourceFactoryLoader.class).toInstance(
-                        new MockDataSourceFactoryLoader());
+                binder.bind(DataSourceFactory.class).toInstance(
+                        new MockDataSourceFactory());
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             }
         };

@@ -77,7 +77,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected DbAdapterFactory adapterFactory;
 
     @Inject
-    protected DataSourceFactoryLoader dataSourceFactoryLoader;
+    protected DataSourceFactory dataSourceFactory;
 
     @Inject
     protected AdhocObjectFactory objectFactory;
@@ -178,9 +178,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
             DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
             dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
-
-            DataSourceFactory dataSourceFactory = dataSourceFactoryLoader
-                    .getDataSourceFactory(nodeDescriptor);
 
             DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
 
