@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,9 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
 
     @Inject
     protected AdhocObjectFactory objectFactory;
+
+    @Inject
+    protected RuntimeProperties properties;
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
         return getDataSourceFactory(nodeDescriptor).getDataSource(nodeDescriptor);
@@ -82,10 +86,10 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
                 ? nodeDescriptor.getDataChannelDescriptor().getName()
                 : null;
 
-        String driver = getProperty(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY);
+        String driver = properties.get(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY);
 
         if (driver == null && channelName != null) {
-            driver = getProperty(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY
+            driver = properties.get(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY
                     + "."
                     + nodeDescriptor.getDataChannelDescriptor().getName()
                     + "."
@@ -96,10 +100,10 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
             return false;
         }
 
-        String url = getProperty(PropertyDataSourceFactory.JDBC_URL_PROPERTY);
+        String url = properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY);
 
         if (url == null && channelName != null) {
-            url = getProperty(PropertyDataSourceFactory.JDBC_URL_PROPERTY
+            url = properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY
                     + "."
                     + nodeDescriptor.getDataChannelDescriptor().getName()
                     + "."
@@ -120,12 +124,4 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         return true;
     }
 
-    /**
-     * Returns a property value for a given full key. This implementation returns a System
-     * property. Subclasses may lookup properties elsewhere. E.g. overriding this method
-     * can help with unit testing this class.
-     */
-    protected String getProperty(String key) {
-        return System.getProperty(key);
-    }
 }

@@ -24,7 +24,9 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.di.Inject;
 
 /**
  * A DataSourceFactrory that creates a DataSource based on system properties. Properties
@@ -52,6 +54,9 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
     static final String JDBC_PASSWORD_PROPERTY = "cayenne.jdbc.password";
     static final String JDBC_MIN_CONNECTIONS_PROPERTY = "cayenne.jdbc.min.connections";
     static final String JDBC_MAX_CONNECTIONS_PROPERTY = "cayenne.jdbc.max.conections";
+
+    @Inject
+    protected RuntimeProperties properties;
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
@@ -103,16 +108,7 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
     }
 
     protected String getProperty(String propertyName, String suffix) {
-        String value = getProperty(propertyName + suffix);
-        return value != null ? value : getProperty(propertyName);
-    }
-
-    /**
-     * Returns a property value for a given full key. This implementation returns a System
-     * property. Subclasses may lookup properties elsewhere. E.g. overriding this method
-     * can help with unit testing this class.
-     */
-    protected String getProperty(String key) {
-        return System.getProperty(key);
+        String value = properties.get(propertyName + suffix);
+        return value != null ? value : properties.get(propertyName);
     }
 }

@@ -18,20 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory1;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.DelegatingDataSourceFactory;
-import org.apache.cayenne.configuration.server.PropertyDataSourceFactory;
-import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -53,6 +49,8 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
+                binder.bind(RuntimeProperties.class).toInstance(
+                        mock(RuntimeProperties.class));
             }
         };
 
@@ -77,6 +75,8 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
+                binder.bind(RuntimeProperties.class).toInstance(
+                        mock(RuntimeProperties.class));
             }
         };
 
@@ -96,6 +96,11 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
     public void testGetDataSourceFactory_Property() throws Exception {
 
+        final RuntimeProperties properties = mock(RuntimeProperties.class);
+        when(properties.get(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY)).thenReturn(
+                "x");
+        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY)).thenReturn("y");
+
         DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
         channelDescriptor.setName("X");
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
@@ -108,39 +113,33 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
+                binder.bind(RuntimeProperties.class).toInstance(properties);
             }
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
 
-        final Map<String, String> properties = new HashMap<String, String>();
-
-        properties.put(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY, "x");
-        properties.put(PropertyDataSourceFactory.JDBC_URL_PROPERTY, "y");
-        DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory() {
-
-            @Override
-            protected String getProperty(String key) {
-                return properties.get(key);
-            }
-        };
+        DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory();
         injector.injectMembers(factoryLoader);
 
         DataSourceFactory factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);
         assertTrue(factory instanceof PropertyDataSourceFactory);
 
-        properties.remove(PropertyDataSourceFactory.JDBC_URL_PROPERTY);
+        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY))
+                .thenReturn(null);
         factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);
         assertFalse(factory instanceof PropertyDataSourceFactory);
 
-        properties.put(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node2", "y");
+        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node2"))
+                .thenReturn("y");
         factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);
         assertFalse(factory instanceof PropertyDataSourceFactory);
-        
-        properties.put(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node1", "y");
+
+        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node1"))
+                .thenReturn("y");
         factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);
         assertTrue(factory instanceof PropertyDataSourceFactory);
