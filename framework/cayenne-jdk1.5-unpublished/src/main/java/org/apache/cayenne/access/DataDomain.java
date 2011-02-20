@@ -39,6 +39,7 @@ import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -646,6 +647,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Shutdowns all owned data nodes and marks this domain as stopped.
      */
+    @BeforeScopeEnd
     public void shutdown() {
         if (!stopped) {
             if (sharedSnapshotCache != null) {
