@@ -20,6 +20,7 @@
 package org.apache.cayenne.unit;
 
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -106,8 +107,6 @@ public class CayenneResources implements BeanFactoryAware {
         }
         return resources;
     }
-
-
 
     public CayenneResources(Map adapterMap) {
         this.adapterMap = adapterMap;
@@ -237,7 +236,15 @@ public class CayenneResources implements BeanFactoryAware {
                     1,
                     1,
                     connectionInfo.getUserName(),
-                    connectionInfo.getPassword());
+                    connectionInfo.getPassword()) {
+
+                @Override
+                public void shutdown() throws SQLException {
+                    // noop - make sure we are not shutdown by the test scope, but at the
+                    // same time PoolManager methods are exposed (so we can't wrap
+                    // PoolManager)
+                }
+            };
         }
         catch (Exception ex) {
             logger.error("Can not create shared data source.", ex);
