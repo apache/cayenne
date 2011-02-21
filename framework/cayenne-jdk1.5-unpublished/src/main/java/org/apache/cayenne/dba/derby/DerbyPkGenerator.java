@@ -58,43 +58,44 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
         }
 
         Connection c = node.getDataSource().getConnection();
-        PreparedStatement select = null;
-
         try {
-            select = c.prepareStatement(
+            PreparedStatement select = c.prepareStatement(
                     SELECT_QUERY,
                     ResultSet.TYPE_FORWARD_ONLY,
                     ResultSet.CONCUR_UPDATABLE);
+            try {
+                select.setString(1, entity.getName());
+                ResultSet rs = select.executeQuery();
+    
+                try {
+                    if (!rs.next()) {
+                        throw new CayenneException("PK lookup failed for table: "
+                                + entity.getName());
+                    }
+        
+                    long nextId = rs.getLong(1);
+        
+                    rs.updateLong(1, nextId + pkCacheSize);
+                    rs.updateRow();
+        
+                    if (rs.next()) {
+                        throw new CayenneException("More than one PK record for table: "
+                                + entity.getName());
+                    }
+                    
+                    c.commit();
 
-            select.setString(1, entity.getName());
-            ResultSet rs = select.executeQuery();
-
-            if (!rs.next()) {
-                throw new CayenneException("PK lookup failed for table: "
-                        + entity.getName());
+                    return nextId;
+                }
+                finally {
+                    rs.close();
+                }
             }
-
-            long nextId = rs.getLong(1);
-
-            rs.updateLong(1, nextId + pkCacheSize);
-            rs.updateRow();
-
-            if (rs.next()) {
-                throw new CayenneException("More than one PK record for table: "
-                        + entity.getName());
-            }
-
-            rs.close();
-
-            select.close();
-            c.commit();
-
-            return nextId;
-        }
-        finally {
-            if (select != null) {
+            finally {
                 select.close();
             }
+        }
+        finally {
             c.close();
         }
     }
