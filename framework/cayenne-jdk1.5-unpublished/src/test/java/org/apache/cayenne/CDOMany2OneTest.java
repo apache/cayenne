@@ -20,11 +20,14 @@
 package org.apache.cayenne;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -82,6 +85,38 @@ public class CDOMany2OneTest extends ServerCase {
         tPainting.insert(6, "pW1", 8, 11);
         tPainting.insert(7, "pW2", 8, 11);
 
+    }
+
+    public void testMultipleToOneDeletion() throws Exception {
+
+        // was a problem per CAY-901
+
+        Painting p = context.newObject(Painting.class);
+        p.setPaintingTitle("P1");
+
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("A1");
+
+        Gallery g = context.newObject(Gallery.class);
+        g.setGalleryName("G1");
+
+        p.setToArtist(a);
+        p.setToGallery(g);
+        context.commitChanges();
+
+        p.setToArtist(null);
+        p.setToGallery(null);
+
+        context.commitChanges();
+
+        SQLTemplate q = new SQLTemplate(Painting.class, "SELECT * from PAINTING");
+        q.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        q.setFetchingDataRows(true);
+
+        Map<String, ?> row = (Map<String, ?>) Cayenne.objectForQuery(context, q);
+        assertEquals("P1", row.get("PAINTING_TITLE"));
+        assertEquals(null, row.get("ARTIST_ID"));
+        assertEquals(null, row.get("GALLERY_ID"));
     }
 
     public void testReadRO1() throws Exception {
