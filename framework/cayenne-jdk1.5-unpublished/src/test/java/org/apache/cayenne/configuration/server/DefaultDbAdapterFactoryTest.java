@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,11 +32,9 @@ import junit.framework.TestCase;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
-import org.apache.cayenne.configuration.server.DbAdapterDetector;
-import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.MockDbAdapter;
+import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -48,13 +50,8 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
     public void testCreatedAdapter_Auto() throws Exception {
 
-        final DbAdapter adapter = new MockDbAdapter() {
-
-            @Override
-            public String createTable(DbEntity ent) {
-                return "XXXXX";
-            }
-        };
+        final DbAdapter adapter = mock(DbAdapter.class);
+        when(adapter.createTable(any(DbEntity.class))).thenReturn("XXXXX");
 
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
         detectors.add(new DbAdapterDetector() {
@@ -120,7 +117,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
     public void testCreatedAdapter_Custom() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(MockDbAdapter.class.getName());
+        nodeDescriptor.setAdapterType(SybaseAdapter.class.getName());
 
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
 
@@ -143,6 +140,6 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         assertNotNull(createdAdapter);
         assertTrue(
                 "Unexpected class: " + createdAdapter.getClass().getName(),
-                createdAdapter instanceof MockDbAdapter);
+                createdAdapter instanceof SybaseAdapter);
     }
 }

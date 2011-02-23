@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -45,7 +47,6 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.MockDbAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -66,6 +67,8 @@ public class DataDomainProviderTest extends TestCase {
         // create dependencies
         final String testConfigName = "testConfig";
         final DataChannelDescriptor testDescriptor = new DataChannelDescriptor();
+        
+        final DbAdapter mockAdapter = mock(DbAdapter.class);
 
         DataMap map1 = new DataMap("map1");
         testDescriptor.getDataMaps().add(map1);
@@ -137,7 +140,7 @@ public class DataDomainProviderTest extends TestCase {
                                     nodeDescriptor.getAdapterType()).newInstance();
                         }
 
-                        return new MockDbAdapter();
+                        return mockAdapter;
                     }
                 });
 
@@ -203,6 +206,6 @@ public class DataDomainProviderTest extends TestCase {
                 .getName());
 
         assertNotNull(node2.getAdapter());
-        assertEquals(MockDbAdapter.class, node2.getAdapter().getClass());
+        assertSame(mockAdapter, node2.getAdapter());
     }
 }
