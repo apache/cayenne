@@ -22,22 +22,26 @@ package org.apache.cayenne;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.BeanValidationFailure;
+import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-/**
- */
-public class CayenneDataObjectValidationTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CayenneDataObjectValidationTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
 
     public void testValidateForSaveMandatoryToOneMissing() throws Exception {
-        DataContext context = createDataContext();
+
         Exhibit exhibit = context.newObject(Exhibit.class);
         exhibit.setOpeningDate(new Date());
         exhibit.setClosingDate(new Date());
@@ -48,7 +52,7 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
         assertTrue("Validation of 'toGallery' should've failed.", result.hasFailures());
         assertTrue(result.hasFailures(exhibit));
 
-        List failures = result.getFailures();
+        List<ValidationFailure> failures = result.getFailures();
         assertEquals(1, failures.size());
 
         BeanValidationFailure failure = (BeanValidationFailure) failures.get(0);
@@ -63,8 +67,8 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
     }
 
     public void testValidateForSaveMandatoryAttributeMissing() throws Exception {
-        DataContext context = createDataContext();
-        Artist artist = (Artist) context.newObject("Artist");
+
+        Artist artist = context.newObject(Artist.class);
 
         ValidationResult result = new ValidationResult();
         artist.validateForSave(result);
@@ -72,7 +76,7 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
         assertTrue("Validation of 'artistName' should've failed.", result.hasFailures());
         assertTrue(result.hasFailures(artist));
 
-        List failures = result.getFailures();
+        List<ValidationFailure> failures = result.getFailures();
         assertEquals(1, failures.size());
 
         BeanValidationFailure failure = (BeanValidationFailure) failures.get(0);
@@ -86,10 +90,13 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
     }
 
     public void testValidateForSaveAttributeTooLong() throws Exception {
-        DataContext context = createDataContext();
-        Artist artist = (Artist) context.newObject("Artist");
 
-        DbEntity entity = context.getEntityResolver().lookupObjEntity(artist).getDbEntity();
+        Artist artist = context.newObject(Artist.class);
+
+        DbEntity entity = context
+                .getEntityResolver()
+                .lookupObjEntity(artist)
+                .getDbEntity();
         int len = ((DbAttribute) entity.getAttribute("ARTIST_NAME")).getMaxLength();
         StringBuffer buf = new StringBuffer(len);
         for (int i = 0; i < len + 1; i++) {
@@ -103,7 +110,7 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
         assertTrue(result.hasFailures());
         assertTrue(result.hasFailures(artist));
 
-        List failures = result.getFailures();
+        List<ValidationFailure> failures = result.getFailures();
         assertEquals(1, failures.size());
 
         BeanValidationFailure failure = (BeanValidationFailure) failures.get(0);
