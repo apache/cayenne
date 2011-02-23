@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -39,9 +46,13 @@ import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
@@ -362,6 +373,17 @@ public class DataContextTest extends ServerCase {
         assertTrue(
                 "Artist expected, got " + objects.get(0).getClass(),
                 objects.get(0) instanceof Artist);
+    }
+
+    public void testPerformQuery_Routing() {
+        Query query = mock(Query.class);
+        QueryMetadata md = mock(QueryMetadata.class);
+        when(query.getMetaData(any(EntityResolver.class))).thenReturn(md);
+        context.performGenericQuery(query);
+        verify(query).route(
+                any(QueryRouter.class),
+                eq(context.getEntityResolver()),
+                (Query) isNull());
     }
 
     public void testPerformNonSelectingQuery() throws Exception {
