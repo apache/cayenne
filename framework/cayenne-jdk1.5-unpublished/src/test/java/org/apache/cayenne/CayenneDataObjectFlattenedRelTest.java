@@ -21,57 +21,99 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.MockDataNode;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- * Test case for objects with flattened relationships.
- * 
- */
-// TODO: redefine all test cases in terms of entities in "relationships" map
-// and merge this test case with FlattenedRelationshipsTst that inherits
-// from RelationshipTestCase.
-public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CayenneDataObjectFlattenedRelTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private DataChannelInterceptor queryInterceptor;
+
+    private TableHelper tArtist;
+
+    private TableHelper tArtGroup;
+
+    private TableHelper tArtistGroup;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("ARTGROUP");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tArtGroup = new TableHelper(dbHelper, "ARTGROUP");
+        tArtGroup.setColumns("GROUP_ID", "NAME");
+
+        tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP");
+        tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
+    }
+
+    private void create1Artist1ArtGroupDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtGroup.insert(1, "g1");
+    }
+
+    private void create1Artist2ArtGroupDataSet() throws Exception {
+        create1Artist1ArtGroupDataSet();
+        tArtGroup.insert(2, "g2");
+    }
+
+    private void create1Artist1ArtGroup1ArtistGroupDataSet() throws Exception {
+        create1Artist1ArtGroupDataSet();
+        tArtistGroup.insert(33001, 1);
     }
 
     public void testReadFlattenedRelationship() throws Exception {
-        DataContext context = createDataContext();
+        create1Artist1ArtGroupDataSet();
 
-        createTestData("testReadFlattenedRelationship");
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
-        List groupList = a1.getGroupArray();
+        List<ArtGroup> groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(0, groupList.size());
     }
 
     public void testReadFlattenedRelationship2() throws Exception {
-        DataContext context = createDataContext();
 
-        createTestData("testReadFlattenedRelationship2");
+        create1Artist1ArtGroup1ArtistGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
-        List groupList = a1.getGroupArray();
+        List<ArtGroup> groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(1, groupList.size());
-        assertEquals(PersistenceState.COMMITTED, ((ArtGroup) groupList.get(0))
-                .getPersistenceState());
-        assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
+        assertEquals(PersistenceState.COMMITTED, groupList.get(0).getPersistenceState());
+        assertEquals("g1", groupList.get(0).getName());
     }
 
     public void testAddToFlattenedRelationship() throws Exception {
 
-        createTestData("testAddToFlattenedRelationship");
-        DataContext context = createDataContext();
+        create1Artist1ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
@@ -79,7 +121,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
-        List results = context.performQuery(q);
+        List<?> results = context.performQuery(q);
         assertEquals(1, results.size());
 
         assertFalse(context.hasChanges());
@@ -87,7 +129,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         a1.addToGroupArray(group);
         assertTrue(context.hasChanges());
 
-        List groupList = a1.getGroupArray();
+        List<?> groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
 
@@ -98,8 +140,8 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         assertFalse(context.hasChanges());
 
         // refetch artist with a different context
-        context = createDataContext();
-        a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        ObjectContext context2 = runtime.getContext();
+        a1 = Cayenne.objectForPK(context2, Artist.class, 33001);
         groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
@@ -107,21 +149,20 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
 
     // Test case to show up a bug in committing more than once
     public void testDoubleCommitAddToFlattenedRelationship() throws Exception {
-        createTestData("testDoubleCommitAddToFlattenedRelationship");
-        DataContext context = createDataContext();
+        create1Artist1ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
         SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
-        List results = context.performQuery(q);
+        List<?> results = context.performQuery(q);
         assertEquals(1, results.size());
 
         ArtGroup group = (ArtGroup) results.get(0);
         a1.addToGroupArray(group);
 
-        List groupList = a1.getGroupArray();
+        List<?> groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
 
@@ -141,15 +182,14 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
     }
 
     public void testRemoveFromFlattenedRelationship() throws Exception {
-        createTestData("testRemoveFromFlattenedRelationship");
-        DataContext context = createDataContext();
+        create1Artist1ArtGroup1ArtistGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
         ArtGroup group = a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group);
 
-        List groupList = a1.getGroupArray();
+        List<ArtGroup> groupList = a1.getGroupArray();
         assertEquals(0, groupList.size());
 
         // Ensure that the commit doesn't fail
@@ -160,12 +200,11 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         assertEquals(0, groupList.size());
     }
 
-    // Shows up a possible bug in ordering of deletes, when a flattened relationships link
-    // record is deleted
-    // at the same time (same transaction) as one of the record to which it links.
+    // Demonstrates a possible bug in ordering of deletes, when a flattened relationships
+    // link record is deleted at the same time (same transaction) as one of the record to
+    // which it links.
     public void testRemoveFlattenedRelationshipAndRootRecord() throws Exception {
-        DataContext context = createDataContext();
-        createTestData("testRemoveFlattenedRelationshipAndRootRecord");
+        create1Artist1ArtGroup1ArtistGroupDataSet();
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
         ArtGroup group = a1.getGroupArray().get(0);
@@ -183,38 +222,35 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
     }
 
     public void testAddRemoveFlattenedRelationship1() throws Exception {
-        DataContext context = createDataContext();
-        createTestData("testAddRemoveFlattenedRelationship1");
+        create1Artist1ArtGroupDataSet();
+
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
         SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
-        List results = context.performQuery(q);
+        List<?> results = context.performQuery(q);
         assertEquals(1, results.size());
 
         ArtGroup group = (ArtGroup) results.get(0);
         a1.addToGroupArray(group);
         group.removeFromArtistArray(a1);
 
-        blockQueries();
-        try {
-            context.commitChanges();
-        }
-        finally {
-            unblockQueries();
-        }
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                context.commitChanges();
+            }
+        });
     }
 
     public void testAddRemoveFlattenedRelationship2() throws Exception {
-        createTestData("testAddRemoveFlattenedRelationship2");
-
-        DataContext context = createDataContext();
+        create1Artist2ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
         SelectQuery q = new SelectQuery(ArtGroup.class);
-        List results = context.performQuery(q);
+        List<?> results = context.performQuery(q);
         assertEquals(2, results.size());
 
         ArtGroup g1 = (ArtGroup) results.get(0);
@@ -223,17 +259,20 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         a1.addToGroupArray(g2);
 
         // test that there is no delete query issued when a flattened join is first
-        // added
-        // and then deleted AND there are some other changes (CAY-548)
+        // added and then deleted AND there are some other changes (CAY-548)
         a1.removeFromGroupArray(g1);
 
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
+        MockDataNode nodeWrapper = MockDataNode.interceptNode(
+                runtime.getDataDomain(),
+                runtime.getDataDomain().getDataNodes().iterator().next());
         try {
             context.commitChanges();
-            assertEquals(1, engine.getRunCount());
+
         }
         finally {
-            engine.stopInterceptNode();
+            nodeWrapper.stopInterceptNode();
         }
+
+        assertEquals(1, nodeWrapper.getRunCount());
     }
 }

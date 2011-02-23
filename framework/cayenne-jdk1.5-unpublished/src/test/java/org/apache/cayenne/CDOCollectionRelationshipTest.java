@@ -20,29 +20,49 @@ package org.apache.cayenne;
 
 import java.util.Collection;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.CollectionToMany;
 import org.apache.cayenne.testdo.relationship.CollectionToManyTarget;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CDOCollectionRelationshipTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CDOCollectionRelationshipTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("COLLECTION_TO_MANY_TARGET");
+        dbHelper.deleteAll("COLLECTION_TO_MANY");
+
+        TableHelper tCollectionToMany = new TableHelper(dbHelper, "COLLECTION_TO_MANY");
+        tCollectionToMany.setColumns("ID");
+
+        TableHelper tCollectionToManyTarget = new TableHelper(
+                dbHelper,
+                "COLLECTION_TO_MANY_TARGET");
+        tCollectionToManyTarget.setColumns("ID", "COLLECTION_TO_MANY_ID");
+
+        // single data set for all tests
+        tCollectionToMany.insert(1).insert(2);
+        tCollectionToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
     }
 
     public void testReadToMany() throws Exception {
-        createTestData("prepare");
 
-        CollectionToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
-                CollectionToMany.class,
-                1);
+        CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
-        Collection targets = o1.getTargets();
+        Collection<?> targets = o1.getTargets();
 
         assertNotNull(targets);
         assertTrue(((ValueHolder) targets).isFault());
@@ -64,16 +84,13 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     }
 
     public void testReadToManyPrefetching() throws Exception {
-        createTestData("prepare");
 
         SelectQuery query = new SelectQuery(CollectionToMany.class, ExpressionFactory
                 .matchDbExp(CollectionToMany.ID_PK_COLUMN, new Integer(1)));
         query.addPrefetch(CollectionToMany.TARGETS_PROPERTY);
-        CollectionToMany o1 = (CollectionToMany) Cayenne.objectForQuery(
-                createDataContext(),
-                query);
+        CollectionToMany o1 = (CollectionToMany) Cayenne.objectForQuery(context, query);
 
-        Collection targets = o1.getTargets();
+        Collection<?> targets = o1.getTargets();
 
         assertFalse(((ValueHolder) targets).isFault());
 
@@ -95,20 +112,15 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     }
 
     public void testAddToMany() throws Exception {
-        createTestData("prepare");
 
-        CollectionToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
-                CollectionToMany.class,
-                1);
+        CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
-        Collection targets = o1.getTargets();
+        Collection<?> targets = o1.getTargets();
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget newTarget = o1
-                .getObjectContext()
-                .newObject(CollectionToManyTarget.class);
+        CollectionToManyTarget newTarget = o1.getObjectContext().newObject(
+                CollectionToManyTarget.class);
 
         o1.addToTargets(newTarget);
         assertEquals(4, targets.size());
@@ -122,18 +134,16 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     }
 
     public void testRemoveToMany() throws Exception {
-        createTestData("prepare");
 
-        CollectionToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
-                CollectionToMany.class,
-                1);
+        CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
-        Collection targets = o1.getTargets();
+        Collection<?> targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget target = Cayenne
-                .objectForPK(o1.getObjectContext(), CollectionToManyTarget.class, 2);
+        CollectionToManyTarget target = Cayenne.objectForPK(
+                o1.getObjectContext(),
+                CollectionToManyTarget.class,
+                2);
         o1.removeFromTargets(target);
 
         assertEquals(2, targets.size());
@@ -148,20 +158,15 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     }
 
     public void testAddToManyViaReverse() throws Exception {
-        createTestData("prepare");
 
-        CollectionToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
-                CollectionToMany.class,
-                1);
+        CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
-        Collection targets = o1.getTargets();
+        Collection<?> targets = o1.getTargets();
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget newTarget = o1
-                .getObjectContext()
-                .newObject(CollectionToManyTarget.class);
+        CollectionToManyTarget newTarget = o1.getObjectContext().newObject(
+                CollectionToManyTarget.class);
 
         newTarget.setCollectionToMany(o1);
         assertEquals(4, targets.size());
