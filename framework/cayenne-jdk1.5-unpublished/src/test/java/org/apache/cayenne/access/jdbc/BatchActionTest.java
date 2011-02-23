@@ -19,20 +19,25 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class BatchActionTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class BatchActionTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     public void testHasGeneratedKeys1() throws Exception {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getChannel().getEntityResolver();
 
         // test with adapter that supports keys
         DbAdapter adapter = buildAdapter(true);
@@ -47,7 +52,7 @@ public class BatchActionTest extends CayenneCase {
     }
 
     public void testHasGeneratedKeys2() throws Exception {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getChannel().getEntityResolver();
 
         // test with adapter that does not support keys...
         DbAdapter adapter = buildAdapter(false);
