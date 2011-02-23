@@ -7,6 +7,13 @@ http://cayenne.apache.org/
 To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
+----------------------------------
+Release: 3.1 M3
+Date: 
+----------------------------------
+Changes/New Features Since 3.1M2:
+
+CAY-1544 Remove jdk1.6 module from Cayenne sources
 
 ----------------------------------
 Release: 3.1 M2
