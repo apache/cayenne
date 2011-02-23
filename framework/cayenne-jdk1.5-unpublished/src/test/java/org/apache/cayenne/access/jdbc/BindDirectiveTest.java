@@ -29,36 +29,59 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests BindDirective for passed null parameters and for not passed parameters
  */
-public class BindDirectiveTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class BindDirectiveTest extends ServerCase {
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private DbAdapter adapter;
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
 
     public void testBindTimestamp() throws Exception {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
         parameters.put("name", "ArtistWithDOB");
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2010, 2, 8);
         parameters.put("dob", new Timestamp(cal.getTime().getTime()));
-        
-        //without JDBC usage
-        Map row = performInsertForParameters(parameters, false, 1);
+
+        // without JDBC usage
+        Map<String, ?> row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(cal.getTime(), row.get("DATE_OF_BIRTH"));
         assertNotNull(row.get("DATE_OF_BIRTH"));
@@ -66,16 +89,16 @@ public class BindDirectiveTest extends CayenneCase {
     }
 
     public void testBindSQLDate() throws Exception {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
         parameters.put("name", "ArtistWithDOB");
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2010, 2, 8);
         parameters.put("dob", new java.sql.Date(cal.getTime().getTime()));
-        
-        //without JDBC usage
-        Map row = performInsertForParameters(parameters, false, 1);
+
+        // without JDBC usage
+        Map<String, ?> row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
         assertNotNull(row.get("DATE_OF_BIRTH"));
@@ -83,16 +106,16 @@ public class BindDirectiveTest extends CayenneCase {
     }
 
     public void testBindUtilDate() throws Exception {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
         parameters.put("name", "ArtistWithDOB");
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2010, 2, 8);
         parameters.put("dob", cal.getTime());
-        
-        //without JDBC usage
-        Map row = performInsertForParameters(parameters, false, 1);
+
+        // without JDBC usage
+        Map<String, ?> row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
         assertNotNull(row.get("DATE_OF_BIRTH"));
@@ -100,10 +123,10 @@ public class BindDirectiveTest extends CayenneCase {
     }
 
     public void testBindingForCollection() throws Exception {
+        
         // insert 3 artists
-        Map parameters;
         for (int i = 1; i < 4; i++) {
-            parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("id", new Long(i));
             parameters.put("name", "Artist" + i);
             performInsertForParameters(parameters, true, i);
@@ -117,19 +140,19 @@ public class BindDirectiveTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(Artist.class, sql);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
-        List<DataRow> result = createDataContext().performQuery(query);
+        List<DataRow> result = context.performQuery(query);
         assertEquals(2, result.size());
     }
 
     public void testBindForPassedNullParam() throws Exception {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
         parameters.put("name", "ArtistWithoutDOB");
         // passing null in parameter
         parameters.put("dob", null);
 
         // without JDBC usage
-        Map row = performInsertForParameters(parameters, false, 1);
+        Map<String, ?> row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
@@ -137,14 +160,14 @@ public class BindDirectiveTest extends CayenneCase {
     }
 
     public void testBindWithJDBCForPassedNullParam() throws Exception {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
         parameters.put("name", "ArtistWithoutDOB");
         // passing null in parameter
         parameters.put("dob", null);
 
         // use JDBC
-        Map row = performInsertForParameters(parameters, true, 1);
+        Map<String, ?> row = performInsertForParameters(parameters, true, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         assertEquals(parameters.get("dob"), row.get("DATE_OF_BIRTH"));
@@ -152,13 +175,13 @@ public class BindDirectiveTest extends CayenneCase {
     }
 
     public void testBindForNotPassedParam() throws Exception {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
         parameters.put("name", "ArtistWithoutDOB");
         // not passing parameter parameters.put("dob", not passed!);
 
         // without JDBC usage
-        Map row = performInsertForParameters(parameters, false, 1);
+        Map<String, ?> row = performInsertForParameters(parameters, false, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         // parameter should be passed as null
@@ -166,13 +189,13 @@ public class BindDirectiveTest extends CayenneCase {
     }
 
     public void testBindWithJDBCForNotPassedParam() throws Exception {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
         parameters.put("name", "ArtistWithoutDOB");
         // not passing parameter parameters.put("dob", not passed!);
 
         // use JDBC
-        Map row = performInsertForParameters(parameters, true, 1);
+        Map<String, ?> row = performInsertForParameters(parameters, true, 1);
         assertEquals(parameters.get("id"), row.get("ARTIST_ID"));
         assertEquals(parameters.get("name"), row.get("ARTIST_NAME"));
         // parameter should be passed as null
@@ -184,10 +207,11 @@ public class BindDirectiveTest extends CayenneCase {
      * 
      * @return inserted row
      */
-    private Map performInsertForParameters(
-            Map parameters,
+    private Map<String, ?> performInsertForParameters(
+            Map<String, Object> parameters,
             boolean useJDBCType,
             int expectedRowCount) throws Exception {
+
         String templateString;
         if (useJDBCType) {
             templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
@@ -201,13 +225,10 @@ public class BindDirectiveTest extends CayenneCase {
 
         template.setParameters(parameters);
 
-        SQLTemplateAction action = new SQLTemplateAction(
-                template,
-                getAccessStackAdapter().getAdapter(),
-                getDomain().getEntityResolver());
-        assertSame(getAccessStackAdapter().getAdapter(), action.getAdapter());
+        SQLTemplateAction action = new SQLTemplateAction(template, adapter, context
+                .getEntityResolver());
 
-        Connection c = getConnection();
+        Connection c = dataSource.getConnection();
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
@@ -221,13 +242,11 @@ public class BindDirectiveTest extends CayenneCase {
             c.close();
         }
 
-        MockOperationObserver observer = new MockOperationObserver();
         SelectQuery query = new SelectQuery(Artist.class);
-        getDomain().performQueries(Collections.singletonList(query), observer);
+        query.setFetchingDataRows(true);
 
-        List data = observer.rowsForQuery(query);
+        List<DataRow> data = context.performQuery(query);
         assertEquals(expectedRowCount, data.size());
-        Map row = (Map) data.get(0);
-        return row;
+        return data.get(0);
     }
 }
