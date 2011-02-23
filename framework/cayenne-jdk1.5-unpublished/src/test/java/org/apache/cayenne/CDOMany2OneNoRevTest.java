@@ -21,28 +21,26 @@ package org.apache.cayenne;
 
 import java.util.Arrays;
 
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting1;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- * Tests DataObjects with no reverse relationships.
- * 
- */
-public class CDOMany2OneNoRevTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CDOMany2OneNoRevTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
 
     public void testNewAdd() throws Exception {
-        deleteTestData();
 
-        DataContext context = createDataContext();
-
-        Artist a1 = (Artist) context.newObject("Artist");
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a");
-        Painting1 p1 = (Painting1) context.newObject("Painting1");
+        Painting1 p1 = context.newObject(Painting1.class);
         p1.setPaintingTitle("p");
 
-        // *** TESTING THIS ***
+        // TESTING THIS
         p1.setToArtist(a1);
 
         assertSame(a1, p1.getToArtist());
