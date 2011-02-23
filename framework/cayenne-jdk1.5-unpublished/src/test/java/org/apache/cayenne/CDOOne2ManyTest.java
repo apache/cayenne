@@ -19,68 +19,128 @@
 
 package org.apache.cayenne;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CDOOne2ManyTest extends CayenneDOTestBase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CDOOne2ManyTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("GALLERY");
+        dbHelper.deleteAll("EXHIBIT");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
+    }
 
     public void testSelectWithToManyDBQualifier() throws Exception {
-        // setup test, intentionally add more than 1 painting to artist
+
+        // intentionally add more than 1 painting to artist
         // since this reduces a chance that painting and artist primary keys
         // would accidentally match, resulting in success when it should fail
-        Artist a1 = newArtist();
-        Painting p1 = newPainting();
-        Painting p2 = newPainting();
-        Painting p3 = newPainting();
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("Xyz");
+
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("1");
         a1.addToPaintingArray(p1);
+
+        Painting p2 = context.newObject(Painting.class);
+        p2.setPaintingTitle("2");
         a1.addToPaintingArray(p2);
+
+        Painting p3 = context.newObject(Painting.class);
+        p3.setPaintingTitle("3");
         a1.addToPaintingArray(p3);
-        ctxt.commitChanges();
+
+        context.commitChanges();
 
         // do select
         Expression e = ExpressionFactory.matchDbExp("paintingArray", p2);
         SelectQuery q = new SelectQuery(Artist.class, e);
 
         // *** TESTING THIS ***
-        List artists = ctxt.performQuery(q);
+        List<Artist> artists = context.performQuery(q);
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
 
     public void testSelectWithToManyQualifier() throws Exception {
-        // setup test, intentionally add more than 1 painting to artist
+
+        // intentionally add more than 1 painting to artist
         // since this reduces a chance that painting and artist primary keys
         // would accidentally match, resulting in success when it should fail
-        Artist a1 = newArtist();
-        Painting p1 = newPainting();
-        Painting p2 = newPainting();
-        Painting p3 = newPainting();
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("Xyz");
+
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("1");
         a1.addToPaintingArray(p1);
+
+        Painting p2 = context.newObject(Painting.class);
+        p2.setPaintingTitle("2");
         a1.addToPaintingArray(p2);
+
+        Painting p3 = context.newObject(Painting.class);
+        p3.setPaintingTitle("3");
         a1.addToPaintingArray(p3);
-        ctxt.commitChanges();
+
+        context.commitChanges();
 
         // do select
         Expression e = ExpressionFactory.matchExp("paintingArray", p2);
         SelectQuery q = new SelectQuery(Artist.class, e);
 
         // *** TESTING THIS ***
-        List artists = ctxt.performQuery(q);
+        List<Artist> artists = context.performQuery(q);
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
 
     public void testNewAdd() throws Exception {
-        Artist a1 = newArtist();
-        Painting p1 = newPainting();
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XyzQ");
+
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("1");
 
         // *** TESTING THIS ***
         a1.addToPaintingArray(p1);
@@ -89,109 +149,138 @@ public class CDOOne2ManyTest extends CayenneDOTestBase {
         assertSame(p1, a1.getPaintingArray().get(0));
         assertSame(a1, p1.getToArtist());
 
-        // do save
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context.commitChanges();
 
         // test database data
-        Artist a2 = fetchArtist();
-        assertEquals(1, a2.getPaintingArray().size());
-        assertEquals(paintingName, (a2.getPaintingArray().get(0))
-                .getPaintingTitle());
+
+        Object[] aRow = tArtist.select();
+        assertEquals("XyzQ", aRow[1]);
+
+        Object[] pRow = tPainting.select();
+        assertEquals("1", pRow[1]);
+        assertEquals(aRow[0], pRow[2]);
     }
 
     public void testNewAddMultiples() throws Exception {
-        Artist a1 = newArtist();
-        Painting p11 = newPainting();
-        Painting p12 = newPainting();
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XyzV");
 
-        // *** TESTING THIS ***
-        a1.addToPaintingArray(p11);
-        a1.addToPaintingArray(p12);
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("1");
+        a1.addToPaintingArray(p1);
+
+        Painting p2 = context.newObject(Painting.class);
+        p2.setPaintingTitle("2");
+        a1.addToPaintingArray(p2);
 
         // test before save
         assertEquals(2, a1.getPaintingArray().size());
-        assertSame(a1, p11.getToArtist());
-        assertSame(a1, p12.getToArtist());
+        assertSame(a1, p1.getToArtist());
+        assertSame(a1, p2.getToArtist());
 
-        // do save
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context.commitChanges();
+
+        ObjectContext context2 = runtime.getContext();
 
         // test database data
-        Artist a2 = fetchArtist();
+        Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
+                Artist.class));
         assertEquals(2, a2.getPaintingArray().size());
     }
 
     public void testRemove1() throws Exception {
-        Painting p1 = newPainting();
-        Gallery g1 = newGallery();
-        g1.addToPaintingArray(p1);
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XyzE");
 
-        // do save
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("1");
+        a1.addToPaintingArray(p1);
+
+        context.commitChanges();
+
+        ObjectContext context2 = runtime.getContext();
 
         // test database data
-        Gallery g2 = fetchGallery();
-        Painting p2 = (Painting) g2.getPaintingArray().get(0);
+        Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
+                Artist.class));
+        Painting p2 = a2.getPaintingArray().get(0);
 
         // *** TESTING THIS ***
-        g2.removeFromPaintingArray(p2);
+        a2.removeFromPaintingArray(p2);
 
         // test before save
-        assertEquals(0, g2.getPaintingArray().size());
+        assertEquals(0, a2.getPaintingArray().size());
         assertNull(p2.getToGallery());
 
         // do save II
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context2.commitChanges();
 
-        Painting p3 = fetchPainting();
-        assertNull(p3.getToGallery());
+        ObjectContext context3 = runtime.getContext();
 
-        Gallery g3 = fetchGallery();
-        assertEquals(0, g3.getPaintingArray().size());
+        Painting p3 = (Painting) Cayenne.objectForQuery(context3, new SelectQuery(
+                Painting.class));
+        assertNull(p3.getToArtist());
+
+        Artist a3 = (Artist) Cayenne.objectForQuery(context3, new SelectQuery(
+                Artist.class));
+        assertEquals(0, a3.getPaintingArray().size());
     }
 
     public void testRemove2() throws Exception {
-        Gallery g1 = newGallery();
-        g1.addToPaintingArray(newPainting());
-        g1.addToPaintingArray(newPainting());
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XyzQ");
 
-        // do save
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        Painting p01 = context.newObject(Painting.class);
+        p01.setPaintingTitle("1");
+        a1.addToPaintingArray(p01);
+
+        Painting p02 = context.newObject(Painting.class);
+        p02.setPaintingTitle("2");
+        a1.addToPaintingArray(p02);
+
+        context.commitChanges();
+
+        ObjectContext context2 = runtime.getContext();
 
         // test database data
-        Gallery g2 = fetchGallery();
-        assertEquals(2, g2.getPaintingArray().size());
-        Painting p2 = (Painting) g2.getPaintingArray().get(0);
+        Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
+                Artist.class));
+        assertEquals(2, a2.getPaintingArray().size());
+        Painting p2 = a2.getPaintingArray().get(0);
 
         // *** TESTING THIS ***
-        g2.removeFromPaintingArray(p2);
+        a2.removeFromPaintingArray(p2);
 
         // test before save
-        assertEquals(1, g2.getPaintingArray().size());
-        assertNull(p2.getToGallery());
+        assertEquals(1, a2.getPaintingArray().size());
+        assertNull(p2.getToArtist());
 
         // do save II
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context2.commitChanges();
 
-        Gallery g3 = fetchGallery();
-        assertEquals(1, g3.getPaintingArray().size());
+        ObjectContext context3 = runtime.getContext();
+
+        Artist a3 = (Artist) Cayenne.objectForQuery(context3, new SelectQuery(
+                Artist.class));
+        assertEquals(1, a3.getPaintingArray().size());
     }
 
     public void testPropagatePK() throws Exception {
-        // setup data
-        Gallery g1 = newGallery();
-        Exhibit e1 = newExhibit(g1);
-        Artist a1 = newArtist();
-        ctxt.commitChanges();
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XyBn");
+
+        Gallery g1 = context.newObject(Gallery.class);
+        g1.setGalleryName("Tyu");
+
+        Exhibit e1 = context.newObject(Exhibit.class);
+        e1.setToGallery(g1);
+        e1.setOpeningDate(new Date());
+        e1.setClosingDate(new Date());
+
+        context.commitChanges();
 
         // *** TESTING THIS ***
-        ArtistExhibit ae1 = (ArtistExhibit) ctxt.newObject("ArtistExhibit");
+        ArtistExhibit ae1 = context.newObject(ArtistExhibit.class);
         e1.addToArtistExhibitArray(ae1);
         a1.addToArtistExhibitArray(ae1);
 
@@ -201,6 +290,6 @@ public class CDOOne2ManyTest extends CayenneDOTestBase {
 
         // save
         // test "assertion" is that commit succeeds (PK of ae1 was set properly)
-        ctxt.commitChanges();
+        context.commitChanges();
     }
 }
