@@ -18,45 +18,55 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.event.MockEventManager;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.remote.ClientChannel;
-import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CayenneContextRefreshQueryTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class CayenneContextRefreshQueryTest extends ClientCase {
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private CayenneContext context;
+
+    private TableHelper tMtTable1;
+    private TableHelper tMtTable2;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
+
+        tMtTable2 = new TableHelper(dbHelper, "MT_TABLE2");
+        tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE");
     }
 
-    private CayenneContext createClientContext() {
-        ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
-        LocalConnection connection = new LocalConnection(serverChannel);
-        ClientChannel clientChannel = new ClientChannel(
-                connection,
-                false,
-                new MockEventManager(),
-                false);
-        return new CayenneContext(clientChannel);
+    private void createM1AndTwoM2sDataSet() throws Exception {
+        tMtTable1.insert(1, "g1", "s1");
+        tMtTable2.insert(1, 1, "g1").insert(2, 1, "g1");
+    }
+
+    private void delete1M2DataSet() throws Exception {
+        tMtTable2.delete().where("TABLE2_ID", 1).execute();
     }
 
     public void testRefreshToMany() throws Exception {
 
-        deleteTestData();
-        createTestData("testRefreshObjectToMany");
-
-        CayenneContext context = createClientContext();
+        createM1AndTwoM2sDataSet();
 
         ClientMtTable1 a = Cayenne.objectForPK(context, ClientMtTable1.class, 1);
         assertEquals(2, a.getTable2Array().size());
 
-        createTestData("testRefreshObjectToManyUpdate");
+        delete1M2DataSet();
 
         RefreshQuery refresh = new RefreshQuery(a);
         context.performGenericQuery(refresh);
