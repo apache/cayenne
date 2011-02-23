@@ -128,9 +128,7 @@ public class AutoAdapter implements DbAdapter {
     /**
      * Creates an AutoAdapter that can detect adapters known to Cayenne.
      * 
-     * @deprecated since 3.1 as
-     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
-     *             parameter is required.
+     * @deprecated since 3.1 use {@link #AutoAdapter(Provider)}
      */
     public AutoAdapter(DataSource dataSource) {
         this((DbAdapterFactory) null, dataSource);
@@ -140,9 +138,7 @@ public class AutoAdapter implements DbAdapter {
      * Creates an AutoAdapter with specified adapter factory and DataSource. If
      * adapterFactory is null, default factory is used.
      * 
-     * @deprecated since 3.1 in favor of
-     *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory}
-     *             configured via dependency injection.
+     * @deprecated since 3.1 use {@link #AutoAdapter(Provider)}
      */
     public AutoAdapter(DbAdapterFactory adapterFactory, final DataSource dataSource) {
         // sanity check
@@ -243,8 +239,6 @@ public class AutoAdapter implements DbAdapter {
     protected DbAdapter loadAdapter() {
         return adapterProvider.get();
     }
-
-    // ---- DbAdapter methods ----
 
     public String getBatchTerminator() {
         return getAdapter().getBatchTerminator();

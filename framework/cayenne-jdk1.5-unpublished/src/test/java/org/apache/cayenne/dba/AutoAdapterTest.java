@@ -19,64 +19,47 @@
 
 package org.apache.cayenne.dba;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-import com.mockrunner.mock.jdbc.MockConnection;
-import com.mockrunner.mock.jdbc.MockDataSource;
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class AutoAdapterTest extends ServerCase {
 
-public class AutoAdapterTest extends CayenneCase {
+    @Inject
+    private DataNode dataNode;
 
-    public void testAddFactory() {
+    public void testGetAdapter_Proxy() throws Exception {
+        Provider<DbAdapter> adapterProvider = mock(Provider.class);
+        when(adapterProvider.get()).thenReturn(dataNode.getAdapter());
 
-        DbAdapterFactory mockFactory = new DbAdapterFactory() {
-
-            public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-                return null;
-            }
-        };
-        AutoAdapter.addFactory(mockFactory);
-        assertTrue(AutoAdapter.defaultFactories.contains(mockFactory));
-        AutoAdapter.defaultFactories.remove(mockFactory);
-    }
-
-    public void testGetAdapter() {
-        MockDbAdapter realAdapter = new MockDbAdapter();
-        MockDbAdapterFactory factory = new MockDbAdapterFactory(realAdapter);
-
-        MockDataSource dataSource = new MockDataSource();
-        dataSource.setupConnection(new MockConnection());
-        AutoAdapter adapter = new AutoAdapter(factory, dataSource);
-
-        assertSame(realAdapter, adapter.getAdapter());
-    }
-
-    public void testGetDefaultAdapter() throws Exception {
-
-        AutoAdapter adapter = new AutoAdapter(getNode().getDataSource());
+        AutoAdapter adapter = new AutoAdapter(adapterProvider);
         DbAdapter detected = adapter.getAdapter();
-
-        assertNotNull(detected);
-        assertEquals(getNode().getAdapter().getClass(), detected.getClass());
+        assertSame(dataNode.getAdapter(), detected);
     }
 
     public void testCreateSQLTemplateAction() {
 
-        AutoAdapter adapter = new AutoAdapter(getNode().getDataSource());
+        Provider<DbAdapter> adapterProvider = mock(Provider.class);
+        when(adapterProvider.get()).thenReturn(dataNode.getAdapter());
+
+        AutoAdapter adapter = new AutoAdapter(adapterProvider);
         SQLTemplateAction action = (SQLTemplateAction) adapter.getAction(new SQLTemplate(
                 Artist.class,
-                "select * from artist"), getNode());
+                "select * from artist"), dataNode);
 
         // it is important for SQLTemplateAction to be used with unwrapped adapter, as the
         // adapter class name is used as a key to the correct SQL template.
-        assertNotNull(action);
         assertNotNull(action.getAdapter());
         assertFalse(action.getAdapter() instanceof AutoAdapter);
-        assertSame(adapter.getAdapter(), action.getAdapter());
+        assertSame(dataNode.getAdapter(), action.getAdapter());
     }
 }
