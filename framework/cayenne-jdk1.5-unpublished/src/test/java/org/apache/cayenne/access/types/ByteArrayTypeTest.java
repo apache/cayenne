@@ -19,27 +19,33 @@
 
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-/**
- */
-public class ByteArrayTypeTest extends CayenneCase {
+public class ByteArrayTypeTest extends TestCase {
 
     public void testTrimBytes1() throws Exception {
-        byte[] b1 = new byte[] { 1, 2, 3 };
+        byte[] b1 = new byte[] {
+                1, 2, 3
+        };
         byte[] b2 = ByteArrayType.trimBytes(b1);
         assertByteArraysEqual(b1, b2);
     }
 
     public void testTrimBytes2() throws Exception {
-        byte[] ref = new byte[] { 1, 2, 3 };
-        byte[] b1 = new byte[] { 1, 2, 3, 0, 0 };
+        byte[] ref = new byte[] {
+                1, 2, 3
+        };
+        byte[] b1 = new byte[] {
+                1, 2, 3, 0, 0
+        };
         byte[] b2 = ByteArrayType.trimBytes(b1);
         assertByteArraysEqual(ref, b2);
     }
 
     public void testTrimBytes3() throws Exception {
-        byte[] b1 = new byte[] { 0, 1, 2, 3 };
+        byte[] b1 = new byte[] {
+                0, 1, 2, 3
+        };
         byte[] b2 = ByteArrayType.trimBytes(b1);
         assertByteArraysEqual(b1, b2);
     }
@@ -50,8 +56,7 @@ public class ByteArrayTypeTest extends CayenneCase {
         assertByteArraysEqual(b1, b2);
     }
 
-    public static void assertByteArraysEqual(byte[] b1, byte[] b2)
-        throws Exception {
+    public static void assertByteArraysEqual(byte[] b1, byte[] b2) throws Exception {
         if (b1 == b2) {
             return;
         }
@@ -69,8 +74,7 @@ public class ByteArrayTypeTest extends CayenneCase {
         }
 
         if (b1.length != b2.length) {
-            fail(
-                "byte arrays differ (length differs: ["
+            fail("byte arrays differ (length differs: ["
                     + b1.length
                     + ","
                     + b2.length
