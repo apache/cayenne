@@ -204,6 +204,39 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 
+    public void testPostLoad_LocalObject() throws Exception {
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        ObjectContext context = createDataContext();
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        context.commitChanges();
+
+        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        MockCallingBackListener listener = new MockCallingBackListener();
+        registry.addListener(
+                LifecycleEvent.POST_LOAD,
+                Artist.class,
+                listener,
+                "publicCallback");
+
+        // reset context and read related object
+        context = createDataContext();
+
+        Artist a2 = (Artist) context.localObject(a1.getObjectId(), null);
+
+        assertEquals(PersistenceState.HOLLOW, a2.getPersistenceState());
+        assertEquals(0, a2.getPostLoaded());
+        assertNull(listener.getPublicCalledbackEntity());
+
+        a2.getArtistName();
+        assertEquals(1, a2.getPostLoaded());
+        assertSame(a2, listener.getPublicCalledbackEntity());
+    }
+
     public void testPreUpdate() {
 
         LifecycleCallbackRegistry registry = getDomain()
