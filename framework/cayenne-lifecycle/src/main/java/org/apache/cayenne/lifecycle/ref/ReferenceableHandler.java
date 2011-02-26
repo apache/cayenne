@@ -21,12 +21,12 @@ package org.apache.cayenne.lifecycle.ref;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.naming.Referenceable;
+
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.annotation.PostLoad;
-import org.apache.cayenne.annotation.PostPersist;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.lifecycle.uuid.UuidCoder;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -66,38 +66,17 @@ public class ReferenceableHandler {
             throw new NullPointerException("Null object");
         }
 
-        if (referenceable instanceof DataObject) {
+        if (referenceable instanceof Persistent) {
 
-            // even if this is not a registered Referenceable, don't see a
-            // problem if we return a UUID.
-            DataObject dataObject = (DataObject) referenceable;
-            String uuid = (String) dataObject
-                    .readPropertyDirectly(Referenceable.UUID_PROPERTY);
+            ObjectId id = ((Persistent) referenceable).getObjectId();
 
-            if (uuid == null) {
-                throw new IllegalArgumentException(
-                        "No UUID set. An object is either not a Referenceable "
-                                + "or is NEW or TRANSIENT.");
-            }
-
-            return uuid;
+            UuidCoder coder = getCoder(id.getEntityName());
+            return coder.toUuid(id);
         }
         else {
             throw new IllegalArgumentException("Object is not a DataObject: "
                     + referenceable.getClass().getName());
         }
-    }
-
-    /**
-     * A lifecycle listener method that initialzes DataObject UUID property.
-     */
-    @PostLoad(entityAnnotations = Referenceable.class)
-    @PostPersist(entityAnnotations = Referenceable.class)
-    protected void initProperties(DataObject object) {
-
-        UuidCoder coder = getCoder(object.getObjectId().getEntityName());
-        String uuid = coder.toUuid(object.getObjectId());
-        object.writePropertyDirectly(Referenceable.UUID_PROPERTY, uuid);
     }
 
     protected UuidCoder getCoder(String entityName) {

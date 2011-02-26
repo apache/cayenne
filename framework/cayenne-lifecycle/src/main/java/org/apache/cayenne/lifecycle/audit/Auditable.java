@@ -25,12 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.apache.cayenne.lifecycle.ref.Referenceable;
-
 /**
- * An annotation that adds auditable behavior to DataObjects. All Auditable objects must
- * be also tagged with {@link Referenceable} annotation, as audit records are based on
- * UUIDs.
+ * An annotation that adds auditing behavior to DataObjects.
  * 
  * @since 3.1
  */
