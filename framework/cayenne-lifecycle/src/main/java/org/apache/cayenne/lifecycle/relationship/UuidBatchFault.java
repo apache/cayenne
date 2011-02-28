@@ -77,7 +77,7 @@ class UuidBatchFault {
         // simple case of one query, handle it separately for performance reasons
         if (sources.size() == 1) {
 
-            String uuid = sources.iterator().next().getUuid();
+            String uuid = sources.get(0).getUuid();
             String entityName = UuidCoder.getEntityName(uuid);
 
             ObjEntity entity = resolver.getObjEntity(entityName);
