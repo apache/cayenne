@@ -16,6 +16,10 @@ Changes/New Features Since 3.1M2:
 CAY-1544 Remove jdk1.6 module from Cayenne sources
 CAY-1545 cayenne-lifecycle Referenceable handler refactoring
 
+Bug Fixes Since 3.1M2:
+
+CAY-1546 cayenne-lifecycle: UuidBatchFault concurrency issues
+
 ----------------------------------
 Release: 3.1 M2
 Date: 

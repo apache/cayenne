@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.cayenne.DataObject;
 
 /**
@@ -29,20 +32,13 @@ import org.apache.cayenne.DataObject;
 public class UuidRelationshipBatchFaultingStrategy implements
         UuidRelationshipFaultingStrategy {
 
-    private ThreadLocal<UuidBatchFault> batchFaultHolder;
+    private ThreadLocal<List<UuidBatchSourceItem>> batchSources;
 
     public UuidRelationshipBatchFaultingStrategy() {
-        this.batchFaultHolder = new ThreadLocal<UuidBatchFault>();
+        this.batchSources = new ThreadLocal<List<UuidBatchSourceItem>>();
     }
 
     public void afterObjectLoaded(DataObject object) {
-
-        UuidBatchFault batchFault = batchFaultHolder.get();
-
-        if (batchFault == null) {
-            batchFault = new UuidBatchFault(object.getObjectContext());
-            batchFaultHolder.set(batchFault);
-        }
 
         String uuidProperty = uuidPropertyName(object);
         String uuidRelationship = uuidRelationshipName(uuidProperty);
@@ -51,15 +47,34 @@ public class UuidRelationshipBatchFaultingStrategy implements
             object.writePropertyDirectly(uuidRelationship, null);
         }
         else {
-            batchFault.addUuid(uuid);
-            object.writePropertyDirectly(
-                    uuidRelationship,
-                    new UuidFault(batchFault, uuid));
+            List<UuidBatchSourceItem> sources = batchSources.get();
+
+            if (sources == null) {
+                sources = new ArrayList<UuidBatchSourceItem>();
+                batchSources.set(sources);
+            }
+
+            sources.add(new UuidBatchSourceItem(object, uuid, uuidRelationship));
         }
     }
 
     public void afterQuery() {
-        batchFaultHolder.set(null);
+
+        List<UuidBatchSourceItem> sources = batchSources.get();
+        if (sources != null) {
+            batchSources.set(null);
+
+            UuidBatchFault batchFault = new UuidBatchFault(sources
+                    .get(0)
+                    .getObject()
+                    .getObjectContext(), sources);
+
+            for (UuidBatchSourceItem source : sources) {
+                source.getObject().writePropertyDirectly(
+                        source.getUuidRelationship(),
+                        new UuidFault(batchFault, source.getUuid()));
+            }
+        }
     }
 
     String uuidRelationshipName(String uuidPropertyName) {
@@ -71,10 +86,9 @@ public class UuidRelationshipBatchFaultingStrategy implements
         UuidRelationship annotation = object.getClass().getAnnotation(
                 UuidRelationship.class);
 
-        // TODO: look it up in the superclasses??
         if (annotation == null) {
             throw new IllegalArgumentException(
-                    "Object class is not annotated with 'MixinRelationship': "
+                    "Object class is not annotated with @UuidRelationship: "
                             + object.getClass().getName());
         }
 
@@ -83,4 +97,5 @@ public class UuidRelationshipBatchFaultingStrategy implements
 
         return annotation.value();
     }
+
 }

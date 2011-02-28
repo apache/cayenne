@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,16 +47,8 @@ class UuidBatchFault {
     private Collection<String> uuids;
     private volatile Map<String, Object> resolved;
 
-    UuidBatchFault(ObjectContext context) {
+    UuidBatchFault(ObjectContext context, List<UuidBatchSourceItem> batchHolder) {
         this.context = context;
-    }
-
-    void addUuid(String uuid) {
-        if (uuids == null) {
-            uuids = new ArrayList<String>();
-        }
-
-        uuids.add(uuid);
     }
 
     Map<String, Object> getObjects() {
