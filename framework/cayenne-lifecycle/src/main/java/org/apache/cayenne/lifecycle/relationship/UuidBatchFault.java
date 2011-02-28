@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,11 +43,12 @@ import org.apache.cayenne.query.SelectQuery;
 class UuidBatchFault {
 
     private ObjectContext context;
-    private Collection<String> uuids;
+    private List<UuidBatchSourceItem> sources;
     private volatile Map<String, Object> resolved;
 
-    UuidBatchFault(ObjectContext context, List<UuidBatchSourceItem> batchHolder) {
+    UuidBatchFault(ObjectContext context, List<UuidBatchSourceItem> sources) {
         this.context = context;
+        this.sources = sources;
     }
 
     Map<String, Object> getObjects() {
@@ -68,16 +68,16 @@ class UuidBatchFault {
 
     private Map<String, Object> fetchObjects() {
 
-        if (uuids == null) {
+        if (sources == null) {
             return Collections.EMPTY_MAP;
         }
 
         EntityResolver resolver = context.getEntityResolver();
 
         // simple case of one query, handle it separately for performance reasons
-        if (uuids.size() == 1) {
+        if (sources.size() == 1) {
 
-            String uuid = uuids.iterator().next();
+            String uuid = sources.iterator().next().getUuid();
             String entityName = UuidCoder.getEntityName(uuid);
 
             ObjEntity entity = resolver.getObjEntity(entityName);
@@ -95,8 +95,9 @@ class UuidBatchFault {
         Map<String, SelectQuery> queriesByEntity = new HashMap<String, SelectQuery>();
         Map<String, UuidCoder> codersByEntity = new HashMap<String, UuidCoder>();
 
-        for (String uuid : uuids) {
+        for (UuidBatchSourceItem source : sources) {
 
+            String uuid = source.getUuid();
             String entityName = UuidCoder.getEntityName(uuid);
             UuidCoder coder = codersByEntity.get(entityName);
             SelectQuery query;
@@ -119,7 +120,7 @@ class UuidBatchFault {
             query.orQualifier(idExp);
         }
 
-        int capacity = (int) Math.ceil(uuids.size() / 0.75d);
+        int capacity = (int) Math.ceil(sources.size() / 0.75d);
         Map<String, Object> results = new HashMap<String, Object>(capacity);
 
         for (SelectQuery query : queriesByEntity.values()) {
