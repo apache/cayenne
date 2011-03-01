@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
@@ -55,7 +54,6 @@ import org.apache.cayenne.query.SelectQuery;
  * <li>DbEntity</li>
  * <li>DbAttribute</li>
  * <li>DbRelationship</li>
- * <li>DataNode</li>
  * <li>DataNodeDescriptor</li>
  * <li>DataDomain</li>
  * <li>Query</li>
@@ -67,6 +65,7 @@ import org.apache.cayenne.query.SelectQuery;
  * @since 3.1 moved from project package
  */
 // TODO andrus 03/10/2010: should we make that a pluggable DI strategy?
+// TODO andrus 03/01/2011: move to Modeler?
 public abstract class NamedObjectFactory {
 
     private static final Map<Class<?>, NamedObjectFactory> factories = new HashMap<Class<?>, NamedObjectFactory>();
@@ -77,7 +76,6 @@ public abstract class NamedObjectFactory {
         factories.put(DbEntity.class, new DbEntityFactory());
         factories.put(ObjAttribute.class, new ObjAttributeFactory());
         factories.put(DbAttribute.class, new DbAttributeFactory());
-        factories.put(DataNode.class, new DataNodeFactory());
         factories.put(DataNodeDescriptor.class, new DataNodeDescriptorFactory());
         factories.put(DataChannelDescriptor.class, new DataChannelDescriptorFactory());
         factories.put(DbRelationship.class, new DbRelationshipFactory(null, false));
@@ -435,25 +433,6 @@ public abstract class NamedObjectFactory {
                     name,
                     TypesMapping.NOT_DEFINED,
                     (DbEntity) namingContext);
-        }
-    }
-
-    static class DataNodeFactory extends NamedObjectFactory {
-
-        @Override
-        protected String nameBase() {
-            return "UntitledDataNode";
-        }
-
-        @Override
-        protected Object create(String name, Object namingContext) {
-            return new DataNode(name);
-        }
-
-        @Override
-        protected boolean isNameInUse(String name, Object namingContext) {
-            DataDomain domain = (DataDomain) namingContext;
-            return domain.getNode(name) != null;
         }
     }
 
