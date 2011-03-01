@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>3.1-SNAPSHOT</version>
+		<version>3.1M2.r1075296</version>
 	</parent>
 	<artifactId>cayenne-lifecycle</artifactId>
 	<name>Library: cayenne-lifecycle</name>
