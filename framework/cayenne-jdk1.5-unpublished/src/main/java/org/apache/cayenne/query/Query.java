@@ -28,7 +28,6 @@ import org.apache.cayenne.map.EntityResolver;
 
 /**
  * Defines minimal API of a query descriptor that is executable via Cayenne.
- * 
  */
 public interface Query extends Serializable, ConfigurationNode {
 
@@ -65,14 +64,13 @@ public interface Query extends Serializable, ConfigurationNode {
     SQLAction createSQLAction(SQLActionVisitor visitor);
 
     /**
-     * Returns a symbolic name of the query. The name may be used as a key to find queries
-     * stored in the DataMap. Some query implementors reuse the name as a QueryMetadata
-     * cache key. Generally the name can be null.
+     * Returns a symbolic name of the query. The name is normally used as a key to find
+     * queries stored in the DataMap.
      * 
      * @since 1.1
      */
     String getName();
-    
+
     /**
      * @since 3.1
      */
