@@ -30,7 +30,7 @@ application.
   subpackages. E.g. to instantiate the Cayenne stack in 3.1 you would do 
   something like that:
 
-  ServerRuntime runtime = new ServerRuntime("cayenne-UntitledDomain.xml");
+  ServerRuntime cayenneRuntime = new ServerRuntime("cayenne-UntitledDomain.xml");
   
   To obtain a new ObjectContext, the following API is used:
 		
