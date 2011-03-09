@@ -96,6 +96,8 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(BatchQueryBuilderFactory.class).toInstance(
+                        mock(BatchQueryBuilderFactory.class));
             }
         };
 

@@ -26,13 +26,13 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.log.JdbcEventLogger;
 
@@ -45,6 +45,9 @@ import org.apache.cayenne.log.JdbcEventLogger;
 public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     public static final String DETECTORS_LIST = "org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors";
+
+    @Inject
+    protected Injector injector;
 
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
@@ -119,6 +122,10 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
             if (adapter != null) {
                 jdbcEventLogger.log("Detected and installed adapter: "
                         + adapter.getClass().getName());
+                
+                // TODO: should detector do this??
+                injector.injectMembers(adapter);
+                
                 return adapter;
             }
         }
@@ -128,6 +135,6 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     protected DbAdapter defaultAdapter() {
         jdbcEventLogger.log("Failed to detect database type, using generic adapter");
-        return new JdbcAdapter();
+        return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
     }
 }
