@@ -36,7 +36,7 @@ import org.apache.cayenne.query.BatchQuery;
 public class InsertBatchQueryBuilder extends BatchQueryBuilder {
 
     public InsertBatchQueryBuilder(DbAdapter adapter) {
-        super.setAdapter(adapter);
+        super(adapter);
     }
 
     /**

@@ -34,12 +34,14 @@ import org.apache.cayenne.query.BatchQuery;
 /**
  * Superclass of batch query translators.
  */
-
 public abstract class BatchQueryBuilder {
 
     protected DbAdapter adapter;
     protected String trimFunction;
 
+    /**
+     * @deprecated since 3.1 unused
+     */
     public BatchQueryBuilder() {
     }
 
