@@ -24,6 +24,8 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
@@ -160,5 +162,8 @@ public class ServerModule implements Module {
         // binding AshwoodEntitySorter without scope, as this is a stateful object and is
         // configured by the owning domain
         binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
+
+        binder.bind(BatchQueryBuilderFactory.class).to(
+                DefaultBatchQueryBuilderFactory.class);
     }
 }

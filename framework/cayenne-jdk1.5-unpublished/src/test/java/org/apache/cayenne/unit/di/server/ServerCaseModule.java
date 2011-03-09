@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
@@ -68,6 +69,8 @@ public class ServerCaseModule implements Module {
         binder.bind(AccessStackAdapter.class).toProviderInstance(
                 new CayenneResourcesAccessStackAdapterProvider(resources));
         binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class);
+        binder.bind(BatchQueryBuilderFactory.class).toProvider(
+                ServerCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(DataChannelInterceptor.class).to(
                 ServerCaseDataChannelInterceptor.class);
         binder.bind(SQLTemplateCustomizer.class).toProviderInstance(
