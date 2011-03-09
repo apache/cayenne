@@ -26,9 +26,12 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,12 +86,10 @@ public class CayenneResources implements BeanFactoryAware {
     protected DataSourceInfo connectionInfo;
     protected DataSource dataSource;
     protected BeanFactory beanFactory;
-    protected Map adapterMap;
+    protected Map<String, AccessStackAdapter> adapterMap;
 
     /**
      * Returns shared test resource instance.
-     * 
-     * @return CayenneTestResources
      */
     public static CayenneResources getResources() {
         if (resources == null) {
@@ -108,8 +109,14 @@ public class CayenneResources implements BeanFactoryAware {
         return resources;
     }
 
-    public CayenneResources(Map adapterMap) {
+    public CayenneResources(Map<String, AccessStackAdapter> adapterMap) {
         this.adapterMap = adapterMap;
+
+        // kludge until we stop using Spring for unit tests and use Cayenne DI
+        BatchQueryBuilderFactory factory = new DefaultBatchQueryBuilderFactory();
+        for (AccessStackAdapter adapter : adapterMap.values()) {
+            ((JdbcAdapter) adapter.getAdapter()).setBatchQueryBuilderFactory(factory);
+        }
     }
 
     /**

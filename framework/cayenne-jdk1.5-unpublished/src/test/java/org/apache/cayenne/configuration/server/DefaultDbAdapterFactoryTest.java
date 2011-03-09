@@ -29,6 +29,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
@@ -126,6 +127,8 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(BatchQueryBuilderFactory.class).toInstance(
+                        mock(BatchQueryBuilderFactory.class));
             }
         };
 
