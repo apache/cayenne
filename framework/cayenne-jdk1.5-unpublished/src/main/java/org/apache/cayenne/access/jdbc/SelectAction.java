@@ -30,7 +30,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -46,7 +46,7 @@ public class SelectAction extends BaseSQLAction {
 
     protected SelectQuery query;
 
-    public SelectAction(SelectQuery query, DbAdapter adapter,
+    public SelectAction(SelectQuery query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(adapter, entityResolver);
         this.query = query;
@@ -69,7 +69,7 @@ public class SelectAction extends BaseSQLAction {
         SelectTranslator translator = createTranslator(connection);
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs;
-        
+
         // need to run in try-catch block to close statement properly if exception happens
         try {
             rs = prepStmt.executeQuery();

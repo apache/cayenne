@@ -125,6 +125,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Factory for creating QueryBuilders. Might be null, then default one will be used.
      * Server-only.
+     * 
+     * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
      */
     private BatchQueryBuilderFactory queryBuilderFactory;
 
@@ -868,6 +870,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Sets factory for creating QueryBuilders
+     * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
      */
     public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {
         this.queryBuilderFactory = queryBuilderFactory;
@@ -875,6 +878,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * @return factory for creating QueryBuilders. Might be null
+     * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
      */
     public BatchQueryBuilderFactory getQueryBuilderFactory() {
         return queryBuilderFactory;

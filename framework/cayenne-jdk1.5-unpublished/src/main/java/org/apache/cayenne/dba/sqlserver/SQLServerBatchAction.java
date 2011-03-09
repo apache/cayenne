@@ -27,7 +27,7 @@ import java.util.Collections;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
@@ -39,7 +39,7 @@ import org.apache.cayenne.query.InsertBatchQuery;
  */
 public class SQLServerBatchAction extends BatchAction {
 
-    public SQLServerBatchAction(BatchQuery batchQuery, DbAdapter adapter,
+    public SQLServerBatchAction(BatchQuery batchQuery, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(batchQuery, adapter, entityResolver);
     }
@@ -62,14 +62,14 @@ public class SQLServerBatchAction extends BatchAction {
 
             // important: turn off IDENTITY_INSERT as SQL Server won't be able to process
             // other identity columns in the same transaction
-            
+
             // TODO: if an error happens here this would mask the parent error
             if (identityOverride) {
                 setIdentityInsert(connection, false);
             }
         }
     }
-    
+
     protected void setIdentityInsert(Connection connection, boolean on)
             throws SQLException {
 
@@ -92,7 +92,7 @@ public class SQLServerBatchAction extends BatchAction {
             }
         }
     }
- 
+
     /**
      * Returns whether a table has identity columns.
      */
@@ -108,7 +108,7 @@ public class SQLServerBatchAction extends BatchAction {
 
         // find identity attributes
         for (Attribute attribute : query.getDbEntity().getAttributes()) {
-            if (((DbAttribute)attribute).isGenerated()) {
+            if (((DbAttribute) attribute).isGenerated()) {
                 return true;
             }
         }

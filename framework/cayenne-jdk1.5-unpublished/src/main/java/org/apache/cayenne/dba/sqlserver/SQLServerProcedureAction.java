@@ -32,7 +32,7 @@ import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
@@ -49,7 +49,7 @@ import org.apache.cayenne.query.Query;
  */
 public class SQLServerProcedureAction extends ProcedureAction {
 
-    public SQLServerProcedureAction(ProcedureQuery query, DbAdapter adapter,
+    public SQLServerProcedureAction(ProcedureQuery query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

@@ -36,7 +36,7 @@ class OracleActionBuilder extends JdbcActionBuilder {
     OracleActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         super(adapter, resolver);
     }
-    
+
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
         return new OracleSQLTemplateAction(query, adapter, getEntityResolver());
@@ -58,7 +58,7 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
             OracleBatchAction action = new OracleBatchAction(
                     query,
-                    getAdapter(),
+                    adapter,
                     getEntityResolver());
             action.setBatch(runningAsBatch);
             return action;

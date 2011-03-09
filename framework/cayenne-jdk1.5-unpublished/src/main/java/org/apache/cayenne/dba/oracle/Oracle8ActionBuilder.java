@@ -51,7 +51,7 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
     public SQLAction batchAction(BatchQuery query) {
         // special handling for LOB updates
         if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
-            // Special action for Oracle8.  See CAY-1307.
+            // Special action for Oracle8. See CAY-1307.
             return new Oracle8LOBBatchAction(query, getAdapter());
         }
         else {
@@ -62,7 +62,7 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
 
             OracleBatchAction action = new OracleBatchAction(
                     query,
-                    getAdapter(),
+                    adapter,
                     getEntityResolver());
             action.setBatch(runningAsBatch);
             return action;

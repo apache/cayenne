@@ -79,7 +79,8 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
 
                 // remove object set for dependent entity, so that it does not show up
                 // on post processing
-                List<Persistent> objects = objectsByDescriptor.get(descriptor.getClassDescriptor());
+                List<Persistent> objects = objectsByDescriptor.get(descriptor
+                        .getClassDescriptor());
                 if (objects.isEmpty()) {
                     continue;
                 }
@@ -108,9 +109,8 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
 
                     DeleteBatchQuery batch = (DeleteBatchQuery) batches.get(batchKey);
                     if (batch == null) {
-                        batch = new DataDomainDeleteQuery(parent.getDomain(),
-                                dbEntity, qualifierBuilder.getAttributes(), 
-                                nullQualifierNames, 27);
+                        batch = new DeleteBatchQuery(dbEntity, qualifierBuilder
+                                .getAttributes(), nullQualifierNames, 27);
                         batch.setUsingOptimisticLocking(qualifierBuilder
                                 .isUsingOptimisticLocking());
                         batches.put(batchKey, batch);

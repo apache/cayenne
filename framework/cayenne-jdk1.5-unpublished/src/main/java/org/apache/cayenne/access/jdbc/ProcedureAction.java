@@ -32,7 +32,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -54,7 +54,7 @@ public class ProcedureAction extends BaseSQLAction {
      */
     protected int processedResultSets;
 
-    public ProcedureAction(ProcedureQuery query, DbAdapter adapter,
+    public ProcedureAction(ProcedureQuery query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(adapter, entityResolver);
         this.query = query;
@@ -71,7 +71,7 @@ public class ProcedureAction extends BaseSQLAction {
 
         try {
             initStatement(statement);
-            
+
             // stored procedure may contain a mixture of update counts and result sets,
             // and out parameters. Read out parameters first, then
             // iterate until we exhaust all results
@@ -230,13 +230,16 @@ public class ProcedureAction extends BaseSQLAction {
             delegate.nextRows(query, Collections.singletonList(result));
         }
     }
-    
+
     /**
      * Initializes statement with query parameters
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     void initStatement(CallableStatement statement) throws Exception {
-        int statementFetchSize = query.getMetaData(getEntityResolver()).getStatementFetchSize();
+        int statementFetchSize = query
+                .getMetaData(getEntityResolver())
+                .getStatementFetchSize();
         if (statementFetchSize != 0) {
             statement.setFetchSize(statementFetchSize);
         }

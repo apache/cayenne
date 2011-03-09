@@ -28,7 +28,7 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 
@@ -37,7 +37,7 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class MySQLProcedureAction extends ProcedureAction {
 
-    public MySQLProcedureAction(ProcedureQuery query, DbAdapter adapter,
+    public MySQLProcedureAction(ProcedureQuery query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

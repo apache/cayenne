@@ -65,9 +65,8 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                 qualifierBuilder.reset(descriptor);
                 boolean isRootDbEntity = entity.getDbEntity() == dbEntity;
 
-                Iterator<Persistent> objects = objectsByDescriptor
-                        .get(descriptor.getClassDescriptor())
-                        .iterator();
+                Iterator<Persistent> objects = objectsByDescriptor.get(
+                        descriptor.getClassDescriptor()).iterator();
                 while (objects.hasNext()) {
                     Persistent o = objects.next();
                     ObjectDiff diff = parent.objectDiff(o.getObjectId());
@@ -107,8 +106,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
                     UpdateBatchQuery batch = (UpdateBatchQuery) batches.get(batchKey);
                     if (batch == null) {
-                        batch = new DataDomainUpdateQuery(
-                                parent.getDomain(),
+                        batch = new UpdateBatchQuery(
                                 dbEntity,
                                 qualifierBuilder.getAttributes(),
                                 updatedAttributes(dbEntity, snapshot),

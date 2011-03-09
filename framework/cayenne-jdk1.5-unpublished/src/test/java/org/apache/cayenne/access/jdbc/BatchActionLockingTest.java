@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -48,7 +47,7 @@ public class BatchActionLockingTest extends LockingCase {
         EntityResolver resolver = getDomain().getEntityResolver();
 
         // test with adapter that supports keys...
-        DbAdapter adapter = buildAdapter(true);
+        JdbcAdapter adapter = buildAdapter(true);
 
         DbEntity dbEntity = resolver
                 .lookupObjEntity(SimpleLockingTestEntity.class)
@@ -94,7 +93,7 @@ public class BatchActionLockingTest extends LockingCase {
         EntityResolver resolver = getDomain().getEntityResolver();
 
         // test with adapter that supports keys...
-        DbAdapter adapter = buildAdapter(true);
+        JdbcAdapter adapter = buildAdapter(true);
 
         DbEntity dbEntity = resolver
                 .lookupObjEntity(SimpleLockingTestEntity.class)
@@ -140,7 +139,7 @@ public class BatchActionLockingTest extends LockingCase {
         assertEquals(0, mockConnection.getNumberRollbacks());
     }
 
-    DbAdapter buildAdapter(boolean supportGeneratedKeys) {
+    JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
         JdbcAdapter adapter = new JdbcAdapter();
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
         return adapter;

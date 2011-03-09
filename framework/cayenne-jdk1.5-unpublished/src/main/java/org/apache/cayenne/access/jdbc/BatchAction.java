@@ -34,7 +34,7 @@ import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
@@ -51,18 +51,13 @@ public class BatchAction extends BaseSQLAction {
     protected boolean batch;
     protected BatchQuery query;
     protected RowDescriptor keyRowDescriptor;
-    
-    /**
-     * Custom BatchQueryBuilderFactory. Can be null, then default will be used.
-     */
-    protected BatchQueryBuilderFactory queryBuilderFactory;
 
-    public BatchAction(BatchQuery batchQuery, DbAdapter adapter,
+    public BatchAction(BatchQuery batchQuery, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(adapter, entityResolver);
         this.query = batchQuery;
     }
-    
+
     /**
      * @return Query which originated this action
      */
@@ -91,25 +86,14 @@ public class BatchAction extends BaseSQLAction {
             runAsIndividualQueries(connection, queryBuilder, observer, generatesKeys);
         }
     }
-    
-    /**
-     * @return factory that creates BatchQueryBuilders
-     */
-    public BatchQueryBuilderFactory getQueryBuilderFactory() {
-        return queryBuilderFactory;
-    }
-    
-    public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {
-        this.queryBuilderFactory = queryBuilderFactory;
-    }
 
     protected BatchQueryBuilder createBuilder() throws CayenneException {
-        BatchQueryBuilderFactory factory = getQueryBuilderFactory();
-           
+        BatchQueryBuilderFactory factory = adapter.getBatchQueryBuilderFactory();
+
         if (factory == null) {
-            factory = new DefaultBatchQueryBuilderFactory();
+            throw new IllegalStateException("Adapter BatchQueryBuilderFactory is null");
         }
-        
+
         if (query instanceof InsertBatchQuery) {
             return factory.createInsertQueryBuilder(adapter);
         }

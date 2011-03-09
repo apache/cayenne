@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.postgres;
 import java.sql.Connection;
 
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerProcedureAction;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -37,7 +37,7 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class PostgresProcedureAction extends SQLServerProcedureAction {
 
-    PostgresProcedureAction(ProcedureQuery query, DbAdapter adapter,
+    PostgresProcedureAction(ProcedureQuery query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

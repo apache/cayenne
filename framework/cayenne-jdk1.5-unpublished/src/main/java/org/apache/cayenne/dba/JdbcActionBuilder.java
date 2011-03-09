@@ -83,7 +83,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     /**
      * Returns DbAdapter used associated with this action builder.
      */
-    public DbAdapter getAdapter() {
+    public JdbcAdapter getAdapter() {
         return adapter;
     }
 

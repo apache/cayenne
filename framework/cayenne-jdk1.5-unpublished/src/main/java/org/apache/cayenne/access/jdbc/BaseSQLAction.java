@@ -27,7 +27,7 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -40,15 +40,15 @@ import org.apache.cayenne.query.SQLAction;
  */
 public abstract class BaseSQLAction implements SQLAction {
 
-    protected DbAdapter adapter;
+    protected JdbcAdapter adapter;
     protected EntityResolver entityResolver;
 
-    public BaseSQLAction(DbAdapter adapter, EntityResolver entityResolver) {
+    public BaseSQLAction(JdbcAdapter adapter, EntityResolver entityResolver) {
         this.adapter = adapter;
         this.entityResolver = entityResolver;
     }
 
-    public DbAdapter getAdapter() {
+    public JdbcAdapter getAdapter() {
         return adapter;
     }
 

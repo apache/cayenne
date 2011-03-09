@@ -23,7 +23,7 @@ import java.sql.Connection;
 
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -32,7 +32,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OracleSelectAction extends SelectAction {
 
-    public OracleSelectAction(SelectQuery query, DbAdapter adapter,
+    public OracleSelectAction(SelectQuery query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

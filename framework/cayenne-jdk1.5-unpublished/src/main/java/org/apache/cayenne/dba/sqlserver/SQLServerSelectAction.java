@@ -22,16 +22,17 @@ import java.sql.Connection;
 
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 
 public class SQLServerSelectAction extends SelectAction {
 
-	public SQLServerSelectAction(SelectQuery query, DbAdapter adapter, EntityResolver entityResolver) {
-		super(query, adapter, entityResolver);
-	}
-	
+    public SQLServerSelectAction(SelectQuery query, JdbcAdapter adapter,
+            EntityResolver entityResolver) {
+        super(query, adapter, entityResolver);
+    }
+
     @Override
     protected SelectTranslator createTranslator(Connection connection) {
         SelectTranslator translator = new SQLServerSelectTranslator();
@@ -41,5 +42,5 @@ public class SQLServerSelectAction extends SelectAction {
         translator.setConnection(connection);
         return translator;
     }
-    
+
 }

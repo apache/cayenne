@@ -22,7 +22,7 @@ import java.sql.Connection;
 
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -31,7 +31,8 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class MySQLSelectAction extends SelectAction {
 
-    MySQLSelectAction(SelectQuery query, DbAdapter adapter, EntityResolver entityResolver) {
+    MySQLSelectAction(SelectQuery query, JdbcAdapter adapter,
+            EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }
 

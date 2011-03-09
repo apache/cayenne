@@ -29,12 +29,14 @@ import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -70,6 +72,12 @@ public class JdbcAdapter implements DbAdapter {
     protected ResourceLocator resourceLocator;
 
     /**
+     * @since 3.1
+     */
+    @Inject
+    protected BatchQueryBuilderFactory batchQueryBuilderFactory;
+
+    /**
      * @since 3.0
      */
     public String getIdentifiersStartQuote() {
@@ -100,7 +108,6 @@ public class JdbcAdapter implements DbAdapter {
         this.configureExtendedTypes(extendedTypes);
         this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
         initIdentifiersQuotes();
-
     }
 
     /**
@@ -585,5 +592,20 @@ public class JdbcAdapter implements DbAdapter {
         else {
             return new NoQuoteStrategy();
         }
+    }
+
+    /**
+     * @since 3.1
+     */
+    public BatchQueryBuilderFactory getBatchQueryBuilderFactory() {
+        return batchQueryBuilderFactory;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setBatchQueryBuilderFactory(
+            BatchQueryBuilderFactory batchQueryBuilderFactory) {
+        this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
 }

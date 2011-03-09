@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
@@ -40,7 +39,7 @@ public class BatchActionTest extends ServerCase {
         EntityResolver resolver = runtime.getChannel().getEntityResolver();
 
         // test with adapter that supports keys
-        DbAdapter adapter = buildAdapter(true);
+        JdbcAdapter adapter = buildAdapter(true);
 
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.lookupObjEntity(
                 GeneratedColumnTestEntity.class).getDbEntity(), 5);
@@ -55,7 +54,7 @@ public class BatchActionTest extends ServerCase {
         EntityResolver resolver = runtime.getChannel().getEntityResolver();
 
         // test with adapter that does not support keys...
-        DbAdapter adapter = buildAdapter(false);
+        JdbcAdapter adapter = buildAdapter(false);
 
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.lookupObjEntity(
                 GeneratedColumnTestEntity.class).getDbEntity(), 5);
@@ -66,7 +65,7 @@ public class BatchActionTest extends ServerCase {
         assertFalse(new BatchAction(batch2, adapter, resolver).hasGeneratedKeys());
     }
 
-    DbAdapter buildAdapter(boolean supportGeneratedKeys) {
+    JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
         JdbcAdapter adapter = new JdbcAdapter();
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
         return adapter;

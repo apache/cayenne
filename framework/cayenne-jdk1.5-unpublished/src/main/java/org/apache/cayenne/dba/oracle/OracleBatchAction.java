@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 
@@ -31,7 +31,8 @@ import org.apache.cayenne.query.BatchQuery;
  */
 class OracleBatchAction extends BatchAction {
 
-    OracleBatchAction(BatchQuery batchQuery, DbAdapter adapter, EntityResolver entityResolver) {
+    OracleBatchAction(BatchQuery batchQuery, JdbcAdapter adapter,
+            EntityResolver entityResolver) {
         super(batchQuery, adapter, entityResolver);
     }
 
