@@ -34,9 +34,20 @@ public class UuidRelationshipHandlerTest extends TestCase {
 
     private ServerRuntime runtime;
 
+    private TableHelper rootTable;
+    private TableHelper e1Table;
+
     @Override
     protected void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
+
+        DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
+
+        rootTable = new TableHelper(dbHelper, "UUID_ROOT1").setColumns("ID", "UUID");
+        rootTable.deleteAll();
+
+        e1Table = new TableHelper(dbHelper, "E1").setColumns("ID");
+        e1Table.deleteAll();
     }
 
     @Override
@@ -46,14 +57,6 @@ public class UuidRelationshipHandlerTest extends TestCase {
 
     public void testRelate_Existing() throws Exception {
 
-        DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
-
-        TableHelper rootTable = new TableHelper(dbHelper, "UUID_ROOT1").setColumns(
-                "ID",
-                "UUID");
-        rootTable.deleteAll();
-        TableHelper e1Table = new TableHelper(dbHelper, "E1").setColumns("ID");
-        e1Table.deleteAll();
         e1Table.insert(1);
 
         ObjectContext context = runtime.getContext();
@@ -68,9 +71,29 @@ public class UuidRelationshipHandlerTest extends TestCase {
 
         assertEquals("E1:1", r1.getUuid());
         assertSame(e1, r1.readPropertyDirectly("cay:related:uuid"));
-        
+
         context.commitChanges();
-        
+
+        Object[] r1x = rootTable.select();
+        assertEquals("E1:1", r1x[1]);
+    }
+
+    public void testRelate_New() throws Exception {
+
+        ObjectContext context = runtime.getContext();
+        E1 e1 = context.newObject(E1.class);
+
+        UuidRoot1 r1 = context.newObject(UuidRoot1.class);
+
+        ReferenceableHandler refHandler = new ReferenceableHandler(context
+                .getEntityResolver());
+        UuidRelationshipHandler handler = new UuidRelationshipHandler(refHandler);
+        handler.relate(r1, e1);
+
+        assertSame(e1, r1.readPropertyDirectly("cay:related:uuid"));
+
+        context.commitChanges();
+
         Object[] r1x = rootTable.select();
         assertEquals("E1:1", r1x[1]);
     }
