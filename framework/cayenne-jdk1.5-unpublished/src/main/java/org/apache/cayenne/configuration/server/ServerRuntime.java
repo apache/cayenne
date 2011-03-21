@@ -20,7 +20,10 @@ package org.apache.cayenne.configuration.server;
 
 import java.util.Collection;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Module;
@@ -70,4 +73,36 @@ public class ServerRuntime extends CayenneRuntime {
         return injector.getInstance(DataDomain.class);
     }
 
+    /**
+     * Provides access to the JDBC DataSource assigned to a given DataNode. A null
+     * argument will work if there's only one DataNode configured.
+     * <p>
+     * Normally Cayenne applications don't need to access DataSource or any other JDBC
+     * code directly, however in some unusual conditions it may be needed, and this method
+     * provides a shortcut to raw JDBC.
+     */
+    public DataSource getDataSource(String dataNodeName) {
+        DataDomain domain = getDataDomain();
+
+        if (dataNodeName != null) {
+            DataNode node = domain.getNode(dataNodeName);
+            if (node == null) {
+                throw new IllegalArgumentException("Unknown DataNode name: "
+                        + dataNodeName);
+            }
+
+            return node.getDataSource();
+        }
+
+        else {
+            Collection<DataNode> nodes = domain.getDataNodes();
+            if (nodes.size() != 1) {
+                throw new IllegalArgumentException(
+                        "If DataNode name is not specified, DataDomain must have exactly 1 DataNode. Actual node count: "
+                                + nodes.size());
+            }
+
+            return nodes.iterator().next().getDataSource();
+        }
+    }
 }

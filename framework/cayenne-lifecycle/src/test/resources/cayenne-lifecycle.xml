@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain project-version="6">
+	<map name="lifecycle-map"/>
+
+	<node name="lifecycle-db"
+		 factory="org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory"
+		 schema-update-strategy="org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy"
+		>
+		<map-ref name="lifecycle-map"/>
+		<data-source>
+			<driver value="org.hsqldb.jdbcDriver"/>
+			<url value="jdbc:hsqldb:mem:lifecycle"/>
+			<connectionPool min="1" max="1"/>
+			<login userName="sa"/>
+		</data-source>
+	</node>
+</domain>
