@@ -261,16 +261,20 @@ public class Application {
 
         Collection details = new ArrayList<String>();
         String[] keys = null;
+        ArrayList<String> values = new ArrayList<String>();
 
         try {
             keys = classLoaderPreference.keys();
+            for (String cpKey : keys) {
+            	values.add(classLoaderPreference.get(cpKey, ""));
+            }
         }
         catch (BackingStoreException e) {
             // do nothing
         }
 
-        for (int i = 0; i < keys.length; i++) {
-            details.add(keys[i]);
+        for (int i = 0; i < values.size(); i++) {
+            details.add(values.get(i));
         }
 
         if (details.size() > 0) {

@@ -19,6 +19,7 @@ CAY-1549 Migrate BatchQueryBuilderFactory to DI
 
 Bug Fixes Since 3.1M2:
 
+CAY-1526 Preferences: java.lang.IllegalArgumentException: Key too long
 CAY-1546 cayenne-lifecycle: UuidBatchFault concurrency issues
 
 ----------------------------------
