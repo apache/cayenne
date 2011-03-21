@@ -94,7 +94,7 @@ public class UuidCoder {
 
     public String toUuid(ObjectId id) {
 
-        if (id.isTemporary()) {
+        if (id.isTemporary() && !id.isReplacementIdAttached()) {
             throw new IllegalArgumentException(
                     "Can't create UUID for a temporary ObjectId");
         }
