@@ -20,6 +20,7 @@ package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.lifecycle.ref.ReferenceableHandler;
+import org.apache.cayenne.lifecycle.relationship.update.UuidPropagatedValueFactory;
 
 /**
  * @since 3.1
@@ -77,15 +78,20 @@ public class UuidRelationshipHandler {
                         "'from' and 'to' objects are registered in different ObjectContexts");
             }
 
+            from.writePropertyDirectly(relationship, to);
+
             if (to.getObjectId().isTemporary()
                     && !to.getObjectId().isReplacementIdAttached()) {
-                throw new UnsupportedOperationException("TODO - eager ID generation");
+
+                // defer UUID resolving till commit
+                from.writeProperty(property, new UuidPropagatedValueFactory(
+                        referenceableHandler,
+                        to));
             }
-
-            String uuid = referenceableHandler.getUuid(to);
-
-            from.writeProperty(property, uuid);
-            from.writePropertyDirectly(relationship, to);
+            else {
+                String uuid = referenceableHandler.getUuid(to);
+                from.writeProperty(property, uuid);
+            }
         }
         else {
             from.writeProperty(property, null);

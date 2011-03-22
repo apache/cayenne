@@ -41,6 +41,12 @@ public class UuidRelationshipHandlerTest extends TestCase {
     protected void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
 
+        // a filter is required to invalidate root objects after commit
+        UuidRelationshipFilter filter = new UuidRelationshipFilter();
+        runtime.getDataDomain().addFilter(filter);
+        runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(
+                filter);
+
         DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
 
         rootTable = new TableHelper(dbHelper, "UUID_ROOT1").setColumns("ID", "UUID");
@@ -94,7 +100,40 @@ public class UuidRelationshipHandlerTest extends TestCase {
 
         context.commitChanges();
 
+        int id = Cayenne.intPKForObject(e1);
+
         Object[] r1x = rootTable.select();
-        assertEquals("E1:1", r1x[1]);
+        assertEquals("E1:" + id, r1x[1]);
+        assertEquals("E1:" + id, r1.getUuid());
+    }
+
+    public void testRelate_Change() throws Exception {
+
+        e1Table.insert(1);
+        rootTable.insert(1, "E1:1");
+
+        ObjectContext context = runtime.getContext();
+
+        UuidRoot1 r1 = Cayenne.objectForPK(context, UuidRoot1.class, 1);
+        assertEquals("E1:1", r1.getUuid());
+
+        E1 e1 = context.newObject(E1.class);
+
+        ReferenceableHandler refHandler = new ReferenceableHandler(context
+                .getEntityResolver());
+        UuidRelationshipHandler handler = new UuidRelationshipHandler(refHandler);
+        handler.relate(r1, e1);
+
+        assertSame(e1, r1.readPropertyDirectly("cay:related:uuid"));
+
+        context.commitChanges();
+
+        int id = Cayenne.intPKForObject(e1);
+        assertFalse(1 == id);
+
+        Object[] r1x = rootTable.select();
+        assertEquals("E1:" + id, r1x[1]);
+        assertEquals("E1:" + id, r1.getUuid());
+        assertSame(e1, r1.readProperty("cay:related:uuid"));
     }
 }

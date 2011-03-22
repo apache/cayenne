@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
+import java.util.Collections;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelFilterChain;
@@ -26,6 +28,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
+import org.apache.cayenne.annotation.PostUpdate;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
@@ -51,7 +54,7 @@ public class UuidRelationshipFilter implements DataChannelFilter {
             GraphDiff diff,
             int syncType,
             DataChannelFilterChain chain) {
-        // noop for now
+        // noop ... all work is done via listeners...
         return chain.onSync(context, diff, syncType);
     }
 
@@ -68,12 +71,18 @@ public class UuidRelationshipFilter implements DataChannelFilter {
         }
     }
 
+    @PostUpdate(entityAnnotations = UuidRelationship.class)
+    @PostPersist(entityAnnotations = UuidRelationship.class)
+    void postCommit(DataObject object) {
+        // invalidate after commit to ensure UUID property is re-read...
+        object.getObjectContext().invalidateObjects(Collections.singleton(object));
+    }
+
     /**
      * A lifecycle callback method that delegates object post load event processing to the
      * underlying faulting strategy.
      */
     @PostLoad(entityAnnotations = UuidRelationship.class)
-    @PostPersist(entityAnnotations = UuidRelationship.class)
     void postLoad(DataObject object) {
         faultingStrategy.afterObjectLoaded(object);
     }
