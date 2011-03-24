@@ -128,6 +128,7 @@ CAY-1496 Problem in derby: comparison operators are not supported on Clob object
 CAY-1503 POST_LOAD is not called on prefetched objects
 CAY-1505 Callbacks: POST_UPDATE is called on updated removed object, instead of POST_REMOVE
 CAY-1506 Reserverd words mapping in WHERE clause
+CAY-1518 cgen: duplicate callback methods
 
 ----------------------------------
 Release: 3.0.1
