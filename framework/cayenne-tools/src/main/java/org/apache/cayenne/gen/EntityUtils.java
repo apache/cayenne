@@ -24,7 +24,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.*;
 
 import java.util.Collection;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 /**
  * Attributes and Methods for working with ObjEntities.
@@ -62,11 +62,11 @@ public class EntityUtils {
 
         this.objEntity = objEntity;
 
-
-        this.callbackNames = new ArrayList<String>();
-        for(CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
+        this.callbackNames = new LinkedHashSet<String>();
+        for (CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
             callbackNames.addAll(cb.getCallbackMethods());
         }
+        
     }
 
     EntityUtils(DataMap dataMap, ObjEntity objEntity, String baseClassName,
@@ -84,8 +84,8 @@ public class EntityUtils {
 
         this.objEntity = objEntity;
 
-        this.callbackNames = new ArrayList<String>();
-        for(CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
+        this.callbackNames = new LinkedHashSet<String>();
+        for (CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
             callbackNames.addAll(cb.getCallbackMethods());
         }
     }
