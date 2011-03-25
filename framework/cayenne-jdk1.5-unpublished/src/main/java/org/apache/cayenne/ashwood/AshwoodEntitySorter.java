@@ -399,13 +399,13 @@ public class AshwoodEntitySorter implements EntitySorter {
 
     private final static class ComponentRecord {
 
-        ComponentRecord(int index, Collection<?> component) {
+        ComponentRecord(int index, Collection<DbEntity> component) {
             this.index = index;
             this.component = component;
         }
 
         int index;
-        Collection<?> component;
+        Collection<DbEntity> component;
     }
 
 }
