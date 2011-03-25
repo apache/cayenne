@@ -30,6 +30,8 @@ import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostUpdate;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -43,6 +45,29 @@ public class UuidRelationshipFilter implements DataChannelFilter {
 
     public void init(DataChannel channel) {
         this.faultingStrategy = createFaultingStrategy();
+        registerUuidRelationships(channel);
+    }
+
+    protected void registerUuidRelationships(DataChannel channel) {
+
+        // TODO: create a DI-managed chain of mapping post processors, and extract this
+        // code to a UuidRelationshipModule. The following code in DataDomainProvider
+        // should be in the standard chain, and this method code - in an extension
+        // dataDomain.getEntityResolver().applyDBLayerDefaults();
+        // dataDomain.getEntityResolver().applyObjectLayerDefaults();
+
+        EntityResolver resolver = channel.getEntityResolver();
+        for (ObjEntity entity : resolver.getObjEntities()) {
+
+            Class<?> type = resolver
+                    .getClassDescriptor(entity.getName())
+                    .getObjectClass();
+            
+            UuidRelationship a = type.getAnnotation(UuidRelationship.class);
+            if(a != null) {
+                
+            }
+        }
     }
 
     protected UuidRelationshipFaultingStrategy createFaultingStrategy() {

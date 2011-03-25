@@ -17,6 +17,7 @@ CAY-1544 Remove jdk1.6 module from Cayenne sources
 CAY-1545 cayenne-lifecycle Referenceable handler refactoring
 CAY-1547 cayenne-lifecycle: support for setting UuidRelationships
 CAY-1549 Migrate BatchQueryBuilderFactory to DI
+CAY-1553 cayenne-lifecycle: @SortWeight annotation 
 
 Bug Fixes Since 3.1M2:
 
