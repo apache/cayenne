@@ -31,8 +31,19 @@ public interface EntitySorter {
 
     /**
      * Initializes a list of DataMaps used by the sorter.
+     * 
+     * @deprecated since 3.1 {@link #setEntityResolver(EntityResolver)} is used, and this
+     *             method is never called.
      */
     void setDataMaps(Collection<DataMap> dataMaps);
+
+    /**
+     * Sets EntityResolver for this sorter. All entities present in the resolver will be
+     * used to determine sort ordering.
+     * 
+     * @since 3.1
+     */
+    void setEntityResolver(EntityResolver resolver);
 
     /**
      * Sorts a list of DbEntities.

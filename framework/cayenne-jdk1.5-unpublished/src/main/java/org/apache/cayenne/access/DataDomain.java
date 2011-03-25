@@ -886,7 +886,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     void refreshEntitySorter() {
         if (entitySorter != null) {
-            entitySorter.setDataMaps(getDataMaps());
+            entitySorter.setEntityResolver(getEntityResolver());
         }
     }
 

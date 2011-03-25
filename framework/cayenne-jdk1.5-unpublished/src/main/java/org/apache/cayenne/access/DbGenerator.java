@@ -45,6 +45,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -54,7 +55,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Utility class that generates database schema based on Cayenne mapping. It is a logical
  * counterpart of DbLoader class.
- * 
  */
 public class DbGenerator {
 
@@ -569,7 +569,7 @@ public class DbGenerator {
         // sort table list
         if (tables.size() > 1) {
             EntitySorter sorter = new AshwoodEntitySorter();
-            sorter.setDataMaps(Collections.singleton(map));
+            sorter.setEntityResolver(new EntityResolver(Collections.singleton(map)));
             sorter.sortDbEntities(tables, false);
         }
 

@@ -68,7 +68,7 @@ public class AshwoodEntitySorterTest extends ServerCase {
         tReflexiveAndToOne.insert(3, 2, 1, "r3");
         
         AshwoodEntitySorter sorter = new AshwoodEntitySorter();
-        sorter.setDataMaps(context.getEntityResolver().getDataMaps());
+        sorter.setEntityResolver(context.getEntityResolver());
 
         ObjEntity entity = context.getEntityResolver().lookupObjEntity(
                 ReflexiveAndToOne.class);

@@ -58,19 +58,18 @@ import org.apache.commons.collections.comparators.ReverseComparator;
  */
 public class AshwoodEntitySorter implements EntitySorter {
 
-    protected Collection<DataMap> dataMaps;
+    protected EntityResolver entityResolver;
     protected Map<DbEntity, ComponentRecord> components;
     protected Map<DbEntity, List<DbRelationship>> reflexiveDbEntities;
 
-    protected DbEntityComparator dbEntityComparator;
-    protected ObjEntityComparator objEntityComparator;
+    protected Comparator<DbEntity> dbEntityComparator;
+    protected Comparator<ObjEntity> objEntityComparator;
 
     private volatile boolean dirty;
 
     public AshwoodEntitySorter() {
         dbEntityComparator = new DbEntityComparator();
         objEntityComparator = new ObjEntityComparator();
-        dataMaps = Collections.EMPTY_LIST;
         dirty = true;
     }
 
@@ -105,7 +104,10 @@ public class AshwoodEntitySorter implements EntitySorter {
         }
     }
 
-    private void doIndexSorter() {
+    /**
+     * Reindexes internal sorter without synchronization.
+     */
+    protected void doIndexSorter() {
 
         Map<DbEntity, List<DbRelationship>> reflexiveDbEntities = new HashMap<DbEntity, List<DbRelationship>>(
                 32);
@@ -113,8 +115,9 @@ public class AshwoodEntitySorter implements EntitySorter {
         Digraph<DbEntity, List<DbAttribute>> referentialDigraph = new MapDigraph<DbEntity, List<DbAttribute>>();
 
         Map<String, DbEntity> tableMap = new HashMap<String, DbEntity>();
-        for (DataMap map : dataMaps) {
-            for (DbEntity entity : map.getDbEntities()) {
+
+        if (entityResolver != null) {
+            for (DbEntity entity : entityResolver.getDbEntities()) {
                 tableMap.put(entity.getFullyQualifiedName(), entity);
                 referentialDigraph.addVertex(entity);
             }
@@ -185,9 +188,19 @@ public class AshwoodEntitySorter implements EntitySorter {
 
     /**
      * @since 1.1
+     * @deprecated since 3.1, {@link #setEntityResolver(EntityResolver)} is used instead.
      */
     public void setDataMaps(Collection<DataMap> dataMaps) {
-        this.dataMaps = dataMaps != null ? dataMaps : Collections.EMPTY_LIST;
+        setEntityResolver(new EntityResolver(dataMaps != null
+                ? dataMaps
+                : Collections.EMPTY_LIST));
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
         this.dirty = true;
     }
 
