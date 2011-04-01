@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features Since 3.1M2:
 
+CAY-1525 CharType: don't trim spaces on the left
 CAY-1544 Remove jdk1.6 module from Cayenne sources
 CAY-1545 cayenne-lifecycle Referenceable handler refactoring
 CAY-1547 cayenne-lifecycle: support for setting UuidRelationships

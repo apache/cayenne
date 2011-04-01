@@ -72,7 +72,7 @@ public class CharType implements ExtendedType {
 
             // trim CHAR type
             if (val != null && type == Types.CHAR && isTrimmingChars()) {
-                val = val.trim();
+                val = rtrim(val);
             }
         }
 
@@ -100,11 +100,21 @@ public class CharType implements ExtendedType {
 
             // trim CHAR type
             if (val != null && type == Types.CHAR && isTrimmingChars()) {
-                val = val.trim();
+                val = rtrim(val);
             }
         }
 
         return val;
+    }
+
+    /** Trim right spaces. */
+    protected String rtrim(String value) {
+        int end = value.length() - 1;
+        int count = end;
+        while ((end >= 0) && (value.charAt(end) <= ' ')) {
+            end--;
+        }
+        return (end == count) ? value : value.substring(0, end + 1);
     }
 
     public void setJdbcObject(
