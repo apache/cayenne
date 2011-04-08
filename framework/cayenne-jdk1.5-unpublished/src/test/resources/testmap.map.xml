@@ -208,6 +208,10 @@
 	<db-entity name="NO_PK_TEST">
 		<db-attribute name="ATTRIBUTE1" type="INTEGER"/>
 	</db-entity>
+	<db-entity name="NULL_TEST">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
 	<db-entity name="PAINTING">
 		<db-attribute name="ARTIST_ID" type="BIGINT"/>
 		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
@@ -447,6 +451,9 @@
 	</obj-entity>
 	<obj-entity name="NoPkTestEntity" className="org.apache.cayenne.testdo.testmap.NoPkTestEntity" dbEntityName="NO_PK_TEST">
 		<obj-attribute name="attribute1" type="java.lang.Integer" db-attribute-path="ATTRIBUTE1"/>
+	</obj-entity>
+	<obj-entity name="NullTestEntity" className="org.apache.cayenne.testdo.testmap.NullTestEntity" dbEntityName="NULL_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtDataObject">
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>

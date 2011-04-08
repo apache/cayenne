@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.MockGraphChangeHandler;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -82,5 +83,18 @@ public class DataContextCommitTest extends CayenneCase {
         diff2.apply(diffChecker2);
         assertEquals(1, diffChecker2.getCallbackCount());
         assertSame(p.getObjectId(), newIds2[0]);
+        
+        //commit new object with uninitialized attributes
+        
+        context = createDataContext();
+        
+        context.newObject(NullTestEntity.class);
+        
+        assertTrue(context.hasChanges());
+        
+        GraphDiff diff3 = context.flushToParent(true);
+        assertNotNull(diff3);
+        assertFalse(context.hasChanges());
+        
     }
 }

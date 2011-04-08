@@ -46,6 +46,7 @@ import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -60,6 +61,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.AccessStackAdapter;
@@ -721,6 +723,19 @@ public class DataContextTest extends ServerCase {
         assertEquals(inflated.getArtistName(), hollow.getArtistName());
 
         assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
+    }
+
+    public void testCommitUnchangedInsert() throws Exception {
+        
+        // see CAY-1444 - reproducible on DB's that support auto incremented PK
+        
+        NullTestEntity newObject = context.newObject(NullTestEntity.class);
+
+        assertTrue(context.hasChanges());
+        context.commitChanges();
+        assertFalse(context.hasChanges());
+
+        assertEquals(PersistenceState.COMMITTED, newObject.getPersistenceState());
     }
 
     private void changeMaxConnections(int delta) {
