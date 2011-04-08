@@ -29,7 +29,7 @@ import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.art.Painting;
 import org.apache.cayenne.unit.CayenneCase;
 
 
