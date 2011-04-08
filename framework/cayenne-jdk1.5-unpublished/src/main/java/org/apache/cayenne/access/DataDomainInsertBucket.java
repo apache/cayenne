@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,12 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 for (Persistent o : objects) {
                     Map<Object, Object> snapshot = diffBuilder.buildDBDiff(parent
                             .objectDiff(o.getObjectId()));
+
+                    // we need to insert even if there is no changes to default values
+                    // so creating an empty changes map
+                    if (snapshot == null) {
+                        snapshot = new HashMap<Object, Object>();
+                    }
 
                     batch.add(snapshot, o.getObjectId());
                 }
