@@ -66,12 +66,6 @@
 			<artifactId>cayenne-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<dependency>
-            <groupId>org.apache.cayenne.plugins</groupId>
-            <artifactId>maven-cayenne-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 	</dependencies>
 
 	<build>
@@ -95,6 +89,7 @@
 			<plugin>
 				<groupId>org.apache.cayenne.plugins</groupId>
 				<artifactId>maven-cayenne-plugin</artifactId>
+				<version>${project.version}</version>
 				<executions>
 				    <execution>
 				        <id>single-classes-cust-template</id>
