@@ -6,6 +6,7 @@
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
 		<version>3.1-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>cayenne-lifecycle</artifactId>
 	<name>Library: cayenne-lifecycle</name>
