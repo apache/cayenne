@@ -53,9 +53,9 @@
 			<unsubscribe>user-unsubscribe@cayenne.apache.org</unsubscribe>
 			<archive>http://mail-archives.apache.org/mod_mbox/cayenne-user</archive>
 			<otherArchives>
-				<otherArchive>
-					http://objectstyle.org/cayenne/lists/cayenne-user
-				</otherArchive>
+				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.user</otherArchive>
+				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.user</otherArchive>
+				<otherArchive>http://objectstyle.org/cayenne/lists/cayenne-user</otherArchive>
 			</otherArchives>
 		</mailingList>
 		<mailingList>
@@ -65,9 +65,9 @@
 			<unsubscribe>dev-unsubscribe@cayenne.apache.org</unsubscribe>
 			<archive>http://mail-archives.apache.org/mod_mbox/cayenne-dev</archive>
 			<otherArchives>
-				<otherArchive>
-					http://objectstyle.org/cayenne/lists/cayenne-devel
-				</otherArchive>
+				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.dev</otherArchive>
+				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.devel</otherArchive>
+				<otherArchive>http://objectstyle.org/cayenne/lists/cayenne-devel</otherArchive>
 			</otherArchives>
 		</mailingList>
 		<mailingList>
@@ -75,6 +75,9 @@
 			<subscribe>commits-subscribe@cayenne.apache.org</subscribe>
 			<unsubscribe>commits-unsubscribe@cayenne.apache.org</unsubscribe>
 			<archive>http://mail-archives.apache.org/mod_mbox/cayenne-commits</archive>
+			<otherArchives>
+				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.commits</otherArchive>
+			</otherArchives>
 		</mailingList>
 	</mailingLists>
 	<developers>
