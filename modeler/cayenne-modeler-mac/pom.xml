@@ -38,13 +38,13 @@
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-modeler</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-modeler-mac-ext</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- 
@@ -55,17 +55,17 @@
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-project-unpublished</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-wocompat-unpublished</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -84,7 +84,7 @@
 				<artifactId>maven-japplication-plugin</artifactId>
 				<configuration>
 					<name>CayenneModeler</name>
-					<longName>${version}</longName>
+					<longName>${project.version}</longName>
 					<destDir>target/modeler</destDir>
 					<mainClass>org.apache.cayenne.modeler.osx.OSXMain</mainClass>
 					<icon>src/japplication/resources/CayenneModeler.icns</icon>

@@ -41,37 +41,37 @@
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-server</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-client</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
     	<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-tools</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-lifecycle</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-modeler</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.cayenne.docs</groupId>
 			<artifactId>cayenne-doc</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 	</dependencies>
@@ -89,7 +89,7 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}/legal</outputDirectory>
 							<resourceBundles>
-								<resourceBundle>org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}</resourceBundle>
+								<resourceBundle>org.apache.cayenne.unpublished:cayenne-legal-unpublished:${project.version}</resourceBundle>
 							</resourceBundles>
 						</configuration>
 					</execution>
@@ -133,7 +133,7 @@
 									<descriptors>
 										<descriptor>src/main/resources/assemblies/assembly-src.xml</descriptor>
 									</descriptors>
-									<finalName>cayenne-${version}-src</finalName>
+									<finalName>cayenne-${project.version}-src</finalName>
 								</configuration>
 							</execution>
 						</executions>
@@ -148,7 +148,7 @@
 				<dependency>
 					<groupId>org.apache.cayenne</groupId>
 					<artifactId>cayenne-modeler-generic</artifactId>
-					<version>${version}</version>
+					<version>${project.version}</version>
 				</dependency>
 			</dependencies>
 			<build>
@@ -166,7 +166,7 @@
 									<descriptors>
 										<descriptor>src/main/resources/assemblies/assembly-generic.xml</descriptor>
 									</descriptors>
-									<finalName>cayenne-${version}</finalName>
+									<finalName>cayenne-${project.version}</finalName>
 								</configuration>
 							</execution>
 						</executions>
@@ -182,7 +182,7 @@
 				<dependency>
 					<groupId>org.apache.cayenne</groupId>
 					<artifactId>cayenne-modeler-mac</artifactId>
-					<version>${version}</version>
+					<version>${project.version}</version>
 				</dependency>
 			</dependencies>
 			<build>
@@ -220,7 +220,7 @@
 									<descriptors>
 										<descriptor>src/main/resources/assemblies/assembly-mac.xml</descriptor>
 									</descriptors>
-									<finalName>cayenne-${version}-macosx</finalName>
+									<finalName>cayenne-${project.version}-macosx</finalName>
 								</configuration>
 							</execution>
 						</executions>
@@ -244,7 +244,7 @@
 									<executable>/bin/chmod</executable>
 									<arguments>
 										<argument>755</argument>
-										<argument>target/cayenne-${version}-macosx/CayenneModeler.app/Contents/MacOS/JavaApplicationStub</argument>
+										<argument>target/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaApplicationStub</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -261,12 +261,12 @@
 									<arguments>
 										<argument>create</argument>
 										<argument>-srcfolder</argument>
-										<argument>target/cayenne-${version}-macosx</argument>
+										<argument>target/cayenne-${project.version}-macosx</argument>
 										<argument>-format</argument>
 										<argument>UDZO</argument>
 										<argument>-volname</argument>
-										<argument>cayenne-${version}</argument>
-										<argument>target/cayenne-${version}-macosx</argument>
+										<argument>cayenne-${project.version}</argument>
+										<argument>target/cayenne-${project.version}-macosx</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -283,7 +283,7 @@
 				<dependency>
 					<groupId>org.apache.cayenne</groupId>
 					<artifactId>cayenne-modeler-win</artifactId>
-					<version>${version}</version>
+					<version>${project.version}</version>
 				</dependency>
 			</dependencies>
 			<build>
@@ -321,7 +321,7 @@
 									<descriptors>
 										<descriptor>src/main/resources/assemblies/assembly-windows.xml</descriptor>
 									</descriptors>
-									<finalName>cayenne-${version}-win</finalName>
+									<finalName>cayenne-${project.version}-win</finalName>
 								</configuration>
 							</execution>
 						</executions>
