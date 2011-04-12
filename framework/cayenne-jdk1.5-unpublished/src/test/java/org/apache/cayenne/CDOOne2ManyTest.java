@@ -154,7 +154,10 @@ public class CDOOne2ManyTest extends ServerCase {
         // test database data
 
         Object[] aRow = tArtist.select();
-        assertEquals("XyzQ", aRow[1]);
+
+        // have to trim CHAR column to ensure consistent comparison results across DB's
+        // should really be using VARCHAR in this test
+        assertEquals("XyzQ", String.valueOf(aRow[1]).trim());
 
         Object[] pRow = tPainting.select();
         assertEquals("1", pRow[1]);
