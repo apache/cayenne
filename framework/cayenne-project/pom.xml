@@ -27,8 +27,7 @@
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.apache.cayenne.unpublished</groupId>
-	<artifactId>cayenne-project-unpublished</artifactId>
+	<artifactId>cayenne-project</artifactId>
 	<name>Cayenne Project</name>
 	<packaging>jar</packaging>
 
@@ -75,13 +74,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

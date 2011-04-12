@@ -25,6 +25,7 @@ Bug Fixes Since 3.1M2:
 
 CAY-1526 Preferences: java.lang.IllegalArgumentException: Key too long
 CAY-1546 cayenne-lifecycle: UuidBatchFault concurrency issues
+CAY-1555 Unpublished dependencies of Maven plugins
 
 ----------------------------------
 Release: 3.1 M2
