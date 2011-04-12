@@ -30,6 +30,19 @@
 	<name>Cayenne Framework Aggregator Project</name>
 	<packaging>pom</packaging>
 
+	<modules>
+		<module>cayenne-legal-unpublished</module>
+		<module>cayenne-di-unpublished</module>
+		<module>cayenne-jdk1.5-unpublished</module>
+		<module>cayenne-project-unpublished</module>
+		<module>cayenne-wocompat-unpublished</module>
+		<module>cayenne-server</module>
+		<module>cayenne-client</module>
+		<module>cayenne-tools</module>
+		<module>cayenne-lifecycle</module>
+		<module>maven-cayenne-plugin</module>
+	</modules>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -41,39 +54,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>generic</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>cayenne-legal-unpublished</module>
-				<module>cayenne-di-unpublished</module>
-				<module>cayenne-jdk1.5-unpublished</module>
-				<module>cayenne-project-unpublished</module>
-				<module>cayenne-wocompat-unpublished</module>
-				<module>cayenne-server</module>
-				<module>cayenne-client</module>
-				<module>cayenne-tools</module>
-				<module>cayenne-lifecycle</module>
-				<module>maven-cayenne-plugin</module>
-			</modules>
-		</profile>
-	</profiles>
-	
-	<repositories>
-		<repository>
-			<id>objectstyle</id>
-			<name>Objectstyle Repository</name>
-			<url>http://objectstyle.org/maven2</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
 </project>
