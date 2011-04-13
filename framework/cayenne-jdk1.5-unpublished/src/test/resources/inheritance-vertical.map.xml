@@ -28,8 +28,8 @@
 	</db-entity>
 	<db-entity name="IV_SUB2">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 		<db-attribute name="SUB2_NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="SUB2_ATTR" type="VARCHAR" length="100"/>
 	</db-entity>
 	<obj-entity name="Iv1Root" className="org.apache.cayenne.testdo.inheritance.vertical.Iv1Root" dbEntityName="IV1_ROOT">
 		<obj-attribute name="discriminator" type="java.lang.String" db-attribute-path="DISCRIMINATOR"/>
@@ -58,6 +58,7 @@
 	<obj-entity name="IvSub2" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance.vertical.IvSub2" dbEntityName="IV_ROOT">
 		<qualifier><![CDATA[discriminator = "IvSub2"]]></qualifier>
 		<obj-attribute name="sub2Name" type="java.lang.String" db-attribute-path="sub2.SUB2_NAME"/>
+		<obj-attribute name="sub2Attr" type="java.lang.String" db-attribute-path="sub2.SUB2_ATTR"/>
 	</obj-entity>
 	<db-relationship name="sub1" source="IV1_ROOT" target="IV1_SUB1" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>

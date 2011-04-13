@@ -126,6 +126,72 @@ public class VerticalInheritanceTest extends ServerCase {
         assertEquals("BdE2", subdata[1]);
     }
 
+    public void testInsert_Sub2() throws Exception {
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub2Table = new TableHelper(dbHelper, "IV_SUB2");
+        ivSub2Table.setColumns("ID", "SUB2_NAME", "SUB2_ATTR");
+
+        IvSub2 sub2 = context.newObject(IvSub2.class);
+        sub2.setName("XyZX");
+        sub2.getObjectContext().commitChanges();
+
+        assertEquals(1, ivRootTable.getRowCount());
+        assertEquals(1, ivSub2Table.getRowCount());
+
+        Object[] data = ivRootTable.select();
+        assertEquals(3, data.length);
+        assertTrue(data[0] instanceof Number);
+        assertTrue(((Number) data[0]).intValue() > 0);
+        assertEquals("XyZX", data[1]);
+        assertEquals("IvSub2", data[2]);
+
+        Object[] subdata = ivSub2Table.select();
+        assertEquals(3, subdata.length);
+        assertEquals(data[0], subdata[0]);
+        assertNull(subdata[1]);
+        assertNull(subdata[2]);
+
+        ivSub2Table.deleteAll();
+        ivRootTable.deleteAll();
+
+        IvSub2 sub21 = context.newObject(IvSub2.class);
+        sub21.setName("XyZXY");
+        sub21.setSub2Name("BdE2");
+        sub21.setSub2Attr("aTtR");
+        sub21.getObjectContext().commitChanges();
+
+        data = ivRootTable.select();
+        assertEquals(3, data.length);
+        assertTrue(data[0] instanceof Number);
+        assertTrue(((Number) data[0]).intValue() > 0);
+        assertEquals("XyZXY", data[1]);
+        assertEquals("IvSub2", data[2]);
+
+        subdata = ivSub2Table.select();
+        assertEquals(3, subdata.length);
+        assertEquals(data[0], subdata[0]);
+        assertEquals("BdE2", subdata[1]);
+        assertEquals("aTtR", subdata[2]);
+
+        sub21.setSub2Attr("BUuT");
+        sub21.getObjectContext().commitChanges();
+
+        subdata = ivSub2Table.select();
+        assertEquals(3, subdata.length);
+        assertEquals(data[0], subdata[0]);
+        assertEquals("BdE2", subdata[1]);
+        assertEquals("BUuT", subdata[2]);
+
+        sub21.getObjectContext().deleteObject(sub21);
+        sub21.getObjectContext().commitChanges();
+
+        assertEquals(0, ivRootTable.getRowCount());
+        assertEquals(0, ivSub2Table.getRowCount());
+    }
+
     public void testInsert_Sub1Sub1() throws Exception {
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");

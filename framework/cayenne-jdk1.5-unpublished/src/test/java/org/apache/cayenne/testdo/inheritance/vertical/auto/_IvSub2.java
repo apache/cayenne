@@ -21,4 +21,11 @@ public abstract class _IvSub2 extends IvRoot {
         return (String)readProperty("sub2Name");
     }
 
+    public void setSub2Attr(String sub2Attr) {
+        writeProperty("sub2Attr", sub2Attr);
+    }
+    public String getSub2Attr() {
+        return (String)readProperty("sub2Attr");
+    }
+
 }
