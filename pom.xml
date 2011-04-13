@@ -558,9 +558,9 @@
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
-
 	<build>
 		<defaultGoal>install</defaultGoal>
+		
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
