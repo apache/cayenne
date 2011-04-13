@@ -121,7 +121,9 @@ abstract class DataDomainSyncBucket {
                     descriptorsByDbEntity.put(dbEntity, descriptors);
                 }
 
-                descriptors.add(dbEntityDescriptor);
+                if (!containsClassDescriptor(descriptors, descriptor)) {
+                    descriptors.add(dbEntityDescriptor);
+                }
             }
 
             // secondary DbEntities...
@@ -145,10 +147,23 @@ abstract class DataDomainSyncBucket {
                         descriptorsByDbEntity.put(dbEntity, descriptors);
                     }
 
-                    descriptors.add(dbEntityDescriptor);
+                    if (!containsClassDescriptor(descriptors, descriptor)) {
+                        descriptors.add(dbEntityDescriptor);
+                    }
                 }
             }
         }
+    }
+
+    private boolean containsClassDescriptor(
+            Collection<DbEntityClassDescriptor> descriptors,
+            ClassDescriptor classDescriptor) {
+        for (DbEntityClassDescriptor descriptor : descriptors) {
+            if (classDescriptor.equals(descriptor.getClassDescriptor())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void addDirtyObject(Persistent object, ClassDescriptor descriptor) {

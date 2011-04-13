@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -75,12 +74,6 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
                     // check whether MODIFIED object has real db-level modifications
                     if (snapshot == null) {
-
-                        if (isRootDbEntity) {
-                            objects.remove();
-                            o.setPersistenceState(PersistenceState.COMMITTED);
-                        }
-
                         continue;
                     }
 
