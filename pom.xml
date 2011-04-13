@@ -55,7 +55,6 @@
 			<otherArchives>
 				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.user</otherArchive>
 				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.user</otherArchive>
-				<otherArchive>http://objectstyle.org/cayenne/lists/cayenne-user</otherArchive>
 			</otherArchives>
 		</mailingList>
 		<mailingList>
@@ -67,7 +66,6 @@
 			<otherArchives>
 				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.dev</otherArchive>
 				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.devel</otherArchive>
-				<otherArchive>http://objectstyle.org/cayenne/lists/cayenne-devel</otherArchive>
 			</otherArchives>
 		</mailingList>
 		<mailingList>
