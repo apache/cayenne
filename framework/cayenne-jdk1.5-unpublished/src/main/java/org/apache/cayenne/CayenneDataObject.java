@@ -485,7 +485,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * @see Cayenne#makePath(String...)
      * @since 3.1
      */
-    public String makePath(String...pathParts) {
+    public static String makePath(String...pathParts) {
         return Cayenne.makePath(pathParts);
     }
 
