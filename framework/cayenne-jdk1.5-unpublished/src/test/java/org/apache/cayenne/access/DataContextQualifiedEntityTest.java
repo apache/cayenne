@@ -21,55 +21,84 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
-import org.apache.cayenne.unit.PeopleCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  */
-public class DataContextQualifiedEntityTest extends PeopleCase {
-    protected DataContext context;
+@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+public class DataContextQualifiedEntityTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tPerson;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PERSON");
 
-        deleteTestData();
-        context = createDataContext();
+        tPerson = new TableHelper(dbHelper, "PERSON");
+        tPerson.setColumns(
+                "CLIENT_COMPANY_ID",
+                "CLIENT_CONTACT_TYPE",
+                "DEPARTMENT_ID",
+                "NAME",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "SALARY");
+    }
+
+    protected void createPersonsDataSet() throws Exception {
+        tPerson.insert(null, null, null, "e1", 1, "EE", 20000);
+        tPerson.insert(null, null, null, "e2", 2, "EE", 25000);
+        tPerson.insert(null, null, null, "e3", 3, "EE", 28000);
+        tPerson.insert(null, null, null, "m1", 4, "EM", 30000);
+        tPerson.insert(null, null, null, "m2", 5, "EM", 40000);
+        tPerson.insert(null, null, null, "c1", 6, "C", null);
     }
 
     public void testSelect() throws Exception {
-        createTestData("test");
+        createPersonsDataSet();
 
         // just check that an appropriate qualifier was applied
         // no inheritance checks in this case...
 
         // select Abstract Ppl
-        List abstractPpl = context.performQuery(new SelectQuery(AbstractPerson.class));
+        List<?> abstractPpl = context.performQuery(new SelectQuery(AbstractPerson.class));
         assertEquals(6, abstractPpl.size());
 
         // select Customer Reps
-        List customerReps =
-            context.performQuery(new SelectQuery(CustomerRepresentative.class));
+        List<?> customerReps = context.performQuery(new SelectQuery(
+                CustomerRepresentative.class));
         assertEquals(1, customerReps.size());
 
         // select Employees
-        List employees = context.performQuery(new SelectQuery(Employee.class));
+        List<?> employees = context.performQuery(new SelectQuery(Employee.class));
         assertEquals(5, employees.size());
 
         // select Managers
-        List managers = context.performQuery(new SelectQuery(Manager.class));
+        List<?> managers = context.performQuery(new SelectQuery(Manager.class));
         assertEquals(2, managers.size());
     }
 
     public void testPrefetch() throws Exception {
-        createTestData("test");
+        createPersonsDataSet();
 
         // select Managers.. make sure prefetch query works as expected
-        List managers = context.performQuery(new SelectQuery(Manager.class));
+        List<?> managers = context.performQuery(new SelectQuery(Manager.class));
         assertEquals(2, managers.size());
     }
 }
