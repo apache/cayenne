@@ -27,24 +27,73 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextExtrasTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextExtrasTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("PAINTING");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+    }
+
+    protected void createPhantomModificationDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+    }
+
+    protected void createPhantomModificationsValidateToOneDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tPainting.insert(33001, "P1", 33001, 3000);
+    }
+
+    protected void createValidateOnToManyChangeDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+    }
+
+    protected void createPhantomRelationshipModificationCommitDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tPainting.insert(33001, "P1", 33001, 3000);
+    }
 
     public void testManualIdProcessingOnCommit() throws Exception {
-        deleteTestData();
-        DataContext context = createDataContext();
 
         Artist object = context.newObject(Artist.class);
         object.setArtistName("ABC");
@@ -62,7 +111,6 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testResolveFault() {
-        DataContext context = createDataContext();
 
         Artist o1 = context.newObject(Artist.class);
         o1.setArtistName("a");
@@ -78,7 +126,6 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testResolveFaultFailure() {
-        DataContext context = createDataContext();
 
         Persistent o1 = context.localObject(new ObjectId(
                 "Artist",
@@ -95,7 +142,6 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testUserProperties() {
-        DataContext context = createDataContext();
 
         assertNull(context.getUserProperty("ABC"));
         Object object = new Object();
@@ -105,7 +151,8 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testHasChangesNew() {
-        DataContext context = createDataContext();
+
+        DataContext context = (DataContext) this.context;
         assertTrue("No changes expected in context", !context.hasChanges());
         context.newObject("Artist");
         assertTrue("Object added to context, expected to report changes", context
@@ -113,21 +160,22 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testNewObject() {
-        DataContext context = createDataContext();
-        Artist a1 = (Artist) context.newObject("Artist");
+
+        Artist a1 = (Artist) ((DataContext) context).newObject("Artist");
         assertTrue(context.getGraphManager().registeredNodes().contains(a1));
         assertTrue(context.newObjects().contains(a1));
     }
 
     public void testNewObjectWithClass() {
-        DataContext context = createDataContext();
+
         Artist a1 = context.newObject(Artist.class);
         assertTrue(context.getGraphManager().registeredNodes().contains(a1));
         assertTrue(context.newObjects().contains(a1));
     }
 
     public void testIdObjectFromDataRow() {
-        DataContext context = createDataContext();
+
+        DataContext context = (DataContext) this.context;
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(100000));
         DataObject obj = context.objectFromDataRow(Artist.class, row);
@@ -139,7 +187,8 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testPartialObjectFromDataRow() {
-        DataContext context = createDataContext();
+
+        DataContext context = (DataContext) this.context;
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(100001));
         row.put("ARTIST_NAME", "ArtistXYZ");
@@ -151,7 +200,8 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testFullObjectFromDataRow() {
-        DataContext context = createDataContext();
+
+        DataContext context = (DataContext) this.context;
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(123456));
         row.put("ARTIST_NAME", "ArtistXYZ");
@@ -165,7 +215,9 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testCommitChangesError() {
-        DataContext context = createDataContext();
+
+        DataContext context = (DataContext) this.context;
+        DataDomain domain = context.getParentDataDomain();
 
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception
@@ -177,8 +229,17 @@ public class DataContextExtrasTest extends CayenneCase {
             }
         };
 
-        PkGenerator oldGenerator = getNode().getAdapter().getPkGenerator();
-        JdbcAdapter adapter = (JdbcAdapter) getNode().getAdapter();
+        PkGenerator oldGenerator = domain
+                .getDataNodes()
+                .iterator()
+                .next()
+                .getAdapter()
+                .getPkGenerator();
+        JdbcAdapter adapter = (JdbcAdapter) domain
+                .getDataNodes()
+                .iterator()
+                .next()
+                .getAdapter();
 
         adapter.setPkGenerator(newGenerator);
         try {
@@ -199,7 +260,6 @@ public class DataContextExtrasTest extends CayenneCase {
      * Testing behavior of Cayenne when a database exception is thrown in SELECT query.
      */
     public void testSelectException() {
-        DataContext context = createDataContext();
 
         SQLTemplate q = new SQLTemplate(Artist.class, "SELECT * FROM NON_EXISTENT_TABLE");
 
@@ -214,16 +274,14 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testEntityResolver() {
-        DataContext context = createDataContext();
         assertNotNull(context.getEntityResolver());
     }
 
     public void testPhantomModificationsValidate() throws Exception {
-        deleteTestData();
-        createTestData("testPhantomModification");
-        DataContext context = createDataContext();
 
-        List objects = context.performQuery(new SelectQuery(Artist.class));
+        createPhantomModificationDataSet();
+
+        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
         Artist a1 = (Artist) objects.get(0);
         Artist a2 = (Artist) objects.get(1);
 
@@ -252,11 +310,10 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testPhantomModificationsValidateToOne() throws Exception {
-        deleteTestData();
-        createTestData("testPhantomModificationsValidateToOne");
-        DataContext context = createDataContext();
 
-        List objects = context.performQuery(new SelectQuery(Painting.class));
+        createPhantomModificationsValidateToOneDataSet();
+
+        List<?> objects = context.performQuery(new SelectQuery(Painting.class));
         Painting p1 = (Painting) objects.get(0);
 
         p1.setPaintingTitle(p1.getPaintingTitle());
@@ -268,11 +325,10 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testValidateOnToManyChange() throws Exception {
-        deleteTestData();
-        createTestData("testValidateOnToManyChange");
-        DataContext context = createDataContext();
 
-        List objects = context.performQuery(new SelectQuery(Artist.class));
+        createValidateOnToManyChangeDataSet();
+
+        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
         Artist a1 = (Artist) objects.get(0);
 
         Painting p1 = context.newObject(Painting.class);
@@ -285,11 +341,10 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testPhantomAttributeModificationCommit() throws Exception {
-        deleteTestData();
-        createTestData("testPhantomModification");
-        DataContext context = createDataContext();
 
-        List objects = context.performQuery(new SelectQuery(Artist.class));
+        createPhantomModificationDataSet();
+
+        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
         Artist a1 = (Artist) objects.get(0);
 
         String oldName = a1.getArtistName();
@@ -302,12 +357,11 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testPhantomRelationshipModificationCommit() throws Exception {
-        deleteTestData();
-        createTestData("testPhantomRelationshipModificationCommit");
-        DataContext context = createDataContext();
+
+        createPhantomRelationshipModificationCommitDataSet();
 
         SelectQuery query = new SelectQuery(Painting.class);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Painting p1 = (Painting) objects.get(0);
@@ -328,12 +382,11 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     public void testPhantomRelationshipModificationValidate() throws Exception {
-        deleteTestData();
-        createTestData("testPhantomRelationshipModificationCommit");
-        DataContext context = createDataContext();
+
+        createPhantomRelationshipModificationCommitDataSet();
 
         SelectQuery query = new SelectQuery(Painting.class);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
         Painting p1 = (Painting) objects.get(0);
