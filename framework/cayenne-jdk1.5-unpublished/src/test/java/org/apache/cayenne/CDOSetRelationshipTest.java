@@ -20,25 +20,55 @@ package org.apache.cayenne;
 
 import java.util.Set;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.SetToMany;
 import org.apache.cayenne.testdo.relationship.SetToManyTarget;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CDOSetRelationshipTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CDOSetRelationshipTest extends ServerCase {
 
+    @Inject
+    protected ObjectContext context;
+    
+    @Inject
+    protected DBHelper dbHelper;
+    
+    protected TableHelper tSetToMany;
+    protected TableHelper tSetToManyTarget;
+    
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("SET_TO_MANY");
+        dbHelper.deleteAll("SET_TO_MANY_TARGET");
+        
+        tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
+        tSetToMany.setColumns("ID");
+        
+        tSetToManyTarget = new TableHelper(dbHelper, "SET_TO_MANY_TARGET");
+        tSetToManyTarget.setColumns("ID", "SET_TO_MANY_ID");
+    }
+    
+    protected void createTestDataSet() throws Exception {
+        tSetToMany.insert(1);
+        tSetToMany.insert(2);
+        tSetToManyTarget.insert(1, 1);
+        tSetToManyTarget.insert(2, 1);
+        tSetToManyTarget.insert(3, 1);
+        tSetToManyTarget.insert(4, 2);
     }
 
     public void testReadToMany() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 SetToMany.class,
                 1);
 
@@ -64,13 +94,13 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     }
 
     public void testReadToManyPrefetching() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         SelectQuery query = new SelectQuery(SetToMany.class, ExpressionFactory
                 .matchDbExp(SetToMany.ID_PK_COLUMN, new Integer(1)));
         query.addPrefetch(SetToMany.TARGETS_PROPERTY);
         SetToMany o1 = (SetToMany) Cayenne.objectForQuery(
-                createDataContext(),
+                context,
                 query);
 
         Set targets = o1.getTargets();
@@ -95,10 +125,10 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     }
 
     public void testAddToMany() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 SetToMany.class,
                 1);
 
@@ -121,10 +151,10 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     }
 
     public void testRemoveToMany() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 SetToMany.class,
                 1);
 
@@ -147,10 +177,10 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     }
 
     public void testAddToManyViaReverse() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 SetToMany.class,
                 1);
 
