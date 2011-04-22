@@ -18,37 +18,84 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextJoinAliasesTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextJoinAliasesTest extends ServerCase {
+    
+    @Inject
+    ObjectContext context;
+    
+    @Inject
+    DBHelper dbHelper;
+    
+    protected TableHelper tArtist;
+    protected TableHelper tExhibit;
+    protected TableHelper tGallery;
+    protected TableHelper tArtistExhibit;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    public void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        
+        tExhibit = new TableHelper(dbHelper, "EXHIBIT");
+        tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
+        
+        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        
+        tArtistExhibit = new TableHelper(dbHelper, "ARTIST_EXHIBIT");
+        tArtistExhibit.setColumns("EXHIBIT_ID", "ARTIST_ID");
+    }
+    
+    protected void createMatchAllDataSet() throws Exception {
+        tArtist.insert(1, "Picasso");
+        tArtist.insert(2, "Dali");
+        tArtist.insert(3, "X");
+        tArtist.insert(4, "Y");
+        tGallery.insert(1, "G1");
+        tGallery.insert(2, "G2");
+        tGallery.insert(3, "G3");
+        
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        
+        tExhibit.insert(1, 2, now, now);
+        tExhibit.insert(2, 2, now, now);
+        tExhibit.insert(3, 1, now, now);
+        tExhibit.insert(4, 1, now, now);
+        tExhibit.insert(5, 3, now, now);
+        
+        tArtistExhibit.insert(1, 1);
+        tArtistExhibit.insert(1, 3);
+        tArtistExhibit.insert(3, 1);
+        tArtistExhibit.insert(4, 2);
+        tArtistExhibit.insert(4, 4);
+        tArtistExhibit.insert(5, 2);
     }
 
     public void testMatchAll() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        Date now = new Date();
-        params.put("date1", now);
-        params.put("date2", now);
-        createTestData("testMatchAll", params);
-
         // select all galleries that have exhibits by both Picasso and Dali...
 
-        ObjectContext context = createDataContext();
+        createMatchAllDataSet();
 
         Artist picasso = Cayenne.objectForPK(context, Artist.class, 1);
         Artist dali = Cayenne.objectForPK(context, Artist.class, 2);
