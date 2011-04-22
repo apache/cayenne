@@ -36,25 +36,25 @@ public class CDOSetRelationshipTest extends ServerCase {
 
     @Inject
     protected ObjectContext context;
-    
+
     @Inject
     protected DBHelper dbHelper;
-    
+
     protected TableHelper tSetToMany;
     protected TableHelper tSetToManyTarget;
-    
+
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("SET_TO_MANY");
         dbHelper.deleteAll("SET_TO_MANY_TARGET");
-        
+        dbHelper.deleteAll("SET_TO_MANY");
+
         tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
         tSetToMany.setColumns("ID");
-        
+
         tSetToManyTarget = new TableHelper(dbHelper, "SET_TO_MANY_TARGET");
         tSetToManyTarget.setColumns("ID", "SET_TO_MANY_ID");
     }
-    
+
     protected void createTestDataSet() throws Exception {
         tSetToMany.insert(1);
         tSetToMany.insert(2);
@@ -67,10 +67,7 @@ public class CDOSetRelationshipTest extends ServerCase {
     public void testReadToMany() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(
-                context,
-                SetToMany.class,
-                1);
+        SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
 
         Set targets = o1.getTargets();
 
@@ -99,9 +96,7 @@ public class CDOSetRelationshipTest extends ServerCase {
         SelectQuery query = new SelectQuery(SetToMany.class, ExpressionFactory
                 .matchDbExp(SetToMany.ID_PK_COLUMN, new Integer(1)));
         query.addPrefetch(SetToMany.TARGETS_PROPERTY);
-        SetToMany o1 = (SetToMany) Cayenne.objectForQuery(
-                context,
-                query);
+        SetToMany o1 = (SetToMany) Cayenne.objectForQuery(context, query);
 
         Set targets = o1.getTargets();
 
@@ -127,17 +122,15 @@ public class CDOSetRelationshipTest extends ServerCase {
     public void testAddToMany() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(
-                context,
-                SetToMany.class,
-                1);
+        SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
 
         Set targets = o1.getTargets();
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        SetToManyTarget newTarget = o1.getObjectContext().newObject(
-                SetToManyTarget.class);
+        SetToManyTarget newTarget = o1
+                .getObjectContext()
+                .newObject(SetToManyTarget.class);
 
         o1.addToTargets(newTarget);
         assertEquals(4, targets.size());
@@ -153,16 +146,15 @@ public class CDOSetRelationshipTest extends ServerCase {
     public void testRemoveToMany() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(
-                context,
-                SetToMany.class,
-                1);
+        SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
 
         Set targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        SetToManyTarget target = Cayenne.objectForPK(o1
-                .getObjectContext(), SetToManyTarget.class, 2);
+        SetToManyTarget target = Cayenne.objectForPK(
+                o1.getObjectContext(),
+                SetToManyTarget.class,
+                2);
         o1.removeFromTargets(target);
 
         assertEquals(2, targets.size());
@@ -179,17 +171,15 @@ public class CDOSetRelationshipTest extends ServerCase {
     public void testAddToManyViaReverse() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(
-                context,
-                SetToMany.class,
-                1);
+        SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
 
         Set targets = o1.getTargets();
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        SetToManyTarget newTarget = o1.getObjectContext().newObject(
-                SetToManyTarget.class);
+        SetToManyTarget newTarget = o1
+                .getObjectContext()
+                .newObject(SetToManyTarget.class);
 
         newTarget.setSetToMany(o1);
         assertEquals(4, targets.size());

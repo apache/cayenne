@@ -59,10 +59,11 @@ public class DataContextPrefetchExtrasTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("CHAR_PK_TEST");
         dbHelper.deleteAll("CHAR_FK_TEST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
+        dbHelper.deleteAll("CHAR_PK_TEST");
+
         dbHelper.deleteAll("COMPOUND_FK_TEST");
+        dbHelper.deleteAll("COMPOUND_PK_TEST");
 
         tCharPkTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
         tCharPkTest.setColumns("PK_COL", "OTHER_COL");
