@@ -26,28 +26,72 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextQueryCachingTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextQueryCachingTest extends ServerCase {
 
-    protected QueryCache oldCache;
+    @Inject
     protected DataContext context;
 
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    protected QueryCache oldCache;
+    protected DataDomain domain;
+
+    protected DataNode getNode() {
+        return this.domain.getDataNodes().iterator().next();
+    }
+
     @Override
-    protected void setUp() throws Exception {
-        oldCache = getDomain().getQueryCache();
-        getDomain().setQueryCache(new MapQueryCache(50));
-        context = createDataContextWithSharedCache(true);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("PAINTING");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+
+        domain = context.getParentDataDomain();
+        oldCache = domain.getQueryCache();
+        domain.setQueryCache(new MapQueryCache(50));
         context.setQueryCache(new MapQueryCache(50));
     }
-    
+
     @Override
-    protected void tearDown() throws Exception {
-        getDomain().setQueryCache(oldCache);
+    protected void tearDownBeforeInjection() throws Exception {
+        domain.setQueryCache(oldCache);
+    }
+
+    protected void createInsertDataSet() throws Exception {
+        tArtist.insert(33001, "aaa");
+        tPainting.insert(33001, "P", 33001, 4000);
+    }
+
+    protected void createUpdateDataSet1() throws Exception {
+        tArtist.update().set("ARTIST_NAME", "bbb").where("ARTIST_ID", 33001).execute();
+    }
+
+    protected void createUpdateDataSet2() throws Exception {
+        tArtist.update().set("ARTIST_NAME", "ccc").where("ARTIST_ID", 33001).execute();
     }
 
     public void testLocalCacheDataRowsRefresh() throws Exception {
@@ -55,15 +99,15 @@ public class DataContextQueryCachingTest extends CayenneCase {
         select.setFetchingDataRows(true);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
+        MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
 
         try {
 
             // first run, no cache yet
-            List rows1 = mockupDataRows(2);
+            List<?> rows1 = mockupDataRows(2);
             engine.reset();
             engine.addExpectedResult(select, rows1);
-            List resultRows = context.performQuery(select);
+            List<?> resultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows1, resultRows);
 
@@ -73,11 +117,11 @@ public class DataContextQueryCachingTest extends CayenneCase {
             assertEquals(rows1, context.getQueryCache().get(cacheKey));
 
             // second run, must refresh the cache
-            List rows2 = mockupDataRows(4);
+            List<?> rows2 = mockupDataRows(4);
             engine.reset();
             engine.addExpectedResult(select, rows2);
             select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
-            List freshResultRows = context.performQuery(select);
+            List<?> freshResultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
             assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
@@ -89,18 +133,19 @@ public class DataContextQueryCachingTest extends CayenneCase {
     }
 
     public void testSharedCacheDataRowsRefresh() throws Exception {
+
         SelectQuery select = new SelectQuery(Artist.class);
         select.setFetchingDataRows(true);
         select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
+        MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
 
         try {
             // first run, no cache yet
-            List rows1 = mockupDataRows(2);
+            List<?> rows1 = mockupDataRows(2);
             engine.reset();
             engine.addExpectedResult(select, rows1);
-            List resultRows = context.performQuery(select);
+            List<?> resultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows1, resultRows);
 
@@ -112,11 +157,11 @@ public class DataContextQueryCachingTest extends CayenneCase {
             assertNull(context.getQueryCache().get(cacheKey));
 
             // second run, must refresh the cache
-            List rows2 = mockupDataRows(5);
+            List<?> rows2 = mockupDataRows(5);
             engine.reset();
             engine.addExpectedResult(select, rows2);
             select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH);
-            List freshResultRows = context.performQuery(select);
+            List<?> freshResultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
             assertEquals(rows2, context.getParentDataDomain().getQueryCache().get(
@@ -129,18 +174,19 @@ public class DataContextQueryCachingTest extends CayenneCase {
     }
 
     public void testLocalCacheDataObjectsRefresh() throws Exception {
+
         SelectQuery select = new SelectQuery(Artist.class);
         select.setFetchingDataRows(false);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
+        MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
 
         try {
             // first run, no cache yet
-            List rows1 = mockupDataRows(2);
+            List<?> rows1 = mockupDataRows(2);
             engine.reset();
             engine.addExpectedResult(select, rows1);
-            List resultRows = context.performQuery(select);
+            List<?> resultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(2, resultRows.size());
             assertTrue(resultRows.get(0) instanceof DataObject);
@@ -150,11 +196,11 @@ public class DataContextQueryCachingTest extends CayenneCase {
             assertEquals(resultRows, context.getQueryCache().get(cacheKey));
 
             // second run, must refresh the cache
-            List rows2 = mockupDataRows(4);
+            List<?> rows2 = mockupDataRows(4);
             engine.reset();
             engine.addExpectedResult(select, rows2);
             select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
-            List freshResultRows = context.performQuery(select);
+            List<?> freshResultRows = context.performQuery(select);
 
             assertEquals(1, engine.getRunCount());
             assertEquals(4, freshResultRows.size());
@@ -168,9 +214,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
     }
 
     public void testLocalCacheRefreshObjectsRefresh() throws Exception {
-
-        deleteTestData();
-        createTestData("testLocalCacheRefreshObjectsRefresh_Insert");
+        createInsertDataSet();
 
         SelectQuery select = new SelectQuery(Artist.class);
         select.setName("c");
@@ -178,23 +222,24 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
         // no cache yet...
 
-        List objects1 = context.performQuery(select);
+        List<?> objects1 = context.performQuery(select);
         assertEquals(1, objects1.size());
         Artist a1 = (Artist) objects1.get(0);
         assertEquals("aaa", a1.getArtistName());
 
         // cache, but force refresh
 
-        createTestData("testLocalCacheRefreshObjectsRefresh_Update1");
-        List objects2 = context.performQuery(select);
+        createUpdateDataSet1();
+
+        List<?> objects2 = context.performQuery(select);
         assertEquals(1, objects2.size());
         Artist a2 = (Artist) objects2.get(0);
         assertSame(a1, a2);
         assertEquals("bbb", a2.getArtistName());
     }
 
-    private List mockupDataRows(int len) {
-        List rows = new ArrayList(len);
+    private List<?> mockupDataRows(int len) {
+        List<Object> rows = new ArrayList<Object>(len);
 
         for (int i = 0; i < len; i++) {
             DataRow a = new DataRow(3);

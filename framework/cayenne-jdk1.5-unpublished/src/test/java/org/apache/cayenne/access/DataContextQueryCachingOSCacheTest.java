@@ -19,15 +19,32 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.cache.OSQueryCache;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingTest {
 
     // runs super tests with a different setup...
     @Override
-    protected void setUp() throws Exception {
-        oldCache = getDomain().getQueryCache();
-        getDomain().setQueryCache(new OSQueryCache());
-        context = createDataContextWithSharedCache(true);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("PAINTING");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+
+        domain = context.getParentDataDomain();
+        oldCache = domain.getQueryCache();
+        domain.setQueryCache(new OSQueryCache());
         context.setQueryCache(new OSQueryCache());
     }
 }
