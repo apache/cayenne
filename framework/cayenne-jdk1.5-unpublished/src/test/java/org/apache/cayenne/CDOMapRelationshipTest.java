@@ -20,26 +20,75 @@ package org.apache.cayenne;
 
 import java.util.Map;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.IdMapToMany;
 import org.apache.cayenne.testdo.relationship.MapToMany;
 import org.apache.cayenne.testdo.relationship.MapToManyTarget;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CDOMapRelationshipTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CDOMapRelationshipTest extends ServerCase {
 
+    @Inject
+    protected ObjectContext context;
+    
+    @Inject
+    protected DBHelper dbHelper;
+    
+    protected TableHelper tMapToMany;
+    protected TableHelper tMapToManyTarget;
+    protected TableHelper tIdMapToMany;
+    protected TableHelper tIdMapToManyTarget;
+    
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MAP_TO_MANY");
+        dbHelper.deleteAll("MAP_TO_MANY_TARGET");
+        dbHelper.deleteAll("ID_MAP_TO_MANY");
+        dbHelper.deleteAll("ID_MAP_TO_MANY_TARGET");
+        
+        tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
+        tMapToMany.setColumns("ID");
+        
+        tMapToManyTarget = new TableHelper(dbHelper, "MAP_TO_MANY_TARGET");
+        tMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID", "NAME");
+        
+        tIdMapToMany = new TableHelper(dbHelper, "ID_MAP_TO_MANY");
+        tIdMapToMany.setColumns("ID");
+        
+        tIdMapToManyTarget = new TableHelper(dbHelper, "ID_MAP_TO_MANY_TARGET");
+        tIdMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
+    }
+    
+    protected void createTestDataSet() throws Exception {
+        tMapToMany.insert(1);
+        tMapToMany.insert(2);
+        tMapToManyTarget.insert(1, 1, "A");
+        tMapToManyTarget.insert(2, 1, "B");
+        tMapToManyTarget.insert(3, 1, "C");
+        tMapToManyTarget.insert(4, 2, "A");
+    }
+    
+    protected void createTestIdDataSet() throws Exception {
+        tIdMapToMany.insert(1);
+        tIdMapToMany.insert(2);
+        tIdMapToManyTarget.insert(1, 1);
+        tIdMapToManyTarget.insert(2, 1);
+        tIdMapToManyTarget.insert(3, 1);
+        tIdMapToManyTarget.insert(4, 2);
     }
 
     public void testReadToMany() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 MapToMany.class,
                 1);
 
@@ -59,10 +108,10 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     }
 
     public void testReadToManyId() throws Exception {
-        createTestData("prepare-id");
+        createTestIdDataSet();
 
         IdMapToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 IdMapToMany.class,
                 1);
 
@@ -85,13 +134,13 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     }
 
     public void testReadToManyPrefetching() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         SelectQuery query = new SelectQuery(MapToMany.class, ExpressionFactory
                 .matchDbExp(MapToMany.ID_PK_COLUMN, new Integer(1)));
         query.addPrefetch(MapToMany.TARGETS_PROPERTY);
         MapToMany o1 = (MapToMany) Cayenne.objectForQuery(
-                createDataContext(),
+                context,
                 query);
 
         Map targets = o1.getTargets();
@@ -106,10 +155,10 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     }
 
     public void testAddToMany() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 MapToMany.class,
                 1);
 
@@ -133,10 +182,10 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     }
 
     public void testRemoveToMany() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 MapToMany.class,
                 1);
 
@@ -159,10 +208,10 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     }
 
     public void testAddToManyViaReverse() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 MapToMany.class,
                 1);
 
@@ -186,10 +235,10 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     }
 
     public void testModifyToManyKey() throws Exception {
-        createTestData("prepare");
+        createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(
-                createDataContext(),
+                context,
                 MapToMany.class,
                 1);
 
