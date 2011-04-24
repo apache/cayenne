@@ -24,32 +24,53 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class EmbeddingTest extends CayenneCase {
-
-    public static final String EMBEDDING_ACCESS_STACK = "EmbeddingStack";
-
+@UseServerRuntime("cayenne-default.xml")
+public class EmbeddingTest extends ServerCase {
+    
+    @Inject
+    protected ObjectContext context;
+    
+    @Inject
+    protected DBHelper dbHelper;
+    
+    protected TableHelper tEmbedEntity1;
+    
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(EMBEDDING_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("EMBED_ENTITY1");
+        
+        tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
+        tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
+    }
+    
+    protected void createSelectDataSet() throws Exception {
+        tEmbedEntity1.delete().execute();
+        tEmbedEntity1.insert(1, "n1", "e1", "e2", "e3", "e4");
+        tEmbedEntity1.insert(2, "n2", "ex1", "ex2", "ex3", "ex4");
+    }
+    
+    protected void createUpdateDataSet() throws Exception {
+        tEmbedEntity1.delete().execute();
+        tEmbedEntity1.insert(1, "n1", "e1", "e2", "e3", "e4");
     }
 
     public void testSelect() throws Exception {
-        createTestData("testSelect");
+        createSelectDataSet();
 
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
         query.addOrdering(EmbedEntity1.NAME_PROPERTY, SortOrder.ASCENDING);
 
-        ObjectContext context = createDataContext();
-
-        List results = context.performQuery(query);
+        List<?> results = context.performQuery(query);
         assertEquals(2, results.size());
 
         EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
@@ -80,9 +101,7 @@ public class EmbeddingTest extends CayenneCase {
     }
 
     public void testInsert() throws Exception {
-        deleteTestData();
 
-        ObjectContext context = createDataContext();
         EmbedEntity1 o1 = context.newObject(EmbedEntity1.class);
         o1.setName("NAME");
 
@@ -113,13 +132,12 @@ public class EmbeddingTest extends CayenneCase {
     }
 
     public void testUpdateEmbeddedProperties() throws Exception {
-        createTestData("testUpdate");
+        createUpdateDataSet();
 
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
         query.addOrdering(EmbedEntity1.NAME_PROPERTY, SortOrder.ASCENDING);
 
-        ObjectContext context = createDataContext();
-        List results = context.performQuery(query);
+        List<?> results = context.performQuery(query);
         EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
 
         Embeddable1 e11 = o1.getEmbedded1();
@@ -136,13 +154,12 @@ public class EmbeddingTest extends CayenneCase {
     }
 
     public void testUpdateEmbedded() throws Exception {
-        createTestData("testUpdate");
+        createUpdateDataSet();
 
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
         query.addOrdering(EmbedEntity1.NAME_PROPERTY, SortOrder.ASCENDING);
 
-        ObjectContext context = createDataContext();
-        List results = context.performQuery(query);
+        List<?> results = context.performQuery(query);
         EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
 
         Embeddable1 e11 = new Embeddable1();
