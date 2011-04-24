@@ -19,40 +19,59 @@
 
 package org.apache.cayenne.access;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 
-public class DataContextSerializationTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextSerializationTest extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected ServerRuntime runtime;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
 
     @Override
-    protected void setUp() throws Exception {
-        Injector injector = mock(Injector.class);
-        when(injector.getInstance(DataChannel.class)).thenReturn(getDomain());
-        CayenneRuntime.bindThreadInjector(injector);
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        CayenneRuntime.bindThreadInjector(runtime.getInjector());
+
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+    }
+
+    protected void createSingleArtistDataSet() throws Exception {
+        tArtist.insert(33001, "aaa");
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    protected void tearDownBeforeInjection() throws Exception {
         CayenneRuntime.bindThreadInjector(null);
-        super.tearDown();
     }
 
     public void testSerializeResolver() throws Exception {
-
-        DataContext context = createDataContextWithSharedCache(true);
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
@@ -62,8 +81,6 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeChannel() throws Exception {
 
-        DataContext context = createDataContextWithSharedCache(true);
-
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
         assertNotNull(deserializedContext.getChannel());
@@ -71,7 +88,7 @@ public class DataContextSerializationTest extends CayenneCase {
     }
 
     public void testSerializeNestedChannel() throws Exception {
-        DataContext context = createDataContextWithSharedCache(true);
+
         ObjectContext child = context.createChildContext();
 
         ObjectContext deserializedContext = Util.cloneViaSerialization(child);
@@ -82,9 +99,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeWithSharedCache() throws Exception {
 
-        createTestData("prepare");
-
-        DataContext context = createDataContextWithSharedCache(true);
+        createSingleArtistDataSet();
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
@@ -110,24 +125,34 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeWithLocalCache() throws Exception {
 
-        createTestData("prepare");
+        createSingleArtistDataSet();
 
-        DataContext context = createDataContextWithDedicatedCache();
+        // manually assemble a DataContext with local cache....
+        DataDomain domain = context.getParentDataDomain();
+        DataRowStore snapshotCache = new DataRowStore(domain.getName(), domain
+                .getProperties(), domain.getEventManager());
 
-        assertNotSame(context.getParentDataDomain().getSharedSnapshotCache(), context
+        DataContext localCacheContext = new DataContext(domain, new ObjectStore(
+                snapshotCache));
+        localCacheContext.setValidatingObjectsOnCommit(domain
+                .isValidatingObjectsOnCommit());
+        localCacheContext.setUsingSharedSnapshotCache(false);
+
+        assertNotSame(domain.getSharedSnapshotCache(), localCacheContext
                 .getObjectStore()
                 .getDataRowCache());
 
-        DataContext deserializedContext = Util.cloneViaSerialization(context);
+        DataContext deserializedContext = Util.cloneViaSerialization(localCacheContext);
 
-        assertNotSame(context, deserializedContext);
-        assertNotSame(context.getObjectStore(), deserializedContext.getObjectStore());
+        assertNotSame(localCacheContext, deserializedContext);
+        assertNotSame(localCacheContext.getObjectStore(), deserializedContext
+                .getObjectStore());
 
-        assertSame(context.getParentDataDomain(), deserializedContext
+        assertSame(localCacheContext.getParentDataDomain(), deserializedContext
                 .getParentDataDomain());
-        assertNotSame(context.getObjectStore().getDataRowCache(), deserializedContext
-                .getObjectStore()
-                .getDataRowCache());
+        assertNotSame(
+                localCacheContext.getObjectStore().getDataRowCache(),
+                deserializedContext.getObjectStore().getDataRowCache());
         assertNotSame(
                 deserializedContext.getParentDataDomain().getSharedSnapshotCache(),
                 deserializedContext.getObjectStore().getDataRowCache());
@@ -141,8 +166,6 @@ public class DataContextSerializationTest extends CayenneCase {
     }
 
     public void testSerializeNew() throws Exception {
-
-        DataContext context = createDataContextWithSharedCache(true);
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
@@ -166,8 +189,6 @@ public class DataContextSerializationTest extends CayenneCase {
     }
 
     public void testSerializeCommitted() throws Exception {
-
-        DataContext context = createDataContextWithSharedCache(true);
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
@@ -194,14 +215,12 @@ public class DataContextSerializationTest extends CayenneCase {
         assertSame(deserializedContext, deserializedArtist.getObjectContext());
 
         // test that to-many relationships are initialized
-        List paintings = deserializedArtist.getPaintingArray();
+        List<?> paintings = deserializedArtist.getPaintingArray();
         assertNotNull(paintings);
         assertEquals(0, paintings.size());
     }
 
     public void testSerializeModified() throws Exception {
-
-        DataContext context = createDataContextWithSharedCache(true);
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
