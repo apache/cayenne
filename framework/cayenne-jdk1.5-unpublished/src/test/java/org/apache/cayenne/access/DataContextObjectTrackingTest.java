@@ -25,23 +25,74 @@ import java.util.Date;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests objects registration in DataContext, transferring objects between contexts and
  * such.
- *
  */
-public class DataContextObjectTrackingTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextObjectTrackingTest extends ServerCase {
+
+    @Inject
+    protected DataChannelInterceptor queryInterceptor;
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    protected ServerRuntime runtime;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+    }
+
+    protected void createArtistsDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tArtist.insert(33003, "artist3");
+        tArtist.insert(33004, "artist4");
+    }
+
+    protected void createMixedDataSet() throws Exception {
+        tArtist.insert(33003, "artist3");
+        tPainting.insert(33003, "P_artist3", 33003, 3000);
+    }
 
     public void testUnregisterObject() {
-
-        DataContext context = createDataContext();
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(1));
@@ -64,7 +115,6 @@ public class DataContextObjectTrackingTest extends CayenneCase {
     }
 
     public void testInvalidateObject() {
-        DataContext context = createDataContext();
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(1));
@@ -87,21 +137,20 @@ public class DataContextObjectTrackingTest extends CayenneCase {
     }
 
     public void testLocalObjectPeerContextMap() throws Exception {
-        deleteTestData();
-        createTestData("testArtists");
+        createArtistsDataSet();
 
         // must create both contexts before running the queries, as each call to
         // 'createDataContext' clears the cache.
-        DataContext context = createDataContext();
-        DataContext peerContext = createDataContext();
+
+        final ObjectContext peerContext = runtime.getDataDomain().createDataContext();
 
         Persistent _new = context.newObject(Artist.class);
 
-        Persistent hollow = context.localObject(new ObjectId(
+        final Persistent hollow = context.localObject(new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001), null);
-        DataObject committed = (DataObject) Cayenne.objectForQuery(
+        final DataObject committed = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -109,14 +158,14 @@ public class DataContextObjectTrackingTest extends CayenneCase {
                         33002)));
 
         int modifiedId = 33003;
-        Artist modified = (Artist) Cayenne.objectForQuery(
+        final Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
         modified.setArtistName("MODDED");
-        DataObject deleted = (DataObject) Cayenne.objectForQuery(
+        final DataObject deleted = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -145,60 +194,60 @@ public class DataContextObjectTrackingTest extends CayenneCase {
         // // expected
         // }
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
+            public void execute() {
 
-            Persistent hollowPeer = peerContext.localObject(hollow.getObjectId(), null);
-            assertEquals(PersistenceState.HOLLOW, hollowPeer.getPersistenceState());
-            assertEquals(hollow.getObjectId(), hollowPeer.getObjectId());
-            assertSame(peerContext, hollowPeer.getObjectContext());
-            assertSame(context, hollow.getObjectContext());
+                Persistent hollowPeer = peerContext.localObject(
+                        hollow.getObjectId(),
+                        null);
+                assertEquals(PersistenceState.HOLLOW, hollowPeer.getPersistenceState());
+                assertEquals(hollow.getObjectId(), hollowPeer.getObjectId());
+                assertSame(peerContext, hollowPeer.getObjectContext());
+                assertSame(context, hollow.getObjectContext());
 
-            Persistent committedPeer = peerContext.localObject(
-                    committed.getObjectId(),
-                    null);
-            assertEquals(PersistenceState.HOLLOW, committedPeer.getPersistenceState());
-            assertEquals(committed.getObjectId(), committedPeer.getObjectId());
-            assertSame(peerContext, committedPeer.getObjectContext());
-            assertSame(context, committed.getObjectContext());
+                Persistent committedPeer = peerContext.localObject(committed
+                        .getObjectId(), null);
+                assertEquals(PersistenceState.HOLLOW, committedPeer.getPersistenceState());
+                assertEquals(committed.getObjectId(), committedPeer.getObjectId());
+                assertSame(peerContext, committedPeer.getObjectContext());
+                assertSame(context, committed.getObjectContext());
 
-            Persistent modifiedPeer = peerContext.localObject(
-                    modified.getObjectId(),
-                    null);
-            assertEquals(PersistenceState.HOLLOW, modifiedPeer.getPersistenceState());
-            assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
-            assertSame(peerContext, modifiedPeer.getObjectContext());
-            assertSame(context, modified.getObjectContext());
+                Persistent modifiedPeer = peerContext.localObject(
+                        modified.getObjectId(),
+                        null);
+                assertEquals(PersistenceState.HOLLOW, modifiedPeer.getPersistenceState());
+                assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
+                assertSame(peerContext, modifiedPeer.getObjectContext());
+                assertSame(context, modified.getObjectContext());
 
-            Persistent deletedPeer = peerContext.localObject(deleted.getObjectId(), null);
-            assertEquals(PersistenceState.HOLLOW, deletedPeer.getPersistenceState());
-            assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
-            assertSame(peerContext, deletedPeer.getObjectContext());
-            assertSame(context, deleted.getObjectContext());
-        }
-        finally {
-            unblockQueries();
-        }
+                Persistent deletedPeer = peerContext.localObject(
+                        deleted.getObjectId(),
+                        null);
+                assertEquals(PersistenceState.HOLLOW, deletedPeer.getPersistenceState());
+                assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
+                assertSame(peerContext, deletedPeer.getObjectContext());
+                assertSame(context, deleted.getObjectContext());
+            }
+        });
     }
 
     public void testLocalObjectPeerContextNoOverride() throws Exception {
-        deleteTestData();
-        createTestData("testArtists");
+        createArtistsDataSet();
 
         // must create both contexts before running the queries, as each call to
         // 'createDataContext' clears the cache.
-        DataContext context = createDataContext();
-        DataContext peerContext = createDataContext();
+
+        final ObjectContext peerContext = runtime.getDataDomain().createDataContext();
 
         int modifiedId = 33003;
-        Artist modified = (Artist) Cayenne.objectForQuery(
+        final Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
-        Artist peerModified = (Artist) Cayenne.objectForQuery(
+        final Artist peerModified = (Artist) Cayenne.objectForQuery(
                 peerContext,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -211,21 +260,20 @@ public class DataContextObjectTrackingTest extends CayenneCase {
         assertEquals(PersistenceState.MODIFIED, modified.getPersistenceState());
         assertEquals(PersistenceState.MODIFIED, peerModified.getPersistenceState());
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
+            public void execute() {
 
-            Persistent peerModified2 = peerContext.localObject(
-                    modified.getObjectId(),
-                    null);
+                Persistent peerModified2 = peerContext.localObject(
+                        modified.getObjectId(),
+                        null);
 
-            assertSame(peerModified, peerModified2);
-            assertEquals(PersistenceState.MODIFIED, peerModified2.getPersistenceState());
-            assertEquals("M2", peerModified.getArtistName());
-            assertEquals("M1", modified.getArtistName());
-        }
-        finally {
-            unblockQueries();
-        }
+                assertSame(peerModified, peerModified2);
+                assertEquals(PersistenceState.MODIFIED, peerModified2
+                        .getPersistenceState());
+                assertEquals("M2", peerModified.getArtistName());
+                assertEquals("M1", modified.getArtistName());
+            }
+        });
     }
 }

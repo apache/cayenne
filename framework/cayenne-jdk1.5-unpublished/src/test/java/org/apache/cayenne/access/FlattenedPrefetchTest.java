@@ -39,8 +39,6 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class FlattenedPrefetchTest extends ServerCase {
 
