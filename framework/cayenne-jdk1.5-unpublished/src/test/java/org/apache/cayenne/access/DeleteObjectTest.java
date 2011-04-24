@@ -24,31 +24,68 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DeleteObjectTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DeleteObjectTest extends ServerCase {
 
-    private DataContext context;
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
 
-        deleteTestData();
-        context = createDataContext();
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
+    }
+
+    protected void createHollowDataSet() throws Exception {
+        tArtist.insert(1, "artist1");
+        tPainting.insert(1, "painting1", 1);
+    }
+
+    protected void createObjectDataSet() throws Exception {
+        tArtist.insert(1, "artist1");
+    }
+
+    protected void createObjectsDataSet() throws Exception {
+        tArtist.insert(1, "artist1");
+        tArtist.insert(2, "artist2");
+    }
+
+    protected void createObjectsRelationshipCollectionDataSet() throws Exception {
+        tArtist.insert(1, "artist1");
+        tPainting.insert(1, "painting1", 1);
+        tPainting.insert(2, "painting2", 1);
+        tPainting.insert(3, "painting3", 1);
     }
 
     public void testDeleteObject() throws Exception {
-        createTestData("testDeleteObject");
+        createObjectDataSet();
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
@@ -60,61 +97,58 @@ public class DeleteObjectTest extends CayenneCase {
     }
 
     public void testDeleteObjects1() throws Exception {
-        createTestData("testDeleteObjects");
+        createObjectsDataSet();
 
-        List artists = context.performQuery(new SelectQuery(Artist.class));
+        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
         assertEquals(2, artists.size());
 
-        Iterator it = artists.iterator();
-        while (it.hasNext()) {
-            DataObject object = (DataObject) it.next();
+        for (Artist object : artists) {
             assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());
         }
 
         context.deleteObjects(artists);
-        it = artists.iterator();
 
-        while (it.hasNext()) {
-            DataObject object = (DataObject) it.next();
+        for (Artist object : artists) {
             assertEquals(PersistenceState.DELETED, object.getPersistenceState());
         }
     }
 
     // Similar to testDeleteObjects2, but extract ObjectContext instead of DataContext.
     public void testDeleteObjects2() throws Exception {
-        createTestData("testDeleteObjects");
+        createObjectsDataSet();
 
         List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
         assertEquals(2, artists.size());
 
-        for (Artist object : artists)
+        for (Artist object : artists) {
             assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());
+        }
 
         artists.get(0).getObjectContext().deleteObjects(artists);
 
-        for (Artist object : artists)
+        for (Artist object : artists) {
             assertEquals(PersistenceState.DELETED, object.getPersistenceState());
+        }
 
         artists.get(0).getObjectContext().commitChanges();
 
-        for (Artist object : artists)
+        for (Artist object : artists) {
             assertEquals(PersistenceState.TRANSIENT, object.getPersistenceState());
+        }
     }
 
     public void testDeleteObjectsRelationshipCollection() throws Exception {
-        createTestData("testDeleteObjectsRelationshipCollection");
+        createObjectsRelationshipCollectionDataSet();
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
-        List paintings = artist.getPaintingArray();
+        List<Painting> paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());
 
         // create a clone to be able to inspect paintings after deletion
-        List paintingsClone = new ArrayList(paintings);
+        List<Painting> paintingsClone = new ArrayList<Painting>(paintings);
 
-        Iterator it = paintingsClone.iterator();
-        while (it.hasNext()) {
-            DataObject object = (DataObject) it.next();
+        for (Painting object : paintingsClone) {
             assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());
         }
 
@@ -129,33 +163,29 @@ public class DeleteObjectTest extends CayenneCase {
         assertEquals(DeleteRule.NULLIFY, r.getDeleteRule());
         assertEquals(0, paintings.size());
 
-        it = paintingsClone.iterator();
-        while (it.hasNext()) {
-            DataObject object = (DataObject) it.next();
+        for (Painting object : paintingsClone) {
             assertEquals(PersistenceState.DELETED, object.getPersistenceState());
         }
     }
 
     public void testDeleteObjectInIterator() throws Exception {
-        createTestData("testDeleteObjectsRelationshipCollection");
+        createObjectsRelationshipCollectionDataSet();
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
-        List paintings = artist.getPaintingArray();
+        List<Painting> paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());
 
         // create a clone to be able to inspect paintings after deletion
-        List paintingsClone = new ArrayList(paintings);
+        List<Painting> paintingsClone = new ArrayList<Painting>(paintings);
 
-        Iterator it = paintingsClone.iterator();
-        while (it.hasNext()) {
-            DataObject object = (DataObject) it.next();
+        for (Painting object : paintingsClone) {
             assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());
         }
 
-        Iterator deleteIt = paintings.iterator();
+        Iterator<Painting> deleteIt = paintings.iterator();
         while (deleteIt.hasNext()) {
-            DataObject object = (DataObject) deleteIt.next();
+            Painting object = deleteIt.next();
             deleteIt.remove();
             context.deleteObject(object);
         }
@@ -164,19 +194,17 @@ public class DeleteObjectTest extends CayenneCase {
         // and no exceptions thrown on concurrent modification...
         assertEquals(0, paintings.size());
 
-        it = paintingsClone.iterator();
-        while (it.hasNext()) {
-            DataObject object = (DataObject) it.next();
+        for (Painting object : paintingsClone) {
             assertEquals(PersistenceState.DELETED, object.getPersistenceState());
         }
     }
 
     public void testDeleteHollow() throws Exception {
-        createTestData("testDeleteHollow");
+        createHollowDataSet();
 
-        List paintings = context.performQuery(new SelectQuery(Painting.class));
+        List<Painting> paintings = context.performQuery(new SelectQuery(Painting.class));
 
-        Painting p = (Painting) paintings.get(0);
+        Painting p = paintings.get(0);
         Artist a = p.getToArtist();
 
         assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
