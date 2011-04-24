@@ -58,10 +58,13 @@ public class FlattenedPrefetchTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTGROUP");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("ARTGROUP");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -81,11 +84,13 @@ public class FlattenedPrefetchTest extends ServerCase {
     }
 
     protected void createPrefetchDataSet1() throws Exception {
-        tArtgroup.insert(33001, "group1");
-        tArtgroup.insert(33002, "group2");
         tArtist.insert(33001, "artist1");
         tArtist.insert(33002, "artist2");
         tArtist.insert(33003, "artist3");
+
+        tArtgroup.insert(33001, "group1");
+        tArtgroup.insert(33002, "group2");
+
         tArtistGroup.insert(33001, 33001);
         tArtistGroup.insert(33001, 33002);
         tArtistGroup.insert(33002, 33002);
@@ -93,11 +98,13 @@ public class FlattenedPrefetchTest extends ServerCase {
     }
 
     protected void createPrefetchDataSet2() throws Exception {
-        tArtgroup.insert(33001, "group1");
-        tArtgroup.insert(33002, "group2");
         tArtist.insert(33001, "artist1");
         tArtist.insert(33002, "artist2");
         tArtist.insert(33003, "artist3");
+        
+        tArtgroup.insert(33001, "group1");
+        tArtgroup.insert(33002, "group2");
+      
         tArtistGroup.insert(33001, 33001);
         tArtistGroup.insert(33001, 33002);
         tArtistGroup.insert(33002, 33002);
