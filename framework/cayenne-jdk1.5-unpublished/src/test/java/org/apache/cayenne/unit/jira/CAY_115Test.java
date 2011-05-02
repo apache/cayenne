@@ -22,30 +22,68 @@ package org.apache.cayenne.unit.jira;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ClobMaster;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  */
-public class CAY_115Test extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CAY_115Test extends ServerCase {
 
+    @Inject
+    protected DataContext context;
+    
+    @Inject
+    protected AccessStackAdapter accessStackAdapter;
+    
+    @Inject
+    protected DBHelper dbHelper;
+    
+    protected TableHelper tClobMaster;
+    protected TableHelper tClobDetail;
+    
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("CLOB_MASTER");
+        dbHelper.deleteAll("CLOB_DETAIL");
+        
+        tClobMaster = new TableHelper(dbHelper, "CLOB_MASTER");
+        tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
+        
+        tClobDetail = new TableHelper(dbHelper, "CLOB_DETAIL");
+        tClobDetail.setColumns("CLOB_DETAIL_ID", "CLOB_MASTER_ID", "NAME");
+    }
+    
+    protected void createDistinctClobFetchDataSet() throws Exception {
+        tClobMaster.insert(1, "cm1 clob", "cm1");
+        tClobMaster.insert(2, "cm2 clob", "cm2");
+        tClobMaster.insert(3, "cm3 clob", "cm3");
+    }
+    
+    protected void createDistinctClobFetchWithToManyJoin() throws Exception {
+        tClobMaster.insert(1, "cm1 clob", "cm1");
+        tClobMaster.insert(2, "cm2 clob", "cm2");
+        tClobMaster.insert(3, "cm3 clob", "cm3");
+        tClobDetail.insert(1, 1, "cd11");
+        tClobDetail.insert(2, 2, "cd21");
+        tClobDetail.insert(3, 2, "cd22");
+        tClobDetail.insert(4, 3, "cd31");
     }
 
     public void testDistinctClobFetch() throws Exception {
-        if (!getAccessStackAdapter().supportsLobInsertsAsStrings()) {
+        if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;
         }
 
-        createTestData("testDistinctClobFetch");
-
-        DataContext context = createDataContext();
+        createDistinctClobFetchDataSet();
 
         SelectQuery noDistinct = new SelectQuery(ClobMaster.class);
         noDistinct.addOrdering(ClobMaster.NAME_PROPERTY, SortOrder.ASCENDING);
@@ -54,25 +92,23 @@ public class CAY_115Test extends RelationshipCase {
         distinct.setDistinct(true);
         distinct.addOrdering(ClobMaster.NAME_PROPERTY, SortOrder.ASCENDING);
 
-        List noDistinctResult = context.performQuery(noDistinct);
-        List distinctResult = context.performQuery(distinct);
+        List<?> noDistinctResult = context.performQuery(noDistinct);
+        List<?> distinctResult = context.performQuery(distinct);
 
         assertEquals(3, noDistinctResult.size());
         assertEquals(noDistinctResult, distinctResult);
     }
 
     public void testDistinctClobFetchWithToManyJoin() throws Exception {
-        if (!getAccessStackAdapter().supportsLobInsertsAsStrings()) {
+        if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;
         }
 
-        createTestData("testDistinctClobFetchWithToManyJoin");
-
-        DataContext context = createDataContext();
+        createDistinctClobFetchWithToManyJoin();
 
         Expression qual = Expression.fromString("details.name like 'cd%'");
         SelectQuery query = new SelectQuery(ClobMaster.class, qual);
-        List result = context.performQuery(query);
+        List<?> result = context.performQuery(query);
 
         assertEquals(3, result.size());
     }
