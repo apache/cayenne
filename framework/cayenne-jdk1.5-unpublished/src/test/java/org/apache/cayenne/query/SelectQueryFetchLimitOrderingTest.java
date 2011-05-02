@@ -21,25 +21,58 @@ package org.apache.cayenne.query;
 
 import java.util.List;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SelectQueryFetchLimitOrderingTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SelectQueryFetchLimitOrderingTest extends ServerCase {
+
+    @Inject
+    protected ObjectContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+    }
+
+    protected void creatArtistsDataSet() throws Exception {
+        tArtist.insert(33001, "c");
+        tArtist.insert(33002, "b");
+        tArtist.insert(33003, "f");
+        tArtist.insert(33004, "d");
+        tArtist.insert(33005, "a");
+        tArtist.insert(33006, "e");
+    }
 
     public void testOrdering() throws Exception {
-        deleteTestData();
-        createTestData("testOrdering");
 
-      
+        creatArtistsDataSet();
 
         SelectQuery query = new SelectQuery("Artist");
         query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         query.setFetchLimit(4);
-        
-        List results = createDataContext().performQuery(query);
+
+        List<?> results = context.performQuery(query);
         assertEquals(4, results.size());
-        
+
         assertEquals("a", ((Artist) results.get(0)).getArtistName());
         assertEquals("b", ((Artist) results.get(1)).getArtistName());
         assertEquals("c", ((Artist) results.get(2)).getArtistName());
