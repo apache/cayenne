@@ -85,11 +85,11 @@ public class ServerCaseModule implements Module {
         binder
                 .bind(ObjectContext.class)
                 .toProvider(ServerCaseObjectContextProvider.class)
-                .in(testScope);
+                .withoutScope();
         binder
                 .bind(DataContext.class)
                 .toProvider(ServerCaseDataContextProvider.class)
-                .in(testScope);
+                .withoutScope();
 
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(
                 testScope);
