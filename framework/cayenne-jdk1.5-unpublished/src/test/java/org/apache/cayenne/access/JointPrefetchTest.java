@@ -33,6 +33,8 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjAttribute;
@@ -41,24 +43,79 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests joint prefetch handling by Cayenne access stack.
  */
-public class JointPrefetchTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class JointPrefetchTest extends ServerCase {
 
+    @Inject
+    protected DataContext context;
+    
+    @Inject
+    protected ServerRuntime runtime;
+    
+    @Inject
+    protected DataChannelInterceptor queryInterceptor;
+    
+    @Inject
+    protected DBHelper dbHelper;
+    
+    protected TableHelper tArtist;
+    protected TableHelper tGallery;
+    protected TableHelper tPainting;
+    
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("GALLERY");
+        
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        
+        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", 
+                "ESTIMATED_PRICE", "GALLERY_ID");
     }
-
+    
+    protected void createJointPrefetchDataSet1() throws Exception {
+        tGallery.insert(33001, "G1");
+        tGallery.insert(33002, "G2");
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tArtist.insert(33003, "artist3");
+        tPainting.insert(33001, "P_artist11", 33001, 1000, 33001);
+        tPainting.insert(33002, "P_artist12", 33001, 2000, 33001);
+        tPainting.insert(33003, "P_artist21", 33002, 3000, 33002);
+    }
+    
+    protected void createJointPrefetchDataSet2() throws Exception {
+        tGallery.insert(33001, "G1");
+        tGallery.insert(33002, "G2");
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tArtist.insert(33003, "artist3");
+        tPainting.insert(33001, "P_artist11", 33001, 1000, 33001);
+        tPainting.insert(33002, "P_artist12", 33001, 2000, 33001);
+        tPainting.insert(33003, "P_artist21", 33002, 3000, 33002);
+    }
+    
     public void testJointPrefetchDataRows() throws Exception {
-        createTestData("testJointPrefetch1");
+        createJointPrefetchDataSet1();
 
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Painting.class);
@@ -67,41 +124,38 @@ public class JointPrefetchTest extends CayenneCase {
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        DataContext context = createDataContext();
+        final List<?> rows = context.performQuery(q);
 
-        List rows = context.performQuery(q);
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            
+            public void execute() {
+                assertEquals(3, rows.size());
 
-        blockQueries();
+                // row should contain columns from both entities minus those duplicated in a
+                // join...
+                    
+                int rowWidth = context.getEntityResolver().getDbEntity("ARTIST").getAttributes().size()
+                        + context.getEntityResolver().getDbEntity("PAINTING").getAttributes().size();
+                Iterator<?> it = rows.iterator();
+                while (it.hasNext()) {
+                    DataRow row = (DataRow) it.next();
+                    assertEquals("" + row, rowWidth, row.size());
 
-        try {
-            assertEquals(3, rows.size());
-
-            // row should contain columns from both entities minus those duplicated in a
-            // join...
-            int rowWidth = getDbEntity("ARTIST").getAttributes().size()
-                    + getDbEntity("PAINTING").getAttributes().size();
-            Iterator it = rows.iterator();
-            while (it.hasNext()) {
-                DataRow row = (DataRow) it.next();
-                assertEquals("" + row, rowWidth, row.size());
-
-                // assert columns presence
-                assertTrue(row + "", row.containsKey("PAINTING_ID"));
-                assertTrue(row + "", row.containsKey("ARTIST_ID"));
-                assertTrue(row + "", row.containsKey("GALLERY_ID"));
-                assertTrue(row + "", row.containsKey("PAINTING_TITLE"));
-                assertTrue(row + "", row.containsKey("ESTIMATED_PRICE"));
-                assertTrue(row + "", row.containsKey("toArtist.ARTIST_NAME"));
-                assertTrue(row + "", row.containsKey("toArtist.DATE_OF_BIRTH"));
+                    // assert columns presence
+                    assertTrue(row + "", row.containsKey("PAINTING_ID"));
+                    assertTrue(row + "", row.containsKey("ARTIST_ID"));
+                    assertTrue(row + "", row.containsKey("GALLERY_ID"));
+                    assertTrue(row + "", row.containsKey("PAINTING_TITLE"));
+                    assertTrue(row + "", row.containsKey("ESTIMATED_PRICE"));
+                    assertTrue(row + "", row.containsKey("toArtist.ARTIST_NAME"));
+                    assertTrue(row + "", row.containsKey("toArtist.DATE_OF_BIRTH"));
+                }
             }
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 
     public void testJointPrefetchSQLTemplate() throws Exception {
-        createTestData("testJointPrefetch1");
+        createJointPrefetchDataSet1();
 
         // correctly naming columns is the key..
         SQLTemplate q = new SQLTemplate(
@@ -124,43 +178,38 @@ public class JointPrefetchTest extends CayenneCase {
                 prefetch.getSemantics());
         q.setFetchingDataRows(false);
 
-        DataContext context = createDataContext();
+        final List<?> objects = context.performQuery(q);
+        
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            
+            public void execute() {
+             // without OUTER join we will get fewer objects...
+                assertEquals(2, objects.size());
 
-        List objects = context.performQuery(q);
+                Iterator<?> it = objects.iterator();
+                while (it.hasNext()) {
+                    Artist a = (Artist) it.next();
+                    List<?> list = a.getPaintingArray();
 
-        blockQueries();
+                    assertNotNull(list);
+                    assertFalse(((ValueHolder) list).isFault());
+                    assertTrue(list.size() > 0);
 
-        try {
+                    Iterator<?> children = list.iterator();
+                    while (children.hasNext()) {
+                        Painting p = (Painting) children.next();
+                        assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
 
-            // without OUTER join we will get fewer objects...
-            assertEquals(2, objects.size());
-
-            Iterator it = objects.iterator();
-            while (it.hasNext()) {
-                Artist a = (Artist) it.next();
-                List list = a.getPaintingArray();
-
-                assertNotNull(list);
-                assertFalse(((ValueHolder) list).isFault());
-                assertTrue(list.size() > 0);
-
-                Iterator children = list.iterator();
-                while (children.hasNext()) {
-                    Painting p = (Painting) children.next();
-                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-
-                    // make sure properties are not null..
-                    assertNotNull(p.getPaintingTitle());
+                        // make sure properties are not null..
+                        assertNotNull(p.getPaintingTitle());
+                    }
                 }
             }
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 
     public void testJointPrefetchToOne() throws Exception {
-        createTestData("testJointPrefetch1");
+        createJointPrefetchDataSet1();
 
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Painting.class);
@@ -168,26 +217,22 @@ public class JointPrefetchTest extends CayenneCase {
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        DataContext context = createDataContext();
+        final List<?> objects = context.performQuery(q);
+        
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            
+            public void execute() {
+                assertEquals(3, objects.size());
 
-        List objects = context.performQuery(q);
-
-        blockQueries();
-
-        try {
-            assertEquals(3, objects.size());
-
-            Iterator it = objects.iterator();
-            while (it.hasNext()) {
-                Painting p = (Painting) it.next();
-                Artist target = p.getToArtist();
-                assertNotNull(target);
-                assertEquals(PersistenceState.COMMITTED, target.getPersistenceState());
+                Iterator<?> it = objects.iterator();
+                while (it.hasNext()) {
+                    Painting p = (Painting) it.next();
+                    Artist target = p.getToArtist();
+                    assertNotNull(target);
+                    assertEquals(PersistenceState.COMMITTED, target.getPersistenceState());
+                }
             }
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 
     /**
@@ -205,7 +250,6 @@ public class JointPrefetchTest extends CayenneCase {
                 Painting.class,
                 "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
                         + "VALUES (33001, 'p1', 33001, 1000)");
-        DataContext context = createDataContext();
 
         context.performNonSelectingQuery(artistSQL);
         context.performNonSelectingQuery(paintingSQL);
@@ -215,31 +259,29 @@ public class JointPrefetchTest extends CayenneCase {
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        ObjEntity artistE = getObjEntity("Artist");
+        ObjEntity artistE = context.getEntityResolver().getObjEntity("Artist");
         ObjAttribute dateOfBirth = (ObjAttribute) artistE.getAttribute("dateOfBirth");
         assertEquals("java.util.Date", dateOfBirth.getType());
         dateOfBirth.setType("java.sql.Date");
         try {
-            List objects = context.performQuery(q);
+            final List<?> objects = context.performQuery(q);
+            
+            queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+                
+                public void execute() {
+                    assertEquals(1, objects.size());
 
-            blockQueries();
-
-            try {
-                assertEquals(1, objects.size());
-
-                Iterator it = objects.iterator();
-                while (it.hasNext()) {
-                    Painting p = (Painting) it.next();
-                    Artist a = p.getToArtist();
-                    assertNotNull(a);
-                    assertNotNull(a.getDateOfBirth());
-                    assertTrue(a.getDateOfBirth().getClass().getName(), Date.class
-                            .isAssignableFrom(a.getDateOfBirth().getClass()));
+                    Iterator<?> it = objects.iterator();
+                    while (it.hasNext()) {
+                        Painting p = (Painting) it.next();
+                        Artist a = p.getToArtist();
+                        assertNotNull(a);
+                        assertNotNull(a.getDateOfBirth());
+                        assertTrue(a.getDateOfBirth().getClass().getName(), Date.class
+                                .isAssignableFrom(a.getDateOfBirth().getClass()));
+                    }
                 }
-            }
-            finally {
-                unblockQueries();
-            }
+            });            
         }
         finally {
             dateOfBirth.setType("java.util.Date");
@@ -247,45 +289,42 @@ public class JointPrefetchTest extends CayenneCase {
     }
 
     public void testJointPrefetchToMany() throws Exception {
-        createTestData("testJointPrefetch1");
+        createJointPrefetchDataSet1();
 
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Artist.class);
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        DataContext context = createDataContext();
+        final List<?> objects = context.performQuery(q);
 
-        List objects = context.performQuery(q);
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            
+            public void execute() {
+                assertEquals(3, objects.size());
 
-        blockQueries();
-        try {
-            assertEquals(3, objects.size());
+                Iterator<?> it = objects.iterator();
+                while (it.hasNext()) {
+                    Artist a = (Artist) it.next();
+                    List<?> list = a.getPaintingArray();
 
-            Iterator it = objects.iterator();
-            while (it.hasNext()) {
-                Artist a = (Artist) it.next();
-                List list = a.getPaintingArray();
+                    assertNotNull(list);
+                    assertFalse(((ValueHolder) list).isFault());
 
-                assertNotNull(list);
-                assertFalse(((ValueHolder) list).isFault());
-
-                Iterator children = list.iterator();
-                while (children.hasNext()) {
-                    Painting p = (Painting) children.next();
-                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-                    // make sure properties are not null..
-                    assertNotNull(p.getPaintingTitle());
+                    Iterator<?> children = list.iterator();
+                    while (children.hasNext()) {
+                        Painting p = (Painting) children.next();
+                        assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+                        // make sure properties are not null..
+                        assertNotNull(p.getPaintingTitle());
+                    }
                 }
             }
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 
     public void testJointPrefetchToManyNonConflictingQualifier() throws Exception {
-        createTestData("testJointPrefetch1");
+        createJointPrefetchDataSet1();
 
         // query with to-many joint prefetches and qualifier that doesn't match
         // prefetch....
@@ -296,42 +335,37 @@ public class JointPrefetchTest extends CayenneCase {
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        DataContext context = createDataContext();
+        final List<?> objects = context.performQuery(q);
+        
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            
+            public void execute() {
+                assertEquals(1, objects.size());
 
-        List objects = context.performQuery(q);
+                Artist a = (Artist) objects.get(0);
+                List<?> list = a.getPaintingArray();
 
-        blockQueries();
+                assertNotNull(list);
+                assertFalse(((ValueHolder) list).isFault());
+                assertEquals(2, list.size());
 
-        try {
+                Iterator<?> children = list.iterator();
+                while (children.hasNext()) {
+                    Painting p = (Painting) children.next();
+                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+                    // make sure properties are not null..
+                    assertNotNull(p.getPaintingTitle());
+                }
 
-            assertEquals(1, objects.size());
-
-            Artist a = (Artist) objects.get(0);
-            List list = a.getPaintingArray();
-
-            assertNotNull(list);
-            assertFalse(((ValueHolder) list).isFault());
-            assertEquals(2, list.size());
-
-            Iterator children = list.iterator();
-            while (children.hasNext()) {
-                Painting p = (Painting) children.next();
-                assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-                // make sure properties are not null..
-                assertNotNull(p.getPaintingTitle());
+                // assert no duplicates
+                Set s = new HashSet(list);
+                assertEquals(s.size(), list.size());
             }
-
-            // assert no duplicates
-            Set s = new HashSet(list);
-            assertEquals(s.size(), list.size());
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 
     public void testJointPrefetchMultiStep() throws Exception {
-        createTestData("testJointPrefetch2");
+        createJointPrefetchDataSet2();
 
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Artist.class);
@@ -342,7 +376,7 @@ public class JointPrefetchTest extends CayenneCase {
                                 + Painting.TO_GALLERY_PROPERTY)
                 .setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        DataContext context = createDataContext();
+        final DataContext context = this.context;
 
         // make sure phantomly prefetched objects are not deallocated
         context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
@@ -352,36 +386,34 @@ public class JointPrefetchTest extends CayenneCase {
                 new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
         assertNull(g1);
 
-        List objects = context.performQuery(q);
+        final List<?> objects = context.performQuery(q);
+        
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            
+            public void execute() {
+                assertEquals(3, objects.size());
 
-        blockQueries();
-        try {
+                Iterator<?> it = objects.iterator();
+                while (it.hasNext()) {
+                    Artist a = (Artist) it.next();
+                    ValueHolder list = (ValueHolder) a.getPaintingArray();
 
-            assertEquals(3, objects.size());
+                    assertNotNull(list);
 
-            Iterator it = objects.iterator();
-            while (it.hasNext()) {
-                Artist a = (Artist) it.next();
-                ValueHolder list = (ValueHolder) a.getPaintingArray();
+                    // intermediate relationship is not fetched...
+                    assertTrue(list.isFault());
+                }
 
-                assertNotNull(list);
-
-                // intermediate relationship is not fetched...
-                assertTrue(list.isFault());
+                // however both galleries must be in memory...
+                DataObject g1 = (DataObject) context.getGraphManager().getNode(
+                        new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
+                assertNotNull(g1);
+                assertEquals(PersistenceState.COMMITTED, g1.getPersistenceState());
+                DataObject g2 = (DataObject) context.getGraphManager().getNode(
+                        new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33002));
+                assertNotNull(g2);
+                assertEquals(PersistenceState.COMMITTED, g2.getPersistenceState());
             }
-
-            // however both galleries must be in memory...
-            g1 = (DataObject) context.getGraphManager().getNode(
-                    new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
-            assertNotNull(g1);
-            assertEquals(PersistenceState.COMMITTED, g1.getPersistenceState());
-            DataObject g2 = (DataObject) context.getGraphManager().getNode(
-                    new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33002));
-            assertNotNull(g2);
-            assertEquals(PersistenceState.COMMITTED, g2.getPersistenceState());
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 }
