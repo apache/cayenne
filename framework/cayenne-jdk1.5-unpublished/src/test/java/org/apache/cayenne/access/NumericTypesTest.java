@@ -21,14 +21,19 @@ package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.BigDecimalEntity;
 import org.apache.cayenne.testdo.testmap.BigIntegerEntity;
 import org.apache.cayenne.testdo.testmap.BitTestEntity;
@@ -38,20 +43,49 @@ import org.apache.cayenne.testdo.testmap.DecimalPKTestEntity;
 import org.apache.cayenne.testdo.testmap.LongEntity;
 import org.apache.cayenne.testdo.testmap.SmallintTestEntity;
 import org.apache.cayenne.testdo.testmap.TinyintTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  */
-public class NumericTypesTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class NumericTypesTest extends ServerCase {
 
+    @Inject
     protected DataContext context;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Inject
+    protected DataContext context1;
 
-        deleteTestData();
-        context = createDataContext();
+    @Inject
+    protected ServerRuntime runtime;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tSmallintTest;
+    protected TableHelper tTinyintTest;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("SMALLINT_TEST");
+        dbHelper.deleteAll("TINYINT_TEST");
+
+        tSmallintTest = new TableHelper(dbHelper, "SMALLINT_TEST");
+        tSmallintTest.setColumns("ID", "SMALLINT_COL");
+
+        tTinyintTest = new TableHelper(dbHelper, "TINYINT_TEST");
+        tTinyintTest.setColumns("ID", "TINYINT_COL");
+    }
+
+    protected void createShortDataSet() throws Exception {
+        tSmallintTest.insert(1, 9999);
+        tSmallintTest.insert(2, 3333);
+    }
+
+    protected void createTinyintDataSet() throws Exception {
+        tTinyintTest.insert(1, 81);
+        tTinyintTest.insert(2, 50);
     }
 
     public void testLong() throws Exception {
@@ -73,8 +107,7 @@ public class NumericTypesTest extends CayenneCase {
 
     public void testBigInteger() throws Exception {
 
-        BigIntegerEntity test = context
-                .newObject(BigIntegerEntity.class);
+        BigIntegerEntity test = context.newObject(BigIntegerEntity.class);
 
         BigInteger i = new BigInteger("1234567890");
         test.setBigIntegerField(i);
@@ -91,8 +124,7 @@ public class NumericTypesTest extends CayenneCase {
 
     public void testBigDecimal() throws Exception {
 
-        BigDecimalEntity test = context
-                .newObject(BigDecimalEntity.class);
+        BigDecimalEntity test = context.newObject(BigDecimalEntity.class);
 
         BigDecimal i = new BigDecimal("1234567890.44");
         test.setBigDecimalField(i);
@@ -108,11 +140,11 @@ public class NumericTypesTest extends CayenneCase {
     }
 
     public void testShortInQualifier() throws Exception {
-        createTestData("testShortInQualifier");
+        createShortDataSet();
 
         // test
         Expression qual = ExpressionFactory.matchExp("smallintCol", new Short("9999"));
-        List objects = context.performQuery(new SelectQuery(
+        List<?> objects = context.performQuery(new SelectQuery(
                 SmallintTestEntity.class,
                 qual));
         assertEquals(1, objects.size());
@@ -122,19 +154,20 @@ public class NumericTypesTest extends CayenneCase {
     }
 
     public void testShortInInsert() throws Exception {
-        SmallintTestEntity object = (SmallintTestEntity) context
+        SmallintTestEntity object = (SmallintTestEntity) (context)
                 .newObject("SmallintTestEntity");
         object.setSmallintCol(new Short("1"));
         context.commitChanges();
     }
 
     public void testTinyintInQualifier() throws Exception {
-        createTestData("testTinyintInQualifier");
+        createTinyintDataSet();
 
         // test
         Expression qual = ExpressionFactory.matchExp("tinyintCol", new Byte((byte) 81));
-        List objects = context
-                .performQuery(new SelectQuery(TinyintTestEntity.class, qual));
+        List<?> objects = context.performQuery(new SelectQuery(
+                TinyintTestEntity.class,
+                qual));
         assertEquals(1, objects.size());
 
         TinyintTestEntity object = (TinyintTestEntity) objects.get(0);
@@ -142,7 +175,7 @@ public class NumericTypesTest extends CayenneCase {
     }
 
     public void testTinyintInInsert() throws Exception {
-        TinyintTestEntity object = (TinyintTestEntity) context
+        TinyintTestEntity object = (TinyintTestEntity) (context)
                 .newObject("TinyintTestEntity");
         object.setTinyintCol(new Byte((byte) 1));
         context.commitChanges();
@@ -150,20 +183,18 @@ public class NumericTypesTest extends CayenneCase {
 
     public void testBooleanBit() throws Exception {
 
-        // populate (testing insert as well)
         BitTestEntity trueObject = (BitTestEntity) context.newObject("BitTestEntity");
         trueObject.setBitColumn(Boolean.TRUE);
         BitTestEntity falseObject = (BitTestEntity) context.newObject("BitTestEntity");
         falseObject.setBitColumn(Boolean.FALSE);
         context.commitChanges();
-
-        // this will clear cache as a side effect
-        context = createDataContext();
+        context.invalidateObjects(Arrays.asList(trueObject, falseObject));
 
         // fetch true...
         Expression trueQ = ExpressionFactory.matchExp("bitColumn", Boolean.TRUE);
-        List trueResult = context
-                .performQuery(new SelectQuery(BitTestEntity.class, trueQ));
+        List<?> trueResult = context1.performQuery(new SelectQuery(
+                BitTestEntity.class,
+                trueQ));
         assertEquals(1, trueResult.size());
 
         BitTestEntity trueRefetched = (BitTestEntity) trueResult.get(0);
@@ -175,7 +206,7 @@ public class NumericTypesTest extends CayenneCase {
 
         // fetch false
         Expression falseQ = ExpressionFactory.matchExp("bitColumn", Boolean.FALSE);
-        List falseResult = context.performQuery(new SelectQuery(
+        List<?> falseResult = context1.performQuery(new SelectQuery(
                 BitTestEntity.class,
                 falseQ));
         assertEquals(1, falseResult.size());
@@ -199,12 +230,11 @@ public class NumericTypesTest extends CayenneCase {
         falseObject.setBooleanColumn(Boolean.FALSE);
         context.commitChanges();
 
-        // this will clear cache as a side effect
-        context = createDataContext();
+        context.invalidateObjects(Arrays.asList(trueObject, falseObject));
 
         // fetch true...
         Expression trueQ = ExpressionFactory.matchExp("booleanColumn", Boolean.TRUE);
-        List trueResult = context.performQuery(new SelectQuery(
+        List<?> trueResult = context1.performQuery(new SelectQuery(
                 BooleanTestEntity.class,
                 trueQ));
         assertEquals(1, trueResult.size());
@@ -218,7 +248,7 @@ public class NumericTypesTest extends CayenneCase {
 
         // fetch false
         Expression falseQ = ExpressionFactory.matchExp("booleanColumn", Boolean.FALSE);
-        List falseResult = context.performQuery(new SelectQuery(
+        List<?> falseResult = context1.performQuery(new SelectQuery(
                 BooleanTestEntity.class,
                 falseQ));
         assertEquals(1, falseResult.size());
@@ -234,8 +264,7 @@ public class NumericTypesTest extends CayenneCase {
     public void testDecimalPK() throws Exception {
 
         // populate (testing insert as well)
-        DecimalPKTestEntity object = context
-                .newObject(DecimalPKTestEntity.class);
+        DecimalPKTestEntity object = context.newObject(DecimalPKTestEntity.class);
 
         object.setName("o1");
         object.setDecimalPK(new BigDecimal("1.25"));
@@ -244,6 +273,9 @@ public class NumericTypesTest extends CayenneCase {
         Map map = Collections.singletonMap("DECIMAL_PK", new BigDecimal("1.25"));
         ObjectId syntheticId = new ObjectId("DecimalPKTestEntity", map);
         assertSame(object, context.localObject(syntheticId, null));
+
+        context.deleteObject(object);
+        context.commitChanges();
     }
 
     public void testDecimalPK1() throws Exception {
