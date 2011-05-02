@@ -23,28 +23,101 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.LockingCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class OptimisticLockingTest extends LockingCase {
+@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+public class OptimisticLockingTest extends ServerCase {
 
+    @Inject
     protected DataContext context;
 
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tSimpleLockingTest;
+    protected TableHelper tRelLockingTest;
+    protected TableHelper tLockingHelper;
+
     @Override
-    protected void setUp() throws Exception {
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("LOCKING_HELPER");
+        dbHelper.deleteAll("SIMPLE_LOCKING_TEST");
+        dbHelper.deleteAll("REL_LOCKING_TEST");
+
+        tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
+        tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION");
+
+        tRelLockingTest = new TableHelper(dbHelper, "REL_LOCKING_TEST");
+        tRelLockingTest.setColumns(
+                "REL_LOCKING_TEST_ID",
+                "SIMPLE_LOCKING_TEST_ID",
+                "NAME");
+
+        tLockingHelper = new TableHelper(dbHelper, "LOCKING_HELPER");
+        tLockingHelper.setColumns("LOCKING_HELPER_ID", "REL_LOCKING_TEST_ID", "NAME");
+    }
+
+    protected void createSimpleLockingDataSet() throws Exception {
+        tLockingHelper.delete().execute();
+        tRelLockingTest.delete().execute();
+        tSimpleLockingTest.delete().execute();
+        tSimpleLockingTest.insert(1, "LockTest1", null);
+    }
+
+    protected void createLockingOnNullDataSet() throws Exception {
+        tLockingHelper.delete().execute();
+        tRelLockingTest.delete().execute();
+        tSimpleLockingTest.delete().execute();
+        tSimpleLockingTest.insert(1, null, null);
+    }
+
+    protected void createLockingOnMixedDataSet() throws Exception {
+        tLockingHelper.delete().execute();
+        tRelLockingTest.delete().execute();
+        tSimpleLockingTest.delete().execute();
+        tSimpleLockingTest.insert(1, null, null);
+        tSimpleLockingTest.insert(2, "LockTest2", null);
+        tSimpleLockingTest.insert(3, "LockTest3", "Another Lock Test");
+    }
+
+    protected void createLockingOnToOneDataSet() throws Exception {
+        tLockingHelper.delete().execute();
+        tRelLockingTest.delete().execute();
+        tSimpleLockingTest.delete().execute();
+        tSimpleLockingTest.insert(1, "LockTest1", null);
+        tRelLockingTest.insert(5, 1, "Rel Test 1");
+        tLockingHelper.insert(1, 5, "Locking Helper 1");
+    }
+
+    protected void createSimpleLockUpdate() throws Exception {
+        tSimpleLockingTest.update().set("NAME", "LockTest1Updated").where(
+                "LOCKING_TEST_ID",
+                1).execute();
+    }
+
+    protected void createRelLockUpdate() throws Exception {
+        tRelLockingTest.update().set("SIMPLE_LOCKING_TEST_ID", 1).where(
+                "REL_LOCKING_TEST_ID",
+                5).execute();
+    }
+
+    protected void createSimpleLockDelete() throws Exception {
+        tSimpleLockingTest.delete().execute();
     }
 
     public void testSuccessSimpleLockingOnDelete() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -59,9 +132,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testSuccessSimpleLockingOnDeleteFollowedByInvalidate() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -78,9 +151,9 @@ public class OptimisticLockingTest extends LockingCase {
 
     public void testSuccessSimpleLockingOnDeleteFollowedByForgetSnapshot()
             throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -96,9 +169,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testSuccessSimpleLockingOnDeletePrecededByInvalidate() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -115,9 +188,9 @@ public class OptimisticLockingTest extends LockingCase {
 
     public void testSuccessSimpleLockingOnDeletePrecededByForgetSnapshot()
             throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -133,9 +206,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testFailSimpleLockingOnDelete() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -146,7 +219,7 @@ public class OptimisticLockingTest extends LockingCase {
         context.commitChanges();
 
         // change row underneath, delete and save... optimistic lock failure expected
-        createTestData("SimpleLockUpdate");
+        createSimpleLockUpdate();
 
         context.deleteObject(object);
 
@@ -160,9 +233,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testSuccessSimpleLockingOnUpdate() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -178,9 +251,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testSuccessSimpleLockingOnUpdateFollowedByInvalidate() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -197,9 +270,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testSuccessSimpleLockingOnUpdatePrecededByInvalidate() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -217,9 +290,9 @@ public class OptimisticLockingTest extends LockingCase {
 
     public void testSuccessSimpleLockingOnUpdateFollowedByForgetSnapshot()
             throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -237,9 +310,9 @@ public class OptimisticLockingTest extends LockingCase {
 
     public void testSuccessSimpleLockingOnUpdatePrecededByForgetSnapshot()
             throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -256,9 +329,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testFailSimpleLocking() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -270,7 +343,8 @@ public class OptimisticLockingTest extends LockingCase {
 
         // change row underneath, change description and save... optimistic lock failure
         // expected
-        createTestData("SimpleLockUpdate");
+        createSimpleLockUpdate();
+
         object.setDescription("second update");
 
         try {
@@ -283,9 +357,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testFailLockingOnNull() throws Exception {
-        createTestData("testLockingOnNull");
+        createLockingOnNullDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -297,7 +371,8 @@ public class OptimisticLockingTest extends LockingCase {
 
         // change row underneath, change description and save... optimistic lock failure
         // expected
-        createTestData("SimpleLockUpdate");
+        createSimpleLockUpdate();
+
         object.setDescription("second update");
 
         try {
@@ -310,11 +385,12 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testSuccessLockingOnMixed() throws Exception {
-        createTestData("testLockingOnMixed");
+        createLockingOnMixedDataSet();
+
         SelectQuery query = new SelectQuery(SimpleLockingTestEntity.class);
         query.addOrdering(new Ordering("db:LOCKING_TEST_ID", SortOrder.ASCENDING));
 
-        List allObjects = context.performQuery(query);
+        List<?> allObjects = context.performQuery(query);
         assertEquals(3, allObjects.size());
 
         SimpleLockingTestEntity object1 = (SimpleLockingTestEntity) allObjects.get(0);
@@ -333,10 +409,10 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testFailLockingOnToOne() throws Exception {
-        createTestData("testLockingOnToOne");
+        createLockingOnToOneDataSet();
 
-        List allObjects = context
-                .performQuery(new SelectQuery(RelLockingTestEntity.class));
+        List<?> allObjects = context.performQuery(new SelectQuery(
+                RelLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
         RelLockingTestEntity object = (RelLockingTestEntity) allObjects.get(0);
@@ -353,7 +429,8 @@ public class OptimisticLockingTest extends LockingCase {
 
         // change row underneath, change description and save... optimistic lock failure
         // expected
-        createTestData("RelLockUpdate");
+        createRelLockUpdate();
+
         object.setName("third update");
 
         try {
@@ -366,9 +443,9 @@ public class OptimisticLockingTest extends LockingCase {
     }
 
     public void testFailRetrieveRow() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -377,23 +454,23 @@ public class OptimisticLockingTest extends LockingCase {
 
         // change row underneath, change description and save... optimistic lock failure
         // expected
-        createTestData("SimpleLockUpdate");
+        createSimpleLockUpdate();
 
         try {
             context.commitChanges();
             fail("Optimistic lock failure expected.");
         }
         catch (OptimisticLockException ex) {
-            Map freshFailedRow = ex.getFreshSnapshot(context);
+            Map<?, ?> freshFailedRow = ex.getFreshSnapshot(context);
             assertNotNull(freshFailedRow);
             assertEquals("LockTest1Updated", freshFailedRow.get("NAME"));
         }
     }
 
     public void testFailRetrieveDeletedRow() throws Exception {
-        createTestData("testSimpleLocking");
+        createSimpleLockingDataSet();
 
-        List allObjects = context.performQuery(new SelectQuery(
+        List<?> allObjects = context.performQuery(new SelectQuery(
                 SimpleLockingTestEntity.class));
         assertEquals(1, allObjects.size());
 
@@ -403,14 +480,14 @@ public class OptimisticLockingTest extends LockingCase {
 
         // delete row underneath, change description and save... optimistic lock failure
         // expected
-        createTestData("SimpleLockDelete");
+        createSimpleLockDelete();
 
         try {
             context.commitChanges();
             fail("Optimistic lock failure expected.");
         }
         catch (OptimisticLockException ex) {
-            Map freshFailedRow = ex.getFreshSnapshot(context);
+            Map<?, ?> freshFailedRow = ex.getFreshSnapshot(context);
             assertNull(freshFailedRow);
         }
     }
