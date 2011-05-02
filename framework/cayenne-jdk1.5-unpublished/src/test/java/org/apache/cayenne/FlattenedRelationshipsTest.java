@@ -21,7 +21,6 @@ package org.apache.cayenne;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -62,12 +61,12 @@ public class FlattenedRelationshipsTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("FLATTENED_TEST_1");
-        dbHelper.deleteAll("FLATTENED_TEST_2");
-        dbHelper.deleteAll("FLATTENED_TEST_3");
         dbHelper.deleteAll("COMPLEX_JOIN");
-        dbHelper.deleteAll("FLATTENED_CIRCULAR");
+        dbHelper.deleteAll("FLATTENED_TEST_3");
+        dbHelper.deleteAll("FLATTENED_TEST_2");
+        dbHelper.deleteAll("FLATTENED_TEST_1");
         dbHelper.deleteAll("FLATTENED_CIRCULAR_JOIN");
+        dbHelper.deleteAll("FLATTENED_CIRCULAR");
 
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
@@ -249,7 +248,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
 
         // test that taking a snapshot does not trigger a fault, and generally works well
-        Map snapshot = context.currentSnapshot(ft3);
+        DataRow snapshot = context.currentSnapshot(ft3);
 
         assertEquals("ft3", snapshot.get("NAME"));
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);

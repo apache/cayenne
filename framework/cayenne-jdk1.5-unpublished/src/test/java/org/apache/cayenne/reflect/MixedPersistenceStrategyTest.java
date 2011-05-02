@@ -32,38 +32,41 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests conflicts between field and map-based persistence.
- * 
  */
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class MixedPersistenceStrategyTest extends ServerCase {
 
     @Inject
     protected ObjectContext context;
-    
+
     @Inject
     protected DBHelper dbHelper;
-    
+
     protected TableHelper tMixedPersistenceStrategy;
     protected TableHelper tMixedPersistenceStrategy2;
-    
+
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MIXED_PERSISTENCE_STRATEGY");
         dbHelper.deleteAll("MIXED_PERSISTENCE_STRATEGY2");
-        
-        tMixedPersistenceStrategy = new TableHelper(dbHelper, "MIXED_PERSISTENCE_STRATEGY");
+        dbHelper.deleteAll("MIXED_PERSISTENCE_STRATEGY");
+
+        tMixedPersistenceStrategy = new TableHelper(
+                dbHelper,
+                "MIXED_PERSISTENCE_STRATEGY");
         tMixedPersistenceStrategy.setColumns("ID", "DESCRIPTION", "NAME");
-        
-        tMixedPersistenceStrategy2 = new TableHelper(dbHelper, "MIXED_PERSISTENCE_STRATEGY2");
+
+        tMixedPersistenceStrategy2 = new TableHelper(
+                dbHelper,
+                "MIXED_PERSISTENCE_STRATEGY2");
         tMixedPersistenceStrategy2.setColumns("ID", "MASTER_ID", "NAME");
     }
-    
+
     protected void createConflictingFieldDataSet() throws Exception {
         tMixedPersistenceStrategy.insert(1, "d1", "n1");
         tMixedPersistenceStrategy2.insert(1, 1, "dn1");
         tMixedPersistenceStrategy2.insert(2, 1, "dn2");
     }
-    
+
     public void testConflictingField1() throws Exception {
 
         createConflictingFieldDataSet();
