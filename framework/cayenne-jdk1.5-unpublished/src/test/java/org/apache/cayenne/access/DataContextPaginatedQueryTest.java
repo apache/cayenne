@@ -35,7 +35,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class DataContextPaginatedQueryTest extends ServerCase {
 
     @Inject
-    protected ObjectContext context;
+    protected DataContext context;
 
     @Inject
     protected DBHelper dbHelper;

@@ -50,8 +50,8 @@ public class OptimisticLockingTest extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("LOCKING_HELPER");
-        dbHelper.deleteAll("SIMPLE_LOCKING_TEST");
         dbHelper.deleteAll("REL_LOCKING_TEST");
+        dbHelper.deleteAll("SIMPLE_LOCKING_TEST");
 
         tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
         tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION");
@@ -99,9 +99,11 @@ public class OptimisticLockingTest extends ServerCase {
     }
 
     protected void createSimpleLockUpdate() throws Exception {
-        tSimpleLockingTest.update().set("NAME", "LockTest1Updated").where(
-                "LOCKING_TEST_ID",
-                1).execute();
+        assertEquals(1, tSimpleLockingTest
+                .update()
+                .set("NAME", "LockTest1Updated")
+                .where("LOCKING_TEST_ID", 1)
+                .execute());
     }
 
     protected void createRelLockUpdate() throws Exception {
@@ -488,7 +490,7 @@ public class OptimisticLockingTest extends ServerCase {
         }
         catch (OptimisticLockException ex) {
             Map<?, ?> freshFailedRow = ex.getFreshSnapshot(context);
-            assertNull(freshFailedRow);
+            assertNull("" + freshFailedRow, freshFailedRow);
         }
     }
 }
