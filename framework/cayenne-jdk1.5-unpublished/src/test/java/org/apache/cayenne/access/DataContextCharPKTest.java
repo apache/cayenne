@@ -20,29 +20,35 @@
 package org.apache.cayenne.access;
 
 import java.util.List;
-import java.util.Map;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextCharPKTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextCharPKTest extends ServerCase {
 
-    protected DataContext ctxt;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        ctxt = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("CHAR_FK_TEST");
+        dbHelper.deleteAll("CHAR_PK_TEST");
     }
 
     public void testInsert() throws Exception {
-        CharPkTestEntity object = (CharPkTestEntity) ctxt.newObject("CharPkTestEntity");
+        CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");
-        ctxt.commitChanges();
+        context.commitChanges();
 
         SQLTemplate q = new SQLTemplate(
                 CharPkTestEntity.class,
@@ -50,10 +56,10 @@ public class DataContextCharPKTest extends CayenneCase {
 
         q.setFetchingDataRows(true);
 
-        List<?> rows = ctxt.performQuery(q);
+        List<?> rows = context.performQuery(q);
         assertNotNull(rows);
         assertEquals(1, rows.size());
-        Map row = (Map) rows.get(0);
+        DataRow row = (DataRow) rows.get(0);
 
         Object val = row.get("OTHER_COL");
         if (val == null) {
@@ -69,42 +75,42 @@ public class DataContextCharPKTest extends CayenneCase {
     }
 
     public void testDelete() throws Exception {
-        CharPkTestEntity object = (CharPkTestEntity) ctxt.newObject("CharPkTestEntity");
+        CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");
-        ctxt.commitChanges();
+        context.commitChanges();
 
-        ctxt.deleteObject(object);
-        ctxt.commitChanges();
+        context.deleteObject(object);
+        context.commitChanges();
 
         SQLTemplate q = new SQLTemplate(
                 CharPkTestEntity.class,
                 "SELECT * FROM CHAR_PK_TEST");
         q.setFetchingDataRows(true);
 
-        List<?> rows = ctxt.performQuery(q);
+        List<?> rows = context.performQuery(q);
         assertNotNull(rows);
         assertEquals(0, rows.size());
     }
 
     public void testUpdate() throws Exception {
-        CharPkTestEntity object = (CharPkTestEntity) ctxt.newObject("CharPkTestEntity");
+        CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");
-        ctxt.commitChanges();
+        context.commitChanges();
 
         object.setOtherCol("UPDATED");
-        ctxt.commitChanges();
+        context.commitChanges();
 
         SQLTemplate q = new SQLTemplate(
                 CharPkTestEntity.class,
                 "SELECT * FROM CHAR_PK_TEST");
         q.setFetchingDataRows(true);
 
-        List<?> rows = ctxt.performQuery(q);
+        List<?> rows = context.performQuery(q);
         assertNotNull(rows);
         assertEquals(1, rows.size());
-        Map row = (Map) rows.get(0);
+        DataRow row = (DataRow) rows.get(0);
         Object val = row.get("OTHER_COL");
         if (val == null) {
             val = row.get("other_col");
