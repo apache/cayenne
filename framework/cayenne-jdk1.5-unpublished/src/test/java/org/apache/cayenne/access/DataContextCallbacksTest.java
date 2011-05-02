@@ -18,32 +18,49 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextCallbacksTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextCallbacksTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        EntityResolver resolver = getDomain().getEntityResolver();
+    protected void tearDownBeforeInjection() throws Exception {
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();
     }
 
     public void testPostAddCallbacks() {
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry registry = runtime
+                .getDataDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
-
-        DataContext context = createDataContext();
 
         // no callbacks
         Artist a1 = context.newObject(Artist.class);
@@ -76,11 +93,10 @@ public class DataContextCallbacksTest extends CayenneCase {
     }
 
     public void testPrePersistCallbacks() {
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry registry = runtime
+                .getDataDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
-
-        DataContext context = createDataContext();
 
         // no callbacks
         Artist a1 = context.newObject(Artist.class);
@@ -115,11 +131,10 @@ public class DataContextCallbacksTest extends CayenneCase {
     }
 
     public void testPreRemoveCallbacks() {
-        LifecycleCallbackRegistry registry = getDomain()
+        LifecycleCallbackRegistry registry = runtime
+                .getDataDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
-
-        DataContext context = createDataContext();
 
         // no callbacks
         Artist a1 = context.newObject(Artist.class);
