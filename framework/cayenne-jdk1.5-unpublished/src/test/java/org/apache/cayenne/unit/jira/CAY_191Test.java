@@ -21,19 +21,48 @@ package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.FkOfDifferentType;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CAY_191Test extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CAY_191Test extends ServerCase {
+    
+    @Inject
+    protected DataContext context;
+    
+    @Inject
+    protected DBHelper dbHelper;
+    
+    protected TableHelper tRelationshipHelper;
+    protected TableHelper tFkOfDifferentType;
+    
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("FK_OF_DIFFERENT_TYPE");
+        dbHelper.deleteAll("RELATIONSHIP_HELPER");
+        
+        tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
+        tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
+        
+        tFkOfDifferentType = new TableHelper(dbHelper, "FK_OF_DIFFERENT_TYPE");
+        tFkOfDifferentType.setColumns("ID", "RELATIONSHIP_HELPER_FK");
+    }
+    
+    protected void createTestDataSet() throws Exception {
+        tRelationshipHelper.insert("RH1", 1);
+        tFkOfDifferentType.insert(1, 1);
+    }
 
     public void testResolveToOneOverFKOfDifferentNumType() throws Exception {
         // this is mostly for legacy schemas, as on many dbs you won;t be able to even
         // create the FK constraint...
 
-        deleteTestData();
-        createTestData("testResolveToOneOverFKOfDifferentNumType");
+        createTestDataSet();
 
-        DataContext context = createDataContext();
         FkOfDifferentType root = Cayenne.objectForPK(
                 context,
                 FkOfDifferentType.class,
