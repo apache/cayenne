@@ -23,28 +23,93 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.FlattenedCircular;
 import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.testdo.relationship.FlattenedTest2;
 import org.apache.cayenne.testdo.relationship.FlattenedTest3;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Test case for objects with flattened relationships.
- * 
  */
-public class FlattenedRelationshipsTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class FlattenedRelationshipsTest extends ServerCase {
 
+    @Inject
     protected DataContext context;
 
+    @Inject
+    protected ServerRuntime runtime;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tFlattenedTest1;
+    protected TableHelper tFlattenedTest2;
+    protected TableHelper tFlattenedTest3;
+    protected TableHelper tComplexJoin;
+    protected TableHelper tFlattenedCircular;
+    protected TableHelper tFlattenedCircularJoin;
+
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("FLATTENED_TEST_1");
+        dbHelper.deleteAll("FLATTENED_TEST_2");
+        dbHelper.deleteAll("FLATTENED_TEST_3");
+        dbHelper.deleteAll("COMPLEX_JOIN");
+        dbHelper.deleteAll("FLATTENED_CIRCULAR");
+        dbHelper.deleteAll("FLATTENED_CIRCULAR_JOIN");
+
+        tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
+        tFlattenedTest1.setColumns("FT1_ID", "NAME");
+
+        tFlattenedTest2 = new TableHelper(dbHelper, "FLATTENED_TEST_2");
+        tFlattenedTest2.setColumns("FT2_ID", "FT1_ID", "NAME");
+
+        tFlattenedTest3 = new TableHelper(dbHelper, "FLATTENED_TEST_3");
+        tFlattenedTest3.setColumns("FT3_ID", "FT2_ID", "NAME");
+
+        tComplexJoin = new TableHelper(dbHelper, "COMPLEX_JOIN");
+        tComplexJoin.setColumns("PK", "FT1_FK", "FT3_FK", "EXTRA_COLUMN");
+
+        tFlattenedCircular = new TableHelper(dbHelper, "FLATTENED_CIRCULAR");
+        tFlattenedCircular.setColumns("ID");
+
+        tFlattenedCircularJoin = new TableHelper(dbHelper, "FLATTENED_CIRCULAR_JOIN");
+        tFlattenedCircularJoin.setColumns("SIDE1_ID", "SIDE2_ID");
+    }
+
+    protected void createFlattenedTestDataSet() throws Exception {
+        tFlattenedTest1.insert(1, "ft1");
+        tFlattenedTest1.insert(2, "ft12");
+        tFlattenedTest2.insert(1, 1, "ft2");
+        tFlattenedTest3.insert(1, 1, "ft3");
+    }
+
+    protected void createFlattenedCircularDataSet() throws Exception {
+        tFlattenedCircular.insert(1);
+        tFlattenedCircular.insert(2);
+        tFlattenedCircular.insert(3);
+        tFlattenedCircularJoin.insert(1, 2);
+        tFlattenedCircularJoin.insert(1, 3);
+    }
+
+    protected void createCircularJoinDataSet() throws Exception {
+        tFlattenedTest1.insert(2, "ft12");
+        tFlattenedTest3.insert(2, null, "ft3-a");
+        tFlattenedTest3.insert(3, null, "ft3-b");
+        tComplexJoin.insert(2000, 2, 2, "A");
+        tComplexJoin.insert(2001, 2, 3, "B");
+        tComplexJoin.insert(2002, 2, 3, "C");
     }
 
     public void testInsertJoinWithPK() throws Exception {
@@ -63,11 +128,8 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
 
         int pk = Cayenne.intPKForObject(obj01);
 
-        context = createDataContext();
-        FlattenedTest1 fresh01 = Cayenne.objectForPK(
-                context,
-                FlattenedTest1.class,
-                pk);
+        DataContext context = runtime.getDataDomain().createDataContext();
+        FlattenedTest1 fresh01 = Cayenne.objectForPK(context, FlattenedTest1.class, pk);
 
         assertEquals("t01", fresh01.getName());
         ValueHolder related = (ValueHolder) fresh01.getFt3OverComplex();
@@ -77,7 +139,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testUnsetJoinWithPK() throws Exception {
-        createTestData("testUnsetJoinWithPK");
+        createCircularJoinDataSet();
 
         SQLTemplate joinSelect = new SQLTemplate(
                 FlattenedTest1.class,
@@ -85,8 +147,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
         joinSelect.setFetchingDataRows(true);
         assertEquals(3, context.performQuery(joinSelect).size());
 
-        FlattenedTest1 ft1 = Cayenne
-                .objectForPK(context, FlattenedTest1.class, 2);
+        FlattenedTest1 ft1 = Cayenne.objectForPK(context, FlattenedTest1.class, 2);
 
         assertEquals("ft12", ft1.getName());
         List related = ft1.getFt3OverComplex();
@@ -94,8 +155,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
 
         assertEquals(2, related.size());
 
-        FlattenedTest3 ft3 = Cayenne
-                .objectForPK(context, FlattenedTest3.class, 3);
+        FlattenedTest3 ft3 = Cayenne.objectForPK(context, FlattenedTest3.class, 3);
         assertTrue(related.contains(ft3));
 
         ft1.removeFromFt3OverComplex(ft3);
@@ -152,6 +212,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testToOneSeriesFlattenedRel() {
+
         FlattenedTest1 ft1 = (FlattenedTest1) context.newObject("FlattenedTest1");
         ft1.setName("FT1Name");
         FlattenedTest2 ft2 = (FlattenedTest2) context.newObject("FlattenedTest2");
@@ -163,7 +224,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
         ft2.addToFt3Array(ft3);
         context.commitChanges();
 
-        context = createDataContext(); // We need a new context
+        context = runtime.getDataDomain().createDataContext(); // We need a new context
         SelectQuery q = new SelectQuery(FlattenedTest3.class);
         q.setQualifier(ExpressionFactory.matchExp("name", "FT3Name"));
         List results = context.performQuery(q);
@@ -176,7 +237,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testTakeObjectSnapshotFlattenedFault() throws Exception {
-        createTestData("test");
+        createFlattenedTestDataSet();
 
         // fetch
         List ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
@@ -194,7 +255,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testRefetchWithFlattenedFaultToOneTarget1() throws Exception {
-        createTestData("test");
+        createFlattenedTestDataSet();
 
         // fetch
         List ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
@@ -209,12 +270,9 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testFlattenedCircular() throws Exception {
-        createTestData("testFlattenedCircular");
-        context = createDataContext();
-        FlattenedCircular fc1 = Cayenne.objectForPK(
-                context,
-                FlattenedCircular.class,
-                1);
+        createFlattenedCircularDataSet();
+
+        FlattenedCircular fc1 = Cayenne.objectForPK(context, FlattenedCircular.class, 1);
 
         List<FlattenedCircular> side2s = fc1.getSide2s();
         assertEquals(2, side2s.size());
