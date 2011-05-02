@@ -19,11 +19,11 @@
 
 package org.apache.cayenne;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -45,20 +45,20 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class FlattenedRelationshipsTest extends ServerCase {
 
     @Inject
-    protected DataContext context;
+    private DataContext context;
 
     @Inject
-    protected ServerRuntime runtime;
+    private DataContext context1;
 
     @Inject
-    protected DBHelper dbHelper;
+    private DBHelper dbHelper;
 
-    protected TableHelper tFlattenedTest1;
-    protected TableHelper tFlattenedTest2;
-    protected TableHelper tFlattenedTest3;
-    protected TableHelper tComplexJoin;
-    protected TableHelper tFlattenedCircular;
-    protected TableHelper tFlattenedCircularJoin;
+    private TableHelper tFlattenedTest1;
+    private TableHelper tFlattenedTest2;
+    private TableHelper tFlattenedTest3;
+    private TableHelper tComplexJoin;
+    private TableHelper tFlattenedCircular;
+    private TableHelper tFlattenedCircularJoin;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -128,14 +128,15 @@ public class FlattenedRelationshipsTest extends ServerCase {
 
         int pk = Cayenne.intPKForObject(obj01);
 
-        DataContext context = runtime.getDataDomain().createDataContext();
-        FlattenedTest1 fresh01 = Cayenne.objectForPK(context, FlattenedTest1.class, pk);
+        context.invalidateObjects(Arrays.asList(obj01, obj11, obj12));
+
+        FlattenedTest1 fresh01 = Cayenne.objectForPK(context1, FlattenedTest1.class, pk);
 
         assertEquals("t01", fresh01.getName());
         ValueHolder related = (ValueHolder) fresh01.getFt3OverComplex();
         assertTrue(related.isFault());
 
-        assertEquals(2, ((List) related).size());
+        assertEquals(2, ((List<?>) related).size());
     }
 
     public void testUnsetJoinWithPK() throws Exception {
@@ -150,7 +151,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
         FlattenedTest1 ft1 = Cayenne.objectForPK(context, FlattenedTest1.class, 2);
 
         assertEquals("ft12", ft1.getName());
-        List related = ft1.getFt3OverComplex();
+        List<FlattenedTest3> related = ft1.getFt3OverComplex();
         assertTrue(((ValueHolder) related).isFault());
 
         assertEquals(2, related.size());
@@ -197,7 +198,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
         // test 1: qualify on flattened attribute
         Expression qual1 = ExpressionFactory.matchExp("ft3Array.name", "t031");
         SelectQuery query1 = new SelectQuery(FlattenedTest1.class, qual1);
-        List objects1 = context.performQuery(query1);
+        List<?> objects1 = context.performQuery(query1);
 
         assertEquals(1, objects1.size());
         assertSame(obj01, objects1.get(0));
@@ -205,7 +206,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
         // test 2: qualify on flattened relationship
         Expression qual2 = ExpressionFactory.matchExp("ft3Array", obj131);
         SelectQuery query2 = new SelectQuery(FlattenedTest1.class, qual2);
-        List objects2 = context.performQuery(query2);
+        List<?> objects2 = context.performQuery(query2);
 
         assertEquals(1, objects2.size());
         assertSame(obj11, objects2.get(0));
@@ -224,10 +225,11 @@ public class FlattenedRelationshipsTest extends ServerCase {
         ft2.addToFt3Array(ft3);
         context.commitChanges();
 
-        context = runtime.getDataDomain().createDataContext(); // We need a new context
+        context.invalidateObjects(Arrays.asList(ft1, ft2, ft3));
+
         SelectQuery q = new SelectQuery(FlattenedTest3.class);
         q.setQualifier(ExpressionFactory.matchExp("name", "FT3Name"));
-        List results = context.performQuery(q);
+        List<?> results = context1.performQuery(q);
 
         assertEquals(1, results.size());
 
@@ -240,7 +242,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
         createFlattenedTestDataSet();
 
         // fetch
-        List ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
+        List<?> ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
         assertEquals(1, ft3s.size());
         FlattenedTest3 ft3 = (FlattenedTest3) ft3s.get(0);
 
@@ -258,7 +260,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
         createFlattenedTestDataSet();
 
         // fetch
-        List ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
+        List<?> ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
         assertEquals(1, ft3s.size());
         FlattenedTest3 ft3 = (FlattenedTest3) ft3s.get(0);
 
