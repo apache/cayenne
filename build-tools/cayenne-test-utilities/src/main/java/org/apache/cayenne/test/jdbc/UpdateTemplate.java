@@ -72,13 +72,17 @@ class UpdateTemplate {
 
             PreparedStatement st = c.prepareStatement(sql);
 
+            int count;
             try {
                 bindParameters(st, bindings, bindingTypes);
-                return st.executeUpdate();
+                count = st.executeUpdate();
             }
             finally {
                 st.close();
             }
+
+            c.commit();
+            return count;
         }
         finally {
             c.close();
