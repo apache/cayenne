@@ -20,24 +20,54 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class ObjectStoreDiffRetainingTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ObjectStoreDiffRetainingTest extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "ARTIST_ID",
+                "ESTIMATED_PRICE",
+                "GALLERY_ID",
+                "PAINTING_ID",
+                "PAINTING_TITLE");
+    }
+
+    protected void createMixedDataSet() throws Exception {
+        tArtist.insert(2000, "artist with one painting", null);
+        tPainting.insert(2000, null, null, 3000, "p1");
     }
 
     public void testSnapshotRetainedOnPropertyModification() throws Exception {
-        createTestData("test");
+        createMixedDataSet();
 
-        DataContext context = createDataContext();
         Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
         ObjectStore objectStore = context.getObjectStore();
 
@@ -48,9 +78,8 @@ public class ObjectStoreDiffRetainingTest extends CayenneCase {
     }
 
     public void testSnapshotRetainedOnRelAndPropertyModification() throws Exception {
-        createTestData("test");
+        createMixedDataSet();
 
-        DataContext context = createDataContext();
         Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
         ObjectStore objectStore = context.getObjectStore();
 
