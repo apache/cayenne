@@ -19,11 +19,15 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CompoundPkChangeTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class CompoundPkChangeTest extends ServerCase {
 
     private static final String key1v1 = "-key1-v1-";
     private static final String key2v1 = "-key2-v1-";
@@ -32,14 +36,19 @@ public class CompoundPkChangeTest extends CayenneCase {
     private static final String key1v3 = "-key1-v3-";
     private static final String key2v3 = "-key2-v3-";
 
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("COMPOUND_FK_TEST");
+        dbHelper.deleteAll("COMPOUND_PK_TEST");
     }
 
     public void testCompoundPkChangeSingleElement() throws Exception {
-        DataContext context = createDataContext();
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedObject = null;
@@ -58,9 +67,7 @@ public class CompoundPkChangeTest extends CayenneCase {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(
-                context,
-                refetch);
+        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(context, refetch);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey2(key2v2);
@@ -75,9 +82,8 @@ public class CompoundPkChangeTest extends CayenneCase {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(
-                context,
-                refetch1);
+        refreshedObject = (CompoundPkTestEntity) Cayenne
+                .objectForQuery(context, refetch1);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey2(key2v3);
@@ -92,14 +98,12 @@ public class CompoundPkChangeTest extends CayenneCase {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(
-                context,
-                refetch2);
+        refreshedObject = (CompoundPkTestEntity) Cayenne
+                .objectForQuery(context, refetch2);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 
     public void testCompoundPkChangeAllElements() throws Exception {
-        DataContext context = createDataContext();
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedObject = null;
@@ -118,9 +122,7 @@ public class CompoundPkChangeTest extends CayenneCase {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(
-                context,
-                refetch);
+        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(context, refetch);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey1(key1v2);
@@ -136,9 +138,8 @@ public class CompoundPkChangeTest extends CayenneCase {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(
-                context,
-                refetch1);
+        refreshedObject = (CompoundPkTestEntity) Cayenne
+                .objectForQuery(context, refetch1);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey1(key1v3);
@@ -154,9 +155,8 @@ public class CompoundPkChangeTest extends CayenneCase {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(
-                context,
-                refetch2);
+        refreshedObject = (CompoundPkTestEntity) Cayenne
+                .objectForQuery(context, refetch2);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 }
