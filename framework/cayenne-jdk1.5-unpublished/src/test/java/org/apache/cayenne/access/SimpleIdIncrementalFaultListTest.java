@@ -24,32 +24,73 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.cayenne.DataObject;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class SimpleIdIncrementalFaultListTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SimpleIdIncrementalFaultListTest extends ServerCase {
 
-    protected SimpleIdIncrementalFaultList<?> list;
-    protected Query query;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tArtist;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+    }
+
+    protected void createArtistsDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tArtist.insert(33003, "artist3");
+        tArtist.insert(33004, "artist4");
+        tArtist.insert(33005, "artist5");
+        tArtist.insert(33006, "artist6");
+        tArtist.insert(33007, "artist7");
+        tArtist.insert(33008, "artist8");
+        tArtist.insert(33009, "artist9");
+        tArtist.insert(33010, "artist10");
+        tArtist.insert(33011, "artist11");
+        tArtist.insert(33012, "artist12");
+        tArtist.insert(33013, "artist13");
+        tArtist.insert(33014, "artist14");
+        tArtist.insert(33015, "artist15");
+        tArtist.insert(33016, "artist16");
+        tArtist.insert(33017, "artist17");
+        tArtist.insert(33018, "artist18");
+        tArtist.insert(33019, "artist19");
+        tArtist.insert(33020, "artist20");
+        tArtist.insert(33021, "artist21");
+        tArtist.insert(33022, "artist22");
+        tArtist.insert(33023, "artist23");
+        tArtist.insert(33024, "artist24");
+        tArtist.insert(33025, "artist25");
     }
 
     public void testRemoveDeleted() throws Exception {
-        createTestData("testArtists");
+        createArtistsDataSet();
 
-        DataContext context = createDataContext();
+        // DataContext context = createDataContext();
 
         SelectQuery query = new SelectQuery(Artist.class);
         query.setPageSize(10);
@@ -67,39 +108,36 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
         assertEquals(24, list.size());
     }
 
-    protected void prepareList(int pageSize) throws Exception {
-        super.setUp();
-        deleteTestData();
-        createTestData("testArtists");
+    private SimpleIdIncrementalFaultList<?> prepareList(int pageSize) throws Exception {
+        createArtistsDataSet();
 
-        SelectQuery q = new SelectQuery("Artist");
+        SelectQuery query = new SelectQuery(Artist.class);
 
         // make sure total number of objects is not divisable
         // by the page size, to test the last smaller page
-        q.setPageSize(pageSize);
-        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        query = q;
-        list = new SimpleIdIncrementalFaultList<Object>(createDataContext(), query);
+        query.setPageSize(pageSize);
+        query.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
+        return new SimpleIdIncrementalFaultList<Object>(context, query);
     }
 
     public void testSize() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertEquals(25, list.size());
     }
 
     public void testSmallList() throws Exception {
-        prepareList(49);
+        SimpleIdIncrementalFaultList<?> list = prepareList(49);
         assertEquals(25, list.size());
     }
 
     public void testOnePageList() throws Exception {
-        prepareList(25);
+        SimpleIdIncrementalFaultList<?> list = prepareList(25);
         assertEquals(25, list.size());
     }
 
     public void testIterator() throws Exception {
-        prepareList(6);
-        Iterator it = list.iterator();
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
+        Iterator<?> it = list.iterator();
         int counter = 0;
         while (it.hasNext()) {
             Object obj = it.next();
@@ -122,10 +160,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
 
     public void testNewObject() throws Exception {
 
-        deleteTestData();
-        createTestData("testArtists");
-
-        DataContext context = createDataContext();
+        createArtistsDataSet();
 
         Artist newArtist = context.newObject(Artist.class);
         newArtist.setArtistName("X");
@@ -143,8 +178,8 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     }
 
     public void testListIterator() throws Exception {
-        prepareList(6);
-        ListIterator it = list.listIterator();
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
+        ListIterator<?> it = list.listIterator();
         int counter = 0;
         while (it.hasNext()) {
             Object obj = it.next();
@@ -166,11 +201,11 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     }
 
     public void testSort() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
 
         new Ordering(Artist.ARTIST_NAME_PROPERTY, SortOrder.DESCENDING).orderList(list);
 
-        Iterator it = list.iterator();
+        Iterator<?> it = list.iterator();
         Artist previousArtist = null;
         while (it.hasNext()) {
             Artist artist = (Artist) it.next();
@@ -182,7 +217,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     }
 
     public void testUnfetchedObjects() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertEquals(25, list.getUnfetchedObjects());
         list.get(7);
         assertEquals(25 - 6, list.getUnfetchedObjects());
@@ -191,7 +226,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     }
 
     public void testPageIndex() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertEquals(0, list.pageIndex(0));
         assertEquals(0, list.pageIndex(1));
         assertEquals(1, list.pageIndex(6));
@@ -206,7 +241,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     }
 
     public void testPagesRead1() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertTrue(list.elements.get(0) instanceof Long);
         assertTrue(list.elements.get(8) instanceof Long);
 
@@ -218,7 +253,7 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     }
 
     public void testGet1() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertTrue(list.elements.get(0) instanceof Long);
         assertTrue(list.elements.get(8) instanceof Long);
 
@@ -229,28 +264,11 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
         assertTrue(list.elements.get(8) instanceof Artist);
     }
 
-    public void testGet2() throws Exception {
-        prepareList(6);
-        ((SelectQuery) query).setFetchingDataRows(true);
-        assertTrue(list.elements.get(0) instanceof Long);
-        assertTrue(list.elements.get(8) instanceof Long);
-
-        Object a0 = list.get(0);
-
-        assertNotNull(a0);
-        assertTrue(list.elements.get(0) instanceof Artist);
-
-        Object a = list.get(8);
-
-        assertNotNull(a);
-        assertTrue(list.elements.get(8) instanceof Artist);
-    }
-
     public void testIndexOf() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
         Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
         SelectQuery query = new SelectQuery(Artist.class, qual);
-        List artists = list.dataContext.performQuery(query);
+        List<?> artists = list.dataContext.performQuery(query);
 
         assertEquals(1, artists.size());
 
@@ -260,10 +278,10 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
     }
 
     public void testLastIndexOf() throws Exception {
-        prepareList(6);
+        SimpleIdIncrementalFaultList<?> list = prepareList(6);
         Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
         SelectQuery query = new SelectQuery(Artist.class, qual);
-        List artists = list.dataContext.performQuery(query);
+        List<?> artists = list.dataContext.performQuery(query);
 
         assertEquals(1, artists.size());
 
