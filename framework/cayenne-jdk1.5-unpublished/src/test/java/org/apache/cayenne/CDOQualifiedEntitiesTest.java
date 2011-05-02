@@ -18,84 +18,66 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.testdo.qualified.Qualified2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CDOQualifiedEntitiesTest extends CayenneCase {
+@UseServerRuntime("cayenne-default.xml")
+public class CDOQualifiedEntitiesTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tQualified1;
+    private TableHelper tQualified2;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(QUALIFIED_ACCESS_STACK);
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("QUALIFIED2");
+        dbHelper.deleteAll("QUALIFIED1");
+
+        tQualified1 = new TableHelper(dbHelper, "QUALIFIED1");
+        tQualified1.setColumns("ID", "NAME", "DELETED");
+
+        tQualified2 = new TableHelper(dbHelper, "QUALIFIED2");
+        tQualified2.setColumns("ID", "NAME", "DELETED", "QUALIFIED1_ID");
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    private void createReadToManyDataSet() throws Exception {
+        tQualified1.insert(1, "OX1", null);
+        tQualified1.insert(2, "OX2", true);
+
+        tQualified2.insert(1, "OY1", null, 1);
+        tQualified2.insert(2, "OY2", true, 1);
+        tQualified2.insert(3, "OY3", null, 2);
+        tQualified2.insert(4, "OY4", true, 2);
+    }
+
+    private void createReadToOneDataSet() throws Exception {
+        tQualified1.insert(1, "OX1", null);
+        tQualified1.insert(2, "OX2", true);
+
+        tQualified2.insert(1, "OY1", null, 2);
     }
 
     public void testReadToMany() throws Exception {
-        if (getAccessStackAdapter().supportsNullBoolean()) {
-            ObjectContext context = createDataContext();
+        if (accessStackAdapter.supportsNullBoolean()) {
 
-            // prepare data set...
-            SQLTemplate insert1 = new SQLTemplate(
-                    Qualified1.class,
-                    "insert into QUALIFIED1 (ID, NAME, DELETED) "
-                            + "values (#bind($id), #bind($name), #bind($deleted 'BOOLEAN'))");
-            Map<String, Object> parameters1 = new HashMap<String, Object>();
-            parameters1.put("id", 1);
-            parameters1.put("name", "OX1");
-            parameters1.put("deleted", null);
-
-            Map<String, Object> parameters2 = new HashMap<String, Object>();
-            parameters2.put("id", 2);
-            parameters2.put("name", "OX2");
-            parameters2.put("deleted", true);
-
-            insert1.setParameters(parameters1, parameters2);
-            context.performQuery(insert1);
-
-            SQLTemplate insert2 = new SQLTemplate(
-                    Qualified2.class,
-                    "insert into QUALIFIED2 (ID, NAME, DELETED, QUALIFIED1_ID) "
-                            + "values (#bind($id), #bind($name), #bind($deleted 'BOOLEAN'), #bind($q1id))");
-            Map<String, Object> parameters3 = new HashMap<String, Object>();
-            parameters3.put("id", 1);
-            parameters3.put("name", "OY1");
-
-            parameters3.put("deleted", null);
-            parameters3.put("q1id", 1);
-
-            Map<String, Object> parameters4 = new HashMap<String, Object>();
-            parameters4.put("id", 2);
-            parameters4.put("name", "OY2");
-            parameters4.put("deleted", true);
-            parameters4.put("q1id", 1);
-
-            Map<String, Object> parameters5 = new HashMap<String, Object>();
-            parameters5.put("id", 3);
-            parameters5.put("name", "OY3");
-            parameters5.put("deleted", null);
-            parameters5.put("q1id", 2);
-
-            Map<String, Object> parameters6 = new HashMap<String, Object>();
-            parameters6.put("id", 4);
-            parameters6.put("name", "OY4");
-            parameters6.put("deleted", true);
-            parameters6.put("q1id", 2);
-
-            insert2.setParameters(parameters3, parameters4, parameters5, parameters6);
-            context.performQuery(insert2);
+            createReadToManyDataSet();
 
             SelectQuery rootSelect = new SelectQuery(Qualified1.class);
             List<Qualified1> roots = context.performQuery(rootSelect);
@@ -115,39 +97,9 @@ public class CDOQualifiedEntitiesTest extends CayenneCase {
     }
 
     public void testReadToOne() throws Exception {
-        if (getAccessStackAdapter().supportsNullBoolean()) {
-            ObjectContext context = createDataContext();
+        if (accessStackAdapter.supportsNullBoolean()) {
 
-            // prepare data set...
-            SQLTemplate insert1 = new SQLTemplate(
-                    Qualified1.class,
-                    "insert into QUALIFIED1 (ID, NAME, DELETED) "
-                            + "values (#bind($id), #bind($name), #bind($deleted 'BOOLEAN'))");
-            Map<String, Object> parameters1 = new HashMap<String, Object>();
-            parameters1.put("id", 1);
-            parameters1.put("name", "OX1");
-            parameters1.put("deleted", null);
-
-            Map<String, Object> parameters2 = new HashMap<String, Object>();
-            parameters2.put("id", 2);
-            parameters2.put("name", "OX2");
-            parameters2.put("deleted", true);
-
-            insert1.setParameters(parameters1, parameters2);
-            context.performQuery(insert1);
-
-            SQLTemplate insert2 = new SQLTemplate(
-                    Qualified2.class,
-                    "insert into QUALIFIED2 (ID, NAME, DELETED, QUALIFIED1_ID) "
-                            + "values (#bind($id), #bind($name), #bind($deleted 'BOOLEAN'), #bind($q1id))");
-            Map<String, Object> parameters3 = new HashMap<String, Object>();
-            parameters3.put("id", 1);
-            parameters3.put("name", "OY1");
-            parameters3.put("deleted", null);
-            parameters3.put("q1id", 2);
-
-            insert2.setParameters(parameters3);
-            context.performQuery(insert2);
+            createReadToOneDataSet();
 
             SelectQuery rootSelect = new SelectQuery(Qualified2.class);
             List<Qualified2> roots = context.performQuery(rootSelect);
