@@ -24,25 +24,31 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CalendarEntity;
 import org.apache.cayenne.testdo.testmap.DateTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests Date handling in Cayenne.
  */
-public class DateTimeTypesTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DateTimeTypesTest extends ServerCase {
 
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("CALENDAR_TEST");
+        dbHelper.deleteAll("DATE_TEST");
     }
 
     public void testCalendar() throws Exception {
@@ -66,7 +72,7 @@ public class DateTimeTypesTest extends CayenneCase {
     }
 
     public void testDate() throws Exception {
-        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+        DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -83,7 +89,7 @@ public class DateTimeTypesTest extends CayenneCase {
     }
 
     public void testTime() throws Exception {
-        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+        DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -107,7 +113,7 @@ public class DateTimeTypesTest extends CayenneCase {
     }
 
     public void testTimestamp() throws Exception {
-        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+        DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -127,7 +133,7 @@ public class DateTimeTypesTest extends CayenneCase {
     }
 
     public void testSQLTemplateTimestamp() throws Exception {
-        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+        DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
