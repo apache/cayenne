@@ -24,25 +24,40 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextDecoratedStackTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextDecoratedStackTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
 
     public void testCommitDecorated() {
-        DataDomain dd = getDomain();
+        DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
         DataContext context = new DataContext(decorator, new ObjectStore(dd
                 .getSharedSnapshotCache()));
@@ -67,7 +82,7 @@ public class DataContextDecoratedStackTest extends CayenneCase {
     }
 
     public void testGetParentDataDomain() {
-        DataDomain dd = getDomain();
+        DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
         DataContext context = new DataContext(decorator, new ObjectStore(dd
                 .getSharedSnapshotCache()));
