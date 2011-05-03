@@ -20,37 +20,60 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextSelectQuerySplitAliasesTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextSelectQuerySplitAliasesTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tArtist;
+    private TableHelper tPainting;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
     }
 
-    public void testAliasPathSplits_SinglePath() {
-        ObjectContext context = createDataContext();
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'AA')"));
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'BB')"));
+    private void createTwoArtistsTwoPaintingsDataSet() throws Exception {
 
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE) "
-                        + "VALUES (1, 1, 'X')"));
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE)"
-                        + " VALUES (2, 2, 'Y')"));
+        tArtist.insert(1, "AA");
+        tArtist.insert(2, "BB");
+
+        tPainting.insert(1, 1, "X");
+        tPainting.insert(2, 2, "Y");
+    }
+
+    private void createTwoArtistsThreePaintingsDataSet() throws Exception {
+
+        createTwoArtistsTwoPaintingsDataSet();
+        tPainting.insert(3, 2, "X");
+    }
+
+    public void testAliasPathSplits_SinglePath() throws Exception {
+        createTwoArtistsTwoPaintingsDataSet();
 
         SelectQuery query = new SelectQuery(Artist.class);
         query.andQualifier(ExpressionFactory.matchExp("p.paintingTitle", "X"));
@@ -62,27 +85,8 @@ public class DataContextSelectQuerySplitAliasesTest extends CayenneCase {
         assertEquals("AA", artists.get(0).getArtistName());
     }
 
-    public void testAliasPathSplits_SplitJoin() {
-        ObjectContext context = createDataContext();
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'AA')"));
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'BB')"));
-
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE) "
-                        + "VALUES (1, 1, 'X')"));
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE)"
-                        + " VALUES (2, 2, 'Y')"));
-        context.performGenericQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE)"
-                        + " VALUES (3, 2, 'X')"));
+    public void testAliasPathSplits_SplitJoin() throws Exception {
+        createTwoArtistsThreePaintingsDataSet();
 
         SelectQuery query = new SelectQuery(Artist.class);
         query.andQualifier(ExpressionFactory.matchExp("p1.paintingTitle", "X"));
