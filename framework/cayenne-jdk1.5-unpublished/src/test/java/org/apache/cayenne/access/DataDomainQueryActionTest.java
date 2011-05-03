@@ -21,69 +21,89 @@ package org.apache.cayenne.access;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.MockQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataDomainQueryActionTest extends ServerCase {
 
-public class DataDomainQueryActionTest extends CayenneCase {
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    public void setUp() throws Exception {
-        deleteTestData();
+    public void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
-    
+
     @Override
-    public void tearDown() {
-        getDomain().resetProperties();
+    public void tearDownBeforeInjection() {
+        runtime.getDataDomain().resetProperties();
     }
-   
+
     public void testCachedQuery() {
-        
-        DataDomain domain = getDomain();
-        
-        ObjectContext context = createDataContext();
-        
+
+        DataDomain domain = runtime.getDataDomain();
+
         Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("sample");
-        
+
         SelectQuery query = new SelectQuery(Painting.class);
-        
+
         query.addPrefetch(Painting.TO_GALLERY_PROPERTY);
         query.addPrefetch(Painting.TO_ARTIST_PROPERTY);
         query.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         query.setPageSize(5);
-        
+
         QueryCache cache = domain.queryCache;
-        
+
         domain.queryCache = new MockQueryCache() {
-           
+
             @Override
-            public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+            public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
                 Object results = factory.createObject();
-                assertTrue("Query cache is not serializable.", results instanceof Serializable);
-                
+                assertTrue(
+                        "Query cache is not serializable.",
+                        results instanceof Serializable);
+
                 return null;
             }
-            
+
+            @SuppressWarnings("all")
             @Override
             public void put(QueryMetadata metadata, List results) {
-                assertTrue("Query cache is not serializable.", results instanceof Serializable);
+                assertTrue(
+                        "Query cache is not serializable.",
+                        results instanceof Serializable);
             }
         };
-        
+
         DataDomainQueryAction action = new DataDomainQueryAction(context, domain, query);
         action.execute();
-        
+
         domain.queryCache = cache;
     }
-    
+
 }
