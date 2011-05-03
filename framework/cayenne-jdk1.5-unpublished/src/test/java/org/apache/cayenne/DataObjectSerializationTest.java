@@ -21,15 +21,18 @@ package org.apache.cayenne;
 
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ToManyList;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 
-/**
- */
-public class DataObjectSerializationTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataObjectSerializationTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
 
     public void testSerializeTransient() throws Exception {
         Artist artist = new Artist();
@@ -37,20 +40,19 @@ public class DataObjectSerializationTest extends CayenneCase {
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
         assertNull(artist.getObjectId());
 
-        Artist deserialized = (Artist) Util.cloneViaSerialization(artist);
+        Artist deserialized = Util.cloneViaSerialization(artist);
         assertEquals(PersistenceState.TRANSIENT, deserialized.getPersistenceState());
         assertNull(deserialized.getObjectId());
         assertEquals("artist1", deserialized.getArtistName());
     }
 
     public void testSerializeNew() throws Exception {
-        DataContext context = super.createDataContext();
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("artist1");
         // resolve relationship fault
         artist.getPaintingArray();
 
-        Artist deserialized = (Artist) Util.cloneViaSerialization(artist);
+        Artist deserialized = Util.cloneViaSerialization(artist);
 
         // everything must be deserialized, but DataContext link should stay null
         assertEquals(PersistenceState.NEW, deserialized.getPersistenceState());
@@ -61,17 +63,16 @@ public class DataObjectSerializationTest extends CayenneCase {
                 + deserialized.getObjectContext(), deserialized.getObjectContext());
 
         // test that to-many relationships are initialized
-        List paintings = deserialized.getPaintingArray();
+        List<?> paintings = deserialized.getPaintingArray();
         assertNotNull(paintings);
         assertEquals(0, paintings.size());
     }
 
     public void testSerializeNewWithFaults() throws Exception {
-        DataContext context = createDataContext();
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("artist1");
 
-        Artist deserialized = (Artist) Util.cloneViaSerialization(artist);
+        Artist deserialized = Util.cloneViaSerialization(artist);
 
         // everything must be deserialized, but DataContext link should stay null
         assertEquals(PersistenceState.NEW, deserialized.getPersistenceState());
@@ -88,9 +89,8 @@ public class DataObjectSerializationTest extends CayenneCase {
     }
 
     public void testSerializeCommitted() throws Exception {
-        DataContext context = super.createDataContext();
 
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("artist1");
         context.commitChanges();
 
@@ -99,7 +99,7 @@ public class DataObjectSerializationTest extends CayenneCase {
         ObjectId id = artist.getObjectId();
         assertNotNull(id);
 
-        Artist deserialized = (Artist) Util.cloneViaSerialization(artist);
+        Artist deserialized = Util.cloneViaSerialization(artist);
 
         // everything must be deserialized, but DataContext link should stay null,
         // and properties shouldn't be populated
