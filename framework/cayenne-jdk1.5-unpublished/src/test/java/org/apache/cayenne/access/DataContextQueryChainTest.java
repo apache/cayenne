@@ -22,15 +22,34 @@ import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextQueryChainTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextQueryChainTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+    }
 
     public void testSelectQuery() {
-        DataContext context = createDataContext();
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("X");
         context.commitChanges();
@@ -45,10 +64,10 @@ public class DataContextQueryChainTest extends CayenneCase {
         assertEquals(2, r.size());
         r.reset();
         r.next();
-        List l1 = r.currentList();
+        List<?> l1 = r.currentList();
         r.next();
-        List l2 = r.currentList();
-        
+        List<?> l2 = r.currentList();
+
         assertTrue(l1.get(0) instanceof DataRow);
         assertTrue(l2.get(0) instanceof DataRow);
     }
