@@ -20,99 +20,96 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.reflect.PersistentDescriptor;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextFlattenedAttributesTest extends CayenneCase {
+/**
+ */
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextFlattenedAttributesTest extends ServerCase {
 
-    final int artistCount = 4;
-    final int galleryCount = 2;
-    final int paintCount = 8;
+    @Inject
+    private DataContext context;
 
-    protected DataContext context;
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("GALLERY");
     }
 
-    private void populateTables() throws Exception {
-        String insertArtist = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (?,?,?)";
-        String insertGal = "INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (?,?)";
-        String insertPaint = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE, GALLERY_ID) VALUES (?, ?, ?, ?, ?)";
-        String insertPaintInfo = "INSERT INTO PAINTING_INFO (PAINTING_ID, TEXT_REVIEW) VALUES (?, ?)";
+    private void createTestDataSet() throws Exception {
+        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
-        Connection conn = getConnection();
+        TableHelper tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE",
+                "GALLERY_ID");
 
-        try {
-            conn.setAutoCommit(false);
+        TableHelper tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
 
-            PreparedStatement stmt = conn.prepareStatement(insertArtist);
-            long dateBase = System.currentTimeMillis();
-            for (int i = 1; i <= artistCount; i++) {
-                stmt.setInt(1, i + 1);
-                stmt.setString(2, "artist" + i);
-                stmt.setDate(3, new java.sql.Date(dateBase + 1000 * 60 * 60 * 24 * i));
-                stmt.executeUpdate();
-            }
-            stmt.close();
+        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
 
-            stmt = conn.prepareStatement(insertGal);
-            for (int i = 1; i <= galleryCount; i++) {
-                stmt.setInt(1, i + 2);
-                stmt.setString(2, "gallery" + i);
-                stmt.executeUpdate();
-            }
-            stmt.close();
-
-            stmt = conn.prepareStatement(insertPaint);
-            for (int i = 1; i <= paintCount; i++) {
-                stmt.setInt(1, i);
-                stmt.setString(2, "painting" + i);
-                stmt.setInt(3, (i - 1) % artistCount + 2);
-                stmt.setBigDecimal(4, new BigDecimal(1000d));
-                if (i == 3)
-                    stmt.setNull(5, Types.INTEGER);
-                else
-                    stmt.setInt(5, (i - 1) % galleryCount + 3);
-                stmt.executeUpdate();
-            }
-            stmt.close();
-
-            stmt = conn.prepareStatement(insertPaintInfo);
-            for (int i = 1; i <= paintCount / 2; i++) {
-                stmt.setInt(1, i);
-                stmt.setString(2, "painting review" + i);
-                stmt.executeUpdate();
-            }
-            stmt.close();
-
-            conn.commit();
+        long dateBase = System.currentTimeMillis();
+        for (int i = 1; i <= 4; i++) {
+            tArtist.insert(i + 1, "artist" + i, new java.sql.Date(dateBase
+                    + 1000
+                    * 60
+                    * 60
+                    * 24
+                    * i));
         }
-        finally {
-            conn.close();
+
+        for (int i = 1; i <= 2; i++) {
+            tGallery.insert(i + 2, "gallery" + i);
         }
+
+        for (int i = 1; i <= 8; i++) {
+
+            Integer galleryId = (i == 3) ? null : (i - 1) % 2 + 3;
+            tPainting.insert(
+                    i,
+                    "painting" + i,
+                    (i - 1) % 4 + 2,
+                    new BigDecimal(1000d),
+                    galleryId);
+
+            tPaintingInfo.insert(i, "painting review" + i);
+        }
+
     }
 
     public void testSelectCompound1() throws Exception {
-        populateTables();
+        createTestDataSet();
         SelectQuery query = new SelectQuery(CompoundPainting.class);
         List<?> objects = context.performQuery(query);
 
@@ -159,7 +156,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     // EJBQLQuery does an OUTER JOIN... which seems like a better idea...
     // 14/01/2010 now it uses LEFT JOIN
     public void testSelectCompound2() throws Exception {
-        populateTables();
+        createTestDataSet();
         SelectQuery query = new SelectQuery(CompoundPainting.class, ExpressionFactory
                 .matchExp("artistName", "artist2"));
         List<?> objects = context.performQuery(query);
@@ -191,7 +188,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
      * SelectQuery statement, CAY-1484
      */
     public void testSelectCompoundLongNames() throws Exception {
-        populateTables();
+        createTestDataSet();
         SelectQuery query = new SelectQuery(CompoundPaintingLongNames.class);
         // the error was thrown on query execution
         List<?> objects = context.performQuery(query);
@@ -199,7 +196,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testSelectEJQBQL() throws Exception {
-        populateTables();
+        createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM CompoundPainting a WHERE a.artistName = 'artist2'");
         List<?> objects = context.performQuery(query);
@@ -216,7 +213,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testSelectEJQBQLCollectionTheta() throws Exception {
-        populateTables();
+        createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT DISTINCT a FROM CompoundPainting cp, Artist a "
                         + "WHERE a.artistName=cp.artistName ORDER BY a.artistName");
@@ -235,7 +232,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testSelectEJQBQLLike() throws Exception {
-        populateTables();
+        createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM CompoundPainting a WHERE a.artistName LIKE 'artist%' "
                         + "ORDER BY a.paintingTitle");
@@ -254,7 +251,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testSelectEJQBQLBetween() throws Exception {
-        populateTables();
+        createTestDataSet();
         EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting a "
                 + "WHERE a.artistName BETWEEN 'artist1' AND 'artist4' "
                 + "ORDER BY a.paintingTitle");
@@ -273,7 +270,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testSelectEJQBQLSubquery() throws Exception {
-        populateTables();
+        createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT g FROM Gallery g WHERE "
                         + "(SELECT COUNT(cp) FROM CompoundPainting cp WHERE g.galleryName=cp.galleryName) = 4");
@@ -288,7 +285,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testSelectEJQBQLHaving() throws Exception {
-        populateTables();
+        createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT cp.galleryName, COUNT(a) from  Artist a, CompoundPainting cp "
                         + "WHERE cp.artistName = a.artistName "
