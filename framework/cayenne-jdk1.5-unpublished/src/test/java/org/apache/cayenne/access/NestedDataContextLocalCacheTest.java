@@ -22,17 +22,32 @@ import java.util.List;
 
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class NestedDataContextLocalCacheTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class NestedDataContextLocalCacheTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
     }
 
     public void testLocalCacheStaysLocal() {
@@ -40,7 +55,6 @@ public class NestedDataContextLocalCacheTest extends CayenneCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        DataContext context = createDataContext();
         ObjectContext child1 = context.createChildContext();
 
         assertNull(((BaseContext) child1).getQueryCache().get(
