@@ -21,36 +21,51 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.query.QueryChain;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RelationshipQuery;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextRelationshipQueryTest extends CayenneCase {
-    
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextRelationshipQueryTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tArtist;
+    private TableHelper tPainting;
+
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
     }
 
-    public void testUnrefreshingToOne() {
+    private void createOneArtistOnePaintingDataSet() throws Exception {
 
-        ObjectContext context = createDataContext();
+        tArtist.insert(1, "a1");
+        tPainting.insert(1, "p1", 1);
+    }
 
-        QueryChain chain = new QueryChain();
-        chain.addQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a1')"));
-        chain
-                .addQuery(new SQLTemplate(
-                        Painting.class,
-                        "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE) VALUES (1, 1, 'p1')"));
+    public void testUnrefreshingToOne() throws Exception {
 
-        context.performQuery(chain);
+        createOneArtistOnePaintingDataSet();
 
         Painting p = Cayenne.objectForPK(context, Painting.class, 1);
 
@@ -62,9 +77,11 @@ public class DataContextRelationshipQueryTest extends CayenneCase {
         int writeCalls = a.getPropertyWrittenDirectly();
         assertEquals("a1", a.getArtistName());
 
-        context.performQuery(new SQLTemplate(
-                Artist.class,
-                "UPDATE ARTIST SET ARTIST_NAME = 'a2' WHERE ARTIST_ID = 1"));
+        assertEquals(1, tArtist
+                .update()
+                .set("ARTIST_NAME", "a2")
+                .where("ARTIST_ID", 1)
+                .execute());
 
         RelationshipQuery toOne = new RelationshipQuery(
                 p.getObjectId(),
@@ -82,20 +99,9 @@ public class DataContextRelationshipQueryTest extends CayenneCase {
                 a.getPropertyWrittenDirectly());
     }
 
-    public void testRefreshingToOne() {
+    public void testRefreshingToOne() throws Exception {
 
-        ObjectContext context = createDataContext();
-
-        QueryChain chain = new QueryChain();
-        chain.addQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a1')"));
-        chain
-                .addQuery(new SQLTemplate(
-                        Painting.class,
-                        "INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE) VALUES (1, 1, 'p1')"));
-
-        context.performQuery(chain);
+        createOneArtistOnePaintingDataSet();
 
         Painting p = Cayenne.objectForPK(context, Painting.class, 1);
 
@@ -107,9 +113,11 @@ public class DataContextRelationshipQueryTest extends CayenneCase {
         int writeCalls = a.getPropertyWrittenDirectly();
         assertEquals("a1", a.getArtistName());
 
-        context.performQuery(new SQLTemplate(
-                Artist.class,
-                "UPDATE ARTIST SET ARTIST_NAME = 'a2' WHERE ARTIST_ID = 1"));
+        assertEquals(1, tArtist
+                .update()
+                .set("ARTIST_NAME", "a2")
+                .where("ARTIST_ID", 1)
+                .execute());
 
         RelationshipQuery toOne = new RelationshipQuery(
                 p.getObjectId(),
