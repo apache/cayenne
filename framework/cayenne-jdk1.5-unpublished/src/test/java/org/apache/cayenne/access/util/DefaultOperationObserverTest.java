@@ -20,26 +20,21 @@
 package org.apache.cayenne.access.util;
 
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DefaultOperationObserverTest extends CayenneCase {
-
-    protected DefaultOperationObserver observer;
-
-    @Override
-    public void setUp() throws Exception {
-        observer = new DefaultOperationObserver();
-    }
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DefaultOperationObserverTest extends ServerCase {
 
     public void testHasExceptions1() throws Exception {
+        DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
         observer.nextGlobalException(new Exception());
         assertTrue(observer.hasExceptions());
     }
 
     public void testHasExceptions2() throws Exception {
+        DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
         observer.nextQueryException(new SelectQuery(), new Exception());
         assertTrue(observer.hasExceptions());
