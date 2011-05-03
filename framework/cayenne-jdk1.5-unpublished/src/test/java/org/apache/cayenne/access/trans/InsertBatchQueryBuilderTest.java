@@ -18,17 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.access.trans;
 
-import java.util.Collections;
-import java.util.List;
-
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.LockingCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class InsertBatchQueryBuilderTest extends LockingCase {
+@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+public class InsertBatchQueryBuilderTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DbAdapter adapter;
 
     public void testConstructor() throws Exception {
         DbAdapter adapter = new JdbcAdapter();
@@ -39,11 +46,8 @@ public class InsertBatchQueryBuilderTest extends LockingCase {
     }
 
     public void testCreateSqlString() throws Exception {
-        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
-
-        List idAttributes = Collections.singletonList(entity
-                .getAttribute("LOCKING_TEST_ID"));
 
         InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
         InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(new JdbcAdapter());
@@ -55,16 +59,14 @@ public class InsertBatchQueryBuilderTest extends LockingCase {
     }
 
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
-        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List idAttributes = Collections.singletonList(entity
-                    .getAttribute("LOCKING_TEST_ID"));
-           
-            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
-            
+
+            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
+
             InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
             InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(deleteQuery);
