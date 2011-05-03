@@ -21,15 +21,19 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class NestedDataContextPeerEventsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class NestedDataContextPeerEventsTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
 
     public void testPeerObjectUpdatedTempOID() {
-        DataContext context = createDataContext();
-
         ObjectContext peer1 = context.createChildContext();
         Artist a1 = peer1.newObject(Artist.class);
         a1.setArtistName("Y");
@@ -47,8 +51,6 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
     }
 
     public void testPeerObjectUpdatedSimpleProperty() {
-        DataContext context = createDataContext();
-
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -69,8 +71,6 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
     }
 
     public void testPeerObjectUpdatedToOneRelationship() {
-
-        DataContext context = createDataContext();
 
         Artist a = context.newObject(Artist.class);
         Artist altA = context.newObject(Artist.class);
@@ -101,8 +101,6 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
     }
 
     public void testPeerObjectUpdatedToManyRelationship() {
-
-        DataContext context = createDataContext();
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
