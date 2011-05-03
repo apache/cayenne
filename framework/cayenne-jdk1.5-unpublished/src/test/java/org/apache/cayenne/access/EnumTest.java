@@ -20,35 +20,49 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Enum1;
 import org.apache.cayenne.testdo.testmap.EnumEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class EnumTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class EnumTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ENUM_ENTITY");
+
+    }
+
+    private void createDataSet() throws Exception {
+        TableHelper tEnumEntity = new TableHelper(dbHelper, "ENUM_ENTITY");
+        tEnumEntity.setColumns("ID", "ENUM_ATTRIBUTE");
+
+        tEnumEntity.insert(1, "two");
+        tEnumEntity.insert(2, "one");
+    }
 
     public void testInsert() {
-        ObjectContext context = createDataContext();
-
         EnumEntity e = context.newObject(EnumEntity.class);
         e.setEnumAttribute(Enum1.one);
-
         context.commitChanges();
     }
 
     public void testSelectQuery() throws Exception {
-        deleteTestData();
-        ObjectContext context = createDataContext();
-
-        context.performGenericQuery(new SQLTemplate(
-                EnumEntity.class,
-                "insert into ENUM_ENTITY (ID, ENUM_ATTRIBUTE) VALUES (1, 'two')"));
-        context.performGenericQuery(new SQLTemplate(
-                EnumEntity.class,
-                "insert into ENUM_ENTITY (ID, ENUM_ATTRIBUTE) VALUES (2, 'one')"));
+        createDataSet();
 
         SelectQuery q = new SelectQuery(EnumEntity.class);
         q.andQualifier(ExpressionFactory.matchExp(
@@ -61,15 +75,7 @@ public class EnumTest extends CayenneCase {
     }
 
     public void testSQLTemplate() throws Exception {
-        deleteTestData();
-        ObjectContext context = createDataContext();
-
-        context.performGenericQuery(new SQLTemplate(
-                EnumEntity.class,
-                "insert into ENUM_ENTITY (ID, ENUM_ATTRIBUTE) VALUES (1, 'two')"));
-        context.performGenericQuery(new SQLTemplate(
-                EnumEntity.class,
-                "insert into ENUM_ENTITY (ID, ENUM_ATTRIBUTE) VALUES (2, 'one')"));
+        createDataSet();
 
         SQLTemplate q = new SQLTemplate(
                 EnumEntity.class,
