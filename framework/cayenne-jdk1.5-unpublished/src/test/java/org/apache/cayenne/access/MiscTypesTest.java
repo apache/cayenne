@@ -21,28 +21,42 @@ package org.apache.cayenne.access;
 import java.lang.reflect.Array;
 
 import org.apache.cayenne.MockSerializable;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ArraysEntity;
 import org.apache.cayenne.testdo.testmap.CharacterEntity;
 import org.apache.cayenne.testdo.testmap.SerializableEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class MiscTypesTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class MiscTypesTest extends ServerCase {
 
+    @Inject
+    private ObjectContext context;
+    
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+    
+    @Inject 
+    private DBHelper dbHelper;
+    
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("SERIALIZABLE_ENTITY");
+        dbHelper.deleteAll("ARRAYS_ENTITY");
+        dbHelper.deleteAll("CHARACTER_ENTITY");
     }
 
     public void testSerializable() throws Exception {
         
         // this test requires BLOB support
-        if(!getAccessStackAdapter().supportsLobs()) {
+        if(!accessStackAdapter.supportsLobs()) {
             return;
         }
-
-        DataContext context = createDataContext();
 
         SerializableEntity test = context
                 .newObject(SerializableEntity.class);
@@ -61,8 +75,6 @@ public class MiscTypesTest extends CayenneCase {
     }
 
     public void testByteArray() {
-        DataContext context = createDataContext();
-
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         byte[] a = new byte[] {
@@ -81,8 +93,6 @@ public class MiscTypesTest extends CayenneCase {
     }
 
     public void testCharArray() {
-        DataContext context = createDataContext();
-
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         char[] a = new char[] {
@@ -101,8 +111,6 @@ public class MiscTypesTest extends CayenneCase {
     }
 
     public void testCharacterArray() {
-        DataContext context = createDataContext();
-
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Character[] a = new Character[] {
@@ -121,8 +129,6 @@ public class MiscTypesTest extends CayenneCase {
     }
     
     public void testCharacter() {
-        DataContext context = createDataContext();
-
         CharacterEntity test = context.newObject(CharacterEntity.class);
 
         test.setCharacterField(new Character('c'));
@@ -138,8 +144,6 @@ public class MiscTypesTest extends CayenneCase {
     }
 
     public void testByteWrapperArray() {
-        DataContext context = createDataContext();
-
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Byte[] a = new Byte[] {
@@ -157,7 +161,7 @@ public class MiscTypesTest extends CayenneCase {
         context.commitChanges();
     }
 
-    void assertArraysEqual(Object a1, Object a2) {
+    private void assertArraysEqual(Object a1, Object a2) {
 
         if (a1 == null && a2 == null) {
             return;
