@@ -23,23 +23,34 @@ import java.util.Date;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextObjectIdQueryTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextObjectIdQueryTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
 
     public void testRefreshNullifiedValuesNew() {
-
-        DataContext context = createDataContext();
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -61,10 +72,8 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
         assertNull(a1.getDateOfBirth());
         assertEquals("X", a1.getArtistName());
     }
-    
-    public void testNoRefreshValuesNew() {
 
-        DataContext context = createDataContext();
+    public void testNoRefreshValuesNew() {
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -84,7 +93,6 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
         Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
         assertEquals("X", a1.getArtistName());
     }
-    
 
     public void testRefreshNullifiedValuesExisting() {
 
@@ -93,7 +101,6 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
                 "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (44, 'X', #bind($date 'DATE'))");
         insert.setParameters(Collections.singletonMap("date", new Date()));
 
-        DataContext context = createDataContext();
         context.performGenericQuery(insert);
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 44l);

@@ -39,8 +39,6 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextFlattenedAttributesTest extends ServerCase {
 
