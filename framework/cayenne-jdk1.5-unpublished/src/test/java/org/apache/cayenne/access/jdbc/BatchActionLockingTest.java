@@ -29,22 +29,28 @@ import java.util.Map;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.LockingCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 import com.mockrunner.jdbc.PreparedStatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockConnection;
 
-/**
- */
-public class BatchActionLockingTest extends LockingCase {
+@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+public class BatchActionLockingTest extends ServerCase {
+
+    @Inject
+    protected ServerRuntime runtime;
 
     public void testRunAsIndividualQueriesSuccess() throws Exception {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         // test with adapter that supports keys...
         JdbcAdapter adapter = buildAdapter(true);
@@ -53,11 +59,13 @@ public class BatchActionLockingTest extends LockingCase {
                 .lookupObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME"));
+        List<DbAttribute> qualifierAttributes = Arrays.asList((DbAttribute) dbEntity
+                .getAttribute("LOCKING_TEST_ID"), (DbAttribute) dbEntity
+                .getAttribute("NAME"));
 
-        Collection nullAttributeNames = Collections.singleton("NAME");
+        Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
-        Map qualifierSnapshot = new HashMap();
+        Map<String, Object> qualifierSnapshot = new HashMap<String, Object>();
         qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
 
         DeleteBatchQuery batchQuery = new DeleteBatchQuery(
@@ -90,7 +98,7 @@ public class BatchActionLockingTest extends LockingCase {
     }
 
     public void testRunAsIndividualQueriesOptimisticLockingFailure() throws Exception {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         // test with adapter that supports keys...
         JdbcAdapter adapter = buildAdapter(true);
@@ -99,11 +107,13 @@ public class BatchActionLockingTest extends LockingCase {
                 .lookupObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME"));
+        List<DbAttribute> qualifierAttributes = Arrays.asList((DbAttribute) dbEntity
+                .getAttribute("LOCKING_TEST_ID"), (DbAttribute) dbEntity
+                .getAttribute("NAME"));
 
-        Collection nullAttributeNames = Collections.singleton("NAME");
+        Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
-        Map qualifierSnapshot = new HashMap();
+        Map<String, Object> qualifierSnapshot = new HashMap<String, Object>();
         qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
 
         DeleteBatchQuery batchQuery = new DeleteBatchQuery(
