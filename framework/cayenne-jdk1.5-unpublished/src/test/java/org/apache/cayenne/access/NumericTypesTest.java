@@ -70,6 +70,7 @@ public class NumericTypesTest extends ServerCase {
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("SMALLINT_TEST");
         dbHelper.deleteAll("TINYINT_TEST");
+        dbHelper.deleteAll("DECIMAL_PK_TST");
 
         tSmallintTest = new TableHelper(dbHelper, "SMALLINT_TEST");
         tSmallintTest.setColumns("ID", "SMALLINT_COL");
@@ -270,7 +271,9 @@ public class NumericTypesTest extends ServerCase {
         object.setDecimalPK(new BigDecimal("1.25"));
         context.commitChanges();
 
-        Map map = Collections.singletonMap("DECIMAL_PK", new BigDecimal("1.25"));
+        Map<String, BigDecimal> map = Collections.singletonMap(
+                "DECIMAL_PK",
+                new BigDecimal("1.25"));
         ObjectId syntheticId = new ObjectId("DecimalPKTestEntity", map);
         assertSame(object, context.localObject(syntheticId, null));
 
@@ -287,7 +290,8 @@ public class NumericTypesTest extends ServerCase {
         object.setDecimalPK(new Double(1.25));
         context.commitChanges();
 
-        Map map = Collections.singletonMap("DECIMAL_PK", new Double(1.25));
+        Map<String, Double> map = Collections
+                .singletonMap("DECIMAL_PK", new Double(1.25));
         ObjectId syntheticId = new ObjectId("DecimalPKTest1", map);
         assertSame(object, context.localObject(syntheticId, null));
     }
