@@ -20,25 +20,31 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-
-public class DataContextCharTypeTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextCharTypeTest extends ServerCase {
+    
+    @Inject
+    protected ObjectContext context;
+    
+    @Inject
+    protected DBHelper dbHelper;
     
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("TYPES_MAPPING_TEST1");
     }
     
     public void testCharTrimming() {
-        DataContext context = createDataContext();
-        
         ReturnTypesMap1 map1 = context.newObject(ReturnTypesMap1.class);
         map1.setCharColumn("  text   ");
         ReturnTypesMap1 map2 = context.newObject(ReturnTypesMap1.class);
