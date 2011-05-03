@@ -22,36 +22,45 @@ package org.apache.cayenne.access;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests various DataContextDelegate methods invocation and consequences on DataContext
  * behavior.
- * 
  */
-public class DataContextDelegateTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextDelegateTest extends ServerCase {
 
-    protected DataContext context;
-    protected Gallery gallery;
-    protected Artist artist;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
 
-        context = createDataContextWithSharedCache(true);
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("GALLERY");
 
         // prepare a single gallery record
-        gallery = (Gallery) context.newObject("Gallery");
+        Gallery gallery = (Gallery) context.newObject("Gallery");
         gallery.setGalleryName("version1");
 
         // prepare a single artist record
-        artist = (Artist) context.newObject("Artist");
+        Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("version1");
 
         context.commitChanges();
