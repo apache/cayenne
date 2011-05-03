@@ -53,6 +53,7 @@ public class DeleteRulesTest extends ServerCase {
         dbHelper.deleteAll("DELETE_RULE_TEST3");
         dbHelper.deleteAll("DELETE_RULE_TEST1");
         dbHelper.deleteAll("DELETE_RULE_TEST2");
+        dbHelper.deleteAll("DELETE_RULE_JOIN");
         dbHelper.deleteAll("DELETE_RULE_FLATB");
         dbHelper.deleteAll("DELETE_RULE_FLATA");
     }

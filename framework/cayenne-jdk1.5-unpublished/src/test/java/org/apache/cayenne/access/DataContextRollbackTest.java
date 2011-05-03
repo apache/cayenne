@@ -37,13 +37,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class DataContextRollbackTest extends ServerCase {
 
     @Inject
-    protected DataContext context;
+    private DataContext context;
 
     @Inject
-    protected ServerRuntime serverRuntime;
+    private ServerRuntime serverRuntime;
 
     @Inject
-    protected DBHelper dbHelper;
+    private DBHelper dbHelper;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -119,7 +119,7 @@ public class DataContextRollbackTest extends ServerCase {
 
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
         context.commitChanges();
-        
+
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
@@ -157,10 +157,10 @@ public class DataContextRollbackTest extends ServerCase {
 
         DataContext freshContext = (DataContext) serverRuntime.getContext();
         assertNotSame(this.context, freshContext);
-        
+
         SelectQuery query = new SelectQuery(Painting.class);
         query.setQualifier(ExpressionFactory.matchExp("paintingTitle", paintingTitle));
-        List queryResults = freshContext.performQuery(query);
+        List<?> queryResults = freshContext.performQuery(query);
 
         assertEquals(1, queryResults.size());
         Painting queriedPainting = (Painting) queryResults.get(0);
@@ -187,10 +187,10 @@ public class DataContextRollbackTest extends ServerCase {
 
         DataContext freshContext = (DataContext) serverRuntime.getContext();
         assertNotSame(this.context, freshContext);
-        
+
         SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List queryResults = freshContext.performQuery(query);
+        List<?> queryResults = freshContext.performQuery(query);
 
         assertEquals(1, queryResults.size());
     }
@@ -214,11 +214,10 @@ public class DataContextRollbackTest extends ServerCase {
         // .. and ensure that the correct data is in the db
         DataContext freshContext = (DataContext) serverRuntime.getContext();
         assertNotSame(this.context, freshContext);
-        
-        
+
         SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List queryResults = freshContext.performQuery(query);
+        List<?> queryResults = freshContext.performQuery(query);
 
         assertEquals(1, queryResults.size());
     }
