@@ -22,30 +22,31 @@ package org.apache.cayenne;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class GenericMappingTest extends CayenneCase {
+@UseServerRuntime("cayenne-default.xml")
+public class GenericMappingTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
 
     @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack("GenericStack");
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("GENERIC2");
+        dbHelper.deleteAll("GENERIC1");
     }
 
     public void testInsertSingle() {
-        DataContext context = createDataContext();
-
         DataObject g1 = (DataObject) context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
@@ -53,8 +54,6 @@ public class GenericMappingTest extends CayenneCase {
     }
 
     public void testInsertRelated() {
-        DataContext context = createDataContext();
-
         DataObject g1 = (DataObject) context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
@@ -66,8 +65,6 @@ public class GenericMappingTest extends CayenneCase {
     }
 
     public void testSelect() {
-        DataContext context = createDataContext();
-
         context.performNonSelectingQuery(new SQLTemplate(
                 "Generic1",
                 "INSERT INTO GENERIC1 (ID, NAME) VALUES (1, 'AAAA')"));
@@ -81,13 +78,11 @@ public class GenericMappingTest extends CayenneCase {
         Expression qual = ExpressionFactory.matchExp("name", "AAAA");
         SelectQuery q = new SelectQuery("Generic1", qual);
 
-        List result = context.performQuery(q);
+        List<?> result = context.performQuery(q);
         assertEquals(1, result.size());
     }
 
     public void testUpdateRelated() {
-        DataContext context = createDataContext();
-
         DataObject g1 = (DataObject) context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
@@ -97,7 +92,7 @@ public class GenericMappingTest extends CayenneCase {
 
         context.commitChanges();
 
-        List r1 = (List) g1.readProperty("generic2s");
+        List<?> r1 = (List<?>) g1.readProperty("generic2s");
         assertTrue(r1.contains(g2));
 
         DataObject g11 = (DataObject) context.newObject("Generic1");
@@ -106,10 +101,10 @@ public class GenericMappingTest extends CayenneCase {
 
         context.commitChanges();
 
-        List r11 = (List) g11.readProperty("generic2s");
+        List<?> r11 = (List<?>) g11.readProperty("generic2s");
         assertTrue(r11.contains(g2));
 
-        List r1_1 = (List) g1.readProperty("generic2s");
+        List<?> r1_1 = (List<?>) g1.readProperty("generic2s");
         assertFalse(r1_1.contains(g2));
     }
 }
