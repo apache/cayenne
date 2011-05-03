@@ -48,8 +48,10 @@ public class DataContextBinaryPKTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("BINARY_PK_TEST2");
-        dbHelper.deleteAll("BINARY_PK_TEST1");
+        if (accessStackAdapter.supportsBinaryPK()) {
+            dbHelper.deleteAll("BINARY_PK_TEST2");
+            dbHelper.deleteAll("BINARY_PK_TEST1");
+        }
     }
 
     public void testInsertBinaryPK() throws Exception {
