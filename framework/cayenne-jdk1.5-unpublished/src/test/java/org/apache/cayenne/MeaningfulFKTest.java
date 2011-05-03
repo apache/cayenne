@@ -19,18 +19,30 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationship.MeaningfulFK;
 import org.apache.cayenne.testdo.relationship.RelationshipHelper;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationResult;
 
-/**
- */
-public class MeaningfulFKTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class MeaningfulFKTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MEANINGFUL_FK");
+    }
 
     public void testValidateForSave1() throws Exception {
-        MeaningfulFK testObject = createDataContext().newObject(
-                MeaningfulFK.class);
+        MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
 
         ValidationResult validation = new ValidationResult();
         testObject.validateForSave(validation);
@@ -44,12 +56,10 @@ public class MeaningfulFKTest extends RelationshipCase {
     }
 
     public void testValidateForSave2() throws Exception {
-        MeaningfulFK testObject = createDataContext().newObject(
-                MeaningfulFK.class);
+        MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
 
-        RelationshipHelper related = testObject
-                .getObjectContext()
-                .newObject(RelationshipHelper.class);
+        RelationshipHelper related = testObject.getObjectContext().newObject(
+                RelationshipHelper.class);
         testObject.setToRelationshipHelper(related);
 
         ValidationResult validation = new ValidationResult();
