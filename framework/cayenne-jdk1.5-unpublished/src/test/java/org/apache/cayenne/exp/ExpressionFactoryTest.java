@@ -20,26 +20,28 @@
 package org.apache.cayenne.exp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.parser.ASTLike;
 import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class ExpressionFactoryTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ExpressionFactoryTest extends ServerCase {
 
-    // non-existent type
-    private static final int badType = -50;
+    @Inject
+    private ObjectContext context;
 
     public void testExpressionOfBadType() throws Exception {
+
+        // non existing type
+        int badType = -50;
+
         try {
             ExpressionFactory.expressionOfType(badType);
             fail();
@@ -78,7 +80,7 @@ public class ExpressionFactoryTest extends CayenneCase {
         Expression path = (Expression) exp.getOperand(0);
         assertEquals(Expression.OBJ_PATH, path.getType());
     }
-    
+
     public void testNotBetweenDbExp() throws Exception {
         Object v1 = new Object();
         Object v2 = new Object();
@@ -153,9 +155,6 @@ public class ExpressionFactoryTest extends CayenneCase {
     }
 
     public void testInExp1() throws Exception {
-        Object[] v = new Object[] {
-                "a", "b"
-        };
         Expression exp = ExpressionFactory.inExp("abc", "a", "b");
         assertEquals(Expression.IN, exp.getType());
     }
@@ -173,7 +172,7 @@ public class ExpressionFactoryTest extends CayenneCase {
         Expression exp = ExpressionFactory.inExp("abc", v);
         assertEquals(Expression.FALSE, exp.getType());
     }
-    
+
     public void testLikeExp() throws Exception {
         String v = "abc";
         Expression exp = ExpressionFactory.likeExp("abc", v);
@@ -191,12 +190,12 @@ public class ExpressionFactoryTest extends CayenneCase {
         Expression path = (Expression) exp.getOperand(0);
         assertEquals(Expression.DB_PATH, path.getType());
     }
-    
+
     public void testLikeExpEscape() throws Exception {
         String v = "abc";
         Expression exp = ExpressionFactory.likeExp("=abc", v, '=');
         assertEquals(Expression.LIKE, exp.getType());
-        
+
         assertEquals('=', ((ASTLike) exp).getEscapeChar());
 
         Expression path = (Expression) exp.getOperand(0);
@@ -212,7 +211,7 @@ public class ExpressionFactoryTest extends CayenneCase {
         Expression path = (Expression) exp.getOperand(0);
         assertEquals(Expression.OBJ_PATH, path.getType());
     }
-    
+
     public void testLikeIgnoreCaseExpEscape() throws Exception {
         String v = "abc";
         Expression exp = ExpressionFactory.likeIgnoreCaseExp("=abc", v, '=');
@@ -237,7 +236,7 @@ public class ExpressionFactoryTest extends CayenneCase {
         Expression exp = ExpressionFactory.notLikeIgnoreCaseExp("abc", v);
         assertEquals(Expression.NOT_LIKE_IGNORE_CASE, exp.getType());
     }
-    
+
     // testing CAY-941 bug
     public void testLikeExpNull() throws Exception {
         Expression exp = ExpressionFactory.likeExp("abc", null);
@@ -247,92 +246,50 @@ public class ExpressionFactoryTest extends CayenneCase {
         assertEquals(Expression.OBJ_PATH, path.getType());
         assertNull(exp.getOperand(1));
     }
-    
-    //CAY-416
+
+    // CAY-416
     public void testCollectionMatch() {
-        ObjectContext dc = createDataContext();
-        Artist artist = dc.newObject(Artist.class);
-        Painting p1 = dc.newObject(Painting.class), p2 = dc.newObject(Painting.class), 
-            p3 = dc.newObject(Painting.class);
+        Artist artist = context.newObject(Artist.class);
+        Painting p1 = context.newObject(Painting.class), p2 = context
+                .newObject(Painting.class), p3 = context.newObject(Painting.class);
         p1.setPaintingTitle("p1");
         p2.setPaintingTitle("p2");
         p3.setPaintingTitle("p3");
         artist.addToPaintingArray(p1);
         artist.addToPaintingArray(p2);
-        
+
         assertTrue(ExpressionFactory.matchExp("paintingArray", p1).match(artist));
         assertFalse(ExpressionFactory.matchExp("paintingArray", p3).match(artist));
         assertFalse(ExpressionFactory.noMatchExp("paintingArray", p1).match(artist));
         assertTrue(ExpressionFactory.noMatchExp("paintingArray", p3).match(artist));
-        
-        assertTrue(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p1").match(artist));
-        assertFalse(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p3").match(artist));
-        assertFalse(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p1").match(artist));
-        assertTrue(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p3").match(artist));
-        
+
+        assertTrue(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p1").match(
+                artist));
+        assertFalse(ExpressionFactory
+                .matchExp("paintingArray.paintingTitle", "p3")
+                .match(artist));
+        assertFalse(ExpressionFactory
+                .noMatchExp("paintingArray.paintingTitle", "p1")
+                .match(artist));
+        assertTrue(ExpressionFactory
+                .noMatchExp("paintingArray.paintingTitle", "p3")
+                .match(artist));
+
         assertTrue(ExpressionFactory.inExp("paintingTitle", "p1").match(p1));
         assertFalse(ExpressionFactory.notInExp("paintingTitle", "p3").match(p3));
     }
-    
-    public void testMatchObject() {
-        ObjectContext dc = createDataContext();
-        
-        Artist a1 = dc.newObject(Artist.class);
-        a1.setArtistName("a1");
-        Artist a2 = dc.newObject(Artist.class);
-        a2.setArtistName("a2");
-        Artist a3 = dc.newObject(Artist.class);
-        a3.setArtistName("a3");
-        dc.commitChanges();
-        
-        SelectQuery query = new SelectQuery(Artist.class);
-        
-        query.setQualifier(ExpressionFactory.matchExp(a2));
-        Object res = Cayenne.objectForQuery(dc, query);//exception if >1 result
-        assertSame(res, a2);
-        assertTrue(query.getQualifier().match(res));
-        
-        query.setQualifier(ExpressionFactory.matchAnyExp(a1, a3));
-        query.addOrdering("artistName", SortOrder.ASCENDING);
-        List<Persistent> list = dc.performQuery(query);
-        assertEquals(list.size(), 2);
-        assertSame(list.get(0), a1);
-        assertSame(list.get(1), a3);
-        assertTrue(query.getQualifier().match(a1));
-        assertTrue(query.getQualifier().match(a3));
-        
-        assertEquals(query.getQualifier(), 
-                ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
-    }
-    
+
     public void testIn() {
-        ObjectContext dc = createDataContext();
-        
-        Artist a1 = dc.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
-        Painting p1 = dc.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("p1");
-        Painting p2 = dc.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
         p2.setPaintingTitle("p2");
         a1.addToPaintingArray(p1);
         a1.addToPaintingArray(p2);
-        dc.commitChanges();
-        
+
         Expression in = ExpressionFactory.inExp("paintingArray", p1);
         assertTrue(in.match(a1));
-    }
-    
-    /**
-     * Tests INs with more than 1000 elements
-     */
-    public void testLongIn() {
-        //not all adapters strip INs, so we just make sure query with such qualifier fires OK
-        Object[] numbers = new String[2009];
-        for (int i = 0; i < numbers.length; i++) {
-            numbers[i] = "" + i;
-        }
-        
-        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp("artistName", numbers));
-        createDataContext().performQuery(query);
     }
 }

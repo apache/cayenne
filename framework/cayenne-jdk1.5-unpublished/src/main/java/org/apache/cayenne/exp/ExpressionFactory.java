@@ -176,7 +176,7 @@ public class ExpressionFactory {
      * all lists into LIST expressions. Applied only in path expressions.
      */
     protected static Object wrapPathOperand(Object op) {
-        if (op instanceof Collection) {
+        if (op instanceof Collection<?>) {
             return new ASTList((Collection<?>) op);
         }
         else if (op instanceof Object[]) {

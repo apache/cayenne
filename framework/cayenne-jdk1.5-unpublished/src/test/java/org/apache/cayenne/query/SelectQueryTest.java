@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.query;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -47,13 +50,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class SelectQueryTest extends ServerCase {
 
     @Inject
-    protected ObjectContext context;
+    private ObjectContext context;
 
     @Inject
-    protected DBHelper dbHelper;
+    private DBHelper dbHelper;
 
     @Inject
-    protected AccessStackAdapter accessStackAdapter;
+    private AccessStackAdapter accessStackAdapter;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -99,7 +102,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.setFetchLimit(7);
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertNotNull(objects);
         assertEquals(7, objects.size());
     }
@@ -125,7 +128,7 @@ public class SelectQueryTest extends ServerCase {
         DbEntity artistDbEntity = context.getEntityResolver().getDbEntity("ARTIST");
 
         SelectQuery query = new SelectQuery(artistDbEntity);
-        List results = context.performQuery(query);
+        List<?> results = context.performQuery(query);
 
         assertEquals(20, results.size());
         assertTrue(results.get(0) instanceof DataRow);
@@ -149,12 +152,12 @@ public class SelectQueryTest extends ServerCase {
         query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
         query.setFetchOffset(5);
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         int size = objects.size();
 
         SelectQuery sizeQ = new SelectQuery(Artist.class);
         sizeQ.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
-        List objects1 = context.performQuery(sizeQ);
+        List<?> objects1 = context.performQuery(sizeQ);
         int sizeAll = objects1.size();
         assertEquals(size, sizeAll - 5);
     }
@@ -164,21 +167,21 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
         query.setFetchLimit(7);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(7, objects.size());
     }
 
     public void testSelectAllObjectsRootEntityName() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery("Artist");
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
     public void testSelectAllObjectsRootClass() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
@@ -189,7 +192,7 @@ public class SelectQueryTest extends ServerCase {
                 .lookupObjEntity(Artist.class);
         SelectQuery query = new SelectQuery(artistEntity);
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
@@ -198,7 +201,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "artist1");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -207,7 +210,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.notLikeExp("artistName", "artist11%");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(19, objects.size());
     }
 
@@ -218,7 +221,7 @@ public class SelectQueryTest extends ServerCase {
                 "artistName",
                 "aRtIsT11%");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(19, objects.size());
     }
 
@@ -231,7 +234,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "aRtIsT%");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
@@ -240,7 +243,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "artist11%");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -251,7 +254,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.andQualifier(ExpressionFactory.likeExp("artistName", "=_%", '='));
 
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -260,17 +263,19 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeExp("artistName", "artist1%");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(11, objects.size());
     }
 
-    /** Test how "like ignore case" works when using uppercase parameter. */
+    /**
+     * Test how "like ignore case" works when using uppercase parameter.
+     */
     public void testSelectLikeIgnoreCaseObjects1() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeIgnoreCaseExp("artistName", "ARTIST%");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
@@ -280,7 +285,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.likeIgnoreCaseExp("artistName", "artist%");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
@@ -291,39 +296,39 @@ public class SelectQueryTest extends ServerCase {
             SelectQuery query = new SelectQuery(ClobTestEntity.class);
             Expression qual = ExpressionFactory.likeIgnoreCaseExp("clobCol", "clob%");
             query.setQualifier(qual);
-            List objects = context.performQuery(query);
+            List<?> objects = context.performQuery(query);
             assertEquals(2, objects.size());
         }
     }
-    
+
     public void testSelectEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
             SelectQuery query = new SelectQuery(ClobTestEntity.class);
             Expression qual = ExpressionFactory.matchExp("clobCol", "clob1");
             query.setQualifier(qual);
-            List objects = context.performQuery(query);
+            List<?> objects = context.performQuery(query);
             assertEquals(1, objects.size());
         }
     }
-    
+
     public void testSelectNotEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
             SelectQuery query = new SelectQuery(ClobTestEntity.class);
             Expression qual = ExpressionFactory.noMatchExp("clobCol", "clob1");
             query.setQualifier(qual);
-            List objects = context.performQuery(query);
+            List<?> objects = context.performQuery(query);
             assertEquals(1, objects.size());
         }
     }
-    
+
     public void testSelectIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName in ('artist1', 'artist2')");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
     }
 
@@ -335,7 +340,7 @@ public class SelectQueryTest extends ServerCase {
         query = query.queryWithParameters(Collections.singletonMap("list", new Object[] {
                 "artist1", "artist2"
         }));
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
     }
 
@@ -347,7 +352,7 @@ public class SelectQueryTest extends ServerCase {
         query = query.queryWithParameters(Collections.singletonMap(
                 "list",
                 new Object[] {}));
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
@@ -359,7 +364,7 @@ public class SelectQueryTest extends ServerCase {
         query = query.queryWithParameters(Collections.singletonMap(
                 "list",
                 new Object[] {}));
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
@@ -368,7 +373,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.inExp("artistName");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
@@ -377,7 +382,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = ExpressionFactory.notInExp("artistName");
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
 
@@ -387,7 +392,7 @@ public class SelectQueryTest extends ServerCase {
         Expression qual = ExpressionFactory.expTrue();
         qual = qual.andExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -398,7 +403,7 @@ public class SelectQueryTest extends ServerCase {
         qual = qual.notExp();
         qual = qual.orExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -408,7 +413,7 @@ public class SelectQueryTest extends ServerCase {
         Expression qual = ExpressionFactory.expFalse();
         qual = qual.andExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 
@@ -418,7 +423,7 @@ public class SelectQueryTest extends ServerCase {
         Expression qual = ExpressionFactory.expFalse();
         qual = qual.orExp(ExpressionFactory.matchExp("artistName", "artist1"));
         query.setQualifier(qual);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
 
@@ -539,6 +544,54 @@ public class SelectQueryTest extends ServerCase {
                 "toArtist+.artistName",
                 null));
         query.addPrefetch("toGallery");
+        context.performQuery(query);
+    }
+
+    public void testSelect_MatchObject() {
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("a1");
+        Artist a2 = context.newObject(Artist.class);
+        a2.setArtistName("a2");
+        Artist a3 = context.newObject(Artist.class);
+        a3.setArtistName("a3");
+        context.commitChanges();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+
+        query.setQualifier(ExpressionFactory.matchExp(a2));
+        Object res = Cayenne.objectForQuery(context, query);// exception if >1 result
+        assertSame(res, a2);
+        assertTrue(query.getQualifier().match(res));
+
+        query.setQualifier(ExpressionFactory.matchAnyExp(a1, a3));
+        query.addOrdering("artistName", SortOrder.ASCENDING);
+        List<Persistent> list = context.performQuery(query);
+        assertEquals(list.size(), 2);
+        assertSame(list.get(0), a1);
+        assertSame(list.get(1), a3);
+        assertTrue(query.getQualifier().match(a1));
+        assertTrue(query.getQualifier().match(a3));
+
+        assertEquals(query.getQualifier(), ExpressionFactory.matchAnyExp(Arrays.asList(
+                a1,
+                a3)));
+    }
+
+    /**
+     * Tests INs with more than 1000 elements
+     */
+    public void testSelectLongIn() {
+        // not all adapters strip INs, so we just make sure query with such qualifier
+        // fires OK
+        Object[] numbers = new String[2009];
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = "" + i;
+        }
+
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp(
+                "artistName",
+                numbers));
         context.performQuery(query);
     }
 }
