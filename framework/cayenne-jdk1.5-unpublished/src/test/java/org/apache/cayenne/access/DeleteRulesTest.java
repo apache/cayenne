@@ -26,32 +26,41 @@ import java.util.Iterator;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationship.DeleteRuleFlatA;
 import org.apache.cayenne.testdo.relationship.DeleteRuleFlatB;
 import org.apache.cayenne.testdo.relationship.DeleteRuleTest1;
 import org.apache.cayenne.testdo.relationship.DeleteRuleTest2;
 import org.apache.cayenne.testdo.relationship.DeleteRuleTest3;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DeleteRulesTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class DeleteRulesTest extends ServerCase {
 
+    @Inject
     private DataContext context;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Inject
+    private DBHelper dbHelper;
 
-        deleteTestData();
-        context = createDataContext();
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("DELETE_RULE_TEST3");
+        dbHelper.deleteAll("DELETE_RULE_TEST1");
+        dbHelper.deleteAll("DELETE_RULE_TEST2");
+        dbHelper.deleteAll("DELETE_RULE_FLATB");
+        dbHelper.deleteAll("DELETE_RULE_FLATA");
     }
 
     public void testDenyToOne() {
-        // DeleteRuleTest1 test2
-        DeleteRuleTest1 test1 = (DeleteRuleTest1) context.newObject("DeleteRuleTest1");
-        DeleteRuleTest2 test2 = (DeleteRuleTest2) context.newObject("DeleteRuleTest2");
+
+        DeleteRuleTest1 test1 = context.newObject(DeleteRuleTest1.class);
+        DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
         test1.setTest2(test2);
         context.commitChanges();
 
@@ -67,8 +76,8 @@ public class DeleteRulesTest extends RelationshipCase {
     }
 
     public void testNoActionToOne() {
-        DeleteRuleTest2 test2 = (DeleteRuleTest2) context.newObject("DeleteRuleTest2");
-        DeleteRuleTest3 test3 = (DeleteRuleTest3) context.newObject("DeleteRuleTest3");
+        DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
+        DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
         test3.setToDeleteRuleTest2(test2);
         context.commitChanges();
 
@@ -78,8 +87,8 @@ public class DeleteRulesTest extends RelationshipCase {
     }
 
     public void testNoActionToMany() {
-        DeleteRuleTest2 test2 = (DeleteRuleTest2) context.newObject("DeleteRuleTest2");
-        DeleteRuleTest3 test3 = (DeleteRuleTest3) context.newObject("DeleteRuleTest3");
+        DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
+        DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
         test3.setToDeleteRuleTest2(test2);
         context.commitChanges();
 
@@ -340,13 +349,12 @@ public class DeleteRulesTest extends RelationshipCase {
 
     private void assertJoinDeleted(DeleteRuleFlatA a, DeleteRuleFlatB b) {
 
-        ObjectDiff changes = context.getObjectStore().changes.get(a
-                .getObjectId());
+        ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
 
         assertNotNull(changes);
-        Collection diffs = new ArrayList();
+        Collection<?> diffs = new ArrayList<Object>();
         changes.appendDiffs(diffs);
-        Iterator it = diffs.iterator();
+        Iterator<?> it = diffs.iterator();
         while (it.hasNext()) {
             Object diff = it.next();
             if (diff instanceof ArcOperation) {
@@ -367,9 +375,9 @@ public class DeleteRulesTest extends RelationshipCase {
         ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
 
         if (changes != null) {
-            Collection diffs = new ArrayList();
+            Collection<?> diffs = new ArrayList<Object>();
             changes.appendDiffs(diffs);
-            Iterator it = diffs.iterator();
+            Iterator<?> it = diffs.iterator();
             while (it.hasNext()) {
                 Object diff = it.next();
                 if (diff instanceof ArcOperation) {
