@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.access;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.sql.Connection;
 
 import org.apache.cayenne.ObjectContext;
@@ -31,50 +39,27 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class UserTransactionTest extends ServerCase {
 
     @Inject
-    protected ObjectContext context;
+    private ObjectContext context;
 
     public void testCommit() throws Exception {
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
 
-        final boolean[] willAddConnectionCalled = new boolean[1];
-        final boolean[] willCommitCalled = new boolean[1];
-        final boolean[] didCommitCalled = new boolean[1];
-
-        TransactionDelegate delegate = new MockTransactionDelegate() {
-
-            @Override
-            public boolean willAddConnection(
-                    Transaction transaction,
-                    Connection connection) {
-                willAddConnectionCalled[0] = true;
-                return true;
-            }
-
-            @Override
-            public boolean willCommit(Transaction transaction) {
-                willCommitCalled[0] = true;
-                return true;
-            }
-
-            @Override
-            public void didCommit(Transaction transaction) {
-                didCommitCalled[0] = true;
-            }
-        };
-
+        TransactionDelegate delegate = mock(TransactionDelegate.class);
         Transaction t = Transaction.internalTransaction(delegate);
+
+        when(delegate.willAddConnection(eq(t), any(Connection.class))).thenReturn(true);
+        when(delegate.willCommit(t)).thenReturn(true);
+
         Transaction.bindThreadTransaction(t);
 
         try {
             context.commitChanges();
 
-            assertTrue("User transaction was ignored", willAddConnectionCalled[0]);
-            assertFalse(
-                    "User transaction was unexpectedly committed",
-                    willCommitCalled[0]);
-            assertFalse("User transaction was unexpectedly committed", didCommitCalled[0]);
+            verify(delegate, atLeast(1)).willAddConnection(eq(t), any(Connection.class));
+            verify(delegate, never()).willCommit(eq(t));
+            verify(delegate, never()).didCommit(eq(t));
         }
         finally {
 
@@ -86,6 +71,5 @@ public class UserTransactionTest extends ServerCase {
             }
             Transaction.bindThreadTransaction(null);
         }
-
     }
 }
