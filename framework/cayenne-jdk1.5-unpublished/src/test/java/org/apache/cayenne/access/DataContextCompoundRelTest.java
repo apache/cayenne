@@ -19,49 +19,55 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Testing relationships with compound keys.
- * 
  */
-public class DataContextCompoundRelTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextCompoundRelTest extends ServerCase {
 
-    protected DataContext ctxt;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DataContext context1;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        ctxt = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("COMPOUND_FK_TEST");
+        dbHelper.deleteAll("COMPOUND_PK_TEST");
     }
 
     public void testInsert() {
-        CompoundPkTestEntity master = ctxt
-                .newObject(CompoundPkTestEntity.class);
-        CompoundFkTestEntity detail = ctxt
-                .newObject(CompoundFkTestEntity.class);
+
+        CompoundPkTestEntity master = context.newObject(CompoundPkTestEntity.class);
+        CompoundFkTestEntity detail = context.newObject(CompoundFkTestEntity.class);
         master.addToCompoundFkArray(detail);
         master.setName("m1");
         master.setKey1("key11");
         master.setKey2("key21");
         detail.setName("d1");
 
-        ctxt.commitChanges();
-
-        // reset context
-        ctxt = createDataContext();
+        context.commitChanges();
+        context.invalidateObjects(Arrays.asList(master, detail));
 
         SelectQuery q = new SelectQuery(CompoundPkTestEntity.class);
-        List<?> objs = ctxt.performQuery(q);
+        List<?> objs = context1.performQuery(q);
         assertEquals(1, objs.size());
 
         master = (CompoundPkTestEntity) objs.get(0);
@@ -75,13 +81,13 @@ public class DataContextCompoundRelTest extends CayenneCase {
     }
 
     public void testFetchQualifyingToOne() {
-        CompoundPkTestEntity master = (CompoundPkTestEntity) ctxt
+        CompoundPkTestEntity master = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");
-        CompoundPkTestEntity master1 = (CompoundPkTestEntity) ctxt
+        CompoundPkTestEntity master1 = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");
-        CompoundFkTestEntity detail = (CompoundFkTestEntity) ctxt
+        CompoundFkTestEntity detail = (CompoundFkTestEntity) context
                 .newObject("CompoundFkTestEntity");
-        CompoundFkTestEntity detail1 = (CompoundFkTestEntity) ctxt
+        CompoundFkTestEntity detail1 = (CompoundFkTestEntity) context
                 .newObject("CompoundFkTestEntity");
         master.addToCompoundFkArray(detail);
         master1.addToCompoundFkArray(detail1);
@@ -98,14 +104,12 @@ public class DataContextCompoundRelTest extends CayenneCase {
 
         detail1.setName("d2");
 
-        ctxt.commitChanges();
-
-        // reset context
-        ctxt = createDataContext();
+        context.commitChanges();
+        context.invalidateObjects(Arrays.asList(master, master1, detail, detail1));
 
         Expression qual = ExpressionFactory.matchExp("toCompoundPk", master);
         SelectQuery q = new SelectQuery(CompoundFkTestEntity.class, qual);
-        List<?> objs = ctxt.performQuery(q);
+        List<?> objs = context1.performQuery(q);
         assertEquals(1, objs.size());
 
         detail = (CompoundFkTestEntity) objs.get(0);
@@ -113,13 +117,13 @@ public class DataContextCompoundRelTest extends CayenneCase {
     }
 
     public void testFetchQualifyingToMany() throws Exception {
-        CompoundPkTestEntity master = (CompoundPkTestEntity) ctxt
+        CompoundPkTestEntity master = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");
-        CompoundPkTestEntity master1 = (CompoundPkTestEntity) ctxt
+        CompoundPkTestEntity master1 = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");
-        CompoundFkTestEntity detail = (CompoundFkTestEntity) ctxt
+        CompoundFkTestEntity detail = (CompoundFkTestEntity) context
                 .newObject("CompoundFkTestEntity");
-        CompoundFkTestEntity detail1 = (CompoundFkTestEntity) ctxt
+        CompoundFkTestEntity detail1 = (CompoundFkTestEntity) context
                 .newObject("CompoundFkTestEntity");
         master.addToCompoundFkArray(detail);
         master1.addToCompoundFkArray(detail1);
@@ -136,14 +140,12 @@ public class DataContextCompoundRelTest extends CayenneCase {
 
         detail1.setName("d2");
 
-        ctxt.commitChanges();
-
-        // reset context
-        ctxt = createDataContext();
+        context.commitChanges();
+        context.invalidateObjects(Arrays.asList(master, master1, detail, detail1));
 
         Expression qual = ExpressionFactory.matchExp("compoundFkArray", detail1);
         SelectQuery q = new SelectQuery(CompoundPkTestEntity.class, qual);
-        List<?> objs = ctxt.performQuery(q);
+        List<?> objs = context1.performQuery(q);
         assertEquals(1, objs.size());
 
         master = (CompoundPkTestEntity) objs.get(0);
