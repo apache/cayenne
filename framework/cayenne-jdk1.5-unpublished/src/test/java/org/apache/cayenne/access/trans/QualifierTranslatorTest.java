@@ -21,6 +21,8 @@ package org.apache.cayenne.access.trans;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.TstBinaryExpSuite;
@@ -32,12 +34,17 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class QualifierTranslatorTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class QualifierTranslatorTest extends ServerCase {
+
+    @Inject
+    private DataNode node;
 
     public void testNonQualifiedQuery() throws Exception {
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), new MockQuery());
+        TstQueryAssembler qa = new TstQueryAssembler(node, new MockQuery());
 
         try {
             new QualifierTranslator(qa).appendPart(new StringBuilder());
@@ -52,7 +59,7 @@ public class QualifierTranslatorTest extends CayenneCase {
     }
 
     public void testNullQualifier() throws Exception {
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), new SelectQuery());
+        TstQueryAssembler qa = new TstQueryAssembler(node, new SelectQuery());
 
         StringBuilder out = new StringBuilder();
         try {
@@ -103,7 +110,7 @@ public class QualifierTranslatorTest extends CayenneCase {
 
     private void doExpressionTest(TstExpressionSuite suite) throws Exception {
 
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), new MockQuery());
+        TstQueryAssembler qa = new TstQueryAssembler(node, new MockQuery());
 
         try {
             TstExpressionCase[] cases = suite.cases();
@@ -112,12 +119,13 @@ public class QualifierTranslatorTest extends CayenneCase {
             for (int i = 0; i < len; i++) {
                 try {
 
-                    ObjEntity entity = getObjEntity(cases[i].getRootEntity());
+                    ObjEntity entity = node.getEntityResolver().getObjEntity(
+                            cases[i].getRootEntity());
                     assertNotNull(entity);
                     SelectQuery q = new SelectQuery(entity);
                     q.setQualifier(cases[i].getCayenneExp());
                     qa.setQuery(q);
-                    
+
                     StringBuilder out = new StringBuilder();
                     new QualifierTranslator(qa).appendPart(out);
                     cases[i].assertTranslatedWell(out.toString());
