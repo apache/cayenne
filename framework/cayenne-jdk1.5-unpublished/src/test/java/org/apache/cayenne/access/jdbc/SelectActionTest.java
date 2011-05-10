@@ -22,25 +22,36 @@ import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.testdo.testmap.ClobTestRelation;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SelectActionTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SelectActionTest extends ServerCase {
 
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("CLOB_TEST_RELATION");
+        dbHelper.deleteAll("CLOB_TEST");
     }
 
     public void testFetchLimit_DistinctResultIterator() throws Exception {
-        if (accessStack.getAdapter(getNode()).supportsLobs()) {
+        if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();
 
