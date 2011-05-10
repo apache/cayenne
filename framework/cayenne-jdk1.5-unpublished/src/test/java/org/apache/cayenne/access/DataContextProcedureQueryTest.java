@@ -22,45 +22,56 @@ package org.apache.cayenne.access;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataContextProcedureQueryTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextProcedureQueryTest extends ServerCase {
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";
     public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_tst_upd_proc2";
     public static final String SELECT_STORED_PROCEDURE = "cayenne_tst_select_proc";
     public static final String OUT_STORED_PROCEDURE = "cayenne_tst_out_proc";
 
-    protected DataContext ctxt;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    protected DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+    protected void setUpAfterInjection() throws Exception {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
-        deleteTestData();
-        ctxt = createDataContext();
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
 
     public void testUpdate() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -77,7 +88,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         Transaction.bindThreadTransaction(t);
 
         try {
-            ctxt.performGenericQuery(q);
+            context.performGenericQuery(q);
         }
         finally {
             Transaction.bindThreadTransaction(null);
@@ -88,7 +99,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         SelectQuery select = new SelectQuery(Artist.class);
         select.addPrefetch("paintingArray");
 
-        List artists = ctxt.performQuery(select);
+        List<?> artists = context.performQuery(select);
         assertEquals(1, artists.size());
 
         Artist a = (Artist) artists.get(0);
@@ -97,7 +108,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testUpdateNoParam() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -113,7 +124,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         Transaction.bindThreadTransaction(t);
 
         try {
-            ctxt.performGenericQuery(q);
+            context.performGenericQuery(q);
         }
         finally {
             Transaction.bindThreadTransaction(null);
@@ -124,7 +135,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         SelectQuery select = new SelectQuery(Artist.class);
         select.addPrefetch("paintingArray");
 
-        List artists = ctxt.performQuery(select);
+        List<?> artists = context.performQuery(select);
         assertEquals(1, artists.size());
 
         Artist a = (Artist) artists.get(0);
@@ -133,7 +144,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testSelect1() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -143,22 +154,22 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", new Integer(3000));
-        List artists = runProcedureSelect(q);
+        List<?> artists = runProcedureSelect(q);
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = ctxt.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        ctxt.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(Collections.singletonList(p));
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
     public void testSelect2() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -169,22 +180,22 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", new Integer(3000));
 
-        List artists = runProcedureSelect(q);
+        List<?> artists = runProcedureSelect(q);
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = ctxt.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        ctxt.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(Collections.singletonList(p));
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
     public void testSelect3() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -192,27 +203,29 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         createArtist(1000.0);
 
         // test ProcedureQuery with Procedure as root
-        Procedure proc = ctxt.getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
+        Procedure proc = context
+                .getEntityResolver()
+                .getProcedure(SELECT_STORED_PROCEDURE);
         ProcedureQuery q = new ProcedureQuery(proc);
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", new Integer(3000));
 
-        List artists = runProcedureSelect(q);
+        List<?> artists = runProcedureSelect(q);
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = ctxt.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        ctxt.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(Collections.singletonList(p));
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
     public void testFetchLimit() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -225,13 +238,13 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", new Integer(3000));
         q.setFetchLimit(2);
-        List artists = runProcedureSelect(q);
+        List<?> artists = runProcedureSelect(q);
 
         assertEquals(2, artists.size());
     }
 
     public void testFetchOffset() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -244,13 +257,13 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", new Integer(3000));
         q.setFetchOffset(2);
-        List artists = runProcedureSelect(q);
+        List<?> artists = runProcedureSelect(q);
 
         assertEquals(1, artists.size());
     }
 
-    public void testColumnNameCapitalization() throws Exception{
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+    public void testColumnNameCapitalization() throws Exception {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -277,33 +290,33 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testOutParams() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
         ProcedureQuery q = new ProcedureQuery(OUT_STORED_PROCEDURE);
         q.addParameter("in_param", new Integer(20));
 
-        List rows = runProcedureSelect(q);
+        List<?> rows = runProcedureSelect(q);
 
         assertEquals(1, rows.size());
         Object row = rows.get(0);
         assertNotNull(row);
         assertTrue(
                 "Unexpected row class: " + row.getClass().getName(),
-                row instanceof Map);
-        Map outParams = (Map) row;
+                row instanceof Map<?, ?>);
+        Map<?, ?> outParams = (Map<?, ?>) row;
         Number price = (Number) outParams.get("out_param");
         assertNotNull("Null result... row content: " + row, price);
         assertEquals(40, price.intValue());
     }
 
     public void testSelectDataObject() throws Exception {
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
-        if (!getAccessStackAdapter().canMakeObjectsOutOfProcedures()) {
+        if (!accessStackAdapter.canMakeObjectsOutOfProcedures()) {
             return;
         }
 
@@ -313,7 +326,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE, Artist.class);
         q.addParameter("aName", "An Artist");
 
-        List artists = runProcedureSelect(q);
+        List<?> artists = runProcedureSelect(q);
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", artists);
@@ -322,13 +335,13 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        ctxt.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(Collections.singletonList(p));
         assertEquals(1101.01, p.getEstimatedPrice().doubleValue(), 0.02);
     }
 
     public void testSelectWithRowDescriptor() throws Exception {
 
-        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+        if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
 
@@ -336,7 +349,9 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         createArtist(1000.0);
 
         // test ProcedureQuery with Procedure as root
-        Procedure proc = ctxt.getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
+        Procedure proc = context
+                .getEntityResolver()
+                .getProcedure(SELECT_STORED_PROCEDURE);
         ProcedureQuery q = new ProcedureQuery(proc);
         q.setFetchingDataRows(true);
         q.addParameter("aName", "An Artist");
@@ -352,7 +367,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         columns[2] = new ColumnDescriptor("DATE_OF_BIRTH", Types.DATE);
         q.addResultDescriptor(columns);
 
-        List rows = runProcedureSelect(q);
+        List<?> rows = runProcedureSelect(q);
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", rows);
@@ -368,34 +383,34 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertTrue("Expected Long, got: " + id.getClass().getName(), id instanceof Long);
     }
 
-    protected List runProcedureSelect(ProcedureQuery q) throws Exception {
+    protected List<DataRow> runProcedureSelect(ProcedureQuery q) throws Exception {
         // Sybase blows whenever a transaction wraps a SP, so turn off transactions
 
-        boolean transactionsFlag = ctxt
+        boolean transactionsFlag = context
                 .getParentDataDomain()
                 .isUsingExternalTransactions();
 
-        ctxt.getParentDataDomain().setUsingExternalTransactions(true);
+        context.getParentDataDomain().setUsingExternalTransactions(true);
 
         try {
-            return ctxt.performQuery(q);
+            return context.performQuery(q);
         }
         finally {
-            ctxt.getParentDataDomain().setUsingExternalTransactions(transactionsFlag);
+            context.getParentDataDomain().setUsingExternalTransactions(transactionsFlag);
         }
     }
 
     protected void createArtist(double paintingPrice) {
-        Artist a = ctxt.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("An Artist");
 
-        Painting p = ctxt.newObject(Painting.class);
+        Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal("" + paintingPrice));
         a.addToPaintingArray(p);
 
-        ctxt.commitChanges();
+        context.commitChanges();
     }
 
     /**
@@ -404,9 +419,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     protected DataRow uppercaseConverter(DataRow row) {
         DataRow converted = new DataRow(row.size());
 
-        Iterator it = row.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Entry<String, Object> entry : row.entrySet()) {
             converted.put(entry.getKey().toString().toUpperCase(), entry.getValue());
         }
 
