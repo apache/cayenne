@@ -19,22 +19,34 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
-public class ObjectStoreGCTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ObjectStoreGCTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
 
     public void testReleaseUnreferenced() throws Exception {
-        final DataContext context = createDataContext();
         context.performGenericQuery(new SQLTemplate(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
@@ -55,8 +67,6 @@ public class ObjectStoreGCTest extends CayenneCase {
     }
 
     public void testRetainUnreferencedNew() throws Exception {
-        final DataContext context = createDataContext();
-
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -87,7 +97,6 @@ public class ObjectStoreGCTest extends CayenneCase {
     }
 
     public void testRetainUnreferencedModified() throws Exception {
-        final DataContext context = createDataContext();
         context.performGenericQuery(new SQLTemplate(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
