@@ -20,97 +20,92 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.QueryChain;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
-import org.apache.cayenne.unit.PeopleCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SingleTableInheritanceTest extends PeopleCase {
+@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+public class SingleTableInheritanceTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tPerson;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ADDRESS");
+        dbHelper.deleteAll("DEPARTMENT");
+        dbHelper.deleteAll("PERSON_NOTES");
+        dbHelper.deleteAll("CLIENT_COMPANY");
+        dbHelper.deleteAll("PERSON");
+
+        tPerson = new TableHelper(dbHelper, "PERSON");
+        tPerson.setColumns("PERSON_ID", "NAME", "PERSON_TYPE");
     }
-    
-    public void testMatchingOnSuperAttributes() {
-        QueryChain insert = new QueryChain();
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'E1', 'EE')"));
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'E2', 'EM')"));
-        createDataContext().performGenericQuery(insert);
-        
+
+    private void create2PersonDataSet() throws Exception {
+        tPerson.insert(1, "E1", "EE");
+        tPerson.insert(2, "E2", "EM");
+    }
+
+    private void create5PersonDataSet() throws Exception {
+        tPerson.insert(1, "E1", "EE");
+        tPerson.insert(2, "E2", "EM");
+        tPerson.insert(3, "E3", "EE");
+        tPerson.insert(4, "E4", "EM");
+        tPerson.insert(5, "E5", "EE");
+    }
+
+    public void testMatchingOnSuperAttributes() throws Exception {
+        create2PersonDataSet();
+
         // fetch on leaf, but match on a super attribute
         SelectQuery select = new SelectQuery(Manager.class);
-        select.andQualifier(ExpressionFactory.matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
-    
-        List<Manager> results = createDataContext().performQuery(select);
+        select.andQualifier(ExpressionFactory
+                .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
+
+        List<Manager> results = context.performQuery(select);
         assertEquals(1, results.size());
         assertEquals("E2", results.get(0).getName());
     }
-    
-    public void testMatchingOnSuperAttributesWithPrefetch() {
-        QueryChain insert = new QueryChain();
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'E1', 'EE')"));
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'E2', 'EM')"));
-        createDataContext().performGenericQuery(insert);
-        
+
+    public void testMatchingOnSuperAttributesWithPrefetch() throws Exception {
+        create2PersonDataSet();
+
         // fetch on leaf, but match on a super attribute
         SelectQuery select = new SelectQuery(Employee.class);
         select.addPrefetch(Employee.TO_DEPARTMENT_PROPERTY);
-        select.andQualifier(ExpressionFactory.matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
-    
-        List<Manager> results = createDataContext().performQuery(select);
+        select.andQualifier(ExpressionFactory
+                .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
+
+        List<Manager> results = context.performQuery(select);
         assertEquals(1, results.size());
         assertEquals("E2", results.get(0).getName());
     }
 
-    public void testPaginatedQueries() {
+    public void testPaginatedQueries() throws Exception {
 
-        QueryChain insert = new QueryChain();
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'E1', 'EE')"));
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'E2', 'EM')"));
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'E3', 'EE')"));
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (4, 'E4', 'EM')"));
-        insert
-                .addQuery(new SQLTemplate(
-                        AbstractPerson.class,
-                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (5, 'E5', 'EE')"));
-        createDataContext().performGenericQuery(insert);
+        create5PersonDataSet();
 
         SelectQuery select = new SelectQuery(AbstractPerson.class);
-        select.addOrdering("db:" + AbstractPerson.PERSON_ID_PK_COLUMN, SortOrder.ASCENDING);
+        select.addOrdering(
+                "db:" + AbstractPerson.PERSON_ID_PK_COLUMN,
+                SortOrder.ASCENDING);
         select.setPageSize(3);
 
-        List<AbstractPerson> results = createDataContext().performQuery(select);
+        List<AbstractPerson> results = context.performQuery(select);
         assertEquals(5, results.size());
 
         assertTrue(results.get(0) instanceof Employee);
