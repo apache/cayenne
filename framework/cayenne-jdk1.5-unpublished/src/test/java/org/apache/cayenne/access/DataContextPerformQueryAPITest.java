@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -43,22 +42,22 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class DataContextPerformQueryAPITest extends ServerCase {
 
     @Inject
-    protected DataContext context;
+    private DataContext context;
 
     @Inject
-    protected DBHelper dbHelper;
+    private DataContext context2;
 
     @Inject
-    protected ServerRuntime runtime;
+    private DBHelper dbHelper;
 
     @Inject
-    protected AccessStackAdapter accessStackAdapter;
+    private AccessStackAdapter accessStackAdapter;
 
     @Inject
-    protected DataChannelInterceptor queryInterceptor;
+    private DataChannelInterceptor queryInterceptor;
 
-    protected TableHelper tArtist;
-    protected TableHelper tPainting;
+    private TableHelper tArtist;
+    private TableHelper tPainting;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -81,12 +80,12 @@ public class DataContextPerformQueryAPITest extends ServerCase {
                 "ESTIMATED_PRICE");
     }
 
-    protected void createTwoArtists() throws Exception {
+    private void createTwoArtists() throws Exception {
         tArtist.insert(21, "artist2");
         tArtist.insert(201, "artist3");
     }
 
-    protected void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {
+    private void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {
         tArtist.insert(11, "artist2");
         tArtist.insert(101, "artist3");
         tPainting.insert(6, "p_artist3", 101, 1000);
@@ -110,10 +109,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
                 11), null);
         Map<String, Artist> parameters = Collections.singletonMap("artist", a);
 
-        List<?> paintings = ((DataContext) runtime.getContext()).performQuery(
-                "ObjectQuery",
-                parameters,
-                true);
+        List<?> paintings = context2.performQuery("ObjectQuery", parameters, true);
         assertNotNull(paintings);
         assertEquals(1, paintings.size());
     }
@@ -152,7 +148,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(1, artists.size());
 
         Artist artist = (Artist) artists.get(0);
-        assertEquals(33002, ((Number) artist.getObjectId().getIdSnapshot().get(
+        assertEquals(11, ((Number) artist.getObjectId().getIdSnapshot().get(
                 Artist.ARTIST_ID_PK_COLUMN)).intValue());
     }
 
@@ -232,11 +228,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-
-                DataContext otherContext = (DataContext) runtime.getContext();
-                List<?> artists1 = otherContext.performQuery(
-                        "QueryWithSharedCache",
-                        false);
+                List<?> artists1 = context2.performQuery("QueryWithSharedCache", false);
                 assertEquals(2, artists1.size());
             }
         });
