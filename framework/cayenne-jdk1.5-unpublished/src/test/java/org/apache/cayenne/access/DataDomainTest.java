@@ -23,15 +23,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- * DataDomain unit tests.
- */
-public class DataDomainTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataDomainTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     public void testName() throws Exception {
         DataDomain domain = new DataDomain("some name");
@@ -103,14 +107,14 @@ public class DataDomainTest extends CayenneCase {
     }
 
     public void testEntityResolver() {
-        assertNotNull(getDomain().getEntityResolver());
+        assertNotNull(runtime.getDataDomain().getEntityResolver());
 
         DataDomain domain = new DataDomain("dom1");
         assertNotNull(domain.getEntityResolver());
     }
 
     public void testInitDataDomainWithSharedCache() throws Exception {
-        Map properties = new HashMap();
+        Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
@@ -118,7 +122,7 @@ public class DataDomainTest extends CayenneCase {
     }
 
     public void testInitDataDomainWithDedicatedCache() throws Exception {
-        Map properties = new HashMap();
+        Map<Object, Object> properties = new HashMap<Object, Object>();
         properties
                 .put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
 
@@ -127,7 +131,7 @@ public class DataDomainTest extends CayenneCase {
     }
 
     public void testInitDataDomainValidation() throws Exception {
-        Map properties = new HashMap();
+        Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE
                 .toString());
 
@@ -136,7 +140,7 @@ public class DataDomainTest extends CayenneCase {
     }
 
     public void testInitDataDomainNoValidation() throws Exception {
-        Map properties = new HashMap();
+        Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE
                 .toString());
 
@@ -145,7 +149,7 @@ public class DataDomainTest extends CayenneCase {
     }
 
     public void testDataDomainInternalTransactions() throws Exception {
-        Map properties = new HashMap();
+        Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.FALSE
                 .toString());
 
@@ -157,7 +161,7 @@ public class DataDomainTest extends CayenneCase {
     }
 
     public void testDataDomainExternalTransactions() throws Exception {
-        Map properties = new HashMap();
+        Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.TRUE
                 .toString());
 
