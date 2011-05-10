@@ -24,20 +24,24 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-/**
- */
-public class SnapshotEventTest extends CayenneCase {
+public class SnapshotEventTest extends TestCase {
+
     public void testRootEvent() {
         Object source = new Object();
-        Collection deleted = new ArrayList();
-        Collection invalidated = new ArrayList();
-        Map modified = new HashMap();
-        Collection related = new ArrayList();
+        Collection<?> deleted = new ArrayList<Object>();
+        Collection<?> invalidated = new ArrayList<Object>();
+        Map<?, ?> modified = new HashMap<Object, Object>();
+        Collection<?> related = new ArrayList<Object>();
 
-        SnapshotEvent event =
-            new SnapshotEvent(source, source, modified, deleted, invalidated, related);
+        SnapshotEvent event = new SnapshotEvent(
+                source,
+                source,
+                modified,
+                deleted,
+                invalidated,
+                related);
         assertSame(source, event.getSource());
         assertSame(source, event.getPostedBy());
         assertSame(deleted, event.getDeletedIds());
