@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.di.Inject;
@@ -45,14 +46,17 @@ public class SingleTableInheritanceTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+        tPerson = new TableHelper(dbHelper, "PERSON");
+        tPerson.setColumns("PERSON_ID", "NAME", "PERSON_TYPE");
+
+        // manually break circular deps
+        tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+
         dbHelper.deleteAll("ADDRESS");
         dbHelper.deleteAll("DEPARTMENT");
         dbHelper.deleteAll("PERSON_NOTES");
         dbHelper.deleteAll("CLIENT_COMPANY");
         dbHelper.deleteAll("PERSON");
-
-        tPerson = new TableHelper(dbHelper, "PERSON");
-        tPerson.setColumns("PERSON_ID", "NAME", "PERSON_TYPE");
     }
 
     private void create2PersonDataSet() throws Exception {
