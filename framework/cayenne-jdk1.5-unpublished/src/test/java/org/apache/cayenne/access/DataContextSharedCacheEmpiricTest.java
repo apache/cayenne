@@ -23,41 +23,51 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
-/**
- */
-public class DataContextSharedCacheEmpiricTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextSharedCacheEmpiricTest extends ServerCase {
 
     private static final String NEW_NAME = "versionX";
 
-    protected DataContext c1;
-    protected DataContext c2;
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private DataContext c1;
+    private DataContext c2;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
 
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
                 Collections.EMPTY_MAP,
                 new DefaultEventManager());
 
-        c1 = new DataContext(getDomain(), new ObjectStore(cache));
-        c2 = new DataContext(getDomain(), new ObjectStore(cache));
+        c1 = new DataContext(runtime.getDataDomain(), new ObjectStore(cache));
+        c2 = new DataContext(runtime.getDataDomain(), new ObjectStore(cache));
 
         // prepare a single artist record
-        SQLTemplate insert = new SQLTemplate(
-                Artist.class,
-                "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'version1')");
-        c1.performNonSelectingQuery(insert);
+        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist.insert(1, "version1");
     }
 
     public void testSelectSelectCommitRefresh() throws Exception {
@@ -65,10 +75,10 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
         SelectQuery query = new SelectQuery(Artist.class);
 
         // select both, a2 should go second...
-        List artists = c1.performQuery(query);
+        List<?> artists = c1.performQuery(query);
         Artist a1 = (Artist) artists.get(0);
 
-        List altArtists = c2.performQuery(query);
+        List<?> altArtists = c2.performQuery(query);
         final Artist a2 = (Artist) altArtists.get(0);
         assertNotNull(a2);
         assertFalse(a2 == a1);
@@ -84,10 +94,10 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(Artist.class);
 
-        List altArtists = c2.performQuery(query);
+        List<?> altArtists = c2.performQuery(query);
         final Artist a2 = (Artist) altArtists.get(0);
 
-        List artists = c1.performQuery(query);
+        List<?> artists = c1.performQuery(query);
         Artist a1 = (Artist) artists.get(0);
 
         assertFalse(a2 == a1);
@@ -103,13 +113,13 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(Artist.class);
 
-        List artists = c1.performQuery(query);
+        List<?> artists = c1.performQuery(query);
         Artist a1 = (Artist) artists.get(0);
 
         // Update Artist
         a1.setArtistName(NEW_NAME);
 
-        List altArtists = c2.performQuery(query);
+        List<?> altArtists = c2.performQuery(query);
         final Artist a2 = (Artist) altArtists.get(0);
         assertNotNull(a2);
         assertFalse(a2 == a1);
