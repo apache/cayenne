@@ -24,9 +24,13 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.cayenne.ObjectContext;
+import javax.sql.DataSource;
+
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -36,13 +40,37 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SelectTranslatorTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SelectTranslatorTest extends ServerCase {
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DbAdapter adapter;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+    }
 
     /**
      * Tests query creation with qualifier and ordering.
@@ -73,56 +101,62 @@ public class SelectTranslatorTest extends CayenneCase {
 
         test.test(q);
     }
-    
+
     /**
      * Tests query creation with qualifier and ordering.
      */
     public void testDbEntityQualifier() throws Exception {
-        ObjectContext context = createDataContext();
-        
+
         SelectQuery q = new SelectQuery(Artist.class);
-        final DbEntity entity = getNode().getEntityResolver().getDbEntity("ARTIST");
-        final DbEntity middleEntity = getNode().getEntityResolver().getDbEntity("ARTIST_GROUP");
+        final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
+        final DbEntity middleEntity = context.getEntityResolver().getDbEntity(
+                "ARTIST_GROUP");
         entity.setQualifier(Expression.fromString("ARTIST_NAME = \"123\""));
         middleEntity.setQualifier(Expression.fromString("GROUP_ID = 1987"));
 
         try {
             Template test = new Template() {
+
                 @Override
                 void test(SelectTranslator transl) throws Exception {
                     String generatedSql = transl.createSqlString();
-    
+
                     // do some simple assertions to make sure all parts are in
                     assertNotNull(generatedSql);
                     assertTrue(generatedSql.startsWith("SELECT "));
                     assertTrue(generatedSql.indexOf(" FROM ") > 0);
                     if (generatedSql.contains("RTRIM")) {
-                        assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("RTRIM("));
-                        }
+                        assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql
+                                .indexOf("RTRIM("));
+                    }
                     else {
                         assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
-                        }
+                    }
                 }
             };
-    
+
             test.test(q);
-            context.performQuery(q);            
-            
-            //testing outer join!!
+            context.performQuery(q);
+
+            // testing outer join!!
             q = new SelectQuery(Painting.class);
             q.addOrdering("toArtist+.artistName", SortOrder.ASCENDING);
             test.test(q);
             context.performQuery(q);
-            
-            //testing quering from related table 
-            q = new SelectQuery(Painting.class, 
-                    ExpressionFactory.matchExp("toArtist.artistName", "foo"));
+
+            // testing quering from related table
+            q = new SelectQuery(Painting.class, ExpressionFactory.matchExp(
+                    "toArtist.artistName",
+                    "foo"));
             test.test(q);
             context.performQuery(q);
-            
-            //testing flattened rels
-            q = new SelectQuery(Artist.class, ExpressionFactory.matchExp("groupArray.name", "bar"));
+
+            // testing flattened rels
+            q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
+                    "groupArray.name",
+                    "bar"));
             new Template() {
+
                 @Override
                 void test(SelectTranslator transl) throws Exception {
                     assertTrue(transl.createSqlString().indexOf("GROUP_ID = ") > 0);
@@ -489,7 +523,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         try {
             SelectQuery q = new SelectQuery(Artist.class);
-            DbEntity entity = getDbEntity("ARTIST");
+            DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
 
@@ -497,8 +531,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
                 @Override
                 void test(SelectTranslator transl) throws Exception {
-                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
-                            .getAdapter();
+                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
 
@@ -506,31 +539,55 @@ public class SelectTranslatorTest extends CayenneCase {
                     assertTrue(s.startsWith("SELECT "));
                     int iFrom = s.indexOf(" FROM ");
                     assertTrue(iFrom > 0);
-                    int artistName = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    int artistName = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd);
                     assertTrue(artistName > 0 && artistName < iFrom);
-                    int artistId = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    int artistId = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd);
                     assertTrue(artistId > 0 && artistId < iFrom);
-                    int dateOfBirth = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
-                    assertTrue(dateOfBirth > 0 &&
-                            dateOfBirth < iFrom);                   
-                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
-                            + " " + charStart + "t0" + charEnd);
+                    int dateOfBirth = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd);
+                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+                    int iArtist = s.indexOf(charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd);
                     assertTrue(iArtist > iFrom);
-                    int iOrderBy = s.indexOf(" ORDER BY " );
-                    int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "DATE_OF_BIRTH" + charEnd, iOrderBy); 
+                    int iOrderBy = s.indexOf(" ORDER BY ");
+                    int dateOfBirth2 = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd, iOrderBy);
                     assertTrue(iOrderBy > iArtist);
                     assertTrue(dateOfBirth2 > iOrderBy);
-                 }
+                }
             };
 
             test.test(q);
         }
         finally {
-            DbEntity entity = getDbEntity("ARTIST");
+            DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
 
@@ -540,7 +597,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         try {
             SelectQuery q = new SelectQuery(Artist.class);
-            DbEntity entity = getDbEntity("ARTIST");
+            DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
             q.andQualifier(ExpressionFactory.lessExp("dateOfBirth", new Date()));
@@ -550,48 +607,79 @@ public class SelectTranslatorTest extends CayenneCase {
                 @Override
                 void test(SelectTranslator transl) throws Exception {
 
-                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
-                            .getAdapter();
+                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
 
                     String s = transl.createSqlString();
-                    
+
                     assertTrue(s.startsWith("SELECT "));
                     int iFrom = s.indexOf(" FROM ");
                     assertTrue(iFrom > 0);
-                    int artistName = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    int artistName = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd);
                     assertTrue(artistName > 0 && artistName < iFrom);
-                    int artistId = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    int artistId = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd);
                     assertTrue(artistId > 0 && artistId < iFrom);
-                    int dateOfBirth = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
-                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);                   
-                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
-                            + " " + charStart + "t0" + charEnd);
+                    int dateOfBirth = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd);
+                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+                    int iArtist = s.indexOf(charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd);
                     assertTrue(iArtist > iFrom);
                     int iWhere = s.indexOf(" WHERE ");
                     assertTrue(iWhere > iArtist);
-                    
-                    int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "DATE_OF_BIRTH" + charEnd + " > ?"); 
+
+                    int dateOfBirth2 = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + " > ?");
                     assertTrue(dateOfBirth2 > iWhere);
-                    
+
                     int iAnd = s.indexOf(" AND ");
                     assertTrue(iAnd > iWhere);
-                    int dateOfBirth3 = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "DATE_OF_BIRTH" + charEnd + " < ?"); 
+                    int dateOfBirth3 = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + " < ?");
                     assertTrue(dateOfBirth3 > iAnd);
-                    
-                 }
+
+                }
             };
 
             test.test(q);
         }
         finally {
-            DbEntity entity = getDbEntity("ARTIST");
+            DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
     }
@@ -606,89 +694,173 @@ public class SelectTranslatorTest extends CayenneCase {
             q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
                     PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-            DbEntity entity = getDbEntity("ARTIST");
+            DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
             Template test = new Template() {
 
                 @Override
                 void test(SelectTranslator transl) throws Exception {
-                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
-                            .getAdapter();
+                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
 
-                    
                     String s = transl.createSqlString();
-                    
+
                     assertTrue(s.startsWith("SELECT DISTINCT "));
                     int iFrom = s.indexOf(" FROM ");
                     assertTrue(iFrom > 0);
-                    int artistName = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    int artistName = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd);
                     assertTrue(artistName > 0 && artistName < iFrom);
-                    int artistId = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    int artistId = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd);
                     assertTrue(artistId > 0 && artistId < iFrom);
-                    int dateOfBirth = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
-                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom); 
-                    int estimatedPrice = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+                    int dateOfBirth = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd);
+                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+                    int estimatedPrice = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ESTIMATED_PRICE"
+                            + charEnd);
                     assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom);
-                    int paintingDescription = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "PAINTING_DESCRIPTION" + charEnd);
+                    int paintingDescription = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_DESCRIPTION"
+                            + charEnd);
                     assertTrue(paintingDescription > 0 && paintingDescription < iFrom);
-                    int paintingTitle = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "PAINTING_TITLE" + charEnd);
+                    int paintingTitle = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_TITLE"
+                            + charEnd);
                     assertTrue(paintingTitle > 0 && paintingTitle < iFrom);
-                    int artistIdT1 = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    int artistIdT1 = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd);
                     assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom);
-                    int galleryId = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "GALLERY_ID" + charEnd);
+                    int galleryId = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "GALLERY_ID"
+                            + charEnd);
                     assertTrue(galleryId > 0 && galleryId < iFrom);
-                    int paintingId = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "PAINTING_ID" + charEnd);
+                    int paintingId = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_ID"
+                            + charEnd);
                     assertTrue(paintingId > 0 && paintingId < iFrom);
-                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
-                            + " " + charStart + "t0" + charEnd);
+                    int iArtist = s.indexOf(charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd);
                     assertTrue(iArtist > iFrom);
                     int iLeftJoin = s.indexOf("LEFT JOIN");
                     assertTrue(iLeftJoin > iFrom);
-                    int iPainting = s.indexOf(charStart + "PAINTING" + charEnd
-                            + " " + charStart + "t1" + charEnd);
+                    int iPainting = s.indexOf(charStart
+                            + "PAINTING"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t1"
+                            + charEnd);
                     assertTrue(iPainting > iLeftJoin);
                     int iOn = s.indexOf(" ON ");
                     assertTrue(iOn > iLeftJoin);
-                    int iArtistId = s.indexOf(charStart + "t0"
-                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd,  iLeftJoin);
+                    int iArtistId = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd, iLeftJoin);
                     assertTrue(iArtistId > iOn);
-                    int iArtistIdT1 = s.indexOf(charStart + "t1"
-                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+                    int iArtistIdT1 = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd, iLeftJoin);
                     assertTrue(iArtistIdT1 > iOn);
                     int i = s.indexOf("=", iLeftJoin);
                     assertTrue(iArtistIdT1 > i || iArtistId > i);
                     int iJoin = s.indexOf("JOIN");
                     assertTrue(iJoin > iLeftJoin);
-                    int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd
-                            + " " + charStart + "t2" + charEnd);
+                    int iPainting2 = s.indexOf(charStart
+                            + "PAINTING"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t2"
+                            + charEnd);
                     assertTrue(iPainting2 > iJoin);
                     int iOn2 = s.indexOf(" ON ");
                     assertTrue(iOn2 > iJoin);
-                    int iArtistId2 = s.indexOf(charStart + "t0"
-                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+                    int iArtistId2 = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd, iJoin);
                     assertTrue(iArtistId2 > iOn2);
-                    int iArtistId2T2 = s.indexOf(charStart + "t2"
-                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+                    int iArtistId2T2 = s.indexOf(charStart
+                            + "t2"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd, iJoin);
                     assertTrue(iArtistId2T2 > iOn2);
                     int i2 = s.indexOf("=", iJoin);
                     assertTrue(iArtistId2T2 > i2 || iArtistId2 > i2);
                     int iWhere = s.indexOf(" WHERE ");
                     assertTrue(iWhere > iJoin);
-                    
+
                     int paintingTitle2 = s.indexOf(charStart
-                            + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?"); 
+                            + "t2"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_TITLE"
+                            + charEnd
+                            + " = ?");
                     assertTrue(paintingTitle2 > iWhere);
                 }
             };
@@ -696,7 +868,7 @@ public class SelectTranslatorTest extends CayenneCase {
             test.test(q);
         }
         finally {
-            DbEntity entity = getDbEntity("ARTIST");
+            DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
     }
@@ -710,77 +882,141 @@ public class SelectTranslatorTest extends CayenneCase {
             q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
                     PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-            DbEntity entity = getDbEntity("PAINTING");
+            DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
             Template test = new Template() {
 
                 @Override
                 void test(SelectTranslator transl) throws Exception {
-                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
-                            .getAdapter();
+                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
- 
+
                     String s = transl.createSqlString();
-                    
+
                     assertTrue(s.startsWith("SELECT "));
                     int iFrom = s.indexOf(" FROM ");
                     assertTrue(iFrom > 0);
-                    
-                    int paintingDescription = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "PAINTING_DESCRIPTION" + charEnd);
+
+                    int paintingDescription = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_DESCRIPTION"
+                            + charEnd);
                     assertTrue(paintingDescription > 0 && paintingDescription < iFrom);
-                    int paintingTitle = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "PAINTING_TITLE" + charEnd);
+                    int paintingTitle = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_TITLE"
+                            + charEnd);
                     assertTrue(paintingTitle > 0 && paintingTitle < iFrom);
-                    int artistIdT1 = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    int artistIdT1 = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd);
                     assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom);
-                    int estimatedPrice = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+                    int estimatedPrice = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ESTIMATED_PRICE"
+                            + charEnd);
                     assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom);
-                   int galleryId = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "GALLERY_ID" + charEnd);
+                    int galleryId = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "GALLERY_ID"
+                            + charEnd);
                     assertTrue(galleryId > 0 && galleryId < iFrom);
-                    int paintingId = s.indexOf(charStart + "t0" + charEnd
-                            + "." + charStart + "PAINTING_ID" + charEnd);
+                    int paintingId = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_ID"
+                            + charEnd);
                     assertTrue(paintingId > 0 && paintingId < iFrom);
-                    int artistName = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    int artistName = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd);
                     assertTrue(artistName > 0 && artistName < iFrom);
-                    int artistId = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    int artistId = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd);
                     assertTrue(artistId > 0 && artistId < iFrom);
-                    int dateOfBirth = s.indexOf(charStart + "t1" + charEnd
-                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
-                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);                  
-                    int iPainting = s.indexOf(charStart + "PAINTING" + charEnd
-                            + " " + charStart + "t0" + charEnd);
+                    int dateOfBirth = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd);
+                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+                    int iPainting = s.indexOf(charStart
+                            + "PAINTING"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd);
                     assertTrue(iPainting > iFrom);
-                  
+
                     int iLeftJoin = s.indexOf("LEFT JOIN");
                     assertTrue(iLeftJoin > iFrom);
-                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
-                            + " " + charStart + "t1" + charEnd);
+                    int iArtist = s.indexOf(charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t1"
+                            + charEnd);
                     assertTrue(iArtist > iLeftJoin);
                     int iOn = s.indexOf(" ON ");
                     assertTrue(iOn > iLeftJoin);
-                    int iArtistId = s.indexOf(charStart + "t0"
-                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd,  iLeftJoin);
+                    int iArtistId = s.indexOf(charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd, iLeftJoin);
                     assertTrue(iArtistId > iOn);
-                    int iArtistIdT1 = s.indexOf(charStart + "t1"
-                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+                    int iArtistIdT1 = s.indexOf(charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd, iLeftJoin);
                     assertTrue(iArtistIdT1 > iOn);
                     int i = s.indexOf("=", iLeftJoin);
                     assertTrue(iArtistIdT1 > i || iArtistId > i);
-                 }
+                }
             };
 
             test.test(q);
         }
         finally {
-            DbEntity entity = getDbEntity("PAINTING");
+            DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
     }
@@ -792,10 +1028,10 @@ public class SelectTranslatorTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Painting.class);
         SelectTranslator tr = makeTranslator(q);
 
-        List columns = tr.buildResultColumns();
+        List<?> columns = tr.buildResultColumns();
 
         // all DbAttributes must be included
-        DbEntity entity = getDbEntity("PAINTING");
+        DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
         for (final DbAttribute a : entity.getAttributes()) {
             ColumnDescriptor c = new ColumnDescriptor(a, "t0");
             assertTrue("No descriptor for " + a + ", columns: " + columns, columns
@@ -812,10 +1048,10 @@ public class SelectTranslatorTest extends CayenneCase {
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         SelectTranslator tr = makeTranslator(q);
 
-        List columns = tr.buildResultColumns();
+        List<?> columns = tr.buildResultColumns();
 
         // assert root entity columns
-        DbEntity entity = getDbEntity("PAINTING");
+        DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
         for (final DbAttribute a : entity.getAttributes()) {
             ColumnDescriptor c = new ColumnDescriptor(a, "t0");
             assertTrue("No descriptor for " + a + ", columns: " + columns, columns
@@ -823,7 +1059,7 @@ public class SelectTranslatorTest extends CayenneCase {
         }
 
         // assert joined columns
-        DbEntity joined = getDbEntity("ARTIST");
+        DbEntity joined = context.getEntityResolver().getDbEntity("ARTIST");
         for (final DbAttribute a : joined.getAttributes()) {
 
             // skip ARTIST PK, it is joined from painting
@@ -842,8 +1078,8 @@ public class SelectTranslatorTest extends CayenneCase {
 
         SelectTranslator translator = new SelectTranslator();
         translator.setQuery(q);
-        translator.setAdapter(getNode().getAdapter());
-        translator.setEntityResolver(getNode().getEntityResolver());
+        translator.setAdapter(adapter);
+        translator.setEntityResolver(context.getEntityResolver());
         return translator;
     }
 
@@ -856,7 +1092,7 @@ public class SelectTranslatorTest extends CayenneCase {
         void test(SelectQuery q) throws Exception {
             SelectTranslator transl = makeTranslator(q);
 
-            Connection c = getConnection();
+            Connection c = dataSource.getConnection();
             try {
 
                 transl.setConnection(c);
