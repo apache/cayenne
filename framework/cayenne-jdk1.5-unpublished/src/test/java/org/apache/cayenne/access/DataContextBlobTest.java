@@ -22,28 +22,38 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.BlobTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextBlobTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextBlobTest extends ServerCase {
 
-    protected DataContext ctxt;
+    @Inject
+    private DataContext context;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Inject
+    private DataContext context2;
 
-        deleteTestData();
-        ctxt = createDataContext();
-    }
+    @Inject
+    private DataContext context3;
+
+    @Inject
+    protected ServerRuntime runtime;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
 
     protected boolean skipTests() {
-        return !getAccessStackAdapter().supportsLobs();
+        return accessStackAdapter.supportsLobs();
     }
 
     protected boolean skipEmptyLOBTests() {
-        return !getAccessStackAdapter().handlesNullVsEmptyLOBs();
+        return accessStackAdapter.handlesNullVsEmptyLOBs();
     }
 
     public void testEmptyBlob() throws Exception {
@@ -84,12 +94,12 @@ public class DataContextBlobTest extends CayenneCase {
         };
 
         // insert new blob
-        ctxt.newObject(BlobTestEntity.class);
-        ctxt.commitChanges();
+        context.newObject(BlobTestEntity.class);
+        context.commitChanges();
 
         // read the BLOB in the new context
-        DataContext ctxt2 = createDataContext();
-        List<?> objects2 = ctxt2.performQuery(new SelectQuery(BlobTestEntity.class));
+
+        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -97,11 +107,10 @@ public class DataContextBlobTest extends CayenneCase {
 
         // update and save Blob
         blobObj2.setBlobCol(bytes2);
-        ctxt2.commitChanges();
+        context2.commitChanges();
 
         // read into yet another context and check for changes
-        DataContext ctxt3 = createDataContext();
-        List<?> objects3 = ctxt3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
@@ -111,7 +120,7 @@ public class DataContextBlobTest extends CayenneCase {
 
     protected void runWithBlobSize(int sizeBytes) throws Exception {
         // insert new clob
-        BlobTestEntity blobObj1 = ctxt.newObject(BlobTestEntity.class);
+        BlobTestEntity blobObj1 = context.newObject(BlobTestEntity.class);
 
         // init BLOB of a specified size
         byte[] bytes = new byte[sizeBytes];
@@ -120,26 +129,24 @@ public class DataContextBlobTest extends CayenneCase {
         }
 
         blobObj1.setBlobCol(bytes);
-        ctxt.commitChanges();
+        context.commitChanges();
 
         // read the CLOB in the new context
-        DataContext ctxt2 = createDataContext();
-        List<?> objects2 = ctxt2.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
         ByteArrayTypeTest.assertByteArraysEqual(blobObj1.getBlobCol(), blobObj2
                 .getBlobCol());
 
-        // update and save Clob
+        // update and save Blob
         blobObj2.setBlobCol(new byte[] {
                 '1', '2'
         });
-        ctxt2.commitChanges();
+        context2.commitChanges();
 
         // read into yet another context and check for changes
-        DataContext ctxt3 = createDataContext();
-        List<?> objects3 = ctxt3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
