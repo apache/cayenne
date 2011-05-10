@@ -25,26 +25,32 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.DateTestEntity;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMap2;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Test Types mapping for selected columns
  */
-public class ReturnTypesMappingTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ReturnTypesMappingTest extends ServerCase {
 
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+    
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("TYPES_MAPPING_TEST1");
+        dbHelper.deleteAll("TYPES_MAPPING_TEST2");
     }
 
     public void testBIGINT() throws Exception {
