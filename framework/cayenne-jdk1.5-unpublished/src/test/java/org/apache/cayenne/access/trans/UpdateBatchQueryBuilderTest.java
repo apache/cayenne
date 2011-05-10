@@ -24,16 +24,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.LockingCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class UpdateBatchQueryBuilderTest extends LockingCase {
+@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+public class UpdateBatchQueryBuilderTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DbAdapter adapter;
 
     public void testConstructor() throws Exception {
         DbAdapter adapter = new JdbcAdapter();
@@ -42,7 +50,7 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
     }
 
     public void testCreateSqlString() throws Exception {
-        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
 
         List idAttributes = Collections.singletonList(entity
@@ -65,7 +73,7 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
     }
 
     public void testCreateSqlStringWithNulls() throws Exception {
-        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
 
         List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity
@@ -94,7 +102,7 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
     }
 
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
-        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
         try {
 
@@ -110,28 +118,28 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
                     updatedAttributes,
                     null,
                     1);
-            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
-            
+            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
+
             UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(updateQuery);
-  
+
             String charStart = adapter.getIdentifiersStartQuote();
             String charEnd = adapter.getIdentifiersEndQuote();
-            
+
             assertNotNull(generatedSql);
-             assertEquals("UPDATE "
-             + charStart
-             + entity.getName()
-             + charEnd
-             + " SET "
-             + charStart
-             + "DESCRIPTION"
-             + charEnd
-             + " = ? WHERE "
-             + charStart
-             + "LOCKING_TEST_ID"
-             + charEnd
-             + " = ?", generatedSql);
+            assertEquals("UPDATE "
+                    + charStart
+                    + entity.getName()
+                    + charEnd
+                    + " SET "
+                    + charStart
+                    + "DESCRIPTION"
+                    + charEnd
+                    + " = ? WHERE "
+                    + charStart
+                    + "LOCKING_TEST_ID"
+                    + charEnd
+                    + " = ?", generatedSql);
 
         }
         finally {
@@ -140,7 +148,7 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
     }
 
     public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
-        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
         try {
 
@@ -160,12 +168,12 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
                     updatedAttributes,
                     nullAttributes,
                     1);
-            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
-            
+            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
+
             UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(updateQuery);
             assertNotNull(generatedSql);
-  
+
             String charStart = adapter.getIdentifiersStartQuote();
             String charEnd = adapter.getIdentifiersEndQuote();
             assertEquals("UPDATE "
