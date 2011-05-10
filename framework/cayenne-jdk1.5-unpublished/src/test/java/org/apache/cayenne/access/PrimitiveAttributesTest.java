@@ -18,17 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.PrimitivesTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class PrimitiveAttributesTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class PrimitiveAttributesTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PRIMITIVES_TEST");
+    }
 
     public void testCommit() {
-        ObjectContext context = createDataContext();
-
-        PrimitivesTestEntity e = context
-                .newObject(PrimitivesTestEntity.class);
+        PrimitivesTestEntity e = context.newObject(PrimitivesTestEntity.class);
         e.setBooleanColumn(true);
         e.setIntColumn(88);
         context.commitChanges();
