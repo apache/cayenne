@@ -20,12 +20,19 @@
 package org.apache.cayenne.access.trans;
 
 import org.apache.cayenne.TranslationCase;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class OrderingTranslatorTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class OrderingTranslatorTest extends ServerCase {
+
+    @Inject
+    private DataNode node;
 
     /**
      * Tests ascending ordering on string attribute.
@@ -34,7 +41,7 @@ public class OrderingTranslatorTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
+        TstQueryAssembler qa = new TstQueryAssembler(node, q);
 
         try {
             TranslationCase tstCase = new TranslationCase(
@@ -60,7 +67,7 @@ public class OrderingTranslatorTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
+        TstQueryAssembler qa = new TstQueryAssembler(node, q);
 
         try {
             TranslationCase tstCase = new TranslationCase(
@@ -86,7 +93,7 @@ public class OrderingTranslatorTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
 
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
+        TstQueryAssembler qa = new TstQueryAssembler(node, q);
 
         try {
             TranslationCase tstCase = new TranslationCase(
@@ -112,7 +119,7 @@ public class OrderingTranslatorTest extends CayenneCase {
         q.addOrdering("artistName", SortOrder.DESCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
+        TstQueryAssembler qa = new TstQueryAssembler(node, q);
 
         try {
             TranslationCase tstCase = new TranslationCase(
@@ -144,7 +151,7 @@ public class OrderingTranslatorTest extends CayenneCase {
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING_INSENSITIVE);
 
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
+        TstQueryAssembler qa = new TstQueryAssembler(node, q);
 
         try {
             TranslationCase tstCase = new TranslationCase(
@@ -178,7 +185,7 @@ public class OrderingTranslatorTest extends CayenneCase {
         q.addOrdering("artistName", SortOrder.DESCENDING);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(getNode(), q);
+        TstQueryAssembler qa = new TstQueryAssembler(node, q);
 
         try {
             TranslationCase tstCase = new TranslationCase(
