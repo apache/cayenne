@@ -19,17 +19,24 @@
 
 package org.apache.cayenne.access.trans;
 
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class QueryAssemblerTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class QueryAssemblerTest extends ServerCase {
+
+    @Inject
+    private DataNode dataNode;
 
     protected TstQueryAssembler qa;
 
     @Override
-    protected void setUp() throws Exception {
-        qa = new TstQueryAssembler(getNode(), new SelectQuery());
+    protected void setUpAfterInjection() throws Exception {
+        qa = new TstQueryAssembler(dataNode, new SelectQuery());
     }
 
     public void testGetQuery() throws Exception {
