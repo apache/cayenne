@@ -31,14 +31,14 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime("cayenne-default.xml")
+@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
 public class GenericMappingTest extends ServerCase {
 
     @Inject
     private DataContext context;
 
     @Inject
-    protected DBHelper dbHelper;
+    private DBHelper dbHelper;
 
     @Override
     protected void setUpAfterInjection() throws Exception {

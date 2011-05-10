@@ -32,43 +32,32 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
-import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
-import org.xml.sax.InputSource;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SchemaUpdateStrategyTest extends CayenneCase {
+@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
+public class SchemaUpdateStrategyTest extends ServerCase {
 
-    private DataMap dataMap;
+    @Inject
+    private DataNode node;
 
-    public DataMap getDataMap() {
-        if (dataMap == null) {
-            MapLoader mapLoader = new MapLoader();
-            dataMap = mapLoader.loadDataMap(getMapXml("sus-map.map.xml"));
-        }
-        return dataMap;
-    }
-
-    private InputSource getMapXml(String mapName) {
-        return new InputSource(getClass().getClassLoader().getResourceAsStream(mapName));
-    }
+    @Inject
+    private DbAdapter adapter;
 
     public void testDBGeneratorStrategy() throws Exception {
 
         String template = "SELECT #result('id' 'int') FROM SUS1";
         SQLTemplate query = new SQLTemplate(Object.class, template);
-        DataMap map = getDataMap();
-        assertNotNull(map);
+
+        DataMap map = node.getEntityResolver().getDataMap("sus-map");
         DataNode dataNode = createDataNode(map);
         int sizeDB = getNameTablesInDB(dataNode).size();
         MockOperationObserver observer = new MockOperationObserver();
@@ -94,8 +83,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
 
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Object.class, template);
-        DataMap map = getDataMap();
-        assertNotNull(map);
+        DataMap map = node.getEntityResolver().getDataMap("sus-map");
         MockOperationObserver observer = new MockOperationObserver();
         DataNode dataNode = createDataNode(map);
 
@@ -130,8 +118,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
 
         String template = "SELECT #result('id' 'int') FROM SUS1";
         SQLTemplate query = new SQLTemplate(Object.class, template);
-        DataMap map = getDataMap();
-        assertNotNull(map);
+        DataMap map = node.getEntityResolver().getDataMap("sus-map");
         DataNode dataNode = createDataNode(map);
         int sizeDB = getNameTablesInDB(dataNode).size();
         MockOperationObserver observer = new MockOperationObserver();
@@ -172,8 +159,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Object.class, template);
         MockOperationObserver observer = new MockOperationObserver();
-        DataMap map = getDataMap();
-        assertNotNull(map);
+        DataMap map = node.getEntityResolver().getDataMap("sus-map");
         DataNode dataNode = createDataNode(map);
 
         setStrategy(TestSchemaUpdateStrategy.class.getName(), dataNode);
@@ -186,8 +172,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
         DbEntity entity = null;
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Object.class, template);
-        DataMap map = getDataMap();
-        assertNotNull(map);
+        DataMap map = node.getEntityResolver().getDataMap("sus-map");
         MockOperationObserver observer = new MockOperationObserver();
         DataNode dataNode = createDataNode(map);
 
@@ -234,8 +219,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
 
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Object.class, template);
-        DataMap map = getDataMap();
-        assertNotNull(map);
+        DataMap map = node.getEntityResolver().getDataMap("sus-map");
         MockOperationObserver observer = new MockOperationObserver();
         DataNode dataNode = createDataNode(map);
         int sizeDB = getNameTablesInDB(dataNode).size();
@@ -254,7 +238,7 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
     }
 
     private DbEntity createOneTable(DataNode dataNode) {
-        DataMap map = getDataMap();
+        DataMap map = node.getEntityResolver().getDataMap("sus-map");
         Collection<DbEntity> ent = map.getDbEntities();
         DbEntity entity = ent.iterator().next();
         String template = dataNode.getAdapter().createTable(entity);
@@ -269,15 +253,14 @@ public class SchemaUpdateStrategyTest extends CayenneCase {
     }
 
     private DataNode createDataNode(DataMap map) {
-        JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
         Collection<DataMap> colection = new ArrayList<DataMap>();
         colection.add(map);
         DataNode dataNode = new DataNode();
         dataNode.setDataMaps(colection);
         dataNode.setAdapter(adapter);
         dataNode.setDataSource(CayenneResources.getResources().getDataSource());
-        dataNode.setDataSourceFactory(getNode().getDataSourceFactory());
-        dataNode.setSchemaUpdateStrategyName(getNode().getSchemaUpdateStrategyName());
+        dataNode.setDataSourceFactory(node.getDataSourceFactory());
+        dataNode.setSchemaUpdateStrategyName(node.getSchemaUpdateStrategyName());
         dataNode.setEntityResolver(new EntityResolver(colection));
         return dataNode;
     }

@@ -30,7 +30,7 @@ import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime("cayenne-default.xml")
+@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
 public class CDOQualifiedEntitiesTest extends ServerCase {
 
     @Inject

@@ -68,7 +68,6 @@ public class ServerCaseModule implements Module {
                 new CayenneResourcesDbAdapterProvider(resources));
         binder.bind(AccessStackAdapter.class).toProviderInstance(
                 new CayenneResourcesAccessStackAdapterProvider(resources));
-        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class);
         binder.bind(BatchQueryBuilderFactory.class).toProvider(
                 ServerCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(DataChannelInterceptor.class).to(
@@ -77,6 +76,8 @@ public class ServerCaseModule implements Module {
                 new CayenneResourcesSQLTemplateCustomizerProvider(resources));
 
         // test-scoped objects
+        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(
+                testScope);
         binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(
                 testScope);
         binder.bind(ServerRuntime.class).toProviderInstance(

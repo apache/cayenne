@@ -36,6 +36,7 @@ public class ServerCase extends DICase {
     public static final String PEOPLE_PROJECT = "cayenne-people.xml";
     public static final String RELATIONSHIPS_PROJECT = "cayenne-relationships.xml";
     public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
+    public static final String DEFAULT_PROJECT = "cayenne-default.xml";
 
     private static final Injector injector;
 

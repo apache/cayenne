@@ -34,7 +34,7 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime("cayenne-default.xml")
+@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
 public class EmbeddingTest extends ServerCase {
     
     @Inject
