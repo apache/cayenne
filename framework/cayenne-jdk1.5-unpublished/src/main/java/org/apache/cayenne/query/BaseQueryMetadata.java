@@ -326,7 +326,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     void setPrefetchTree(PrefetchTreeNode prefetchTree) {
         if (prefetchTree != null) {
-            // importnat: make a clone to allow modification independent from the
+            // important: make a clone to allow modification independent from the
             // caller...
             try {
                 prefetchTree = (PrefetchTreeNode) Util

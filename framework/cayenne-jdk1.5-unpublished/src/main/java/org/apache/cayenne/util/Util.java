@@ -333,11 +333,12 @@ public class Util {
     /**
      * Creates Serializable object copy using serialization/deserialization.
      */
-    public static <T extends Serializable> T cloneViaSerialization(T object) throws Exception {
+    public static <T extends Serializable> T cloneViaSerialization(T object)
+            throws Exception {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
             @Override
-            public synchronized byte[] toByteArray() {
+            public byte[] toByteArray() {
                 return buf;
             }
         };
@@ -509,7 +510,7 @@ public class Util {
 
             // skip \n, \r, \r\n
             if (c == '\n' || c == '\r') {
-                
+
                 matched = true;
 
                 // do lookahead
