@@ -37,14 +37,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class SingleTableInheritance1Test extends ServerCase {
 
     @Inject
-    protected ObjectContext context;
+    private ObjectContext context;
 
     @Inject
-    protected DBHelper dbHelper;
+    private DBHelper dbHelper;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        super.setUpAfterInjection();
 
         dbHelper.deleteAll("GROUP_MEMBERS");
         dbHelper.deleteAll("USER_PROPERTIES");
