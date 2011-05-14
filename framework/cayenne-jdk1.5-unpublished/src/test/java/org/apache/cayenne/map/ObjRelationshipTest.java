@@ -24,18 +24,36 @@ import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
-public class ObjRelationshipTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ObjRelationshipTest extends ServerCase {
 
-    protected DbEntity artistDBEntity = getDbEntity("ARTIST");
-    protected DbEntity artistExhibitDBEntity = getDbEntity("ARTIST_EXHIBIT");
-    protected DbEntity exhibitDBEntity = getDbEntity("EXHIBIT");
-    protected DbEntity paintingDbEntity = getDbEntity("PAINTING");
-    protected DbEntity galleryDBEntity = getDbEntity("GALLERY");
+    @Inject
+    private ServerRuntime runtime;
+
+    private DbEntity artistDBEntity;
+    private DbEntity artistExhibitDBEntity;
+    private DbEntity exhibitDBEntity;
+    private DbEntity paintingDbEntity;
+    private DbEntity galleryDBEntity;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+
+        artistDBEntity = resolver.getDbEntity("ARTIST");
+        artistExhibitDBEntity = resolver.getDbEntity("ARTIST_EXHIBIT");
+        exhibitDBEntity = resolver.getDbEntity("EXHIBIT");
+        paintingDbEntity = resolver.getDbEntity("PAINTING");
+        galleryDBEntity = resolver.getDbEntity("GALLERY");
+    }
 
     public void testEncodeAsXML() {
         StringWriter buffer = new StringWriter();
@@ -56,11 +74,12 @@ public class ObjRelationshipTest extends CayenneCase {
 
         r.encodeAsXML(encoder);
         out.close();
-        
+
         String lineBreak = System.getProperty("line.separator");
 
         assertEquals("<obj-relationship name=\"X\" source=\"S\" target=\"T\" "
-                + "collection-type=\"java.util.Map\" map-key=\"bla\"/>" + lineBreak, buffer.getBuffer().toString());
+                + "collection-type=\"java.util.Map\" map-key=\"bla\"/>"
+                + lineBreak, buffer.getBuffer().toString());
     }
 
     public void testCollectionType() {
@@ -71,13 +90,16 @@ public class ObjRelationshipTest extends CayenneCase {
     }
 
     public void testSerializability() throws Exception {
-        ObjEntity artistObjEnt = getObjEntity("Artist");
+        ObjEntity artistObjEnt = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getObjEntity("Artist");
 
         // start with "to many"
         ObjRelationship r1 = (ObjRelationship) artistObjEnt
                 .getRelationship("paintingArray");
 
-        ObjRelationship r2 = (ObjRelationship) Util.cloneViaSerialization(r1);
+        ObjRelationship r2 = Util.cloneViaSerialization(r1);
         assertEquals(r1.getName(), r2.getName());
         assertEquals(r1.getDbRelationshipPath(), r2.getDbRelationshipPath());
     }
@@ -103,8 +125,14 @@ public class ObjRelationshipTest extends CayenneCase {
     }
 
     public void testGetReverseDbRelationshipPath() {
-        ObjEntity artistObjEnt = getObjEntity("Artist");
-        ObjEntity paintingObjEnt = getObjEntity("Painting");
+        ObjEntity artistObjEnt = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getObjEntity("Artist");
+        ObjEntity paintingObjEnt = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getObjEntity("Painting");
 
         // start with "to many"
         ObjRelationship r1 = (ObjRelationship) artistObjEnt
@@ -118,7 +146,10 @@ public class ObjRelationshipTest extends CayenneCase {
     }
 
     public void testSetDbRelationshipPath() {
-        ObjEntity artistObjEnt = getObjEntity("Artist");
+        ObjEntity artistObjEnt = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getObjEntity("Artist");
 
         ObjRelationship r = new ObjRelationship("r");
         r.setSourceEntity(artistObjEnt);
@@ -305,8 +336,14 @@ public class ObjRelationshipTest extends CayenneCase {
 
     public void testGetReverseRel1() {
 
-        ObjEntity artistObjEnt = getObjEntity("Artist");
-        ObjEntity paintingObjEnt = getObjEntity("Painting");
+        ObjEntity artistObjEnt = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getObjEntity("Artist");
+        ObjEntity paintingObjEnt = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getObjEntity("Painting");
 
         // start with "to many"
         ObjRelationship r1 = (ObjRelationship) artistObjEnt
@@ -318,8 +355,10 @@ public class ObjRelationshipTest extends CayenneCase {
     }
 
     public void testGetReverseRel2() {
-        ObjEntity artistEnt = getObjEntity("Artist");
-        ObjEntity paintingEnt = getObjEntity("Painting");
+        ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Artist");
+        ObjEntity paintingEnt = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Painting");
 
         // start with "to one"
         ObjRelationship r1 = (ObjRelationship) paintingEnt.getRelationship("toArtist");
@@ -425,7 +464,8 @@ public class ObjRelationshipTest extends CayenneCase {
 
     // Test a relationship loaded from the test datamap that we know should be flattened
     public void testKnownFlattenedRelationship() {
-        ObjEntity artistEnt = getObjEntity("Artist");
+        ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Artist");
         ObjRelationship theRel = (ObjRelationship) artistEnt
                 .getRelationship("groupArray");
         assertNotNull(theRel);
