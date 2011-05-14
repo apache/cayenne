@@ -22,6 +22,8 @@ package org.apache.cayenne.exp.parser;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -29,12 +31,18 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.TestBean;
 
-/**
- */
-public class ExpressionEvaluateInMemoryTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ExpressionEvaluateInMemoryTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DataContext context;
 
     public void testEvaluateOBJ_PATH_DataObject() throws Exception {
         ASTObjPath node = new ASTObjPath("artistName");
@@ -63,7 +71,8 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
     public void testEvaluateOBJ_PATH_ObjEntity() throws Exception {
         ASTObjPath node = new ASTObjPath("paintingArray.paintingTitle");
 
-        ObjEntity ae = getDomain().getEntityResolver().lookupObjEntity(Artist.class);
+        ObjEntity ae = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
+                Artist.class);
 
         Object target = node.evaluate(ae);
         assertTrue(target instanceof ObjAttribute);
@@ -72,7 +81,8 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
     public void testEvaluateDB_PATH_DbEntity() throws Exception {
         Expression e = Expression.fromString("db:paintingArray.PAINTING_TITLE");
 
-        ObjEntity ae = getDomain().getEntityResolver().lookupObjEntity(Artist.class);
+        ObjEntity ae = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
+                Artist.class);
         DbEntity ade = ae.getDbEntity();
 
         Object objTarget = e.evaluate(ae);
@@ -81,7 +91,7 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
         Object dbTarget = e.evaluate(ade);
         assertTrue(dbTarget instanceof DbAttribute);
     }
-    
+
     public void testEvaluateEQUAL_TOBigDecimal() throws Exception {
         BigDecimal bd1 = new BigDecimal("2.0");
         BigDecimal bd2 = new BigDecimal("2.0");
@@ -142,7 +152,6 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
     }
 
     public void testEvaluateEQUAL_TODataObject() throws Exception {
-        DataContext context = createDataContext();
         Artist a1 = (Artist) context.newObject("Artist");
         Artist a2 = (Artist) context.newObject("Artist");
         Painting p1 = (Painting) context.newObject("Painting");
@@ -210,9 +219,8 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
     }
 
     public void testEvaluateLESS_THAN() throws Exception {
-        Expression e = new ASTLess(
-                new ASTObjPath("estimatedPrice"),
-                new BigDecimal(10000d));
+        Expression e = new ASTLess(new ASTObjPath("estimatedPrice"), new BigDecimal(
+                10000d));
 
         Painting noMatch = new Painting();
         noMatch.setEstimatedPrice(new BigDecimal(10001));
@@ -453,7 +461,7 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
         assertEquals(5, ((Number) new ASTNegate(new Integer(-5)).evaluate(null))
                 .intValue());
     }
-    
+
     public void testEvaluateTrue() throws Exception {
         assertEquals(Boolean.TRUE, new ASTTrue().evaluate(null));
     }
