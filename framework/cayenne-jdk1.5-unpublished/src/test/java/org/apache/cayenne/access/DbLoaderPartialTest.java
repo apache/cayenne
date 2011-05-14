@@ -21,23 +21,33 @@ package org.apache.cayenne.access;
 
 import java.util.Collection;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DbLoaderPartialTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DbLoaderPartialTest extends ServerCase {
 
-    protected DbLoader loader;
+    @Inject
+    private DbAdapter adapter;
+
+    @Inject
+    private DataSource dataSource;
+
+    private DbLoader loader;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    protected void setUpAfterInjection() throws Exception {
         loader = new DbLoader(
-                getConnection(),
-                getNode().getAdapter(),
+                dataSource.getConnection(),
+                adapter,
                 new DbLoaderDelegate() {
 
                     public boolean overwriteDbEntity(DbEntity ent)
@@ -76,13 +86,13 @@ public class DbLoaderPartialTest extends CayenneCase {
         try {
 
             DataMap map = new DataMap();
-            String tableLabel = getNode().getAdapter().tableTypeForTable();
+            String tableLabel = adapter.tableTypeForTable();
 
             loader.loadDataMapFromDB(null, "%", new String[] {
                 tableLabel
             }, map);
 
-            Collection rels = getDbEntity(map, "ARTIST").getRelationships();
+            Collection<?> rels = getDbEntity(map, "ARTIST").getRelationships();
             assertNotNull(rels);
             int artistRels = rels.size();
 
