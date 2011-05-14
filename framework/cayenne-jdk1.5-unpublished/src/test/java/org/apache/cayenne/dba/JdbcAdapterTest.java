@@ -22,21 +22,20 @@ package org.apache.cayenne.dba;
 import java.sql.Types;
 
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.MySQLStackAdapter;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class JdbcAdapterTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class JdbcAdapterTest extends ServerCase {
 
-    protected JdbcAdapter adapter;
-
-    @Override
-    protected void setUp() throws java.lang.Exception {
-        adapter = new JdbcAdapter();
-    }
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
 
     public void testExternalTypesForJdbcType() throws Exception {
         // check a few types
@@ -47,32 +46,35 @@ public class JdbcAdapterTest extends CayenneCase {
     }
 
     private void checkType(int type) throws java.lang.Exception {
+        JdbcAdapter adapter = new JdbcAdapter();
+
         String[] types = adapter.externalTypesForJdbcType(type);
         assertNotNull(types);
         assertEquals(1, types.length);
         assertEquals(TypesMapping.getSqlNameByType(type), types[0]);
     }
-    
+
     public void testCreateTableQuoteSqlIdentifiers() {
-         
-        DbEntity entity = new DbEntity();
-        DbAttribute attr = new DbAttribute();
-        attr.setName("name column");
-        attr.setType(1);
-        entity.addAttribute(attr);
-        
-        DbKeyGenerator id = new DbKeyGenerator();
-        entity.setPrimaryKeyGenerator(id);
-        
-        DataMap dm = new DataMap();        
-        dm.setQuotingSQLIdentifiers(true);
-        entity.setDataMap(dm);
-        entity.setName("name table");
- 
-        if(getAccessStackAdapter().getAdapter() instanceof MySQLAdapter){
-            MySQLAdapter adaptMySQL = (MySQLAdapter) getAccessStackAdapter().getAdapter();             
-            String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";            
+
+        if (accessStackAdapter.getAdapter() instanceof MySQLAdapter) {
+
+            DbEntity entity = new DbEntity();
+            DbAttribute attr = new DbAttribute();
+            attr.setName("name column");
+            attr.setType(1);
+            entity.addAttribute(attr);
+
+            DbKeyGenerator id = new DbKeyGenerator();
+            entity.setPrimaryKeyGenerator(id);
+
+            DataMap dm = new DataMap();
+            dm.setQuotingSQLIdentifiers(true);
+            entity.setDataMap(dm);
+            entity.setName("name table");
+
+            MySQLAdapter adaptMySQL = (MySQLAdapter) accessStackAdapter.getAdapter();
+            String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";
             assertEquals(str, adaptMySQL.createTable(entity));
         }
-     }
+    }
 }

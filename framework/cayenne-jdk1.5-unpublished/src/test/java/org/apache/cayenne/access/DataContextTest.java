@@ -469,7 +469,7 @@ public class DataContextTest extends ServerCase {
         query.setPageSize(5);
         List<?> objects = context.performQuery(query);
         assertNotNull(objects);
-        assertTrue(objects instanceof IncrementalFaultList);
+        assertTrue(objects instanceof IncrementalFaultList<?>);
         assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);
         assertTrue(((IncrementalFaultList<?>) objects).elements.get(6) instanceof Long);
 
@@ -483,7 +483,7 @@ public class DataContextTest extends ServerCase {
         query.setPageSize(5);
         List<?> objects = context.performQuery(query);
         assertNotNull(objects);
-        assertTrue(objects instanceof IncrementalFaultList);
+        assertTrue(objects instanceof IncrementalFaultList<?>);
         assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);
         assertTrue(((IncrementalFaultList<?>) objects).elements.get(6) instanceof Long);
 
@@ -497,7 +497,7 @@ public class DataContextTest extends ServerCase {
         query.setPageSize(5);
         final List<?> objects = context.performQuery(query);
         assertNotNull(objects);
-        assertTrue(objects instanceof IncrementalFaultList);
+        assertTrue(objects instanceof IncrementalFaultList<?>);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -519,7 +519,7 @@ public class DataContextTest extends ServerCase {
         assertEquals(7, objects.size());
         assertTrue(
                 "Map expected, got " + objects.get(0).getClass(),
-                objects.get(0) instanceof Map);
+                objects.get(0) instanceof Map<?, ?>);
     }
 
     public void testCommitChangesRO1() throws Exception {
@@ -725,9 +725,9 @@ public class DataContextTest extends ServerCase {
     }
 
     public void testCommitUnchangedInsert() throws Exception {
-        
+
         // see CAY-1444 - reproducible on DB's that support auto incremented PK
-        
+
         NullTestEntity newObject = context.newObject(NullTestEntity.class);
 
         assertTrue(context.hasChanges());
