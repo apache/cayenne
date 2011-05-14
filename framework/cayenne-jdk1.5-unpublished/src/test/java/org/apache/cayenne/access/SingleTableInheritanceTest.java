@@ -94,8 +94,8 @@ public class SingleTableInheritanceTest extends ServerCase {
         dbHelper.deleteAll("ADDRESS");
         dbHelper.deleteAll("DEPARTMENT");
         dbHelper.deleteAll("PERSON_NOTES");
-        dbHelper.deleteAll("CLIENT_COMPANY");
         dbHelper.deleteAll("PERSON");
+        dbHelper.deleteAll("CLIENT_COMPANY");
     }
 
     private void create2PersonDataSet() throws Exception {
