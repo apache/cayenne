@@ -74,6 +74,11 @@ public class DbLoaderPartialTest extends ServerCase {
                 });
     }
 
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+        loader.getConnection().close();
+    }
+
     /**
      * Tests that FKs are properly loaded when the relationship source is not loaded. See
      * CAY-479. This test will perform two reverse engineers. The second reverse engineer
@@ -83,47 +88,40 @@ public class DbLoaderPartialTest extends ServerCase {
      */
     public void testPartialLoad() throws Exception {
 
-        try {
+        DataMap map = new DataMap();
+        String tableLabel = adapter.tableTypeForTable();
 
-            DataMap map = new DataMap();
-            String tableLabel = adapter.tableTypeForTable();
+        loader.loadDataMapFromDB(null, "%", new String[] {
+            tableLabel
+        }, map);
 
-            loader.loadDataMapFromDB(null, "%", new String[] {
-                tableLabel
-            }, map);
+        Collection<?> rels = getDbEntity(map, "ARTIST").getRelationships();
+        assertNotNull(rels);
+        int artistRels = rels.size();
 
-            Collection<?> rels = getDbEntity(map, "ARTIST").getRelationships();
-            assertNotNull(rels);
-            int artistRels = rels.size();
+        rels = getDbEntity(map, "GALLERY").getRelationships();
+        assertNotNull(rels);
+        int galleryRels = rels.size();
 
-            rels = getDbEntity(map, "GALLERY").getRelationships();
-            assertNotNull(rels);
-            int galleryRels = rels.size();
+        rels = getDbEntity(map, "PAINTING").getRelationships();
+        assertNotNull(rels);
+        int paintingRels = rels.size();
 
-            rels = getDbEntity(map, "PAINTING").getRelationships();
-            assertNotNull(rels);
-            int paintingRels = rels.size();
+        loader.loadDataMapFromDB(null, "%", new String[] {
+            tableLabel
+        }, map);
 
-            loader.loadDataMapFromDB(null, "%", new String[] {
-                tableLabel
-            }, map);
+        rels = getDbEntity(map, "ARTIST").getRelationships();
+        assertNotNull(rels);
+        assertEquals(artistRels, rels.size());
 
-            rels = getDbEntity(map, "ARTIST").getRelationships();
-            assertNotNull(rels);
-            assertEquals(artistRels, rels.size());
+        rels = getDbEntity(map, "GALLERY").getRelationships();
+        assertNotNull(rels);
+        assertEquals(galleryRels, rels.size());
 
-            rels = getDbEntity(map, "GALLERY").getRelationships();
-            assertNotNull(rels);
-            assertEquals(galleryRels, rels.size());
-
-            rels = getDbEntity(map, "PAINTING").getRelationships();
-            assertNotNull(rels);
-            assertEquals(paintingRels, rels.size());
-
-        }
-        finally {
-            loader.getConnection().close();
-        }
+        rels = getDbEntity(map, "PAINTING").getRelationships();
+        assertNotNull(rels);
+        assertEquals(paintingRels, rels.size());
     }
 
     private DbEntity getDbEntity(DataMap map, String name) {

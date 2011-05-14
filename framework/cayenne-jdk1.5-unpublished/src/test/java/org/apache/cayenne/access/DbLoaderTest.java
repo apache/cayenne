@@ -24,113 +24,115 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DbLoaderTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DbLoaderTest extends ServerCase {
 
-    protected DbLoader loader;
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DbAdapter adapter;
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    private DbLoader loader;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        loader = new DbLoader(getConnection(), getNode().getAdapter(), null);
+    protected void setUpAfterInjection() throws Exception {
+        loader = new DbLoader(dataSource.getConnection(), adapter, null);
+    }
+
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+        loader.getConnection().close();
     }
 
     public void testGetTableTypes() throws Exception {
-        try {
-            List tableTypes = loader.getTableTypes();
 
-            assertNotNull(tableTypes);
+        List<?> tableTypes = loader.getTableTypes();
 
-            String tableLabel = getNode().getAdapter().tableTypeForTable();
-            if (tableLabel != null) {
-                assertTrue(
-                        "Missing type for table '" + tableLabel + "' - " + tableTypes,
-                        tableTypes.contains(tableLabel));
-            }
+        assertNotNull(tableTypes);
 
-            String viewLabel = getNode().getAdapter().tableTypeForView();
-            if (viewLabel != null) {
-                assertTrue(
-                        "Missing type for view '" + viewLabel + "' - " + tableTypes,
-                        tableTypes.contains(viewLabel));
-            }
+        String tableLabel = adapter.tableTypeForTable();
+        if (tableLabel != null) {
+            assertTrue(
+                    "Missing type for table '" + tableLabel + "' - " + tableTypes,
+                    tableTypes.contains(tableLabel));
         }
-        finally {
-            loader.getConnection().close();
+
+        String viewLabel = adapter.tableTypeForView();
+        if (viewLabel != null) {
+            assertTrue(
+                    "Missing type for view '" + viewLabel + "' - " + tableTypes,
+                    tableTypes.contains(viewLabel));
         }
     }
 
     public void testGetTables() throws Exception {
-        try {
 
-            String tableLabel = getNode().getAdapter().tableTypeForTable();
+        String tableLabel = adapter.tableTypeForTable();
 
-            List<DbEntity> tables = loader.getTables(null, null, "%", new String[] {
-                tableLabel
-            });
+        List<DbEntity> tables = loader.getTables(null, null, "%", new String[] {
+            tableLabel
+        });
 
-            assertNotNull(tables);
+        assertNotNull(tables);
 
-            boolean foundArtist = false;
+        boolean foundArtist = false;
 
-            for (DbEntity table : tables) {
-                if ("ARTIST".equalsIgnoreCase(table.getName())) {
-                    foundArtist = true;
-                    break;
-                }
+        for (DbEntity table : tables) {
+            if ("ARTIST".equalsIgnoreCase(table.getName())) {
+                foundArtist = true;
+                break;
             }
+        }
 
-            assertTrue("'ARTIST' is missing from the table list: " + tables, foundArtist);
-        }
-        finally {
-            loader.getConnection().close();
-        }
+        assertTrue("'ARTIST' is missing from the table list: " + tables, foundArtist);
     }
 
     public void testLoadWithMeaningfulPK() throws Exception {
-        try {
 
-            DataMap map = new DataMap();
-            String tableLabel = getNode().getAdapter().tableTypeForTable();
+        DataMap map = new DataMap();
+        String tableLabel = adapter.tableTypeForTable();
 
-            loader.setCreatingMeaningfulPK(true);
-            
-            List<DbEntity> testLoader = loader.getTables(
-                    null,
-                    null,
-                    "artist",
-                    new String[] {
-                        tableLabel
-                    });
-            if(testLoader.size()==0){
-                testLoader = loader.getTables(
-                        null,
-                        null,
-                        "ARTIST",
-                        new String[] {
-                            tableLabel
-                        });
-            }
-            
-            loader.loadDbEntities(map, testLoader);
+        loader.setCreatingMeaningfulPK(true);
 
-            loader.loadObjEntities(map);
-            ObjEntity artist = map.getObjEntity("Artist");
-            assertNotNull(artist);
-            ObjAttribute id = (ObjAttribute) artist.getAttribute("artistId");
-            assertNotNull(id);
+        List<DbEntity> testLoader = loader.getTables(null, null, "artist", new String[] {
+            tableLabel
+        });
+        if (testLoader.size() == 0) {
+            testLoader = loader.getTables(null, null, "ARTIST", new String[] {
+                tableLabel
+            });
         }
-        finally {
-            loader.getConnection().close();
-        }
+
+        loader.loadDbEntities(map, testLoader);
+
+        loader.loadObjEntities(map);
+        ObjEntity artist = map.getObjEntity("Artist");
+        assertNotNull(artist);
+        ObjAttribute id = (ObjAttribute) artist.getAttribute("artistId");
+        assertNotNull(id);
     }
 
     /**
@@ -139,88 +141,90 @@ public class DbLoaderTest extends CayenneCase {
      * (Sybase).
      */
     public void testLoad() throws Exception {
-        try {
-            boolean supportsUnique = getNode().getAdapter().supportsUniqueConstraints();
-            boolean supportsLobs = getAccessStackAdapter().supportsLobs();
-            boolean supportsFK = getAccessStackAdapter().supportsFKConstraints();
 
-            DataMap map = new DataMap();
-            String tableLabel = getNode().getAdapter().tableTypeForTable();
+        boolean supportsUnique = runtime
+                .getDataDomain()
+                .getDataNodes()
+                .iterator()
+                .next()
+                .getAdapter()
+                .supportsUniqueConstraints();
+        boolean supportsLobs = accessStackAdapter.supportsLobs();
+        boolean supportsFK = accessStackAdapter.supportsFKConstraints();
 
-            // *** TESTING THIS ***
-            loader.loadDbEntities(map, loader.getTables(null, null, "%", new String[] {
-                tableLabel
-            }));
+        DataMap map = new DataMap();
+        String tableLabel = adapter.tableTypeForTable();
 
-            assertDbEntities(map);
+        // *** TESTING THIS ***
+        loader.loadDbEntities(map, loader.getTables(null, null, "%", new String[] {
+            tableLabel
+        }));
 
-            if (supportsLobs) {
-                assertLobDbEntities(map);
-            }
+        assertDbEntities(map);
 
-            // *** TESTING THIS ***
-            loader.loadDbRelationships(map);
+        if (supportsLobs) {
+            assertLobDbEntities(map);
+        }
 
-            if (supportsFK) {
-                Collection rels = getDbEntity(map, "ARTIST").getRelationships();
-                assertNotNull(rels);
-                assertTrue(rels.size() > 0);
+        // *** TESTING THIS ***
+        loader.loadDbRelationships(map);
 
-                // test one-to-one
-                rels = getDbEntity(map, "PAINTING").getRelationships();
-                assertNotNull(rels);
+        if (supportsFK) {
+            Collection<?> rels = getDbEntity(map, "ARTIST").getRelationships();
+            assertNotNull(rels);
+            assertTrue(rels.size() > 0);
 
-                // find relationship to PAINTING_INFO
-                DbRelationship oneToOne = null;
-                Iterator it = rels.iterator();
-                while (it.hasNext()) {
-                    DbRelationship rel = (DbRelationship) it.next();
-                    if ("PAINTING_INFO".equalsIgnoreCase(rel.getTargetEntityName())) {
-                        oneToOne = rel;
-                        break;
-                    }
-                }
+            // test one-to-one
+            rels = getDbEntity(map, "PAINTING").getRelationships();
+            assertNotNull(rels);
 
-                assertNotNull("No relationship to PAINTING_INFO", oneToOne);
-                assertFalse("Relationship to PAINTING_INFO must be to-one", oneToOne
-                        .isToMany());
-                assertTrue("Relationship to PAINTING_INFO must be to-one", oneToOne
-                        .isToDependentPK());
-
-                // test UNIQUE only if FK is supported...
-                if (supportsUnique) {
-                    assertUniqueConstraintsInRelationships(map);
+            // find relationship to PAINTING_INFO
+            DbRelationship oneToOne = null;
+            Iterator<?> it = rels.iterator();
+            while (it.hasNext()) {
+                DbRelationship rel = (DbRelationship) it.next();
+                if ("PAINTING_INFO".equalsIgnoreCase(rel.getTargetEntityName())) {
+                    oneToOne = rel;
+                    break;
                 }
             }
 
-            // *** TESTING THIS ***
-            loader.setCreatingMeaningfulPK(false);
-            loader.loadObjEntities(map);
+            assertNotNull("No relationship to PAINTING_INFO", oneToOne);
+            assertFalse("Relationship to PAINTING_INFO must be to-one", oneToOne
+                    .isToMany());
+            assertTrue("Relationship to PAINTING_INFO must be to-one", oneToOne
+                    .isToDependentPK());
 
-            ObjEntity ae = map.getObjEntity("Artist");
-            assertNotNull(ae);
-            assertEquals("Artist", ae.getName());
-            // assert primary key is not an attribute
-            assertNull(ae.getAttribute("artistId"));
-            if (supportsLobs) {
-                assertLobObjEntities(map);
-            }
-
-            if (supportsFK) {
-                Collection rels1 = ae.getRelationships();
-                assertNotNull(rels1);
-                assertTrue(rels1.size() > 0);
-            }
-
-            // now when the map is loaded, test
-            // various things
-            // selectively check how different types were processed
-            if (getAccessStackAdapter().supportsColumnTypeReengineering()) {
-                checkTypes(map);
+            // test UNIQUE only if FK is supported...
+            if (supportsUnique) {
+                assertUniqueConstraintsInRelationships(map);
             }
         }
-        finally {
-            loader.getConnection().close();
+
+        // *** TESTING THIS ***
+        loader.setCreatingMeaningfulPK(false);
+        loader.loadObjEntities(map);
+
+        ObjEntity ae = map.getObjEntity("Artist");
+        assertNotNull(ae);
+        assertEquals("Artist", ae.getName());
+        // assert primary key is not an attribute
+        assertNull(ae.getAttribute("artistId"));
+        if (supportsLobs) {
+            assertLobObjEntities(map);
+        }
+
+        if (supportsFK) {
+            Collection<?> rels1 = ae.getRelationships();
+            assertNotNull(rels1);
+            assertTrue(rels1.size() > 0);
+        }
+
+        // now when the map is loaded, test
+        // various things
+        // selectively check how different types were processed
+        if (accessStackAdapter.supportsColumnTypeReengineering()) {
+            checkTypes(map);
         }
     }
 
@@ -301,7 +305,14 @@ public class DbLoaderTest extends CayenneCase {
     }
 
     private DataMap originalMap() {
-        return getNode().getDataMaps().iterator().next();
+        return runtime
+                .getDataDomain()
+                .getDataNodes()
+                .iterator()
+                .next()
+                .getDataMaps()
+                .iterator()
+                .next();
     }
 
     /**
