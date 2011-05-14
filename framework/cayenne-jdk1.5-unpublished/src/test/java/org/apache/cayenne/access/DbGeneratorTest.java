@@ -19,67 +19,74 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- * Test cases for DbGenerator.
- * 
- */
-public class DbGeneratorTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DbGeneratorTest extends ServerCase {
 
-    protected DbGenerator gen;
+    @Inject
+    private DbAdapter adapter;
+
+    @Inject
+    private ServerRuntime runtime;
+
+    private DbGenerator generator;
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        gen = new DbGenerator(getNode().getAdapter(), getDomain().getDataMap("testmap"));
+    protected void setUpAfterInjection() throws Exception {
+        generator = new DbGenerator(adapter, runtime
+                .getDataDomain()
+                .getDataMap("testmap"));
     }
 
     public void testAdapter() throws Exception {
-        assertSame(getNode().getAdapter(), gen.getAdapter());
+        assertSame(adapter, generator.getAdapter());
     }
 
     public void testPkFilteringLogic() throws Exception {
-        DataMap map = getDomain().getDataMap("testmap");
+        DataMap map = runtime.getDataDomain().getDataMap("testmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
         DbEntity exhibit = map.getDbEntity("EXHIBIT");
 
         // sanity check
         assertNotNull(artistExhibit);
         assertNotNull(exhibit);
-        assertNotNull(gen.dbEntitiesRequiringAutoPK);
+        assertNotNull(generator.dbEntitiesRequiringAutoPK);
 
         // real test
-        assertTrue(gen.dbEntitiesRequiringAutoPK.contains(exhibit));
-        assertFalse(gen.dbEntitiesRequiringAutoPK.contains(artistExhibit));
+        assertTrue(generator.dbEntitiesRequiringAutoPK.contains(exhibit));
+        assertFalse(generator.dbEntitiesRequiringAutoPK.contains(artistExhibit));
     }
 
     public void testCreatePkSupport() throws Exception {
-        assertTrue(gen.shouldCreatePKSupport());
-        gen.setShouldCreatePKSupport(false);
-        assertFalse(gen.shouldCreatePKSupport());
+        assertTrue(generator.shouldCreatePKSupport());
+        generator.setShouldCreatePKSupport(false);
+        assertFalse(generator.shouldCreatePKSupport());
 
     }
 
     public void testShouldCreateTables() throws Exception {
-        assertTrue(gen.shouldCreateTables());
-        gen.setShouldCreateTables(false);
-        assertFalse(gen.shouldCreateTables());
+        assertTrue(generator.shouldCreateTables());
+        generator.setShouldCreateTables(false);
+        assertFalse(generator.shouldCreateTables());
     }
 
     public void testDropPkSupport() throws Exception {
 
-        assertFalse(gen.shouldDropPKSupport());
-        gen.setShouldDropPKSupport(true);
-        assertTrue(gen.shouldDropPKSupport());
+        assertFalse(generator.shouldDropPKSupport());
+        generator.setShouldDropPKSupport(true);
+        assertTrue(generator.shouldDropPKSupport());
     }
 
     public void testShouldDropTables() throws Exception {
-        assertFalse(gen.shouldDropTables());
-        gen.setShouldDropTables(true);
-        assertTrue(gen.shouldDropTables());
+        assertFalse(generator.shouldDropTables());
+        generator.setShouldDropTables(true);
+        assertTrue(generator.shouldDropTables());
     }
 }
