@@ -21,12 +21,19 @@ package org.apache.cayenne.map;
 
 import java.util.Collection;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 
-public class DbEntityTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DbEntityTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     public void testSerializability() throws Exception {
         DbEntity entity = new DbEntity("entity");
@@ -39,7 +46,7 @@ public class DbEntityTest extends CayenneCase {
         generated.setGenerated(true);
         entity.addAttribute(generated);
 
-        DbEntity d2 = (DbEntity) Util.cloneViaSerialization(entity);
+        DbEntity d2 = Util.cloneViaSerialization(entity);
 
         assertNotNull(d2.getPrimaryKeys());
         assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
@@ -230,7 +237,8 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityIndependentPath() {
-        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
+                "ARTIST");
 
         Expression e1 = Expression.fromString("db:paintingArray");
         Expression translated = artistE
@@ -240,7 +248,8 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityTrimmedPath() {
-        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
+                "ARTIST");
 
         Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
         Expression translated = artistE
@@ -250,7 +259,8 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntitySplitHalfWay() {
-        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
+                "ARTIST");
 
         Expression e1 = Expression
                 .fromString("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
@@ -265,19 +275,24 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityMatchingPath() {
-        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
+                "ARTIST");
 
         Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(
                 e1,
                 "artistExhibitArray.toExhibit");
 
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
+        assertEquals(
+                "failure: " + translated,
+                Expression
+                        .fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"),
+                translated);
     }
 
     public void testTranslateToRelatedEntityToOne() {
-        DbEntity paintingE = getDomain().getEntityResolver().getDbEntity("PAINTING");
+        DbEntity paintingE = runtime.getDataDomain().getEntityResolver().getDbEntity(
+                "PAINTING");
 
         Expression e1 = Expression.fromString("db:toArtist.ARTIST_NAME = 'aa'");
         Expression translated = paintingE.translateToRelatedEntity(e1, "toArtist");
