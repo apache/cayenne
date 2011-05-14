@@ -22,30 +22,38 @@ package org.apache.cayenne.map;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DbRelationshipTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DbRelationshipTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     protected DbEntity artistEnt;
     protected DbEntity paintingEnt;
     protected DbEntity galleryEnt;
 
     @Override
-    public void setUp() throws Exception {
-        artistEnt = getDbEntity("ARTIST");
-        paintingEnt = getDbEntity("PAINTING");
-        galleryEnt = getDbEntity("GALLERY");
+    public void setUpAfterInjection() throws Exception {
+        artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
+        galleryEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("GALLERY");
     }
 
     public void testSrcFkSnapshotWithTargetSnapshot() throws Exception {
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<String, Object>();
         Integer id = new Integer(44);
         map.put("GALLERY_ID", id);
 
         DbRelationship dbRel = (DbRelationship) galleryEnt
                 .getRelationship("paintingArray");
-        Map targetMap = dbRel.getReverseRelationship().srcFkSnapshotWithTargetSnapshot(
-                map);
+        Map<String, Object> targetMap = dbRel
+                .getReverseRelationship()
+                .srcFkSnapshotWithTargetSnapshot(map);
         assertEquals(id, targetMap.get("GALLERY_ID"));
     }
 
