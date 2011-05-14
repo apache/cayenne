@@ -26,14 +26,37 @@ import java.util.Map;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 
-public class ObjEntityTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ObjEntityTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+    }
 
     public void testGetAttributeWithOverrides() {
 
@@ -69,7 +92,8 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testGetPrimaryKeys() {
-        ObjEntity artistE = getObjEntity("Artist");
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Artist");
         Collection<ObjAttribute> pks = artistE.getPrimaryKeys();
         assertEquals(1, pks.size());
 
@@ -90,7 +114,10 @@ public class ObjEntityTest extends CayenneCase {
         assertNull(clientPk.getEntity());
         assertFalse(clientArtistE.getAttributes().contains(pk));
 
-        ObjEntity meaningfulPKE = getObjEntity("MeaningfulPKTest1");
+        ObjEntity meaningfulPKE = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getObjEntity("MeaningfulPKTest1");
         Collection<ObjAttribute> mpks = meaningfulPKE.getPrimaryKeys();
         assertEquals(1, mpks.size());
 
@@ -107,7 +134,9 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testAttributes() {
-        ObjEntity artistE = getObjEntity("Artist");
+        // ObjEntity artistE = getObjEntity("Artist");
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Artist");
         ObjAttribute attr = (ObjAttribute) artistE.getAttribute("artistName");
 
         assertEquals(attr.getMaxLength(), attr.getDbAttribute().getMaxLength());
@@ -115,7 +144,8 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testLastPathComponent() {
-        ObjEntity artistE = getObjEntity("Artist");
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Artist");
 
         Map<String, String> aliases = new HashMap<String, String>();
         aliases.put("a", "paintingArray.toGallery");
@@ -266,7 +296,7 @@ public class ObjEntityTest extends CayenneCase {
     public void testSerializability() throws Exception {
         ObjEntity entity = new ObjEntity("entity");
 
-        ObjEntity d1 = (ObjEntity) Util.cloneViaSerialization(entity);
+        ObjEntity d1 = Util.cloneViaSerialization(entity);
         assertEquals(entity.getName(), d1.getName());
     }
 
@@ -330,7 +360,7 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testAttributeForDbAttribute() throws Exception {
-        ObjEntity ae = getObjEntity("Artist");
+        ObjEntity ae = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
 
         assertNull(ae.getAttributeForDbAttribute((DbAttribute) dae
@@ -340,7 +370,7 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testRelationshipForDbRelationship() throws Exception {
-        ObjEntity ae = getObjEntity("Artist");
+        ObjEntity ae = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
 
         assertNull(ae.getRelationshipForDbRelationship(new DbRelationship()));
@@ -356,7 +386,8 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityIndependentPath() throws Exception {
-        ObjEntity artistE = getDomain().getEntityResolver().lookupObjEntity(Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
+                Artist.class);
 
         Expression e1 = Expression.fromString("paintingArray");
         Expression translated = artistE
@@ -366,7 +397,8 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityTrimmedPath() throws Exception {
-        ObjEntity artistE = getDomain().getEntityResolver().lookupObjEntity(Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
+                Artist.class);
 
         Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
         Expression translated = artistE
@@ -376,7 +408,8 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntitySplitHalfWay() throws Exception {
-        ObjEntity artistE = getDomain().getEntityResolver().lookupObjEntity(Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
+                Artist.class);
 
         Expression e1 = Expression.fromString("paintingArray.toPaintingInfo.textReview");
         Expression translated = artistE.translateToRelatedEntity(
@@ -390,7 +423,8 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityMatchingPath() throws Exception {
-        ObjEntity artistE = getDomain().getEntityResolver().lookupObjEntity(Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
+                Artist.class);
         Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(
                 e1,
@@ -403,7 +437,8 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityMultiplePaths() throws Exception {
-        ObjEntity artistE = getDomain().getEntityResolver().lookupObjEntity(Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
+                Artist.class);
 
         Expression e1 = Expression
                 .fromString("paintingArray = $p and artistExhibitArray.toExhibit.closingDate = $d");
@@ -418,7 +453,6 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testTranslateNullArg() {
-        ObjectContext context = createDataContext();
         ObjEntity entity = context.getEntityResolver().getObjEntity("Artist");
 
         Expression exp = ExpressionFactory.noMatchExp("dateOfBirth", null);
