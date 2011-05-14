@@ -22,24 +22,31 @@ package org.apache.cayenne.map;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 
-public class EntityTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class EntityTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     public void testSerializability() throws Exception {
         Entity entity = new MockEntity("entity");
 
-        Entity d1 = (Entity) Util.cloneViaSerialization(entity);
+        Entity d1 = Util.cloneViaSerialization(entity);
         assertEquals(entity.getName(), d1.getName());
 
         entity.addAttribute(new MockAttribute("abc"));
         entity.addRelationship(new MockRelationship("xyz"));
-        Entity d2 = (Entity) Util.cloneViaSerialization(entity);
+        Entity d2 = Util.cloneViaSerialization(entity);
         assertNotNull(d2.getAttribute("abc"));
 
         // test that ref collection wrappers are still working
@@ -63,12 +70,16 @@ public class EntityTest extends CayenneCase {
     public void testSerializabilityWithHessian() throws Exception {
         Entity entity = new MockEntity("entity");
 
-        Entity d1 = (Entity) HessianUtil.cloneViaClientServerSerialization(entity, new EntityResolver());
+        Entity d1 = (Entity) HessianUtil.cloneViaClientServerSerialization(
+                entity,
+                new EntityResolver());
         assertEquals(entity.getName(), d1.getName());
 
         entity.addAttribute(new MockAttribute("abc"));
         entity.addRelationship(new MockRelationship("xyz"));
-        Entity d2 = (Entity) HessianUtil.cloneViaClientServerSerialization(entity, new EntityResolver());
+        Entity d2 = (Entity) HessianUtil.cloneViaClientServerSerialization(
+                entity,
+                new EntityResolver());
         assertNotNull(d2.getAttribute("abc"));
         assertNotNull(d2.getRelationship("xyz"));
 
@@ -126,34 +137,34 @@ public class EntityTest extends CayenneCase {
         entity.removeRelationship(rel.getName());
         assertNull(entity.getRelationship(rel.getName()));
     }
-    
+
     public void testAttributeClashWithRelationship() {
         Entity entity = new MockEntity();
         Relationship rel = new MockRelationship("tst_name");
-        
+
         entity.addRelationship(rel);
-        
+
         try {
             Attribute attribute = new MockAttribute("tst_name");
             entity.addAttribute(attribute);
-            
+
             fail("Exception should have been thrown due to clashing attribute and relationship names.");
         }
         catch (Exception e) {
             // Exception expected.
         }
     }
-    
+
     public void testRelationshipClashWithAttribute() {
         Entity entity = new MockEntity();
         Attribute attribute = new MockAttribute("tst_name");
-        
+
         entity.addAttribute(attribute);
-        
+
         try {
             Relationship rel = new MockRelationship("tst_name");
             entity.addRelationship(rel);
-            
+
             fail("Exception should have been thrown due to clashing attribute and relationship names.");
         }
         catch (Exception e) {
@@ -168,7 +179,8 @@ public class EntityTest extends CayenneCase {
 
         // itertator should be returned, but when trying to read 1st component,
         // it should throw an exception....
-        ObjEntity galleryEnt = getObjEntity("Gallery");
+        ObjEntity galleryEnt = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Gallery");
         Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
         assertTrue(it.hasNext());
 
@@ -185,7 +197,8 @@ public class EntityTest extends CayenneCase {
         // test invalid expression type
         Expression badPathExpr = ExpressionFactory.expressionOfType(Expression.IN);
         badPathExpr.setOperand(0, "a.b.c");
-        ObjEntity galleryEnt = getObjEntity("Gallery");
+        ObjEntity galleryEnt = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Gallery");
 
         try {
             galleryEnt.resolvePathComponents(badPathExpr);
@@ -200,7 +213,8 @@ public class EntityTest extends CayenneCase {
         Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
         pathExpr.setOperand(0, "galleryName");
 
-        ObjEntity galleryEnt = getObjEntity("Gallery");
+        ObjEntity galleryEnt = runtime.getDataDomain().getEntityResolver().getObjEntity(
+                "Gallery");
         Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
 
         // iterator must contain a single ObjAttribute
