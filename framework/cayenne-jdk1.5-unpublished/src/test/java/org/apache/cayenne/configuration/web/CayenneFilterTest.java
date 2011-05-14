@@ -18,11 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.Key;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockFilterConfig;
@@ -48,10 +52,10 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals("abc.xml", runtime
-                .getInjector()
-                .getInstance(RuntimeProperties.class)
-                .get(ServerModule.CONFIGURATION_LOCATION));
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+
+        assertEquals(Arrays.asList("abc.xml"), locations);
     }
 
     public void testInitWithLocation() throws Exception {
@@ -68,11 +72,10 @@ public class CayenneFilterTest extends TestCase {
 
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
 
-        assertEquals("xyz", runtime
-                .getInjector()
-                .getInstance(RuntimeProperties.class)
-                .get(ServerModule.CONFIGURATION_LOCATION));
+        assertEquals(Arrays.asList("xyz"), locations);
     }
 
     public void testInitWithStandardModules() throws Exception {
@@ -90,9 +93,10 @@ public class CayenneFilterTest extends TestCase {
 
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
 
-        assertEquals("cayenne-abc.xml", runtime.getInjector().getInstance(
-                RuntimeProperties.class).get(ServerModule.CONFIGURATION_LOCATION));
+        assertEquals(Arrays.asList("cayenne-abc.xml"), locations);
         assertEquals(2, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof ServerModule);
         assertTrue(runtime.getModules()[1] instanceof WebModule);

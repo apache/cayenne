@@ -18,16 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.server;
 
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.web.MockModule1;
 import org.apache.cayenne.configuration.web.MockModule2;
 import org.apache.cayenne.configuration.web.MockRequestHandler;
 import org.apache.cayenne.configuration.web.RequestHandler;
 import org.apache.cayenne.configuration.web.WebUtil;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.remote.RemoteService;
 
 import com.mockrunner.mock.web.MockServletConfig;
@@ -52,10 +56,12 @@ public class ROPHessianServletTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
         assertEquals(
-                "cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml",
-                runtime.getInjector().getInstance(RuntimeProperties.class).get(
-                        ServerModule.CONFIGURATION_LOCATION));
+                Arrays
+                        .asList("cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml"),
+                locations);
     }
 
     public void testInitWithLocation() throws Exception {
@@ -73,11 +79,10 @@ public class ROPHessianServletTest extends TestCase {
 
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
 
-        assertEquals(location, runtime
-                .getInjector()
-                .getInstance(RuntimeProperties.class)
-                .get(ServerModule.CONFIGURATION_LOCATION));
+        assertEquals(Arrays.asList(location), locations);
     }
 
     public void testInitWithStandardModules() throws Exception {
@@ -96,8 +101,10 @@ public class ROPHessianServletTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals(name + ".xml", runtime.getInjector().getInstance(
-                RuntimeProperties.class).get(ServerModule.CONFIGURATION_LOCATION));
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+
+        assertEquals(Arrays.asList(name + ".xml"), locations);
         assertEquals(2, runtime.getModules().length);
         assertTrue(runtime.getModules()[0] instanceof ServerModule);
         assertTrue(runtime.getModules()[1] instanceof ROPServerModule);

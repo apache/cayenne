@@ -40,11 +40,11 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
@@ -67,7 +67,7 @@ public class DataDomainProviderTest extends TestCase {
         // create dependencies
         final String testConfigName = "testConfig";
         final DataChannelDescriptor testDescriptor = new DataChannelDescriptor();
-        
+
         final DbAdapter mockAdapter = mock(DbAdapter.class);
 
         DataMap map1 = new DataMap("map1");
@@ -109,23 +109,20 @@ public class DataDomainProviderTest extends TestCase {
             }
         };
 
-        final DefaultRuntimeProperties testProperties = new DefaultRuntimeProperties(
-                Collections.singletonMap(
-                        ServerModule.CONFIGURATION_LOCATION,
-                        testConfigName));
-
         final EventManager eventManager = new MockEventManager();
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
                 binder.bindList(DataDomainProvider.FILTERS_LIST);
+                binder.bindList(DataDomainProvider.LOCATIONS_LIST).add(testConfigName);
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
                 binder.bind(ResourceLocator.class).toInstance(locator);
-                binder.bind(RuntimeProperties.class).toInstance(testProperties);
                 binder.bind(ConfigurationNameMapper.class).to(
                         DefaultConfigurationNameMapper.class);
+                binder.bind(DataChannelDescriptorMerger.class).to(
+                        DefaultDataChannelDescriptorMerger.class);
                 binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
                 binder.bind(SchemaUpdateStrategy.class).toInstance(
                         new SkipSchemaUpdateStrategy());

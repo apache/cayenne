@@ -33,8 +33,8 @@ import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
@@ -61,14 +61,19 @@ public class DataDomainProvider implements Provider<DataDomain> {
      */
     public static final String FILTERS_LIST = "org.apache.cayenne.configuration.server.DataDomainProvider.filters";
 
+    /**
+     * A DI key for the list storing locations of the DataDomain configuration resources.
+     */
+    public static final String LOCATIONS_LIST = "org.apache.cayenne.configuration.server.DataDomainProvider.locations";
+
     @Inject
     protected ResourceLocator resourceLocator;
 
     @Inject
-    protected DataChannelDescriptorLoader loader;
+    protected DataChannelDescriptorMerger descriptorMerger;
 
     @Inject
-    protected RuntimeProperties configurationProperties;
+    protected DataChannelDescriptorLoader loader;
 
     @Inject
     protected SchemaUpdateStrategy defaultSchemaUpdateStrategy;
@@ -84,6 +89,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     @Inject(FILTERS_LIST)
     protected List<DataChannelFilter> filters;
+
+    @Inject(LOCATIONS_LIST)
+    protected List<String> locations;
 
     @Inject
     protected Injector injector;
@@ -107,59 +115,61 @@ public class DataDomainProvider implements Provider<DataDomain> {
     }
 
     protected DataDomain createAndInitDataDomain() throws Exception {
-        String configurationLocation = configurationProperties
-                .get(ServerModule.CONFIGURATION_LOCATION);
 
-        if (configurationLocation == null) {
-            throw new DataDomainLoadException(
-                    "No configuration location available. "
-                            + "You can specify when creating Cayenne runtime "
-                            + "or via a system property '%s'",
-                    ServerModule.CONFIGURATION_LOCATION);
+        if (locations == null || locations.isEmpty()) {
+            throw new DataDomainLoadException("No configuration location(s) available");
         }
 
         long t0 = System.currentTimeMillis();
         if (logger.isDebugEnabled()) {
-            logger.debug("starting configuration loading: " + configurationLocation);
+            logger.debug("starting configuration loading: " + locations);
         }
 
-        Collection<Resource> configurations = resourceLocator
-                .findResources(configurationLocation);
+        DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
 
-        if (configurations.isEmpty()) {
-            throw new DataDomainLoadException(
-                    "Configuration file \"%s\" is not found.",
-                    configurationLocation);
-        }
+        for (int i = 0; i < locations.size(); i++) {
 
-        Resource configurationResource = configurations.iterator().next();
+            String location = locations.get(i);
 
-        // no support for multiple configs yet, but this is not a hard error
-        if (configurations.size() > 1) {
-            logger.info("found "
-                    + configurations.size()
-                    + " configurations, will use the first one: "
-                    + configurationResource.getURL());
-        }
+            Collection<Resource> configurations = resourceLocator.findResources(location);
 
-        ConfigurationTree<DataChannelDescriptor> tree = loader
-                .load(configurationResource);
-        if (!tree.getLoadFailures().isEmpty()) {
-            // TODO: andrus 03/10/2010 - log the errors before throwing?
-            throw new DataDomainLoadException(tree, "Error loading DataChannelDescriptor");
+            if (configurations.isEmpty()) {
+                throw new DataDomainLoadException(
+                        "Configuration resource \"%s\" is not found.",
+                        location);
+            }
+
+            Resource configurationResource = configurations.iterator().next();
+
+            // no support for multiple configs yet, but this is not a hard error
+            if (configurations.size() > 1) {
+                logger.info("found "
+                        + configurations.size()
+                        + " configurations for "
+                        + location
+                        + ", will use the first one: "
+                        + configurationResource.getURL());
+            }
+
+            ConfigurationTree<DataChannelDescriptor> tree = loader
+                    .load(configurationResource);
+            if (!tree.getLoadFailures().isEmpty()) {
+                // TODO: andrus 03/10/2010 - log the errors before throwing?
+                throw new DataDomainLoadException(
+                        tree,
+                        "Error loading DataChannelDescriptor");
+            }
+
+            descriptors[i] = tree.getRootNode();
         }
 
         long t1 = System.currentTimeMillis();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("finished configuration loading: "
-                    + configurationLocation
-                    + " in "
-                    + (t1 - t0)
-                    + " ms.");
+            logger.debug("finished configuration loading in " + (t1 - t0) + " ms.");
         }
 
-        DataChannelDescriptor descriptor = tree.getRootNode();
+        DataChannelDescriptor descriptor = descriptorMerger.merge(descriptors);
         DataDomain dataDomain = createDataDomain(descriptor.getName());
 
         dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
@@ -170,7 +180,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         for (DataMap dataMap : descriptor.getDataMaps()) {
             dataDomain.addDataMap(dataMap);
         }
-        
+
         dataDomain.getEntityResolver().applyDBLayerDefaults();
         dataDomain.getEntityResolver().applyObjectLayerDefaults();
 

@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.apache.cayenne.DataChannel;
@@ -25,8 +28,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
@@ -35,19 +38,37 @@ import org.apache.cayenne.query.Query;
 
 public class ServerRuntimeTest extends TestCase {
 
-    public void testDefaultConstructor() {
+    public void testDefaultConstructor_SingleLocation() {
         ServerRuntime runtime = new ServerRuntime("xxxx");
 
-        assertEquals("xxxx", runtime
-                .getInjector()
-                .getInstance(RuntimeProperties.class)
-                .get(ServerModule.CONFIGURATION_LOCATION));
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+
+        assertEquals(Arrays.asList("xxxx"), locations);
 
         assertEquals(1, runtime.getModules().length);
 
         Module m0 = runtime.getModules()[0];
         assertTrue(m0 instanceof ServerModule);
-        assertEquals("xxxx", ((ServerModule) m0).configurationLocation);
+        assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
+    }
+
+    public void testDefaultConstructor_MultipleLocations() {
+        ServerRuntime runtime = new ServerRuntime(new String[] {
+                "xxxx", "yyyy"
+        });
+
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+
+        assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
+
+        assertEquals(1, runtime.getModules().length);
+
+        Module m0 = runtime.getModules()[0];
+        assertTrue(m0 instanceof ServerModule);
+        assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
+        assertEquals("yyyy", ((ServerModule) m0).configurationLocations[1]);
     }
 
     public void testConstructor_Modules() {

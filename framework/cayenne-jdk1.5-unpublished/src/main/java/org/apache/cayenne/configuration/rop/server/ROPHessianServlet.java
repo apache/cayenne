@@ -78,7 +78,8 @@ public class ROPHessianServlet extends HessianServlet {
         Collection<Module> modules = configAdapter.createModules(new ROPServerModule(
                 eventBridgeParameters));
 
-        ServerRuntime runtime = new ServerRuntime(configurationLocation, modules);
+        ServerRuntime runtime = new ServerRuntime(configurationLocation, modules
+                .toArray(new Module[modules.size()]));
 
         DataChannel channel = runtime.getChannel();
 

@@ -32,9 +32,11 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -55,6 +57,7 @@ import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
@@ -71,23 +74,29 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class ServerModule implements Module {
 
+    protected String[] configurationLocations;
+
     /**
-     * A property defining the location of the runtime configuration XML resource or file.
+     * Creates a ServerModule with at least one configuration location. For multi-module
+     * projects additional locations can be specified as well.
      */
-    public static final String CONFIGURATION_LOCATION = "cayenne.config.location";
+    public ServerModule(String... configurationLocations) {
 
-    protected String configurationLocation;
+        if (configurationLocations == null) {
+            throw new NullPointerException("Null configurationLocations");
+        }
 
-    public ServerModule(String configurationLocation) {
-        this.configurationLocation = configurationLocation;
+        if (configurationLocations.length < 1) {
+            throw new IllegalArgumentException("Empty configurationLocations");
+        }
+
+        this.configurationLocations = configurationLocations;
     }
 
     public void configure(Binder binder) {
 
-        // configure global stack properties
-        binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP).put(
-                ServerModule.CONFIGURATION_LOCATION,
-                configurationLocation);
+        // configure empty global stack properties
+        binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
 
         CommonsJdbcEventLogger logger = new CommonsJdbcEventLogger();
         QueryLogger.setLogger(logger);
@@ -114,6 +123,13 @@ public class ServerModule implements Module {
         // configure an empty filter chain
         binder.bindList(DataDomainProvider.FILTERS_LIST);
 
+        // configure explicit configurations
+        ListBuilder<Object> locationsListBuilder = binder
+                .bindList(DataDomainProvider.LOCATIONS_LIST);
+        for (String location : configurationLocations) {
+            locationsListBuilder.add(location);
+        }
+
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ConfigurationNameMapper.class).to(
                 DefaultConfigurationNameMapper.class);
@@ -137,6 +153,8 @@ public class ServerModule implements Module {
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(
                 XMLDataChannelDescriptorLoader.class);
+        binder.bind(DataChannelDescriptorMerger.class).to(
+                DefaultDataChannelDescriptorMerger.class);
 
         // a service to load DataMap XML descriptors
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);

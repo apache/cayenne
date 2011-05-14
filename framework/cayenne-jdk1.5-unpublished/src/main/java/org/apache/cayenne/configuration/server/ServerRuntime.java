@@ -39,8 +39,8 @@ import org.apache.cayenne.di.Module;
  */
 public class ServerRuntime extends CayenneRuntime {
 
-    private static Module mainModule(String configurationLocation) {
-        return new ServerModule(configurationLocation);
+    private static Module mainModule(String... configurationLocations) {
+        return new ServerModule(configurationLocations);
     }
 
     /**
@@ -55,12 +55,12 @@ public class ServerRuntime extends CayenneRuntime {
 
     /**
      * Creates a server runtime configuring it with a standard set of services contained
-     * in {@link ServerModule}. CayenneServerModule is created with provided
-     * 'configurationLocation'. An optional array of extra modules may contain service
+     * in {@link ServerModule}. CayenneServerModule is created with one or more
+     * 'configurationLocations'. An optional array of extra modules may contain service
      * overrides and/or user services.
      */
-    public ServerRuntime(String configurationLocation, Collection<Module> extraModules) {
-        super(mergeModules(mainModule(configurationLocation), extraModules));
+    public ServerRuntime(String[] configurationLocations, Module... extraModules) {
+        super(mergeModules(mainModule(configurationLocations), extraModules));
     }
 
     /**
