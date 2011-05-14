@@ -19,32 +19,27 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
 import org.apache.cayenne.reflect.MockClassDescriptor;
 import org.apache.cayenne.reflect.MockClassDescriptorFactory;
 import org.apache.cayenne.reflect.Property;
-import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class EntityResolverClassDescriptorTest extends CayenneCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class EntityResolverClassDescriptorTest extends ClientCase {
 
-    /**
-     * Configures multi-tier stack as we want to access descriptors in different tiers...
-     */
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
+    @Inject
+    private ServerRuntime runtime;
 
     public void testServerDescriptorCaching() {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
         ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");
@@ -58,7 +53,7 @@ public class EntityResolverClassDescriptorTest extends CayenneCase {
     }
 
     public void testServerDescriptorFactory() {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
         MockClassDescriptor mockDescriptor = new MockClassDescriptor();
@@ -77,7 +72,7 @@ public class EntityResolverClassDescriptorTest extends CayenneCase {
     }
 
     public void testArcProperties() {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
         ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");
