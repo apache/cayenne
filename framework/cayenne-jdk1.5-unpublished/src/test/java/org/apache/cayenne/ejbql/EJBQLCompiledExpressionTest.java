@@ -18,14 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class EJBQLCompiledExpressionTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class EJBQLCompiledExpressionTest extends ServerCase {
+    
+    @Inject
+    protected ServerRuntime runtime;
 
     public void testGetSource() {
         String source = "select a from Artist a";
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
         EJBQLCompiledExpression select = parser.compile(source, resolver);
@@ -34,7 +41,7 @@ public class EJBQLCompiledExpressionTest extends CayenneCase {
 
     public void testGetExpression() {
         String source = "select a from Artist a";
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
         EJBQLCompiledExpression select = parser.compile(source, resolver);
@@ -42,7 +49,7 @@ public class EJBQLCompiledExpressionTest extends CayenneCase {
     }
 
     public void testGetEntityDescriptor() {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
         EJBQLCompiledExpression select = parser.compile(
@@ -65,7 +72,7 @@ public class EJBQLCompiledExpressionTest extends CayenneCase {
     }
 
     public void testGetRootDescriptor() {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
         EJBQLCompiledExpression select = parser.compile(
@@ -77,7 +84,7 @@ public class EJBQLCompiledExpressionTest extends CayenneCase {
     }
 
     public void testGetEntityDescriptorCaseSensitivity() {
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
         EJBQLCompiledExpression select1 = parser.compile(
