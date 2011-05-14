@@ -20,66 +20,82 @@
 package org.apache.cayenne.util;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.DeepMergeOperation;
 
-public class DeepMergeOperationTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DeepMergeOperationTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DataChannelInterceptor queryInterceptor;
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DataContext context1;
 
     public void testDeepMergeNonExistent() {
 
-        ClassDescriptor d = getDomain().getEntityResolver().getClassDescriptor("Artist");
+        final ClassDescriptor d = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getClassDescriptor("Artist");
 
-        DataContext context = createDataContext();
-        DataContext context1 = createDataContext();
-
-        Artist a = context.newObject(Artist.class);
+        final Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
         context.commitChanges();
 
-        DeepMergeOperation op = new DeepMergeOperation(context1);
-        blockQueries();
-        try {
-            Artist a2 = (Artist) op.merge(a, d);
-            assertNotNull(a2);
-            assertEquals(PersistenceState.COMMITTED, a2.getPersistenceState());
-            assertEquals(a.getArtistName(), a2.getArtistName());
-        }
-        finally {
-            unblockQueries();
-        }
+        final DeepMergeOperation op = new DeepMergeOperation(context1);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                Artist a2 = (Artist) op.merge(a, d);
+                assertNotNull(a2);
+                assertEquals(PersistenceState.COMMITTED, a2.getPersistenceState());
+                assertEquals(a.getArtistName(), a2.getArtistName());
+            }
+        });
     }
 
     public void testDeepMergeModified() {
 
-        ClassDescriptor d = getDomain().getEntityResolver().getClassDescriptor("Artist");
+        final ClassDescriptor d = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getClassDescriptor("Artist");
 
-        DataContext context = createDataContext();
-        DataContext context1 = createDataContext();
-
-        Artist a = context.newObject(Artist.class);
+        final Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
         context.commitChanges();
 
-        Artist a1 = (Artist) Cayenne.objectForPK(context1, a.getObjectId());
+        final Artist a1 = (Artist) Cayenne.objectForPK(context1, a.getObjectId());
         a1.setArtistName("BBB");
-        DeepMergeOperation op = new DeepMergeOperation(context1);
+        final DeepMergeOperation op = new DeepMergeOperation(context1);
 
-        blockQueries();
-        try {
-            Artist a2 = (Artist) op.merge(a, d);
-            assertNotNull(a2);
-            assertEquals(PersistenceState.MODIFIED, a2.getPersistenceState());
-            assertSame(a1, a2);
-            assertEquals("BBB", a2.getArtistName());
-        }
-        finally {
-            unblockQueries();
-        }
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                Artist a2 = (Artist) op.merge(a, d);
+                assertNotNull(a2);
+                assertEquals(PersistenceState.MODIFIED, a2.getPersistenceState());
+                assertSame(a1, a2);
+                assertEquals("BBB", a2.getArtistName());
+            }
+        });
     }
 
 }
