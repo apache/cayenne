@@ -19,19 +19,25 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SelectQueryPrefetchRouterActionTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SelectQueryPrefetchRouterActionTest extends ServerCase {
+
+    @Inject
+    private EntityResolver resolver;
 
     public void testPaintings1() {
-        ObjEntity paintingEntity = getDomain().getEntityResolver().lookupObjEntity(
-                Painting.class);
+        ObjEntity paintingEntity = resolver.lookupObjEntity(Painting.class);
         SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
                 "artistName",
                 "abc"));
@@ -40,7 +46,7 @@ public class SelectQueryPrefetchRouterActionTest extends CayenneCase {
         SelectQueryPrefetchRouterAction action = new SelectQueryPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(q, router, getDomain().getEntityResolver());
+        action.route(q, router, resolver);
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
@@ -51,8 +57,7 @@ public class SelectQueryPrefetchRouterActionTest extends CayenneCase {
     }
 
     public void testPrefetchPaintings2() {
-        ObjEntity paintingEntity = getDomain().getEntityResolver().lookupObjEntity(
-                Painting.class);
+        ObjEntity paintingEntity = resolver.lookupObjEntity(Painting.class);
 
         SelectQuery q = new SelectQuery(Artist.class, Expression
                 .fromString("artistName = 'abc' or artistName = 'xyz'"));
@@ -61,7 +66,7 @@ public class SelectQueryPrefetchRouterActionTest extends CayenneCase {
         SelectQueryPrefetchRouterAction action = new SelectQueryPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(q, router, getDomain().getEntityResolver());
+        action.route(q, router, resolver);
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
@@ -73,8 +78,7 @@ public class SelectQueryPrefetchRouterActionTest extends CayenneCase {
     }
 
     public void testGalleries() {
-        ObjEntity galleryEntity = getDomain().getEntityResolver().lookupObjEntity(
-                Gallery.class);
+        ObjEntity galleryEntity = resolver.lookupObjEntity(Gallery.class);
         SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
                 "artistName",
                 "abc"));
@@ -83,7 +87,7 @@ public class SelectQueryPrefetchRouterActionTest extends CayenneCase {
         SelectQueryPrefetchRouterAction action = new SelectQueryPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(q, router, getDomain().getEntityResolver());
+        action.route(q, router, resolver);
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
