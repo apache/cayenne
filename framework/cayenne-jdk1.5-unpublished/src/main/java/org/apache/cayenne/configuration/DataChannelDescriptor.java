@@ -36,7 +36,8 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.1
  */
-public class DataChannelDescriptor implements ConfigurationNode, Serializable, XMLSerializable {
+public class DataChannelDescriptor implements ConfigurationNode, Serializable,
+        XMLSerializable {
 
     protected String name;
     protected Map<String, String> properties;
@@ -138,6 +139,16 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 
     public Collection<DataNodeDescriptor> getNodeDescriptors() {
         return nodeDescriptors;
+    }
+
+    public DataNodeDescriptor getNodeDescriptor(String name) {
+        for (DataNodeDescriptor node : nodeDescriptors) {
+            if (name.equals(node.getName())) {
+                return node;
+            }
+        }
+
+        return null;
     }
 
     public Resource getConfigurationSource() {

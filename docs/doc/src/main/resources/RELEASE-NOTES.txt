@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features Since 3.1M2:
 
+CAY-943 Support multiple cayenne.xml files in the project
 CAY-1556 Add path construction feature to make constructing paths from constants easier for queries and orderings
 CAY-1525 CharType: don't trim spaces on the left
 CAY-1544 Remove jdk1.6 module from Cayenne sources
