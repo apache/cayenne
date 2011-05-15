@@ -18,15 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SQLTemplateCacheKeyTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SQLTemplateCacheKeyTest extends ServerCase {
+
+    @Inject
+    private EntityResolver resolver;
 
     public void testNoCache() {
-
-        EntityResolver resolver = getDomain().getEntityResolver();
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
@@ -42,8 +46,6 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
 
     public void testLocalCache() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
-
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -55,8 +57,6 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
 
     public void testSharedCache() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
-
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
@@ -67,8 +67,6 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
     }
 
     public void testNamedQuery() {
-
-        EntityResolver resolver = getDomain().getEntityResolver();
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
