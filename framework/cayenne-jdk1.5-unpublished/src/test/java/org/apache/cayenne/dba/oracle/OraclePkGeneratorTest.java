@@ -19,19 +19,18 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.dba.JdbcAdapter;
+import junit.framework.TestCase;
+
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
-public class OraclePkGeneratorTest extends CayenneCase {
-    protected OraclePkGenerator pkGenerator;
+public class OraclePkGeneratorTest extends TestCase {
+
+    private OraclePkGenerator pkGenerator;
 
     @Override
     protected void setUp() throws Exception {
-        pkGenerator = new OraclePkGenerator((JdbcAdapter)getAccessStackAdapter().getAdapter());
+        pkGenerator = new OraclePkGenerator(new OracleAdapter());
     }
 
     public void testSequenceNameDefault() throws Exception {
@@ -44,7 +43,7 @@ public class OraclePkGeneratorTest extends CayenneCase {
         DbKeyGenerator customGenerator = new DbKeyGenerator();
         customGenerator.setGeneratorType(DbKeyGenerator.ORACLE_TYPE);
         customGenerator.setGeneratorName("CUSTOM_GENERATOR");
-		entity.setPrimaryKeyGenerator(customGenerator);
+        entity.setPrimaryKeyGenerator(customGenerator);
         assertEquals("custom_generator", pkGenerator.sequenceName(entity));
     }
 
