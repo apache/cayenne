@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -34,7 +33,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -102,7 +100,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                 if (root instanceof Class<?>) {
                     entity = resolver.lookupObjEntity((Class<?>) root);
                     if (entity == null) { // entity not found, try to resolve it with
-                                          // client resolver
+                        // client resolver
                         EntityResolver clientResolver = resolver
                                 .getClientEntityResolver();
                         if (clientResolver != resolver) {
@@ -325,22 +323,22 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     }
 
     void setPrefetchTree(PrefetchTreeNode prefetchTree) {
-        if (prefetchTree != null) {
-            // important: make a clone to allow modification independent from the
-            // caller...
-            try {
-                prefetchTree = (PrefetchTreeNode) Util
-                        .cloneViaSerialization(prefetchTree);
-            }
-            catch (CayenneRuntimeException e) {
-                throw e;
-            }
-            catch (Exception e) {
-                throw new CayenneRuntimeException("Error cloning prefetch tree", e);
-            }
+        this.prefetchTree = prefetchTree != null ? deepClone(prefetchTree, null) : null;
+    }
+
+    private PrefetchTreeNode deepClone(PrefetchTreeNode source, PrefetchTreeNode targetParent) {
+
+        PrefetchTreeNode target = new PrefetchTreeNode(targetParent, source.getName());
+        target.setEjbqlPathEntityId(source.getEjbqlPathEntityId());
+        target.setEntityName(source.getEntityName());
+        target.setPhantom(source.isPhantom());
+        target.setSemantics(source.getSemantics());
+
+        for (PrefetchTreeNode child : source.getChildren()) {
+            target.addChild(deepClone(child, target));
         }
 
-        this.prefetchTree = prefetchTree;
+        return target;
     }
 
     /**
