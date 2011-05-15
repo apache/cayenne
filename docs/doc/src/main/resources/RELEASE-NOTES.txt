@@ -33,6 +33,7 @@ CAY-1505 Callbacks: POST_UPDATE is called on updated removed object, instead of 
 CAY-1506 Reserverd words mapping in WHERE clause
 CAY-1518 cgen: duplicate callback methods
 CAY-1557 Vertical inheritance is broken for subclasses with more than one flattened attribute
+CAY-1567 BaseQueryMetadata.setPrefetches() causes a shared lock
 
 ----------------------------------
 Release: 3.0.1

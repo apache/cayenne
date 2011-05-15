@@ -69,9 +69,9 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
      * Creates a phantom PrefetchTreeNode, initializing it with parent node and a name of
      * a relationship segment connecting this node with the parent.
      */
-    protected PrefetchTreeNode(PrefetchTreeNode parent, String segmentPath) {
+    protected PrefetchTreeNode(PrefetchTreeNode parent, String name) {
         this.parent = parent;
-        this.name = segmentPath;
+        this.name = name;
         this.phantom = true;
         this.semantics = UNDEFINED_SEMANTICS;
     }
