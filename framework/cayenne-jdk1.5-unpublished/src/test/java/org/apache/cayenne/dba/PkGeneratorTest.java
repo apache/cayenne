@@ -23,38 +23,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class PkGeneratorTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class PkGeneratorTest extends ServerCase {
 
-    protected PkGenerator pkGen;
-    protected DataNode node;
-    protected DbEntity paintEnt;
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    private DataNode node;
+
+    private PkGenerator pkGenerator;
+    private DbEntity paintingEntity;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
-        node = getDomain().getDataNodes().iterator().next();
-        pkGen = node.getAdapter().getPkGenerator();
-        paintEnt = getDbEntity("PAINTING");
-        List list = new ArrayList();
-        list.add(paintEnt);
-        pkGen.createAutoPk(node, list);
-        pkGen.reset();
+    protected void setUpAfterInjection() throws Exception {
+
+        pkGenerator = node.getAdapter().getPkGenerator();
+        paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
+
+        List<DbEntity> list = new ArrayList<DbEntity>();
+        list.add(paintingEntity);
+        pkGenerator.createAutoPk(node, list);
+        pkGenerator.reset();
     }
 
     public void testGeneratePkForDbEntity() throws Exception {
-        List pkList = new ArrayList();
+        List<Object> pkList = new ArrayList<Object>();
 
-        int testSize = (pkGen instanceof JdbcPkGenerator) ? ((JdbcPkGenerator) pkGen)
-                .getPkCacheSize() * 2 : 25;
+        int testSize = (pkGenerator instanceof JdbcPkGenerator)
+                ? ((JdbcPkGenerator) pkGenerator).getPkCacheSize() * 2
+                : 25;
         if (testSize < 25) {
             testSize = 25;
         }
 
         for (int i = 0; i < testSize; i++) {
-            Object pk = pkGen.generatePk(node, paintEnt
+            Object pk = pkGenerator.generatePk(node, paintingEntity
                     .getPrimaryKeys()
                     .iterator()
                     .next());
@@ -63,7 +73,7 @@ public class PkGeneratorTest extends CayenneCase {
 
             // check that the number is continuous
             // of course this assumes a single-threaded test
-            if (getAccessStackAdapter().supportsBatchPK() && pkList.size() > 0) {
+            if (accessStackAdapter.supportsBatchPK() && pkList.size() > 0) {
                 Number last = (Number) pkList.get(pkList.size() - 1);
                 assertEquals(last.intValue() + 1, ((Number) pk).intValue());
             }
