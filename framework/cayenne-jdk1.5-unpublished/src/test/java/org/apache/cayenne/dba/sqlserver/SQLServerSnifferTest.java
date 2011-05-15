@@ -22,19 +22,30 @@ package org.apache.cayenne.dba.sqlserver;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.unit.AccessStackAdapter;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.SQLServerStackAdapter;
+import javax.sql.DataSource;
 
-public class SQLServerSnifferTest extends CayenneCase {
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.SQLServerStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
+
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SQLServerSnifferTest extends ServerCase {
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
 
     public void testCreateAdapter() throws Exception {
 
         SQLServerSniffer sniffer = new SQLServerSniffer();
 
         DbAdapter adapter = null;
-        Connection c = getConnection();
+        Connection c = dataSource.getConnection();
 
         try {
             adapter = sniffer.createAdapter(c.getMetaData());
@@ -48,11 +59,7 @@ public class SQLServerSnifferTest extends CayenneCase {
             }
         }
 
-        // only test with SQLServer adapter
-        AccessStackAdapter testAdapter = getAccessStackAdapter();
-        boolean sqlServer = testAdapter instanceof SQLServerStackAdapter;
-
-        if (sqlServer) {
+        if (accessStackAdapter instanceof SQLServerStackAdapter) {
             assertNotNull(adapter);
         }
         else {
