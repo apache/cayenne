@@ -28,24 +28,31 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 
-/**
- */
-public class SQLTemplateTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SQLTemplateTest extends ServerCase {
 
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
     }
 
     public void testBindCHARInWHERE() {
@@ -68,7 +75,7 @@ public class SQLTemplateTest extends CayenneCase {
                 testDataMap,
                 "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($ARTIST_NAME)",
                 true);
-        //whitespace after name is for reason
+        // whitespace after name is for reason
         s1.setParameters(Collections.singletonMap("ARTIST_NAME", "Surikov "));
         List<DataRow> result = context.performQuery(s1);
         assertEquals(1, result.size());
@@ -167,7 +174,7 @@ public class SQLTemplateTest extends CayenneCase {
         assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
 
         // set immutable parameters ... query must recast them to mutable version
-        Map[] parameters = new Map[] {
+        Map<String, Object>[] parameters = new Map[] {
             Collections.EMPTY_MAP
         };
         o.setParameters(parameters);
@@ -207,12 +214,12 @@ public class SQLTemplateTest extends CayenneCase {
         assertNotNull(query.getParameters());
         assertTrue(query.getParameters().isEmpty());
 
-        Map params = new HashMap();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("a", "b");
 
         query.setParameters(params);
         assertEquals(params, query.getParameters());
-        Iterator it = query.parametersIterator();
+        Iterator<?> it = query.parametersIterator();
         assertTrue(it.hasNext());
         assertEquals(params, it.next());
         assertFalse(it.hasNext());
@@ -230,23 +237,23 @@ public class SQLTemplateTest extends CayenneCase {
         assertNotNull(query.getParameters());
         assertTrue(query.getParameters().isEmpty());
 
-        Map params1 = new HashMap();
+        Map<String, Object> params1 = new HashMap<String, Object>();
         params1.put("a", "b");
 
-        Map params2 = new HashMap();
+        Map<String, Object> params2 = new HashMap<String, Object>();
         params2.put("1", "2");
 
         query.setParameters(new Map[] {
                 params1, params2, null
         });
         assertEquals(params1, query.getParameters());
-        Iterator it = query.parametersIterator();
+        Iterator<?> it = query.parametersIterator();
         assertTrue(it.hasNext());
         assertEquals(params1, it.next());
         assertTrue(it.hasNext());
         assertEquals(params2, it.next());
         assertTrue(it.hasNext());
-        assertTrue(((Map) it.next()).isEmpty());
+        assertTrue(((Map<String, Object>) it.next()).isEmpty());
         assertFalse(it.hasNext());
 
         query.setParameters((Map[]) null);
