@@ -31,6 +31,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
@@ -76,13 +77,14 @@ public class ServerCaseModule implements Module {
                 new CayenneResourcesSQLTemplateCustomizerProvider(resources));
 
         // test-scoped objects
+        binder.bind(EntityResolver.class).toProvider(
+                ServerCaseEntityResolverProvider.class).in(testScope);
         binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(
                 testScope);
         binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(
                 testScope);
         binder.bind(ServerRuntime.class).toProviderInstance(
                 new ServerRuntimeProvider(resources)).in(testScope);
-
         binder
                 .bind(ObjectContext.class)
                 .toProvider(ServerCaseObjectContextProvider.class)

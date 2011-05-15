@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SelectQueryCacheKeyTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SelectQueryCacheKeyTest extends ServerCase {
+
+    @Inject
+    private EntityResolver resolver;
 
     public void testNoCache() {
-
-        EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery query = new SelectQuery(Artist.class);
 
@@ -44,8 +48,6 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
 
     public void testLocalCache() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
-
         SelectQuery query = new SelectQuery(Artist.class);
 
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -56,8 +58,6 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
     }
 
     public void testSharedCache() {
-
-        EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery query = new SelectQuery(Artist.class);
 
@@ -70,8 +70,6 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
 
     public void testNamedQuery() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
-
         SelectQuery query = new SelectQuery(Artist.class);
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
@@ -83,8 +81,6 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
     }
 
     public void testUniqueKeyEntity() {
-
-        EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery q1 = new SelectQuery(Artist.class);
         q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -105,8 +101,6 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
     }
 
     public void testUniqueKeyEntityQualifier() {
-
-        EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery q1 = new SelectQuery(Artist.class);
         q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -130,8 +124,6 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
     }
 
     public void testUniqueKeyEntityFetchLimit() {
-
-        EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery q1 = new SelectQuery(Artist.class);
         q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
