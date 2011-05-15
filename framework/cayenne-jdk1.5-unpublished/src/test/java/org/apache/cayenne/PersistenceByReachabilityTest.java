@@ -19,15 +19,22 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class PersistenceByReachabilityTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class PersistenceByReachabilityTest extends ServerCase {
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private ObjectContext context1;
 
     public void testToOneTargetTransient() throws Exception {
-        DataContext context = createDataContext();
         Painting persistentDO = context.newObject(Painting.class);
 
         Artist transientDO = new Artist();
@@ -37,7 +44,6 @@ public class PersistenceByReachabilityTest extends CayenneCase {
     }
 
     public void testToOneTargetPersistent() throws Exception {
-        DataContext context = createDataContext();
         Painting transientDO = context.newObject(Painting.class);
 
         Artist persistentDO = new Artist();
@@ -47,11 +53,9 @@ public class PersistenceByReachabilityTest extends CayenneCase {
     }
 
     public void testToOneTargetDifferentContext() throws Exception {
-        DataContext context1 = createDataContext();
-        Painting doC1 = context1.newObject(Painting.class);
 
-        DataContext context2 = createDataContext();
-        Artist doC2 = context2.newObject(Artist.class);
+        Painting doC1 = context.newObject(Painting.class);
+        Artist doC2 = context1.newObject(Artist.class);
 
         // this is the case where exception must be thrown as DataContexts are
         // different
@@ -60,16 +64,13 @@ public class PersistenceByReachabilityTest extends CayenneCase {
             fail("failed to detect relationship between objects in different DataContexts");
         }
         catch (CayenneRuntimeException ex) {
-
+            // expected
         }
     }
 
     public void testToManyTargetDifferentContext() throws Exception {
-        DataContext context1 = createDataContext();
-        Painting doC1 = context1.newObject(Painting.class);
-
-        DataContext context2 = createDataContext();
-        Artist doC2 = context2.newObject(Artist.class);
+        Painting doC1 = context.newObject(Painting.class);
+        Artist doC2 = context1.newObject(Artist.class);
 
         // this is the case where exception must be thrown as DataContexts are
         // different
@@ -83,7 +84,6 @@ public class PersistenceByReachabilityTest extends CayenneCase {
     }
 
     public void testToManyTargetTransient() throws Exception {
-        DataContext context = createDataContext();
         Painting transientDO = context.newObject(Painting.class);
 
         Artist persistentDO = new Artist();
@@ -93,7 +93,6 @@ public class PersistenceByReachabilityTest extends CayenneCase {
     }
 
     public void testToManyTargetPersistent() throws Exception {
-        DataContext context = createDataContext();
         Painting persistentDO = context.newObject(Painting.class);
 
         Artist transientDO = new Artist();
