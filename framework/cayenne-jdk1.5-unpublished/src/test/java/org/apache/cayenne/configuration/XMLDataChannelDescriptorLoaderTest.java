@@ -54,9 +54,8 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         injector.injectMembers(loader);
 
         String testConfigName = "testConfig1";
-        String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/cayenne-" + testConfigName + ".xml");
+
+        URL url = getClass().getResource("cayenne-" + testConfigName + ".xml");
         ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
 
         assertNotNull(tree);
@@ -112,9 +111,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         injector.injectMembers(loader);
 
         String testConfigName = "testConfig2";
-        String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/cayenne-" + testConfigName + ".xml");
+        URL url = getClass().getResource("cayenne-" + testConfigName + ".xml");
 
         ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
 
@@ -148,9 +145,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         injector.injectMembers(loader);
 
         String testConfigName = "testConfig3";
-        String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/cayenne-" + testConfigName + ".xml");
+        URL url = getClass().getResource("cayenne-" + testConfigName + ".xml");
 
         ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
 
