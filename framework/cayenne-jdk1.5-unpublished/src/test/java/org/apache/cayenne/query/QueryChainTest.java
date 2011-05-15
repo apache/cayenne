@@ -18,10 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class QueryChainTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class QueryChainTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     public void testSelectQuery() {
 
@@ -29,7 +36,7 @@ public class QueryChainTest extends CayenneCase {
         chain.addQuery(new SelectQuery(Artist.class));
         chain.addQuery(new SelectQuery(Artist.class));
 
-        QueryMetadata md = chain.getMetaData(getDomain().getEntityResolver());
+        QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());
 
         assertNotNull(md);
         assertTrue(md.isFetchingDataRows());
@@ -42,12 +49,12 @@ public class QueryChainTest extends CayenneCase {
         SelectQuery q1 = new SelectQuery(Artist.class);
         q1.setFetchingDataRows(true);
         chain.addQuery(q1);
-        
+
         SelectQuery q2 = new SelectQuery(Artist.class);
         q2.setFetchingDataRows(true);
         chain.addQuery(q2);
 
-        QueryMetadata md = chain.getMetaData(getDomain().getEntityResolver());
+        QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());
 
         assertNotNull(md);
         assertTrue(md.isFetchingDataRows());
