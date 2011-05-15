@@ -18,15 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class ProcedureQueryCacheKeyTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ProcedureQueryCacheKeyTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     public void testNoCache() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
@@ -42,7 +49,7 @@ public class ProcedureQueryCacheKeyTest extends CayenneCase {
 
     public void testLocalCache() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
@@ -55,7 +62,7 @@ public class ProcedureQueryCacheKeyTest extends CayenneCase {
 
     public void testSharedCache() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
@@ -68,7 +75,7 @@ public class ProcedureQueryCacheKeyTest extends CayenneCase {
 
     public void testNamedQuery() {
 
-        EntityResolver resolver = getDomain().getEntityResolver();
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
