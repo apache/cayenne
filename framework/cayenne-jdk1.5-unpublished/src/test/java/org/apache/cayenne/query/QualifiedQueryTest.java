@@ -19,12 +19,12 @@ package org.apache.cayenne.query;
  *  under the License.
  ****************************************************************/
 
+import junit.framework.TestCase;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.unit.CayenneCase;
 
-public class QualifiedQueryTest extends CayenneCase {
+public class QualifiedQueryTest extends TestCase {
 
     public void testSetQualifier() {
         QualifiedQuery query = new MockQualifiedQuery();

@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-public class EJBQLExpressionTest extends CayenneCase {
+public class EJBQLExpressionTest extends TestCase {
 
     public void testDbPath() {
 

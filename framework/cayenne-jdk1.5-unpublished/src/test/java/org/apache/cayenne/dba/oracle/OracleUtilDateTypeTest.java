@@ -17,40 +17,35 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.dba.oracle;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-/**
- */
-public class OracleUtilDateTypeTest extends CayenneCase {
+public class OracleUtilDateTypeTest extends TestCase {
 
-	public void testNormalizeDate() throws Exception {
-		Date date = new Date();
-		Date timeNormalized = new OracleUtilDateType().normalizeDate(date);
+    public void testNormalizeDate() throws Exception {
+        Date date = new Date();
+        Date timeNormalized = new OracleUtilDateType().normalizeDate(date);
 
-		assertNotNull(timeNormalized);
+        assertNotNull(timeNormalized);
 
-		Calendar raw = Calendar.getInstance();
-		raw.setTime(date);
+        Calendar raw = Calendar.getInstance();
+        raw.setTime(date);
 
-		Calendar normalized = null;
+        Calendar normalized = null;
 
-		normalized = Calendar.getInstance();
-		normalized.setTime(timeNormalized);
+        normalized = Calendar.getInstance();
+        normalized.setTime(timeNormalized);
 
-		assertEquals(1970, normalized.get(Calendar.YEAR));
-		assertEquals(0, normalized.get(Calendar.MONTH));
-		assertEquals(1, normalized.get(Calendar.DAY_OF_MONTH));
+        assertEquals(1970, normalized.get(Calendar.YEAR));
+        assertEquals(0, normalized.get(Calendar.MONTH));
+        assertEquals(1, normalized.get(Calendar.DAY_OF_MONTH));
 
-		assertEquals(
-			raw.get(Calendar.HOUR_OF_DAY),
-			normalized.get(Calendar.HOUR_OF_DAY));
-		assertEquals(raw.get(Calendar.MINUTE), normalized.get(Calendar.MINUTE));
-		assertEquals(raw.get(Calendar.SECOND), normalized.get(Calendar.SECOND));
-	}
+        assertEquals(raw.get(Calendar.HOUR_OF_DAY), normalized.get(Calendar.HOUR_OF_DAY));
+        assertEquals(raw.get(Calendar.MINUTE), normalized.get(Calendar.MINUTE));
+        assertEquals(raw.get(Calendar.SECOND), normalized.get(Calendar.SECOND));
+    }
 }

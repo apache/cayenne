@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.MockPersistentObject;
@@ -43,12 +45,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.GenericResponse;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class ClientChannelTest extends CayenneCase {
+public class ClientChannelTest extends TestCase {
 
     public void testOnQuerySelect() {
 

@@ -17,18 +17,15 @@
  *  under the License.
  ****************************************************************/
 
- 
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-/**
- */
-public class ExpressionParameterTest extends CayenneCase {
+public class ExpressionParameterTest extends TestCase {
 
-	public void testConstructor() throws Exception {
-    	ExpressionParameter p = new ExpressionParameter("abc");
-    	assertEquals("abc", p.getName());
+    public void testConstructor() throws Exception {
+        ExpressionParameter p = new ExpressionParameter("abc");
+        assertEquals("abc", p.getName());
     }
 
 }

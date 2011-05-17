@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-public class RelationshipTest extends CayenneCase {
+public class RelationshipTest extends TestCase {
 
     public void testName() throws Exception {
         Relationship rel = new MockRelationship();

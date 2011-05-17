@@ -18,10 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
+
 import org.apache.cayenne.util.IDUtil;
 
-public class CommonsJdbcEventLoggerTest extends CayenneCase {
+public class CommonsJdbcEventLoggerTest extends TestCase {
 
     public void testSqlLiteralForObject() throws Exception {
         StringBuilder buf = new StringBuilder();

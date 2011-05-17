@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.exp.parser.ASTList;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  */
-public class ParametrizedExpressionTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ParametrizedExpressionTest extends ServerCase {
 
     /**
      * Tests how parameter substitution algorithm works on an expression with no

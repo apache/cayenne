@@ -19,44 +19,40 @@
 
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
+public class ExpressionTraversalTest extends TestCase {
 
-public class ExpressionTraversalTest extends CayenneCase {
-    protected TstTraversalHandler handler;
- 
+    private TstTraversalHandler handler;
+
     @Override
-    protected void setUp() throws Exception {                
+    protected void setUp() throws Exception {
         handler = new TstTraversalHandler();
     }
-    
-    
+
     public void testUnary() throws Exception {
         doExpressionTest(new TstUnaryExpSuite());
     }
-    
-    
+
     public void testBinary() throws Exception {
         doExpressionTest(new TstBinaryExpSuite());
     }
-    
-    
+
     public void testTernary() throws Exception {
         doExpressionTest(new TstTernaryExpSuite());
-    } 
-    
-    
+    }
+
     private void doExpressionTest(TstExpressionSuite suite) throws Exception {
         TstExpressionCase[] cases = suite.cases();
-        
+
         int len = cases.length;
-        for(int i = 0;  i < len; i++) {
+        for (int i = 0; i < len; i++) {
             handler.reset();
             cases[i].getCayenneExp().traverse(handler);
-            
+
             // assert statistics
             handler.assertConsistency();
             cases[i].assertParsedWell(handler.getNodeCount(), handler.getLeafs());
         }
-    }    
+    }
 }

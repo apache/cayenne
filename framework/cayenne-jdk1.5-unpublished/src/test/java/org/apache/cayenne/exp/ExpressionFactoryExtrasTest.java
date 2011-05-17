@@ -24,14 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
 
-public class ExpressionFactoryExtrasTest extends CayenneCase {
+public class ExpressionFactoryExtrasTest extends TestCase {
 
     protected TstTraversalHandler handler;
 
     @Override
-    protected void setUp() throws java.lang.Exception {
+    protected void setUp() throws Exception {
         handler = new TstTraversalHandler();
     }
 

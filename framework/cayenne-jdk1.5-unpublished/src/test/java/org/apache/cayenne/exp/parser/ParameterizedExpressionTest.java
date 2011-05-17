@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp.parser;
 
 import java.util.Collections;
@@ -92,7 +91,7 @@ public class ParameterizedExpressionTest extends TestCase {
     public void testParams1() {
         Expression e1 = Expression.fromString("k1 = $test");
 
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("test", "xyz");
         Expression e2 = e1.expWithParameters(map, false);
         assertNotNull(e2);
@@ -104,7 +103,7 @@ public class ParameterizedExpressionTest extends TestCase {
     public void testParams2() {
         Expression e1 = Expression.fromString("k1 like $test");
 
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("test", "xyz");
         Expression e2 = e1.expWithParameters(map, false);
         assertNotNull(e2);
@@ -125,7 +124,7 @@ public class ParameterizedExpressionTest extends TestCase {
         Expression e1 = Expression
                 .fromString("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
 
-        Map params = new HashMap();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("test2", "abc");
         params.put("test3", "xyz");
         Expression e2 = e1.expWithParameters(params, true);
@@ -145,7 +144,7 @@ public class ParameterizedExpressionTest extends TestCase {
         Expression e1 = Expression
                 .fromString("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
 
-        Map params = new HashMap();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("test4", "123");
         Expression e2 = e1.expWithParameters(params, true);
 

@@ -27,11 +27,11 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataRowStoreTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataRowStoreTest extends ServerCase {
 
     public void testDefaultConstructor() {
         DataRowStore cache = new DataRowStore(
@@ -47,7 +47,7 @@ public class DataRowStoreTest extends CayenneCase {
     }
 
     public void testConstructorWithProperties() {
-        Map props = new HashMap();
+        Map<Object, Object> props = new HashMap<Object, Object>();
         props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String
                 .valueOf(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
 
@@ -78,7 +78,7 @@ public class DataRowStoreTest extends CayenneCase {
      * Tests LRU cache behavior.
      */
     public void testMaxSize() throws Exception {
-        Map props = new HashMap();
+        Map<Object, Object> props = new HashMap<Object, Object>();
         props.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));
 
         DataRowStore cache = new DataRowStore(
@@ -89,15 +89,15 @@ public class DataRowStoreTest extends CayenneCase {
         assertEquals(0, cache.size());
 
         ObjectId key1 = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
-        Map diff1 = new HashMap();
+        Map<Object, Object> diff1 = new HashMap<Object, Object>();
         diff1.put(key1, new DataRow(1));
 
         ObjectId key2 = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
-        Map diff2 = new HashMap();
+        Map<Object, Object> diff2 = new HashMap<Object, Object>();
         diff2.put(key2, new DataRow(1));
 
         ObjectId key3 = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
-        Map diff3 = new HashMap();
+        Map<Object, Object> diff3 = new HashMap<Object, Object>();
         diff3.put(key3, new DataRow(1));
 
         cache.processSnapshotChanges(

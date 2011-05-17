@@ -19,15 +19,16 @@
 
 package org.apache.cayenne.conn;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
+
 import org.apache.cayenne.util.Util;
 
+public class DataSourceInfoTest extends TestCase {
 
-public class DataSourceInfoTest extends CayenneCase {
     private DataSourceInfo dsi;
 
     @Override
-    public void setUp() throws java.lang.Exception {
+    public void setUp() throws Exception {
         dsi = new DataSourceInfo();
         dsi.setUserName("a");
         dsi.setPassword("b");
@@ -51,7 +52,7 @@ public class DataSourceInfoTest extends CayenneCase {
     }
 
     public void testSerialize() throws java.lang.Exception {
-        DataSourceInfo dsiUnserialized = (DataSourceInfo)Util.cloneViaSerialization(dsi);
+        DataSourceInfo dsiUnserialized = Util.cloneViaSerialization(dsi);
         assertEquals(dsi, dsiUnserialized);
         assertTrue(dsi != dsiUnserialized);
     }
