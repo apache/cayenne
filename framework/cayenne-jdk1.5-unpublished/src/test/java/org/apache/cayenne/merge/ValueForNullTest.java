@@ -27,6 +27,7 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -34,10 +35,16 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ValueForNullTest extends MergeCase {
 
     private static final String DEFAULT_VALUE_STRING = "DEFSTRING";
+
+    @Inject
+    private DataContext context;
 
     public void test() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
@@ -45,15 +52,13 @@ public class ValueForNullTest extends MergeCase {
         ObjEntity objEntity = map.getObjEntity("Painting");
         assertNotNull(objEntity);
 
-        DataContext ctxt = createDataContext();
-
         // insert some rows before adding "not null" column
         final int nrows = 10;
         for (int i = 0; i < nrows; i++) {
-            DataObject o = (DataObject) ctxt.newObject("Painting");
+            DataObject o = (DataObject) context.newObject("Painting");
             o.writeProperty("paintingTitle", "ptitle" + i);
         }
-        ctxt.commitChanges();
+        context.commitChanges();
 
         // create and add new column to model and db
         DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
@@ -87,7 +92,7 @@ public class ValueForNullTest extends MergeCase {
                 objAttr.getName(),
                 DEFAULT_VALUE_STRING);
         SelectQuery query = new SelectQuery("Painting", qual);
-        List<Persistent> rows = ctxt.performQuery(query);
+        List<Persistent> rows = context.performQuery(query);
         assertEquals(nrows, rows.size());
 
         // clean up

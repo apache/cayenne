@@ -22,8 +22,10 @@ import java.sql.Types;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SetPrimaryKeyToDbTest extends MergeCase {
 
     public void test() throws Exception {
@@ -40,17 +42,17 @@ public class SetPrimaryKeyToDbTest extends MergeCase {
 
         assertTokensAndExecute(node, map, 1, 0);
         assertTokensAndExecute(node, map, 0, 0);
-        
+
         DbAttribute e1col2 = new DbAttribute("ID2", Types.INTEGER, dbEntity1);
         e1col2.setMandatory(true);
         dbEntity1.addAttribute(e1col2);
-        
+
         assertTokensAndExecute(node, map, 2, 0);
         assertTokensAndExecute(node, map, 0, 0);
 
         e1col1.setPrimaryKey(false);
         e1col2.setPrimaryKey(true);
-        
+
         assertTokensAndExecute(node, map, 1, 0);
         assertTokensAndExecute(node, map, 0, 0);
     }

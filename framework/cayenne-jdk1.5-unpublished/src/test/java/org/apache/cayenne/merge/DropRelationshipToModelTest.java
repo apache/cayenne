@@ -21,7 +21,6 @@ package org.apache.cayenne.merge;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -29,8 +28,10 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DropRelationshipToModelTest extends MergeCase {
 
     public void testForreignKey() throws Exception {
@@ -100,7 +101,7 @@ public class DropRelationshipToModelTest extends MergeCase {
         o2a1.setType("java.lang.String");
         objEntity2.addAttribute(o2a1);
         map.addObjEntity(objEntity2);
-        
+
         // create ObjRelationships
         assertEquals(0, objEntity1.getRelationships().size());
         assertEquals(0, objEntity2.getRelationships().size());
@@ -134,7 +135,7 @@ public class DropRelationshipToModelTest extends MergeCase {
         dbEntity2.addRelationship(rel2To1);
         dbEntity1.addRelationship(rel1To2);
         dbEntity2.addAttribute(e2col2);
-        
+
         // try do use the merger to remove the relationship in the model
         tokens = createMergeTokens();
         assertTokens(tokens, 2, 0);
@@ -145,7 +146,7 @@ public class DropRelationshipToModelTest extends MergeCase {
         assertTrue(token1 instanceof DropRelationshipToModel);
         execute(token1);
         execute(token0);
-        
+
         // check after merging
         assertNull(dbEntity2.getAttribute(e2col2.getName()));
         assertEquals(0, dbEntity1.getRelationships().size());
@@ -154,14 +155,13 @@ public class DropRelationshipToModelTest extends MergeCase {
         assertEquals(0, objEntity2.getRelationships().size());
 
         // clear up
-        DataContext ctxt = createDataContext();
         dbEntity1.removeRelationship(rel1To2.getName());
         dbEntity2.removeRelationship(rel2To1.getName());
         map.removeObjEntity(objEntity1.getName(), true);
         map.removeDbEntity(dbEntity1.getName(), true);
         map.removeObjEntity(objEntity2.getName(), true);
         map.removeDbEntity(dbEntity2.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertNull(map.getObjEntity(objEntity1.getName()));
         assertNull(map.getDbEntity(dbEntity1.getName()));
         assertNull(map.getObjEntity(objEntity2.getName()));

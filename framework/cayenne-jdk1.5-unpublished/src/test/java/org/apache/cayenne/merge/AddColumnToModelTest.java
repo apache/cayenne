@@ -21,13 +21,14 @@ package org.apache.cayenne.merge;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class AddColumnToModelTest extends MergeCase {
 
     public void testAddColumn() throws Exception {
@@ -59,7 +60,6 @@ public class AddColumnToModelTest extends MergeCase {
         objEntity.addAttribute(oatr1);
         map.addObjEntity(objEntity);
 
-        
         // remove name column
         objEntity.removeAttribute(oatr1.getName());
         dbEntity.removeAttribute(column2.getName());
@@ -76,14 +76,16 @@ public class AddColumnToModelTest extends MergeCase {
         assertTrue(token instanceof AddColumnToModel);
         execute(token);
         assertEquals(1, objEntity.getAttributes().size());
-        assertEquals("java.lang.String", objEntity.getAttributes().iterator().next().getType());
-
-        DataContext ctxt = createDataContext();
+        assertEquals("java.lang.String", objEntity
+                .getAttributes()
+                .iterator()
+                .next()
+                .getType());
 
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));

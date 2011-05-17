@@ -21,7 +21,6 @@ package org.apache.cayenne.merge;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -29,7 +28,10 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DropColumnToModelTest extends MergeCase {
 
     public void testSimpleColumn() throws Exception {
@@ -58,7 +60,7 @@ public class DropColumnToModelTest extends MergeCase {
         objEntity.setDbEntity(dbEntity);
         ObjAttribute oatr1 = new ObjAttribute("name");
         oatr1.setDbAttributePath(column2.getName());
-        oatr1.setType("java.lang.String");        
+        oatr1.setType("java.lang.String");
         objEntity.addAttribute(oatr1);
         map.addObjEntity(objEntity);
 
@@ -77,12 +79,10 @@ public class DropColumnToModelTest extends MergeCase {
         assertNull(dbEntity.getAttribute(column2.getName()));
         assertNull(objEntity.getAttribute(oatr1.getName()));
 
-        DataContext ctxt = createDataContext();
-
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -126,7 +126,7 @@ public class DropColumnToModelTest extends MergeCase {
 
         assertTokensAndExecute(node, map, 2, 0);
         assertTokensAndExecute(node, map, 0, 0);
-        
+
         // force drop fk column in db
         execute(mergerFactory().createDropColumnToDb(dbEntity2, e2col2));
 
@@ -161,7 +161,7 @@ public class DropColumnToModelTest extends MergeCase {
         o2a1.setType("java.lang.String");
         objEntity2.addAttribute(o2a1);
         map.addObjEntity(objEntity2);
-        
+
         // create ObjRelationships
         assertEquals(0, objEntity1.getRelationships().size());
         assertEquals(0, objEntity2.getRelationships().size());
@@ -188,9 +188,9 @@ public class DropColumnToModelTest extends MergeCase {
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
         assertTrue(token0.getClass().getName(), token0 instanceof DropColumnToModel);
         assertTrue(token1.getClass().getName(), token1 instanceof DropRelationshipToModel);
-        // do not execute DropRelationshipToModel, only DropColumnToModel. 
+        // do not execute DropRelationshipToModel, only DropColumnToModel.
         execute(token0);
-        
+
         // check after merging
         assertNull(dbEntity2.getAttribute(e2col2.getName()));
         assertEquals(0, dbEntity1.getRelationships().size());
@@ -199,14 +199,14 @@ public class DropColumnToModelTest extends MergeCase {
         assertEquals(0, objEntity2.getRelationships().size());
 
         // clear up
-        DataContext ctxt = createDataContext();
+
         dbEntity1.removeRelationship(rel1To2.getName());
         dbEntity2.removeRelationship(rel2To1.getName());
         map.removeObjEntity(objEntity1.getName(), true);
         map.removeDbEntity(dbEntity1.getName(), true);
         map.removeObjEntity(objEntity2.getName(), true);
         map.removeDbEntity(dbEntity2.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertNull(map.getObjEntity(objEntity1.getName()));
         assertNull(map.getDbEntity(dbEntity1.getName()));
         assertNull(map.getObjEntity(objEntity2.getName()));

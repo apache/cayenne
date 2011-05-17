@@ -18,53 +18,72 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataDomain;
+import javax.sql.DataSource;
+
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.ashwood.AshwoodEntitySorter;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.InputSource;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
 
-public class MergeCase extends CayenneCase {
+public abstract class MergeCase extends ServerCase {
 
-    protected DataDomain domain;
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    protected EntityResolver resolver;
+
+    @Inject
     protected DataNode node;
+
     protected DataMap map;
 
-    private final Log logObj = LogFactory.getLog(getClass());
-
-    private static List<String> tableNames = Arrays.asList(
+    private static List<String> TABLE_NAMES = Arrays.asList(
             "ARTIST",
             "PAINTING",
             "NEW_TABLE",
             "NEW_TABLE2");
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+
+        // this map can't be safely modified in this test, as it is reset by DI container
+        // on every test
+        map = runtime.getDataDomain().getDataMap("testmap");
+
+        filterDataMap();
+
+        List<MergerToken> tokens = createMergeTokens();
+        execute(tokens);
+
+        assertTokensAndExecute(0, 0);
+    }
 
     protected DbMerger createMerger() {
         return new DbMerger() {
 
             @Override
             public boolean includeTableName(String tableName) {
-                return tableNames.contains(tableName.toUpperCase());
+                return TABLE_NAMES.contains(tableName.toUpperCase());
             }
         };
     }
@@ -73,80 +92,38 @@ public class MergeCase extends CayenneCase {
         return createMerger().createMergeTokens(node, map);
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        createTestData("testArtists");
-        DataNode orgNode = getDomain().getDataNodes().iterator().next();
-        
-        
-        // clone DataMap by saving and loading from XML as to avoid modifying shared test
-        // DataMap
-        DataMap originalMap = getDomain().getDataMap("testmap");
-        StringWriter out = new StringWriter();
-        PrintWriter outWriter = new PrintWriter(out);
-        originalMap.encodeAsXML(outWriter);
-        outWriter.flush();
-        StringReader in = new StringReader(out.toString());
-        map = new MapLoader().loadDataMap(new InputSource(in));
-        
-        // map must operate in an EntityResolve namespace...
-        EntityResolver testResolver = new EntityResolver();
-        testResolver.addDataMap(map);
-
-        node = new DataNode("mergenode");
-        node.setAdapter(orgNode.getAdapter());
-        node.setDataSource(orgNode.getDataSource());
-        node.addDataMap(map);
-        
-        domain = new DataDomain("mergetestdomain");
-        domain.setEntitySorter(new AshwoodEntitySorter());
-        domain.addNode(node);
-
-        filterDataMap(node, map);
-
-        List<MergerToken> tokens = createMergeTokens();
-        execute(tokens);
-
-        assertTokensAndExecute(0, 0);
-    }
-
     /**
      * Remote binary pk {@link DbEntity} for {@link DbAdapter} not supporting that and so
      * on.
      */
-    private void filterDataMap(DataNode node, DataMap map) {
+    private void filterDataMap() {
         // copied from AbstractAccessStack.dbEntitiesInInsertOrder
-        boolean excludeBinPK = getAccessStackAdapter().supportsBinaryPK();
+        boolean excludeBinPK = accessStackAdapter.supportsBinaryPK();
 
-        if (!excludeBinPK) { 
+        if (!excludeBinPK) {
             return;
         }
 
         List<DbEntity> entitiesToRemove = new ArrayList<DbEntity>();
 
         for (DbEntity ent : map.getDbEntities()) {
-                for (DbAttribute attr : ent.getAttributes()) {
-                    // check for BIN PK or FK to BIN Pk
-                    if (attr.getType() == Types.BINARY
-                            || attr.getType() == Types.VARBINARY
-                            || attr.getType() == Types.LONGVARBINARY) {
+            for (DbAttribute attr : ent.getAttributes()) {
+                // check for BIN PK or FK to BIN Pk
+                if (attr.getType() == Types.BINARY
+                        || attr.getType() == Types.VARBINARY
+                        || attr.getType() == Types.LONGVARBINARY) {
 
-                        if (attr.isPrimaryKey() || attr.isForeignKey()) {
-                            entitiesToRemove.add(ent);
-                            break;
-                        }
+                    if (attr.isPrimaryKey() || attr.isForeignKey()) {
+                        entitiesToRemove.add(ent);
+                        break;
                     }
+                }
             }
         }
 
         for (DbEntity e : entitiesToRemove) {
-            logObj.info("filter away " + e.getName());
             map.removeDbEntity(e.getName(), true);
         }
-
     }
 
     protected void execute(List<MergerToken> tokens) throws Exception {
@@ -161,26 +138,22 @@ public class MergeCase extends CayenneCase {
         token.execute(mergerContext);
     }
 
-    protected void executeSql(String sql) throws Exception {
-        Connection conn = null;
-        Statement st = null;
+    private void executeSql(String sql) throws Exception {
+        Connection conn = dataSource.getConnection();
+
         try {
-            QueryLogger.log(sql);
-            conn = getConnection();
-            st = conn.createStatement();
-            st.execute(sql);
-        }
-        catch (SQLException e) {
-            QueryLogger.logQueryError(e);
-            throw e;
-        }
-        finally {
-            if (st != null) {
+            Statement st = conn.createStatement();
+
+            try {
+                st.execute(sql);
+            }
+            finally {
                 st.close();
             }
-            if (conn != null) {
-                conn.close();
-            }
+        }
+
+        finally {
+            conn.close();
         }
     }
 
@@ -198,7 +171,7 @@ public class MergeCase extends CayenneCase {
                 actualToModel++;
             }
         }
-        logTokens(tokens);
+
         assertEquals("tokens to db", expectedToDb, actualToDb);
         assertEquals("tokens to model", expectedToModel, actualToModel);
     }
@@ -235,12 +208,6 @@ public class MergeCase extends CayenneCase {
         }
     }
 
-    protected void logTokens(List<MergerToken> tokens) {
-        for (MergerToken token : tokens) {
-            logObj.info("token: " + token.toString());
-        }
-    }
-
     protected MergerFactory mergerFactory() {
         return node.getAdapter().mergerFactory();
     }
@@ -257,16 +224,4 @@ public class MergeCase extends CayenneCase {
         catch (Exception e) {
         }
     }
-    
-    @Override
-    protected DataContext createDataContext() {
-        return domain.createDataContext();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        deleteTestData();
-    }
-
 }

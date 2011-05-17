@@ -22,15 +22,21 @@ import java.sql.Types;
 
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class MergerFactoryTest extends MergeCase {
+
+    @Inject
+    private DataContext context;
 
     public void testAddAndDropColumnToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
@@ -148,30 +154,17 @@ public class MergerFactoryTest extends MergeCase {
         objEntity.addAttribute(oatr1);
         map.addObjEntity(objEntity);
 
-        // try to insert some rows to check that pk stuff is working
-        DataContext ctxt = createDataContext();
-        DataMap sourceMap = map;//ctxt.getEntityResolver().getDataMap("testmap");
-
-        try {
-            sourceMap.addDbEntity(dbEntity);
-            sourceMap.addObjEntity(objEntity);
-
-            for (int i = 0; i < 5; i++) {
-                CayenneDataObject dao = (CayenneDataObject) ctxt.newObject(objEntity
-                        .getName());
-                dao.writeProperty(oatr1.getName(), "test " + i);
-            }
-            ctxt.commitChanges();
+        for (int i = 0; i < 5; i++) {
+            CayenneDataObject dao = (CayenneDataObject) context.newObject(objEntity
+                    .getName());
+            dao.writeProperty(oatr1.getName(), "test " + i);
         }
-        finally {
-            sourceMap.removeObjEntity(objEntity.getName(), true);
-            sourceMap.removeDbEntity(dbEntity.getName(), true);
-        }
+        context.commitChanges();
 
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -225,19 +218,17 @@ public class MergerFactoryTest extends MergeCase {
         assertTokensAndExecute(node, map, 2, 0);
         assertTokensAndExecute(node, map, 0, 0);
 
-        DataContext ctxt = createDataContext();
-
         // remove relationships
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertTokensAndExecute(node, map, 1, 1);
         assertTokensAndExecute(node, map, 0, 0);
 
         // clear up
         // map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -294,19 +285,17 @@ public class MergerFactoryTest extends MergeCase {
         assertTokensAndExecute(node, map, 1, 0);
         assertTokensAndExecute(node, map, 0, 0);
 
-        DataContext ctxt = createDataContext();
-
         // remove relationships
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertTokensAndExecute(node, map, 1, 1);
         assertTokensAndExecute(node, map, 0, 0);
 
         // clear up
         // map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));

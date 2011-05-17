@@ -19,14 +19,15 @@
 package org.apache.cayenne.merge;
 
 import java.sql.Types;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class CreateTableToModelTest extends MergeCase {
 
     public void testAddTable() throws Exception {
@@ -55,7 +56,7 @@ public class CreateTableToModelTest extends MergeCase {
             token = token.createReverse(mergerFactory());
         }
         assertTrue(token.getClass().getName(), token instanceof CreateTableToModel);
-        logTokens(Collections.singletonList(token));
+
         execute(token);
 
         ObjEntity objEntity = null;
@@ -69,12 +70,16 @@ public class CreateTableToModelTest extends MergeCase {
             }
         }
         assertNotNull(objEntity);
-        
-        assertEquals(objEntity.getClassName(), map.getDefaultPackage() + "." + objEntity.getName());
+
+        assertEquals(objEntity.getClassName(), map.getDefaultPackage()
+                + "."
+                + objEntity.getName());
         assertEquals(objEntity.getSuperClassName(), map.getDefaultSuperclass());
-        assertEquals(objEntity.getClientClassName(), 
-                map.getDefaultClientPackage() + "." + objEntity.getName());
-        assertEquals(objEntity.getClientSuperClassName(), map.getDefaultClientSuperclass());
+        assertEquals(objEntity.getClientClassName(), map.getDefaultClientPackage()
+                + "."
+                + objEntity.getName());
+        assertEquals(objEntity.getClientSuperClassName(), map
+                .getDefaultClientSuperclass());
 
         assertEquals(1, objEntity.getAttributes().size());
         assertEquals("java.lang.String", objEntity
@@ -83,14 +88,12 @@ public class CreateTableToModelTest extends MergeCase {
                 .next()
                 .getType());
 
-        DataContext ctxt = createDataContext();
-
         // clear up
         // fix psql case issue
         map.removeDbEntity(objEntity.getDbEntity().getName(), true);
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));

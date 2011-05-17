@@ -21,12 +21,14 @@ package org.apache.cayenne.merge;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DropTableToModelTest extends MergeCase {
 
     public void testDropTable() throws Exception {
@@ -73,12 +75,10 @@ public class DropTableToModelTest extends MergeCase {
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertNull(map.getObjEntity(objEntity.getName()));
 
-        DataContext ctxt = createDataContext();
-
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
+        resolver.clearCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));

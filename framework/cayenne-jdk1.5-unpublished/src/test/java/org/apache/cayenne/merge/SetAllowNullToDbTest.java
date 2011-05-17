@@ -22,7 +22,10 @@ import java.sql.Types;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SetAllowNullToDbTest extends MergeCase {
 
     public void test() throws Exception {
