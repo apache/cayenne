@@ -21,13 +21,16 @@ package org.apache.cayenne.remote;
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.testdo.mt.ClientMtLifecycles;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime("cayenne-multi-tier.xml")
 public class RemoteCallbacksTest extends RemoteCayenneCase implements LifecycleListener {
     private int added, loaded, prePersisted, postPersisted, preRemoved, postRemoved, preUpdated, postUpdated;
     
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    public void setUpAfterInjection() throws Exception {
+        super.setUpAfterInjection();
+        
         added = 0;
         loaded = 0;
         prePersisted = 0;

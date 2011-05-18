@@ -24,8 +24,11 @@ import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime("cayenne-multi-tier.xml")
 public class NestedObjectContextLocalTest extends RemoteCayenneCase {
+
     public void testLocalCacheStaysLocal() {
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);

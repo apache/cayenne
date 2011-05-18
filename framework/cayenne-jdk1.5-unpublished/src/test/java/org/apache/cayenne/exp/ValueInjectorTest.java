@@ -19,14 +19,20 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.remote.RemoteCayenneCase;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime("cayenne-multi-tier.xml")
 public class ValueInjectorTest extends RemoteCayenneCase {
+    
+    @Inject
+    private ObjectContext context;
+    
     public void test() {
-        ObjectContext context = createDataContext();
         ObjEntity entity = context.getEntityResolver().lookupObjEntity(MtTable1Subclass.class);
         Expression qualifier = entity.getDeclaredQualifier();
         

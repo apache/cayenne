@@ -21,11 +21,14 @@ package org.apache.cayenne.remote;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * This is a test primarily for CAY-1103
  */
+@UseServerRuntime("cayenne-multi-tier.xml")
 public class RemoteRollbackTest extends RemoteCayenneCase {
+    
     public void testRollbackNew() {
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("a");

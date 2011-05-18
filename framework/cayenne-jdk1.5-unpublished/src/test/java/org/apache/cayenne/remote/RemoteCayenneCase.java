@@ -22,20 +22,17 @@ import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.cache.MapQueryCache;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.remote.service.LocalConnection;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.UnitLocalConnection;
+import org.apache.cayenne.unit.di.server.ServerCase;
 
-/**
- * JUnit case to test ROP functionality
- */
-public abstract class RemoteCayenneCase extends CayenneCase {
+public abstract class RemoteCayenneCase extends ServerCase {
 
     protected CayenneContext context;
 
+    @Inject
     protected DataContext parentDataContext;
 
     /**
@@ -58,8 +55,7 @@ public abstract class RemoteCayenneCase extends CayenneCase {
     }
 
     @Override
-    public void setUp() throws Exception {
-        parentDataContext = createDataContext();
+    public void setUpAfterInjection() throws Exception {
         context = createROPContext();
     }
 
@@ -70,17 +66,12 @@ public abstract class RemoteCayenneCase extends CayenneCase {
                 clientServerChannel,
                 serializationPolicy);
         ClientChannel channel = new ClientChannel(connection, false,
-        // we want events, but we don't want thread eaks, so creating single threaded EM.
+        // we want events, but we don't want thread leaks, so creating single threaded EM.
                 // TODO: replace with container managed ClientCase.
                 new DefaultEventManager(0),
                 false);
         CayenneContext context = new CayenneContext(channel, true, true);
         context.setQueryCache(new MapQueryCache(10));
         return context;
-    }
-
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
 }

@@ -21,14 +21,27 @@ package org.apache.cayenne.remote;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime("cayenne-multi-tier.xml")
 public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
+    
+    @Inject
+    private DBHelper dbHelper;
+    
+    @Override
+    public void setUpAfterInjection() throws Exception {
+        super.setUpAfterInjection();
+        
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+    }
 
     public void testPeerObjectUpdatedTempOID() throws Exception {
-        deleteTestData();
-        
         ObjectContext peer1 = context.createChildContext();
         ClientMtTable1 a1 = peer1.newObject(ClientMtTable1.class);
         a1.setGlobalAttribute1("Y");
@@ -46,8 +59,6 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedSimpleProperty() throws Exception {
-        deleteTestData();
-
         ClientMtTable1 a = context.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");
         context.commitChanges();
@@ -68,8 +79,6 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedToOneRelationship() throws Exception {
-        deleteTestData();
-
         ClientMtTable1 a = context.newObject(ClientMtTable1.class);
         ClientMtTable1 altA = context.newObject(ClientMtTable1.class);
 
@@ -99,8 +108,6 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedToManyRelationship() throws Exception {
-        deleteTestData();
-
         ClientMtTable1 a = context.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");
 

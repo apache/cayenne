@@ -20,20 +20,34 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime("cayenne-multi-tier.xml")
 public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
 
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    public void setUpAfterInjection() throws Exception {
+        super.setUpAfterInjection();
+
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+    }
+
     public void testParentUpdatedId() throws Exception {
-        deleteTestData();
-        
         ObjectContext child = context.createChildContext();
 
         ClientMtTable1 ac = child.newObject(ClientMtTable1.class);
         ac.setGlobalAttribute1("X");
         child.commitChangesToParent();
 
-        ClientMtTable1 ap = (ClientMtTable1) context.getGraphManager().getNode(ac.getObjectId());
+        ClientMtTable1 ap = (ClientMtTable1) context.getGraphManager().getNode(
+                ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());
