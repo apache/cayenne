@@ -19,15 +19,23 @@
 
 package org.apache.cayenne;
 
+import java.sql.Timestamp;
+
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime("cayenne-small-testmap.xml")
 public class CDOOneDep2OneTest extends CayenneDOTestBase {
+
+    @Inject
+    private ObjectContext context1;
 
     public void testNewAdd1() throws Exception {
         Artist a1 = newArtist();
@@ -46,7 +54,7 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
 
         // do save
         context.commitChanges();
-        context = createDataContext();
+        context = context1;
 
         // test database data
         PaintingInfo pi2 = fetchPaintingInfo();
@@ -58,14 +66,17 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
     /** Tests how primary key is propagated from one new object to another. */
     public void testNewAdd2() throws Exception {
         Artist a1 = this.newArtist();
-        Gallery g1 = this.newGallery();
-        Exhibit e1 = this.newExhibit(g1);
+        Gallery g1 = context.newObject(Gallery.class);
+        g1.setGalleryName(galleryName);
 
-        ArtistExhibit ae1 = this.newArtistExhibit();
+        Exhibit e1 = context.newObject(Exhibit.class);
+        e1.setOpeningDate(new Timestamp(System.currentTimeMillis()));
+        e1.setClosingDate(new Timestamp(System.currentTimeMillis()));
+        e1.setToGallery(g1);
+
+        ArtistExhibit ae1 = context.newObject(ArtistExhibit.class);
         ae1.setToArtist(a1);
         ae1.setToExhibit(e1);
-
-        // do save
 
         // *** TESTING THIS ***
         context.commitChanges();
@@ -89,7 +100,7 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
 
         // do save
         context.commitChanges();
-        context = createDataContext();
+        context = context1;
 
         // test database data
         PaintingInfo pi2 = fetchPaintingInfo();
@@ -115,7 +126,7 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
         // do save II
         context.commitChanges();
         ObjectId pi2oid = pi2.getObjectId();
-        context = createDataContext();
+        context = context1;
 
         PaintingInfo pi3 = fetchPaintingInfo();
         Painting p3 = pi3.getPainting();

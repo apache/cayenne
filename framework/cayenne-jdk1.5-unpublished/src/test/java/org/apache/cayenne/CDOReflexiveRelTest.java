@@ -19,117 +19,102 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Some more tests regarding reflexive relationships, especially related to delete rules
- * etc.  The implementation is hairy, and so needs a really good workout.
+ * etc. The implementation is hairy, and so needs a really good workout.
  */
-public class CDOReflexiveRelTest extends CayenneDOTestBase {
+@UseServerRuntime("cayenne-small-testmap.xml")
+public class CDOReflexiveRelTest extends ServerCase {
 
-	private void failWithException(Exception e) {
-			e.printStackTrace();
-			fail("Should not have thrown an exception :"+e.getMessage());
-	}
+    @Inject
+    private ObjectContext context;
 
-	public void testAddDeleteNoCommit() {
-		ArtGroup parentGroup=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup.setName("parent");
+    public void testAddDeleteNoCommit() {
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        parentGroup.setName("parent");
 
-		ArtGroup childGroup1=(ArtGroup)context.newObject("ArtGroup");
-		childGroup1.setName("child1");
-		childGroup1.setToParentGroup(parentGroup);
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1.setName("child1");
+        childGroup1.setToParentGroup(parentGroup);
 
-		try {
-			context.deleteObject(parentGroup);
-		} catch (Exception e) {
-			this.failWithException(e);
-		}
-	}
-	
-	public void testAddDeleteWithCommit() {
-		ArtGroup parentGroup=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup.setName("parent");
+        context.deleteObject(parentGroup);
+    }
 
-		ArtGroup childGroup1=(ArtGroup)context.newObject("ArtGroup");
-		childGroup1.setName("child1");
-		childGroup1.setToParentGroup(parentGroup);
-		context.commitChanges();
+    public void testAddDeleteWithCommit() {
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        parentGroup.setName("parent");
 
-		try {
-			context.deleteObject(parentGroup);
-			context.commitChanges();
-		} catch (Exception e) {
-			this.failWithException(e);
-		}
-		
-	}
-	
-	public void testReplaceDeleteNoCommit() {
-		ArtGroup parentGroup1=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup1.setName("parent1");
-		ArtGroup parentGroup2=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup2.setName("parent2");
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1.setName("child1");
+        childGroup1.setToParentGroup(parentGroup);
+        context.commitChanges();
 
-		ArtGroup childGroup1=(ArtGroup)context.newObject("ArtGroup");
-		childGroup1.setName("child1");
-		childGroup1.setToParentGroup(parentGroup1);
+        context.deleteObject(parentGroup);
+        context.commitChanges();
+    }
 
+    public void testReplaceDeleteNoCommit() {
+        ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
+        parentGroup1.setName("parent1");
+        ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
+        parentGroup2.setName("parent2");
 
-		childGroup1.setToParentGroup(parentGroup2);
-		try {
-			context.deleteObject(parentGroup1);
-			context.deleteObject(parentGroup2);
-		} catch (Exception e) {
-			this.failWithException(e);
-		}		
-	}
-	
-	public void testReplaceDeleteWithCommit() {
-		ArtGroup parentGroup1=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup1.setName("parent1");
-		ArtGroup parentGroup2=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup2.setName("parent2");
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1.setName("child1");
+        childGroup1.setToParentGroup(parentGroup1);
 
-		ArtGroup childGroup1=(ArtGroup)context.newObject("ArtGroup");
-		childGroup1.setName("child1");
-		childGroup1.setToParentGroup(parentGroup1);
-		childGroup1.setToParentGroup(parentGroup2);
-		context.commitChanges();
+        childGroup1.setToParentGroup(parentGroup2);
 
-		try {
-			context.deleteObject(parentGroup1);
-			context.deleteObject(parentGroup2);
-			context.commitChanges();
-		} catch (Exception e) {
-			this.failWithException(e);
-		}		
-	}
-	
-	public void testCommitReplaceCommit() {
-		ArtGroup parentGroup1=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup1.setName("parent1");
-		ArtGroup parentGroup2=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup2.setName("parent2");
+        context.deleteObject(parentGroup1);
+        context.deleteObject(parentGroup2);
+    }
 
-		ArtGroup childGroup1=(ArtGroup)context.newObject("ArtGroup");
-		childGroup1.setName("child1");
-		childGroup1.setToParentGroup(parentGroup1);
-		context.commitChanges();
-		childGroup1.setToParentGroup(parentGroup2);
-		context.commitChanges();
-	}
+    public void testReplaceDeleteWithCommit() {
+        ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
+        parentGroup1.setName("parent1");
+        ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
+        parentGroup2.setName("parent2");
 
-	public void testComplexInsertUpdateOrdering() {
-		ArtGroup parentGroup=(ArtGroup)context.newObject("ArtGroup");
-		parentGroup.setName("parent");
-		context.commitChanges();
-		
-		//Check that the update and insert both work write
-		ArtGroup childGroup1=(ArtGroup)context.newObject("ArtGroup");
-		childGroup1.setName("child1");
-		childGroup1.setToParentGroup(parentGroup);
-		context.commitChanges();
-	}
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1.setName("child1");
+        childGroup1.setToParentGroup(parentGroup1);
+        childGroup1.setToParentGroup(parentGroup2);
+        context.commitChanges();
+
+        context.deleteObject(parentGroup1);
+        context.deleteObject(parentGroup2);
+        context.commitChanges();
+    }
+
+    public void testCommitReplaceCommit() {
+        ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
+        parentGroup1.setName("parent1");
+        ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
+        parentGroup2.setName("parent2");
+
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1.setName("child1");
+        childGroup1.setToParentGroup(parentGroup1);
+        context.commitChanges();
+        childGroup1.setToParentGroup(parentGroup2);
+        context.commitChanges();
+    }
+
+    public void testComplexInsertUpdateOrdering() {
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        parentGroup.setName("parent");
+        context.commitChanges();
+
+        // Check that the update and insert both work write
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1.setName("child1");
+        childGroup1.setToParentGroup(parentGroup);
+        context.commitChanges();
+    }
 
 }

@@ -19,14 +19,19 @@
 
 package org.apache.cayenne;
 
-import java.util.Map;
-
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+@UseServerRuntime("cayenne-small-testmap.xml")
 public class CDOOne2OneDepTest extends CayenneDOTestBase {
-    
+
+    @Inject
+    private ObjectContext context1;
+
     public void testRollbackDependent() {
         Artist a1 = newArtist();
         Painting p1 = newPainting();
@@ -34,13 +39,13 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
         // needed to save without errors
         p1.setToArtist(a1);
         context.commitChanges();
-        
+
         PaintingInfo info = context.newObject(PaintingInfo.class);
         info.setTextReview("XXX");
         p1.setToPaintingInfo(info);
-        
+
         assertSame(info, p1.getToPaintingInfo());
-        
+
         context.rollbackChanges();
         assertNull(p1.getToPaintingInfo());
     }
@@ -52,7 +57,7 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
         // needed to save without errors
         p1.setToArtist(a1);
         context.commitChanges();
-        context = createDataContext();
+        context = context1;
 
         // test database data
         Painting p2 = fetchPainting();
@@ -68,7 +73,7 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
         // needed to save without errors
         p1.setToArtist(a1);
         context.commitChanges();
-        context = createDataContext();
+        context = context1;
 
         // test database data
         Painting p2 = fetchPainting();
@@ -87,16 +92,16 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
         // needed to save without errors
         p1.setToArtist(a1);
 
-        // *** TESTING THIS *** 
+        // *** TESTING THIS ***
         p1.setToPaintingInfo(pi1);
 
         // test before save
         assertSame(pi1, p1.getToPaintingInfo());
         assertSame(p1, pi1.getPainting());
 
-        // do save 
+        // do save
         context.commitChanges();
-        context = createDataContext();
+        context = context1;
 
         // test database data
         Painting p2 = fetchPainting();
@@ -110,18 +115,18 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
         Artist a1 = newArtist();
         PaintingInfo pi1 = newPaintingInfo();
         Painting p1 = newPainting();
-        
+
         p1.setToArtist(a1);
         p1.setToPaintingInfo(pi1);
         context.commitChanges();
-        
-        context = createDataContext();
+
+        context = context1;
         Painting painting = fetchPainting();
 
         assertTrue(painting.readPropertyDirectly("toPaintingInfo") instanceof Fault);
 
-        // test that taking a snapshot does not trigger a fault, and generally works well 
-        Map snapshot = context.currentSnapshot(painting);
+        // test that taking a snapshot does not trigger a fault, and generally works well
+        DataRow snapshot = ((DataContext) context).currentSnapshot(painting);
 
         assertEquals(paintingName, snapshot.get("PAINTING_TITLE"));
         assertTrue(painting.readPropertyDirectly("toPaintingInfo") instanceof Fault);

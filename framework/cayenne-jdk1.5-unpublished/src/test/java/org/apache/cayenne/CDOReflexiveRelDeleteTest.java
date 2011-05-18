@@ -19,32 +19,38 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class CDOReflexiveRelDeleteTest extends CayenneDOTestBase {
+@UseServerRuntime("cayenne-small-testmap.xml")
+public class CDOReflexiveRelDeleteTest extends ServerCase {
 
+    @Inject
+    private ObjectContext context;
+    
     private ArtGroup parentGroup;
     private ArtGroup childGroup1;
     private ArtGroup childGroup2;
     private ArtGroup childGroup3;
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        super.setUpAfterInjection();
 
-        parentGroup = (ArtGroup) context.newObject("ArtGroup");
+        parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        childGroup1 = (ArtGroup) context.newObject("ArtGroup");
+        childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
 
-        childGroup2 = (ArtGroup) context.newObject("ArtGroup");
+        childGroup2 = context.newObject(ArtGroup.class);
         childGroup2.setName("child2");
         childGroup2.setToParentGroup(parentGroup);
 
-        childGroup3 = (ArtGroup) context.newObject("ArtGroup");
+        childGroup3 = context.newObject(ArtGroup.class);
         childGroup3.setName("subchild");
         childGroup3.setToParentGroup(childGroup1);
 
