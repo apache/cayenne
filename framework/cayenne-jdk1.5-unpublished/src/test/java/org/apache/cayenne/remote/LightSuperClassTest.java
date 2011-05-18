@@ -36,9 +36,6 @@ public class LightSuperClassTest extends RemoteCayenneCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Inject
-    private ObjectContext context;
-
     private boolean server;
 
     @Override
@@ -61,7 +58,7 @@ public class LightSuperClassTest extends RemoteCayenneCase {
 
     private ObjectContext createContext() {
         if (server) {
-            return context;
+            return serverContext;
         }
         else {
             return createROPContext();

@@ -40,18 +40,18 @@ public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
     }
 
     public void testParentUpdatedId() throws Exception {
-        ObjectContext child = context.createChildContext();
+        ObjectContext child = clientContext.createChildContext();
 
         ClientMtTable1 ac = child.newObject(ClientMtTable1.class);
         ac.setGlobalAttribute1("X");
         child.commitChangesToParent();
 
-        ClientMtTable1 ap = (ClientMtTable1) context.getGraphManager().getNode(
+        ClientMtTable1 ap = (ClientMtTable1) clientContext.getGraphManager().getNode(
                 ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());
-        context.commitChanges();
+        clientContext.commitChanges();
 
         assertFalse(ap.getObjectId().isTemporary());
         assertEquals(ap.getObjectId(), ac.getObjectId());

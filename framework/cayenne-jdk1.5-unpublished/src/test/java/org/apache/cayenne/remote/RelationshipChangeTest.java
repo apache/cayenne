@@ -29,28 +29,28 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class RelationshipChangeTest extends RemoteCayenneCase {
 
     public void testNullify() {
-        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
-        ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
+        ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
+        ClientMtTable2 o2 = clientContext.newObject(ClientMtTable2.class);
         
         o2.setTable1(o1);
 
         assertEquals(1, o1.getTable2Array().size());
-        context.commitChanges();
+        clientContext.commitChanges();
 
         o2.setTable1(null);
         assertEquals(0, o1.getTable2Array().size());
     }
     
     public void testChange() {
-        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
-        ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
+        ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
+        ClientMtTable2 o2 = clientContext.newObject(ClientMtTable2.class);
         
-        ClientMtTable1 o3 = context.newObject(ClientMtTable1.class);
+        ClientMtTable1 o3 = clientContext.newObject(ClientMtTable1.class);
         
         o2.setTable1(o1);
 
         assertEquals(1, o1.getTable2Array().size());
-        context.commitChanges();
+        clientContext.commitChanges();
 
         o2.setTable1(o3);
         assertEquals(0, o1.getTable2Array().size());

@@ -25,13 +25,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class CayenneContextDeletionTest extends RemoteCayenneCase {
 
     public void testDeletion() {
-        ClientMtTable1 object = context.newObject(ClientMtTable1.class);
-        context.commitChanges();
+        ClientMtTable1 object = clientContext.newObject(ClientMtTable1.class);
+        clientContext.commitChanges();
 
-        context.deleteObject(object);
+        clientContext.deleteObject(object);
 
         // now check that the object is unregistered
-        context.commitChanges();
-        assertNull(context.getGraphManager().getNode(object.getObjectId()));
+        clientContext.commitChanges();
+        assertNull(clientContext.getGraphManager().getNode(object.getObjectId()));
     }
 }

@@ -30,15 +30,15 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 
 public abstract class RemoteCayenneCase extends ServerCase {
 
-    protected CayenneContext context;
+    protected CayenneContext clientContext;
 
     @Inject
-    protected DataContext parentDataContext;
+    protected DataContext serverContext;
 
     /**
      * Used serialization policy. Per CAY-979 we're testing on all policies
      */
-    protected int serializationPolicy;
+    private int serializationPolicy;
 
     @Override
     public void runBare() throws Throwable {
@@ -56,12 +56,11 @@ public abstract class RemoteCayenneCase extends ServerCase {
 
     @Override
     public void setUpAfterInjection() throws Exception {
-        context = createROPContext();
+        clientContext = createROPContext();
     }
 
     protected CayenneContext createROPContext() {
-        ClientServerChannel clientServerChannel = new ClientServerChannel(
-                parentDataContext);
+        ClientServerChannel clientServerChannel = new ClientServerChannel(serverContext);
         UnitLocalConnection connection = new UnitLocalConnection(
                 clientServerChannel,
                 serializationPolicy);

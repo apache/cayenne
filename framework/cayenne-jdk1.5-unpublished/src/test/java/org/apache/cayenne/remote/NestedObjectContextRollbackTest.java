@@ -26,40 +26,40 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
 
     public void testRollbackChanges() {
-        ObjectContext child1 = context.createChildContext();
+        ObjectContext child1 = clientContext.createChildContext();
         
-        assertFalse(context.hasChanges());
+        assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
         
-        context.newObject(ClientMtTable1.class);
+        clientContext.newObject(ClientMtTable1.class);
         child1.newObject(ClientMtTable1.class);
         
-        assertTrue(context.hasChanges());
+        assertTrue(clientContext.hasChanges());
         assertTrue(child1.hasChanges());
         
         child1.rollbackChanges();
-        assertFalse(context.hasChanges());
+        assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
         
-        context.rollbackChanges();
+        clientContext.rollbackChanges();
     }
     
     public void testRollbackChangesLocally() {
-        ObjectContext child1 = context.createChildContext();
+        ObjectContext child1 = clientContext.createChildContext();
         
-        assertFalse(context.hasChanges());
+        assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
         
-        context.newObject(ClientMtTable1.class);
+        clientContext.newObject(ClientMtTable1.class);
         child1.newObject(ClientMtTable1.class);
         
-        assertTrue(context.hasChanges());
+        assertTrue(clientContext.hasChanges());
         assertTrue(child1.hasChanges());
         
         child1.rollbackChangesLocally();
-        assertTrue(context.hasChanges());
+        assertTrue(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
         
-        context.rollbackChanges();
+        clientContext.rollbackChanges();
     }
 }

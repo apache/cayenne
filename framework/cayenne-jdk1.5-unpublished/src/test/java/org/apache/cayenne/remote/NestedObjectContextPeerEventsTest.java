@@ -42,12 +42,12 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedTempOID() throws Exception {
-        ObjectContext peer1 = context.createChildContext();
+        ObjectContext peer1 = clientContext.createChildContext();
         ClientMtTable1 a1 = peer1.newObject(ClientMtTable1.class);
         a1.setGlobalAttribute1("Y");
         ObjectId a1TempId = a1.getObjectId();
 
-        ObjectContext peer2 = context.createChildContext();
+        ObjectContext peer2 = clientContext.createChildContext();
         ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a1TempId, a1);
 
         assertEquals(a1TempId, a2.getObjectId());
@@ -59,14 +59,14 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedSimpleProperty() throws Exception {
-        ClientMtTable1 a = context.newObject(ClientMtTable1.class);
+        ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");
-        context.commitChanges();
+        clientContext.commitChanges();
 
-        ObjectContext peer1 = context.createChildContext();
+        ObjectContext peer1 = clientContext.createChildContext();
         ClientMtTable1 a1 = (ClientMtTable1) peer1.localObject(a.getObjectId(), a);
 
-        ObjectContext peer2 = context.createChildContext();
+        ObjectContext peer2 = clientContext.createChildContext();
         ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a.getObjectId(), a);
 
         a1.setGlobalAttribute1("Y");
@@ -79,21 +79,21 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedToOneRelationship() throws Exception {
-        ClientMtTable1 a = context.newObject(ClientMtTable1.class);
-        ClientMtTable1 altA = context.newObject(ClientMtTable1.class);
+        ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
+        ClientMtTable1 altA = clientContext.newObject(ClientMtTable1.class);
 
-        ClientMtTable2 p = context.newObject(ClientMtTable2.class);
+        ClientMtTable2 p = clientContext.newObject(ClientMtTable2.class);
         p.setTable1(a);
         p.setGlobalAttribute("PPP");
         a.setGlobalAttribute1("X");
         altA.setGlobalAttribute1("Y");
-        context.commitChanges();
+        clientContext.commitChanges();
 
-        ObjectContext peer1 = context.createChildContext();
+        ObjectContext peer1 = clientContext.createChildContext();
         ClientMtTable2 p1 = (ClientMtTable2) peer1.localObject(p.getObjectId(), p);
         ClientMtTable1 altA1 = (ClientMtTable1) peer1.localObject(altA.getObjectId(), altA);
 
-        ObjectContext peer2 = context.createChildContext();
+        ObjectContext peer2 = clientContext.createChildContext();
         ClientMtTable2 p2 = (ClientMtTable2) peer2.localObject(p.getObjectId(), p);
         ClientMtTable1 altA2 = (ClientMtTable1) peer2.localObject(altA.getObjectId(), altA);
         ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a.getObjectId(), a);
@@ -108,23 +108,23 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedToManyRelationship() throws Exception {
-        ClientMtTable1 a = context.newObject(ClientMtTable1.class);
+        ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");
 
-        ClientMtTable2 px = context.newObject(ClientMtTable2.class);
+        ClientMtTable2 px = clientContext.newObject(ClientMtTable2.class);
         px.setTable1(a);
         px.setGlobalAttribute("PX");
 
-        ClientMtTable2 py = context.newObject(ClientMtTable2.class);
+        ClientMtTable2 py = clientContext.newObject(ClientMtTable2.class);
         py.setGlobalAttribute("PY");
 
-        context.commitChanges();
+        clientContext.commitChanges();
 
-        ObjectContext peer1 = context.createChildContext();
+        ObjectContext peer1 = clientContext.createChildContext();
         ClientMtTable2 py1 = (ClientMtTable2) peer1.localObject(py.getObjectId(), py);
         ClientMtTable1 a1 = (ClientMtTable1) peer1.localObject(a.getObjectId(), a);
 
-        ObjectContext peer2 = context.createChildContext();
+        ObjectContext peer2 = clientContext.createChildContext();
         ClientMtTable2 py2 = (ClientMtTable2) peer2.localObject(py.getObjectId(), py);
         ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a.getObjectId(), a);
 
