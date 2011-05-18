@@ -33,15 +33,15 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
 
         // needed to save without errors
         p1.setToArtist(a1);
-        ctxt.commitChanges();
+        context.commitChanges();
         
-        PaintingInfo info = ctxt.newObject(PaintingInfo.class);
+        PaintingInfo info = context.newObject(PaintingInfo.class);
         info.setTextReview("XXX");
         p1.setToPaintingInfo(info);
         
         assertSame(info, p1.getToPaintingInfo());
         
-        ctxt.rollbackChanges();
+        context.rollbackChanges();
         assertNull(p1.getToPaintingInfo());
     }
 
@@ -51,8 +51,8 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
 
         // needed to save without errors
         p1.setToArtist(a1);
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context.commitChanges();
+        context = createDataContext();
 
         // test database data
         Painting p2 = fetchPainting();
@@ -67,8 +67,8 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
 
         // needed to save without errors
         p1.setToArtist(a1);
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context.commitChanges();
+        context = createDataContext();
 
         // test database data
         Painting p2 = fetchPainting();
@@ -95,8 +95,8 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
         assertSame(p1, pi1.getPainting());
 
         // do save 
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context.commitChanges();
+        context = createDataContext();
 
         // test database data
         Painting p2 = fetchPainting();
@@ -113,15 +113,15 @@ public class CDOOne2OneDepTest extends CayenneDOTestBase {
         
         p1.setToArtist(a1);
         p1.setToPaintingInfo(pi1);
-        ctxt.commitChanges();
+        context.commitChanges();
         
-        ctxt = createDataContext();
+        context = createDataContext();
         Painting painting = fetchPainting();
 
         assertTrue(painting.readPropertyDirectly("toPaintingInfo") instanceof Fault);
 
         // test that taking a snapshot does not trigger a fault, and generally works well 
-        Map snapshot = ctxt.currentSnapshot(painting);
+        Map snapshot = context.currentSnapshot(painting);
 
         assertEquals(paintingName, snapshot.get("PAINTING_TITLE"));
         assertTrue(painting.readPropertyDirectly("toPaintingInfo") instanceof Fault);

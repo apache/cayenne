@@ -23,17 +23,21 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public abstract class CayenneDOTestBase extends CayenneCase {
+@UseServerRuntime("cayenne-small-testmap.xml")
+public abstract class CayenneDOTestBase extends ServerCase {
 
     public static final String artistName = "artist with one painting";
     public static final String galleryName = "my gallery";
@@ -44,16 +48,24 @@ public abstract class CayenneDOTestBase extends CayenneCase {
             2, 3, 4, 5
     };
 
-    protected DataContext ctxt;
+    @Inject
+    protected DataContext context;
+    
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
-        ctxt = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST");
     }
 
     protected Exhibit newExhibit(Gallery gallery) {
-        Exhibit e1 = (Exhibit) ctxt.newObject("Exhibit");
+        Exhibit e1 = (Exhibit) context.newObject("Exhibit");
         e1.setOpeningDate(new Timestamp(System.currentTimeMillis()));
         e1.setClosingDate(new Timestamp(System.currentTimeMillis()));
         e1.setToGallery(gallery);
@@ -61,35 +73,35 @@ public abstract class CayenneDOTestBase extends CayenneCase {
     }
 
     protected ArtistExhibit newArtistExhibit() {
-        return (ArtistExhibit) ctxt.newObject("ArtistExhibit");
+        return (ArtistExhibit) context.newObject("ArtistExhibit");
     }
 
     protected Gallery newGallery() {
-        Gallery g1 = (Gallery) ctxt.newObject("Gallery");
+        Gallery g1 = (Gallery) context.newObject("Gallery");
         g1.setGalleryName(galleryName);
         return g1;
     }
 
     protected Artist newArtist() {
-        Artist a1 = (Artist) ctxt.newObject("Artist");
+        Artist a1 = (Artist) context.newObject("Artist");
         a1.setArtistName(artistName);
         return a1;
     }
 
     protected Painting newROPainting() {
-        Painting p1 = (Painting) ctxt.newObject("ROPainting");
+        Painting p1 = (Painting) context.newObject("ROPainting");
         p1.setPaintingTitle(paintingName);
         return p1;
     }
 
     protected Painting newPainting() {
-        Painting p1 = (Painting) ctxt.newObject("Painting");
+        Painting p1 = (Painting) context.newObject("Painting");
         p1.setPaintingTitle(paintingName);
         return p1;
     }
 
     protected PaintingInfo newPaintingInfo() {
-        PaintingInfo p1 = (PaintingInfo) ctxt.newObject("PaintingInfo");
+        PaintingInfo p1 = (PaintingInfo) context.newObject("PaintingInfo");
         p1.setTextReview(textReview);
         p1.setImageBlob(paintingImage);
         return p1;
@@ -99,7 +111,7 @@ public abstract class CayenneDOTestBase extends CayenneCase {
         SelectQuery q = new SelectQuery("Gallery", ExpressionFactory.matchExp(
                 "galleryName",
                 galleryName));
-        List gls = ctxt.performQuery(q);
+        List<?> gls = context.performQuery(q);
         return (gls.size() > 0) ? (Gallery) gls.get(0) : null;
     }
 
@@ -107,7 +119,7 @@ public abstract class CayenneDOTestBase extends CayenneCase {
         SelectQuery q = new SelectQuery("Artist", ExpressionFactory.matchExp(
                 "artistName",
                 artistName));
-        List ats = ctxt.performQuery(q);
+        List<?> ats = context.performQuery(q);
         return (ats.size() > 0) ? (Artist) ats.get(0) : null;
     }
 
@@ -115,7 +127,7 @@ public abstract class CayenneDOTestBase extends CayenneCase {
         SelectQuery q = new SelectQuery("Painting", ExpressionFactory.matchExp(
                 "paintingTitle",
                 paintingName));
-        List pts = ctxt.performQuery(q);
+        List<?> pts = context.performQuery(q);
         return (pts.size() > 0) ? (Painting) pts.get(0) : null;
     }
 
@@ -125,7 +137,7 @@ public abstract class CayenneDOTestBase extends CayenneCase {
         SelectQuery q = new SelectQuery(PaintingInfo.class, ExpressionFactory.likeExp(
                 "textReview",
                 textReview));
-        List pts = ctxt.performQuery(q);
+        List<?> pts = context.performQuery(q);
         return (pts.size() > 0) ? (PaintingInfo) pts.get(0) : null;
     }
 }

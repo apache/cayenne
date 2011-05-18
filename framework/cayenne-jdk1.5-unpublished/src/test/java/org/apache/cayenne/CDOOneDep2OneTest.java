@@ -45,8 +45,8 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
         assertSame(p1, pi1.getPainting());
 
         // do save
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context.commitChanges();
+        context = createDataContext();
 
         // test database data
         PaintingInfo pi2 = fetchPaintingInfo();
@@ -68,14 +68,14 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
         // do save
 
         // *** TESTING THIS ***
-        ctxt.commitChanges();
+        context.commitChanges();
     }
 
     public void testReplace() throws Exception {
         String altPaintingName = "alt painting";
 
         Artist a1 = newArtist();
-        assertEquals(a1.getObjectId(), ctxt
+        assertEquals(a1.getObjectId(), context
                 .localObject(a1.getObjectId(), null)
                 .getObjectId());
 
@@ -85,11 +85,11 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
 
         pi1.setPainting(p1);
 
-        assertTrue(ctxt.hasChanges());
+        assertTrue(context.hasChanges());
 
         // do save
-        ctxt.commitChanges();
-        ctxt = createDataContext();
+        context.commitChanges();
+        context = createDataContext();
 
         // test database data
         PaintingInfo pi2 = fetchPaintingInfo();
@@ -113,9 +113,9 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
         assertEquals(PersistenceState.MODIFIED, pi2.getPersistenceState());
 
         // do save II
-        ctxt.commitChanges();
+        context.commitChanges();
         ObjectId pi2oid = pi2.getObjectId();
-        ctxt = createDataContext();
+        context = createDataContext();
 
         PaintingInfo pi3 = fetchPaintingInfo();
         Painting p3 = pi3.getPainting();
