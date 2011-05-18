@@ -33,7 +33,27 @@ public abstract class DICase extends TestCase {
     @Override
     protected final void setUp() throws Exception {
         getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).setUp(this);
-        setUpAfterInjection();
+
+        try {
+            setUpAfterInjection();
+        }
+        catch (Exception e) {
+
+            // must stop the lifecycle manager (do the same thing we'd normally do in
+            // 'tearDown' ), otherwise following tests will end up in
+            // a bad state
+
+            try {
+                getUnitTestInjector()
+                        .getInstance(UnitTestLifecycleManager.class)
+                        .tearDown(this);
+            }
+            catch (Exception x) {
+                // swallow...
+            }
+
+            throw e;
+        }
     }
 
     @Override
