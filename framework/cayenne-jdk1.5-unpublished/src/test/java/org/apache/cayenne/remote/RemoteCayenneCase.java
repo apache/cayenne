@@ -26,9 +26,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.unit.UnitLocalConnection;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.client.ClientCase;
 
-public abstract class RemoteCayenneCase extends ServerCase {
+public abstract class RemoteCayenneCase extends ClientCase {
 
     protected CayenneContext clientContext;
 

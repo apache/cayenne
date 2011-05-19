@@ -19,9 +19,10 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime("cayenne-multi-tier.xml")
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextDeletionTest extends RemoteCayenneCase {
 
     public void testDeletion() {

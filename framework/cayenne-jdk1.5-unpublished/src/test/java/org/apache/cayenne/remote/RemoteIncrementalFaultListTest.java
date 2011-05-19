@@ -25,37 +25,33 @@ import java.util.ListIterator;
 
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime("cayenne-multi-tier.xml")
-public class RemoteIncrementalFaultListTest extends ServerCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class RemoteIncrementalFaultListTest extends ClientCase {
 
     private static final int COUNT = 25;
 
     @Inject
-    private DataContext context;
+    private CayenneContext clientContext;
 
     @Inject
     private DBHelper dbHelper;
 
     private TableHelper tMTTable;
 
-    protected RemoteIncrementalFaultList list;
-    protected SelectQuery query;
+    private RemoteIncrementalFaultList list;
+    private SelectQuery query;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -94,30 +90,18 @@ public class RemoteIncrementalFaultListTest extends ServerCase {
         tMTTable.insert(25, "g25", "s25");
     }
 
-    protected void prepareList(int pageSize) throws Exception {
+    private void prepareList(int pageSize) throws Exception {
 
         createObjectsDataSet();
 
-        this.query = new SelectQuery(ClientMtTable1.class);
+        query = new SelectQuery(ClientMtTable1.class);
 
         // make sure total number of objects is not divisable
         // by the page size, to test the last smaller page
         query.setPageSize(pageSize);
         query.addOrdering("db:" + MtTable1.TABLE1_ID_PK_COLUMN, SortOrder.ASCENDING);
 
-        ClientServerChannel serverChannel = new ClientServerChannel(context);
-        LocalConnection connection = new LocalConnection(
-                serverChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel clientChannel = new ClientChannel(
-                connection,
-                false,
-                new MockEventManager(),
-                false);
-
-        this.list = new RemoteIncrementalFaultList(
-                new CayenneContext(clientChannel),
-                query);
+        list = new RemoteIncrementalFaultList(clientContext, query);
     }
 
     public void testSize() throws Exception {

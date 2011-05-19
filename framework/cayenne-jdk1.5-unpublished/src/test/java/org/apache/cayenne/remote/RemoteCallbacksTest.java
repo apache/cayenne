@@ -21,9 +21,10 @@ package org.apache.cayenne.remote;
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.testdo.mt.ClientMtLifecycles;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime("cayenne-multi-tier.xml")
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class RemoteCallbacksTest extends RemoteCayenneCase implements LifecycleListener {
     private int added, loaded, prePersisted, postPersisted, preRemoved, postRemoved, preUpdated, postUpdated;
     

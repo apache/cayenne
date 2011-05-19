@@ -20,12 +20,13 @@ package org.apache.cayenne.remote;
 
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * This is a test primarily for CAY-1118
  */
-@UseServerRuntime("cayenne-multi-tier.xml")
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class RelationshipChangeTest extends RemoteCayenneCase {
 
     public void testNullify() {

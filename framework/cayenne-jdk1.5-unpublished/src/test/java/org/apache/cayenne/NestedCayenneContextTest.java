@@ -36,12 +36,13 @@ import org.apache.cayenne.testdo.mt.ClientMtTooneDep;
 import org.apache.cayenne.testdo.mt.ClientMtTooneMaster;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests nested object contexts
  */
-@UseServerRuntime("cayenne-multi-tier.xml")
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class NestedCayenneContextTest extends RemoteCayenneCase {
 
     @Inject

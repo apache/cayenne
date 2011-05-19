@@ -25,12 +25,13 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.persistent.Continent;
 import org.apache.cayenne.testdo.persistent.Country;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Test for entites that are implemented in same class on client and server
  */
-@UseServerRuntime("cayenne-multi-tier.xml")
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class LightSuperClassTest extends RemoteCayenneCase {
 
     @Inject

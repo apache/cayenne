@@ -23,9 +23,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.remote.RemoteCayenneCase;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime("cayenne-multi-tier.xml")
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ValueInjectorTest extends RemoteCayenneCase {
 
     public void test() {
