@@ -22,7 +22,9 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -30,21 +32,29 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 // TODO: redefine all test cases in terms of entities in "relationships" map
 // and merge this test case with DeleteRulesTst that inherits
 // from RelationshipTestCase.
-public class DataContextDeleteRulesTest extends CayenneCase {
+@UseServerRuntime("cayenne-small-testmap.xml")
+public class DataContextDeleteRulesTest extends ServerCase {
 
+    @Inject
     private DataContext context;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Inject
+    private DBHelper dbHelper;
 
-        deleteTestData();
-        context = createDataContext();
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTGROUP");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
     }
 
     public void testNullifyToOne() {
@@ -175,7 +185,7 @@ public class DataContextDeleteRulesTest extends CayenneCase {
         painting.setToPaintingInfo(info);
 
         // Must commit before deleting.. this relationship is dependent,
-        // and everything must be committed for certain things to work.
+        // and everything must be committed for certain things to work
         context.commitChanges();
 
         context.deleteObject(painting);
