@@ -488,6 +488,18 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
+		<repository>
+			<id>caucho</id>
+			<name>Caucho Repository</name>
+			<url>http://caucho.com/m2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
