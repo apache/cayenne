@@ -21,30 +21,43 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ClobTestEntity;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class DataContextClobTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextClobTest extends ServerCase {
 
-    protected DataContext ctxt;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DataContext context2;
+
+    @Inject
+    private DataContext context3;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        deleteTestData();
-        ctxt = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("CLOB_TEST");
     }
 
-    protected boolean skipTests() {
-        return !getAccessStackAdapter().supportsLobs();
+    private boolean skipTests() {
+        return !accessStackAdapter.supportsLobs();
     }
 
-    protected boolean skipEmptyLOBTests() {
-        return !getAccessStackAdapter().handlesNullVsEmptyLOBs();
+    private boolean skipEmptyLOBTests() {
+        return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
 
     public void testEmptyClob() throws Exception {
@@ -81,12 +94,11 @@ public class DataContextClobTest extends CayenneCase {
         }
 
         // insert new clob
-        ctxt.newObject(ClobTestEntity.class);
-        ctxt.commitChanges();
+        context.newObject(ClobTestEntity.class);
+        context.commitChanges();
 
         // read the CLOB in the new context
-        DataContext ctxt2 = createDataContext();
-        List<?> objects2 = ctxt2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -95,11 +107,10 @@ public class DataContextClobTest extends CayenneCase {
 
         // update and save Clob
         clobObj2.setClobCol("updated rather small clob...");
-        ctxt2.commitChanges();
+        context2.commitChanges();
 
         // read into yet another context and check for changes
-        DataContext ctxt3 = createDataContext();
-        List<?> objects3 = ctxt3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);
@@ -108,7 +119,7 @@ public class DataContextClobTest extends CayenneCase {
 
     protected void runWithClobSize(int sizeBytes) throws Exception {
         // insert new clob
-        ClobTestEntity clobObj1 = ctxt.newObject(ClobTestEntity.class);
+        ClobTestEntity clobObj1 = context.newObject(ClobTestEntity.class);
 
         // init CLOB of a specified size
         if (sizeBytes == 0) {
@@ -122,11 +133,10 @@ public class DataContextClobTest extends CayenneCase {
             clobObj1.setClobCol(new String(bytes));
         }
 
-        ctxt.commitChanges();
+        context.commitChanges();
 
         // read the CLOB in the new context
-        DataContext ctxt2 = createDataContext();
-        List<?> objects2 = ctxt2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -134,11 +144,10 @@ public class DataContextClobTest extends CayenneCase {
 
         // update and save Clob
         clobObj2.setClobCol("updated rather small clob...");
-        ctxt2.commitChanges();
+        context2.commitChanges();
 
         // read into yet another context and check for changes
-        DataContext ctxt3 = createDataContext();
-        List<?> objects3 = ctxt3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);
