@@ -22,21 +22,27 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 import org.apache.cayenne.util.EventUtil;
 
 /**
  * Tests that DataContext sends DataChannel events.
- *
  */
-public class DataContextDataChannelEventsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextDataChannelEventsTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DataContext peer;
 
     public void testCommitEvent() {
-        DataContext context = createDataContext();
-
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -53,8 +59,6 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     }
 
     public void testRollbackEvent() {
-        DataContext context = createDataContext();
-
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -71,8 +75,6 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     }
 
     public void testChangeEventOnChildChange() {
-        DataContext context = createDataContext();
-
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -92,8 +94,6 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     }
 
     public void testChangeEventOnPeerChange() throws Exception {
-        DataContext context = createDataContext();
-
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -101,7 +101,6 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        DataContext peer = createDataContextWithSharedCache(false);
         Artist a1 = (Artist) peer.localObject(a.getObjectId(), a);
 
         a1.setArtistName("Y");
@@ -119,8 +118,6 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     }
 
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
-        DataContext context = createDataContext();
-
         ObjectContext childPeer1 = context.createChildContext();
 
         Artist a = childPeer1.newObject(Artist.class);
