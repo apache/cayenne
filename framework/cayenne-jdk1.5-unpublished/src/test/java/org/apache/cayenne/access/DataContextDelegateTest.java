@@ -53,6 +53,7 @@ public class DataContextDelegateTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
         dbHelper.deleteAll("GALLERY");
 
         // prepare a single gallery record
