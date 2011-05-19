@@ -27,17 +27,21 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.MockDataObject;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class ObjectStoreTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ObjectStoreTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
 
     public void testRegisteredObjectsCount() throws Exception {
-        DataContext context = createDataContext();
+
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
 
         DataObject o1 = new MockDataObject();
@@ -59,7 +63,6 @@ public class ObjectStoreTest extends CayenneCase {
     }
 
     public void testObjectsUnregistered() throws Exception {
-        DataContext context = createDataContext();
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(1));
@@ -83,7 +86,6 @@ public class ObjectStoreTest extends CayenneCase {
     }
 
     public void testUnregisterThenRegister() throws Exception {
-        DataContext context = createDataContext();
 
         // Create a gallery.
         Gallery g = context.newObject(Gallery.class);
@@ -125,8 +127,7 @@ public class ObjectStoreTest extends CayenneCase {
         //
         // The full object graph is not being re-registered during auto-registration
         // with the context.
-        Painting newP = (Painting) Cayenne.objectForPK(createDataContext(), p
-                .getObjectId());
+        Painting newP = (Painting) Cayenne.objectForPK(context, p.getObjectId());
         assertNotNull(newP.getToGallery());
     }
 }
