@@ -31,8 +31,6 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneResources;
@@ -41,12 +39,10 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class EntityResolverTest extends ServerCase {
-    
-    public static final String MULTI_TIER_ACCESS_STACK = "MultiTierStack";
-    
+
     @Inject
     private ServerRuntime runtime;
-    
+
     @Inject
     private DataContext context;
 
@@ -76,46 +72,31 @@ public class EntityResolverTest extends ServerCase {
         }
     }
 
-    public void testGetClientEntityResolver() {
-
-        AccessStack stack = CayenneResources.getResources().getAccessStack(
-                MULTI_TIER_ACCESS_STACK);
-
-        EntityResolver resolver = new EntityResolver(stack.getDataDomain().getDataMaps());
-        EntityResolver clientResolver = resolver.getClientEntityResolver();
-        assertNotNull(clientResolver);
-
-        // make sure that client entities got translated properly...
-
-        try {
-            assertNotNull(clientResolver.getObjEntity("MtTable1"));
-        }
-        catch (CayenneRuntimeException e) {
-            fail("'MtTable1' entity is not mapped. All entities: "
-                    + clientResolver.getObjEntities());
-        }
-
-        assertNotNull(clientResolver.lookupObjEntity(ClientMtTable1.class));
-        assertNull(clientResolver.lookupObjEntity(MtTable1.class));
-    }
-
     public void testGetObjEntity() {
-        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(runtime
+                .getDataDomain()
+                .getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity("Artist"));
     }
 
     public void testLookupObjEntityByClass() {
-        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(runtime
+                .getDataDomain()
+                .getDataMaps());
         assertIsArtistObjEntity(resolver.lookupObjEntity(Artist.class));
     }
 
     public void testLookupObjEntityByInstance() {
-        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(runtime
+                .getDataDomain()
+                .getDataMaps());
         assertIsArtistObjEntity(resolver.lookupObjEntity(new Artist()));
     }
 
     public void testLookupObjEntityByDataobject() {
-        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(runtime
+                .getDataDomain()
+                .getDataMaps());
         Artist artist = (Artist) context.newObject("Artist");
         assertIsArtistObjEntity(resolver.lookupObjEntity(artist));
     }
@@ -217,7 +198,7 @@ public class EntityResolverTest extends ServerCase {
         assertNotNull(ae);
         assertEquals(ae, getObjEntity("Artist"));
     }
-    
+
     private DbEntity getDbEntity(String dbEntityName) {
         for (DataMap map : runtime.getDataDomain().getDataMaps()) {
             for (DbEntity e : map.getDbEntities()) {

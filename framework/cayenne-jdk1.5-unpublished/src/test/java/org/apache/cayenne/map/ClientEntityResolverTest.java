@@ -22,13 +22,39 @@ package org.apache.cayenne.map;
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class ClientEntityResolverTest extends TestCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class ClientEntityResolverTest extends ClientCase {
+
+    @Inject
+    private EntityResolver serverResolver;
+
+    public void testGetClientEntityResolver() {
+
+        EntityResolver clientResolver = serverResolver.getClientEntityResolver();
+        assertNotNull(clientResolver);
+
+        // make sure that client entities got translated properly...
+
+        try {
+            assertNotNull(clientResolver.getObjEntity("MtTable1"));
+        }
+        catch (CayenneRuntimeException e) {
+            fail("'MtTable1' entity is not mapped. All entities: "
+                    + clientResolver.getObjEntities());
+        }
+
+        assertNotNull(clientResolver.lookupObjEntity(ClientMtTable1.class));
+        assertNull(clientResolver.lookupObjEntity(MtTable1.class));
+    }
 
     public void testSerializabilityWithHessian() throws Exception {
         ObjEntity entity = new ObjEntity("test_entity");
