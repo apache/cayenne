@@ -19,13 +19,12 @@
 
 package org.apache.cayenne;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
-public class DataRowTest extends CayenneCase {
+public class DataRowTest extends TestCase {
 
     public void testHessianSerializability() throws Exception {
         DataRow s1 = new DataRow(10);
