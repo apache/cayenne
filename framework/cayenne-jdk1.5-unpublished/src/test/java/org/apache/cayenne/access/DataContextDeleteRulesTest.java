@@ -49,9 +49,11 @@ public class DataContextDeleteRulesTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTGROUP");
+        dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("EXHIBIT");
         dbHelper.deleteAll("GALLERY");
