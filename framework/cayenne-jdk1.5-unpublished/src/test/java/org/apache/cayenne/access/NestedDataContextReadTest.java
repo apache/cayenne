@@ -30,31 +30,94 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class NestedDataContextReadTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class NestedDataContextReadTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DataChannelInterceptor queryInterceptor;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    private TableHelper tArtist;
+    private TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE");
+    }
+
+    private void createArtistsDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tArtist.insert(33003, "artist3");
+        tArtist.insert(33004, "artist4");
+    }
+
+    private void createRelationshipDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tArtist.insert(33003, "artist3");
+        tArtist.insert(33004, "artist4");
+        tPainting.insert(33001, "P_artist1", 33001, 3000);
+        tPainting.insert(33002, "P_artist2", 33002, 3000);
+        tPainting.insert(33003, "P_artist3", 33003, 3000);
+        tPainting.insert(33004, "P_artist4", 33004, 3000);
+        tPainting.insert(33005, "P_artist5", null, 3000);
+    }
+
+    private void createPrefetchingDataSet() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+        tPainting.insert(33001, "P_artist1", 33001, 3000);
+        tPainting.insert(33006, "P_artist6", 33001, 3000);
+    }
 
     public void testCreateChildDataContext() {
-        DataContext parent = createDataContext();
-        parent.setValidatingObjectsOnCommit(true);
+        context.setValidatingObjectsOnCommit(true);
 
-        ObjectContext child1 = parent.createChildContext();
+        ObjectContext child1 = context.createChildContext();
 
         assertNotNull(child1);
-        assertSame(parent, child1.getChannel());
+        assertSame(context, child1.getChannel());
         assertTrue(((DataContext) child1).isValidatingObjectsOnCommit());
 
-        parent.setValidatingObjectsOnCommit(false);
+        context.setValidatingObjectsOnCommit(false);
 
-        ObjectContext child2 = parent.createChildContext();
+        ObjectContext child2 = context.createChildContext();
 
         assertNotNull(child2);
-        assertSame(parent, child2.getChannel());
+        assertSame(context, child2.getChannel());
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
 
         // second level of nesting
@@ -66,19 +129,17 @@ public class NestedDataContextReadTest extends CayenneCase {
     }
 
     public void testLocalObjectSynchronize() throws Exception {
-        deleteTestData();
-        createTestData("testArtists");
+        createArtistsDataSet();
 
-        DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = context.createChildContext();
 
-        Persistent _new = context.newObject(Artist.class);
+        final Persistent _new = context.newObject(Artist.class);
 
-        Persistent hollow = context.localObject(new ObjectId(
+        final Persistent hollow = context.localObject(new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001), null);
-        DataObject committed = (DataObject) Cayenne.objectForQuery(
+        final DataObject committed = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -86,14 +147,14 @@ public class NestedDataContextReadTest extends CayenneCase {
                         33002)));
 
         int modifiedId = 33003;
-        Artist modified = (Artist) Cayenne.objectForQuery(
+        final Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
         modified.setArtistName("M1");
-        DataObject deleted = (DataObject) Cayenne.objectForQuery(
+        final DataObject deleted = (DataObject) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -109,69 +170,68 @@ public class NestedDataContextReadTest extends CayenneCase {
 
         // now check how objects in different state behave
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
+            public void execute() {
+                Persistent newPeer = childContext.localObject(_new.getObjectId(), _new);
 
-            Persistent newPeer = childContext.localObject(_new.getObjectId(), _new);
+                assertEquals(_new.getObjectId(), newPeer.getObjectId());
+                assertEquals(PersistenceState.COMMITTED, newPeer.getPersistenceState());
 
-            assertEquals(_new.getObjectId(), newPeer.getObjectId());
-            assertEquals(PersistenceState.COMMITTED, newPeer.getPersistenceState());
+                assertSame(childContext, newPeer.getObjectContext());
+                assertSame(context, _new.getObjectContext());
 
-            assertSame(childContext, newPeer.getObjectContext());
-            assertSame(context, _new.getObjectContext());
+                Persistent hollowPeer = childContext.localObject(
+                        hollow.getObjectId(),
+                        hollow);
+                assertEquals(PersistenceState.HOLLOW, hollowPeer.getPersistenceState());
+                assertEquals(hollow.getObjectId(), hollowPeer.getObjectId());
+                assertSame(childContext, hollowPeer.getObjectContext());
+                assertSame(context, hollow.getObjectContext());
 
-            Persistent hollowPeer = childContext
-                    .localObject(hollow.getObjectId(), hollow);
-            assertEquals(PersistenceState.HOLLOW, hollowPeer.getPersistenceState());
-            assertEquals(hollow.getObjectId(), hollowPeer.getObjectId());
-            assertSame(childContext, hollowPeer.getObjectContext());
-            assertSame(context, hollow.getObjectContext());
+                Persistent committedPeer = childContext.localObject(committed
+                        .getObjectId(), committed);
+                assertEquals(PersistenceState.COMMITTED, committedPeer
+                        .getPersistenceState());
+                assertEquals(committed.getObjectId(), committedPeer.getObjectId());
+                assertSame(childContext, committedPeer.getObjectContext());
+                assertSame(context, committed.getObjectContext());
 
-            Persistent committedPeer = childContext.localObject(
-                    committed.getObjectId(),
-                    committed);
-            assertEquals(PersistenceState.COMMITTED, committedPeer.getPersistenceState());
-            assertEquals(committed.getObjectId(), committedPeer.getObjectId());
-            assertSame(childContext, committedPeer.getObjectContext());
-            assertSame(context, committed.getObjectContext());
+                Artist modifiedPeer = (Artist) childContext.localObject(modified
+                        .getObjectId(), modified);
+                assertEquals(PersistenceState.COMMITTED, modifiedPeer
+                        .getPersistenceState());
+                assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
+                assertEquals("M1", modifiedPeer.getArtistName());
+                assertSame(childContext, modifiedPeer.getObjectContext());
+                assertSame(context, modified.getObjectContext());
 
-            Artist modifiedPeer = (Artist) childContext.localObject(modified
-                    .getObjectId(), modified);
-            assertEquals(PersistenceState.COMMITTED, modifiedPeer.getPersistenceState());
-            assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
-            assertEquals("M1", modifiedPeer.getArtistName());
-            assertSame(childContext, modifiedPeer.getObjectContext());
-            assertSame(context, modified.getObjectContext());
+                Persistent deletedPeer = childContext.localObject(
+                        deleted.getObjectId(),
+                        deleted);
+                assertEquals(PersistenceState.COMMITTED, deletedPeer
+                        .getPersistenceState());
+                assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
+                assertSame(childContext, deletedPeer.getObjectContext());
+                assertSame(context, deleted.getObjectContext());
 
-            Persistent deletedPeer = childContext.localObject(
-                    deleted.getObjectId(),
-                    deleted);
-            assertEquals(PersistenceState.COMMITTED, deletedPeer.getPersistenceState());
-            assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
-            assertSame(childContext, deletedPeer.getObjectContext());
-            assertSame(context, deleted.getObjectContext());
-        }
-        finally {
-            unblockQueries();
-        }
+            }
+        });
     }
 
     public void testLocalObjectsNoOverride() throws Exception {
-        deleteTestData();
-        createTestData("testArtists");
+        createArtistsDataSet();
 
-        DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = context.createChildContext();
 
         int modifiedId = 33003;
-        Artist modified = (Artist) Cayenne.objectForQuery(
+        final Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
-        Artist peerModified = (Artist) Cayenne.objectForQuery(
+        final Artist peerModified = (Artist) Cayenne.objectForQuery(
                 childContext,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
@@ -184,84 +244,73 @@ public class NestedDataContextReadTest extends CayenneCase {
         assertEquals(PersistenceState.MODIFIED, modified.getPersistenceState());
         assertEquals(PersistenceState.MODIFIED, peerModified.getPersistenceState());
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-
-            Persistent peerModified2 = childContext.localObject(
-                    modified.getObjectId(),
-                    modified);
-            assertSame(peerModified, peerModified2);
-            assertEquals(PersistenceState.MODIFIED, peerModified2.getPersistenceState());
-            assertEquals("M2", peerModified.getArtistName());
-            assertEquals("M1", modified.getArtistName());
-        }
-        finally {
-            unblockQueries();
-        }
+            public void execute() {
+                Persistent peerModified2 = childContext.localObject(modified
+                        .getObjectId(), modified);
+                assertSame(peerModified, peerModified2);
+                assertEquals(PersistenceState.MODIFIED, peerModified2
+                        .getPersistenceState());
+                assertEquals("M2", peerModified.getArtistName());
+                assertEquals("M1", modified.getArtistName());
+            }
+        });
     }
 
     public void testLocalObjectRelationship() throws Exception {
-        deleteTestData();
 
-        DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = context.createChildContext();
 
         Artist _new = context.newObject(Artist.class);
-        Painting _newP = context.newObject(Painting.class);
+        final Painting _newP = context.newObject(Painting.class);
         _new.addToPaintingArray(_newP);
 
-        blockQueries();
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        try {
-
-            Painting painting = (Painting) childContext.localObject(_newP.getObjectId(), _newP);
-            assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-            assertNotNull(painting.getToArtist());
-            assertEquals(PersistenceState.COMMITTED, painting.getToArtist().getPersistenceState());
-        }
-        finally {
-            unblockQueries();
-        }
+            public void execute() {
+                Painting painting = (Painting) childContext.localObject(_newP
+                        .getObjectId(), _newP);
+                assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
+                assertNotNull(painting.getToArtist());
+                assertEquals(PersistenceState.COMMITTED, painting
+                        .getToArtist()
+                        .getPersistenceState());
+            }
+        });
     }
 
     public void testSelect() throws Exception {
-        deleteTestData();
-        createTestData("testArtists");
+        createArtistsDataSet();
 
-        DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildContext();
+        ObjectContext child = context.createChildContext();
 
         // test how different object states appear in the child on select
 
-        Persistent _new = parent.newObject(Artist.class);
+        Persistent _new = context.newObject(Artist.class);
 
-        Persistent hollow = parent.localObject(new ObjectId(
+        Persistent hollow = context.localObject(new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001), null);
         DataObject committed = (DataObject) Cayenne.objectForQuery(
-                parent,
+                context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         33002)));
 
         int modifiedId = 33003;
-        Artist modified = (Artist) Cayenne.objectForQuery(
-                parent,
-                new ObjectIdQuery(new ObjectId(
-                        "Artist",
-                        Artist.ARTIST_ID_PK_COLUMN,
-                        modifiedId)));
+        Artist modified = (Artist) Cayenne.objectForQuery(context, new ObjectIdQuery(
+                new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, modifiedId)));
         modified.setArtistName("MODDED");
         DataObject deleted = (DataObject) Cayenne.objectForQuery(
-                parent,
+                context,
                 new ObjectIdQuery(new ObjectId(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         33004)));
-        parent.deleteObject(deleted);
+        context.deleteObject(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, committed.getPersistenceState());
@@ -269,10 +318,10 @@ public class NestedDataContextReadTest extends CayenneCase {
         assertEquals(PersistenceState.DELETED, deleted.getPersistenceState());
         assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
-        List objects = child.performQuery(new SelectQuery(Artist.class));
+        List<?> objects = child.performQuery(new SelectQuery(Artist.class));
         assertEquals("All but NEW object must have been included", 4, objects.size());
 
-        Iterator it = objects.iterator();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             DataObject next = (DataObject) it.next();
             assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
@@ -285,11 +334,9 @@ public class NestedDataContextReadTest extends CayenneCase {
     }
 
     public void testReadToOneRelationship() throws Exception {
-        deleteTestData();
-        createTestData("testReadRelationship");
+        createRelationshipDataSet();
 
-        DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildContext();
+        final ObjectContext child = context.createChildContext();
 
         // test how different object states appear in the child on select
 
@@ -300,38 +347,38 @@ public class NestedDataContextReadTest extends CayenneCase {
         int newTargetSrcId = 33005;
 
         Painting hollowTargetSrc = Cayenne.objectForPK(
-                parent,
+                context,
                 Painting.class,
                 hollowTargetSrcId);
         Artist hollowTarget = hollowTargetSrc.getToArtist();
 
         Painting modifiedTargetSrc = Cayenne.objectForPK(
-                parent,
+                context,
                 Painting.class,
                 modifiedTargetSrcId);
         Artist modifiedTarget = modifiedTargetSrc.getToArtist();
         modifiedTarget.setArtistName("M1");
 
-        Painting deletedTargetSrc = Cayenne.objectForPK(
-                parent,
+        final Painting deletedTargetSrc = Cayenne.objectForPK(
+                context,
                 Painting.class,
                 deletedTargetSrcId);
         Artist deletedTarget = deletedTargetSrc.getToArtist();
         deletedTargetSrc.setToArtist(null);
-        parent.deleteObject(deletedTarget);
+        context.deleteObject(deletedTarget);
 
         Painting committedTargetSrc = Cayenne.objectForPK(
-                parent,
+                context,
                 Painting.class,
                 committedTargetSrcId);
         Artist committedTarget = committedTargetSrc.getToArtist();
         committedTarget.getArtistName();
 
-        Painting newTargetSrc = Cayenne.objectForPK(
-                parent,
+        final Painting newTargetSrc = Cayenne.objectForPK(
+                context,
                 Painting.class,
                 newTargetSrcId);
-        Artist newTarget = parent.newObject(Artist.class);
+        Artist newTarget = context.newObject(Artist.class);
         newTarget.setArtistName("N1");
         newTargetSrc.setToArtist(newTarget);
 
@@ -350,59 +397,60 @@ public class NestedDataContextReadTest extends CayenneCase {
         // run an ordered query, so we can address specific objects directly by index
         SelectQuery q = new SelectQuery(Painting.class);
         q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
-        List childSources = child.performQuery(q);
+        final List<?> childSources = child.performQuery(q);
         assertEquals(5, childSources.size());
 
-        blockQueries();
-        try {
-            Painting childHollowTargetSrc = (Painting) childSources.get(0);
-            assertSame(child, childHollowTargetSrc.getObjectContext());
-            Artist childHollowTarget = childHollowTargetSrc.getToArtist();
-            assertNotNull(childHollowTarget);
-            assertEquals(PersistenceState.HOLLOW, childHollowTarget.getPersistenceState());
-            assertSame(child, childHollowTarget.getObjectContext());
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            Artist childModifiedTarget = ((Painting) childSources.get(1)).getToArtist();
+            public void execute() {
+                Painting childHollowTargetSrc = (Painting) childSources.get(0);
+                assertSame(child, childHollowTargetSrc.getObjectContext());
+                Artist childHollowTarget = childHollowTargetSrc.getToArtist();
+                assertNotNull(childHollowTarget);
+                assertEquals(PersistenceState.HOLLOW, childHollowTarget
+                        .getPersistenceState());
+                assertSame(child, childHollowTarget.getObjectContext());
 
-            assertEquals(PersistenceState.COMMITTED, childModifiedTarget
-                    .getPersistenceState());
-            assertSame(child, childModifiedTarget.getObjectContext());
-            assertEquals("M1", childModifiedTarget.getArtistName());
+                Artist childModifiedTarget = ((Painting) childSources.get(1))
+                        .getToArtist();
 
-            Painting childDeletedTargetSrc = (Painting) childSources.get(2);
-            // make sure we got the right object...
-            assertEquals(deletedTargetSrc.getObjectId(), childDeletedTargetSrc
-                    .getObjectId());
-            Artist childDeletedTarget = childDeletedTargetSrc.getToArtist();
-            assertNull(childDeletedTarget);
+                assertEquals(PersistenceState.COMMITTED, childModifiedTarget
+                        .getPersistenceState());
+                assertSame(child, childModifiedTarget.getObjectContext());
+                assertEquals("M1", childModifiedTarget.getArtistName());
 
-            Artist childCommittedTarget = ((Painting) childSources.get(3)).getToArtist();
-            assertEquals(PersistenceState.COMMITTED, childCommittedTarget
-                    .getPersistenceState());
-            assertSame(child, childCommittedTarget.getObjectContext());
+                Painting childDeletedTargetSrc = (Painting) childSources.get(2);
+                // make sure we got the right object...
+                assertEquals(deletedTargetSrc.getObjectId(), childDeletedTargetSrc
+                        .getObjectId());
+                Artist childDeletedTarget = childDeletedTargetSrc.getToArtist();
+                assertNull(childDeletedTarget);
 
-            Painting childNewTargetSrc = (Painting) childSources.get(4);
-            // make sure we got the right object...
-            assertEquals(newTargetSrc.getObjectId(), childNewTargetSrc.getObjectId());
-            Artist childNewTarget = childNewTargetSrc.getToArtist();
-            assertNotNull(childNewTarget);
-            assertEquals(PersistenceState.COMMITTED, childNewTarget.getPersistenceState());
-            assertSame(child, childNewTarget.getObjectContext());
-            assertEquals("N1", childNewTarget.getArtistName());
-        }
-        finally {
-            unblockQueries();
-        }
+                Artist childCommittedTarget = ((Painting) childSources.get(3))
+                        .getToArtist();
+                assertEquals(PersistenceState.COMMITTED, childCommittedTarget
+                        .getPersistenceState());
+                assertSame(child, childCommittedTarget.getObjectContext());
+
+                Painting childNewTargetSrc = (Painting) childSources.get(4);
+                // make sure we got the right object...
+                assertEquals(newTargetSrc.getObjectId(), childNewTargetSrc.getObjectId());
+                Artist childNewTarget = childNewTargetSrc.getToArtist();
+                assertNotNull(childNewTarget);
+                assertEquals(PersistenceState.COMMITTED, childNewTarget
+                        .getPersistenceState());
+                assertSame(child, childNewTarget.getObjectContext());
+                assertEquals("N1", childNewTarget.getArtistName());
+            }
+        });
     }
 
     public void testPrefetchingToOne() throws Exception {
-        deleteTestData();
-        createTestData("testPrefetching");
+        createPrefetchingDataSet();
 
-        DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildContext();
+        final ObjectContext child = context.createChildContext();
 
-        ObjectId prefetchedId = new ObjectId(
+        final ObjectId prefetchedId = new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 new Integer(33001));
@@ -411,78 +459,73 @@ public class NestedDataContextReadTest extends CayenneCase {
         q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
 
-        List results = child.performQuery(q);
+        final List<?> results = child.performQuery(q);
 
-        blockQueries();
-        try {
-            assertEquals(2, results.size());
-            Iterator it = results.iterator();
-            while (it.hasNext()) {
-                Painting o = (Painting) it.next();
-                assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
-                assertSame(child, o.getObjectContext());
+        // blockQueries();
 
-                Artist o1 = o.getToArtist();
-                assertNotNull(o1);
-                assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-                assertSame(child, o1.getObjectContext());
-                assertEquals(prefetchedId, o1.getObjectId());
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                assertEquals(2, results.size());
+                Iterator<?> it = results.iterator();
+                while (it.hasNext()) {
+                    Painting o = (Painting) it.next();
+                    assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
+                    assertSame(child, o.getObjectContext());
+
+                    Artist o1 = o.getToArtist();
+                    assertNotNull(o1);
+                    assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
+                    assertSame(child, o1.getObjectContext());
+                    assertEquals(prefetchedId, o1.getObjectId());
+                }
             }
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 
     public void testPrefetchingToMany() throws Exception {
-        deleteTestData();
-        createTestData("testPrefetching");
+        createPrefetchingDataSet();
 
-        DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildContext();
+        final ObjectContext child = context.createChildContext();
 
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
 
-        List results = child.performQuery(q);
+        final List<?> results = child.performQuery(q);
 
-        blockQueries();
-        try {
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            Artist o1 = (Artist) results.get(0);
-            assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-            assertSame(child, o1.getObjectContext());
+            public void execute() {
+                Artist o1 = (Artist) results.get(0);
+                assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
+                assertSame(child, o1.getObjectContext());
 
-            List children1 = o1.getPaintingArray();
+                List<?> children1 = o1.getPaintingArray();
 
-            assertEquals(2, children1.size());
-            Iterator it = children1.iterator();
-            while (it.hasNext()) {
-                Painting o = (Painting) it.next();
-                assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
-                assertSame(child, o.getObjectContext());
+                assertEquals(2, children1.size());
+                Iterator<?> it = children1.iterator();
+                while (it.hasNext()) {
+                    Painting o = (Painting) it.next();
+                    assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
+                    assertSame(child, o.getObjectContext());
 
-                assertEquals(o1, o.getToArtist());
+                    assertEquals(o1, o.getToArtist());
+                }
+
+                Artist o2 = (Artist) results.get(1);
+                assertEquals(PersistenceState.COMMITTED, o2.getPersistenceState());
+                assertSame(child, o2.getObjectContext());
+
+                List<?> children2 = o2.getPaintingArray();
+
+                assertEquals(0, children2.size());
             }
-
-            Artist o2 = (Artist) results.get(1);
-            assertEquals(PersistenceState.COMMITTED, o2.getPersistenceState());
-            assertSame(child, o2.getObjectContext());
-
-            List children2 = o2.getPaintingArray();
-
-            assertEquals(0, children2.size());
-        }
-        finally {
-            unblockQueries();
-        }
+        });
     }
 
     public void testObjectFromDataRow() throws Exception {
-        deleteTestData();
 
-        DataContext context = createDataContext();
         DataContext childContext = (DataContext) context.createChildContext();
 
         DataRow row = new DataRow(8);
@@ -490,7 +533,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         row.put("ARTIST_NAME", "A");
         row.put("DATE_OF_BIRTH", new Date());
 
-        Artist artist = childContext.objectFromDataRow(Artist.class, row, true);
+        Artist artist = childContext.objectFromDataRow(Artist.class, row);
         assertNotNull(artist);
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
         assertSame(childContext, artist.getObjectContext());
