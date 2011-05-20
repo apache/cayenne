@@ -476,18 +476,7 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
-		<repository>
-			<id>objectstyle</id>
-			<name>Objectstyle Repository</name>
-			<url>http://objectstyle.org/maven2</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
+
 		<repository>
 			<id>caucho</id>
 			<name>Caucho Repository</name>
@@ -663,7 +652,7 @@
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
-				<version>3.0.2</version>
+				<version>3.0.5</version>
 				<configuration>
 					<generatePdf>false</generatePdf>
 					<generateXml>true</generateXml>
