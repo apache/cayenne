@@ -478,6 +478,18 @@
 		</repository>
 
 		<repository>
+			<id>objectstyle</id>
+			<name>ObjectStyle Repository</name>
+			<url>http://objectstyle.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
 			<id>caucho</id>
 			<name>Caucho Repository</name>
 			<url>http://caucho.com/m2</url>
