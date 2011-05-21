@@ -68,6 +68,7 @@ public class NumericTypesTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("BOOLEAN_TEST");
         dbHelper.deleteAll("SMALLINT_TEST");
         dbHelper.deleteAll("TINYINT_TEST");
         dbHelper.deleteAll("DECIMAL_PK_TST");

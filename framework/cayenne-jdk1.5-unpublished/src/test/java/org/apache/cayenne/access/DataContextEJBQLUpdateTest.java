@@ -50,6 +50,7 @@ public class DataContextEJBQLUpdateTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("BOOLEAN_TEST");
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
