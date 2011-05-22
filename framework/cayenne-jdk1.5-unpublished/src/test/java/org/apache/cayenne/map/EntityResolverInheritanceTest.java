@@ -19,32 +19,28 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.unit.PeopleCase;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class EntityResolverInheritanceTest extends PeopleCase {
+@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+public class EntityResolverInheritanceTest extends ServerCase {
 
-    protected EntityResolver resolver;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        resolver = new EntityResolver(getDomain().getDataMaps());
-    }
+    @Inject
+    private EntityResolver resolver;
 
     public void testLookupAbstractPersonTree() throws Exception {
         EntityInheritanceTree tree = resolver.lookupInheritanceTree("AbstractPerson");
         assertNotNull(tree);
         assertEquals(2, tree.getChildrenCount());
-        assertSame(getObjEntity("AbstractPerson"), tree.getEntity());
+        assertSame(resolver.getObjEntity("AbstractPerson"), tree.getEntity());
     }
 
     public void testLookupEmployeeTree() throws Exception {
         EntityInheritanceTree tree = resolver.lookupInheritanceTree("Employee");
         assertNotNull(tree);
         assertEquals(1, tree.getChildrenCount());
-        assertSame(getObjEntity("Employee"), tree.getEntity());
+        assertSame(resolver.getObjEntity("Employee"), tree.getEntity());
     }
 
     public void testLookupManagerTree() throws Exception {
