@@ -100,13 +100,6 @@ public class CayenneResources {
         return node;
     }
 
-    /**
-     * Returns connection information.
-     */
-    public DataSourceInfo getConnectionInfo() {
-        return connectionInfo;
-    }
-
     public DataSource createDataSource() {
 
         try {

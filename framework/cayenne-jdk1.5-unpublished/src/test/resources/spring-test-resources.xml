@@ -116,48 +116,6 @@
 	<!-- ======================================= -->
 	<!-- Access Stacks -->
 	<!-- ======================================= -->
-	<bean id="TestStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="TestMap"/></list></constructor-arg>
-	</bean>
-	<bean id="PeopleStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="PeopleMap"/></list></constructor-arg>
-	</bean>
-	<bean id="EmbeddingStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="EmbeddingMap"/></list></constructor-arg>
-	</bean>
-	<bean id="LockingStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="LockingMap"/></list></constructor-arg>
-	</bean>
-	<bean id="RelationshipStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="RelationshipMap"/></list></constructor-arg>
-	</bean>
-	<bean id="OneWayStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="OneWayMap"/></list></constructor-arg>
-	</bean>
-	<bean id="MultiNodeStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg>
-			<list><ref bean="DB1Map"/><ref bean="DB2Map"/></list>
-		</constructor-arg>
-	</bean>
-	<bean id="MultiTierStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="MultiTierMap"/></list></constructor-arg>
-	</bean>
-	<bean id="GenericStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="GenericMap"/></list></constructor-arg>
-	</bean>
-	<bean id="QualifiedStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg><list><ref bean="QualifiedMap"/></list></constructor-arg>
-	</bean>
 	<!-- Used to create DB schema to avoid conflicts when schema for individual stacks is generated. -->
 	<bean id="SchemaSetupStack" class="org.apache.cayenne.unit.SimpleAccessStack">
 		<constructor-arg><ref bean="TestResources"/></constructor-arg>
