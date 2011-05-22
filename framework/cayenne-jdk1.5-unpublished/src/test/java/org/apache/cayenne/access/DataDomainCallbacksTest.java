@@ -18,38 +18,52 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.Arrays;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataDomainCallbacksTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataDomainCallbacksTest extends ServerCase {
+
+    @Inject
+    private EntityResolver resolver;
+
+    @Inject
+    private ObjectContext context;
+
+    @Inject
+    private ObjectContext context1;
+    
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        EntityResolver resolver = getDomain().getEntityResolver();
-        resolver.getCallbackRegistry().clear();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
     }
 
     public void testPostLoad() throws Exception {
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
@@ -103,11 +117,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
     }
 
     public void testPostLoad_MixedResult() throws Exception {
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
@@ -130,11 +140,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
     }
 
     public void testPostLoad_Relationship() throws Exception {
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
@@ -151,11 +157,10 @@ public class DataDomainCallbacksTest extends CayenneCase {
         p1.setPaintingTitle("XXX");
         context.commitChanges();
 
-        // reset context and read related object
-        context = createDataContext();
+        context.invalidateObjects(Arrays.asList(a1, p1));
 
         SelectQuery q = new SelectQuery(Painting.class);
-        p1 = (Painting) context.performQuery(q).get(0);
+        p1 = (Painting) context1.performQuery(q).get(0);
 
         // this should be a hollow object, so no callback just yet
         a1 = p1.getToArtist();
@@ -169,11 +174,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
     }
 
     public void testPostLoad_Prefetch() throws Exception {
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
@@ -190,12 +191,9 @@ public class DataDomainCallbacksTest extends CayenneCase {
         p1.setPaintingTitle("XXX");
         context.commitChanges();
 
-        // reset context and read related object
-        context = createDataContext();
-
         SelectQuery q = new SelectQuery(Painting.class);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
-        p1 = (Painting) context.performQuery(q).get(0);
+        p1 = (Painting) context1.performQuery(q).get(0);
 
         // artist is prefetched here, and a callback must have been invoked
         a1 = p1.getToArtist();
@@ -205,11 +203,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
     }
 
     public void testPostLoad_LocalObject() throws Exception {
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -223,10 +217,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
                 listener,
                 "publicCallback");
 
-        // reset context and read related object
-        context = createDataContext();
-
-        Artist a2 = (Artist) context.localObject(a1.getObjectId(), null);
+        Artist a2 = (Artist) context1.localObject(a1.getObjectId(), null);
 
         assertEquals(PersistenceState.HOLLOW, a2.getPersistenceState());
         assertEquals(0, a2.getPostLoaded());
@@ -239,11 +230,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
     public void testPreUpdate() {
 
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -279,11 +266,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
     public void testPostUpdate() {
 
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -321,11 +304,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
     public void testPostRemove() {
 
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -351,11 +330,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
     public void testPostRemove_UpdatedDeleted() {
 
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -386,11 +361,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
     public void testPostRemove_InsertedUpdatedDeleted() {
 
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        ObjectContext context = createDataContext();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         MockCallingBackListener listener0 = new MockCallingBackListener();
         registry.addListener(
@@ -425,11 +396,8 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
     public void testPostPersist() {
 
-        LifecycleCallbackRegistry registry = getDomain()
-                .getEntityResolver()
-                .getCallbackRegistry();
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        ObjectContext context = createDataContext();
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
