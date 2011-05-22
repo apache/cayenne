@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
@@ -63,6 +64,7 @@ public class ServerCaseModule implements Module {
         binder.bind(UnitTestLifecycleManager.class).toInstance(
                 new ServerCaseLifecycleManager(testScope));
 
+        binder.bind(DataSourceInfo.class).toInstance(resources.getConnectionInfo());
         binder.bind(DataSource.class).toProviderInstance(
                 new CayenneResourcesDataSourceProvider(resources));
         binder.bind(DbAdapter.class).toProviderInstance(

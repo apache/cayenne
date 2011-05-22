@@ -21,15 +21,22 @@ package org.apache.cayenne.conn;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class PoolManagerTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class PoolManagerTest extends ServerCase {
+
+    @Inject
+    private DataSourceInfo dataSourceInfo;
 
     public void testDataSourceUrl() throws Exception {
-        String driverName = getConnectionInfo().getJdbcDriver();
-        String url = getConnectionInfo().getDataSourceUrl();
+        String driverName = dataSourceInfo.getJdbcDriver();
+        String url = dataSourceInfo.getDataSourceUrl();
 
         PoolManager pm = new PoolManager(driverName, url, 0, 3, "", "") {
+
             @Override
             protected void startMaintenanceThread() {
             }
@@ -40,6 +47,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testPassword() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "b") {
+
             @Override
             protected void startMaintenanceThread() {
             }
@@ -49,6 +57,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testUserName() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "a", "") {
+
             @Override
             protected void startMaintenanceThread() {
             }
@@ -58,6 +67,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testMinConnections() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
+
             @Override
             protected void startMaintenanceThread() {
             }
@@ -67,6 +77,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testMaxConnections() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
+
             @Override
             protected void startMaintenanceThread() {
             }
@@ -75,15 +86,10 @@ public class PoolManagerTest extends CayenneCase {
     }
 
     public void testPooling() throws Exception {
-        DataSourceInfo dsi = getConnectionInfo();
-        PoolManager pm =
-            new PoolManager(
-                dsi.getJdbcDriver(),
-                dsi.getDataSourceUrl(),
-                2,
-                3,
-                dsi.getUserName(),
-                dsi.getPassword());
+
+        PoolManager pm = new PoolManager(dataSourceInfo.getJdbcDriver(), dataSourceInfo
+                .getDataSourceUrl(), 2, 3, dataSourceInfo.getUserName(), dataSourceInfo
+                .getPassword());
 
         try {
             assertEquals(0, pm.getCurrentlyInUse());
@@ -106,9 +112,7 @@ public class PoolManagerTest extends CayenneCase {
             assertEquals(2, pm.getCurrentlyUnused());
         }
         finally {
-            // get rid of local pool
-            pm.dispose();
+            pm.shutdown();
         }
-
     }
 }
