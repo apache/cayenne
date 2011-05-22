@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.unit;
 
-import java.util.Map;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
 
@@ -32,9 +30,6 @@ public interface AccessStack {
     AccessStackAdapter getAdapter(DataNode node);
 
     UnitTestDomain getDataDomain();
-
-    void createTestData(Class<?> testCase, String testName, Map parameters)
-            throws Exception;
 
     void deleteTestData() throws Exception;
 

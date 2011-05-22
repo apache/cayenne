@@ -20,8 +20,6 @@
 package org.apache.cayenne.unit;
 
 import java.sql.Connection;
-import java.util.Collections;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -29,7 +27,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
-import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -100,18 +97,6 @@ public abstract class CayenneCase extends TestCase {
         // make sure adapter is correct
         customizer.setAdapter(getAccessStackAdapter().getAdapter());
         return customizer;
-    }
-
-    /**
-     * Creates test data via a mechanism preconfigured in the access stack. Default
-     * mechanism is loading test data DML from XML file.
-     */
-    protected void createTestData(String testName) throws Exception {
-        accessStack.createTestData(this.getClass(), testName, Collections.EMPTY_MAP);
-    }
-
-    protected void createTestData(String testName, Map parameters) throws Exception {
-        accessStack.createTestData(this.getClass(), testName, parameters);
     }
 
     protected DataNode getNode() {

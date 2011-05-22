@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -48,7 +47,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.testdo.testmap.StringET1ExtendedType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,18 +66,15 @@ public class SimpleAccessStack implements AccessStack {
 
     protected CayenneResources resources;
     protected UnitTestDomain domain;
-    protected DataSetFactory dataSetFactory;
 
-    public SimpleAccessStack(CayenneResources resources, DataSetFactory dataSetFactory,
-            DataMap[] maps) throws Exception {
+    public SimpleAccessStack(CayenneResources resources, DataMap[] maps) throws Exception {
 
-        this.dataSetFactory = dataSetFactory;
         this.resources = resources;
         this.domain = new UnitTestDomain("domain");
         domain.setEventManager(new DefaultEventManager(2));
         domain.setEntitySorter(new AshwoodEntitySorter());
         domain.setQueryCache(new MapQueryCache(50));
-        
+
         for (DataMap map : maps) {
             initNode(map);
         }
@@ -121,12 +116,6 @@ public class SimpleAccessStack implements AccessStack {
      */
     public UnitTestDomain getDataDomain() {
         return domain;
-    }
-
-    public void createTestData(Class<?> testCase, String testName, Map parameters)
-            throws Exception {
-        Query query = dataSetFactory.getDataSetQuery(testCase, testName, parameters);
-        getDataDomain().onQuery(null, query);
     }
 
     /**
