@@ -34,23 +34,28 @@ public class CAY_743Test extends TestCase {
         Injector injector = DIBootstrap.createInjector(new ServerModule(
                 "cay743/cayenne-domain.xml"));
 
-        DataDomain domain = injector.getInstance(DataDomain.class);
-        assertEquals(2, domain.getDataMaps().size());
+        try {
+            DataDomain domain = injector.getInstance(DataDomain.class);
+            assertEquals(2, domain.getDataMaps().size());
 
-        DataMap m1 = domain.getDataMap("map1");
-        DataMap m2 = domain.getDataMap("map2");
+            DataMap m1 = domain.getDataMap("map1");
+            DataMap m2 = domain.getDataMap("map2");
 
-        ObjEntity oe11 = m1.getObjEntity("Entity11");
-        ObjEntity oe12 = m1.getObjEntity("Entity12");
+            ObjEntity oe11 = m1.getObjEntity("Entity11");
+            ObjEntity oe12 = m1.getObjEntity("Entity12");
 
-        ObjEntity oe21 = m2.getObjEntity("Entity21");
-        ObjEntity oe22 = m2.getObjEntity("Entity22");
+            ObjEntity oe21 = m2.getObjEntity("Entity21");
+            ObjEntity oe22 = m2.getObjEntity("Entity22");
 
-        // this causes StackOverflow per CAY-743
-        ObjEntity oe21Super = oe21.getSuperEntity();
-        ObjEntity oe12Super = oe12.getSuperEntity();
+            // this causes StackOverflow per CAY-743
+            ObjEntity oe21Super = oe21.getSuperEntity();
+            ObjEntity oe12Super = oe12.getSuperEntity();
 
-        assertSame(oe12Super, oe22);
-        assertSame(oe21Super, oe11);
+            assertSame(oe12Super, oe22);
+            assertSame(oe21Super, oe11);
+        }
+        finally {
+            injector.shutdown();
+        }
     }
 }
