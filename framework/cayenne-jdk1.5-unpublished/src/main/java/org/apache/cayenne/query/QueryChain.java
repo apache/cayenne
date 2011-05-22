@@ -39,12 +39,11 @@ public class QueryChain implements Query {
 
     protected Collection<Query> chain;
     protected String name;
-    
+
     /**
      * @since 3.1
      */
     protected DataMap dataMap;
-
 
     /**
      * Creates an empty QueryChain.
@@ -64,12 +63,12 @@ public class QueryChain implements Query {
     /**
      * Creates a new QueryChain with a collection of Queries.
      */
-    public QueryChain(Collection<Query> queries) {
+    public QueryChain(Collection<? extends Query> queries) {
         if (queries != null && !queries.isEmpty()) {
             this.chain = new ArrayList<Query>(queries);
         }
     }
-    
+
     /**
      * @since 3.1
      */
@@ -142,7 +141,7 @@ public class QueryChain implements Query {
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }
-    
+
     /**
      * Returns default metadata.
      */

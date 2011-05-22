@@ -26,7 +26,6 @@ import org.apache.cayenne.query.Query;
 
 /**
  * Defines methods used to run Cayenne queries.
- * 
  */
 public interface QueryEngine {
 
@@ -37,7 +36,7 @@ public interface QueryEngine {
      * @since 1.1 The signature has changed from List to Collection.
      */
     void performQueries(
-            Collection<Query> queries,
+            Collection<? extends Query> queries,
             OperationObserver resultConsumer);
 
     /**

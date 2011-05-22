@@ -24,22 +24,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Test for Result directive to check if we could use ResultDitrective optionally.
  */
-public class ResultDirectiveTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class ResultDirectiveTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private AccessStackAdapter accessStackAdapter;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
     }
 
     public void testWithoutResultDirective() throws Exception {
@@ -59,7 +80,10 @@ public class ResultDirectiveTest extends CayenneCase {
         Map<String, Object> selectResult = selectForQuery(sql);
 
         assertEquals(artist.get("ARTIST_ID"), selectResult.get("ARTIST_ID"));
-        assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
+        assertEquals(artist.get("ARTIST_NAME"), selectResult
+                .get("ARTIST_NAME")
+                .toString()
+                .trim());
     }
 
     public void testWithMixedDirectiveUse1() throws Exception {
@@ -70,7 +94,10 @@ public class ResultDirectiveTest extends CayenneCase {
         Map<String, Object> selectResult = selectForQuery(sql);
 
         assertEquals(artist.get("ARTIST_ID"), selectResult.get("ARTIST_ID"));
-        assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
+        assertEquals(artist.get("ARTIST_NAME"), selectResult
+                .get("ARTIST_NAME")
+                .toString()
+                .trim());
     }
 
     public void testWithMixedDirectiveUse2() throws Exception {
@@ -88,7 +115,9 @@ public class ResultDirectiveTest extends CayenneCase {
         SQLTemplate template = new SQLTemplate(Artist.class, sql);
         template.setColumnNamesCapitalization(CapsStrategy.UPPER);
         MockOperationObserver observer = new MockOperationObserver();
-        getDomain().performQueries(Collections.singletonList(template), observer);
+        runtime.getDataDomain().performQueries(
+                Collections.singletonList(template),
+                observer);
 
         List<Map<String, Object>> data = observer.rowsForQuery(template);
         assertEquals(1, data.size());
@@ -112,13 +141,17 @@ public class ResultDirectiveTest extends CayenneCase {
 
         template.setParameters(parameters);
 
-        SQLTemplateAction action = new SQLTemplateAction(
-                template,
-                getAccessStackAdapter().getAdapter(),
-                getDomain().getEntityResolver());
-        assertSame(getAccessStackAdapter().getAdapter(), action.getAdapter());
+        SQLTemplateAction action = new SQLTemplateAction(template, accessStackAdapter
+                .getAdapter(), runtime.getDataDomain().getEntityResolver());
+        assertSame(accessStackAdapter.getAdapter(), action.getAdapter());
 
-        Connection c = getConnection();
+        Connection c = runtime
+                .getDataDomain()
+                .getDataNodes()
+                .iterator()
+                .next()
+                .getDataSource()
+                .getConnection();
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
@@ -134,11 +167,13 @@ public class ResultDirectiveTest extends CayenneCase {
 
         MockOperationObserver observer = new MockOperationObserver();
         SelectQuery query = new SelectQuery(Artist.class);
-        getDomain().performQueries(Collections.singletonList(query), observer);
+        runtime
+                .getDataDomain()
+                .performQueries(Collections.singletonList(query), observer);
 
-        List data = observer.rowsForQuery(query);
+        List<?> data = observer.rowsForQuery(query);
         assertEquals(1, data.size());
-        Map row = (Map) data.get(0);
+        DataRow row = (DataRow) data.get(0);
         return row;
     }
 }

@@ -666,7 +666,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Routes queries to appropriate DataNodes for execution.
      */
     public void performQueries(
-            final Collection<Query> queries,
+            final Collection<? extends Query> queries,
             final OperationObserver callback) {
 
         runInTransaction(new Transformer() {
@@ -870,6 +870,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Sets factory for creating QueryBuilders
+     * 
      * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
      */
     public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {

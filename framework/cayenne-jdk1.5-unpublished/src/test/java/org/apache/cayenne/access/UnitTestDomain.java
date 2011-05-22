@@ -64,12 +64,15 @@ public class UnitTestDomain extends DataDomain {
     }
 
     @Override
-    public void performQueries(Collection queries, OperationObserver callback) {
+    public void performQueries(
+            Collection<? extends Query> queries,
+            OperationObserver callback) {
         checkQueryAllowed(queries);
         super.performQueries(queries, callback);
     }
 
-    public void checkQueryAllowed(Collection queries) throws AssertionFailedError {
+    public void checkQueryAllowed(Collection<? extends Query> queries)
+            throws AssertionFailedError {
         if (blockingQueries) {
             Assert.fail("Query is unexpected: " + queries);
         }

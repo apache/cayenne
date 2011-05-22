@@ -209,7 +209,9 @@ public class DataNode implements QueryEngine {
      * 
      * @since 1.1
      */
-    public void performQueries(Collection<Query> queries, OperationObserver callback) {
+    public void performQueries(
+            Collection<? extends Query> queries,
+            OperationObserver callback) {
 
         int listSize = queries.size();
         if (listSize == 0) {
