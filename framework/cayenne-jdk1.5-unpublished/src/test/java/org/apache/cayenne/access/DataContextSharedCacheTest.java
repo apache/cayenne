@@ -29,30 +29,50 @@ import java.util.Map;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.MultiContextCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 /**
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
  * DataDomain.
  */
-public class DataContextSharedCacheTest extends MultiContextCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextSharedCacheTest extends ServerCase {
 
-    protected Artist artist;
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    @Inject
+    private DataContext context1;
+
+    @Inject
+    private SQLTemplateCustomizer sqlTemplateCustomizer;
+
+    private Artist artist;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
 
-        context = createDataContextWithSharedCache(true);
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
 
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");
@@ -63,17 +83,14 @@ public class DataContextSharedCacheTest extends MultiContextCase {
 
     /**
      * Test case to prove that refreshing snapshots as a result of the database fetch will
-     * be propagated accross DataContexts.
+     * be propagated across DataContexts.
      */
     public void testSnapshotChangePropagationOnSelect() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
 
-        // create alternative context making sure that no cache is flushed
-        DataContext altContext = createDataContextWithSharedCache(false);
-        
         // update artist using raw SQL
-        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
                 Artist.class,
                 "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) "
                         + "WHERE ARTIST_NAME = #bind($oldName)");
@@ -87,7 +104,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // fetch updated artist into the new context, and see if the original
         // one gets updated
         Expression qual = ExpressionFactory.matchExp("artistName", newName);
-        List artists = altContext.performQuery(new SelectQuery(Artist.class, qual));
+        List artists = context1.performQuery(new SelectQuery(Artist.class, qual));
         assertEquals(1, artists.size());
         Artist altArtist = (Artist) artists.get(0);
 
@@ -119,19 +136,15 @@ public class DataContextSharedCacheTest extends MultiContextCase {
      * Test case to prove that changes made to an object in one ObjectStore and committed
      * to the database will be reflected in the peer ObjectStore using the same
      * DataRowCache.
-     * 
-     * @throws Exception
      */
     public void testSnapshotChangePropagation() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
 
-        DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(originalName, altArtist.getArtistName());
@@ -176,12 +189,10 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         final Date newDate = new Date(originalDate.getTime() - 10000);
         final String newAltName = "version3";
 
-        DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(originalName, altArtist.getArtistName());
@@ -220,17 +231,13 @@ public class DataContextSharedCacheTest extends MultiContextCase {
      * Test case to prove that deleting an object in one ObjectStore and committing to the
      * database will be reflected in the peer ObjectStore using the same DataRowCache. By
      * default COMMITTED objects will be changed to TRANSIENT.
-     * 
-     * @throws Exception
      */
     public void testSnapshotDeletePropagationToCommitted() throws Exception {
 
-        DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
@@ -265,12 +272,9 @@ public class DataContextSharedCacheTest extends MultiContextCase {
      */
     public void testSnapshotDeletePropagationToHollow() throws Exception {
 
-        DataContext altContext = mirrorDataContext(context);
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
 
-        // make sure we have a fully resolved copy of an artist object
-        // in the second context
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(PersistenceState.HOLLOW, altArtist.getPersistenceState());
@@ -302,12 +306,11 @@ public class DataContextSharedCacheTest extends MultiContextCase {
      */
     public void testSnapshotDeletePropagationToModified() throws Exception {
 
-        DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
+        altArtist.getArtistName();
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
 
@@ -340,16 +343,9 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         assertNotNull(id.getIdSnapshot().get(Artist.ARTIST_ID_PK_COLUMN));
         assertFalse(id.isTemporary());
 
-        altContext.commitChanges();
+        context1.commitChanges();
 
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
-
-        // create independent context and fetch artist in it
-        DataContext context3 = createDataContextWithDedicatedCache();
-        List artists = context3.performQuery(new ObjectIdQuery(id));
-        assertEquals(1, artists.size());
-        Artist artist3 = (Artist) artists.get(0);
-        assertEquals(id, artist3.getObjectId());
     }
 
     /**
@@ -361,17 +357,16 @@ public class DataContextSharedCacheTest extends MultiContextCase {
      */
     public void testSnapshotDeletePropagationToDeleted() throws Exception {
 
-        DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
+        altArtist.getArtistName();
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
 
         // delete peer
-        altContext.deleteObject(altArtist);
+        context1.deleteObject(altArtist);
 
         // Update Artist
         context.deleteObject(artist);
@@ -392,15 +387,13 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         };
         helper.assertWithTimeout(3000);
 
-        assertFalse(altContext.hasChanges());
+        assertFalse(context1.hasChanges());
     }
 
     /**
      * Test case to prove that deleting an object in one ObjectStore and committing to the
      * database will be reflected in the peer ObjectStore using the same DataRowCache,
      * including proper processing of deleted object being held in to-many collections.
-     * 
-     * @throws Exception
      */
     public void testSnapshotDeletePropagationToManyRefresh() throws Exception {
 
@@ -414,18 +407,16 @@ public class DataContextSharedCacheTest extends MultiContextCase {
 
         context.commitChanges();
 
-        DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist and painting
         // objects
         // in the second context
 
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
-        final Painting altPainting1 = (Painting) altContext.getGraphManager().getNode(
-                painting1.getObjectId());
-        final Painting altPainting2 = (Painting) altContext.getGraphManager().getNode(
-                painting2.getObjectId());
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
+        final Painting altPainting1 = (Painting) context1.localObject(painting1
+                .getObjectId(), null);
+        final Painting altPainting2 = (Painting) context1.localObject(painting2
+                .getObjectId(), null);
 
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(painting1.getPaintingTitle(), altPainting1.getPaintingTitle());
@@ -459,7 +450,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
                         .getPersistenceState());
                 assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
-                Collection list = altArtist.getPaintingArray();
+                Collection<Painting> list = altArtist.getPaintingArray();
                 assertEquals(1, list.size());
                 assertFalse(list.contains(altPainting1));
             }
@@ -482,16 +473,14 @@ public class DataContextSharedCacheTest extends MultiContextCase {
 
         context.commitChanges();
 
-        DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist and painting
         // objects
         // in the second context
 
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
-        final Painting altPainting1 = (Painting) altContext.getGraphManager().getNode(
-                painting1.getObjectId());
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
+        final Painting altPainting1 = (Painting) context1.localObject(painting1
+                .getObjectId(), null);
 
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(painting1.getPaintingTitle(), altPainting1.getPaintingTitle());
@@ -519,15 +508,13 @@ public class DataContextSharedCacheTest extends MultiContextCase {
             }
         };
         helper.assertWithTimeout(2000);
-        List list = altArtist.getPaintingArray();
+        List<Painting> list = altArtist.getPaintingArray();
         assertEquals(2, list.size());
     }
 
     /**
      * Checks that cache is refreshed when a query "refreshingObjects" property is set to
      * true.
-     * 
-     * @throws Exception
      */
     public void testCacheRefreshingOnSelect() throws Exception {
         String originalName = artist.getArtistName();
@@ -543,7 +530,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         assertEquals(originalName, oldSnapshot.get("ARTIST_NAME"));
 
         // update artist using raw SQL
-        SQLTemplate update = getSQLTemplateBuilder()
+        SQLTemplate update = sqlTemplateCustomizer
                 .createSQLTemplate(
                         Artist.class,
                         "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)");
@@ -593,14 +580,11 @@ public class DataContextSharedCacheTest extends MultiContextCase {
     public void testSnapshotEvictedAndObjectsHollowedForInvalidate() throws Exception {
         String originalName = artist.getArtistName();
 
-        // create alternative context
-        final DataContext altContext = mirrorDataContext(context);
-
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
-        altContext.prepareForAccess(altArtist, null, false);
+        final Artist altArtist = (Artist) context1
+                .localObject(artist.getObjectId(), null);
+        context1.prepareForAccess(altArtist, null, false);
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
         context.invalidateObjects(Collections.singletonList(artist));
@@ -616,16 +600,14 @@ public class DataContextSharedCacheTest extends MultiContextCase {
             @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.HOLLOW, altArtist.getPersistenceState());
-                assertNull(altContext
-                        .getObjectStore()
-                        .getDataRowCache()
-                        .getCachedSnapshot(altArtist.getObjectId()));
+                assertNull(context1.getObjectStore().getDataRowCache().getCachedSnapshot(
+                        altArtist.getObjectId()));
             }
         }.assertWithTimeout(5000);
 
         // resolve object
         assertEquals(originalName, altArtist.getArtistName());
-        DataRow altFreshSnapshot = altContext
+        DataRow altFreshSnapshot = context1
                 .getObjectStore()
                 .getDataRowCache()
                 .getCachedSnapshot(altArtist.getObjectId());
