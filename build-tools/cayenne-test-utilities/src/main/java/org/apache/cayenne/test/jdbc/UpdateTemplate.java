@@ -49,7 +49,7 @@ class UpdateTemplate {
                     }
                     else {
                         throw new IllegalStateException(
-                                "No type inmformation for null value at index " + i);
+                                "No type information for null value at index " + i);
                     }
                 }
                 else {

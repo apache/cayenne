@@ -19,49 +19,60 @@
 
 package org.apache.cayenne.unit.jira;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Testing qualifier translator correctness on reflexive relationships.
- * 
  */
 // TODO: this is really a qualifier translator general test... need to
-// find an approprtaite place in unit tests..
-public class CAY_194Test extends RelationshipCase {
+// find an appropriate place in unit tests..
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CAY_194Test extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpAfterInjection() throws Exception {
+        TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
+        tReflexive.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 
-        deleteTestData();
+        tReflexive.update().set("PARENT_ID", null, Types.INTEGER).execute();
+
+        dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
+        dbHelper.deleteAll("TO_ONEFK1");
     }
 
     public void testQualifyOnToMany() {
-        DataContext context = createDataContext();
 
-        ReflexiveAndToOne ox = context
-                .newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);
         ox.setName("ox");
-        ReflexiveAndToOne o1 = context
-                .newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne o1 = context.newObject(ReflexiveAndToOne.class);
         o1.setName("o1");
 
-        ReflexiveAndToOne o2 = context
-                .newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne o2 = context.newObject(ReflexiveAndToOne.class);
         o2.setName("o2");
         o2.setToParent(o1);
 
         context.commitChanges();
 
         Expression qualifier = ExpressionFactory.matchExp("children", o2);
-        List parents = context.performQuery(new SelectQuery(
+        List<?> parents = context.performQuery(new SelectQuery(
                 ReflexiveAndToOne.class,
                 qualifier));
         assertEquals(1, parents.size());
@@ -74,24 +85,20 @@ public class CAY_194Test extends RelationshipCase {
     }
 
     public void testQualifyOnToOne() {
-        DataContext context = createDataContext();
 
-        ReflexiveAndToOne ox = context
-                .newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);
         ox.setName("ox");
-        ReflexiveAndToOne o1 = context
-                .newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne o1 = context.newObject(ReflexiveAndToOne.class);
         o1.setName("o1");
 
-        ReflexiveAndToOne o2 = context
-                .newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne o2 = context.newObject(ReflexiveAndToOne.class);
         o2.setName("o2");
         o2.setToParent(o1);
 
         context.commitChanges();
 
         Expression qualifier = ExpressionFactory.matchExp("toParent", o1);
-        List children = context.performQuery(new SelectQuery(
+        List<?> children = context.performQuery(new SelectQuery(
                 ReflexiveAndToOne.class,
                 qualifier));
         assertEquals(1, children.size());
