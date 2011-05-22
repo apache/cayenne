@@ -22,24 +22,33 @@ package org.apache.cayenne;
 import java.util.Arrays;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationship.ToOneFK1;
 import org.apache.cayenne.testdo.relationship.ToOneFK2;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * Tests the behavior of one-to-one relationship where to-one is pointing to an FK.
- * 
- * @since 1.1
  */
-public class CDOOneToOneFKTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CDOOneToOneFKTest extends ServerCase {
 
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DataContext context1;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
-        context = createDataContext();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("TO_ONEFK2");
+        dbHelper.deleteAll("TO_ONEFK1");
     }
 
     public void testReadRelationship() {
@@ -50,16 +59,14 @@ public class CDOOneToOneFKTest extends RelationshipCase {
 
         context.invalidateObjects(Arrays.asList(src, target));
 
-        ToOneFK2 src1 = (ToOneFK2) Cayenne
-                .objectForPK(context, src.getObjectId());
+        ToOneFK2 src1 = (ToOneFK2) Cayenne.objectForPK(context, src.getObjectId());
         assertNotNull(src1.getToOneToFK());
         // resolve HOLLOW
         assertSame(src1, src1.getToOneToFK().getToPK());
 
         context.invalidateObjects(Arrays.asList(src1, src1.getToOneToFK()));
 
-        ToOneFK1 target2 = (ToOneFK1) Cayenne.objectForPK(context, target
-                .getObjectId());
+        ToOneFK1 target2 = (ToOneFK1) Cayenne.objectForPK(context, target.getObjectId());
         assertNotNull(target2.getToPK());
 
         // resolve HOLLOW
@@ -69,14 +76,13 @@ public class CDOOneToOneFKTest extends RelationshipCase {
     public void test2Null() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
-        context = createDataContext();
 
         // test database data
         ObjectIdQuery refetch = new ObjectIdQuery(
                 src.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context, refetch);
+        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
 
         // *** TESTING THIS ***
         assertNull(src2.getToOneToFK());
@@ -85,14 +91,13 @@ public class CDOOneToOneFKTest extends RelationshipCase {
     public void testReplaceNull1() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
-        context = createDataContext();
 
         // test database data
         ObjectIdQuery refetch = new ObjectIdQuery(
                 src.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context, refetch);
+        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
         assertEquals(src.getObjectId(), src2.getObjectId());
 
         // *** TESTING THIS ***
@@ -114,14 +119,13 @@ public class CDOOneToOneFKTest extends RelationshipCase {
 
         // do save
         context.commitChanges();
-        context = createDataContext();
 
         // test database data
         ObjectIdQuery refetch = new ObjectIdQuery(
                 src.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context, refetch);
+        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
         ToOneFK1 target2 = src2.getToOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
@@ -140,14 +144,13 @@ public class CDOOneToOneFKTest extends RelationshipCase {
 
         // do save
         context.commitChanges();
-        context = createDataContext();
 
         // test database data
         ObjectIdQuery refetch = new ObjectIdQuery(
                 src.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context, refetch);
+        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
         ToOneFK1 target2 = src2.getToOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
@@ -159,12 +162,12 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         ToOneFK1 target = context.newObject(ToOneFK1.class);
         src.setToOneToFK(target);
         context.commitChanges();
-        context = createDataContext();
+
         ObjectIdQuery refetch = new ObjectIdQuery(
                 src.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context, refetch);
+        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
 
         assertTrue(src2.readPropertyDirectly("toOneToFK") instanceof Fault);
 
@@ -184,12 +187,12 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         context.commitChanges();
 
         // test database data
-        context = createDataContext();
+
         ObjectIdQuery refetch = new ObjectIdQuery(
                 src.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context, refetch);
+        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
         assertNull(src.getToOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
     }
