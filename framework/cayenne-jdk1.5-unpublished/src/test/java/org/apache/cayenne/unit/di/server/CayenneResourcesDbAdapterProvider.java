@@ -21,22 +21,25 @@ package org.apache.cayenne.unit.di.server;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
 
 public class CayenneResourcesDbAdapterProvider implements Provider<DbAdapter> {
 
-    protected CayenneResources resources;
+    private CayenneResources resources;
+    private DataSourceInfo dataSourceInfo;
 
-    public CayenneResourcesDbAdapterProvider(CayenneResources resources) {
+    public CayenneResourcesDbAdapterProvider(@Inject CayenneResources resources,
+            @Inject DataSourceInfo dataSourceInfo) {
+        this.dataSourceInfo = dataSourceInfo;
         this.resources = resources;
     }
 
     public DbAdapter get() throws ConfigurationException {
 
-        DataSourceInfo connectionInfo = resources.getConnectionInfo();
-        AccessStackAdapter adapter = resources.getAccessStackAdapter(connectionInfo
+        AccessStackAdapter adapter = resources.getAccessStackAdapter(dataSourceInfo
                 .getAdapterClassName());
 
         return adapter.getAdapter();

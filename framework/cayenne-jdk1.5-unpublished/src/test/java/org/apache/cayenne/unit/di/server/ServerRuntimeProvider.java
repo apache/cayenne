@@ -26,20 +26,21 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.CayenneResources;
 
 public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
-    @Inject
-    protected ServerCaseProperties properties;
-
-    private CayenneResources resources;
+    private ServerCaseProperties properties;
     private ServerCaseDataSourceFactory dataSourceFactory;
 
-    public ServerRuntimeProvider(CayenneResources resources,
-            ServerCaseDataSourceFactory dataSourceFactory) {
-        this.resources = resources;
+    private Provider<DbAdapter> dbAdapterProvider;
+
+    public ServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
+            @Inject ServerCaseProperties properties,
+            @Inject Provider<DbAdapter> dbAdapterProvider) {
+
         this.dataSourceFactory = dataSourceFactory;
+        this.properties = properties;
+        this.dbAdapterProvider = dbAdapterProvider;
     }
 
     public ServerRuntime get() throws ConfigurationException {
@@ -60,8 +61,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
             // these are the objects overriding standard ServerModule definitions or
             // dependencies needed by such overrides
 
-            binder.bind(DbAdapter.class).toProviderInstance(
-                    new CayenneResourcesDbAdapterProvider(resources));
+            binder.bind(DbAdapter.class).toProviderInstance(dbAdapterProvider);
             binder.bind(DataDomain.class).toProvider(ServerCaseDataDomainProvider.class);
 
             // map DataSources for all test DataNode names

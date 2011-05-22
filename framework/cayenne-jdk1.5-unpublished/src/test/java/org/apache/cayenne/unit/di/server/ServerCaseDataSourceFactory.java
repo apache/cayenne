@@ -30,6 +30,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.di.Inject;
 
 public class ServerCaseDataSourceFactory {
 
@@ -38,17 +39,13 @@ public class ServerCaseDataSourceFactory {
     private Map<String, DataSource> dataSources;
     private Set<String> mapsWithDedicatedDataSource;
 
-    ServerCaseDataSourceFactory(DataSourceInfo dataSourceInfo,
-            String... mapsWithDedicatedDataSource) {
-
-        if (mapsWithDedicatedDataSource == null) {
-            mapsWithDedicatedDataSource = new String[0];
-        }
+    public ServerCaseDataSourceFactory(@Inject DataSourceInfo dataSourceInfo) {
 
         this.dataSourceInfo = dataSourceInfo;
         this.dataSources = new HashMap<String, DataSource>();
-        this.mapsWithDedicatedDataSource = new HashSet<String>(Arrays
-                .asList(mapsWithDedicatedDataSource));
+        this.mapsWithDedicatedDataSource = new HashSet<String>(Arrays.asList(
+                "map-db1",
+                "map-db2"));
 
         this.sharedDataSource = createDataSource();
     }

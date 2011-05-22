@@ -21,7 +21,6 @@ package org.apache.cayenne.unit.di.client;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
-import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.DICase;
 import org.apache.cayenne.unit.di.server.ServerCaseModule;
 
@@ -34,10 +33,9 @@ public class ClientCase extends DICase {
     private static final Injector injector;
 
     static {
-        final CayenneResources resources = CayenneResources.getResources();
         DefaultScope testScope = new DefaultScope();
         injector = DIBootstrap.createInjector(
-                new ServerCaseModule(resources, testScope),
+                new ServerCaseModule(testScope),
                 new ClientCaseModule(testScope));
     }
 

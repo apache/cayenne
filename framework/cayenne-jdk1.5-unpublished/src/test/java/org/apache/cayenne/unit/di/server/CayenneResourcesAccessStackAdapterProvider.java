@@ -20,20 +20,24 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.AccessStackAdapter;
 import org.apache.cayenne.unit.CayenneResources;
 
-public class CayenneResourcesAccessStackAdapterProvider implements Provider<AccessStackAdapter> {
+public class CayenneResourcesAccessStackAdapterProvider implements
+        Provider<AccessStackAdapter> {
 
-    protected CayenneResources resources;
+    private CayenneResources resources;
+    private DataSourceInfo dataSourceInfo;
 
-    public CayenneResourcesAccessStackAdapterProvider(CayenneResources resources) {
+    public CayenneResourcesAccessStackAdapterProvider(@Inject CayenneResources resources,
+            @Inject DataSourceInfo dataSourceInfo) {
+        this.dataSourceInfo = dataSourceInfo;
         this.resources = resources;
     }
 
     public AccessStackAdapter get() throws ConfigurationException {
-        DataSourceInfo connectionInfo = resources.getConnectionInfo();
-        return resources.getAccessStackAdapter(connectionInfo.getAdapterClassName());
+        return resources.getAccessStackAdapter(dataSourceInfo.getAdapterClassName());
     }
 }

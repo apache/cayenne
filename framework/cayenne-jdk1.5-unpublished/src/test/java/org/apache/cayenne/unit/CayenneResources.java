@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.unit;
 
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -34,79 +33,19 @@ import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.InputStreamResource;
 
 /**
  * Initializes connections for Cayenne unit tests.
  */
-public class CayenneResources implements BeanFactoryAware {
+public class CayenneResources {
 
     private static Log logger = LogFactory.getLog(CayenneResources.class);
 
-    public static final String TEST_RESOURCES_DESCRIPTOR = "spring-test-resources.xml";
-
-    public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
-    public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
-
-    public static final String SCHEMA_SETUP_STACK = "SchemaSetupStack";
     public static final String SQL_TEMPLATE_CUSTOMIZER = "SQLTemplateCustomizer";
-    public static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
-
-    private static CayenneResources resources;
-
-    private static CayenneResources loadResources() {
-
-        InputStream in = Thread
-                .currentThread()
-                .getContextClassLoader()
-                .getResourceAsStream(TEST_RESOURCES_DESCRIPTOR);
-
-        if (in == null) {
-            logger.error("Can't locate resource: " + TEST_RESOURCES_DESCRIPTOR);
-            throw new RuntimeException(
-                    "Can't locate resource descriptor in the ClassLoader: "
-                            + TEST_RESOURCES_DESCRIPTOR);
-        }
-
-        BeanFactory factory = new XmlBeanFactory(new InputStreamResource(in));
-        CayenneResources resources = (CayenneResources) factory.getBean(
-                "TestResources",
-                CayenneResources.class);
-
-        resources.setConnectionKey(System.getProperty(CONNECTION_NAME_KEY));
-
-        return resources;
-    }
 
     protected DataSourceInfo connectionInfo;
     protected DataSource dataSource;
-    protected BeanFactory beanFactory;
     protected Map<String, AccessStackAdapter> adapterMap;
-
-    /**
-     * Returns shared test resource instance.
-     */
-    public static CayenneResources getResources() {
-        if (resources == null) {
-            resources = loadResources();
-
-            // rebuild schema after the resources static var is initialized so that after
-            // possible initial failure we don't attempt rebuilding schema in subsequent
-            // tests
-            try {
-                resources.rebuildSchema();
-            }
-            catch (Exception ex) {
-                logger.error("Error generating schema...", ex);
-                throw new RuntimeException("Error generating schema");
-            }
-        }
-        return resources;
-    }
 
     public CayenneResources(Map<String, AccessStackAdapter> adapterMap) {
         this.adapterMap = adapterMap;
@@ -116,65 +55,12 @@ public class CayenneResources implements BeanFactoryAware {
         for (AccessStackAdapter adapter : adapterMap.values()) {
             ((JdbcAdapter) adapter.getAdapter()).setBatchQueryBuilderFactory(factory);
         }
+
     }
 
-    /**
-     * Completely rebuilds test schema.
-     */
-    void rebuildSchema() throws Exception {
-
-        if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
-            logger.info("skipping schema generation... ");
-            return;
-        }
-
-        // generate schema using a special AccessStack that
-        // combines all DataMaps that require schema support
-        // schema generation is done like that instead of
-        // per stack on demand, to avoid conflicts when
-        // dropping and generating PK objects.
-        AccessStack stack = getAccessStack(SCHEMA_SETUP_STACK);
-
-        stack.dropSchema();
-        stack.dropPKSupport();
-        stack.createSchema();
-        stack.createPKSupport();
-    }
-
-    public void setConnectionKey(String connectionKey) {
-
-        connectionInfo = ConnectionProperties.getInstance().getConnectionInfo(
-                connectionKey);
-
-        // attempt default if invalid key is specified
-        if (connectionInfo == null) {
-
-            logger.info("Invalid connection key '"
-                    + connectionKey
-                    + "', trying default: "
-                    + DEFAULT_CONNECTION_KEY);
-
-            connectionInfo = ConnectionProperties.getInstance().getConnectionInfo(
-                    DEFAULT_CONNECTION_KEY);
-        }
-
-        if (connectionInfo == null) {
-            throw new RuntimeException("Null connection info for key: " + connectionKey);
-        }
-
-        logger.info("test connection info: " + connectionInfo);
+    public void setConnectionInfo(DataSourceInfo connectionInfo) {
+        this.connectionInfo = connectionInfo;
         this.dataSource = createDataSource();
-    }
-
-    /**
-     * BeanFactoryAware implementation to store BeanFactory.
-     */
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
-
-    public AccessStack getAccessStack(String name) {
-        return (AccessStack) beanFactory.getBean(name, AccessStack.class);
     }
 
     /**

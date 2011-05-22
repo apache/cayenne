@@ -21,6 +21,7 @@ package org.apache.cayenne.unit.di.server;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
 public class ServerCaseSharedDataSourceProvider implements Provider<DataSource> {
@@ -28,7 +29,7 @@ public class ServerCaseSharedDataSourceProvider implements Provider<DataSource> 
     protected ServerCaseDataSourceFactory dataSourceFactory;
 
     public ServerCaseSharedDataSourceProvider(
-            ServerCaseDataSourceFactory dataSourceFactory) {
+            @Inject ServerCaseDataSourceFactory dataSourceFactory) {
         this.dataSourceFactory = dataSourceFactory;
     }
 

@@ -42,20 +42,13 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
 public class ServerCaseModule implements Module {
 
-    protected CayenneResources resources;
     protected DefaultScope testScope;
 
-    public ServerCaseModule(CayenneResources resources, DefaultScope testScope) {
-        this.resources = resources;
+    public ServerCaseModule(DefaultScope testScope) {
         this.testScope = testScope;
     }
 
     public void configure(Binder binder) {
-
-        ServerCaseDataSourceFactory dataSourceFactory = new ServerCaseDataSourceFactory(
-                resources.getConnectionInfo(),
-                "map-db1",
-                "map-db2");
 
         // these are the objects injectable in unit tests that subclass from
         // ServerCase. Note that ServerRuntimeProvider creates ServerRuntime
@@ -63,25 +56,29 @@ public class ServerCaseModule implements Module {
         // unit test injector. ServerRuntime injector contents are customized
         // inside ServerRuntimeProvider.
 
+        binder.bind(CayenneResources.class).toProvider(CayenneResourcesProvider.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // singleton objects
         binder.bind(UnitTestLifecycleManager.class).toInstance(
                 new ServerCaseLifecycleManager(testScope));
 
-        binder.bind(DataSourceInfo.class).toInstance(resources.getConnectionInfo());
-        binder.bind(DataSource.class).toProviderInstance(
-                new ServerCaseSharedDataSourceProvider(dataSourceFactory));
-        binder.bind(DbAdapter.class).toProviderInstance(
-                new CayenneResourcesDbAdapterProvider(resources));
-        binder.bind(AccessStackAdapter.class).toProviderInstance(
-                new CayenneResourcesAccessStackAdapterProvider(resources));
+        binder.bind(DataSourceInfo.class).toProvider(
+                ServerCaseDataSourceInfoProvider.class);
+        binder
+                .bind(DataSource.class)
+                .toProvider(ServerCaseSharedDataSourceProvider.class);
+        binder.bind(DbAdapter.class).toProvider(CayenneResourcesDbAdapterProvider.class);
+        binder.bind(AccessStackAdapter.class).toProvider(
+                CayenneResourcesAccessStackAdapterProvider.class);
         binder.bind(BatchQueryBuilderFactory.class).toProvider(
                 ServerCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(DataChannelInterceptor.class).to(
                 ServerCaseDataChannelInterceptor.class);
         binder.bind(SQLTemplateCustomizer.class).toProvider(
                 SQLTemplateCustomizerProvider.class);
+        binder.bind(ServerCaseDataSourceFactory.class).to(
+                ServerCaseDataSourceFactory.class);
 
         // test-scoped objects
         binder.bind(EntityResolver.class).toProvider(
@@ -90,8 +87,8 @@ public class ServerCaseModule implements Module {
                 testScope);
         binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(
                 testScope);
-        binder.bind(ServerRuntime.class).toProviderInstance(
-                new ServerRuntimeProvider(resources, dataSourceFactory)).in(testScope);
+        binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProvider.class).in(
+                testScope);
         binder
                 .bind(ObjectContext.class)
                 .toProvider(ServerCaseObjectContextProvider.class)
@@ -104,5 +101,4 @@ public class ServerCaseModule implements Module {
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(
                 testScope);
     }
-
 }
