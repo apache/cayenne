@@ -21,29 +21,41 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
  * This test case ensures that PK pre-generated for the entity manually before commit is
  * used during commit as well.
- * 
  */
 // TODO: 1/16/2006 - the algorithm used to generate the PK may be included in
 // DataObjectUtils to pull the PK on demand. A caveat - we need to analyze DataObject in
 // question to see if a PK is numeric and not propagated.
-public class PregeneratedPKTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class PregeneratedPKTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
     }
 
     public void testLongPk() throws Exception {
-
-        DataContext context = createDataContext();
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
 
