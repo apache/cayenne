@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit;
+package org.apache.cayenne.unit.di.server;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -28,35 +28,33 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.testdo.testmap.StringET1ExtendedType;
+import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.CayenneResources;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * Default implementation of the AccessStack that has a single DataNode per DataMap.
  */
-public class SimpleAccessStack implements AccessStack {
+class SchemaHelper {
 
-    private static Log logger = LogFactory.getLog(SimpleAccessStack.class);
+    private static Log logger = LogFactory.getLog(SchemaHelper.class);
 
     // hardcoded dependent entities that should be excluded
     // if LOBs are not supported
@@ -67,7 +65,7 @@ public class SimpleAccessStack implements AccessStack {
     protected CayenneResources resources;
     protected UnitTestDomain domain;
 
-    public SimpleAccessStack(CayenneResources resources, DataMap[] maps) throws Exception {
+    public SchemaHelper(CayenneResources resources, DataMap[] maps) throws Exception {
 
         this.resources = resources;
         this.domain = new UnitTestDomain("domain");
@@ -211,63 +209,6 @@ public class SimpleAccessStack implements AccessStack {
         return entities;
     }
 
-    private void deleteTestData(DataNode node, DataMap map) throws Exception {
-
-        Connection conn = node.getDataSource().getConnection();
-        List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
-        try {
-            if (conn.getAutoCommit()) {
-                conn.setAutoCommit(false);
-            }
-
-            Statement stmt = conn.createStatement();
-
-            ListIterator<DbEntity> it = list.listIterator(list.size());
-            while (it.hasPrevious()) {
-                DbEntity ent = it.previous();
-
-                boolean status;
-                if (ent.getDataMap() != null
-                        && ent.getDataMap().isQuotingSQLIdentifiers()) {
-                    status = true;
-                }
-                else {
-                    status = false;
-                }
-
-                QuotingStrategy strategy = getAdapter(node).getQuotingStrategy(status);
-
-                String deleteSql = "DELETE FROM " + strategy.quoteString(ent.getName());
-
-                try {
-                    stmt.executeUpdate(deleteSql);
-                }
-                catch (SQLException e) {
-                    try {
-                        Collection<String> deleteTableSql = node
-                                .getAdapter()
-                                .dropTableStatements(ent);
-                        stmt.executeUpdate(deleteTableSql.iterator().next());
-                        String createTableSql = node.getAdapter().createTable(ent);
-                        stmt.executeUpdate(createTableSql);
-                    }
-                    catch (SQLException e1) {
-                        throw new CayenneRuntimeException(
-                                "Error deleting test data for entity '"
-                                        + ent.getName()
-                                        + "': "
-                                        + e.getLocalizedMessage());
-                    }
-                }
-            }
-            conn.commit();
-            stmt.close();
-        }
-        finally {
-            conn.close();
-        }
-    }
-
     private void dropSchema(DataNode node, DataMap map) throws Exception {
         Connection conn = node.getDataSource().getConnection();
         List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
@@ -338,7 +279,7 @@ public class SimpleAccessStack implements AccessStack {
             Statement stmt = conn.createStatement();
 
             for (String query : tableCreateQueries(node, map)) {
-                QueryLogger.logQuery(query, Collections.EMPTY_LIST);
+                logger.info(query);
                 stmt.execute(query);
             }
             getAdapter(node).createdTables(conn, map);

@@ -24,13 +24,15 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.AccessStack;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.InputStreamResource;
+import org.xml.sax.InputSource;
 
 public class CayenneResourcesProvider implements Provider<CayenneResources> {
 
@@ -42,7 +44,14 @@ public class CayenneResourcesProvider implements Provider<CayenneResources> {
     public static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
 
     public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
-    public static final String SCHEMA_SETUP_STACK = "SchemaSetupStack";
+
+    private static String[] DATA_MAPS_REQUIREING_SCHEMA_SETUP = {
+            "testmap.map.xml", "people.map.xml", "locking.map.xml",
+            "relationships.map.xml", "multi-tier.map.xml", "generic.map.xml",
+            "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml",
+            "qualified.map.xml", "quoted-identifiers.map.xml",
+            "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml"
+    };
 
     @Inject
     private DataSourceInfo dataSourceInfo;
@@ -72,7 +81,7 @@ public class CayenneResourcesProvider implements Provider<CayenneResources> {
         // possible initial failure we don't attempt rebuilding schema in subsequent
         // tests
         try {
-            rebuildSchema(factory);
+            rebuildSchema(resources);
         }
         catch (Exception ex) {
             logger.error("Error generating schema...", ex);
@@ -85,26 +94,32 @@ public class CayenneResourcesProvider implements Provider<CayenneResources> {
     /**
      * Completely rebuilds test schema.
      */
-    private void rebuildSchema(BeanFactory beanFactory) throws Exception {
+    private void rebuildSchema(CayenneResources resources) throws Exception {
 
         if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
             logger.info("skipping schema generation... ");
             return;
         }
 
-        // generate schema using a special AccessStack that
-        // combines all DataMaps that require schema support
-        // schema generation is done like that instead of
-        // per stack on demand, to avoid conflicts when
-        // dropping and generating PK objects.
-        AccessStack stack = (AccessStack) beanFactory.getBean(
-                SCHEMA_SETUP_STACK,
-                AccessStack.class);
+        // generate schema combining all DataMaps that require schema support.
+        // Schema generation is done like that instead of per DataMap on demand to avoid
+        // conflicts when dropping and generating PK objects.
 
-        stack.dropSchema();
-        stack.dropPKSupport();
-        stack.createSchema();
-        stack.createPKSupport();
+        DataMap[] maps = new DataMap[DATA_MAPS_REQUIREING_SCHEMA_SETUP.length];
+
+        for (int i = 0; i < maps.length; i++) {
+            InputStream stream = getClass().getClassLoader().getResourceAsStream(
+                    DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
+            InputSource in = new InputSource(stream);
+            in.setSystemId(DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
+            maps[i] = new MapLoader().loadDataMap(in);
+        }
+
+        SchemaHelper schemaHelper = new SchemaHelper(resources, maps);
+
+        schemaHelper.dropSchema();
+        schemaHelper.dropPKSupport();
+        schemaHelper.createSchema();
+        schemaHelper.createPKSupport();
     }
-
 }

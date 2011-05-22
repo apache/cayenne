@@ -112,31 +112,6 @@
     <bean id="InheritanceVerticalMap" class="org.apache.cayenne.unit.DataMapFactory">
         <constructor-arg><value>inheritance-vertical.map.xml</value></constructor-arg>
     </bean>
-    
-	<!-- ======================================= -->
-	<!-- Access Stacks -->
-	<!-- ======================================= -->
-	<!-- Used to create DB schema to avoid conflicts when schema for individual stacks is generated. -->
-	<bean id="SchemaSetupStack" class="org.apache.cayenne.unit.SimpleAccessStack">
-		<constructor-arg><ref bean="TestResources"/></constructor-arg>
-		<constructor-arg>
-			<list>
-				<ref bean="TestMap"/>
-				<ref bean="PeopleMap"/>
-				<ref bean="LockingMap"/>
-				<ref bean="RelationshipMap"/>
-				<ref bean="MultiTierMap"/>
-				<ref bean="GenericMap"/>
-				<ref bean="DB1Map"/>
-				<ref bean="DB2Map"/>
-				<ref bean="EmbeddingMap"/>
-				<ref bean="QualifiedMap"/>
-                <ref bean="QuoteMap"/>
-				<ref bean="InheritanceSingleTable1Map"/>
-				<ref bean="InheritanceVerticalMap"/>
-			</list>
-		</constructor-arg>
-	</bean>
 	
 	
 	<!-- ======================================= -->
