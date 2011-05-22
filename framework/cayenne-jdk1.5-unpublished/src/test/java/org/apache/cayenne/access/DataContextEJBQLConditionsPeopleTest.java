@@ -18,26 +18,55 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inherit.Address;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Manager;
-import org.apache.cayenne.unit.PeopleCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
+@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+public class DataContextEJBQLConditionsPeopleTest extends ServerCase {
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Inject
+    private ObjectContext context;
 
     @Override
-    protected void setUp() throws Exception {
-        deleteTestData();
+    protected void setUpAfterInjection() throws Exception {
 
-        ObjectContext context = createDataContext();
+        TableHelper tPerson = new TableHelper(dbHelper, "PERSON");
+        tPerson.setColumns(
+                "PERSON_ID",
+                "NAME",
+                "PERSON_TYPE",
+                "SALARY",
+                "CLIENT_COMPANY_ID",
+                "DEPARTMENT_ID");
+
+        // manually break circular deps
+        tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+
+        dbHelper.deleteAll("ADDRESS");
+        dbHelper.deleteAll("DEPARTMENT");
+        dbHelper.deleteAll("PERSON_NOTES");
+        dbHelper.deleteAll("PERSON");
+        dbHelper.deleteAll("CLIENT_COMPANY");
+
+        // TODO: use TableHelper to create test data
+
         Department d1 = context.newObject(Department.class);
         d1.setName("d1");
 
@@ -83,21 +112,10 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         context.commitChanges();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        // help in cleaning up relationship cycles...
-        ObjectContext context = createDataContext();
-        context.performGenericQuery(new SQLTemplate(
-                Department.class,
-                "update DEPARTMENT set MANAGER_ID = NULL"));
-    }
-
     public void testCollectionMemberOfId() throws Exception {
 
         String ejbql = "SELECT DISTINCT m FROM Manager m JOIN m.managedDepartments d"
                 + " WHERE m MEMBER d.employees";
-
-        ObjectContext context = createDataContext();
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         List<?> objects = context.performQuery(query);
@@ -119,8 +137,6 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         String ejbql = "SELECT DISTINCT m FROM Manager m JOIN m.managedDepartments d"
                 + " WHERE m NOT MEMBER d.employees";
 
-        ObjectContext context = createDataContext();
-
         EJBQLQuery query = new EJBQLQuery(ejbql);
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
@@ -141,8 +157,6 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         String ejbql = "SELECT a"
                 + " FROM Address a JOIN a.toEmployee m JOIN m.toDepartment d"
                 + " WHERE m NOT MEMBER d.employees";
-
-        ObjectContext context = createDataContext();
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         List<?> objects = context.performQuery(query);
