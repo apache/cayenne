@@ -65,55 +65,7 @@
 	<bean id="SQLiteStackAdapter" class="org.apache.cayenne.unit.SQLiteStackAdapter">
 		<constructor-arg><ref bean="SQLiteAdapter"/></constructor-arg>
 	</bean>
-	
-	
-	<!-- ======================================= -->
-	<!-- DataMaps -->
-	<!-- ======================================= -->
-	<bean id="TestMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>testmap.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="PeopleMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>people.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="LockingMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>locking.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="RelationshipMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>relationships.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="OneWayMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>one-way-map.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="DB1Map" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>map-db1.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="DB2Map" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>map-db2.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="MultiTierMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>multi-tier.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="GenericMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>generic.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="EmbeddingMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>embeddable.map.xml</value></constructor-arg>
-	</bean>
-	<bean id="QualifiedMap" class="org.apache.cayenne.unit.DataMapFactory">
-		<constructor-arg><value>qualified.map.xml</value></constructor-arg>
-	</bean>
-    <bean id="QuoteMap" class="org.apache.cayenne.unit.DataMapFactory">
-        <constructor-arg><value>quoted-identifiers.map.xml</value></constructor-arg>
-    </bean>
-    <bean id="InheritanceSingleTable1Map" class="org.apache.cayenne.unit.DataMapFactory">
-        <constructor-arg><value>inheritance-single-table1.map.xml</value></constructor-arg>
-    </bean>
-    <bean id="InheritanceVerticalMap" class="org.apache.cayenne.unit.DataMapFactory">
-        <constructor-arg><value>inheritance-vertical.map.xml</value></constructor-arg>
-    </bean>
-	
-	
+		
 	<!-- ======================================= -->
 	<!-- Test Resources Container -->
 	<!-- ======================================= -->
