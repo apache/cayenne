@@ -32,7 +32,6 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -176,15 +175,6 @@ public class CayenneResources implements BeanFactoryAware {
 
     public AccessStack getAccessStack(String name) {
         return (AccessStack) beanFactory.getBean(name, AccessStack.class);
-    }
-
-    public SQLTemplateCustomizer getSQLTemplateCustomizer() {
-        BeanFactory child = (BeanFactory) beanFactory.getBean(
-                SQL_TEMPLATE_CUSTOMIZER,
-                BeanFactory.class);
-        return (SQLTemplateCustomizer) child.getBean(
-                SQL_TEMPLATE_CUSTOMIZER,
-                SQLTemplateCustomizer.class);
     }
 
     /**

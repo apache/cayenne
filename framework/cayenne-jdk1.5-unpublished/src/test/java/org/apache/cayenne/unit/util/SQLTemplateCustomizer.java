@@ -32,8 +32,10 @@ public class SQLTemplateCustomizer {
     protected DbAdapter adapter;
     protected Map<String, Map<String, String>> sqlMap;
 
-    public SQLTemplateCustomizer(Map<String, Map<String, String>> sqlMap) {
+    public SQLTemplateCustomizer(Map<String, Map<String, String>> sqlMap,
+            DbAdapter adapter) {
         this.sqlMap = sqlMap;
+        this.adapter = adapter;
     }
 
     /**
@@ -56,11 +58,4 @@ public class SQLTemplateCustomizer {
         return template;
     }
 
-    public DbAdapter getAdapter() {
-        return adapter;
-    }
-
-    public void setAdapter(DbAdapter adapter) {
-        this.adapter = adapter;
-    }
 }

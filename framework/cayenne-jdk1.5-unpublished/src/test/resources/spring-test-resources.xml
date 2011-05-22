@@ -204,12 +204,4 @@
 			</map>
 		</constructor-arg>
 	</bean>
-	
-	<!-- ======================================= -->
-	<!-- SQLTemplate Customizer (external reference) -->
-	<!-- ======================================= -->
-	<bean id="SQLTemplateCustomizer" class="org.apache.cayenne.unit.SpringResourceFactory">
-		<constructor-arg><value>dml/unit.util.SQLTemplateCustomizer.xml</value>
-		</constructor-arg>
-	</bean>
 </beans>

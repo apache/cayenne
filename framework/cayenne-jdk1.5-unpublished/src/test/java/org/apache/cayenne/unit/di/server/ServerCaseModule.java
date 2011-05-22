@@ -80,8 +80,8 @@ public class ServerCaseModule implements Module {
                 ServerCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(DataChannelInterceptor.class).to(
                 ServerCaseDataChannelInterceptor.class);
-        binder.bind(SQLTemplateCustomizer.class).toProviderInstance(
-                new CayenneResourcesSQLTemplateCustomizerProvider(resources));
+        binder.bind(SQLTemplateCustomizer.class).toProvider(
+                SQLTemplateCustomizerProvider.class);
 
         // test-scoped objects
         binder.bind(EntityResolver.class).toProvider(
