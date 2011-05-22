@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -35,16 +37,22 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class PrefetchProcessorTreeBuilderTest extends ServerCase {
+
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private EntityResolver resolver;
 
     public void testBuildTreeNoPrefetches() {
 
-        final ClassDescriptor descriptor = getDomain()
-                .getEntityResolver()
-                .getClassDescriptor("Artist");
-        List dataRows = new ArrayList();
+        final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
+        List<Object> dataRows = new ArrayList<Object>();
         dataRows.add(new DataRow(4));
         dataRows.add(new DataRow(4));
 
@@ -83,12 +91,12 @@ public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
         HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
-                createDataContext(),
+                context,
                 metadata);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
                 resolver,
                 dataRows,
-                new HashMap());
+                new HashMap<Object, Object>());
 
         PrefetchProcessorNode processingTree = builder.buildTree(tree);
 
@@ -103,16 +111,14 @@ public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
 
     public void testBuildTreeWithPrefetches() {
 
-        final ClassDescriptor descriptor = getDomain()
-                .getEntityResolver()
-                .getClassDescriptor("Artist");
-        ObjEntity e2 = getObjEntity("Painting");
-        ObjEntity e3 = getObjEntity("Gallery");
-        ObjEntity e4 = getObjEntity("Exhibit");
-        ObjEntity e5 = getObjEntity("ArtistExhibit");
+        final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
+        ObjEntity e2 = resolver.getObjEntity("Painting");
+        ObjEntity e3 = resolver.getObjEntity("Gallery");
+        ObjEntity e4 = resolver.getObjEntity("Exhibit");
+        ObjEntity e5 = resolver.getObjEntity("ArtistExhibit");
 
-        List mainRows = new ArrayList();
-        Map extraRows = new HashMap();
+        List<Object> mainRows = new ArrayList<Object>();
+        Map<Object, Object> extraRows = new HashMap<Object, Object>();
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
         tree.addPath(Artist.PAINTING_ARRAY_PROPERTY).setPhantom(false);
@@ -158,7 +164,7 @@ public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
         };
 
         HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
-                createDataContext(),
+                context,
                 metadata);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
                 resolver,
@@ -197,4 +203,5 @@ public class PrefetchProcessorTreeBuilderTest extends CayenneCase {
         assertFalse(n5.isPhantom());
         assertTrue(n5.isPartitionedByParent());
     }
+
 }
