@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -32,8 +31,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -45,32 +42,6 @@ public class EntityResolverTest extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    public void testObjEntityLookupDuplicates() {
-        AccessStack stack = CayenneResources
-                .getResources()
-                .getAccessStack("GenericStack");
-
-        DataMap generic = stack.getDataDomain().getDataMap("generic");
-        EntityResolver resolver = new EntityResolver(Collections.singleton(generic));
-
-        ObjEntity g1 = resolver.getObjEntity("Generic1");
-        assertNotNull(g1);
-
-        ObjEntity g2 = resolver.getObjEntity("Generic2");
-        assertNotNull(g2);
-
-        assertNotSame(g1, g2);
-        assertNull(resolver.lookupObjEntity(Object.class));
-
-        try {
-            resolver.lookupObjEntity(CayenneDataObject.class);
-            fail("two entities mapped to the same class... resolver must have thrown.");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
-        }
-    }
 
     public void testGetObjEntity() {
         EntityResolver resolver = new EntityResolver(runtime

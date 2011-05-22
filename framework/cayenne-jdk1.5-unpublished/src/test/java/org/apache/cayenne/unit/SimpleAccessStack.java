@@ -99,8 +99,7 @@ public class SimpleAccessStack implements AccessStack {
 
         // use shared data source in all cases but the multi-node...
 
-        if (MultiNodeCase.NODE1.equals(node.getName())
-                || MultiNodeCase.NODE2.equals(node.getName())) {
+        if ("map-db1".equals(node.getName()) || "map-db1".equals(node.getName())) {
             node.setDataSource(resources.createDataSource());
         }
         else {
@@ -109,22 +108,6 @@ public class SimpleAccessStack implements AccessStack {
 
         node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
         domain.addNode(node);
-    }
-
-    /**
-     * Returns DataDomain for this AccessStack.
-     */
-    public UnitTestDomain getDataDomain() {
-        return domain;
-    }
-
-    /**
-     * Deletes all data from the database tables mentioned in the DataMap.
-     */
-    public void deleteTestData() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            deleteTestData(node, node.getDataMaps().iterator().next());
-        }
     }
 
     /** Drops all test tables. */

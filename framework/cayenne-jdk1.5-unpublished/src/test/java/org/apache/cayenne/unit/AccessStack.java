@@ -20,18 +20,10 @@
 package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.UnitTestDomain;
 
-/**
- * DataDomain wrapper used for testing a specific Cayenne stack configuration.
- */
 public interface AccessStack {
 
     AccessStackAdapter getAdapter(DataNode node);
-
-    UnitTestDomain getDataDomain();
-
-    void deleteTestData() throws Exception;
 
     void dropSchema() throws Exception;
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.query.Query;
 /**
  * A DataDomainQueryAction that can be configured to block queries that are not run from
  * cache.
- * 
  */
 public class UnitTestDomainQueryAction extends DataDomainQueryAction {
 
@@ -54,7 +53,8 @@ public class UnitTestDomainQueryAction extends DataDomainQueryAction {
         super.runQueryInTransaction();
     }
 
-    protected void checkQueryAllowed(Collection queries) throws AssertionFailedError {
+    protected void checkQueryAllowed(Collection<? extends Query> queries)
+            throws AssertionFailedError {
         ((UnitTestDomain) domain).checkQueryAllowed(queries);
     }
 }

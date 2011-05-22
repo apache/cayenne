@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
@@ -39,7 +41,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -51,6 +52,9 @@ public class SchemaUpdateStrategyTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private DataSource dataSource;
 
     public void testDBGeneratorStrategy() throws Exception {
 
@@ -258,7 +262,7 @@ public class SchemaUpdateStrategyTest extends ServerCase {
         DataNode dataNode = new DataNode();
         dataNode.setDataMaps(colection);
         dataNode.setAdapter(adapter);
-        dataNode.setDataSource(CayenneResources.getResources().getDataSource());
+        dataNode.setDataSource(dataSource);
         dataNode.setDataSourceFactory(node.getDataSourceFactory());
         dataNode.setSchemaUpdateStrategyName(node.getSchemaUpdateStrategyName());
         dataNode.setEntityResolver(new EntityResolver(colection));
