@@ -19,19 +19,25 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
-import org.apache.cayenne.unit.PeopleCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends PeopleCase {
+@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends ServerCase {
+
+    @Inject
+    private EntityResolver resolver;
 
     public void testPrefetchEmployee() throws Exception {
-        ObjEntity departmentEntity = getDomain().getEntityResolver().lookupObjEntity(
-                Department.class);
+        ObjEntity departmentEntity = resolver.lookupObjEntity(Department.class);
         SelectQuery q = new SelectQuery(Employee.class, ExpressionFactory.matchExp(
                 "name",
                 "abc"));
@@ -41,7 +47,7 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends PeopleCa
         SelectQueryPrefetchRouterAction action = new SelectQueryPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(q, router, getDomain().getEntityResolver());
+        action.route(q, router, resolver);
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
@@ -53,8 +59,7 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends PeopleCa
     }
 
     public void testPrefetchManager() throws Exception {
-        ObjEntity departmentEntity = getDomain().getEntityResolver().lookupObjEntity(
-                Department.class);
+        ObjEntity departmentEntity = resolver.lookupObjEntity(Department.class);
         SelectQuery q = new SelectQuery(Manager.class, ExpressionFactory.matchExp(
                 "name",
                 "abc"));
@@ -64,7 +69,7 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends PeopleCa
         SelectQueryPrefetchRouterAction action = new SelectQueryPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(q, router, getDomain().getEntityResolver());
+        action.route(q, router, resolver);
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
