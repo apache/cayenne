@@ -20,116 +20,112 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.testdo.relationship.Child;
+import org.apache.cayenne.testdo.relationship.Master;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
-public class NestedDataContextParentPeerEventsTest extends CayenneCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class NestedDataContextParentPeerEventsTest extends ServerCase {
+
+    @Inject
+    private DataContext parentContext1;
+
+    @Inject
+    private DataContext parentContext2;
 
     public void testPeerObjectUpdatedSimpleProperty() throws Exception {
-        DataContext context = createDataContext();
+        Master a = parentContext1.newObject(Master.class);
+        a.setName("X");
+        parentContext1.commitChanges();
 
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
-        context.commitChanges();
+        Master a1 = (Master) parentContext2.localObject(a.getObjectId(), a);
 
-        DataContext parentPeer = createDataContextWithSharedCache(false);
-        Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
+        final ObjectContext child = parentContext1.createChildContext();
+        final Master a2 = (Master) child.localObject(a.getObjectId(), a);
 
-        final ObjectContext peer2 = context.createChildContext();
-        final Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
-
-        a1.setArtistName("Y");
-        assertEquals("X", a2.getArtistName());
-        parentPeer.commitChangesToParent();
+        a1.setName("Y");
+        assertEquals("X", a2.getName());
+        parentContext2.commitChangesToParent();
 
         new ThreadedTestHelper() {
 
             @Override
             protected void assertResult() throws Exception {
-                assertEquals("Y", a2.getArtistName());
+                assertEquals("Y", a2.getName());
 
-                assertFalse("Peer data context became dirty on event processing", peer2
+                assertFalse("Peer data context became dirty on event processing", child
                         .hasChanges());
             }
         }.assertWithTimeout(2000);
     }
 
     public void testPeerObjectUpdatedToOneRelationship() throws Exception {
+        Master a = parentContext1.newObject(Master.class);
+        Master altA = parentContext1.newObject(Master.class);
 
-        DataContext context = createDataContext();
+        Child p = parentContext1.newObject(Child.class);
+        p.setMaster(a);
+        a.setName("X");
+        altA.setName("Y");
+        parentContext1.commitChanges();
 
-        Artist a = context.newObject(Artist.class);
-        Artist altA = context.newObject(Artist.class);
+        Child p1 = (Child) parentContext2.localObject(p.getObjectId(), null);
+        Master altA1 = (Master) parentContext2.localObject(altA.getObjectId(), null);
 
-        Painting p = context.newObject(Painting.class);
-        p.setToArtist(a);
-        p.setPaintingTitle("PPP");
-        a.setArtistName("X");
-        altA.setArtistName("Y");
-        context.commitChanges();
+        final ObjectContext childContext1 = parentContext1.createChildContext();
+        final Child p2 = (Child) childContext1.localObject(p.getObjectId(), p);
+        final Master altA2 = (Master) childContext1.localObject(altA.getObjectId(), altA);
+        Master a2 = (Master) childContext1.localObject(a.getObjectId(), a);
 
-        DataContext parentPeer = createDataContextWithSharedCache(false);
-        Painting p1 = (Painting) parentPeer.localObject(p.getObjectId(), p);
-        Artist altA1 = (Artist) parentPeer.localObject(altA.getObjectId(), altA);
-
-        final ObjectContext peer2 = context.createChildContext();
-        final Painting p2 = (Painting) peer2.localObject(p.getObjectId(), p);
-        final Artist altA2 = (Artist) peer2.localObject(altA.getObjectId(), altA);
-        Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
-
-        p1.setToArtist(altA1);
-        assertSame(a2, p2.getToArtist());
-        assertNotSame(altA2, p2.getToArtist());
-        parentPeer.commitChangesToParent();
+        p1.setMaster(altA1);
+        assertSame(a2, p2.getMaster());
+        assertNotSame(altA2, p2.getMaster());
+        parentContext2.commitChanges();
 
         new ThreadedTestHelper() {
 
             @Override
             protected void assertResult() throws Exception {
-                assertSame(altA2, p2.getToArtist());
-                assertFalse("Peer data context became dirty on event processing", peer2
-                        .hasChanges());
+                assertSame(altA2, p2.getMaster());
+                assertFalse(
+                        "Peer data context became dirty on event processing",
+                        childContext1.hasChanges());
             }
         }.assertWithTimeout(2000);
     }
 
     public void testPeerObjectUpdatedToManyRelationship() throws Exception {
+        Master a = parentContext1.newObject(Master.class);
+        a.setName("X");
 
-        DataContext context = createDataContext();
+        Child px = parentContext1.newObject(Child.class);
+        px.setMaster(a);
 
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
+        Child py = parentContext1.newObject(Child.class);
 
-        Painting px = context.newObject(Painting.class);
-        px.setToArtist(a);
-        px.setPaintingTitle("PX");
+        parentContext1.commitChanges();
 
-        Painting py = context.newObject(Painting.class);
-        py.setPaintingTitle("PY");
+        Child py1 = (Child) parentContext2.localObject(py.getObjectId(), py);
+        Master a1 = (Master) parentContext2.localObject(a.getObjectId(), a);
 
-        context.commitChanges();
+        final ObjectContext peer2 = parentContext1.createChildContext();
+        final Child py2 = (Child) peer2.localObject(py.getObjectId(), py);
+        final Master a2 = (Master) peer2.localObject(a.getObjectId(), a);
 
-        DataContext parentPeer = createDataContextWithSharedCache(false);
-        Painting py1 = (Painting) parentPeer.localObject(py.getObjectId(), py);
-        Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
-
-        final ObjectContext peer2 = context.createChildContext();
-        final Painting py2 = (Painting) peer2.localObject(py.getObjectId(), py);
-        final Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
-
-        a1.addToPaintingArray(py1);
-        assertEquals(1, a2.getPaintingArray().size());
-        assertFalse(a2.getPaintingArray().contains(py2));
-        parentPeer.commitChangesToParent();
+        a1.addToChildren(py1);
+        assertEquals(1, a2.getChildren().size());
+        assertFalse(a2.getChildren().contains(py2));
+        parentContext2.commitChangesToParent();
 
         new ThreadedTestHelper() {
 
             @Override
             protected void assertResult() throws Exception {
-                assertEquals(2, a2.getPaintingArray().size());
-                assertTrue(a2.getPaintingArray().contains(py2));
+                assertEquals(2, a2.getChildren().size());
+                assertTrue(a2.getChildren().contains(py2));
 
                 assertFalse("Peer data context became dirty on event processing", peer2
                         .hasChanges());

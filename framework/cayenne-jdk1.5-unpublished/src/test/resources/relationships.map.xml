@@ -4,6 +4,10 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
 	 project-version="6">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationship"/>
+	<db-entity name="CHILD">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MASTER_ID" type="INTEGER"/>
+	</db-entity>
 	<db-entity name="CLOB_DETAIL">
 		<db-attribute name="CLOB_DETAIL_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="CLOB_MASTER_ID" type="INTEGER"/>
@@ -93,6 +97,10 @@
 		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
+	<db-entity name="MASTER">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
 	<db-entity name="MEANINGFUL_FK">
 		<db-attribute name="MEANIGNFUL_FK_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isMandatory="true"/>
@@ -135,6 +143,8 @@
 	<db-entity name="TO_ONEFK2">
 		<db-attribute name="TO_ONEFK2_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<obj-entity name="Child" className="org.apache.cayenne.testdo.relationship.Child" dbEntityName="CHILD">
+	</obj-entity>
 	<obj-entity name="ClobDetail" className="org.apache.cayenne.testdo.relationship.ClobDetail" dbEntityName="CLOB_DETAIL">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
@@ -181,6 +191,9 @@
 	<obj-entity name="MapToManyTarget" className="org.apache.cayenne.testdo.relationship.MapToManyTarget" dbEntityName="MAP_TO_MANY_TARGET">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="Master" className="org.apache.cayenne.testdo.relationship.Master" dbEntityName="MASTER">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<obj-entity name="MeaningfulFK" className="org.apache.cayenne.testdo.relationship.MeaningfulFK" dbEntityName="MEANINGFUL_FK">
 		<obj-attribute name="relationshipHelperID" type="java.lang.Integer" db-attribute-path="RELATIONSHIP_HELPER_ID"/>
 	</obj-entity>
@@ -209,6 +222,9 @@
 	</obj-entity>
 	<obj-entity name="ToOneFK2" className="org.apache.cayenne.testdo.relationship.ToOneFK2" dbEntityName="TO_ONEFK2">
 	</obj-entity>
+	<db-relationship name="master" source="CHILD" target="MASTER" toMany="false">
+		<db-attribute-pair source="MASTER_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER" toMany="false">
 		<db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
 	</db-relationship>
@@ -305,6 +321,9 @@
 	<db-relationship name="mapToMany" source="MAP_TO_MANY_TARGET" target="MAP_TO_MANY" toMany="false">
 		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="children" source="MASTER" target="CHILD" toMany="true">
+		<db-attribute-pair source="ID" target="MASTER_ID"/>
+	</db-relationship>
 	<db-relationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER" toMany="false">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
@@ -350,6 +369,7 @@
 	<db-relationship name="toOneToFK" source="TO_ONEFK2" target="TO_ONEFK1" toMany="false">
 		<db-attribute-pair source="TO_ONEFK2_PK" target="TO_ONEFK1_FK"/>
 	</db-relationship>
+	<obj-relationship name="master" source="Child" target="Master" deleteRule="Nullify" db-relationship-path="master"/>
 	<obj-relationship name="master" source="ClobDetail" target="ClobMaster" db-relationship-path="master"/>
 	<obj-relationship name="details" source="ClobMaster" target="ClobDetail" db-relationship-path="details"/>
 	<obj-relationship name="targets" source="CollectionToMany" target="CollectionToManyTarget" collection-type="java.util.Collection" db-relationship-path="targets"/>
@@ -377,6 +397,7 @@
 	<obj-relationship name="mapToMany" source="IdMapToManyTarget" target="IdMapToMany" db-relationship-path="mapToMany"/>
 	<obj-relationship name="targets" source="MapToMany" target="MapToManyTarget" collection-type="java.util.Map" map-key="name" db-relationship-path="targets"/>
 	<obj-relationship name="mapToMany" source="MapToManyTarget" target="MapToMany" db-relationship-path="mapToMany"/>
+	<obj-relationship name="children" source="Master" target="Child" deleteRule="Deny" db-relationship-path="children"/>
 	<obj-relationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" db-relationship-path="toRelationshipHelper"/>
 	<obj-relationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" db-relationship-path="children"/>
 	<obj-relationship name="toHelper" source="ReflexiveAndToOne" target="RelationshipHelper" db-relationship-path="toHelper"/>
