@@ -22,18 +22,32 @@ package org.apache.cayenne;
 import java.util.Arrays;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationship.ToManyFkDep;
 import org.apache.cayenne.testdo.relationship.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationship.ToManyRoot2;
-import org.apache.cayenne.unit.RelationshipCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at
 // partial solution
-public class CDOOneToManyFKTest extends RelationshipCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class CDOOneToManyFKTest extends ServerCase {
+
+    @Inject
+    protected DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("TO_ONEFK2");
+        dbHelper.deleteAll("TO_ONEFK1");
+    }
 
     public void testReadRelationship() throws Exception {
-        deleteTestData();
-        DataContext context = createDataContext();
 
         ToManyRoot2 src2 = context.newObject(ToManyRoot2.class);
         ToManyFkRoot src = context.newObject(ToManyFkRoot.class);
@@ -51,8 +65,8 @@ public class CDOOneToManyFKTest extends RelationshipCase {
 
         context.invalidateObjects(Arrays.asList(src, target, src2));
 
-        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(context, src
-                .getObjectId());
+        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne
+                .objectForPK(context, src.getObjectId());
         assertNotNull(src1.getDeps());
         assertEquals(1, src1.getDeps().size());
         // resolve HOLLOW
