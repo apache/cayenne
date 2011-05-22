@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.unit.CayenneCase;
+import junit.framework.TestCase;
+
 import org.apache.cayenne.util.IDUtil;
 
-/**
- */
-public class QueryLoggerTest extends CayenneCase {
+@Deprecated
+public class QueryLoggerTest extends TestCase {
+
     public void testSqlLiteralForObject() throws Exception {
         StringBuffer buf = new StringBuffer();
 
@@ -39,7 +40,7 @@ public class QueryLoggerTest extends CayenneCase {
         assertFormatting((byte) 1, "01");
         assertFormatting((byte) 10, "0A");
         assertFormatting(Byte.MAX_VALUE, "7F");
-        assertFormatting((byte) - 1, "FF");
+        assertFormatting((byte) -1, "FF");
         assertFormatting(Byte.MIN_VALUE, "80");
     }
 

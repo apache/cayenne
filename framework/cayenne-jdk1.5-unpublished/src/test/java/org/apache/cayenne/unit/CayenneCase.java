@@ -41,7 +41,6 @@ public abstract class CayenneCase extends TestCase {
 
     public static final String TEST_ACCESS_STACK = "TestStack";
     public static final String MULTI_TIER_ACCESS_STACK = "MultiTierStack";
-    public static final String QUALIFIED_ACCESS_STACK = "QualifiedStack";
 
     protected AccessStack accessStack;
 
