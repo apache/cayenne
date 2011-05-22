@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
@@ -32,10 +30,10 @@ import org.apache.cayenne.map.DataMap;
 class ServerCaseDataDomainProvider extends DataDomainProvider {
 
     @Inject
-    protected DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
-    protected DbAdapter adapter;
+    private DbAdapter adapter;
 
     @Override
     protected DataDomain createDataDomain(String name) {
@@ -47,12 +45,13 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
 
         DataDomain domain = super.createAndInitDataDomain();
 
-        // add nodes dynamically
-        // TODO: andrus, 06/14/2010 should probably map them in XML to avoid this mess...
+        // add nodes and DataSources dynamically...
         for (DataMap dataMap : domain.getDataMaps()) {
 
             DataNode node = new DataNode(dataMap.getName());
-            node.setDataSource(dataSource);
+
+            // shared or dedicated DataSources can be mapped per DataMap
+            node.setDataSource(dataSourceFactory.getDataSource(dataMap.getName()));
             node.setAdapter(adapter);
             node.addDataMap(dataMap);
             node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
@@ -68,15 +67,6 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
             // // tweak mapping with a delegate
             // for (Procedure proc : map.getProcedures()) {
             // getAdapter(node).tweakProcedure(proc);
-            // }
-
-            // use shared data source in all cases but the multi-node...
-            // if (MultiNodeCase.NODE1.equals(node.getName())
-            // || MultiNodeCase.NODE2.equals(node.getName())) {
-            // node.setDataSource(resources.createDataSource());
-            // }
-            // else {
-            // node.setDataSource(resources.getDataSource());
             // }
 
             domain.addNode(node);

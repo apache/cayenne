@@ -191,8 +191,7 @@ public class CayenneResources implements BeanFactoryAware {
      * Returns DB-specific testing adapter.
      */
     public AccessStackAdapter getAccessStackAdapter(String adapterClassName) {
-        AccessStackAdapter stackAdapter = (AccessStackAdapter) adapterMap
-                .get(adapterClassName);
+        AccessStackAdapter stackAdapter = adapterMap.get(adapterClassName);
 
         if (stackAdapter == null) {
             throw new RuntimeException("No AccessStackAdapter for DbAdapter class: "

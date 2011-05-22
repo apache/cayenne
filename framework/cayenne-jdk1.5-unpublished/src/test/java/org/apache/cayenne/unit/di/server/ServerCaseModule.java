@@ -52,6 +52,11 @@ public class ServerCaseModule implements Module {
 
     public void configure(Binder binder) {
 
+        ServerCaseDataSourceFactory dataSourceFactory = new ServerCaseDataSourceFactory(
+                resources.getConnectionInfo(),
+                "map-db1",
+                "map-db2");
+
         // these are the objects injectable in unit tests that subclass from
         // ServerCase. Note that ServerRuntimeProvider creates ServerRuntime
         // instances complete with their own DI injectors, independent from the
@@ -66,7 +71,7 @@ public class ServerCaseModule implements Module {
 
         binder.bind(DataSourceInfo.class).toInstance(resources.getConnectionInfo());
         binder.bind(DataSource.class).toProviderInstance(
-                new CayenneResourcesDataSourceProvider(resources));
+                new ServerCaseSharedDataSourceProvider(dataSourceFactory));
         binder.bind(DbAdapter.class).toProviderInstance(
                 new CayenneResourcesDbAdapterProvider(resources));
         binder.bind(AccessStackAdapter.class).toProviderInstance(
@@ -86,7 +91,7 @@ public class ServerCaseModule implements Module {
         binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(
                 testScope);
         binder.bind(ServerRuntime.class).toProviderInstance(
-                new ServerRuntimeProvider(resources)).in(testScope);
+                new ServerRuntimeProvider(resources, dataSourceFactory)).in(testScope);
         binder
                 .bind(ObjectContext.class)
                 .toProvider(ServerCaseObjectContextProvider.class)

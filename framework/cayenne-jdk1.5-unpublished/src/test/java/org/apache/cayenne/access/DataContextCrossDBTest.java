@@ -19,25 +19,23 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
-import org.apache.cayenne.unit.MultiNodeCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataContextCrossDBTest extends MultiNodeCase {
+@UseServerRuntime(ServerCase.MULTINODE_PROJECT)
+public class DataContextCrossDBTest extends ServerCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        deleteTestData();
-    }
+    @Inject
+    private DataContext context;
 
     public void testMultiDBUpdate() {
 
         // for now testing that no exceptions are thrown... wouldn't hurt to check the
         // data as well???
-
-        DataContext context = createDataContext();
 
         // insert
         CrossdbM1E1 o1 = context.newObject(CrossdbM1E1.class);

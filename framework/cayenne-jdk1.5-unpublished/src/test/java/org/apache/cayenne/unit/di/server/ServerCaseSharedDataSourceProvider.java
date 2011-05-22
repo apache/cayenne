@@ -22,18 +22,17 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.CayenneResources;
 
-public class CayenneResourcesDataSourceProvider implements Provider<DataSource> {
+public class ServerCaseSharedDataSourceProvider implements Provider<DataSource> {
 
-    protected CayenneResources resources;
+    protected ServerCaseDataSourceFactory dataSourceFactory;
 
-    public CayenneResourcesDataSourceProvider(CayenneResources resources) {
-        this.resources = resources;
+    public ServerCaseSharedDataSourceProvider(
+            ServerCaseDataSourceFactory dataSourceFactory) {
+        this.dataSourceFactory = dataSourceFactory;
     }
 
     public DataSource get() throws ConfigurationException {
-        return resources.getDataSource();
+        return dataSourceFactory.getSharedDataSource();
     }
-
 }

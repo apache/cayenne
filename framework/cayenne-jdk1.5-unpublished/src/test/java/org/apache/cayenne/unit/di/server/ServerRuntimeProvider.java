@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -35,10 +33,13 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
     @Inject
     protected ServerCaseProperties properties;
 
-    protected CayenneResources resources;
+    private CayenneResources resources;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
-    public ServerRuntimeProvider(CayenneResources resources) {
+    public ServerRuntimeProvider(CayenneResources resources,
+            ServerCaseDataSourceFactory dataSourceFactory) {
         this.resources = resources;
+        this.dataSourceFactory = dataSourceFactory;
     }
 
     public ServerRuntime get() throws ConfigurationException {
@@ -62,8 +63,9 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
             binder.bind(DbAdapter.class).toProviderInstance(
                     new CayenneResourcesDbAdapterProvider(resources));
             binder.bind(DataDomain.class).toProvider(ServerCaseDataDomainProvider.class);
-            binder.bind(DataSource.class).toProviderInstance(
-                    new CayenneResourcesDataSourceProvider(resources));
+
+            // map DataSources for all test DataNode names
+            binder.bind(ServerCaseDataSourceFactory.class).toInstance(dataSourceFactory);
         }
     }
 }
