@@ -24,20 +24,25 @@ import java.util.Date;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.MultiContextCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
-public class DataContextDelegateSharedCacheTest extends MultiContextCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataContextDelegateSharedCacheTest extends ServerCase {
 
-    protected Artist artist;
-    protected DataContext context;
+    @Inject
+    private DataContext context;
+
+    @Inject
+    private DataContext context1;
+
+    private Artist artist;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        context = createDataContextWithSharedCache(true);
+    protected void setUpAfterInjection() throws Exception {
 
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");
@@ -54,8 +59,6 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
      */
     public void testShouldMergeChanges() throws Exception {
 
-        DataContext altContext = createDataContext();
-
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
@@ -68,13 +71,13 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) altContext.localObject(artist.getObjectId(), null);
+        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertNotSame(altArtist, artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
-        altContext.setDelegate(delegate);
+        context1.setDelegate(delegate);
 
         // Update and save artist in peer context
         artist.setArtistName("version2");
@@ -100,8 +103,6 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
     public void testBlockedShouldMergeChanges() throws Exception {
         String oldName = artist.getArtistName();
 
-        DataContext altContext = mirrorDataContext(context);
-
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
@@ -109,12 +110,11 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
                 return false;
             }
         };
-        altContext.setDelegate(delegate);
+        context1.setDelegate(delegate);
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) altContext.getObjectStore().getNode(
-                artist.getObjectId());
+        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(oldName, altArtist.getArtistName());
@@ -136,8 +136,6 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
      */
     public void testShouldProcessDeleteOnExternalChange() throws Exception {
 
-        DataContext altContext = mirrorDataContext(context);
-
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
@@ -147,12 +145,11 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
                 return true;
             }
         };
-        altContext.setDelegate(delegate);
+        context1.setDelegate(delegate);
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) altContext.getGraphManager().getNode(
-                artist.getObjectId());
+        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
@@ -182,8 +179,6 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
      */
     public void testBlockShouldProcessDeleteOnExternalChange() throws Exception {
 
-        DataContext altContext = mirrorDataContext(context);
-
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
@@ -193,12 +188,11 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
                 return false;
             }
         };
-        altContext.setDelegate(delegate);
+        context1.setDelegate(delegate);
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) altContext.getObjectStore().getNode(
-                artist.getObjectId());
+        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
