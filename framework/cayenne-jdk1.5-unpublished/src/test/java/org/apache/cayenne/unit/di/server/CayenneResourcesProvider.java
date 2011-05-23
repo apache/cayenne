@@ -20,6 +20,8 @@ package org.apache.cayenne.unit.di.server;
 
 import java.io.InputStream;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
@@ -52,6 +54,9 @@ public class CayenneResourcesProvider implements Provider<CayenneResources> {
             "qualified.map.xml", "quoted-identifiers.map.xml",
             "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml"
     };
+
+    @Inject
+    private DataSource dataSource;
 
     @Inject
     private DataSourceInfo dataSourceInfo;
@@ -115,7 +120,7 @@ public class CayenneResourcesProvider implements Provider<CayenneResources> {
             maps[i] = new MapLoader().loadDataMap(in);
         }
 
-        SchemaHelper schemaHelper = new SchemaHelper(resources, maps);
+        SchemaHelper schemaHelper = new SchemaHelper(dataSource, resources, maps);
 
         schemaHelper.dropSchema();
         schemaHelper.dropPKSupport();

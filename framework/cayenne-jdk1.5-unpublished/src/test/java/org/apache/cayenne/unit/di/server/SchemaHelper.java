@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.access.UnitTestDomain;
@@ -64,9 +66,12 @@ class SchemaHelper {
 
     protected CayenneResources resources;
     protected UnitTestDomain domain;
+    private DataSource dataSource;
 
-    public SchemaHelper(CayenneResources resources, DataMap[] maps) throws Exception {
+    public SchemaHelper(DataSource dataSource, CayenneResources resources, DataMap[] maps)
+            throws Exception {
 
+        this.dataSource = dataSource;
         this.resources = resources;
         this.domain = new UnitTestDomain("domain");
         domain.setEventManager(new DefaultEventManager(2));
@@ -94,15 +99,6 @@ class SchemaHelper {
         }
 
         node.addDataMap(map);
-
-        // use shared data source in all cases but the multi-node...
-
-        if ("map-db1".equals(node.getName()) || "map-db1".equals(node.getName())) {
-            node.setDataSource(resources.createDataSource());
-        }
-        else {
-            node.setDataSource(resources.getDataSource());
-        }
 
         node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
         domain.addNode(node);
@@ -210,7 +206,7 @@ class SchemaHelper {
     }
 
     private void dropSchema(DataNode node, DataMap map) throws Exception {
-        Connection conn = node.getDataSource().getConnection();
+        Connection conn = dataSource.getConnection();
         List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
 
         try {
@@ -272,7 +268,7 @@ class SchemaHelper {
     }
 
     private void createSchema(DataNode node, DataMap map) throws Exception {
-        Connection conn = node.getDataSource().getConnection();
+        Connection conn = dataSource.getConnection();
 
         try {
             getAdapter(node).willCreateTables(conn, map);
