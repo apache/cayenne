@@ -82,12 +82,15 @@ public class SchemaHelper {
 
     private DataSource dataSource;
     private UnitDbAdapter unitDbAdapter;
+    private DbAdapter dbAdapter;
 
     private DataDomain domain;
 
-    public SchemaHelper(@Inject DataSource dataSource, @Inject UnitDbAdapter unitDbAdapter) {
+    public SchemaHelper(@Inject DataSource dataSource,
+            @Inject UnitDbAdapter unitDbAdapter, @Inject DbAdapter dbAdapter) {
         this.dataSource = dataSource;
         this.unitDbAdapter = unitDbAdapter;
+        this.dbAdapter = dbAdapter;
     }
 
     /**
@@ -138,7 +141,7 @@ public class SchemaHelper {
     private void initNode(DataMap map) throws Exception {
 
         DataNode node = new DataNode(map.getName());
-        node.setAdapter(unitDbAdapter.getAdapter());
+        node.setAdapter(dbAdapter);
         node.setDataSource(dataSource);
 
         // setup test extended types

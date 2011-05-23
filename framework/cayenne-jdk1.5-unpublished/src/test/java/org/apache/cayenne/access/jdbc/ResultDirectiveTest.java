@@ -27,13 +27,13 @@ import java.util.Map;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -47,10 +47,10 @@ public class ResultDirectiveTest extends ServerCase {
     private ServerRuntime runtime;
 
     @Inject
-    private UnitDbAdapter accessStackAdapter;
+    private DBHelper dbHelper;
 
     @Inject
-    private DBHelper dbHelper;
+    private DbAdapter dbAdapter;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -141,9 +141,10 @@ public class ResultDirectiveTest extends ServerCase {
 
         template.setParameters(parameters);
 
-        SQLTemplateAction action = new SQLTemplateAction(template, accessStackAdapter
-                .getAdapter(), runtime.getDataDomain().getEntityResolver());
-        assertSame(accessStackAdapter.getAdapter(), action.getAdapter());
+        SQLTemplateAction action = new SQLTemplateAction(template, dbAdapter, runtime
+                .getDataDomain()
+                .getEntityResolver());
+        assertSame(dbAdapter, action.getAdapter());
 
         Connection c = runtime
                 .getDataDomain()

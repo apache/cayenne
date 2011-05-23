@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -35,7 +34,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class JdbcAdapterTest extends ServerCase {
 
     @Inject
-    private UnitDbAdapter accessStackAdapter;
+    private DbAdapter dbAdapter;
 
     public void testExternalTypesForJdbcType() throws Exception {
         // check a few types
@@ -56,7 +55,7 @@ public class JdbcAdapterTest extends ServerCase {
 
     public void testCreateTableQuoteSqlIdentifiers() {
 
-        if (accessStackAdapter.getAdapter() instanceof MySQLAdapter) {
+        if (dbAdapter instanceof MySQLAdapter) {
 
             DbEntity entity = new DbEntity();
             DbAttribute attr = new DbAttribute();
@@ -72,7 +71,7 @@ public class JdbcAdapterTest extends ServerCase {
             entity.setDataMap(dm);
             entity.setName("name table");
 
-            MySQLAdapter adaptMySQL = (MySQLAdapter) accessStackAdapter.getAdapter();
+            MySQLAdapter adaptMySQL = (MySQLAdapter) dbAdapter;
             String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";
             assertEquals(str, adaptMySQL.createTable(entity));
         }

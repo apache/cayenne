@@ -61,10 +61,6 @@ public class UnitDbAdapter {
         this.adapter = adapter;
     }
 
-    public DbAdapter getAdapter() {
-        return adapter;
-    }
-
     /**
      * Drops all table constraints.
      */
@@ -98,7 +94,7 @@ public class UnitDbAdapter {
             }
             boolean status = entity.getDataMap() != null
                     && entity.getDataMap().isQuotingSQLIdentifiers();
-            QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+            QuotingStrategy strategy = adapter.getQuotingStrategy(status);
 
             for (String constraint : constraints) {
                 StringBuilder drop = new StringBuilder();
@@ -244,7 +240,7 @@ public class UnitDbAdapter {
     /**
      * Returns a file under test resources DDL directory for the specified database.
      */
-    String ddlString(String database, String name) {
+    private String ddlString(String database, String name) {
         StringBuffer location = new StringBuffer();
         location.append("ddl/").append(database).append("/").append(name);
 
@@ -304,7 +300,7 @@ public class UnitDbAdapter {
             }
             boolean status = entity.getDataMap() != null
                     && entity.getDataMap().isQuotingSQLIdentifiers();
-            QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+            QuotingStrategy strategy = adapter.getQuotingStrategy(status);
 
             // Get all constraints for the table
             ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity
