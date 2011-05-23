@@ -67,10 +67,12 @@ class SchemaHelper {
     protected CayenneResources resources;
     protected UnitTestDomain domain;
     private DataSource dataSource;
+    private String adapterClassName;
 
-    public SchemaHelper(DataSource dataSource, CayenneResources resources, DataMap[] maps)
-            throws Exception {
+    public SchemaHelper(DataSource dataSource, String adapterClassName,
+            CayenneResources resources, DataMap[] maps) throws Exception {
 
+        this.adapterClassName = adapterClassName;
         this.dataSource = dataSource;
         this.resources = resources;
         this.domain = new UnitTestDomain("domain");
@@ -88,7 +90,12 @@ class SchemaHelper {
     }
 
     private void initNode(DataMap map) throws Exception {
-        DataNode node = resources.newDataNode(map.getName());
+
+        AccessStackAdapter adapter = resources.getAccessStackAdapter(adapterClassName);
+
+        DataNode node = new DataNode(map.getName());
+        node.setAdapter(adapter.getAdapter());
+        node.setDataSource(dataSource);
 
         // setup test extended types
         node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());

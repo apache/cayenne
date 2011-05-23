@@ -19,32 +19,17 @@
 
 package org.apache.cayenne.unit;
 
-import java.sql.SQLException;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.conn.PoolDataSource;
-import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Initializes connections for Cayenne unit tests.
  */
 public class CayenneResources {
 
-    private static Log logger = LogFactory.getLog(CayenneResources.class);
-
-    public static final String SQL_TEMPLATE_CUSTOMIZER = "SQLTemplateCustomizer";
-
-    protected DataSourceInfo connectionInfo;
-    protected DataSource dataSource;
     protected Map<String, AccessStackAdapter> adapterMap;
 
     public CayenneResources(Map<String, AccessStackAdapter> adapterMap) {
@@ -56,11 +41,6 @@ public class CayenneResources {
             ((JdbcAdapter) adapter.getAdapter()).setBatchQueryBuilderFactory(factory);
         }
 
-    }
-
-    public void setConnectionInfo(DataSourceInfo connectionInfo) {
-        this.connectionInfo = connectionInfo;
-        this.dataSource = createDataSource();
     }
 
     /**
@@ -76,52 +56,4 @@ public class CayenneResources {
 
         return stackAdapter;
     }
-
-    /**
-     * Returns shared DataSource.
-     */
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    /**
-     * Creates new DataNode.
-     */
-    public DataNode newDataNode(String name) throws Exception {
-        AccessStackAdapter adapter = getAccessStackAdapter(connectionInfo
-                .getAdapterClassName());
-
-        DataNode node = new DataNode(name);
-        node.setDataSource(dataSource);
-        node.setAdapter(adapter.getAdapter());
-        return node;
-    }
-
-    public DataSource createDataSource() {
-
-        try {
-            PoolDataSource poolDS = new PoolDataSource(
-                    connectionInfo.getJdbcDriver(),
-                    connectionInfo.getDataSourceUrl());
-            return new PoolManager(
-                    poolDS,
-                    1,
-                    1,
-                    connectionInfo.getUserName(),
-                    connectionInfo.getPassword()) {
-
-                @Override
-                public void shutdown() throws SQLException {
-                    // noop - make sure we are not shutdown by the test scope, but at the
-                    // same time PoolManager methods are exposed (so we can't wrap
-                    // PoolManager)
-                }
-            };
-        }
-        catch (Exception ex) {
-            logger.error("Can not create shared data source.", ex);
-            throw new RuntimeException("Can not create shared data source.", ex);
-        }
-    }
-
 }

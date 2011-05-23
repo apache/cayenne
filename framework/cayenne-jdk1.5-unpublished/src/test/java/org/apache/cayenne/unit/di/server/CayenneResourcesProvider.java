@@ -80,8 +80,6 @@ public class CayenneResourcesProvider implements Provider<CayenneResources> {
                 "TestResources",
                 CayenneResources.class);
 
-        resources.setConnectionInfo(dataSourceInfo);
-
         // rebuild schema after the resources instance is loaded so that after
         // possible initial failure we don't attempt rebuilding schema in subsequent
         // tests
@@ -120,7 +118,8 @@ public class CayenneResourcesProvider implements Provider<CayenneResources> {
             maps[i] = new MapLoader().loadDataMap(in);
         }
 
-        SchemaHelper schemaHelper = new SchemaHelper(dataSource, resources, maps);
+        SchemaHelper schemaHelper = new SchemaHelper(dataSource, dataSourceInfo
+                .getAdapterClassName(), resources, maps);
 
         schemaHelper.dropSchema();
         schemaHelper.dropPKSupport();
