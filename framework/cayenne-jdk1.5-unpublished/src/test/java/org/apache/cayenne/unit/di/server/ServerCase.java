@@ -43,7 +43,7 @@ public class ServerCase extends DICase {
     static {
         DefaultScope testScope = new DefaultScope();
         injector = DIBootstrap.createInjector(new ServerCaseModule(testScope));
-        injector.getInstance(SchemaHelper.class).rebuildSchema();
+        injector.getInstance(SchemaBuilder.class).rebuildSchema();
     }
 
     @Override

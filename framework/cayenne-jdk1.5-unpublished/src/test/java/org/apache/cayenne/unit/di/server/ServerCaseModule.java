@@ -110,7 +110,7 @@ public class ServerCaseModule implements Module {
                 SQLiteAdapter.class.getName(),
                 SQLiteUnitDbAdapter.class.getName());
 
-        binder.bind(SchemaHelper.class).to(SchemaHelper.class);
+        binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // singleton objects

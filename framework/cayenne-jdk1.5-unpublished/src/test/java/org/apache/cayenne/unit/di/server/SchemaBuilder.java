@@ -57,9 +57,9 @@ import org.xml.sax.InputSource;
 /**
  * Default implementation of the AccessStack that has a single DataNode per DataMap.
  */
-public class SchemaHelper {
+public class SchemaBuilder {
 
-    private static Log logger = LogFactory.getLog(SchemaHelper.class);
+    private static Log logger = LogFactory.getLog(SchemaBuilder.class);
 
     public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
     public static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
@@ -86,7 +86,7 @@ public class SchemaHelper {
 
     private DataDomain domain;
 
-    public SchemaHelper(@Inject DataSource dataSource,
+    public SchemaBuilder(@Inject DataSource dataSource,
             @Inject UnitDbAdapter unitDbAdapter, @Inject DbAdapter dbAdapter) {
         this.dataSource = dataSource;
         this.unitDbAdapter = unitDbAdapter;

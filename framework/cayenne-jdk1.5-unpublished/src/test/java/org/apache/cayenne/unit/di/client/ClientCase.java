@@ -22,7 +22,7 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DICase;
-import org.apache.cayenne.unit.di.server.SchemaHelper;
+import org.apache.cayenne.unit.di.server.SchemaBuilder;
 import org.apache.cayenne.unit.di.server.ServerCaseModule;
 
 public class ClientCase extends DICase {
@@ -39,7 +39,7 @@ public class ClientCase extends DICase {
                 new ServerCaseModule(testScope),
                 new ClientCaseModule(testScope));
        
-        injector.getInstance(SchemaHelper.class).rebuildSchema();
+        injector.getInstance(SchemaBuilder.class).rebuildSchema();
     }
 
     @Override
