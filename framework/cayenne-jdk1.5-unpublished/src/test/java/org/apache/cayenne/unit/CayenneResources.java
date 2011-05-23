@@ -74,9 +74,6 @@ public class CayenneResources {
                     + adapterClassName);
         }
 
-        // post init
-        stackAdapter.unchecked(this);
-
         return stackAdapter;
     }
 

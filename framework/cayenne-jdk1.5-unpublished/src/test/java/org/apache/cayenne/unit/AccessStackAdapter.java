@@ -65,10 +65,6 @@ public class AccessStackAdapter {
         return adapter;
     }
 
-    public void unchecked(CayenneResources resources) {
-
-    }
-
     /**
      * Drops all table constraints.
      */
@@ -107,10 +103,9 @@ public class AccessStackAdapter {
             for (String constraint : constraints) {
                 StringBuilder drop = new StringBuilder();
 
-                drop.append("ALTER TABLE ")
-                .append(strategy.quoteFullyQualifiedName(entity))
-                .append(" DROP CONSTRAINT ")
-                .append(constraint);
+                drop.append("ALTER TABLE ").append(
+                        strategy.quoteFullyQualifiedName(entity)).append(
+                        " DROP CONSTRAINT ").append(constraint);
                 executeDDL(conn, drop.toString());
             }
         }
@@ -308,9 +303,8 @@ public class AccessStackAdapter {
                 continue;
             }
             boolean status = entity.getDataMap() != null
-            && entity.getDataMap().isQuotingSQLIdentifiers();
+                    && entity.getDataMap().isQuotingSQLIdentifiers();
             QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
-
 
             // Get all constraints for the table
             ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity
