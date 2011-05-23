@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -35,7 +35,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class JdbcAdapterTest extends ServerCase {
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     public void testExternalTypesForJdbcType() throws Exception {
         // check a few types

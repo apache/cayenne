@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit;
+package org.apache.cayenne.unit.di.server;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,7 +38,7 @@ import org.apache.commons.collections.ExtendedProperties;
  * in $HOME/.cayenne/connection.properties. As of now this is purely a utility class. Its
  * features are not used in deployment.
  */
-public class ConnectionProperties {
+class ConnectionProperties {
 
     public static final String EMBEDDED_DATASOURCE = "internal_embedded_datasource";
     public static final String EMBEDDED_DATASOURCE_DBADAPTER = "org.apache.cayenne.dba.hsqldb.HSQLDBAdapter";
@@ -61,8 +61,8 @@ public class ConnectionProperties {
     public static final String URL_KEY_MAVEN = "cayenneJdbcUrl";
     public static final String DRIVER_KEY_MAVEN = "cayenneJdbcDriver";
 
-    protected static ConnectionProperties sharedInstance;
-    protected static Map<String, DataSourceInfo> connectionInfos = Collections
+    private static ConnectionProperties sharedInstance;
+    private static Map<String, DataSourceInfo> connectionInfos = Collections
             .synchronizedMap(new HashMap<String, DataSourceInfo>());
 
     static {
@@ -305,7 +305,7 @@ public class ConnectionProperties {
      * Returns a list of connection names configured in the properties object.
      */
     public List<String> extractNames(ExtendedProperties props) {
-        Iterator it = props.getKeys();
+        Iterator<?> it = props.getKeys();
         List<String> list = new ArrayList<String>();
 
         while (it.hasNext()) {

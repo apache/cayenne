@@ -20,27 +20,25 @@
 package org.apache.cayenne.unit;
 
 import java.sql.Connection;
-import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.cayenne.access.DataContextProcedureQueryTest;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureParameter;
 
 /**
  */
-public class PostgresStackAdapter extends AccessStackAdapter {
+public class MySQLUnitDbAdapter extends UnitDbAdapter {
 
-    public PostgresStackAdapter(DbAdapter adapter) {
+    static final Collection<String> NO_CONSTRAINTS_TABLES = Arrays.asList(
+            "REFLEXIVE_AND_TO_ONE",
+            "ARTGROUP",
+            "FK_OF_DIFFERENT_TYPE");
+
+    public MySQLUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
-    }
-
-    @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
-        // avoid dropping constraints...
     }
 
     @Override
@@ -49,42 +47,50 @@ public class PostgresStackAdapter extends AccessStackAdapter {
     }
 
     @Override
+    public boolean supportsCaseSensitiveLike() {
+        return false;
+    }
+
+    @Override
     public boolean supportsStoredProcedures() {
         return true;
     }
 
     @Override
-    public boolean canMakeObjectsOutOfProcedures() {
-        // we are a victim of CAY-148 - column capitalization...
-        return false;
+    public boolean supportsTrimChar() {
+        return true;
     }
 
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
+
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
-            executeDDL(con, "postgresql", "create-select-sp.sql");
-            executeDDL(con, "postgresql", "create-update-sp.sql");
-            executeDDL(con, "postgresql", "create-update-sp2.sql");
-            executeDDL(con, "postgresql", "create-out-sp.sql");
+            executeDDL(con, "mysql", "create-select-sp.sql");
+            executeDDL(con, "mysql", "create-update-sp.sql");
+            executeDDL(con, "mysql", "create-update-sp2.sql");
+            executeDDL(con, "mysql", "create-out-sp.sql");
         }
     }
 
     @Override
-    public void tweakProcedure(Procedure proc) {
-        if (DataContextProcedureQueryTest.OUT_STORED_PROCEDURE.equals(proc.getName())
-                && proc.getCallParameters().size() == 2) {
+    public void willDropTables(
+            Connection conn,
+            DataMap map,
+            Collection<String> tablesToDrop) throws Exception {
 
-            proc.clearCallParameters();
-            proc.addCallParameter(new ProcedureParameter(
-                    "out_param",
-                    Types.INTEGER,
-                    ProcedureParameter.OUT_PARAMETER));
-
-            proc.addCallParameter(new ProcedureParameter(
-                    "in_param",
-                    Types.INTEGER,
-                    ProcedureParameter.IN_PARAMETER));
-            proc.setReturningValue(true);
+        Procedure proc = map.getProcedure("cayenne_tst_select_proc");
+        if (proc != null && proc.getDataMap() == map) {
+            executeDDL(conn, "mysql", "drop-select-sp.sql");
+            executeDDL(conn, "mysql", "drop-update-sp.sql");
+            executeDDL(conn, "mysql", "drop-update-sp2.sql");
+            executeDDL(conn, "mysql", "drop-out-sp.sql");
         }
+    }
+
+    @Override
+    public boolean supportsFKConstraints(DbEntity entity) {
+        // MySQL supports that, but there are problems deleting objects from such
+        // tables...
+        return !NO_CONSTRAINTS_TABLES.contains(entity.getName());
     }
 }

@@ -42,7 +42,7 @@ import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -56,7 +56,7 @@ public class SelectQueryTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     @Override
     protected void setUpAfterInjection() throws Exception {

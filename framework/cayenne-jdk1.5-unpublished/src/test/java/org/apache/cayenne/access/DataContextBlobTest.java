@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.BlobTestEntity;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -46,7 +46,7 @@ public class DataContextBlobTest extends ServerCase {
     protected ServerRuntime runtime;
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     protected boolean skipTests() {
         return accessStackAdapter.supportsLobs();

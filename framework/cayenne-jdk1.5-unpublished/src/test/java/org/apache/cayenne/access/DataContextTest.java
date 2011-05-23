@@ -63,7 +63,7 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -79,7 +79,7 @@ public class DataContextTest extends ServerCase {
     protected DBHelper dbHelper;
 
     @Inject
-    protected AccessStackAdapter accessStackAdapter;
+    protected UnitDbAdapter accessStackAdapter;
 
     @Inject
     protected DataChannelInterceptor queryInterceptor;

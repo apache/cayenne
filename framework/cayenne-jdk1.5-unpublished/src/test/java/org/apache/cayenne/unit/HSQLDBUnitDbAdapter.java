@@ -24,9 +24,9 @@ import java.sql.Connection;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
-public class HSQLDBStackAdapter extends AccessStackAdapter {
+public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
 
-    public HSQLDBStackAdapter(DbAdapter adapter) {
+    public HSQLDBUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 

@@ -35,14 +35,14 @@ import org.apache.cayenne.map.Procedure;
 
 /**
  */
-public class SybaseStackAdapter extends AccessStackAdapter {
+public class SybaseUnitDbAdapter extends UnitDbAdapter {
 
     /**
      * Constructor for SybaseDelegate.
      * 
      * @param adapter
      */
-    public SybaseStackAdapter(DbAdapter adapter) {
+    public SybaseUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 

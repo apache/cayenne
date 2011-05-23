@@ -16,41 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-
 package org.apache.cayenne.unit;
 
-import java.sql.Connection;
-import java.util.Collection;
-
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DataMap;
 
-/**
- */
-public class DB2StackAdapter extends AccessStackAdapter {
+public class SQLiteUnitDbAdapter extends UnitDbAdapter {
 
-    public DB2StackAdapter(DbAdapter adapter) {
+    public SQLiteUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
     
     @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
-        // avoid dropping constraints...  
-    }
-
-    @Override
-    public boolean supportsBinaryPK() {
+    public boolean supportsFKConstraints() {
         return false;
     }
-
+    
     @Override
-    public boolean supportsLobs() {
-        return true;
+    public boolean supportsColumnTypeReengineering() {
+        return false;
     }
-
+    
     @Override
-    public boolean supportsStoredProcedures() {
+    public boolean supportsCaseSensitiveLike() {
+        return false;
+    }
+    
+    @Override
+    public boolean supportsAllAnySome() {
         return false;
     }
 }

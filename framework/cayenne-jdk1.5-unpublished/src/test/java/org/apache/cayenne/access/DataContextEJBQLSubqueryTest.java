@@ -31,7 +31,7 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -42,7 +42,7 @@ public class DataContextEJBQLSubqueryTest extends ServerCase {
     private ObjectContext context;
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     @Inject
     private DBHelper dbHelper;

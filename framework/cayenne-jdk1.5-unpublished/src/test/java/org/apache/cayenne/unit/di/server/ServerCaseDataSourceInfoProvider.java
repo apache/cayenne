@@ -21,7 +21,6 @@ package org.apache.cayenne.unit.di.server;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.ConnectionProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

@@ -49,20 +49,19 @@ import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.unit.AccessStackAdapter;
-import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.unit.DB2StackAdapter;
-import org.apache.cayenne.unit.FrontBaseStackAdapter;
-import org.apache.cayenne.unit.H2StackAdapter;
-import org.apache.cayenne.unit.HSQLDBStackAdapter;
-import org.apache.cayenne.unit.IngresStackAdapter;
-import org.apache.cayenne.unit.MySQLStackAdapter;
-import org.apache.cayenne.unit.OpenBaseStackAdapter;
-import org.apache.cayenne.unit.OracleStackAdapter;
-import org.apache.cayenne.unit.PostgresStackAdapter;
-import org.apache.cayenne.unit.SQLServerStackAdapter;
-import org.apache.cayenne.unit.SQLiteStackAdapter;
-import org.apache.cayenne.unit.SybaseStackAdapter;
+import org.apache.cayenne.unit.DB2UnitDbAdapter;
+import org.apache.cayenne.unit.FrontBaseUnitDbAdapter;
+import org.apache.cayenne.unit.H2UnitDbAdapter;
+import org.apache.cayenne.unit.HSQLDBUnitDbAdapter;
+import org.apache.cayenne.unit.IngresUnitDbAdapter;
+import org.apache.cayenne.unit.MySQLUnitDbAdapter;
+import org.apache.cayenne.unit.OpenBaseUnitDbAdapter;
+import org.apache.cayenne.unit.OracleUnitDbAdapter;
+import org.apache.cayenne.unit.PostgresUnitDbAdapter;
+import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
+import org.apache.cayenne.unit.SQLiteUnitDbAdapter;
+import org.apache.cayenne.unit.SybaseUnitDbAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
@@ -83,35 +82,35 @@ public class ServerCaseModule implements Module {
         // unit test injector. ServerRuntime injector contents are customized
         // inside ServerRuntimeProvider.
 
-        binder.bindMap(AccessStackAdapterProvider.TEST_ADAPTERS_MAP).put(
+        binder.bindMap(UnitDbAdapterProvider.TEST_ADAPTERS_MAP).put(
                 OracleAdapter.class.getName(),
-                OracleStackAdapter.class.getName()).put(
+                OracleUnitDbAdapter.class.getName()).put(
                 Oracle8Adapter.class.getName(),
-                OracleStackAdapter.class.getName()).put(
+                OracleUnitDbAdapter.class.getName()).put(
                 SybaseAdapter.class.getName(),
-                SybaseStackAdapter.class.getName()).put(
+                SybaseUnitDbAdapter.class.getName()).put(
                 MySQLAdapter.class.getName(),
-                MySQLStackAdapter.class.getName()).put(
+                MySQLUnitDbAdapter.class.getName()).put(
                 PostgresAdapter.class.getName(),
-                PostgresStackAdapter.class.getName()).put(
+                PostgresUnitDbAdapter.class.getName()).put(
                 OpenBaseAdapter.class.getName(),
-                OpenBaseStackAdapter.class.getName()).put(
+                OpenBaseUnitDbAdapter.class.getName()).put(
                 SQLServerAdapter.class.getName(),
-                SQLServerStackAdapter.class.getName()).put(
+                SQLServerUnitDbAdapter.class.getName()).put(
                 DB2Adapter.class.getName(),
-                DB2StackAdapter.class.getName()).put(
+                DB2UnitDbAdapter.class.getName()).put(
                 HSQLDBAdapter.class.getName(),
-                HSQLDBStackAdapter.class.getName()).put(
+                HSQLDBUnitDbAdapter.class.getName()).put(
                 H2Adapter.class.getName(),
-                H2StackAdapter.class.getName()).put(
+                H2UnitDbAdapter.class.getName()).put(
                 FrontBaseAdapter.class.getName(),
-                FrontBaseStackAdapter.class.getName()).put(
+                FrontBaseUnitDbAdapter.class.getName()).put(
                 IngresAdapter.class.getName(),
-                IngresStackAdapter.class.getName()).put(
+                IngresUnitDbAdapter.class.getName()).put(
                 SQLiteAdapter.class.getName(),
-                SQLiteStackAdapter.class.getName());
+                SQLiteUnitDbAdapter.class.getName());
 
-        binder.bind(CayenneResources.class).toProvider(CayenneResourcesProvider.class);
+        binder.bind(SchemaHelper.class).to(SchemaHelper.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // singleton objects
@@ -124,9 +123,11 @@ public class ServerCaseModule implements Module {
                 .bind(DataSource.class)
                 .toProvider(ServerCaseSharedDataSourceProvider.class);
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
-        binder
-                .bind(AccessStackAdapter.class)
-                .toProvider(AccessStackAdapterProvider.class);
+        binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);
+
+        // this factory is a hack that allows to inject to DbAdapters loaded outside of
+        // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed
+        // in the ServerModule is ignored
         binder.bind(BatchQueryBuilderFactory.class).toProvider(
                 ServerCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(DataChannelInterceptor.class).to(

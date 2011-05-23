@@ -20,20 +20,13 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
 import org.apache.cayenne.di.Provider;
 
 public class ServerCaseBatchQueryBuilderFactoryProvider implements
         Provider<BatchQueryBuilderFactory> {
 
-    @Inject
-    // injecting provider to make this provider independent from scoping of ServerRuntime
-    protected Provider<ServerRuntime> serverRuntimeProvider;
-
     public BatchQueryBuilderFactory get() throws ConfigurationException {
-        Injector injector = serverRuntimeProvider.get().getInjector();
-        return injector.getInstance(BatchQueryBuilderFactory.class);
+        return new DefaultBatchQueryBuilderFactory();
     }
 }

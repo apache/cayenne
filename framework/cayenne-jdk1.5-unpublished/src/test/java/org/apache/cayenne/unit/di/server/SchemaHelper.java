@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.unit.di.server;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -33,30 +34,45 @@ import java.util.ListIterator;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.testdo.testmap.StringET1ExtendedType;
-import org.apache.cayenne.unit.AccessStackAdapter;
-import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.InputSource;
 
 /**
  * Default implementation of the AccessStack that has a single DataNode per DataMap.
  */
-class SchemaHelper {
+public class SchemaHelper {
 
     private static Log logger = LogFactory.getLog(SchemaHelper.class);
+
+    public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
+    public static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
+
+    public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
+
+    private static String[] DATA_MAPS_REQUIREING_SCHEMA_SETUP = {
+            "testmap.map.xml", "people.map.xml", "locking.map.xml",
+            "relationships.map.xml", "multi-tier.map.xml", "generic.map.xml",
+            "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml",
+            "qualified.map.xml", "quoted-identifiers.map.xml",
+            "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml"
+    };
 
     // hardcoded dependent entities that should be excluded
     // if LOBs are not supported
@@ -64,37 +80,65 @@ class SchemaHelper {
         "CLOB_DETAIL"
     };
 
-    protected CayenneResources resources;
-    protected UnitTestDomain domain;
     private DataSource dataSource;
-    private String adapterClassName;
+    private UnitDbAdapter unitDbAdapter;
 
-    public SchemaHelper(DataSource dataSource, String adapterClassName,
-            CayenneResources resources, DataMap[] maps) throws Exception {
+    private DataDomain domain;
 
-        this.adapterClassName = adapterClassName;
+    public SchemaHelper(@Inject DataSource dataSource, @Inject UnitDbAdapter unitDbAdapter) {
         this.dataSource = dataSource;
-        this.resources = resources;
-        this.domain = new UnitTestDomain("domain");
+        this.unitDbAdapter = unitDbAdapter;
+    }
+
+    /**
+     * Completely rebuilds test schema.
+     */
+    // TODO - this method changes the internal state of the object ... refactor
+    public void rebuildSchema() {
+
+        if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
+            logger.info("skipping schema generation... ");
+            return;
+        }
+
+        // generate schema combining all DataMaps that require schema support.
+        // Schema generation is done like that instead of per DataMap on demand to avoid
+        // conflicts when dropping and generating PK objects.
+
+        DataMap[] maps = new DataMap[DATA_MAPS_REQUIREING_SCHEMA_SETUP.length];
+
+        for (int i = 0; i < maps.length; i++) {
+            InputStream stream = getClass().getClassLoader().getResourceAsStream(
+                    DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
+            InputSource in = new InputSource(stream);
+            in.setSystemId(DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
+            maps[i] = new MapLoader().loadDataMap(in);
+        }
+
+        this.domain = new DataDomain("temp");
         domain.setEventManager(new DefaultEventManager(2));
         domain.setEntitySorter(new AshwoodEntitySorter());
         domain.setQueryCache(new MapQueryCache(50));
 
-        for (DataMap map : maps) {
-            initNode(map);
-        }
-    }
+        try {
+            for (DataMap map : maps) {
+                initNode(map);
+            }
 
-    public AccessStackAdapter getAdapter(DataNode node) {
-        return resources.getAccessStackAdapter(node.getAdapter().getClass().getName());
+            dropSchema();
+            dropPKSupport();
+            createSchema();
+            createPKSupport();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Error rebuilding schema", e);
+        }
     }
 
     private void initNode(DataMap map) throws Exception {
 
-        AccessStackAdapter adapter = resources.getAccessStackAdapter(adapterClassName);
-
         DataNode node = new DataNode(map.getName());
-        node.setAdapter(adapter.getAdapter());
+        node.setAdapter(unitDbAdapter.getAdapter());
         node.setDataSource(dataSource);
 
         // setup test extended types
@@ -102,7 +146,7 @@ class SchemaHelper {
 
         // tweak mapping with a delegate
         for (Procedure proc : map.getProcedures()) {
-            getAdapter(node).tweakProcedure(proc);
+            unitDbAdapter.tweakProcedure(proc);
         }
 
         node.addDataMap(map);
@@ -112,7 +156,7 @@ class SchemaHelper {
     }
 
     /** Drops all test tables. */
-    public void dropSchema() throws Exception {
+    private void dropSchema() throws Exception {
         for (DataNode node : domain.getDataNodes()) {
             dropSchema(node, node.getDataMaps().iterator().next());
         }
@@ -121,13 +165,13 @@ class SchemaHelper {
     /**
      * Creates all test tables in the database.
      */
-    public void createSchema() throws Exception {
+    private void createSchema() throws Exception {
         for (DataNode node : domain.getDataNodes()) {
             createSchema(node, node.getDataMaps().iterator().next());
         }
     }
 
-    public void dropPKSupport() throws Exception {
+    private void dropPKSupport() throws Exception {
         for (DataNode node : domain.getDataNodes()) {
             dropPKSupport(node, node.getDataMaps().iterator().next());
         }
@@ -138,7 +182,7 @@ class SchemaHelper {
      * provided by DbAdapter to generate any necessary database objects and data for
      * primary key support.
      */
-    public void createPKSupport() throws Exception {
+    private void createPKSupport() throws Exception {
         for (DataNode node : domain.getDataNodes()) {
             createPKSupport(node, node.getDataMaps().iterator().next());
         }
@@ -154,8 +198,8 @@ class SchemaHelper {
         // filter various unsupported tests...
 
         // LOBs
-        boolean excludeLOB = !getAdapter(node).supportsLobs();
-        boolean excludeBinPK = !getAdapter(node).supportsBinaryPK();
+        boolean excludeLOB = !unitDbAdapter.supportsLobs();
+        boolean excludeBinPK = !unitDbAdapter.supportsBinaryPK();
         if (excludeLOB || excludeBinPK) {
 
             List<DbEntity> filtered = new ArrayList<DbEntity>();
@@ -231,7 +275,7 @@ class SchemaHelper {
             }
             tables.close();
 
-            getAdapter(node).willDropTables(conn, map, allTables);
+            unitDbAdapter.willDropTables(conn, map, allTables);
 
             // drop all tables in the map
             Statement stmt = conn.createStatement();
@@ -256,7 +300,7 @@ class SchemaHelper {
                 }
             }
 
-            getAdapter(node).droppedTables(conn, map);
+            unitDbAdapter.droppedTables(conn, map);
         }
         finally {
             conn.close();
@@ -278,14 +322,14 @@ class SchemaHelper {
         Connection conn = dataSource.getConnection();
 
         try {
-            getAdapter(node).willCreateTables(conn, map);
+            unitDbAdapter.willCreateTables(conn, map);
             Statement stmt = conn.createStatement();
 
             for (String query : tableCreateQueries(node, map)) {
                 logger.info(query);
                 stmt.execute(query);
             }
-            getAdapter(node).createdTables(conn, map);
+            unitDbAdapter.createdTables(conn, map);
         }
         finally {
             conn.close();
@@ -310,7 +354,7 @@ class SchemaHelper {
 
         // FK constraints
         for (DbEntity ent : orderedEnts) {
-            if (!getAdapter(node).supportsFKConstraints(ent)) {
+            if (!unitDbAdapter.supportsFKConstraints(ent)) {
                 continue;
             }
 

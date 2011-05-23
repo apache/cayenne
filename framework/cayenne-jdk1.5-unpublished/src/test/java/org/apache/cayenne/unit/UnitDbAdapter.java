@@ -48,13 +48,13 @@ import org.apache.commons.logging.LogFactory;
  * things implemented in subclasses may become future candidates for inclusion in the
  * corresponding adapter code.
  */
-public class AccessStackAdapter {
+public class UnitDbAdapter {
 
-    private static Log logger = LogFactory.getLog(AccessStackAdapter.class);
+    private static Log logger = LogFactory.getLog(UnitDbAdapter.class);
 
     protected DbAdapter adapter;
 
-    public AccessStackAdapter(DbAdapter adapter) {
+    public UnitDbAdapter(DbAdapter adapter) {
         if (adapter == null) {
             throw new CayenneRuntimeException("Null adapter.");
         }

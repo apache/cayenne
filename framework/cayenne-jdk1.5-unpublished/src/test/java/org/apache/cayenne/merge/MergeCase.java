@@ -35,7 +35,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 
 public abstract class MergeCase extends ServerCase {
@@ -44,7 +44,7 @@ public abstract class MergeCase extends ServerCase {
     private ServerRuntime runtime;
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     @Inject
     private DataSource dataSource;

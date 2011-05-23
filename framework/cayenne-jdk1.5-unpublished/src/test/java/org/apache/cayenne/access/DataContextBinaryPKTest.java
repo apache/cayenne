@@ -27,7 +27,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.BinaryPKTest1;
 import org.apache.cayenne.testdo.testmap.BinaryPKTest2;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -41,7 +41,7 @@ public class DataContextBinaryPKTest extends ServerCase {
     private DataContext context1;
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     @Inject
     private DBHelper dbHelper;

@@ -17,44 +17,40 @@
  *  under the License.
  ****************************************************************/
 
+
 package org.apache.cayenne.unit;
 
-import java.io.InputStream;
+import java.sql.Connection;
+import java.util.Collection;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.InputStreamResource;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DataMap;
 
 /**
- * A bean that loads other Spring beans from the specified location.
- * 
  */
-public class SpringResourceFactory implements FactoryBean {
+public class DB2UnitDbAdapter extends UnitDbAdapter {
 
-    protected String location;
-    protected BeanFactory factory;
-
-    public SpringResourceFactory(String location) {
-        this.location = location;
+    public DB2UnitDbAdapter(DbAdapter adapter) {
+        super(adapter);
+    }
+    
+    @Override
+    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
+        // avoid dropping constraints...  
     }
 
-    public Object getObject() throws Exception {
-        if (factory == null) {
-            InputStream in = Thread
-                    .currentThread()
-                    .getContextClassLoader()
-                    .getResourceAsStream(location);
-            this.factory = new XmlBeanFactory(new InputStreamResource(in));
-        }
-        return factory;
+    @Override
+    public boolean supportsBinaryPK() {
+        return false;
     }
 
-    public Class getObjectType() {
-        return BeanFactory.class;
-    }
-
-    public boolean isSingleton() {
+    @Override
+    public boolean supportsLobs() {
         return true;
+    }
+
+    @Override
+    public boolean supportsStoredProcedures() {
+        return false;
     }
 }

@@ -35,7 +35,7 @@ import org.apache.cayenne.testdo.testmap.BigDecimalEntity;
 import org.apache.cayenne.testdo.testmap.BigIntegerEntity;
 import org.apache.cayenne.testdo.testmap.DateTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -50,7 +50,7 @@ public class DataContextEJBQLFunctionalExpressionsTemp extends ServerCase {
     private ObjectContext context;
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     @Override
     protected void setUpAfterInjection() throws Exception {

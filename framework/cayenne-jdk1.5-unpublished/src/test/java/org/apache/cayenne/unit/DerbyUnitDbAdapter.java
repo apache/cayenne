@@ -16,33 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.unit;
 
 import org.apache.cayenne.dba.DbAdapter;
 
-public class SQLiteStackAdapter extends AccessStackAdapter {
+/**
+ * 
+ */
+public class DerbyUnitDbAdapter extends UnitDbAdapter {
 
-    public SQLiteStackAdapter(DbAdapter adapter) {
+    static {
+        // as of Derby 10.1 Alpha, this is needed for Mac OS X:
+        // http://issues.apache.org/jira/browse/DERBY-1
+        System.setProperty("derby.storage.fileSyncTransactionLog", "true");
+    }
+
+    public DerbyUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
-    
+
     @Override
-    public boolean supportsFKConstraints() {
+    public boolean supportsBinaryPK() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsCaseInsensitiveOrder() {
         return false;
     }
     
     @Override
-    public boolean supportsColumnTypeReengineering() {
-        return false;
-    }
-    
-    @Override
-    public boolean supportsCaseSensitiveLike() {
-        return false;
-    }
-    
-    @Override
-    public boolean supportsAllAnySome() {
-        return false;
+    public boolean supportsLobs() {
+        return true;
     }
 }

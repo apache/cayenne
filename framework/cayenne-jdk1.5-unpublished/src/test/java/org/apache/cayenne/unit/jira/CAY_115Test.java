@@ -29,7 +29,7 @@ import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ClobMaster;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -42,7 +42,7 @@ public class CAY_115Test extends ServerCase {
     protected DataContext context;
     
     @Inject
-    protected AccessStackAdapter accessStackAdapter;
+    protected UnitDbAdapter accessStackAdapter;
     
     @Inject
     protected DBHelper dbHelper;

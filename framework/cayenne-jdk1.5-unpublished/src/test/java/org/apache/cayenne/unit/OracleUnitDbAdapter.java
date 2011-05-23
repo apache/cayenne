@@ -38,14 +38,14 @@ import org.apache.cayenne.map.ProcedureParameter;
 
 /**
  */
-public class OracleStackAdapter extends AccessStackAdapter {
+public class OracleUnitDbAdapter extends UnitDbAdapter {
 
     /**
      * Constructor for OracleDelegate.
      * 
      * @param adapter
      */
-    public OracleStackAdapter(DbAdapter adapter) {
+    public OracleUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 

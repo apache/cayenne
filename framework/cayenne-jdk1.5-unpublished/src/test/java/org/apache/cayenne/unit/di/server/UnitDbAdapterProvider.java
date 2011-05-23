@@ -27,10 +27,10 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.AccessStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.util.Util;
 
-public class AccessStackAdapterProvider implements Provider<AccessStackAdapter> {
+public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
 
     static final String TEST_ADAPTERS_MAP = "org.apache.cayenne.unit.di.server.CayenneResourcesAccessStackAdapterProvider.adapters";
 
@@ -38,7 +38,7 @@ public class AccessStackAdapterProvider implements Provider<AccessStackAdapter> 
     private DataSourceInfo dataSourceInfo;
     private Map<String, String> adapterTypesMap;
 
-    public AccessStackAdapterProvider(
+    public UnitDbAdapterProvider(
             @Inject(TEST_ADAPTERS_MAP) Map<String, String> adapterTypesMap,
             @Inject DataSourceInfo dataSourceInfo, @Inject DbAdapter adapter) {
         this.dataSourceInfo = dataSourceInfo;
@@ -46,7 +46,7 @@ public class AccessStackAdapterProvider implements Provider<AccessStackAdapter> 
         this.adapter = adapter;
     }
 
-    public AccessStackAdapter get() throws ConfigurationException {
+    public UnitDbAdapter get() throws ConfigurationException {
 
         String testAdapterType = adapterTypesMap
                 .get(dataSourceInfo.getAdapterClassName());
@@ -55,9 +55,9 @@ public class AccessStackAdapterProvider implements Provider<AccessStackAdapter> 
                     + dataSourceInfo.getAdapterClassName());
         }
 
-        Class<AccessStackAdapter> type;
+        Class<UnitDbAdapter> type;
         try {
-            type = (Class<AccessStackAdapter>) Util.getJavaClass(testAdapterType);
+            type = (Class<UnitDbAdapter>) Util.getJavaClass(testAdapterType);
         }
         catch (ClassNotFoundException e) {
             throw new CayenneRuntimeException(
@@ -66,14 +66,14 @@ public class AccessStackAdapterProvider implements Provider<AccessStackAdapter> 
                     testAdapterType);
         }
 
-        if (!AccessStackAdapter.class.isAssignableFrom(type)) {
+        if (!UnitDbAdapter.class.isAssignableFrom(type)) {
             throw new CayenneRuntimeException(
                     "Class %s is not assignable to AccessStackAdapter",
                     testAdapterType);
         }
 
         try {
-            Constructor<AccessStackAdapter> c = type.getConstructor(DbAdapter.class);
+            Constructor<UnitDbAdapter> c = type.getConstructor(DbAdapter.class);
             return c.newInstance(adapter);
         }
         catch (Exception e) {

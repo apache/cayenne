@@ -22,9 +22,9 @@ package org.apache.cayenne.unit;
 import org.apache.cayenne.dba.DbAdapter;
 
 
-public class H2StackAdapter extends AccessStackAdapter {
+public class H2UnitDbAdapter extends UnitDbAdapter {
 
-    public H2StackAdapter(DbAdapter adapter) {
+    public H2UnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 

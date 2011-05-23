@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.AccessStackAdapter;
-import org.apache.cayenne.unit.SQLServerStackAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -38,7 +38,7 @@ public class SQLServerSnifferTest extends ServerCase {
     private DataSource dataSource;
 
     @Inject
-    private AccessStackAdapter accessStackAdapter;
+    private UnitDbAdapter accessStackAdapter;
 
     public void testCreateAdapter() throws Exception {
 
@@ -59,7 +59,7 @@ public class SQLServerSnifferTest extends ServerCase {
             }
         }
 
-        if (accessStackAdapter instanceof SQLServerStackAdapter) {
+        if (accessStackAdapter instanceof SQLServerUnitDbAdapter) {
             assertNotNull(adapter);
         }
         else {

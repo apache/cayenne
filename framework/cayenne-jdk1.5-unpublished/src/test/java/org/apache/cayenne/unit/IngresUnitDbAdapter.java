@@ -27,9 +27,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class IngresStackAdapter extends AccessStackAdapter {
+public class IngresUnitDbAdapter extends UnitDbAdapter {
 
-    public IngresStackAdapter(DbAdapter adapter) {
+    public IngresUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 

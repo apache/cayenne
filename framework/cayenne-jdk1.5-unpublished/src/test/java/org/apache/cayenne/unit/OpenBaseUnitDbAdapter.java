@@ -27,25 +27,10 @@ import org.apache.cayenne.map.DataMap;
 
 /**
  */
-public class FrontBaseStackAdapter extends AccessStackAdapter {
+public class OpenBaseUnitDbAdapter extends UnitDbAdapter {
 
-    public FrontBaseStackAdapter(DbAdapter adapter) {
+    public OpenBaseUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
-    }
-
-    @Override
-    public boolean supportsLobs() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsLobInsertsAsStrings() {
-        return false;
-    }
-    
-    @Override
-    public boolean supportsEqualNullSyntax() {
-        return false;
     }
 
     @Override
@@ -55,25 +40,19 @@ public class FrontBaseStackAdapter extends AccessStackAdapter {
     }
 
     @Override
-    public boolean supportsBatchPK() {
-        return false;
-    }
-
-    @Override
     public boolean supportsHaving() {
-        // FrontBase DOES support HAVING, however it doesn't support aggegate expressions
-        // in HAVING, and requires using column aliases instead. As HAVING is used for old
-        // and ugly derived DbEntities, no point in implementing special support at the
-        // adapter level.
         return false;
     }
 
     @Override
-    public boolean supportsCaseInsensitiveOrder() {
-        // TODO, Andrus 11/8/2005: FrontBase does support UPPER() in ordering clause,
-        // however it does not
-        // support table aliases inside UPPER... Not sure what to do about it.
+    public boolean supportsReverseComparison() {
+        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
+        return false;
+    }
 
+    @Override
+    public boolean supportNullRowForAggregateFunctions() {
+        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
         return false;
     }
 }
