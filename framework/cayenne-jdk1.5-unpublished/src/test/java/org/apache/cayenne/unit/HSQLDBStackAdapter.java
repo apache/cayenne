@@ -24,8 +24,6 @@ import java.sql.Connection;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
-/**
- */
 public class HSQLDBStackAdapter extends AccessStackAdapter {
 
     public HSQLDBStackAdapter(DbAdapter adapter) {
@@ -36,7 +34,7 @@ public class HSQLDBStackAdapter extends AccessStackAdapter {
     public boolean supportsLobs() {
         return true;
     }
-    
+
     /**
      * Note that out of all SP tests HSQLDB (as of 8.0.2) supports only updates that do
      * not return a ResultSet (see HSQL CallableStatement JavaDocs). Once HSQL implements

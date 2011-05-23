@@ -21,6 +21,7 @@ package org.apache.cayenne.unit.di.server;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.di.DICase;
 
 public class ServerCase extends DICase {
@@ -43,6 +44,9 @@ public class ServerCase extends DICase {
     static {
         DefaultScope testScope = new DefaultScope();
         injector = DIBootstrap.createInjector(new ServerCaseModule(testScope));
+        
+        // this triggers schema setup
+        injector.getInstance(CayenneResources.class);
     }
 
     @Override

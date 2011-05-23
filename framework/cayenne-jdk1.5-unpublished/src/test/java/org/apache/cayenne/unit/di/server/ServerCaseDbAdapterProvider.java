@@ -19,25 +19,26 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.AccessStackAdapter;
-import org.apache.cayenne.unit.CayenneResources;
 
-public class CayenneResourcesAccessStackAdapterProvider implements
-        Provider<AccessStackAdapter> {
+public class ServerCaseDbAdapterProvider implements Provider<DbAdapter> {
 
-    private CayenneResources resources;
     private DataSourceInfo dataSourceInfo;
+    private AdhocObjectFactory objectFactory;
 
-    public CayenneResourcesAccessStackAdapterProvider(@Inject CayenneResources resources,
-            @Inject DataSourceInfo dataSourceInfo) {
+    public ServerCaseDbAdapterProvider(@Inject DataSourceInfo dataSourceInfo,
+            @Inject AdhocObjectFactory objectFactory) {
         this.dataSourceInfo = dataSourceInfo;
-        this.resources = resources;
+        this.objectFactory = objectFactory;
     }
 
-    public AccessStackAdapter get() throws ConfigurationException {
-        return resources.getAccessStackAdapter(dataSourceInfo.getAdapterClassName());
+    public DbAdapter get() throws ConfigurationException {
+
+        return objectFactory.newInstance(DbAdapter.class, dataSourceInfo
+                .getAdapterClassName());
     }
 }
