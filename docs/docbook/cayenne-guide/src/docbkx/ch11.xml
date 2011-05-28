@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="5.0" xml:id="customizing-cayenne-runtime">
+	<title>Customizing Cayenne Runtime</title>
+	<section xml:id="depdendency-injection-container">
+		<title>Dependency Injection Container</title>
+		<section xml:id="di-bindings-api">
+			<title>DI Bindings API</title>
+		</section>
+		<section xml:id="managing-services-lifecycle">
+			<title>Managing Services Lifecycle</title>
+		</section>
+		<section xml:id="overriding-services">
+			<title>Overriding Services</title>
+		</section>
+	</section>
+	<section xml:id="ways-to-customize-runtime">
+		<title>Ways to Customize Runtime</title>
+		<section xml:id="changing-properties-of-existing-services">
+			<title>Changing Properties of Existing Services</title>
+		</section>
+		<section xml:id="contributing-to-service-lists-maps">
+			<title>Contributing to Service Lists and Maps</title>
+		</section>
+		<section xml:id="alternative-service-implementations">
+			<title>Alternative Service Implementations</title>
+		</section>
+	</section>
+	<section xml:id="noteworthy-runtime-components">
+		<title>Noteworthy Runtime Components</title>
+		<section xml:id="jdbceventlogger">
+			<title>JdbcEventLogger</title>
+		</section>
+		<section xml:id="datasourcefactory">
+			<title>DataSourceFactory</title>
+		</section>
+		<section xml:id="datachannelfilter">
+			<title>DataChannelFilter</title>
+		</section>
+		<section xml:id="querycache">
+			<title>QueryCache</title>
+		</section>
+		<section xml:id="extendedtypes">
+			<title>ExtendedTypes</title>
+		</section>
+	</section>
+</chapter>

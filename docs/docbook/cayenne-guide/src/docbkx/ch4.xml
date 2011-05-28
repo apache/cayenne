@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="5.0" xml:id="including-cayenne-in-project">
+	<title>Including Cayenne in a Project</title>
+	<section xml:id="jar-files-and-depdendencies">
+		<title>Jar Files and Dependencies</title>
+	</section>
+	<section xml:id="maven-projects">
+		<title>Maven Projects</title>
+		<section xml:id="mvn-cgen">
+			<title>cgen</title>
+		</section>
+		<section xml:id="mvn-cdbgen">
+			<title>cdbgen</title>
+		</section>
+		<section xml:id="mvn-cdbimport">
+			<title>cdbimport</title>
+		</section>
+	</section>
+	<section xml:id="ant-projects">
+		<title>Ant Projects</title>
+		<section xml:id="ant-cgen">
+			<title>cgen</title>
+		</section>
+		<section xml:id="ant-cdbgen">
+			<title>cdbgen</title>
+		</section>
+		<section xml:id="ant-cdbimport">
+			<title>cdbimport</title>
+		</section>
+		<section xml:id="ant-cdataport">
+			<title>cdataport</title>
+		</section>
+	</section>
+</chapter>

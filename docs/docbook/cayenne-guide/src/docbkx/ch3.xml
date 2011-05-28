@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="5.0" xml:id="cayennemodeler-application">
+	<title>CayenneModeler Application</title>
+	<section xml:id="working-with-mapping-projects">
+		<title>Working with Mapping Projects</title>
+	</section>
+	<section xml:id="reverse-engineering-database">
+		<title>Reverse Engineering Database</title>
+	</section>
+	<section xml:id="generating-database-schema">
+		<title>Generating Database Schema</title>
+	</section>
+	<section xml:id="migrations">
+		<title>Migrations</title>
+	</section>
+	<section xml:id="generating-java-classes">
+		<title>Generating Java Classes</title>
+	</section>
+	<section xml:id="modeling-inheritance">
+		<title>Modeling Inheritance</title>
+	</section>
+	<section xml:id="modeling-pk-generation-strategy">
+		<title>Modeling Primary Key Generation Strategy</title>
+	</section>
+</chapter>

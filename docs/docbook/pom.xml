@@ -31,7 +31,7 @@
 	</parent>
 	
 	<modules>
-		<module>main</module>
+		<module>cayenne-guide</module>
 	</modules>
 
 	<groupId>org.apache.cayenne.docs</groupId>
@@ -84,12 +84,11 @@
 					<xincludeSupported>true</xincludeSupported>
 					<highlightSource>true</highlightSource>
 					<targetDirectory>${basedir}/target/site/</targetDirectory>
-					<sourceDirectory>disabled-for-parent-pom</sourceDirectory>
 					<includes>index.xml</includes>				
 				</configuration>
 				<executions>
 					<execution>
-						<id>builcd-pdf</id>
+						<id>build-pdf</id>
 						<configuration>
 							<foCustomization>${project.parent.basedir}/stylesheets/pdf.xsl</foCustomization>
 							<postProcess>
@@ -159,14 +158,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-		
-		
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0-beta-7</version>
-			</extension>
-		</extensions>
 	</build>
 </project>

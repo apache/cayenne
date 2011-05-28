@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="5.0" xml:id="lifecycle-events">
+	<title>Lifecycle Events</title>
+	<section xml:id="types-of-lifecycle-events">
+		<title>Types of Lifecycle Events</title>
+	</section>
+	<section xml:id="lifecycle-callbacks-listeners">
+		<title>Lifecycle Callbacks and Listeners</title>
+		<section xml:id="callback-listener-method-semantics">
+			<title>Callback and Listener Methods Semantics</title>
+		</section>
+		<section xml:id="registering-callbacks-listeners">
+			<title>Registering Callbacks and Listeners</title>
+		</section>
+		<section xml:id="comining-listeners-with-datachannelfilters">
+			<title>Combining Listeners with DataChannelFilters</title>
+		</section>
+	</section>
+</chapter>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="5.0" xml:id="cayenne-mapping-structure">
+	<title>Cayenne Mapping Structure</title>
+	<section xml:id="cayenne-project">
+		<title>Cayenne Project</title>
+	</section>
+	<section xml:id="datamap">
+		<title>DataMap</title>
+	</section>
+	<section xml:id="datanode">
+		<title>DataNode</title>
+	</section>
+	<section xml:id="dbentity">
+		<title>DbEntity</title>
+	</section>
+	<section xml:id="objentity">
+		<title>ObjEntity</title>
+		<section xml:id="mapping-objattributes-to-custom-classes">
+			<title>Mapping ObjAttributes to Custom Classes</title>
+		</section>
+	</section>
+	<section xml:id="embeddable">
+		<title>Embeddable</title>
+	</section>
+	<section xml:id="procedure">
+		<title>Procedure</title>
+	</section>
+	<section xml:id="query">
+		<title>Query</title>
+	</section>
+	<section xml:id="listeners-and-callbacks">
+		<title>Listeners and Callbacks</title>
+	</section>
+</chapter>

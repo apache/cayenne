@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="5.0" xml:id="rop-deployment">
+	<title>ROP Deployment</title>
+	<section xml:id="deploying-rop-server">
+		<title>Deploying ROP Server</title>
+	</section>
+	<section xml:id="deploying-rop-client">
+		<title>Deploying ROP Client</title>
+	</section>
+	<section xml:id="rop-security">
+		<title>Security</title>
+	</section>
+</chapter>

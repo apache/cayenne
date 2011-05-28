@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="5.0" xml:id="performance-tuning">
+	<title>Performance Tuning</title>
+	<section xml:id="prefetching">
+		<title>Prefetching</title>
+	</section>
+	<section xml:id="datarows">
+		<title>Data Rows</title>
+	</section>
+	<section xml:id="iterated-queries">
+		<title>Iterated Queries</title>
+	</section>
+	<section xml:id="paginated-queries">
+		<title>Paginated Queries</title>
+	</section>
+	<section xml:id="caching-and-fresh-data">
+		<title>Caching and Fresh Data</title>
+		<section xml:id="object-caching">
+			<title>Object Caching</title>
+		</section>
+		<section xml:id="query-result-caching">
+			<title>Query Result Caching</title>
+		</section>
+	</section>
+	<section xml:id="turning-off-synchronization-of-objectcontexts">
+		<title>Turning off Synchronization of ObjectContexts</title>
+	</section>
+</chapter>
