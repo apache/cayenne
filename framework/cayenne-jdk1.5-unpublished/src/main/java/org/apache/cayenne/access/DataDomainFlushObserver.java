@@ -25,6 +25,7 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -37,6 +38,15 @@ import org.apache.cayenne.util.Util;
  * @since 1.2
  */
 class DataDomainFlushObserver implements OperationObserver {
+
+    /**
+     * @since 3.1
+     */
+    private JdbcEventLogger logger;
+
+    DataDomainFlushObserver(JdbcEventLogger logger) {
+        this.logger = logger;
+    }
 
     public void nextQueryException(Query query, Exception ex) {
         throw new CayenneRuntimeException("Raising from query exception.", Util
@@ -123,7 +133,7 @@ class DataDomainFlushObserver implements OperationObserver {
                 Object value = key.values().iterator().next();
 
                 // Log the generated PK
-                QueryLogger.logGeneratedKey(attribute, value);
+                logger.logGeneratedKey(attribute, value);
 
                 // I guess we should override any existing value,
                 // as generated key is the latest thing that exists in the DB.

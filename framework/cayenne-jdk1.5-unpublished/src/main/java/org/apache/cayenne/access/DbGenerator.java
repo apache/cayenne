@@ -40,6 +40,8 @@ import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -66,6 +68,8 @@ public class DbGenerator {
     // optional DataDomain needed for correct FK generation in cross-db situations
     protected DataDomain domain;
 
+    protected JdbcEventLogger jdbcEventLogger;
+
     // stores generated SQL statements
     protected Map<String, Collection<String>> dropTables;
     protected Map<String, String> createTables;
@@ -90,7 +94,10 @@ public class DbGenerator {
 
     /**
      * Creates and initializes new DbGenerator.
+     * 
+     * @deprecated since 3.1 use {@link #DbGenerator(DbAdapter, DataMap, JdbcEventLogger)}
      */
+    @Deprecated
     public DbGenerator(DbAdapter adapter, DataMap map) {
         this(adapter, map, Collections.<DbEntity> emptyList());
     }
@@ -101,10 +108,28 @@ public class DbGenerator {
      * @param adapter DbAdapter corresponding to the database
      * @param map DataMap whose entities will be used in schema generation
      * @param excludedEntities entities that should be ignored during schema generation
+     * @deprecated since 3.1 use
+     *             {@link #DbGenerator(DbAdapter, DataMap, Collection, DataDomain, JdbcEventLogger)}
      */
+    @Deprecated
     public DbGenerator(DbAdapter adapter, DataMap map,
             Collection<DbEntity> excludedEntities) {
-        this(adapter, map, excludedEntities, null);
+        this(adapter, map, excludedEntities, null, NoopJdbcEventLogger.getInstance());
+    }
+
+    /**
+     * @since 3.1
+     */
+    public DbGenerator(DbAdapter adapter, DataMap map, JdbcEventLogger logger) {
+        this(adapter, map, logger, Collections.<DbEntity> emptyList());
+    }
+
+    /**
+     * @since 3.1
+     */
+    public DbGenerator(DbAdapter adapter, DataMap map, JdbcEventLogger logger,
+            Collection<DbEntity> excludedEntities) {
+        this(adapter, map, excludedEntities, null, logger);
     }
 
     /**
@@ -114,10 +139,11 @@ public class DbGenerator {
      * @param map DataMap whose entities will be used in schema generation
      * @param excludedEntities entities that should be ignored during schema generation
      * @param domain optional DataDomain used to detect cross-database relationships.
-     * @since 1.2
+     * @since 3.1
      */
     public DbGenerator(DbAdapter adapter, DataMap map,
-            Collection<DbEntity> excludedEntities, DataDomain domain) {
+            Collection<DbEntity> excludedEntities, DataDomain domain,
+            JdbcEventLogger logger) {
         // sanity check
         if (adapter == null) {
             throw new IllegalArgumentException("Adapter must not be null.");
@@ -130,6 +156,7 @@ public class DbGenerator {
         this.domain = domain;
         this.map = map;
         this.adapter = adapter;
+        this.jdbcEventLogger = logger;
 
         prepareDbEntities(excludedEntities);
         resetToDefaults();
@@ -346,7 +373,7 @@ public class DbGenerator {
         Statement statement = connection.createStatement();
 
         try {
-            QueryLogger.logQuery(sql, null);
+            jdbcEventLogger.logQuery(sql, null);
             statement.execute(sql);
             return true;
         }
@@ -356,7 +383,7 @@ public class DbGenerator {
             }
 
             failures.addFailure(new SimpleValidationFailure(sql, ex.getMessage()));
-            QueryLogger.logQueryError(ex);
+            jdbcEventLogger.logQueryError(ex);
             return false;
         }
         finally {

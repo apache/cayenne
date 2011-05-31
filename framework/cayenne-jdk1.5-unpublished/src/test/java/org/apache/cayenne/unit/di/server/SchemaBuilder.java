@@ -43,6 +43,7 @@ import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -83,14 +84,16 @@ public class SchemaBuilder {
     private DataSource dataSource;
     private UnitDbAdapter unitDbAdapter;
     private DbAdapter dbAdapter;
-
     private DataDomain domain;
+    private JdbcEventLogger jdbcEventLogger;
 
     public SchemaBuilder(@Inject DataSource dataSource,
-            @Inject UnitDbAdapter unitDbAdapter, @Inject DbAdapter dbAdapter) {
+            @Inject UnitDbAdapter unitDbAdapter, @Inject DbAdapter dbAdapter,
+            @Inject JdbcEventLogger jdbcEventLogger) {
         this.dataSource = dataSource;
         this.unitDbAdapter = unitDbAdapter;
         this.dbAdapter = dbAdapter;
+        this.jdbcEventLogger = jdbcEventLogger;
     }
 
     /**
@@ -345,7 +348,7 @@ public class SchemaBuilder {
     private Collection<String> tableCreateQueries(DataNode node, DataMap map)
             throws Exception {
         DbAdapter adapter = node.getAdapter();
-        DbGenerator gen = new DbGenerator(adapter, map, null, domain);
+        DbGenerator gen = new DbGenerator(adapter, map, null, domain, jdbcEventLogger);
 
         List<DbEntity> orderedEnts = dbEntitiesInInsertOrder(node, map);
         List<String> queries = new ArrayList<String>();

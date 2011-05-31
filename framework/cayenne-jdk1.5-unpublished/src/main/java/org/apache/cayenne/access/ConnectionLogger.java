@@ -28,6 +28,7 @@ import org.apache.cayenne.conn.DataSourceInfo;
  * connection pools.
  * 
  * @since 1.2
+ * @deprecated since 3.1
  */
 public class ConnectionLogger implements ConnectionEventLoggingDelegate {
 

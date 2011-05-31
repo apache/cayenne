@@ -160,10 +160,6 @@ public class IncrementalFaultList<E> implements List<E> {
                 while (it.hasNextRow()) {
                     elementsList.add(it.nextRow());
                 }
-
-                QueryLogger.logSelectCount(elementsList.size(), System
-                        .currentTimeMillis()
-                        - t1);
             }
             finally {
                 it.close();

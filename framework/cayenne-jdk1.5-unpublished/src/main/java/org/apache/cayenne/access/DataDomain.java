@@ -579,9 +579,18 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.1
      */
     public Transaction createTransaction() {
-        return (isUsingExternalTransactions()) ? Transaction
-                .externalTransaction(getTransactionDelegate()) : Transaction
-                .internalTransaction(getTransactionDelegate());
+        if (isUsingExternalTransactions()) {
+            Transaction transaction = Transaction
+                    .externalTransaction(getTransactionDelegate());
+            transaction.setJdbcEventLogger(jdbcEventLogger);
+            return transaction;
+        }
+        else {
+            Transaction transaction = Transaction
+                    .internalTransaction(getTransactionDelegate());
+            transaction.setJdbcEventLogger(jdbcEventLogger);
+            return transaction;
+        }
     }
 
     /**
@@ -883,6 +892,13 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public BatchQueryBuilderFactory getQueryBuilderFactory() {
         return queryBuilderFactory;
+    }
+
+    /**
+     * @since 3.1
+     */
+    JdbcEventLogger getJdbcEventLogger() {
+        return jdbcEventLogger;
     }
 
     void refreshEntitySorter() {

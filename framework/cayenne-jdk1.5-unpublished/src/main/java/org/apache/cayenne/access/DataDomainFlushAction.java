@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ class DataDomainFlushAction {
     DataDomain getDomain() {
         return domain;
     }
-    
+
     DataContext getContext() {
         return context;
     }
@@ -120,7 +119,7 @@ class DataDomainFlushAction {
         }
 
         this.context = context;
-        
+
         // ObjectStoreGraphDiff contains changes already categorized by objectId...
         this.changesByObjectId = ((ObjectStoreGraphDiff) changes).getChangesByObjectId();
         this.insertBucket = new DataDomainInsertBucket(this);
@@ -187,7 +186,8 @@ class DataDomainFlushAction {
     }
 
     private void runQueries() {
-        DataDomainFlushObserver observer = new DataDomainFlushObserver();
+        DataDomainFlushObserver observer = new DataDomainFlushObserver(domain
+                .getJdbcEventLogger());
 
         // split query list by spanned nodes and run each single node range individually.
         // Since connections are reused per node within an open transaction, there should
@@ -253,7 +253,7 @@ class DataDomainFlushAction {
                     Collections.EMPTY_LIST,
                     resultIndirectlyModifiedIds);
         }
-        
+
         context.getObjectStore().postprocessAfterCommit(resultDiff);
     }
 }

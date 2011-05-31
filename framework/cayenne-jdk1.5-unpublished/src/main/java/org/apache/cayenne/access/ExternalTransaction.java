@@ -144,13 +144,11 @@ class ExternalTransaction extends Transaction {
     }
 
     void processCommit() throws SQLException, CayenneException {
-        QueryLogger
-                .logCommitTransaction("no commit - transaction controlled externally.");
+        jdbcEventLogger.logCommitTransaction("no commit - transaction controlled externally.");
     }
 
     void processRollback() throws SQLException, CayenneException {
-        QueryLogger
-                .logRollbackTransaction("no rollback - transaction controlled externally.");
+        jdbcEventLogger.logRollbackTransaction("no rollback - transaction controlled externally.");
     }
 
     /**
@@ -161,7 +159,7 @@ class ExternalTransaction extends Transaction {
             return;
         }
 
-        Iterator it = connections.values().iterator();
+        Iterator<?> it = connections.values().iterator();
         while (it.hasNext()) {
             try {
 

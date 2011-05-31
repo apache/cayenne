@@ -33,6 +33,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -53,7 +55,29 @@ public class DataNode implements QueryEngine {
     protected SchemaUpdateStrategy schemaUpdateStrategy;
     protected Map<String, DataMap> dataMaps;
 
+    private JdbcEventLogger jdbcEventLogger;
+
     TransactionDataSource readThroughDataSource;
+
+    /**
+     * Creates a new unnamed DataNode.
+     */
+    public DataNode() {
+        this(null);
+    }
+
+    /**
+     * Creates a new DataNode, assigning it a name.
+     */
+    public DataNode(String name) {
+
+        this.name = name;
+        this.dataMaps = new HashMap<String, DataMap>();
+        this.readThroughDataSource = new TransactionDataSource();
+
+        // make sure logger is not null
+        this.jdbcEventLogger = NoopJdbcEventLogger.getInstance();
+    }
 
     /**
      * @since 3.0
@@ -87,19 +111,17 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Creates a new unnamed DataNode.
+     * @since 3.1
      */
-    public DataNode() {
-        this(null);
+    public JdbcEventLogger getJdbcEventLogger() {
+        return jdbcEventLogger;
     }
 
     /**
-     * Creates a new DataNode, assigning it a name.
+     * @since 3.1
      */
-    public DataNode(String name) {
-        this.name = name;
-        this.dataMaps = new HashMap<String, DataMap>();
-        this.readThroughDataSource = new TransactionDataSource();
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.jdbcEventLogger = logger;
     }
 
     /**
@@ -235,7 +257,7 @@ public class DataNode implements QueryEngine {
             connection = this.getDataSource().getConnection();
         }
         catch (Exception globalEx) {
-            QueryLogger.logQueryError(globalEx);
+            jdbcEventLogger.logQueryError(globalEx);
 
             Transaction transaction = Transaction.getThreadTransaction();
             if (transaction != null) {
@@ -256,7 +278,7 @@ public class DataNode implements QueryEngine {
                     queryRunner.runQuery(connection, nextQuery);
                 }
                 catch (Exception queryEx) {
-                    QueryLogger.logQueryError(queryEx);
+                    jdbcEventLogger.logQueryError(queryEx);
 
                     // notify consumer of the exception,
                     // stop running further queries

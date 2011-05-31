@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 
 /**
  * A Cayenne transaction. Currently supports managing JDBC connections.
@@ -69,6 +71,8 @@ public abstract class Transaction {
     protected Map<String, Connection> connections;
     protected int status;
     protected TransactionDelegate delegate;
+    
+    protected JdbcEventLogger jdbcEventLogger;
 
     static String decodeStatus(int status) {
         switch (status) {
@@ -142,6 +146,7 @@ public abstract class Transaction {
      */
     protected Transaction() {
         status = STATUS_NO_TRANSACTION;
+        jdbcEventLogger = NoopJdbcEventLogger.getInstance();
     }
 
     public TransactionDelegate getDelegate() {
@@ -154,6 +159,20 @@ public abstract class Transaction {
 
     public int getStatus() {
         return status;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public void setJdbcEventLogger(JdbcEventLogger jdbcEventLogger) {
+        this.jdbcEventLogger = jdbcEventLogger;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public JdbcEventLogger getJdbcEventLogger() {
+        return this.jdbcEventLogger;
     }
 
     public synchronized void setRollbackOnly() {

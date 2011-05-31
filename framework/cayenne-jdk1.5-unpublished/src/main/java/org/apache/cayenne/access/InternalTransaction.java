@@ -39,7 +39,7 @@ class InternalTransaction extends ExternalTransaction {
     @Override
     public void begin() {
         super.begin();
-        QueryLogger.logBeginTransaction("transaction started.");
+        jdbcEventLogger.logBeginTransaction("transaction started.");
     }
 
     @Override
@@ -64,7 +64,7 @@ class InternalTransaction extends ExternalTransaction {
 
         if (connections != null && connections.size() > 0) {
             Throwable deferredException = null;
-            Iterator it = connections.values().iterator();
+            Iterator<?> it = connections.values().iterator();
             while (it.hasNext()) {
                 Connection connection = (Connection) it.next();
                 try {
@@ -93,7 +93,7 @@ class InternalTransaction extends ExternalTransaction {
             }
 
             if (deferredException != null) {
-                QueryLogger.logRollbackTransaction("transaction rolledback.");
+                jdbcEventLogger.logRollbackTransaction("transaction rolledback.");
                 if (deferredException instanceof SQLException) {
                     throw (SQLException) deferredException;
                 }
@@ -102,7 +102,7 @@ class InternalTransaction extends ExternalTransaction {
                 }
             }
             else {
-                QueryLogger.logCommitTransaction("transaction committed.");
+                jdbcEventLogger.logCommitTransaction("transaction committed.");
             }
         }
     }
@@ -114,7 +114,7 @@ class InternalTransaction extends ExternalTransaction {
         if (connections != null && connections.size() > 0) {
             Throwable deferredException = null;
 
-            Iterator it = connections.values().iterator();
+            Iterator<?> it = connections.values().iterator();
             while (it.hasNext()) {
                 Connection connection = (Connection) it.next();
 
