@@ -30,6 +30,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.db2.DB2Adapter;
+import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
@@ -50,6 +51,7 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.DB2UnitDbAdapter;
+import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.FrontBaseUnitDbAdapter;
 import org.apache.cayenne.unit.H2UnitDbAdapter;
 import org.apache.cayenne.unit.HSQLDBUnitDbAdapter;
@@ -85,6 +87,8 @@ public class ServerCaseModule implements Module {
         binder.bindMap(UnitDbAdapterProvider.TEST_ADAPTERS_MAP).put(
                 OracleAdapter.class.getName(),
                 OracleUnitDbAdapter.class.getName()).put(
+                DerbyAdapter.class.getName(),
+                DerbyUnitDbAdapter.class.getName()).put(
                 Oracle8Adapter.class.getName(),
                 OracleUnitDbAdapter.class.getName()).put(
                 SybaseAdapter.class.getName(),
