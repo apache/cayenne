@@ -88,7 +88,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         return $stringUtils.formatVariableName(${attr.Name});
     }
 #elseif ( $importUtils.isNonBooleanPrimitive(${attr.Type}) )
-    public $classGen.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
+    public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
         return $stringUtils.formatVariableName(${attr.Name});
     }
 #else
