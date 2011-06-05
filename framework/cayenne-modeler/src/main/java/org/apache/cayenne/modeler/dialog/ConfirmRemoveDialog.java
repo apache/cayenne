@@ -54,9 +54,9 @@ public class ConfirmRemoveDialog {
         dialog.setVisible(true);
 
         Object selectedValue = pane.getValue();
-        shouldDelete = selectedValue.equals(JOptionPane.YES_OPTION);
+		shouldDelete = selectedValue==null?false:selectedValue.equals(JOptionPane.YES_OPTION);
 
-        // If the user clicks "no", we'll just ignore whatever's in the checkbox because it's non-sensical.
+        // If the user clicks "no" or window close button, we'll just ignore whatever's in the checkbox because it's non-sensical.
         if (shouldDelete) {
             PreferenceDetail pref = Application.getInstance().getPreferenceDomain().getDetail(GeneralPreferences.DELETE_PROMPT_PREFERENCE, true);
             pref.setBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE, neverPromptAgainBox.isSelected());
