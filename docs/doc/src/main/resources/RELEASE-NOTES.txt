@@ -15,6 +15,7 @@ Date:
 Improvements Sice 3.0.1
 
 CAY-1500 MySQL JDBC Batching
+CAY-1575 Error generating Embeddable classes in Cayenne Modeler
 
 Bug Fixes Since 3.0.1:
 
