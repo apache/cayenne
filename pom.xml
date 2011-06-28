@@ -172,6 +172,14 @@
 			</roles>
 			<timezone>+3</timezone>
 		</developer>
+		<developer>
+			<id>dkazimirchyk</id>
+			<name>Dzmitry Kazimirchyk</name>
+			<email>dkazimirchyk@apache.org</email>
+			<roles>
+				<role>Committer</role>
+			</roles>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
