@@ -48,9 +48,9 @@ public class FlattenedRelationshipInContextTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("FLATTENED_TEST_1");
-        dbHelper.deleteAll("FLATTENED_TEST_2");
         dbHelper.deleteAll("FLATTENED_TEST_3");
+        dbHelper.deleteAll("FLATTENED_TEST_2");
+        dbHelper.deleteAll("FLATTENED_TEST_1");
 
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");

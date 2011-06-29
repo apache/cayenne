@@ -49,10 +49,10 @@ public class DataContextJoinAliasesTest extends ServerCase {
 
     @Override
     public void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("EXHIBIT");
         dbHelper.deleteAll("GALLERY");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
         
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");

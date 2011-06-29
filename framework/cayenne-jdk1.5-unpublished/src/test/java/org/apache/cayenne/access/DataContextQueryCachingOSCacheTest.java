@@ -29,8 +29,8 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
     // runs super tests with a different setup...
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
