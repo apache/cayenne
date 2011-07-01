@@ -19,7 +19,11 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.util.Iterator;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.WindowConstants;
 
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
@@ -28,9 +32,6 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
-import org.scopemvc.core.Control;
-import org.scopemvc.core.ControlException;
-import org.scopemvc.view.swing.SPanel;
 
 /**
  * A controller for batch DbEntities schema update.
@@ -38,8 +39,10 @@ import org.scopemvc.view.swing.SPanel;
  */
 public class SchemaUpdateController extends DefaultsPreferencesController {
 
-    public static final String ALL_CONTROL = "cayenne.modeler.datamap.defaultprefs.schema.radio";
-    public static final String UNINIT_CONTROL = "cayenne.modeler.datamap.defaultprefs.schemanull.radio";
+    public static final String ALL_CONTROL = "Set/update schema for all DbEntities";
+    public static final String UNINIT_CONTROL = "Do not override existing non-empty schema";
+    
+    protected DefaultsPreferencesView view;
 
     public SchemaUpdateController(ProjectController mediator, DataMap dataMap) {
         super(mediator, dataMap);
@@ -48,24 +51,41 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
     /**
      * Creates and runs the schema update dialog.
      */
-    public void startup() {
-        SPanel view = new DefaultsPreferencesDialog(ALL_CONTROL, UNINIT_CONTROL);
+    public void startupAction() {
+        view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
         view.setTitle("Update DbEntities Schema");
-        setView(view);
-        super.startup();
+        initController();
+        
+        view.pack();
+        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        view.setModal(true);
+        makeCloseableOnEscape();
+        centerView();
+        view.setVisible(true);
     }
-
-    protected void doHandleControl(Control control) throws ControlException {
-        if (control.matchesID(UPDATE_CONTROL)) {
-            updateSchema();
-        }
-        else {
-            super.doHandleControl(control);
-        }
+    
+    public Component getView() {
+        return this.view;
+    }
+    
+    private void initController() {
+        view.getUpdateButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent arg0) {
+                updateSchema();
+            }
+        });
+        
+        view.getCancelButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent arg0) {
+                view.dispose();
+            }
+        });
     }
 
     protected void updateSchema() {
-        boolean doAll = ((DefaultsPreferencesModel) getModel()).isAllEntities();
+        boolean doAll = isAllEntities();
         String defaultSchema = dataMap.getDefaultSchema();
 
         // set schema for DbEntities
@@ -93,6 +113,6 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
                 }
             }
         }
-        shutdown();
+        view.dispose();
     }
 }

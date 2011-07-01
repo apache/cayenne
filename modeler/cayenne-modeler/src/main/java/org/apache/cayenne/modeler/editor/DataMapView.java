@@ -575,7 +575,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getDbEntities().size() > 0 || dataMap.getProcedures().size() > 0) {
-            new SchemaUpdateController(eventController, dataMap).startup();
+            new SchemaUpdateController(eventController, dataMap).startupAction();
         }
     }
 
@@ -587,7 +587,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getObjEntities().size() > 0) {
-            new SuperclassUpdateController(eventController, dataMap, false).startup();
+            new SuperclassUpdateController(eventController, dataMap, false).startupAction();
         }
     }
 
@@ -599,7 +599,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getObjEntities().size() > 0 || dataMap.getEmbeddables().size() > 0) {
-            new PackageUpdateController(eventController, dataMap, false).startup();
+            new PackageUpdateController(eventController, dataMap, false).startupAction();
         }
     }
 
@@ -611,7 +611,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getObjEntities().size() > 0) {
-            new PackageUpdateController(eventController, dataMap, true).startup();
+            new PackageUpdateController(eventController, dataMap, true).startupAction();
         }
     }
 
@@ -623,7 +623,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getObjEntities().size() > 0) {
-            new SuperclassUpdateController(eventController, dataMap, true).startup();
+            new SuperclassUpdateController(eventController, dataMap, true).startupAction();
         }
     }
 

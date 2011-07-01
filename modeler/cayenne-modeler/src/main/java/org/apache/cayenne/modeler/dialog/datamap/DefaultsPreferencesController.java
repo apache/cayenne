@@ -21,31 +21,31 @@ package org.apache.cayenne.modeler.dialog.datamap;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.scopemvc.controller.basic.BasicController;
-import org.scopemvc.core.Control;
-import org.scopemvc.core.ControlException;
+import org.apache.cayenne.modeler.util.CayenneController;
 
 /**
  * An abstract controller for the DataMap defaults updates.
  * 
  */
-public abstract class DefaultsPreferencesController extends BasicController {
-
-    public static final String CANCEL_CONTROL = "cayenne.modeler.datamap.defaultprefs.cancel.button";
-    public static final String UPDATE_CONTROL = "cayenne.modeler.datamap.defaultprefs.update.button";
-
+public abstract class DefaultsPreferencesController extends CayenneController {
+    
     protected DataMap dataMap;
     protected ProjectController mediator;
+    
+    protected boolean allEntities;
 
     public DefaultsPreferencesController(ProjectController mediator, DataMap dataMap) {
-        setModel(new DefaultsPreferencesModel(true));
+        super(mediator);
+        this.allEntities = true;
         this.dataMap = dataMap;
         this.mediator = mediator;
     }
 
-    protected void doHandleControl(Control control) throws ControlException {
-        if (control.matchesID(CANCEL_CONTROL)) {
-            shutdown();
-        }
+    public boolean isAllEntities() {
+        return ((DefaultsPreferencesView)getView()).getUpdateAll().isSelected();
+    }
+
+    public boolean isUninitializedEntities() {
+        return !isAllEntities();
     }
 }

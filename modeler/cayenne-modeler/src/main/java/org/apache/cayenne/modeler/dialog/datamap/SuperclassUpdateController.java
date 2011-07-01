@@ -19,25 +19,28 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.util.Iterator;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.WindowConstants;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
-import org.scopemvc.core.Control;
-import org.scopemvc.core.ControlException;
-import org.scopemvc.view.swing.SPanel;
 
 /**
  */
 public class SuperclassUpdateController extends DefaultsPreferencesController {
 
-    public static final String ALL_CONTROL = "cayenne.modeler.datamap.defaultprefs.superclass.radio";
-    public static final String UNINIT_CONTROL = "cayenne.modeler.datamap.defaultprefs.superclassnull.radio";
+    public static final String ALL_CONTROL = "Set/update superclass for all ObjEntities";
+    public static final String UNINIT_CONTROL = "Do not override existing non-empty superclasses";
 
     protected boolean clientUpdate;
+    
+    protected DefaultsPreferencesView view;
 
     public SuperclassUpdateController(ProjectController mediator, DataMap dataMap, boolean clientUpdate) {
         super(mediator, dataMap);
@@ -47,24 +50,41 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
     /**
      * Creates and runs superclass update dialog.
      */
-    public void startup() {
-        SPanel view = new DefaultsPreferencesDialog(ALL_CONTROL, UNINIT_CONTROL);
+    public void startupAction() {
+        view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
         view.setTitle("Update DataObjects Superclass");
-        setView(view);
-        super.startup();
+        initController();
+        
+        view.pack();
+        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        view.setModal(true);
+        makeCloseableOnEscape();
+        centerView();
+        view.setVisible(true);
     }
-
-    protected void doHandleControl(Control control) throws ControlException {
-        if (control.matchesID(UPDATE_CONTROL)) {
-            updateSuperclass();
-        }
-        else {
-            super.doHandleControl(control);
-        }
+    
+    public Component getView() {
+        return this.view;
+    }
+    
+    private void initController() {
+        view.getUpdateButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                updateSuperclass();
+            }
+        });
+        
+        view.getCancelButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent arg0) {
+                view.dispose();
+            }
+        });
     }
 
     protected void updateSuperclass() {
-        boolean doAll = ((DefaultsPreferencesModel) getModel()).isAllEntities();
+        boolean doAll = isAllEntities();
         String defaultSuperclass = getSuperclass();
 
         for (ObjEntity entity : dataMap.getObjEntities()) {
@@ -79,7 +99,7 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
             }
         }
 
-        shutdown();
+        view.dispose();
     }
 
     protected String getSuperclass() {

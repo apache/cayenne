@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.dialog.datamap;
 
 import java.awt.Component;
-import java.util.Iterator;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
@@ -35,7 +34,7 @@ import org.apache.cayenne.swing.BindingBuilder;
 
 public class LockingUpdateController extends CayenneController {
 
-    protected LockingUpdateDialog view;
+    protected LockingUpdateView view;
     protected DataMap dataMap;
 
     public LockingUpdateController(ProjectController parent, DataMap dataMap) {
@@ -45,7 +44,7 @@ public class LockingUpdateController extends CayenneController {
 
     public void startup() {
 
-        view = new LockingUpdateDialog();
+        view = new LockingUpdateView();
 
         boolean on = dataMap.getDefaultLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
         view.setTitle(on ? "Enable Optimistic Locking" : "Disable Optimistic Locking");

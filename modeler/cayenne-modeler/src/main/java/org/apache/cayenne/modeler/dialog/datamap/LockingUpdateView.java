@@ -32,7 +32,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class LockingUpdateDialog extends JDialog {
+public class LockingUpdateView extends JDialog {
 
     protected JCheckBox entities;
     protected JCheckBox attributes;
@@ -41,7 +41,7 @@ public class LockingUpdateDialog extends JDialog {
     protected JButton cancelButton;
     protected JButton updateButton;
 
-    public LockingUpdateDialog() {
+    public LockingUpdateView() {
 
         this.entities = new JCheckBox("Update all Entities");
         this.attributes = new JCheckBox("Update all Attributes");

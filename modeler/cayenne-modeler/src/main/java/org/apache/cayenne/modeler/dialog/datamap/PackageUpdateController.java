@@ -19,9 +19,14 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import javax.swing.WindowConstants;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -33,18 +38,18 @@ import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
-import org.scopemvc.core.Control;
-import org.scopemvc.core.ControlException;
-import org.scopemvc.view.swing.SPanel;
 
 /**
  */
 public class PackageUpdateController extends DefaultsPreferencesController {
 
-    public static final String ALL_CONTROL = "cayenne.modeler.datamap.defaultprefs.package.radio";
-    public static final String UNINIT_CONTROL = "cayenne.modeler.datamap.defaultprefs.packagenull.radio";
+    public static final String ALL_CONTROL = 
+            "Set/update package for all ObjEntities and Embeddables (create default class names if missing)";
+    public static final String UNINIT_CONTROL = "Do not override class names with packages";
 
     protected boolean clientUpdate;
+    
+    protected DefaultsPreferencesView view;
 
     public PackageUpdateController(ProjectController mediator, DataMap dataMap,
             boolean clientUpdate) {
@@ -55,24 +60,40 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     /**
      * Creates and runs the package update dialog.
      */
-    public void startup() {
-        SPanel view = new DefaultsPreferencesDialog(ALL_CONTROL, UNINIT_CONTROL);
+    public void startupAction() {
+        view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
         view.setTitle("Update ObjEntities and Embeddables Java Package");
-        setView(view);
-        super.startup();
+        initController();
+        
+        view.pack();
+        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        view.setModal(true);
+        makeCloseableOnEscape();
+        centerView();
+        view.setVisible(true);
     }
-
-    protected void doHandleControl(Control control) throws ControlException {
-        if (control.matchesID(UPDATE_CONTROL)) {
-            updatePackage();
-        }
-        else {
-            super.doHandleControl(control);
-        }
+    
+    public Component getView() {
+        return this.view;
+    }
+    
+    private void initController() {
+        view.getCancelButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent arg0) {
+                view.dispose();
+            }
+        });
+        view.getUpdateButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent arg0) {
+                updatePackage();
+            }
+        });
     }
 
     protected void updatePackage() {
-        boolean doAll = ((DefaultsPreferencesModel) getModel()).isAllEntities();
+        boolean doAll = isAllEntities();
         String defaultPackage = getDefaultPackage();
         if (Util.isEmptyString(defaultPackage)) {
             defaultPackage = "";
@@ -120,7 +141,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
             }
         }
 
-        shutdown();
+        view.dispose();
     }
 
     protected String extractClassName(String name) {

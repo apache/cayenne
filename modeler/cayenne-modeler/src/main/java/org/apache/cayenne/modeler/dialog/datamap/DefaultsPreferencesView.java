@@ -23,12 +23,10 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
-
-import org.scopemvc.view.swing.SButton;
-import org.scopemvc.view.swing.SPanel;
-import org.scopemvc.view.swing.SRadioButton;
-import org.scopemvc.view.swing.SwingView;
+import javax.swing.JRadioButton;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -36,28 +34,30 @@ import com.jgoodies.forms.layout.FormLayout;
 
 /**
  */
-public class DefaultsPreferencesDialog extends SPanel {
+public class DefaultsPreferencesView extends JDialog {
+    
+    protected JRadioButton updateAll;
+    protected JRadioButton updateEmpty;
+    protected JButton updateButton;
+    protected JButton cancelButton;
+    protected JPanel buttonPanel;
 
-    public DefaultsPreferencesDialog(String allControl, String uninitializedControl) {
+    public DefaultsPreferencesView(String allControl, String uninitializedControl) {
         initView(allControl, uninitializedControl);
     }
 
     protected void initView(String allControl, String uninitializedControl) {
-        SRadioButton updateAll = new SRadioButton(
-                allControl,
-                DefaultsPreferencesModel.ALL_ENTITIES_SELECTOR);
+        updateAll = new JRadioButton(allControl);
+        updateAll.setSelected(true);
 
-        SRadioButton updateEmpty = new SRadioButton(
-                uninitializedControl,
-                DefaultsPreferencesModel.UNINITIALIZED_ENTITIES_SELECTOR);
+        updateEmpty = new JRadioButton(uninitializedControl);
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(updateAll);
         buttonGroup.add(updateEmpty);
 
-        SButton updateButton = new SButton(
-                DefaultsPreferencesController.UPDATE_CONTROL);
-        SButton cancelButton = new SButton(DefaultsPreferencesController.CANCEL_CONTROL);
+        updateButton = new JButton("Update");
+        cancelButton = new JButton("Cancel");
 
         // assemble
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -75,7 +75,21 @@ public class DefaultsPreferencesDialog extends SPanel {
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+    }
 
-        setDisplayMode(SwingView.MODAL_DIALOG);
+    public JRadioButton getUpdateAll() {
+        return updateAll;
+    }
+
+    public JRadioButton getUpdateEmpty() {
+        return updateEmpty;
+    }
+
+    public JButton getUpdateButton() {
+        return updateButton;
+    }
+
+    public JButton getCancelButton() {
+        return cancelButton;
     }
 }
