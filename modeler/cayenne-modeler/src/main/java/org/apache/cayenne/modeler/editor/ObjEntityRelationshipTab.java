@@ -65,7 +65,7 @@ import org.apache.cayenne.modeler.action.CutRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfoController;
+import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfo;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
@@ -191,8 +191,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
 
                 ObjRelationshipTableModel model = (ObjRelationshipTableModel) table
                         .getModel();
-                new ObjRelationshipInfoController(mediator, model.getRelationship(row))
-                        .startup();
+                new ObjRelationshipInfo(mediator, model.getRelationship(row)).startupAction();
 
                 /**
                  * This is required for a table to be updated properly
