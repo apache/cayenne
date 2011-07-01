@@ -16,65 +16,53 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.modeler.dialog.query;
 
 import java.awt.BorderLayout;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JRadioButton;
 
 import org.apache.cayenne.modeler.util.PanelFactory;
-import org.scopemvc.view.swing.SAction;
-import org.scopemvc.view.swing.SButton;
-import org.scopemvc.view.swing.SPanel;
-import org.scopemvc.view.swing.SRadioButton;
-import org.scopemvc.view.swing.SwingView;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
- * A dialog to select a type of newly created query.
- * 
- */
-public class QueryTypeDialog extends SPanel {
+public class QueryTypeView extends JDialog {
     
-     public QueryTypeDialog() {
+    protected ButtonGroup buttonGroup;
+    protected JRadioButton objectSelect;
+    protected JRadioButton sqlSelect;
+    protected JRadioButton procedureSelect;
+    protected JRadioButton ejbqlSelect;
+    protected JButton createButton;
+    protected JButton cancelButton;
+    
+    public QueryTypeView() {
         initView();
     }
-
+    
     private void initView() {
+        
         // create widgets
-     ButtonGroup buttonGroup = new ButtonGroup();
-       
-     SRadioButton objectSelect = new SRadioButton(
-                QueryTypeController.OBJECT_QUERY_CONTROL,
-                QueryTypeModel.OBJECT_SELECT_QUERY_SELECTOR);
-        
-      SRadioButton sqlSelect = new SRadioButton(
-      QueryTypeController.SQL_QUERY_CONTROL,
-      QueryTypeModel.RAW_SQL_QUERY_SELECTOR);
-        
-      SRadioButton procedureSelect = new SRadioButton(
-      QueryTypeController.PROCEDURE_QUERY_CONTROL,
-      QueryTypeModel.PROCEDURE_QUERY_SELECTOR);
-        
-      SRadioButton ejbqlSelect = new SRadioButton(
-              QueryTypeController.EJBQL_QUERY_CONTROL,
-              QueryTypeModel.EJBQL_QUERY_SELECTOR);
-      
+        ButtonGroup buttonGroup = new ButtonGroup();
+        objectSelect = new JRadioButton("Object Select Query");
+        sqlSelect = new JRadioButton("Raw SQL");
+        procedureSelect = new JRadioButton("Stored Procedure Query");
+        ejbqlSelect = new JRadioButton("EJBQL Query");
+        objectSelect.setSelected(true);
         buttonGroup.add(objectSelect);
         buttonGroup.add(sqlSelect);
         buttonGroup.add(procedureSelect);
         buttonGroup.add(ejbqlSelect);
-       
-        SButton saveButton = new SButton(new SAction(QueryTypeController.CREATE_CONTROL));
-        saveButton.setEnabled(true);
 
-        SButton cancelButton = new SButton(
-                new SAction(QueryTypeController.CANCEL_CONTROL));
+        createButton = new JButton("Create"); 
+        createButton.setEnabled(true);
+
+        cancelButton = new JButton("Cancel");
         cancelButton.setEnabled(true);
  
         // assemble
@@ -94,13 +82,39 @@ public class QueryTypeDialog extends SPanel {
         add(builder.getPanel(), BorderLayout.CENTER);
 
         add(PanelFactory.createButtonPanel(new JButton[] {
-                saveButton, cancelButton
+                createButton, cancelButton
         }), BorderLayout.SOUTH);
 
-        // decorate
-        setDisplayMode(SwingView.MODAL_DIALOG);
         setTitle("Select New Query Type");
     }
+    
+    public JButton getSaveButton()
+    {
+        return createButton;
+    }
+    
+    public JButton getCancelButton()
+    {
+        return cancelButton;
+    }
+    
+    public JRadioButton getObjectSelect()
+    {
+        return objectSelect;
+    }
+    
+    public JRadioButton getSqlSelect()
+    {
+        return sqlSelect;
+    }
+    
+    public JRadioButton getProcedureSelect()
+    {
+        return procedureSelect;
+    }
+    
+    public JRadioButton getEjbqlSelect()
+    {
+        return ejbqlSelect;
+    }
 }
-
-
