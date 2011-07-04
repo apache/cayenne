@@ -21,16 +21,18 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 
 import java.awt.BorderLayout;
 
-import org.scopemvc.view.swing.SPanel;
-import org.scopemvc.view.swing.STextField;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
  */
-public class CustomRemoteEventsConfigPanel extends SPanel {
-
+public class CustomRemoteEventsConfigPanel extends JPanel {
+    
+    protected JTextField factoryClass;
+    
     public CustomRemoteEventsConfigPanel() {
         super();
         initView();
@@ -39,8 +41,7 @@ public class CustomRemoteEventsConfigPanel extends SPanel {
     protected void initView() {
         setLayout(new BorderLayout());
 
-        STextField factoryClass = new STextField(30);
-        factoryClass.setSelector(CacheSyncConfigModel.FACTORY_CLASS_SELECTOR);
+        factoryClass = new JTextField(30);
 
         // type form
         FormLayout layout = new FormLayout("right:150, 3dlu, left:200", "");

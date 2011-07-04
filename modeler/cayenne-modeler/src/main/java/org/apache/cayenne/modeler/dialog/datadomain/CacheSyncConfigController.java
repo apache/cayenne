@@ -19,22 +19,23 @@
 
 package org.apache.cayenne.modeler.dialog.datadomain;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.WindowConstants;
+
 import org.apache.cayenne.access.DataRowStore;
-import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.event.DomainEvent;
+import org.apache.cayenne.event.JMSBridgeFactory;
+import org.apache.cayenne.event.JavaGroupsBridgeFactory;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scopemvc.controller.basic.BasicController;
-import org.scopemvc.core.Control;
-import org.scopemvc.core.ControlException;
-import org.scopemvc.core.ModelChangeEvent;
-import org.scopemvc.core.ModelChangeListener;
-import org.scopemvc.core.Selector;
-import org.scopemvc.view.swing.SPanel;
 
 /**
  * A controller for CacheSyncConfigDialog and its subviews. Builds a model out of a
@@ -44,8 +45,7 @@ import org.scopemvc.view.swing.SPanel;
  * own independent models.
  * 
  */
-public class CacheSyncConfigController extends BasicController implements
-        ModelChangeListener {
+public class CacheSyncConfigController extends CayenneController {
 
     private static Log logObj = LogFactory.getLog(CacheSyncConfigController.class);
 
@@ -55,18 +55,26 @@ public class CacheSyncConfigController extends BasicController implements
     private static final String JGROUPS_FACTORY_CLASS = "org.apache.cayenne.event.JavaGroupsBridgeFactory";
     private static final String JMS_FACTORY_CLASS = "org.apache.cayenne.event.JMSBridgeFactory";
 
-    public static final String SAVE_CONFIG_CONTROL = "cayenne.modeler.cacheSyncConfig.save.button";
-    public static final String CANCEL_CONFIG_CONTROL = "cayenne.modeler.cacheSyncConfig.cancel.button";
+    public static final String SAVE_CONFIG_CONTROL = "Done";
+    public static final String CANCEL_CONFIG_CONTROL = "Cancel";
 
-    public static final String JGROUPS_DEFAULT_CONTROL = "cayenne.modeler.jgroupConfig.radio1";
+    public static final String JGROUPS_DEFAULT_CONTROL = "Standard Configuration";
 
-    public static final String JGROUPS_URL_CONTROL = "cayenne.modeler.jgroupConfig.radio2";
+    public static final String JGROUPS_URL_CONTROL = "Use Configuration File";
+    
+    public static final String JGROUPS_FACTORY_LABEL = "JavaGroups Multicast (Default)";
+    public static final String JMS_FACTORY_LABEL = "JMS Transport";
+    public static final String CUSTOM_FACTORY_LABEL = "Custom Transport";
 
     protected Map existingCards;
+    protected Map properties;
     protected boolean modified;
     protected ProjectController eventController;
+    
+    protected CacheSyncConfigView view;
 
     public CacheSyncConfigController(ProjectController eventController) {
+        super(eventController);
         this.eventController = eventController;
     }
 
@@ -74,66 +82,62 @@ public class CacheSyncConfigController extends BasicController implements
      * Creates and shows a new modal dialog window. Registers as a listener for its own
      * model to update subviews on model changes.
      */
-    public void startup() {
-        
+    public void startup() { 
         DataChannelDescriptor domain = (DataChannelDescriptor)eventController.getProject().getRootNode();
         
         String factory = (String) domain.getProperties().get(
                 DataRowStore.EVENT_BRIDGE_FACTORY_PROPERTY);
 
-        CacheSyncTypesModel topModel = buildTypesModel(factory);
-        setModel(topModel);
-        setView(new CacheSyncConfigDialog());
-
+        view = new CacheSyncConfigView();
+        initView();
+        
+        properties = new HashMap(((DataChannelDescriptor)eventController.getProject()
+                .getRootNode()).getProperties());
+        System.out.println(properties);
+        
         // build cards, showing the one corresponding to DataDomain state
         prepareChildren(factory);
-        super.startup();
+        
+        view.pack();
+        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        view.setModal(true);
+        makeCloseableOnEscape();
+        centerView();
+        view.setVisible(true);
     }
-
-    /**
-     * ModelChangeListener implementation that updates "modified" status and changes
-     * dialog subview on model changes.
-     */
-    public void modelChanged(ModelChangeEvent inEvent) {
-        logObj.info("ModelChangeEvent: " + inEvent.getSelector());
-
-        Selector selector = inEvent.getSelector();
-
-        if (selector.startsWith(CacheSyncTypesModel.FACTORY_LABEL_SELECTOR)) {
-            changeConfigView();
-            modified = true;
-            logObj.info("** Factory selection modified..");
-        }
-        else {
-            modified = true;
-            logObj.info("** Property modified modified..");
-        }
+    
+    public Component getView() {
+        return this.view;
     }
-
-    /**
-     * Overrides super implementation to process controls from this controller's view and
-     * its subviews.
-     */
-    protected void doHandleControl(Control control) throws ControlException {
-        logObj.info("Control: " + control);
-
-        if (control.matchesID(CANCEL_CONFIG_CONTROL)) {
-            shutdown();
-        }
-        else if (control.matchesID(SAVE_CONFIG_CONTROL)) {
-            commitChanges();
-        }
-        else if (control.matchesID(JGROUPS_DEFAULT_CONTROL)) {
-            jgroupsDefaultConfig();
-        }
-        else if (control.matchesID(JGROUPS_URL_CONTROL)) {
-            jgroupsURLConfig();
-        }
+    
+    private void initView() {
+        view.getCancelButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                view.dispose();
+            }
+        });
+        view.getSaveButton().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                commitChanges();
+            }
+        });
+        view.getTypeSelector().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                selectCard();
+            }
+        });
+    }
+    
+    protected void selectCard() {
+        view.showCard((String)view.getTypeSelector().getSelectedItem());
     }
 
     protected void jgroupsDefaultConfig() {
         JGroupsConfigPanel view = (JGroupsConfigPanel) existingCards
-                .get(CacheSyncTypesModel.JGROUPS_FACTORY_LABEL);
+                .get(JGROUPS_FACTORY_LABEL);
         if (view != null) {
             view.showDefaultConfig();
         }
@@ -141,7 +145,7 @@ public class CacheSyncConfigController extends BasicController implements
 
     protected void jgroupsURLConfig() {
         JGroupsConfigPanel view = (JGroupsConfigPanel) existingCards
-                .get(CacheSyncTypesModel.JGROUPS_FACTORY_LABEL);
+                .get(JGROUPS_FACTORY_LABEL);
         if (view != null) {
             view.showCustomConfig();
         }
@@ -151,146 +155,188 @@ public class CacheSyncConfigController extends BasicController implements
      * Stores configuration changes in the data domain properties.
      */
     protected void commitChanges() {
-        logObj.info("Has changes?: " + modified);
-
-        if (modified) {
-            // extract model from current card
-            CacheSyncTypesModel topModel = (CacheSyncTypesModel) getModel();
-            SPanel card = (SPanel) existingCards.get(topModel.getFactoryLabel());
-            CacheSyncConfigModel model = (CacheSyncConfigModel) card.getShownModel();
-
-            DataChannelDescriptor domain = (DataChannelDescriptor)eventController.getProject().getRootNode();
-
-            logObj.warn("domain properties BEFORE: " + domain.getProperties());
-            model.storeProperties(domain.getProperties());
-
-            logObj.warn("domain properties: " + domain.getProperties());
-
-            eventController.fireDomainEvent(new DomainEvent(this, domain));
+        DataChannelDescriptor domain = (DataChannelDescriptor)eventController.getProject().getRootNode();
+        logObj.warn("domain properties BEFORE: " + domain.getProperties());
+        
+        Map<String, String> props = domain.getProperties();
+        
+        String type = (String)view.getTypeSelector().getSelectedItem();
+        if (JGROUPS_FACTORY_LABEL.equals(type)) {
+            JGroupsConfigPanel jgroupsPanel = (JGroupsConfigPanel) existingCards
+                    .get(JGROUPS_FACTORY_LABEL);
+            props.put(DataRowStore.EVENT_BRIDGE_FACTORY_PROPERTY, JGROUPS_FACTORY_CLASS);
+            if (jgroupsPanel.useConfigFile.isSelected()) {
+                props.remove(JavaGroupsBridgeFactory.MCAST_ADDRESS_PROPERTY);
+                props.remove(JavaGroupsBridgeFactory.MCAST_PORT_PROPERTY);
+                if (!"".equals(jgroupsPanel.configURL.getText())) {
+                    props.put(JavaGroupsBridgeFactory.JGROUPS_CONFIG_URL_PROPERTY, 
+                            jgroupsPanel.configURL.getText());
+                }
+                else {
+                    props.put(JavaGroupsBridgeFactory.JGROUPS_CONFIG_URL_PROPERTY, null);
+                }
+            }
+            else {
+                props.remove(JavaGroupsBridgeFactory.JGROUPS_CONFIG_URL_PROPERTY);
+                if (!"".equals(jgroupsPanel.multicastAddress.getText())) {
+                    props.put(JavaGroupsBridgeFactory.MCAST_ADDRESS_PROPERTY, 
+                            jgroupsPanel.multicastAddress.getText());
+                }
+                else {
+                    props.put(JavaGroupsBridgeFactory.MCAST_ADDRESS_PROPERTY, null);
+                }
+                if (!"".equals(jgroupsPanel.multicastPort.getText())) { 
+                    props.put(JavaGroupsBridgeFactory.MCAST_PORT_PROPERTY, 
+                            jgroupsPanel.multicastPort.getText());
+                }
+                else {
+                    props.put(JavaGroupsBridgeFactory.MCAST_PORT_PROPERTY, null);
+                }
+            }
         }
-
-        shutdown();
-    }
-
-    /**
-     * Changes a subview to a panel specific for the currently selected configuration
-     * type.
-     */
-    protected void changeConfigView() {
-        CacheSyncTypesModel topModel = (CacheSyncTypesModel) getModel();
-        CacheSyncConfigModel newModel = buildModel(topModel);
-
-        // NOTE: card doesn't have a controller, since it does not need it
-        String label = topModel.getFactoryLabel();
-        SPanel card = (SPanel) existingCards.get(label);
-        card.setBoundModel(newModel);
-        ((CacheSyncConfigDialog) getView()).showCard(label);
-    }
-
-    protected CacheSyncTypesModel buildTypesModel(String factory) {
-
-        if (factory == null) {
-            factory = DataRowStore.EVENT_BRIDGE_FACTORY_DEFAULT;
+        else if (JMS_FACTORY_LABEL.equals(type)) {
+            JMSConfigPanel jmsPanel = (JMSConfigPanel) existingCards
+                    .get(JMS_FACTORY_LABEL);
+            props.put(DataRowStore.EVENT_BRIDGE_FACTORY_PROPERTY, JMS_FACTORY_CLASS);
+            if (!"".equals(jmsPanel.topicFactory.getText())) {
+                props.put(JMSBridgeFactory.TOPIC_CONNECTION_FACTORY_PROPERTY, 
+                        jmsPanel.topicFactory.getText());
+            }
+            else {
+                props.put(JMSBridgeFactory.TOPIC_CONNECTION_FACTORY_PROPERTY, null);
+            }
         }
+        else if (CUSTOM_FACTORY_LABEL.equals(type)) {
+            CustomRemoteEventsConfigPanel customPanel = (CustomRemoteEventsConfigPanel) existingCards
+                    .get(CUSTOM_FACTORY_LABEL);
+            if (!"".equals(customPanel.factoryClass.getText())) {
+                props.put(DataRowStore.EVENT_BRIDGE_FACTORY_PROPERTY, customPanel.factoryClass.getText());
+            }
+            else {
+                props.put(DataRowStore.EVENT_BRIDGE_FACTORY_PROPERTY, null);
+            }
+        }
+        
+        logObj.warn("domain properties: " + domain.getProperties());
+        
+        eventController.fireDomainEvent(new DomainEvent(this, domain));
 
-        String label;
-
+        view.dispose();
+    }
+    
+    protected void loadProperties(String factory) {
+        String configUrl = (String)properties.get(JavaGroupsBridgeFactory.JGROUPS_CONFIG_URL_PROPERTY);
+        String multicastAddress = (String)properties.get(JavaGroupsBridgeFactory.MCAST_ADDRESS_PROPERTY);
+        String multicastPort = (String)properties.get(JavaGroupsBridgeFactory.MCAST_PORT_PROPERTY);
+        String topicFactory = (String)properties.get(JMSBridgeFactory.TOPIC_CONNECTION_FACTORY_PROPERTY);
+        
+        JGroupsConfigPanel jgroupsPanel = (JGroupsConfigPanel) existingCards
+                .get(JGROUPS_FACTORY_LABEL);
+        
+        if (configUrl != null) {
+            jgroupsPanel.useConfigFile.setSelected(true);
+            jgroupsURLConfig();
+            jgroupsPanel.configURL.setText(configUrl);
+        }
+        else {
+            jgroupsPanel.useDefaultConfig.setSelected(true);
+            jgroupsDefaultConfig();
+        }
+        
+        if (multicastAddress != null) {
+            jgroupsPanel.multicastAddress.setText(multicastAddress);
+        }
+        else {
+            jgroupsPanel.multicastAddress.setText(JavaGroupsBridgeFactory.MCAST_ADDRESS_DEFAULT);
+        }
+        
+        if (multicastPort != null) {
+            jgroupsPanel.multicastPort.setText(multicastPort);
+        }
+        else {
+            jgroupsPanel.multicastPort.setText(JavaGroupsBridgeFactory.MCAST_PORT_DEFAULT);
+        }
+        
+        JMSConfigPanel jmsPanel = (JMSConfigPanel) existingCards
+                .get(JMS_FACTORY_LABEL);
+     
+        if (topicFactory != null) {
+            jmsPanel.topicFactory.setText(topicFactory);
+        }
+        else {
+            jmsPanel.topicFactory.setText(JMSBridgeFactory.TOPIC_CONNECTION_FACTORY_DEFAULT);
+        }
+        
+        CustomRemoteEventsConfigPanel customPanel = (CustomRemoteEventsConfigPanel) existingCards
+                .get(CUSTOM_FACTORY_LABEL);
+        String factoryClass = (String)properties.get(DataRowStore.EVENT_BRIDGE_FACTORY_PROPERTY);
+        if (factoryClass != null) {
+            customPanel.factoryClass.setText(factoryClass);
+        }
+        else {
+            customPanel.factoryClass.setText(DataRowStore.EVENT_BRIDGE_FACTORY_DEFAULT);
+        }
+        
         if (JGROUPS_FACTORY_CLASS.equals(factory)) {
-            label = CacheSyncTypesModel.JGROUPS_FACTORY_LABEL;
+            view.getTypeSelector().setSelectedItem(JGROUPS_FACTORY_LABEL);
         }
         else if (JMS_FACTORY_CLASS.equals(factory)) {
-            label = CacheSyncTypesModel.JMS_FACTORY_LABEL;
+            view.getTypeSelector().setSelectedItem(JMS_FACTORY_LABEL);
         }
         else {
-            label = CacheSyncTypesModel.CUSTOM_FACTORY_LABEL;
+            view.getTypeSelector().setSelectedItem(CUSTOM_FACTORY_LABEL);
         }
-
-        CacheSyncTypesModel model = new CacheSyncTypesModel();
-        model.setFactoryLabel(label);
-        model.addModelChangeListener(this);
-        return model;
-    }
-
-    protected CacheSyncConfigModel buildModel(CacheSyncTypesModel topModel) {
-        String label = topModel.getFactoryLabel();
-        String factory;
-
-        if (label.equals(CacheSyncTypesModel.JGROUPS_FACTORY_LABEL)) {
-            factory = JGROUPS_FACTORY_CLASS;
-        }
-        else if (label.equals(CacheSyncTypesModel.JMS_FACTORY_LABEL)) {
-            factory = JMS_FACTORY_CLASS;
-        }
-        else {
-            // reset factory
-            factory = null;
-        }
-
-        return buildModel(factory);
-    }
-
-    protected CacheSyncConfigModel buildModel(String factory) {
-
-        CacheSyncConfigModel model;
-
-        if (JGROUPS_FACTORY_CLASS.equals(factory)) {
-            model = new JGroupsConfigModel();
-        }
-        else if (JMS_FACTORY_CLASS.equals(factory)) {
-            model = new JMSConfigModel();
-        }
-        else {
-            model = new CacheSyncConfigModel();
-        }
-
-        model.setMap(new HashMap(((DataChannelDescriptor)eventController.getProject().getRootNode()).getProperties()));
-        model.setFactoryClass(factory);
-        model.addModelChangeListener(this);
-
-        return model;
     }
 
     protected void prepareChildren(String factory) {
         existingCards = new HashMap();
-        CacheSyncConfigDialog topView = (CacheSyncConfigDialog) getView();
+        CacheSyncConfigView topView = (CacheSyncConfigView) getView();
 
         // note that none of the panels need a controller
         // if they issue controls, they will use this object taken from parent
 
         JGroupsConfigPanel jgroupsPanel = new JGroupsConfigPanel();
-        existingCards.put(CacheSyncTypesModel.JGROUPS_FACTORY_LABEL, jgroupsPanel);
-        topView.addCard(jgroupsPanel, CacheSyncTypesModel.JGROUPS_FACTORY_LABEL);
+        existingCards.put(JGROUPS_FACTORY_LABEL, jgroupsPanel);
+        topView.addCard(jgroupsPanel, JGROUPS_FACTORY_LABEL);
+        
+        jgroupsPanel.getUseDefaultConfig().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                jgroupsDefaultConfig();
+            }
+        });
+        jgroupsPanel.getUseConfigFile().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                jgroupsURLConfig();
+            }
+        });
 
         JMSConfigPanel jmsPanel = new JMSConfigPanel();
-        existingCards.put(CacheSyncTypesModel.JMS_FACTORY_LABEL, jmsPanel);
-        topView.addCard(jmsPanel, CacheSyncTypesModel.JMS_FACTORY_LABEL);
+        existingCards.put(JMS_FACTORY_LABEL, jmsPanel);
+        topView.addCard(jmsPanel, JMS_FACTORY_LABEL);
 
         CustomRemoteEventsConfigPanel customFactoryPanel = new CustomRemoteEventsConfigPanel();
-        existingCards.put(CacheSyncTypesModel.CUSTOM_FACTORY_LABEL, customFactoryPanel);
-        topView.addCard(customFactoryPanel, CacheSyncTypesModel.CUSTOM_FACTORY_LABEL);
+        existingCards.put(CUSTOM_FACTORY_LABEL, customFactoryPanel);
+        topView.addCard(customFactoryPanel, CUSTOM_FACTORY_LABEL);
 
         if (factory == null) {
             factory = DataRowStore.EVENT_BRIDGE_FACTORY_DEFAULT;
         }
 
-        // display the right initial card
-        // can't call "changeConfigView", since it will reset custom factories..
-        Object model = buildModel(factory);
-
         if (JGROUPS_FACTORY_CLASS.equals(factory)) {
-            jgroupsPanel.setBoundModel(model);
-            ((CacheSyncConfigDialog) getView())
-                    .showCard(CacheSyncTypesModel.JGROUPS_FACTORY_LABEL);
+            ((CacheSyncConfigView) getView())
+                    .showCard(JGROUPS_FACTORY_LABEL);
         }
         else if (JMS_FACTORY_CLASS.equals(factory)) {
-            jmsPanel.setBoundModel(model);
-            ((CacheSyncConfigDialog) getView())
-                    .showCard(CacheSyncTypesModel.JMS_FACTORY_LABEL);
+            ((CacheSyncConfigView) getView())
+                    .showCard(JMS_FACTORY_LABEL);
         }
         else {
-            customFactoryPanel.setBoundModel(model);
-            ((CacheSyncConfigDialog) getView())
-                    .showCard(CacheSyncTypesModel.CUSTOM_FACTORY_LABEL);
+            ((CacheSyncConfigView) getView())
+                    .showCard(CUSTOM_FACTORY_LABEL);
         }
+        
+        loadProperties(factory);
     }
 }

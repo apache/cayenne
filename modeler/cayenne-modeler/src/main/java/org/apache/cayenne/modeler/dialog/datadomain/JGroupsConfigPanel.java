@@ -22,22 +22,23 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 import java.awt.BorderLayout;
 
 import javax.swing.ButtonGroup;
-
-import org.scopemvc.view.swing.SPanel;
-import org.scopemvc.view.swing.SRadioButton;
-import org.scopemvc.view.swing.STextField;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
  */
-public class JGroupsConfigPanel extends SPanel {
+public class JGroupsConfigPanel extends JPanel {
 
-    protected STextField multicastAddress;
-    protected STextField multicastPort;
-    protected STextField configURL;
-
+    protected JTextField multicastAddress;
+    protected JTextField multicastPort;
+    protected JTextField configURL;
+    protected JRadioButton useDefaultConfig;
+    protected JRadioButton useConfigFile;
+    
     public JGroupsConfigPanel() {
         initView();
     }
@@ -45,28 +46,17 @@ public class JGroupsConfigPanel extends SPanel {
     protected void initView() {
         setLayout(new BorderLayout());
 
-        SRadioButton useDefaultConfig =
-            new SRadioButton(
-                CacheSyncConfigController.JGROUPS_DEFAULT_CONTROL,
-                JGroupsConfigModel.USING_DEFAULT_CONFIG_SELECTOR);
+        useDefaultConfig = new JRadioButton(CacheSyncConfigController.JGROUPS_DEFAULT_CONTROL);
+        useDefaultConfig.setSelected(true);
+        useConfigFile = new JRadioButton(CacheSyncConfigController.JGROUPS_URL_CONTROL);
+        
+        ButtonGroup radioGroup = new ButtonGroup();
+        radioGroup.add(useConfigFile);
+        radioGroup.add(useDefaultConfig);
 
-        SRadioButton useConfigFile =
-            new SRadioButton(
-                CacheSyncConfigController.JGROUPS_URL_CONTROL,
-                JGroupsConfigModel.USING_CONFIG_FILE_SELECTOR);
-
-        ButtonGroup group = new ButtonGroup();
-        group.add(useConfigFile);
-        group.add(useDefaultConfig);
-
-        multicastAddress = new STextField();
-        multicastAddress.setSelector(JGroupsConfigModel.MCAST_ADDRESS_SELECTOR);
-
-        multicastPort = new STextField(5);
-        multicastPort.setSelector(JGroupsConfigModel.MCAST_PORT_SELECTOR);
-
-        configURL = new STextField();
-        configURL.setSelector(JGroupsConfigModel.JGROUPS_CONFIG_URL_SELECTOR);
+        multicastAddress = new JTextField(20);
+        multicastPort = new JTextField(5);
+        configURL = new JTextField(20);
 
         // type form
         FormLayout layout = new FormLayout("right:150, 3dlu, left:200", "");
@@ -100,5 +90,17 @@ public class JGroupsConfigPanel extends SPanel {
         multicastAddress.setEditable(false);
         multicastPort.setEditable(false);
         configURL.setEditable(true);
+    }
+    
+    public JRadioButton getUseDefaultConfig() {
+        return this.useDefaultConfig;
+    }
+    
+    public void setUseDefaultConfig(JRadioButton button) {
+        this.useDefaultConfig = button;
+    }
+    
+    public JRadioButton getUseConfigFile() {
+        return this.useConfigFile;
     }
 }

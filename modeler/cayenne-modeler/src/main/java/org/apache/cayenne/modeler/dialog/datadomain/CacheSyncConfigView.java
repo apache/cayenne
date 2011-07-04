@@ -24,40 +24,40 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
-
-import org.scopemvc.core.Control;
-import org.scopemvc.view.swing.SButton;
-import org.scopemvc.view.swing.SComboBox;
-import org.scopemvc.view.swing.SPanel;
-import org.scopemvc.view.swing.SwingView;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
  */
-public class CacheSyncConfigDialog extends SPanel {
+public class CacheSyncConfigView extends JDialog {
     public static final String EMPTY_CARD_KEY = "Empty";
 
     protected JPanel configPanel;
+    protected JComboBox typeSelector;
+    protected JButton saveButton;
+    protected JButton cancelButton;
 
-    public CacheSyncConfigDialog() {
+    public CacheSyncConfigView() {
         initView();
     }
 
     protected void initView() {
-        setDisplayMode(SwingView.MODAL_DIALOG);
         this.setLayout(new BorderLayout());
         this.setTitle("Configure Remote Cache Synchronization");
 
-        SComboBox type = new SComboBox();
-        type.setSelector(CacheSyncTypesModel.NOTIFICATION_TYPES_SELECTOR);
-        type.setSelectionSelector(CacheSyncTypesModel.FACTORY_LABEL_SELECTOR);
+        typeSelector = new JComboBox();
+        typeSelector.addItem("JavaGroups Multicast (Default)");
+        typeSelector.addItem("JMS Transport");
+        typeSelector.addItem("Custom Transport");
 
-        SButton saveButton = new SButton(CacheSyncConfigController.SAVE_CONFIG_CONTROL);
-        SButton cancelButton =
-            new SButton(CacheSyncConfigController.CANCEL_CONFIG_CONTROL);
+        saveButton = new JButton(CacheSyncConfigController.SAVE_CONFIG_CONTROL);
+        cancelButton =
+            new JButton(CacheSyncConfigController.CANCEL_CONFIG_CONTROL);
 
         // buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -68,7 +68,7 @@ public class CacheSyncConfigDialog extends SPanel {
         FormLayout layout = new FormLayout("right:150, 3dlu, left:200", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.append("Notification Transport Type:", type);
+        builder.append("Notification Transport Type:", typeSelector);
 
         // config panel
         configPanel = new JPanel(new CardLayout());
@@ -81,15 +81,23 @@ public class CacheSyncConfigDialog extends SPanel {
         showCard(EMPTY_CARD_KEY);
     }
 
-    public Control getCloseControl() {
-        return new Control(CacheSyncConfigController.CANCEL_CONFIG_CONTROL);
-    }
-
     public void addCard(Component card, String key) {
         configPanel.add(card, key);
     }
 
     public void showCard(String key) {
         ((CardLayout) configPanel.getLayout()).show(configPanel, key);
+    }
+
+    public JButton getSaveButton() {
+        return this.saveButton;
+    }
+
+    public JButton getCancelButton() {
+        return this.cancelButton;
+    }
+
+    public JComboBox getTypeSelector() {
+        return this.typeSelector;
     }
 }

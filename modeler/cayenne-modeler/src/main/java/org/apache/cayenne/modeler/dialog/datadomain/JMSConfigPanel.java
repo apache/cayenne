@@ -21,15 +21,17 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 
 import java.awt.BorderLayout;
 
-import org.scopemvc.view.swing.SPanel;
-import org.scopemvc.view.swing.STextField;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
  */
-public class JMSConfigPanel extends SPanel {
+public class JMSConfigPanel extends JPanel {
+    
+    protected JTextField topicFactory;
 
     public JMSConfigPanel() {
         super();
@@ -39,8 +41,7 @@ public class JMSConfigPanel extends SPanel {
     protected void initView() {
         setLayout(new BorderLayout());
 
-        STextField topicFactory = new STextField(30);
-        topicFactory.setSelector(JMSConfigModel.TOPIC_FACTORY_SELECTOR);
+        topicFactory = new JTextField(30);
 
         // type form
         FormLayout layout = new FormLayout("right:150, 3dlu, left:200", "");
@@ -54,5 +55,4 @@ public class JMSConfigPanel extends SPanel {
 
         add(builder.getPanel(), BorderLayout.NORTH);
     }
-
 }
