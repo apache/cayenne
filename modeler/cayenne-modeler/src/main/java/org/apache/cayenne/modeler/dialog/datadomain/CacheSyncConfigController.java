@@ -38,10 +38,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A controller for CacheSyncConfigDialog and its subviews. Builds a model out of a
- * DataDomain properties map, and on save updates DataDomain properties with configuration
- * changes made by the user. This controller manages one main dialog view, and its
- * subviews organized using CardLayout.
+ * A controller for CacheSyncConfigDialog and its subviews. This controller 
+ * manages one main dialog view, and its subviews organized using CardLayout.
  * 
  */
 public class CacheSyncConfigController extends CayenneController {
