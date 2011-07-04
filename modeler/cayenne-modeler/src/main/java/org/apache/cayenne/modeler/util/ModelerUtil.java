@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.modeler.util;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Window;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
@@ -28,6 +31,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.swing.Action;
@@ -174,5 +178,31 @@ public final class ModelerUtil {
                         .getActionName(numSelected > 1));
             }
         }
+    }
+    
+    /**
+     * Retrieves strings from .properties file
+     */
+    public static String getProperty(String key) {
+        ResourceBundle properties = ResourceBundle.getBundle(Application.DEFAULT_MESSAGE_BUNDLE);
+        return properties == null ? "" : properties.getString(key);
+    }
+    
+    /**
+     * Center a window on a parent window
+     */
+    public static void centerWindow(Window parent, Window child) {
+        Dimension parentSize = parent.getSize();
+        Dimension childSize = child.getSize();
+        
+        Point parentLocation = new Point(0, 0);
+        if (parent.isShowing()) {
+            parentLocation = parent.getLocationOnScreen();
+        }
+
+        int x = parentLocation.x + parentSize.width / 2 - childSize.width / 2;
+        int y = parentLocation.y + parentSize.height / 2 - childSize.height / 2;
+
+        child.setLocation(x, y);
     }
 }

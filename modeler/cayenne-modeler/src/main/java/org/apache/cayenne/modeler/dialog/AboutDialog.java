@@ -40,7 +40,6 @@ import javax.swing.WindowConstants;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
-import org.scopemvc.util.UIStrings;
 
 /** 
  * Displays the Cayenne license and build information.
@@ -75,7 +74,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
             StringBuffer buffer = new StringBuffer();
             buffer.append("<html>");
             buffer.append("<font size='-1' face='Arial,Helvetica'>");
-            buffer.append(UIStrings.get("cayenne.modeler.about.info"));
+            buffer.append(ModelerUtil.getProperty("cayenne.modeler.about.info"));
             buffer.append("</font>");
 
             buffer.append("<font size='-2' face='Arial,Helvetica'>");

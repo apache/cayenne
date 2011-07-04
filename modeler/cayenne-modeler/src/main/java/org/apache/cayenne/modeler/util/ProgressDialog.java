@@ -31,8 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import org.scopemvc.view.awt.AWTUtilities;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -80,7 +78,7 @@ public class ProgressDialog extends JDialog {
 
         setResizable(false);
         pack();
-        AWTUtilities.centreOnWindow(getOwner(), this);
+        ModelerUtil.centerWindow(getOwner(), this);
     }
 
     public JButton getCancelButton() {

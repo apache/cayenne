@@ -42,12 +42,12 @@ import javax.swing.ScrollPaneConstants;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scopemvc.util.UIStrings;
 
 /**
  * Displays CayenneModeler exceptions and warning messages.
@@ -201,7 +201,7 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
     }
 
     protected String infoHTML() {
-        String bugreportURL = UIStrings.get("cayenne.bugreport.url");
+        String bugreportURL = ModelerUtil.getProperty("cayenne.bugreport.url");
         return "<b><font face='Arial,Helvetica' size='+1' color='red'>"
             + getTitle()
             + "</font></b><br>"

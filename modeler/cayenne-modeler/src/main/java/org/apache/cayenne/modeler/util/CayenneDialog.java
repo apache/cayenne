@@ -37,7 +37,6 @@ import javax.swing.event.HyperlinkListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
-import org.scopemvc.view.awt.AWTUtilities;
 
 /**
  * Superclass of CayenneModeler dialogs. Adds support for popping hyperlinks 
@@ -138,7 +137,7 @@ public class CayenneDialog extends JDialog implements HyperlinkListener {
      * Centers this dialog relative to the parent Window 
      */
     public void centerWindow() {
-        AWTUtilities.centreOnWindow(getParentEditor(), this);
+        ModelerUtil.centerWindow(getParentEditor(), this);
     }
 
     public CayenneModelerFrame getParentEditor() {

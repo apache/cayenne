@@ -19,17 +19,12 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.swing.JFrame;
-import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -40,7 +35,6 @@ import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.dialog.pref.ClasspathPreferences;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
-import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
@@ -49,11 +43,6 @@ import org.apache.cayenne.swing.BindingFactory;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
-import org.scopemvc.controller.basic.ViewContext;
-import org.scopemvc.controller.swing.SwingContext;
-import org.scopemvc.core.View;
-import org.scopemvc.util.UIStrings;
-import org.scopemvc.view.swing.SwingView;
 
 /**
  * A main modeler application class that provides a number of services to the Modeler
@@ -188,19 +177,9 @@ public class Application {
         this.bindingFactory = new BindingFactory();
         this.adapterMapping = new AdapterMapping();
 
-        // ...Scope
-
-        // TODO: this will go away if switch away from Scope
-        // force Scope to use CayenneModeler properties
-        UIStrings.setPropertiesName(DEFAULT_MESSAGE_BUNDLE);
-        ViewContext.clearThreadContext();
-
         this.undoManager = new CayenneUndoManager(this);
 
         this.frameController = new CayenneModelerController(this);
-
-        // update Scope to work nicely with main frame
-        ViewContext.setGlobalContext(new ModelerContext(frameController.getFrame()));
 
         // open up
         frameController.startupAction();
@@ -310,79 +289,5 @@ public class Application {
 
     protected void initPreferences() {
         this.cayenneProjectPreferences = new CayenneProjectPreferences();
-    }
-
-    final class ModelerContext extends SwingContext {
-
-        JFrame frame;
-
-        public ModelerContext(JFrame frame) {
-            this.frame = frame;
-        }
-
-        @Override
-        protected void showViewInPrimaryWindow(SwingView view) {
-        }
-
-        /**
-         * Creates closeable dialogs.
-         */
-        @Override
-        protected void showViewInDialog(SwingView inView) {
-            // NOTE:
-            // copied from superclass, except that JDialog is substituted for
-            // CayenneDialog
-            // Keep in mind when upgrading Scope to the newer versions.
-
-            // Make a JDialog to contain the view.
-            Window parentWindow = getDefaultParentWindow();
-
-            final CayenneDialog dialog;
-            if (parentWindow instanceof Dialog) {
-                dialog = new CayenneDialog((Dialog) parentWindow);
-            }
-            else {
-                dialog = new CayenneDialog((Frame) parentWindow);
-            }
-
-            // Set title, modality, resizability
-            if (inView.getTitle() != null) {
-                dialog.setTitle(inView.getTitle());
-            }
-            if (inView.getDisplayMode() == SwingView.MODAL_DIALOG) {
-                dialog.setModal(true);
-            }
-            else {
-                dialog.setModal(false);
-            }
-            dialog.setResizable(inView.isResizable());
-
-            setupWindow(dialog.getRootPane(), inView, true);
-            dialog.toFront();
-        }
-
-        /**
-         * Overrides super implementation to allow using Scope together with normal Swing
-         * code that CayenneModeler already has.
-         */
-        @Override
-        public JRootPane findRootPaneFor(View view) {
-            JRootPane pane = super.findRootPaneFor(view);
-
-            if (pane != null) {
-                return pane;
-            }
-
-            if (((SwingView) view).getDisplayMode() != SwingView.PRIMARY_WINDOW) {
-                return pane;
-            }
-
-            return frame.getRootPane();
-        }
-
-        @Override
-        protected Window getDefaultParentWindow() {
-            return frame;
-        }
     }
 }
