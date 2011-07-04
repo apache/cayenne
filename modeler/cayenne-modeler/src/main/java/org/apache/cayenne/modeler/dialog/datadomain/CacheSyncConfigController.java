@@ -41,8 +41,7 @@ import org.apache.commons.logging.LogFactory;
  * A controller for CacheSyncConfigDialog and its subviews. Builds a model out of a
  * DataDomain properties map, and on save updates DataDomain properties with configuration
  * changes made by the user. This controller manages one main dialog view, and its
- * subviews organized using CardLayout. Each subview as well as the main dialog have their
- * own independent models.
+ * subviews organized using CardLayout.
  * 
  */
 public class CacheSyncConfigController extends CayenneController {
@@ -79,8 +78,7 @@ public class CacheSyncConfigController extends CayenneController {
     }
 
     /**
-     * Creates and shows a new modal dialog window. Registers as a listener for its own
-     * model to update subviews on model changes.
+     * Creates and shows a new modal dialog window.
      */
     public void startup() { 
         DataChannelDescriptor domain = (DataChannelDescriptor)eventController.getProject().getRootNode();
@@ -93,7 +91,6 @@ public class CacheSyncConfigController extends CayenneController {
         
         properties = new HashMap(((DataChannelDescriptor)eventController.getProject()
                 .getRootNode()).getProperties());
-        System.out.println(properties);
         
         // build cards, showing the one corresponding to DataDomain state
         prepareChildren(factory);
