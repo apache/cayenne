@@ -76,11 +76,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.scopemvc</groupId>
-			<artifactId>scopemvc</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>foundrylogic.vpp</groupId>
 			<artifactId>vpp</artifactId>
 		</dependency>

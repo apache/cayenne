@@ -119,11 +119,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.scopemvc</groupId>
-			<artifactId>scopemvc</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 		</dependency>
