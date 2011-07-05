@@ -22,6 +22,7 @@ CAY-1545 cayenne-lifecycle Referenceable handler refactoring
 CAY-1547 cayenne-lifecycle: support for setting UuidRelationships
 CAY-1549 Migrate BatchQueryBuilderFactory to DI
 CAY-1553 cayenne-lifecycle: @SortWeight annotation 
+CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
 
 Bug Fixes Since 3.1M2:
 
@@ -118,8 +119,11 @@ CAY-1430 Problems with TINYINT type mapping
 Release: 3.0.3
 Date: 
 ----------------------------------
+Changes/New Features Since 3.0.2:
 
-Bug Fixes Since 3.0.2
+CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
+
+Bug Fixes Since 3.0.2:
 
 CAY-1577 SQL queries for LIKE expressions with escape character generated with syntax errors
 
