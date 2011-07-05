@@ -8,11 +8,20 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.0.3
+Date: 
+----------------------------------
+
+Bug Fixes Since 3.0.2:
+
+CAY-1577 SQL queries for LIKE expressions with escape character generated with syntax errors
+
+----------------------------------
 Release: 3.0.2
 Date: 
 ----------------------------------
 
-Improvements Sice 3.0.1
+Improvements Since 3.0.1
 
 CAY-1500 MySQL JDBC Batching
 CAY-1575 Error generating Embeddable classes in Cayenne Modeler

@@ -334,4 +334,24 @@ public class ExpressionFactoryTest extends CayenneCase {
         SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp("artistName", numbers));
         createDataContext().performQuery(query);
     }
+
+    public void testEscapeCharacter() {
+        ObjectContext dc = createDataContext();
+
+        Artist a1 = dc.newObject(Artist.class);
+        a1.setArtistName("A_1");
+        Artist a2 = dc.newObject(Artist.class);
+        a2.setArtistName("A_2");
+        dc.commitChanges();
+        
+        Expression ex1 = ExpressionFactory.likeIgnoreCaseDbExp("ARTIST_NAME", "A*_1", '*');
+        SelectQuery q1 = new SelectQuery(Artist.class, ex1);
+        List<Artist> artists = dc.performQuery(q1);
+        assertEquals(1, artists.size());
+        
+        Expression ex2 = ExpressionFactory.likeExp("artistName", "A*_2", '*');
+        SelectQuery q2 = new SelectQuery(Artist.class, ex2);
+        artists = dc.performQuery(q2);
+        assertEquals(1, artists.size());
+    }
 }
