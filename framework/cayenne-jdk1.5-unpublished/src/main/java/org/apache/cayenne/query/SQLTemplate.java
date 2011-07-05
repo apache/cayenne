@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -225,9 +226,11 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
         // encode adapter SQL
         if (templates != null && !templates.isEmpty()) {
-            for (Map.Entry<String, String> entry : templates.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
+
+            //sorting entries by adapter name
+            TreeSet<String> keys = new TreeSet<String>(templates.keySet());
+            for (String key : keys) {
+                String value = templates.get(key);
 
                 if (key != null && value != null) {
                     String sql = value.trim();
