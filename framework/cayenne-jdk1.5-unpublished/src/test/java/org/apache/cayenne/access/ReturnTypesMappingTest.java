@@ -673,7 +673,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         NamedQuery q = new NamedQuery("SelectDateTest");
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Date columnValue = (Date) testRead.get("TIME_COLUMN");
-        assertNotNull(columnValue);
+        assertNotNull(testRead.toString(), columnValue);
         assertEquals(now.toString(), new Time(columnValue.getTime()).toString());
     }
 
