@@ -355,17 +355,18 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             boolean isPatternMatchNode = PatternMatchNode.class.isAssignableFrom(node
                     .getClass());
 
+            if (parenthesisNeeded)
+                out.append(')');
+            
             if (isPatternMatchNode && !likeIgnoreCase)
                 appendLikeEscapeCharacter((PatternMatchNode) node);
-
-            if (parenthesisNeeded)
+            
+            if (likeIgnoreCase)
                 out.append(')');
 
             if (isPatternMatchNode && likeIgnoreCase)
                 appendLikeEscapeCharacter((PatternMatchNode) node);
 
-            if (likeIgnoreCase)
-                out.append(')');
         }
         catch (IOException ioex) {
             throw new CayenneRuntimeException("Error appending content", ioex);

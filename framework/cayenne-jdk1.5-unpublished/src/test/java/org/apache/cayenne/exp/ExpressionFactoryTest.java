@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.parser.ASTLike;
 import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -291,5 +293,23 @@ public class ExpressionFactoryTest extends ServerCase {
 
         Expression in = ExpressionFactory.inExp("paintingArray", p1);
         assertTrue(in.match(a1));
+    }
+    
+    public void testEscapeCharacter() {
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("A_1");
+        Artist a2 = context.newObject(Artist.class);
+        a2.setArtistName("A_2");
+        context.commitChanges();
+        
+        Expression ex1 = ExpressionFactory.likeIgnoreCaseDbExp("ARTIST_NAME", "A*_1", '*');
+        SelectQuery q1 = new SelectQuery(Artist.class, ex1);
+        List<Artist> artists = context.performQuery(q1);
+        assertEquals(1, artists.size());
+        
+        Expression ex2 = ExpressionFactory.likeExp("artistName", "A*_2", '*');
+        SelectQuery q2 = new SelectQuery(Artist.class, ex2);
+        artists = context.performQuery(q2);
+        assertEquals(1, artists.size());
     }
 }
