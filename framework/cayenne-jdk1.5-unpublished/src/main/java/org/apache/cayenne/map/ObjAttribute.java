@@ -94,7 +94,7 @@ public class ObjAttribute extends Attribute {
 
         if (getType() != null) {
             encoder.print(" type=\"");
-            encoder.print(getType());
+            encoder.print(Util.encodeXmlAttribute(getType()));
             encoder.print('\"');
         }
 
