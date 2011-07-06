@@ -693,7 +693,8 @@ void literal_or_param() : { }
 
 void like_expression() #Like : { }
 {
-	string_expression() [<NOT> { jjtThis.not = true; }] <LIKE> pattern_value() 
+	string_expression() [<NOT> { jjtThis.not = true; }] <LIKE> 
+	((input_parameter() [(<ESCAPE> escape_character())]) | pattern_value())  
 }
 
 
@@ -1208,8 +1209,7 @@ void positional_input_parameter() #PositionalInputParameter :
 
 void pattern_value() #PatternValue : { }
 {
-	(input_parameter() | string_literal())
-	[(<ESCAPE> escape_character())]
+	string_literal() [(<ESCAPE> escape_character())]
 }
 
 

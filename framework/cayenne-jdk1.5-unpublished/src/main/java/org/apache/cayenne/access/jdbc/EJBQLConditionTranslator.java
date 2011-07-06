@@ -386,7 +386,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
     
     /**
-     * Checks expression for containing null imput parameter.
+     * Checks expression for containing null input parameter.
      * For that, we'll append IS NULL or IS NOT NULL instead of =null or <>null
      * @return whether replacement was done and there's no need for normal expression processing
      */
@@ -563,6 +563,10 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitLike(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
+            if (checkNullParameter(expression, " IS NULL")) {
+                return false;
+            }
+            
             if (expression.isNegated()) {
                 context.append(" NOT");
             }
