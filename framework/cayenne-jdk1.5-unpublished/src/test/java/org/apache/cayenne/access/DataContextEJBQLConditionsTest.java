@@ -186,6 +186,22 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
 
         assertTrue(ids.contains(new Integer(33005)));
     }
+    
+    public void testLikeNullParameter() {
+        DataContext context = createDataContext();
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("a1");
+        a1.setDateOfBirth(null);
+        context.commitChanges();
+        
+        EJBQLQuery eq1 = new EJBQLQuery("select a from Artist a where a.dateOfBirth like :param");
+        eq1.setParameter("param", null);
+        assertNotNull(DataObjectUtils.objectForQuery(context, eq1));
+        
+        EJBQLQuery eq2 = new EJBQLQuery("select a from Artist a where a.dateOfBirth like ?1");
+        eq2.setParameter(1, null);
+        assertNotNull(DataObjectUtils.objectForQuery(context, eq2));
+    }
 
     public void testIn() throws Exception {
         createTestData("prepareIn");
