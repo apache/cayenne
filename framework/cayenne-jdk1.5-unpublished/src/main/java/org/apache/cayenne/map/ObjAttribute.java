@@ -102,7 +102,7 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
         if (getType() != null) {
             encoder.print(" type=\"");
-            encoder.print(getType());
+            encoder.print(Util.encodeXmlAttribute(getType()));
             encoder.print('\"');
         }
 
