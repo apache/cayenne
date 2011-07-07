@@ -32,6 +32,7 @@ CAY-1555 Unpublished dependencies of Maven plugins
 CAY-1575 Error generating Embeddable classes in Cayenne Modeler
 CAY-1577 SQL queries for LIKE expressions with escape character generated with syntax errors
 CAY-1581 Not-Escaping <> during serialization to *.map.xml
+CAY-1585 SelectQuery automatic cache key needs FetchOffset
 
 ----------------------------------
 Release: 3.1 M2

@@ -49,7 +49,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
             }
             else {
                 // create a unique key based on entity, qualifier, ordering and fetch
-                // limit
+                // offset and limit
 
                 StringBuilder key = new StringBuilder();
 
@@ -77,11 +77,17 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                         }
                     }
                 }
-
-                if (query.getFetchLimit() > 0) {
-                    key.append('/').append(query.getFetchLimit());
+                
+                if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
+                    key.append('/');
+                    if (query.getFetchOffset() > 0) {
+                        key.append('o').append(query.getFetchOffset());
+                    }
+                    if (query.getFetchLimit() > 0) {
+                        key.append('l').append(query.getFetchLimit());
+                    }
                 }
-
+                
                 this.cacheKey = key.toString();
             }
 

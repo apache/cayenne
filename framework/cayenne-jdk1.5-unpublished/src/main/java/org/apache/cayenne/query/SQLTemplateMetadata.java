@@ -71,6 +71,16 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
                                 parameters.get(parameterKey));
                     }
                 }
+                
+                if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
+                    key.append('/');
+                    if (query.getFetchOffset() > 0) {
+                        key.append('o').append(query.getFetchOffset());
+                    }
+                    if (query.getFetchLimit() > 0) {
+                        key.append('l').append(query.getFetchLimit());
+                    }
+                }
 
                 this.cacheKey = key.toString();
             }

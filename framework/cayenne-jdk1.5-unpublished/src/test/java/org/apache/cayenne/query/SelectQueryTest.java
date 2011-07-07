@@ -596,4 +596,31 @@ public class SelectQueryTest extends ServerCase {
                 numbers));
         context.performQuery(query);
     }
+    
+    public void testCacheOffsetAndLimit() throws Exception {
+        createArtistsDataSet();
+        
+        SelectQuery query1 = new SelectQuery(Artist.class);
+        query1.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        query1.setFetchOffset(0);
+        query1.setFetchLimit(10);
+        context.performQuery(query1);
+        
+        SelectQuery query2 = new SelectQuery(Artist.class);
+        query2.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        query2.setFetchOffset(10);
+        query2.setFetchLimit(10);
+        context.performQuery(query2);
+        
+        SelectQuery query3 = new SelectQuery(Artist.class);
+        query3.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        query3.setFetchOffset(10);
+        query3.setFetchLimit(10);
+        context.performQuery(query3);
+        
+        assertFalse(query1.metaData.getCacheKey()
+                .equals(query2.metaData.cacheKey));
+        assertEquals(query2.metaData.getCacheKey(), 
+                query3.metaData.getCacheKey());
+    }
 }

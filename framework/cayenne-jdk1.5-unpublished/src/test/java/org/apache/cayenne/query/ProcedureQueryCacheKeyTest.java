@@ -87,4 +87,21 @@ public class ProcedureQueryCacheKeyTest extends ServerCase {
         assertEquals("proc:", md1.getCacheKey());
     }
 
+    public void testCacheFetchOffsetAndLimit() {
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        
+        ProcedureQuery q1 = new ProcedureQuery("ABC", Artist.class);
+        q1.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        q1.setFetchOffset(5);
+        q1.setFetchLimit(3);
+        
+        ProcedureQuery q2 = new ProcedureQuery("ABC", Artist.class);
+        q2.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        q2.setFetchOffset(5);
+        q2.setFetchLimit(3);
+        
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
+                .getMetaData(resolver)
+                .getCacheKey());
+    }
 }
