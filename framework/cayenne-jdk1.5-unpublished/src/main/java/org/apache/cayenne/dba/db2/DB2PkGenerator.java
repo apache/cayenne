@@ -61,7 +61,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
                 String sql = "SELECT NEXTVAL FOR "
                         + pkGeneratingSequenceName
                         + " FROM SYSIBM.SYSDUMMY1";
-                logger.logQuery(sql, Collections.EMPTY_LIST);
+                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = st.executeQuery(sql);
                 try {
                     // Object pk = null;
@@ -156,11 +156,14 @@ public class DB2PkGenerator extends JdbcPkGenerator {
             Statement sel = con.createStatement();
             try {
                 StringBuilder buffer = new StringBuilder();
-                buffer.append("SELECT SEQNAME FROM SYSCAT.SEQUENCES ").append(
-                        "WHERE SEQNAME LIKE '").append(_SEQUENCE_PREFIX).append("%'");
+                buffer
+                        .append("SELECT SEQNAME FROM SYSCAT.SEQUENCES ")
+                        .append("WHERE SEQNAME LIKE '")
+                        .append(_SEQUENCE_PREFIX)
+                        .append("%'");
 
                 String sql = buffer.toString();
-                logger.logQuery(sql, Collections.EMPTY_LIST);
+                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = sel.executeQuery(sql);
                 try {
                     List<String> sequenceList = new ArrayList<String>();

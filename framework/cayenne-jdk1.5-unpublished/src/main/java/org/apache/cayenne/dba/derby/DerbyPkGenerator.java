@@ -28,6 +28,7 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 
 /**
@@ -51,6 +52,7 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
     @Override
     protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
+        JdbcEventLogger logger = adapter.getJdbcEventLogger();
         if (logger.isLoggable()) {
             logger.logQuery(SELECT_QUERY, Collections
                     .singletonList(entity.getName()));

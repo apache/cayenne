@@ -106,6 +106,8 @@ public class JdbcAdapter implements DbAdapter {
 
         // TODO: andrus 05.02.2010 - ideally this should be injected
         this.resourceLocator = new ClassLoaderResourceLocator();
+        
+        this.pkGenerator = createPkGenerator();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
         this.configureExtendedTypes(extendedTypes);
@@ -190,9 +192,6 @@ public class JdbcAdapter implements DbAdapter {
      * Returns primary key generator associated with this DbAdapter.
      */
     public PkGenerator getPkGenerator() {
-        if (pkGenerator == null) {
-            pkGenerator = createPkGenerator();
-        }
         return pkGenerator;
     }
 

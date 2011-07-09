@@ -90,7 +90,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
                 // TABLE!!
                 try {
                     String unlockString = "UNLOCK TABLES";
-                    logger.logQuery(unlockString, Collections.EMPTY_LIST);
+                    adapter.getJdbcEventLogger().logQuery(unlockString, Collections.EMPTY_LIST);
                     st.execute(unlockString);
                 }
                 catch (SQLException unlockEx) {
@@ -158,14 +158,14 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
             throws SQLException {
         // lock
         String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
-        logger.logQuery(lockString, Collections.EMPTY_LIST);
+        adapter.getJdbcEventLogger().logQuery(lockString, Collections.EMPTY_LIST);
         statement.execute(lockString);
 
         // select
         long pk = -1;
 
         String selectString = super.pkSelectString(entityName);
-        logger.logQuery(selectString, Collections.EMPTY_LIST);
+        adapter.getJdbcEventLogger().logQuery(selectString, Collections.EMPTY_LIST);
         ResultSet rs = statement.executeQuery(selectString);
         try {
             if (!rs.next()) {
@@ -189,7 +189,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
         // update
         String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
-        logger.logQuery(updateString, Collections.EMPTY_LIST);
+        adapter.getJdbcEventLogger().logQuery(updateString, Collections.EMPTY_LIST);
         int updated = statement.executeUpdate(updateString);
         // optimistic lock failure...
         if (updated != 1) {

@@ -36,7 +36,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.ResultIterator;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -50,19 +49,14 @@ import org.apache.cayenne.util.IDUtil;
  */
 public class JdbcPkGenerator implements PkGenerator {
 
-    private JdbcAdapter adapter;
-
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
 
+    protected JdbcAdapter adapter;
     protected Map<String, LongPkRange> pkCache = new HashMap<String, LongPkRange>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
-    
-    protected JdbcEventLogger logger;
 
     public JdbcPkGenerator(JdbcAdapter adapter) {
-        super();
         this.adapter = adapter;
-        this.logger = adapter.getJdbcEventLogger();
     }
 
     public JdbcAdapter getAdapter() {
@@ -154,15 +148,22 @@ public class JdbcPkGenerator implements PkGenerator {
 
     protected String pkSelectString(String entName) {
         StringBuilder buf = new StringBuilder();
-        buf.append("SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '").append(
-                entName).append('\'');
+        buf
+                .append("SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '")
+                .append(entName)
+                .append('\'');
         return buf.toString();
     }
 
     protected String pkUpdateString(String entName) {
         StringBuilder buf = new StringBuilder();
-        buf.append("UPDATE AUTO_PK_SUPPORT").append(" SET NEXT_ID = NEXT_ID + ").append(
-                pkCacheSize).append(" WHERE TABLE_NAME = '").append(entName).append('\'');
+        buf
+                .append("UPDATE AUTO_PK_SUPPORT")
+                .append(" SET NEXT_ID = NEXT_ID + ")
+                .append(pkCacheSize)
+                .append(" WHERE TABLE_NAME = '")
+                .append(entName)
+                .append('\'');
         return buf.toString();
     }
 
@@ -201,7 +202,7 @@ public class JdbcPkGenerator implements PkGenerator {
      * @throws SQLException in case of query failure.
      */
     public int runUpdate(DataNode node, String sql) throws SQLException {
-        logger.logQuery(sql, Collections.EMPTY_LIST);
+        adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
         Connection con = node.getDataSource().getConnection();
         try {

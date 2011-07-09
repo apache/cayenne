@@ -62,7 +62,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
             Statement st = con.createStatement();
             try {
                 String sql = "SELECT " + pkGeneratingSequenceName + ".nextval";
-                logger.logQuery(sql, Collections.EMPTY_LIST);
+                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = st.executeQuery(sql);
                 try {
                     // Object pk = null;
@@ -95,7 +95,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
             Statement select = connection.createStatement();
             try {
                 String sql = "select seq_name from iisequences where seq_owner != 'DBA'";
-                logger.logQuery(sql, Collections.EMPTY_LIST);
+                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = select.executeQuery(sql);
                 try {
                     List<String> sequenceList = new ArrayList<String>();

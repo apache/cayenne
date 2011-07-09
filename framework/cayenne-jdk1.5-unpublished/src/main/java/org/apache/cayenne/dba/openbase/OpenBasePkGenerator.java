@@ -92,7 +92,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
         String sql = newIDString(entity);
-        logger.logQuery(sql, Collections.EMPTY_LIST);
+        adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
         Connection con = node.getDataSource().getConnection();
         try {
