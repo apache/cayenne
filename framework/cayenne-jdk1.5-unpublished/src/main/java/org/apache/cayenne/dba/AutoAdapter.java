@@ -31,7 +31,6 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -49,6 +48,7 @@ import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -119,6 +119,7 @@ public class AutoAdapter implements DbAdapter {
 
     protected Provider<DbAdapter> adapterProvider;
     protected PkGenerator pkGenerator;
+    protected JdbcEventLogger logger;
 
     /**
      * The actual adapter that is delegated methods execution.
@@ -176,12 +177,11 @@ public class AutoAdapter implements DbAdapter {
                 }
 
                 if (adapter == null) {
-                    QueryLogger
-                            .log("Failed to detect database type, using default adapter");
+                    logger.log("Failed to detect database type, using default adapter");
                     adapter = new JdbcAdapter();
                 }
                 else {
-                    QueryLogger.log("Detected and installed adapter: "
+                    logger.log("Detected and installed adapter: "
                             + adapter.getClass().getName());
                 }
 
@@ -197,13 +197,14 @@ public class AutoAdapter implements DbAdapter {
      * 
      * @since 3.1
      */
-    public AutoAdapter(Provider<DbAdapter> adapterProvider) {
+    public AutoAdapter(Provider<DbAdapter> adapterProvider, JdbcEventLogger logger) {
 
         if (adapterProvider == null) {
             throw new CayenneRuntimeException("Null adapterProvider");
         }
 
         this.adapterProvider = adapterProvider;
+        this.logger = logger;
     }
 
     /**

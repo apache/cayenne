@@ -79,7 +79,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
                 public DbAdapter get() {
                     return detectAdapter(nodeDescriptor, dataSource);
                 }
-            });
+            }, jdbcEventLogger);
         }
     }
 
@@ -122,10 +122,10 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
             if (adapter != null) {
                 jdbcEventLogger.log("Detected and installed adapter: "
                         + adapter.getClass().getName());
-                
+
                 // TODO: should detector do this??
                 injector.injectMembers(adapter);
-                
+
                 return adapter;
             }
         }

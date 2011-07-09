@@ -21,7 +21,6 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
@@ -98,9 +97,7 @@ public class ServerModule implements Module {
         // configure empty global stack properties
         binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
 
-        CommonsJdbcEventLogger logger = new CommonsJdbcEventLogger();
-        QueryLogger.setLogger(logger);
-        binder.bind(JdbcEventLogger.class).toInstance(logger);
+        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically

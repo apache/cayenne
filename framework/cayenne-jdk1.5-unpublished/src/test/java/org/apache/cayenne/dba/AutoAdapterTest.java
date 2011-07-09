@@ -26,6 +26,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -41,7 +42,9 @@ public class AutoAdapterTest extends ServerCase {
         Provider<DbAdapter> adapterProvider = mock(Provider.class);
         when(adapterProvider.get()).thenReturn(dataNode.getAdapter());
 
-        AutoAdapter adapter = new AutoAdapter(adapterProvider);
+        AutoAdapter adapter = new AutoAdapter(
+                adapterProvider,
+                NoopJdbcEventLogger.getInstance());
         DbAdapter detected = adapter.getAdapter();
         assertSame(dataNode.getAdapter(), detected);
     }
@@ -51,7 +54,9 @@ public class AutoAdapterTest extends ServerCase {
         Provider<DbAdapter> adapterProvider = mock(Provider.class);
         when(adapterProvider.get()).thenReturn(dataNode.getAdapter());
 
-        AutoAdapter adapter = new AutoAdapter(adapterProvider);
+        AutoAdapter adapter = new AutoAdapter(
+                adapterProvider,
+                NoopJdbcEventLogger.getInstance());
         SQLTemplateAction action = (SQLTemplateAction) adapter.getAction(new SQLTemplate(
                 Artist.class,
                 "select * from artist"), dataNode);

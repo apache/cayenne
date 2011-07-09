@@ -72,8 +72,9 @@ public class OptimisticLockException extends CayenneRuntimeException {
 
         Expression qualifier = null;
         for (DbAttribute attribute : rootEntity.getPrimaryKeys()) {
-            Expression attributeQualifier = ExpressionFactory.matchDbExp(attribute
-                    .getName(), qualifierSnapshot.get(attribute.getName()));
+            Expression attributeQualifier = ExpressionFactory.matchDbExp(
+                    attribute.getName(),
+                    qualifierSnapshot.get(attribute.getName()));
 
             qualifier = (qualifier != null)
                     ? qualifier.andExp(attributeQualifier)
@@ -102,7 +103,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
                 buffer.append(entry.getKey()).append("=");
-                QueryLogger.sqlLiteralForObject(buffer, entry.getValue());
+                buffer.append(entry.getValue());
 
                 if (it.hasNext()) {
                     buffer.append(", ");
