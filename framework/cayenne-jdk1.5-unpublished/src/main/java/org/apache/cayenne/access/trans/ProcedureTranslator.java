@@ -55,7 +55,6 @@ public class ProcedureTranslator {
             return type;
         }
     }
-    
 
     private static NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
@@ -66,7 +65,7 @@ public class ProcedureTranslator {
     protected List<ProcedureParameter> callParams;
     protected List<Object> values;
     protected JdbcEventLogger logger;
-    
+
     public ProcedureTranslator() {
         this.logger = NoopJdbcEventLogger.getInstance();
     }
@@ -82,14 +81,17 @@ public class ProcedureTranslator {
     public void setAdapter(DbAdapter adapter) {
         this.adapter = adapter;
     }
-    
+
     /**
      * @since 3.1
      */
     public void setJdbcEventLogger(JdbcEventLogger logger) {
         this.logger = logger;
     }
-    
+
+    /**
+     * @since 3.1
+     */
     public JdbcEventLogger getJdbcEventLogger() {
         return logger;
     }
@@ -149,7 +151,7 @@ public class ProcedureTranslator {
         initValues();
         String sqlStr = createSqlString();
 
-        if (getJdbcEventLogger().isLoggable()) {
+        if (logger.isLoggable()) {
             // need to convert OUT/VOID parameters to loggable strings
             long time = System.currentTimeMillis() - t1;
 
@@ -162,7 +164,7 @@ public class ProcedureTranslator {
             }
 
             // FIXME: compute proper attributes via callParams
-            getJdbcEventLogger().logQuery(sqlStr, null, loggableParameters, time);
+            logger.logQuery(sqlStr, null, loggableParameters, time);
         }
         CallableStatement stmt = connection.prepareCall(sqlStr);
         initStatement(stmt);

@@ -109,10 +109,16 @@ public abstract class QueryAssembler {
         this.adapter = adapter;
     }
     
+    /**
+     * @since 3.1
+     */
     public void setJdbcEventLogger(JdbcEventLogger logger) {
         this.logger = logger;
     }
     
+    /**
+     * @since 3.1
+     */
     public JdbcEventLogger getJdbcEventLogger() {
         return logger;
     }
@@ -196,7 +202,7 @@ public abstract class QueryAssembler {
     public PreparedStatement createStatement() throws Exception {
         long t1 = System.currentTimeMillis();
         String sqlStr = createSqlString();
-        getJdbcEventLogger().logQuery(sqlStr, attributes, values, System.currentTimeMillis() - t1);
+        logger.logQuery(sqlStr, attributes, values, System.currentTimeMillis() - t1);
         PreparedStatement stmt = connection.prepareStatement(sqlStr);
         initStatement(stmt);
         return stmt;
