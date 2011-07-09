@@ -44,7 +44,7 @@ class OracleSelectAction extends SelectAction {
         translator.setAdapter(adapter);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(logger);
+        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
         return translator;
     }
 

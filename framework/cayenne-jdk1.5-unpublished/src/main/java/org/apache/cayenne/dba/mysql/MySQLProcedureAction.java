@@ -111,7 +111,7 @@ class MySQLProcedureAction extends ProcedureAction {
         if (updateCount == -1) {
             return false;
         }
-        logger.logUpdateCount(updateCount);
+        adapter.getJdbcEventLogger().logUpdateCount(updateCount);
         observer.nextCount(query, updateCount);
 
         return true;
@@ -128,7 +128,7 @@ class MySQLProcedureAction extends ProcedureAction {
         translator.setQuery(query);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(logger);
+        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
         return translator;
     }
 

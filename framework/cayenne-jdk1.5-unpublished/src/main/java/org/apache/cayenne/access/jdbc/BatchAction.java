@@ -35,6 +35,7 @@ import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
@@ -113,6 +114,7 @@ public class BatchAction extends BaseSQLAction {
             OperationObserver delegate) throws SQLException, Exception {
 
         String queryStr = queryBuilder.createSqlString(query);
+        JdbcEventLogger logger = adapter.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
 
         // log batch SQL execution
@@ -175,6 +177,7 @@ public class BatchAction extends BaseSQLAction {
             OperationObserver delegate,
             boolean generatesKeys) throws SQLException, Exception {
 
+        JdbcEventLogger logger = adapter.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 

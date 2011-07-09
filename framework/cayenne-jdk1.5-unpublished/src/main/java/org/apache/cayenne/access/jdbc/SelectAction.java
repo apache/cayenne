@@ -57,10 +57,10 @@ public class SelectAction extends BaseSQLAction {
         translator.setAdapter(adapter);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(logger);
+        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
         return translator;
     }
-    
+
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
 
@@ -167,8 +167,9 @@ public class SelectAction extends BaseSQLAction {
                 it.close();
             }
 
-            logger.logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
-
+            adapter.getJdbcEventLogger().logSelectCount(
+                    resultRows.size(),
+                    System.currentTimeMillis() - t1);
             observer.nextRows(query, resultRows);
         }
         else {

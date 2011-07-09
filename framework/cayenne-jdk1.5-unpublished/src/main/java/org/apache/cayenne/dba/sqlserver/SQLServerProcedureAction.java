@@ -95,7 +95,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
                     if (updateCount == -1) {
                         break;
                     }
-                    logger.logUpdateCount(updateCount);
+                    adapter.getJdbcEventLogger().logUpdateCount(updateCount);
                     localObserver.nextCount(query, updateCount);
                 }
 

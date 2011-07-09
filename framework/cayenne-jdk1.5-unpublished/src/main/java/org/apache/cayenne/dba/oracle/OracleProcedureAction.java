@@ -104,7 +104,7 @@ class OracleProcedureAction extends ProcedureAction {
 
         if (result != null && !result.isEmpty()) {
             // treat out parameters as a separate data row set
-            logger.logSelectCount(1, System.currentTimeMillis() - t1);
+            adapter.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
             delegate.nextRows(query, Collections.singletonList(result));
         }
     }

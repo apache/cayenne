@@ -108,7 +108,7 @@ public class ProcedureAction extends BaseSQLAction {
                     if (updateCount == -1) {
                         break;
                     }
-                    logger.logUpdateCount(updateCount);
+                    adapter.getJdbcEventLogger().logUpdateCount(updateCount);
                     observer.nextCount(query, updateCount);
                 }
             }
@@ -134,7 +134,7 @@ public class ProcedureAction extends BaseSQLAction {
         translator.setQuery(query);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(logger);
+        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
         return translator;
     }
 
@@ -226,7 +226,7 @@ public class ProcedureAction extends BaseSQLAction {
 
         if (result != null && !result.isEmpty()) {
             // treat out parameters as a separate data row set
-            logger.logSelectCount(1, System.currentTimeMillis() - t1);
+            adapter.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
             delegate.nextRows(query, Collections.singletonList(result));
         }
     }
