@@ -31,7 +31,6 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -114,10 +113,10 @@ public class BatchAction extends BaseSQLAction {
             OperationObserver delegate) throws SQLException, Exception {
 
         String queryStr = queryBuilder.createSqlString(query);
-        boolean isLoggable = QueryLogger.isLoggable();
+        boolean isLoggable = logger.isLoggable();
 
         // log batch SQL execution
-        QueryLogger.logQuery(queryStr, Collections.EMPTY_LIST);
+        logger.logQuery(queryStr, Collections.EMPTY_LIST);
 
         // run batch
         query.reset();
@@ -127,7 +126,7 @@ public class BatchAction extends BaseSQLAction {
             while (query.next()) {
 
                 if (isLoggable) {
-                    QueryLogger.logQueryParameters(
+                    logger.logQueryParameters(
                             "batch bind",
                             query.getDbAttributes(),
                             queryBuilder.getParameterValues(query),
@@ -155,7 +154,7 @@ public class BatchAction extends BaseSQLAction {
                     totalUpdateCount += result;
                 }
 
-                QueryLogger.logUpdateCount(totalUpdateCount);
+                logger.logUpdateCount(totalUpdateCount);
             }
         }
         finally {
@@ -176,13 +175,13 @@ public class BatchAction extends BaseSQLAction {
             OperationObserver delegate,
             boolean generatesKeys) throws SQLException, Exception {
 
-        boolean isLoggable = QueryLogger.isLoggable();
+        boolean isLoggable = logger.isLoggable();
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
         String queryStr = queryBuilder.createSqlString(query);
 
         // log batch SQL execution
-        QueryLogger.logQuery(queryStr, Collections.EMPTY_LIST);
+        logger.logQuery(queryStr, Collections.EMPTY_LIST);
 
         // run batch queries one by one
         query.reset();
@@ -193,7 +192,7 @@ public class BatchAction extends BaseSQLAction {
         try {
             while (query.next()) {
                 if (isLoggable) {
-                    QueryLogger.logQueryParameters(
+                    logger.logQueryParameters(
                             "bind",
                             query.getDbAttributes(),
                             queryBuilder.getParameterValues(query),
@@ -226,7 +225,7 @@ public class BatchAction extends BaseSQLAction {
                 }
 
                 if (isLoggable) {
-                    QueryLogger.logUpdateCount(updated);
+                    logger.logUpdateCount(updated);
                 }
             }
         }

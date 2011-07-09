@@ -25,7 +25,6 @@ import java.sql.Statement;
 import java.util.Collections;
 
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.Attribute;
@@ -78,7 +77,7 @@ public class SQLServerBatchAction extends BatchAction {
                 + query.getDbEntity().getFullyQualifiedName()
                 + flag;
 
-        QueryLogger.logQuery(configSQL, Collections.EMPTY_LIST);
+        logger.logQuery(configSQL, Collections.EMPTY_LIST);
 
         Statement statement = connection.createStatement();
         try {

@@ -22,6 +22,8 @@ package org.apache.cayenne.access;
 import java.sql.Connection;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -37,6 +39,9 @@ public class TransactionThreadTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
+    
+    @Inject
+    private JdbcEventLogger logger;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -51,6 +56,7 @@ public class TransactionThreadTest extends ServerCase {
 
         Delegate delegate = new Delegate();
         Transaction t = Transaction.internalTransaction(delegate);
+        t.setJdbcEventLogger(logger);
 
         Transaction.bindThreadTransaction(t);
 

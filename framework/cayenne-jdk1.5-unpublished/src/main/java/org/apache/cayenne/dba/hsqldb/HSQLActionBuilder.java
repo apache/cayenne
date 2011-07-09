@@ -43,7 +43,7 @@ class HSQLActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new ProcedureAction(query, adapter, entityResolver) {
+        ProcedureAction procedureAction = new ProcedureAction(query, adapter, entityResolver) {
 
             @Override
             protected ProcedureTranslator createTranslator(Connection connection) {
@@ -52,9 +52,12 @@ class HSQLActionBuilder extends JdbcActionBuilder {
                 transl.setQuery(query);
                 transl.setEntityResolver(getEntityResolver());
                 transl.setConnection(connection);
+                transl.setJdbcEventLogger(logger);
                 return transl;
             }
         };
+        
+        return procedureAction;
     }
 
 }

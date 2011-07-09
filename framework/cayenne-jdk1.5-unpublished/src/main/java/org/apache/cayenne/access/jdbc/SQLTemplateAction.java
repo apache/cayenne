@@ -35,10 +35,11 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -62,6 +63,7 @@ public class SQLTemplateAction implements SQLAction {
     protected QueryMetadata queryMetadata;
 
     protected DbEntity dbEntity;
+    protected JdbcEventLogger logger;
 
     /**
      * @since 3.0
@@ -72,6 +74,7 @@ public class SQLTemplateAction implements SQLAction {
         this.adapter = adapter;
         this.queryMetadata = query.getMetaData(entityResolver);
         this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
+        this.logger = NoopJdbcEventLogger.getInstance();
     }
 
     /**
@@ -79,6 +82,14 @@ public class SQLTemplateAction implements SQLAction {
      */
     public DbAdapter getAdapter() {
         return adapter;
+    }
+    
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.logger = logger;
+    }
+    
+    public JdbcEventLogger getJdbcEventLogger() {
+        return this.logger;
     }
 
     /**
@@ -96,7 +107,7 @@ public class SQLTemplateAction implements SQLAction {
                     + getAdapter().getClass().getName());
         }
 
-        boolean loggable = QueryLogger.isLoggable();
+        boolean loggable = getJdbcEventLogger().isLoggable();
         int size = query.parametersSize();
 
         SQLTemplateProcessor templateProcessor = new SQLTemplateProcessor();
@@ -116,7 +127,7 @@ public class SQLTemplateAction implements SQLAction {
                     nextParameters);
 
             if (loggable) {
-                QueryLogger.logQuery(compiled.getSql(), Arrays.asList(compiled
+                getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled
                         .getBindings()));
             }
 
@@ -192,7 +203,7 @@ public class SQLTemplateAction implements SQLAction {
                     }
 
                     updateCounts.add(Integer.valueOf(updateCount));
-                    QueryLogger.logUpdateCount(updateCount);
+                    getJdbcEventLogger().logUpdateCount(updateCount);
                 }
             }
         }
@@ -234,7 +245,7 @@ public class SQLTemplateAction implements SQLAction {
             // is due here.
             List<DataRow> resultRows = (List<DataRow>) it.allRows();
 
-            QueryLogger.logSelectCount(resultRows.size(), System.currentTimeMillis()
+            getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis()
                     - startTime);
 
             callback.nextRows(query, resultRows);

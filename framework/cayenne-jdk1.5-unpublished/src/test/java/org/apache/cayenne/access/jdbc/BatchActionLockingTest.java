@@ -32,6 +32,7 @@ import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -49,6 +50,9 @@ public class BatchActionLockingTest extends ServerCase {
     @Inject
     protected ServerRuntime runtime;
 
+    @Inject
+    private Injector injector;
+    
     public void testRunAsIndividualQueriesSuccess() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -152,6 +156,7 @@ public class BatchActionLockingTest extends ServerCase {
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
         JdbcAdapter adapter = new JdbcAdapter();
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
+        injector.injectMembers(adapter);
         return adapter;
     }
 }

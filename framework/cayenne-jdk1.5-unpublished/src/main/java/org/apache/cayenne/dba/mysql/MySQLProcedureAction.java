@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
@@ -112,7 +111,7 @@ class MySQLProcedureAction extends ProcedureAction {
         if (updateCount == -1) {
             return false;
         }
-        QueryLogger.logUpdateCount(updateCount);
+        logger.logUpdateCount(updateCount);
         observer.nextCount(query, updateCount);
 
         return true;
@@ -129,6 +128,7 @@ class MySQLProcedureAction extends ProcedureAction {
         translator.setQuery(query);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
+        translator.setJdbcEventLogger(logger);
         return translator;
     }
 

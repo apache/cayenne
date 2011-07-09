@@ -68,8 +68,8 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new PostgresActionBuilder(this, node
-                .getEntityResolver()));
+        return query
+                .createSQLAction(new PostgresActionBuilder(this, node.getEntityResolver()));
     }
 
     /**

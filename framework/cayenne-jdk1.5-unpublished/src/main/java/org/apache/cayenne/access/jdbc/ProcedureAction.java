@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -109,7 +108,7 @@ public class ProcedureAction extends BaseSQLAction {
                     if (updateCount == -1) {
                         break;
                     }
-                    QueryLogger.logUpdateCount(updateCount);
+                    logger.logUpdateCount(updateCount);
                     observer.nextCount(query, updateCount);
                 }
             }
@@ -135,6 +134,7 @@ public class ProcedureAction extends BaseSQLAction {
         translator.setQuery(query);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
+        translator.setJdbcEventLogger(logger);
         return translator;
     }
 
@@ -226,7 +226,7 @@ public class ProcedureAction extends BaseSQLAction {
 
         if (result != null && !result.isEmpty()) {
             // treat out parameters as a separate data row set
-            QueryLogger.logSelectCount(1, System.currentTimeMillis() - t1);
+            logger.logSelectCount(1, System.currentTimeMillis() - t1);
             delegate.nextRows(query, Collections.singletonList(result));
         }
     }

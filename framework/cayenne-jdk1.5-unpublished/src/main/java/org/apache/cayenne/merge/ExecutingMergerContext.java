@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -44,6 +45,7 @@ public class ExecutingMergerContext implements MergerContext {
         // create a fake DataNode as lots of DbAdapter/PkGenerator methods
         // take a DataNode instead of just a DataSource
         this.node = new DataNode();
+        this.node.setJdbcEventLogger(((JdbcAdapter)adapter).getJdbcEventLogger());
         this.node.setDataSource(dataSource);
         this.node.setAdapter(adapter);
         this.delegate = delegate;

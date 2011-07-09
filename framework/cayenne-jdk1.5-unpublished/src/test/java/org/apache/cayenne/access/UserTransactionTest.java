@@ -31,6 +31,7 @@ import java.sql.Connection;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -40,6 +41,9 @@ public class UserTransactionTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
+    
+    @Inject
+    private JdbcEventLogger logger;
 
     public void testCommit() throws Exception {
 
@@ -48,6 +52,7 @@ public class UserTransactionTest extends ServerCase {
 
         TransactionDelegate delegate = mock(TransactionDelegate.class);
         Transaction t = Transaction.internalTransaction(delegate);
+        t.setJdbcEventLogger(logger);
 
         when(delegate.willAddConnection(eq(t), any(Connection.class))).thenReturn(true);
         when(delegate.willCommit(t)).thenReturn(true);

@@ -26,8 +26,8 @@ import java.util.List;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -42,10 +42,12 @@ public abstract class BaseSQLAction implements SQLAction {
 
     protected JdbcAdapter adapter;
     protected EntityResolver entityResolver;
+    protected JdbcEventLogger logger;
 
     public BaseSQLAction(JdbcAdapter adapter, EntityResolver entityResolver) {
         this.adapter = adapter;
         this.entityResolver = entityResolver;
+        this.logger = adapter.getJdbcEventLogger();
     }
 
     public JdbcAdapter getAdapter() {
@@ -83,8 +85,7 @@ public abstract class BaseSQLAction implements SQLAction {
 
         if (!delegate.isIteratedResult()) {
             List<DataRow> resultRows = (List<DataRow>) it.allRows();
-            QueryLogger
-                    .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
+            logger.logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
             delegate.nextRows(query, resultRows);
         }

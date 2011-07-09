@@ -34,12 +34,13 @@ import java.util.List;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.trans.LOBBatchQueryBuilder;
 import org.apache.cayenne.access.trans.LOBBatchQueryWrapper;
 import org.apache.cayenne.access.trans.LOBInsertBatchQueryBuilder;
 import org.apache.cayenne.access.trans.LOBUpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -54,14 +55,25 @@ class OracleLOBBatchAction implements SQLAction {
 
     BatchQuery query;
     DbAdapter adapter;
+    
+    protected JdbcEventLogger logger;
 
     OracleLOBBatchAction(BatchQuery query, DbAdapter adapter) {
         this.adapter = adapter;
         this.query = query;
+        this.logger = NoopJdbcEventLogger.getInstance();
     }
 
     DbAdapter getAdapter() {
         return adapter;
+    }
+    
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.logger = logger;
+    }
+    
+    public JdbcEventLogger getJdbcEventLogger() {
+        return this.logger;
     }
 
     public void performAction(Connection connection, OperationObserver observer)
@@ -91,7 +103,7 @@ class OracleLOBBatchAction implements SQLAction {
         List<DbAttribute> qualifierAttributes = selectQuery
                 .getDbAttributesForLOBSelectQualifier();
 
-        boolean isLoggable = QueryLogger.isLoggable();
+        boolean isLoggable = getJdbcEventLogger().isLoggable();
 
         query.reset();
         while (selectQuery.next()) {
@@ -99,13 +111,13 @@ class OracleLOBBatchAction implements SQLAction {
             String updateStr = queryBuilder.createSqlString(query);
 
             // 1. run row update
-            QueryLogger.logQuery(updateStr, Collections.EMPTY_LIST);
+            logger.logQuery(updateStr, Collections.EMPTY_LIST);
             PreparedStatement statement = connection.prepareStatement(updateStr);
             try {
 
                 if (isLoggable) {
                     List bindings = queryBuilder.getValuesForLOBUpdateParameters(query);
-                    QueryLogger.logQueryParameters(
+                    logger.logQueryParameters(
                             "bind",
                             null,
                             bindings,
@@ -114,7 +126,7 @@ class OracleLOBBatchAction implements SQLAction {
 
                 queryBuilder.bindParameters(statement, query);
                 updated = statement.executeUpdate();
-                QueryLogger.logUpdateCount(updated);
+                logger.logUpdateCount(updated);
             }
             finally {
                 try {
@@ -144,7 +156,7 @@ class OracleLOBBatchAction implements SQLAction {
             return;
         }
 
-        boolean isLoggable = QueryLogger.isLoggable();
+        boolean isLoggable = getJdbcEventLogger().isLoggable();
 
         List qualifierValues = selectQuery.getValuesForLOBSelectQualifier();
         List lobValues = selectQuery.getValuesForUpdatedLOBColumns();
@@ -157,8 +169,8 @@ class OracleLOBBatchAction implements SQLAction {
                 qualifierAttributes);
 
         if (isLoggable) {
-            QueryLogger.logQuery(selectStr, qualifierValues);
-            QueryLogger.logQueryParameters("write LOB", null, lobValues, false);
+            getJdbcEventLogger().logQuery(selectStr, qualifierValues);
+            getJdbcEventLogger().logQueryParameters("write LOB", null, lobValues, false);
         }
 
         PreparedStatement selectStatement = con.prepareStatement(selectStr);

@@ -27,7 +27,6 @@ import java.sql.Types;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;

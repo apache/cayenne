@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
@@ -105,7 +104,7 @@ class OracleProcedureAction extends ProcedureAction {
 
         if (result != null && !result.isEmpty()) {
             // treat out parameters as a separate data row set
-            QueryLogger.logSelectCount(1, System.currentTimeMillis() - t1);
+            logger.logSelectCount(1, System.currentTimeMillis() - t1);
             delegate.nextRows(query, Collections.singletonList(result));
         }
     }

@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -93,7 +92,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
         String sql = newIDString(entity);
-        QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+        logger.logQuery(sql, Collections.EMPTY_LIST);
 
         Connection con = node.getDataSource().getConnection();
         try {
@@ -148,7 +147,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         // result in errors...
 
         // create needed sequences
-        Iterator it = dbEntities.iterator();
+        Iterator<?> it = dbEntities.iterator();
         while (it.hasNext()) {
             DbEntity entity = (DbEntity) it.next();
 
@@ -169,7 +168,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     @Override
     public List createAutoPkStatements(List dbEntities) {
         List<String> list = new ArrayList<String>(2 * dbEntities.size());
-        Iterator it = dbEntities.iterator();
+        Iterator<?> it = dbEntities.iterator();
         while (it.hasNext()) {
             DbEntity entity = (DbEntity) it.next();
 

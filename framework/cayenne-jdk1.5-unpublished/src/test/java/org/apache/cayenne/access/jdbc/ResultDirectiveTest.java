@@ -29,6 +29,7 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -51,6 +52,9 @@ public class ResultDirectiveTest extends ServerCase {
 
     @Inject
     private DbAdapter dbAdapter;
+    
+    @Inject
+    private JdbcEventLogger logger;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -145,6 +149,8 @@ public class ResultDirectiveTest extends ServerCase {
         SQLTemplateAction action = new SQLTemplateAction(template, dbAdapter, runtime
                 .getDataDomain()
                 .getEntityResolver());
+        action.setJdbcEventLogger(logger);
+        
         assertSame(dbAdapter, action.getAdapter());
 
         Connection c = runtime

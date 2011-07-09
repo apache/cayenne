@@ -29,7 +29,6 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
@@ -80,7 +79,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
             Statement st = con.createStatement();
             try {
                 String sql = "SELECT nextval('" + pkGeneratingSequenceName + "')";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                logger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = st.executeQuery(sql);
                 try {
                     // Object pk = null;
@@ -127,7 +126,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
             Statement sel = con.createStatement();
             try {
                 String sql = "SELECT relname FROM pg_class WHERE relkind='S'";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                logger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = sel.executeQuery(sql);
                 try {
                     List<String> sequenceList = new ArrayList<String>();

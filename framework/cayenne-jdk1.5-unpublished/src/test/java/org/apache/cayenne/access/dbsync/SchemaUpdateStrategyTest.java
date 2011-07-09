@@ -36,6 +36,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -55,6 +56,9 @@ public class SchemaUpdateStrategyTest extends ServerCase {
     
     @Inject
     private DataSource dataSource;
+    
+    @Inject
+    private JdbcEventLogger jdbcEventLogger;
 
     public void testDBGeneratorStrategy() throws Exception {
 
@@ -260,6 +264,7 @@ public class SchemaUpdateStrategyTest extends ServerCase {
         Collection<DataMap> colection = new ArrayList<DataMap>();
         colection.add(map);
         DataNode dataNode = new DataNode();
+        dataNode.setJdbcEventLogger(jdbcEventLogger);
         dataNode.setDataMaps(colection);
         dataNode.setAdapter(adapter);
         dataNode.setDataSource(dataSource);

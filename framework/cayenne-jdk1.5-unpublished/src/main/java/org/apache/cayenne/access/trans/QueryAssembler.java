@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -46,6 +47,7 @@ public abstract class QueryAssembler {
     protected Connection connection;
     protected DbAdapter adapter;
     protected EntityResolver entityResolver;
+    protected JdbcEventLogger logger;
 
     /**
      * Holds PreparedStatement values.
@@ -61,6 +63,10 @@ public abstract class QueryAssembler {
      * The index parameter will be inserted at in parameter list
      */
     protected int parameterIndex;
+    
+    public QueryAssembler() {
+        this.logger = NoopJdbcEventLogger.getInstance();
+    }
 
     /**
      * Returns aliases for the path splits defined in the query.
@@ -101,6 +107,14 @@ public abstract class QueryAssembler {
 
     public void setAdapter(DbAdapter adapter) {
         this.adapter = adapter;
+    }
+    
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.logger = logger;
+    }
+    
+    public JdbcEventLogger getJdbcEventLogger() {
+        return logger;
     }
 
     public void setEntityResolver(EntityResolver entityResolver) {
@@ -182,7 +196,7 @@ public abstract class QueryAssembler {
     public PreparedStatement createStatement() throws Exception {
         long t1 = System.currentTimeMillis();
         String sqlStr = createSqlString();
-        QueryLogger.logQuery(sqlStr, attributes, values, System.currentTimeMillis() - t1);
+        getJdbcEventLogger().logQuery(sqlStr, attributes, values, System.currentTimeMillis() - t1);
         PreparedStatement stmt = connection.prepareStatement(sqlStr);
         initStatement(stmt);
         return stmt;

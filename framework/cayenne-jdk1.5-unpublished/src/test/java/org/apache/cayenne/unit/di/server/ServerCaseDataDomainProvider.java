@@ -25,6 +25,7 @@ import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 
 class ServerCaseDataDomainProvider extends DataDomainProvider {
@@ -34,6 +35,9 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private JdbcEventLogger jdbcEventLogger;
 
     @Override
     protected DataDomain createDataDomain(String name) {
@@ -49,6 +53,7 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
         for (DataMap dataMap : domain.getDataMaps()) {
 
             DataNode node = new DataNode(dataMap.getName());
+            node.setJdbcEventLogger(jdbcEventLogger);
 
             // shared or dedicated DataSources can be mapped per DataMap
             node.setDataSource(dataSourceFactory.getDataSource(dataMap.getName()));

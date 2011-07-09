@@ -42,6 +42,7 @@ class Oracle8SelectAction extends OracleSelectAction {
         translator.setAdapter(adapter);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
+        translator.setJdbcEventLogger(logger);
         return translator;
     }
 }

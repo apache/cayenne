@@ -35,8 +35,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -56,10 +56,13 @@ public class JdbcPkGenerator implements PkGenerator {
 
     protected Map<String, LongPkRange> pkCache = new HashMap<String, LongPkRange>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
+    
+    protected JdbcEventLogger logger;
 
     public JdbcPkGenerator(JdbcAdapter adapter) {
         super();
         this.adapter = adapter;
+        this.logger = adapter.getJdbcEventLogger();
     }
 
     public JdbcAdapter getAdapter() {
@@ -198,7 +201,7 @@ public class JdbcPkGenerator implements PkGenerator {
      * @throws SQLException in case of query failure.
      */
     public int runUpdate(DataNode node, String sql) throws SQLException {
-        QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+        logger.logQuery(sql, Collections.EMPTY_LIST);
 
         Connection con = node.getDataSource().getConnection();
         try {

@@ -37,6 +37,7 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -58,7 +59,8 @@ public class JdbcAdapter implements DbAdapter {
     final static String DEFAULT_IDENTIFIERS_START_QUOTE = "\"";
     final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
 
-    protected PkGenerator pkGenerator;
+    private PkGenerator pkGenerator;
+    
     protected TypesHandler typesHandler;
     protected ExtendedTypeMap extendedTypes;
     protected boolean supportsBatchUpdates;
@@ -76,6 +78,9 @@ public class JdbcAdapter implements DbAdapter {
      */
     @Inject
     protected BatchQueryBuilderFactory batchQueryBuilderFactory;
+    
+    @Inject
+    protected JdbcEventLogger logger;
 
     /**
      * @since 3.0
@@ -101,8 +106,6 @@ public class JdbcAdapter implements DbAdapter {
 
         // TODO: andrus 05.02.2010 - ideally this should be injected
         this.resourceLocator = new ClassLoaderResourceLocator();
-
-        this.pkGenerator = createPkGenerator();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
         this.configureExtendedTypes(extendedTypes);
@@ -117,6 +120,13 @@ public class JdbcAdapter implements DbAdapter {
      */
     public String getBatchTerminator() {
         return ";";
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public JdbcEventLogger getJdbcEventLogger() {
+        return this.logger;
     }
 
     /**
@@ -180,6 +190,9 @@ public class JdbcAdapter implements DbAdapter {
      * Returns primary key generator associated with this DbAdapter.
      */
     public PkGenerator getPkGenerator() {
+        if (pkGenerator == null) {
+            pkGenerator = createPkGenerator();
+        }
         return pkGenerator;
     }
 

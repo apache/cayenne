@@ -29,7 +29,6 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.map.DbEntity;
@@ -63,7 +62,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
             Statement st = con.createStatement();
             try {
                 String sql = "SELECT " + pkGeneratingSequenceName + ".nextval";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                logger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = st.executeQuery(sql);
                 try {
                     // Object pk = null;
@@ -96,7 +95,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
             Statement select = connection.createStatement();
             try {
                 String sql = "select seq_name from iisequences where seq_owner != 'DBA'";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                logger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = select.executeQuery(sql);
                 try {
                     List<String> sequenceList = new ArrayList<String>();

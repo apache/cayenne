@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -174,7 +173,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
             Statement st = con.createStatement();
             try {
                 String sql = "SELECT " + pkGeneratingSequenceName + ".nextval FROM DUAL";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                logger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = st.executeQuery(sql);
                 try {
                     // Object pk = null;
@@ -267,7 +266,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
             Statement sel = con.createStatement();
             try {
                 String sql = "SELECT LOWER(SEQUENCE_NAME) FROM ALL_SEQUENCES";
-                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                logger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = sel.executeQuery(sql);
                 try {
                     List<String> sequenceList = new ArrayList<String>();

@@ -144,6 +144,7 @@ public class SchemaBuilder {
     private void initNode(DataMap map) throws Exception {
 
         DataNode node = new DataNode(map.getName());
+        node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);
         node.setDataSource(dataSource);
 

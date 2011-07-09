@@ -37,7 +37,7 @@ class FrontBaseActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction objectSelectAction(SelectQuery query) {
-        return new SelectAction(query, adapter, entityResolver) {
+        SelectAction action = new SelectAction(query, adapter, entityResolver) {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {
@@ -46,8 +46,11 @@ class FrontBaseActionBuilder extends JdbcActionBuilder {
                 translator.setAdapter(adapter);
                 translator.setEntityResolver(getEntityResolver());
                 translator.setConnection(connection);
+                translator.setJdbcEventLogger(logger);
                 return translator;
             }
         };
+
+        return action;
     }
 }

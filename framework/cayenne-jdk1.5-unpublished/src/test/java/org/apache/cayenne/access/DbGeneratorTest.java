@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -35,6 +36,9 @@ public class DbGeneratorTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
+    
+    @Inject
+    private JdbcEventLogger logger;
 
     private DbGenerator generator;
 
@@ -42,7 +46,7 @@ public class DbGeneratorTest extends ServerCase {
     protected void setUpAfterInjection() throws Exception {
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
-                .getDataMap("testmap"));
+                .getDataMap("testmap"), logger);
     }
 
     public void testAdapter() throws Exception {

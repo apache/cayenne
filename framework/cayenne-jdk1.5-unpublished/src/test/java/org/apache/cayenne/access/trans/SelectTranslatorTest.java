@@ -34,6 +34,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -62,6 +63,9 @@ public class SelectTranslatorTest extends ServerCase {
 
     @Inject
     private DBHelper dbHelper;
+    
+    @Inject
+    private JdbcEventLogger logger;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -1080,6 +1084,7 @@ public class SelectTranslatorTest extends ServerCase {
         translator.setQuery(q);
         translator.setAdapter(adapter);
         translator.setEntityResolver(context.getEntityResolver());
+        translator.setJdbcEventLogger(logger);
         return translator;
     }
 

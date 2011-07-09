@@ -24,6 +24,7 @@ import org.apache.cayenne.access.jdbc.EJBQLAction;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.jdbc.SelectAction;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -43,10 +44,12 @@ public class JdbcActionBuilder implements SQLActionVisitor {
 
     protected JdbcAdapter adapter;
     protected EntityResolver entityResolver;
+    protected JdbcEventLogger logger;
 
     public JdbcActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         this.adapter = adapter;
         this.entityResolver = resolver;
+        this.logger = adapter.getJdbcEventLogger();
     }
 
     public SQLAction batchAction(BatchQuery query) {
@@ -70,7 +73,9 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     }
 
     public SQLAction sqlAction(SQLTemplate query) {
-        return new SQLTemplateAction(query, adapter, entityResolver);
+        SQLTemplateAction action = new SQLTemplateAction(query, adapter, entityResolver);
+        action.setJdbcEventLogger(logger);
+        return action;
     }
 
     /**

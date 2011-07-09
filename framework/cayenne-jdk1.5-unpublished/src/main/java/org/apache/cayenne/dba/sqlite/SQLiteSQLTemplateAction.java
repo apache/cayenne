@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.DbAdapter;
@@ -85,7 +84,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             else {                
                 int updateCount = statement.executeUpdate();
                 updateCounts.add(Integer.valueOf(updateCount));
-                QueryLogger.logUpdateCount(updateCount);
+                getJdbcEventLogger().logUpdateCount(updateCount);
             }
 
             // end - code different from super

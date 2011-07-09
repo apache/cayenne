@@ -26,8 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -54,6 +55,7 @@ public class ProcedureTranslator {
             return type;
         }
     }
+    
 
     private static NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
@@ -63,6 +65,11 @@ public class ProcedureTranslator {
     protected EntityResolver entityResolver;
     protected List<ProcedureParameter> callParams;
     protected List<Object> values;
+    protected JdbcEventLogger logger;
+    
+    public ProcedureTranslator() {
+        this.logger = NoopJdbcEventLogger.getInstance();
+    }
 
     public void setQuery(ProcedureQuery query) {
         this.query = query;
@@ -74,6 +81,17 @@ public class ProcedureTranslator {
 
     public void setAdapter(DbAdapter adapter) {
         this.adapter = adapter;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.logger = logger;
+    }
+    
+    public JdbcEventLogger getJdbcEventLogger() {
+        return logger;
     }
 
     /**
@@ -131,7 +149,7 @@ public class ProcedureTranslator {
         initValues();
         String sqlStr = createSqlString();
 
-        if (QueryLogger.isLoggable()) {
+        if (getJdbcEventLogger().isLoggable()) {
             // need to convert OUT/VOID parameters to loggable strings
             long time = System.currentTimeMillis() - t1;
 
@@ -144,7 +162,7 @@ public class ProcedureTranslator {
             }
 
             // FIXME: compute proper attributes via callParams
-            QueryLogger.logQuery(sqlStr, null, loggableParameters, time);
+            getJdbcEventLogger().logQuery(sqlStr, null, loggableParameters, time);
         }
         CallableStatement stmt = connection.prepareCall(sqlStr);
         initStatement(stmt);

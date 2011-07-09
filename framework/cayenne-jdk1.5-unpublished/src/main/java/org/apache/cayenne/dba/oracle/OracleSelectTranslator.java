@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.oracle;
 
 import java.sql.PreparedStatement;
 
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.trans.SelectTranslator;
 
 /**
@@ -54,7 +53,7 @@ class OracleSelectTranslator extends SelectTranslator {
     @Override
     public PreparedStatement createStatement() throws Exception {
         String sqlStr = createSqlString();
-        QueryLogger.logQuery(sqlStr, values);
+        logger.logQuery(sqlStr, values);
         PreparedStatement stmt = connection.prepareStatement(sqlStr);
 
         initStatement(stmt);

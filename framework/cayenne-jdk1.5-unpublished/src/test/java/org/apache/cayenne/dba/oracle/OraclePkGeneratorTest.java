@@ -19,17 +19,23 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import junit.framework.TestCase;
-
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class OraclePkGeneratorTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class OraclePkGeneratorTest extends ServerCase {
+    
+    @Inject
+    protected JdbcEventLogger logger;
 
     private OraclePkGenerator pkGenerator;
 
     @Override
-    protected void setUp() throws Exception {
+    protected void setUpAfterInjection() throws Exception {
         pkGenerator = new OraclePkGenerator(new OracleAdapter());
     }
 

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.access.jdbc.BatchAction;
+import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -39,7 +41,9 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new OracleSQLTemplateAction(query, adapter, getEntityResolver());
+        SQLTemplateAction action = new Oracle8SQLTemplateAction(query, adapter, getEntityResolver());
+        action.setJdbcEventLogger(logger);
+        return action;
     }
 
     @Override
@@ -47,7 +51,9 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
         // special handling for LOB updates
         if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
-            return new OracleLOBBatchAction(query, getAdapter());
+            OracleLOBBatchAction action = new OracleLOBBatchAction(query, getAdapter());
+            action.setJdbcEventLogger(logger);
+            return action;
         }
         else {
 
@@ -56,11 +62,11 @@ class OracleActionBuilder extends JdbcActionBuilder {
             boolean useOptimisticLock = query.isUsingOptimisticLocking();
             boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
 
-            OracleBatchAction action = new OracleBatchAction(
+            BatchAction action = new OracleBatchAction(
                     query,
                     adapter,
                     getEntityResolver());
-            action.setBatch(runningAsBatch);
+            ((OracleBatchAction)action).setBatch(runningAsBatch);
             return action;
         }
 

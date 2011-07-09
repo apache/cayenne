@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
@@ -96,7 +95,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
                     if (updateCount == -1) {
                         break;
                     }
-                    QueryLogger.logUpdateCount(updateCount);
+                    logger.logUpdateCount(updateCount);
                     localObserver.nextCount(query, updateCount);
                 }
 

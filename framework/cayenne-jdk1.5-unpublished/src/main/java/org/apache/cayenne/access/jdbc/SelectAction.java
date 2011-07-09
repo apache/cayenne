@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -58,9 +57,10 @@ public class SelectAction extends BaseSQLAction {
         translator.setAdapter(adapter);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
+        translator.setJdbcEventLogger(logger);
         return translator;
     }
-
+    
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
 
@@ -167,8 +167,7 @@ public class SelectAction extends BaseSQLAction {
                 it.close();
             }
 
-            QueryLogger
-                    .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
+            logger.logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
             observer.nextRows(query, resultRows);
         }

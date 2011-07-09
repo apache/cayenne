@@ -53,6 +53,7 @@ class PostgresProcedureAction extends SQLServerProcedureAction {
         translator.setQuery(query);
         translator.setEntityResolver(getEntityResolver());
         translator.setConnection(connection);
+        translator.setJdbcEventLogger(logger);
         return translator;
     }
 
