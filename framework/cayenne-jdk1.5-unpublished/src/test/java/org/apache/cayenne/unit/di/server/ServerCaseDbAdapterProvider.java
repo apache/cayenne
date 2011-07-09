@@ -22,10 +22,11 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
-public class ServerCaseDbAdapterProvider implements Provider<DbAdapter> {
+public class ServerCaseDbAdapterProvider implements Provider<JdbcAdapter> {
 
     private DataSourceInfo dataSourceInfo;
     private AdhocObjectFactory objectFactory;
@@ -36,7 +37,7 @@ public class ServerCaseDbAdapterProvider implements Provider<DbAdapter> {
         this.objectFactory = objectFactory;
     }
 
-    public DbAdapter get() throws ConfigurationException {
+    public JdbcAdapter get() throws ConfigurationException {
 
         return objectFactory.newInstance(DbAdapter.class, dataSourceInfo
                 .getAdapterClassName());

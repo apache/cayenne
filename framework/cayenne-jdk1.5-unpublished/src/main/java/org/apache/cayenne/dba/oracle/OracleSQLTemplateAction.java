@@ -46,7 +46,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.RowDescriptorBuilder;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
@@ -58,7 +58,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
     protected DbEntity dbEntity;
 
-    OracleSQLTemplateAction(SQLTemplate query, DbAdapter adapter,
+    OracleSQLTemplateAction(SQLTemplate query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
         this.dbEntity = query.getMetaData(entityResolver).getDbEntity();

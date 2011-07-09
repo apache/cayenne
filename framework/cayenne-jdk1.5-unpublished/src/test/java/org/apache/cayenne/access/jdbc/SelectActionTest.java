@@ -92,5 +92,4 @@ public class SelectActionTest extends ServerCase {
             obj.setClobId(clobId);
         }
     }
-
 }

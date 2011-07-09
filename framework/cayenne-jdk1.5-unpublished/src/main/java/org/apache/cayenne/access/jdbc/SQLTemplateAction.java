@@ -37,9 +37,9 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -68,13 +68,13 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * @since 3.0
      */
-    public SQLTemplateAction(SQLTemplate query, DbAdapter adapter,
+    public SQLTemplateAction(SQLTemplate query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         this.query = query;
         this.adapter = adapter;
         this.queryMetadata = query.getMetaData(entityResolver);
         this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
-        this.logger = NoopJdbcEventLogger.getInstance();
+        this.logger = adapter.getJdbcEventLogger();
     }
 
     /**
@@ -82,14 +82,6 @@ public class SQLTemplateAction implements SQLAction {
      */
     public DbAdapter getAdapter() {
         return adapter;
-    }
-    
-    public void setJdbcEventLogger(JdbcEventLogger logger) {
-        this.logger = logger;
-    }
-    
-    public JdbcEventLogger getJdbcEventLogger() {
-        return this.logger;
     }
 
     /**
@@ -107,7 +99,7 @@ public class SQLTemplateAction implements SQLAction {
                     + getAdapter().getClass().getName());
         }
 
-        boolean loggable = getJdbcEventLogger().isLoggable();
+        boolean loggable = logger.isLoggable();
         int size = query.parametersSize();
 
         SQLTemplateProcessor templateProcessor = new SQLTemplateProcessor();
@@ -127,8 +119,7 @@ public class SQLTemplateAction implements SQLAction {
                     nextParameters);
 
             if (loggable) {
-                getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled
-                        .getBindings()));
+                logger.logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
             }
 
             execute(connection, callback, compiled, counts);
@@ -203,7 +194,7 @@ public class SQLTemplateAction implements SQLAction {
                     }
 
                     updateCounts.add(Integer.valueOf(updateCount));
-                    getJdbcEventLogger().logUpdateCount(updateCount);
+                    logger.logUpdateCount(updateCount);
                 }
             }
         }
@@ -235,8 +226,10 @@ public class SQLTemplateAction implements SQLAction {
                 builder.getDescriptor(types),
                 queryMetadata);
 
-        LimitResultIterator it = new LimitResultIterator(result, getFetchOffset(), query
-                .getFetchLimit());
+        LimitResultIterator it = new LimitResultIterator(
+                result,
+                getFetchOffset(),
+                query.getFetchLimit());
 
         if (!iteratedResult) {
 
@@ -245,7 +238,7 @@ public class SQLTemplateAction implements SQLAction {
             // is due here.
             List<DataRow> resultRows = (List<DataRow>) it.allRows();
 
-            getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis()
+            logger.logSelectCount(resultRows.size(), System.currentTimeMillis()
                     - startTime);
 
             callback.nextRows(query, resultRows);
@@ -299,8 +292,9 @@ public class SQLTemplateAction implements SQLAction {
                 if (!builder.isOverriden(attribute.getName())
                         && TypesMapping.isNumeric(attribute.getType())) {
 
-                    builder.overrideColumnType(attribute.getName(), TypesMapping
-                            .getJavaBySqlType(attribute.getType()));
+                    builder.overrideColumnType(
+                            attribute.getName(),
+                            TypesMapping.getJavaBySqlType(attribute.getType()));
                 }
             }
         }

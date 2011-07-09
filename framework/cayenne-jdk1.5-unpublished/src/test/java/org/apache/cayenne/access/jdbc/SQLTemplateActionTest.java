@@ -32,7 +32,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.Query;
@@ -57,7 +56,7 @@ public class SQLTemplateActionTest extends ServerCase {
     protected DataNode node;
 
     @Inject
-    protected DbAdapter adapter;
+    protected JdbcAdapter adapter;
 
     @Inject
     protected ObjectContext objectContext;
@@ -93,10 +92,11 @@ public class SQLTemplateActionTest extends ServerCase {
     }
 
     public void testProperties() throws Exception {
-        DbAdapter adapter = new JdbcAdapter();
         SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");
-        SQLTemplateAction action = new SQLTemplateAction(template, adapter, objectContext
-                .getEntityResolver());
+        SQLTemplateAction action = new SQLTemplateAction(
+                template,
+                adapter,
+                objectContext.getEntityResolver());
         assertSame(adapter, action.getAdapter());
         assertSame(template, action.getQuery());
     }
@@ -360,8 +360,10 @@ public class SQLTemplateActionTest extends ServerCase {
 
     public void testExtractTemplateString() throws Exception {
         SQLTemplate template = new SQLTemplate(Artist.class, "A\nBC");
-        SQLTemplateAction action = new SQLTemplateAction(template, adapter, objectContext
-                .getEntityResolver());
+        SQLTemplateAction action = new SQLTemplateAction(
+                template,
+                adapter,
+                objectContext.getEntityResolver());
 
         assertEquals("A BC", action.extractTemplateString());
     }

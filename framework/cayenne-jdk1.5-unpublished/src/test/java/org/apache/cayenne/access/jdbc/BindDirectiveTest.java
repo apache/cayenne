@@ -34,7 +34,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.CapsStrategy;
@@ -55,14 +55,14 @@ public class BindDirectiveTest extends ServerCase {
     private DataSource dataSource;
 
     @Inject
-    private DbAdapter adapter;
+    private JdbcAdapter adapter;
 
     @Inject
     private ObjectContext context;
 
     @Inject
     private DBHelper dbHelper;
-    
+
     @Inject
     private JdbcEventLogger logger;
 
@@ -127,7 +127,7 @@ public class BindDirectiveTest extends ServerCase {
     }
 
     public void testBindingForCollection() throws Exception {
-        
+
         // insert 3 artists
         for (int i = 1; i < 4; i++) {
             Map<String, Object> parameters = new HashMap<String, Object>();
@@ -229,9 +229,10 @@ public class BindDirectiveTest extends ServerCase {
 
         template.setParameters(parameters);
 
-        SQLTemplateAction action = new SQLTemplateAction(template, adapter, context
-                .getEntityResolver());
-        action.setJdbcEventLogger(logger);
+        SQLTemplateAction action = new SQLTemplateAction(
+                template,
+                adapter,
+                context.getEntityResolver());
 
         Connection c = dataSource.getConnection();
         try {

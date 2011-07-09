@@ -29,6 +29,7 @@ import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
@@ -127,6 +128,7 @@ public class ServerCaseModule implements Module {
                 .bind(DataSource.class)
                 .toProvider(ServerCaseSharedDataSourceProvider.class);
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
+        binder.bind(JdbcAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);
 
         // this factory is a hack that allows to inject to DbAdapters loaded outside of

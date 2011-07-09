@@ -73,9 +73,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     }
 
     public SQLAction sqlAction(SQLTemplate query) {
-        SQLTemplateAction action = new SQLTemplateAction(query, adapter, entityResolver);
-        action.setJdbcEventLogger(logger);
-        return action;
+        return new SQLTemplateAction(query, adapter, entityResolver);
     }
 
     /**

@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -41,9 +40,7 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        SQLTemplateAction action = new Oracle8SQLTemplateAction(query, adapter, getEntityResolver());
-        action.setJdbcEventLogger(logger);
-        return action;
+        return new Oracle8SQLTemplateAction(query, adapter, getEntityResolver());
     }
 
     @Override
@@ -66,7 +63,7 @@ class OracleActionBuilder extends JdbcActionBuilder {
                     query,
                     adapter,
                     getEntityResolver());
-            ((OracleBatchAction)action).setBatch(runningAsBatch);
+            ((OracleBatchAction) action).setBatch(runningAsBatch);
             return action;
         }
 

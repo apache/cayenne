@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
-import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -36,8 +35,6 @@ class SQLiteActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        SQLTemplateAction action = new SQLiteSQLTemplateAction(query, adapter, getEntityResolver());
-        action.setJdbcEventLogger(logger);
-        return action;
+        return new SQLiteSQLTemplateAction(query, adapter, getEntityResolver());
     }
 }
