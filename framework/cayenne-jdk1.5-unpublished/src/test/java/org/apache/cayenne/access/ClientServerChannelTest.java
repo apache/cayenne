@@ -30,6 +30,7 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.MockGraphDiff;
 import org.apache.cayenne.graph.NodeCreateOperation;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
@@ -63,6 +64,9 @@ public class ClientServerChannelTest extends ClientCase {
 
     @Inject
     protected DataChannelInterceptor queryInterceptor;
+    
+    @Inject
+    protected JdbcEventLogger logger;
 
     private TableHelper tMtTable1;
     private TableHelper tMtTable2;

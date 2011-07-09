@@ -39,6 +39,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.Resource;
@@ -95,6 +96,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     @Inject
     protected Injector injector;
+    
+    @Inject
+    protected JdbcEventLogger jdbcEventLogger;
 
     public DataDomain get() throws ConfigurationException {
 
@@ -187,6 +191,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
             DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
+            dataNode.setJdbcEventLogger(jdbcEventLogger);
             dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
 
             DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);

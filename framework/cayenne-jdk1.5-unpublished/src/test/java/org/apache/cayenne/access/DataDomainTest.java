@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -36,6 +37,9 @@ public class DataDomainTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
+    
+    @Inject
+    private JdbcEventLogger logger;
 
     public void testName() throws Exception {
         DataDomain domain = new DataDomain("some name");
@@ -47,9 +51,13 @@ public class DataDomainTest extends ServerCase {
     public void testNodes() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         assertEquals(0, domain.getDataNodes().size());
-        domain.addNode(new DataNode("1"));
+        DataNode node = new DataNode("1");
+        node.setJdbcEventLogger(logger);
+        domain.addNode(node);
         assertEquals(1, domain.getDataNodes().size());
-        domain.addNode(new DataNode("2"));
+        node = new DataNode("2");
+        node.setJdbcEventLogger(logger);
+        domain.addNode(node);
         assertEquals(2, domain.getDataNodes().size());
     }
 
@@ -58,6 +66,7 @@ public class DataDomainTest extends ServerCase {
         assertNull(domain.getDataMap("map"));
 
         DataNode node = new DataNode("1");
+        node.setJdbcEventLogger(logger);
         node.addDataMap(new DataMap("map"));
 
         domain.addNode(node);
@@ -79,6 +88,7 @@ public class DataDomainTest extends ServerCase {
         DataDomain domain = new DataDomain("dom1");
         DataMap map = new DataMap("map");
         DataNode node = new DataNode("1");
+        node.setJdbcEventLogger(logger);
 
         domain.addNode(node);
 
@@ -192,6 +202,7 @@ public class DataDomainTest extends ServerCase {
                 nodeShutdown[1] = true;
             }
         };
+        n1.setJdbcEventLogger(logger);
 
         domain.addNode(n1);
         domain.addNode(n2);

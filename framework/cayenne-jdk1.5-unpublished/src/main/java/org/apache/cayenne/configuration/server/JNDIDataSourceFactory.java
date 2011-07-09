@@ -24,8 +24,9 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,6 +38,9 @@ import org.apache.commons.logging.LogFactory;
 public class JNDIDataSourceFactory implements DataSourceFactory {
 
     private static final Log logger = LogFactory.getLog(JNDIDataSourceFactory.class);
+    
+    @Inject
+    protected JdbcEventLogger jdbcEventLogger;
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
@@ -52,13 +56,13 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
         }
         catch (Exception ex) {
             logger.info("failed JNDI lookup of DataSource location '" + location + "'");
-            QueryLogger.logConnectFailure(ex);
+            jdbcEventLogger.logConnectFailure(ex);
             throw ex;
         }
     }
 
     DataSource lookupViaJNDI(String location) throws NamingException {
-        QueryLogger.logConnect(location);
+        jdbcEventLogger.logConnect(location);
 
         Context context = new InitialContext();
         DataSource dataSource;
@@ -71,7 +75,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
             dataSource = (DataSource) context.lookup(location);
         }
 
-        QueryLogger.logConnectSuccess();
+        jdbcEventLogger.logConnectSuccess();
         return dataSource;
     }
 

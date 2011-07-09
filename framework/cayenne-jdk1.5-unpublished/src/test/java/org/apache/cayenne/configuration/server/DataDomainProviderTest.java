@@ -54,6 +54,8 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
+import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.Resource;
@@ -144,6 +146,7 @@ public class DataDomainProviderTest extends TestCase {
                 binder.bind(DataSourceFactory.class).toInstance(
                         new MockDataSourceFactory());
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
             }
         };
 

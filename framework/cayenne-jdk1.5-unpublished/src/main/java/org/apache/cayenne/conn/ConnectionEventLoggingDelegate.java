@@ -24,6 +24,7 @@ package org.apache.cayenne.conn;
  * {@link org.apache.cayenne.conn.PoolManager} to notify of connection events. Used
  * mainly for logging.
  * 
+ * @deprecated since 3.1
  */
 public interface ConnectionEventLoggingDelegate {
 

@@ -27,6 +27,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -45,6 +46,9 @@ public class DataContextSerializationTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
+    
+    @Inject
+    protected JdbcEventLogger logger;
 
     protected TableHelper tArtist;
 

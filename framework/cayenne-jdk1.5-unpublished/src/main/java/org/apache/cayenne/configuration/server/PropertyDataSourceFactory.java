@@ -21,12 +21,11 @@ package org.apache.cayenne.configuration.server;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.access.ConnectionLogger;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * A DataSourceFactrory that creates a DataSource based on system properties. Properties
@@ -57,6 +56,9 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 
     @Inject
     protected RuntimeProperties properties;
+    
+    @Inject
+    protected JdbcEventLogger jdbcEventLogger;
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
@@ -72,7 +74,6 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
         int minConnections = getIntProperty(JDBC_MIN_CONNECTIONS_PROPERTY, suffix, 1);
         int maxConnections = getIntProperty(JDBC_MAX_CONNECTIONS_PROPERTY, suffix, 1);
 
-        ConnectionLogger logger = new ConnectionLogger();
         try {
             return new PoolManager(
                     driver,
@@ -81,10 +82,10 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
                     maxConnections,
                     username,
                     password,
-                    logger);
+                    jdbcEventLogger);
         }
         catch (Exception e) {
-            QueryLogger.logConnectFailure(e);
+            jdbcEventLogger.logConnectFailure(e);
             throw e;
         }
     }

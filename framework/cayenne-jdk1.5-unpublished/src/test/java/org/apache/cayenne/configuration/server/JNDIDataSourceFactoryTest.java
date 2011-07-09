@@ -21,15 +21,21 @@ package org.apache.cayenne.configuration.server;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.unit.JNDISetup;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 import com.mockrunner.mock.jdbc.MockDataSource;
 
-public class JNDIDataSourceFactoryTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class JNDIDataSourceFactoryTest extends ServerCase {
+    
+    @Inject
+    private Injector injector;
 
     public void testGetDataSource_NameBound() throws Exception {
 
@@ -45,6 +51,7 @@ public class JNDIDataSourceFactoryTest extends TestCase {
         try {
 
             JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
+            injector.injectMembers(factory);
             assertSame(dataSource, factory.getDataSource(descriptor));
         }
         finally {
@@ -67,6 +74,7 @@ public class JNDIDataSourceFactoryTest extends TestCase {
         try {
 
             JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
+            injector.injectMembers(factory);
             assertSame(dataSource, factory.getDataSource(descriptor));
         }
         finally {
@@ -83,6 +91,7 @@ public class JNDIDataSourceFactoryTest extends TestCase {
         JNDISetup.doSetup();
 
         JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
+        injector.injectMembers(factory);
 
         try {
             factory.getDataSource(descriptor);

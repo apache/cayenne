@@ -23,9 +23,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
@@ -49,8 +49,9 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
     protected void executeSql(MergerContext mergerContext, String sql) {
         Connection conn = null;
         Statement st = null;
+        JdbcEventLogger logger = mergerContext.getDataNode().getJdbcEventLogger();
         try {
-            QueryLogger.log(sql);
+            logger.log(sql);
             conn = mergerContext.getDataNode().getDataSource().getConnection();
             st = conn.createStatement();
             st.execute(sql);
@@ -58,7 +59,7 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
         catch (SQLException e) {
             mergerContext.getValidationResult().addFailure(
                     new SimpleValidationFailure(sql, e.getMessage()));
-            QueryLogger.logQueryError(e);
+            logger.logQueryError(e);
         }
         finally {
             if (st != null) {

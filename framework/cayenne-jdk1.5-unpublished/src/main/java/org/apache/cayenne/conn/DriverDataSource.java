@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -42,7 +43,7 @@ public class DriverDataSource implements DataSource {
     protected String userName;
     protected String password;
 
-    protected ConnectionEventLoggingDelegate logger;
+    protected JdbcEventLogger logger;
 
     /**
      * Loads JDBC driver using current thread class loader.
@@ -194,11 +195,11 @@ public class DriverDataSource implements DataSource {
         DriverManager.setLogWriter(out);
     }
 
-    public ConnectionEventLoggingDelegate getLogger() {
+    public JdbcEventLogger getLogger() {
         return logger;
     }
 
-    public void setLogger(ConnectionEventLoggingDelegate delegate) {
+    public void setLogger(JdbcEventLogger delegate) {
         logger = delegate;
     }
 

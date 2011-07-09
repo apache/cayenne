@@ -35,6 +35,7 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -53,6 +54,9 @@ public class DataContextExtrasTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
+    
+    @Inject
+    protected JdbcEventLogger logger;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;

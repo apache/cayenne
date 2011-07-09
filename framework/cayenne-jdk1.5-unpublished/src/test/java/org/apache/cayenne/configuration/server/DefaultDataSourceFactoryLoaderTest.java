@@ -33,6 +33,8 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResourceLocator;
 
@@ -51,6 +53,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
                 binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
                 binder.bind(RuntimeProperties.class).toInstance(
                         mock(RuntimeProperties.class));
+                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
             }
         };
 
@@ -77,6 +80,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
                 binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
                 binder.bind(RuntimeProperties.class).toInstance(
                         mock(RuntimeProperties.class));
+                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
             }
         };
 
@@ -114,6 +118,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
                 binder.bind(RuntimeProperties.class).toInstance(properties);
+                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
             }
         };
 

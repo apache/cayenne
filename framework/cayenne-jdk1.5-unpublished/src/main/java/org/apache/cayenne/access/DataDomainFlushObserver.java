@@ -38,7 +38,7 @@ import org.apache.cayenne.util.Util;
  * @since 1.2
  */
 class DataDomainFlushObserver implements OperationObserver {
-
+    
     /**
      * @since 3.1
      */
@@ -141,6 +141,14 @@ class DataDomainFlushObserver implements OperationObserver {
                 break;
             }
         }
+    }
+    
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.logger = logger;
+    }
+    
+    public JdbcEventLogger getJdbcEventLogger() {
+        return this.logger;
     }
 
     public void nextBatchCount(Query query, int[] resultCount) {

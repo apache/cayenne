@@ -35,6 +35,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
@@ -65,6 +66,8 @@ class DataDomainFlushAction {
     private DataDomainFlattenedBucket flattenedBucket;
 
     private List<Query> queries;
+    
+    private JdbcEventLogger logger;
 
     DataDomainFlushAction(DataDomain domain) {
         this.domain = domain;
@@ -92,6 +95,14 @@ class DataDomainFlushAction {
 
     Map<ObjectId, DataRow> getResultModifiedSnapshots() {
         return resultModifiedSnapshots;
+    }
+    
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.logger = logger;
+    }
+    
+    public JdbcEventLogger getJdbcEventLogger() {
+        return this.logger;
     }
 
     ObjectDiff objectDiff(Object objectId) {

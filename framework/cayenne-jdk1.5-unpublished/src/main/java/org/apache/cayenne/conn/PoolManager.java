@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import javax.sql.PooledConnection;
 
 import org.apache.cayenne.di.BeforeScopeEnd;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * PoolManager is a Cayenne implementation of a pooling DataSource.
@@ -70,7 +71,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
     }
 
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
-            String userName, String password, ConnectionEventLoggingDelegate logger)
+            String userName, String password, JdbcEventLogger logger)
             throws SQLException {
 
         if (logger != null) {
