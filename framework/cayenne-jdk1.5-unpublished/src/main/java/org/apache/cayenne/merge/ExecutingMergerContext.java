@@ -39,13 +39,13 @@ public class ExecutingMergerContext implements MergerContext {
         this.delegate = new DefaultModelMergeDelegate();
     }
 
-    public ExecutingMergerContext(DataMap map, DataSource dataSource, DbAdapter adapter,
+    public ExecutingMergerContext(DataMap map, DataSource dataSource, JdbcAdapter adapter,
             ModelMergeDelegate delegate) {
         this.map = map;
         // create a fake DataNode as lots of DbAdapter/PkGenerator methods
         // take a DataNode instead of just a DataSource
         this.node = new DataNode();
-        this.node.setJdbcEventLogger(((JdbcAdapter)adapter).getJdbcEventLogger());
+        this.node.setJdbcEventLogger(adapter.getJdbcEventLogger());
         this.node.setDataSource(dataSource);
         this.node.setAdapter(adapter);
         this.delegate = delegate;

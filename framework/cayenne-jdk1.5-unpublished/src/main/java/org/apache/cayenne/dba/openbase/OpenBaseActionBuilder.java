@@ -40,7 +40,7 @@ class OpenBaseActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction objectSelectAction(SelectQuery query) {
-        SelectAction action = new SelectAction(query, adapter, entityResolver) {
+       return new SelectAction(query, adapter, entityResolver) {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {
@@ -53,7 +53,5 @@ class OpenBaseActionBuilder extends JdbcActionBuilder {
                 return translator;
             }
         };
-        
-        return action;
     }
 }

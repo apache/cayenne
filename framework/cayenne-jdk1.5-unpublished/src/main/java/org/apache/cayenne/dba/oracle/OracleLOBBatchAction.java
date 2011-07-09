@@ -39,8 +39,8 @@ import org.apache.cayenne.access.trans.LOBBatchQueryWrapper;
 import org.apache.cayenne.access.trans.LOBInsertBatchQueryBuilder;
 import org.apache.cayenne.access.trans.LOBUpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -55,25 +55,17 @@ class OracleLOBBatchAction implements SQLAction {
 
     BatchQuery query;
     DbAdapter adapter;
-    
+
     protected JdbcEventLogger logger;
 
-    OracleLOBBatchAction(BatchQuery query, DbAdapter adapter) {
+    OracleLOBBatchAction(BatchQuery query, JdbcAdapter adapter) {
         this.adapter = adapter;
         this.query = query;
-        this.logger = NoopJdbcEventLogger.getInstance();
+        this.logger = adapter.getJdbcEventLogger();
     }
 
     DbAdapter getAdapter() {
         return adapter;
-    }
-    
-    public void setJdbcEventLogger(JdbcEventLogger logger) {
-        this.logger = logger;
-    }
-    
-    public JdbcEventLogger getJdbcEventLogger() {
-        return this.logger;
     }
 
     public void performAction(Connection connection, OperationObserver observer)
@@ -103,7 +95,7 @@ class OracleLOBBatchAction implements SQLAction {
         List<DbAttribute> qualifierAttributes = selectQuery
                 .getDbAttributesForLOBSelectQualifier();
 
-        boolean isLoggable = getJdbcEventLogger().isLoggable();
+        boolean isLoggable = logger.isLoggable();
 
         query.reset();
         while (selectQuery.next()) {
@@ -156,7 +148,7 @@ class OracleLOBBatchAction implements SQLAction {
             return;
         }
 
-        boolean isLoggable = getJdbcEventLogger().isLoggable();
+        boolean isLoggable = logger.isLoggable();
 
         List qualifierValues = selectQuery.getValuesForLOBSelectQualifier();
         List lobValues = selectQuery.getValuesForUpdatedLOBColumns();
@@ -169,8 +161,8 @@ class OracleLOBBatchAction implements SQLAction {
                 qualifierAttributes);
 
         if (isLoggable) {
-            getJdbcEventLogger().logQuery(selectStr, qualifierValues);
-            getJdbcEventLogger().logQueryParameters("write LOB", null, lobValues, false);
+            logger.logQuery(selectStr, qualifierValues);
+            logger.logQueryParameters("write LOB", null, lobValues, false);
         }
 
         PreparedStatement selectStatement = con.prepareStatement(selectStr);
@@ -270,8 +262,9 @@ class OracleLOBBatchAction implements SQLAction {
             }
         }
         catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing BLOB.", Util
-                    .unwindException(e));
+            throw new CayenneRuntimeException(
+                    "Error processing BLOB.",
+                    Util.unwindException(e));
         }
     }
 
@@ -293,8 +286,9 @@ class OracleLOBBatchAction implements SQLAction {
 
         }
         catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing CLOB.", Util
-                    .unwindException(e));
+            throw new CayenneRuntimeException(
+                    "Error processing CLOB.",
+                    Util.unwindException(e));
         }
     }
 
@@ -315,8 +309,9 @@ class OracleLOBBatchAction implements SQLAction {
             }
         }
         catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing CLOB.", Util
-                    .unwindException(e));
+            throw new CayenneRuntimeException(
+                    "Error processing CLOB.",
+                    Util.unwindException(e));
         }
     }
 }

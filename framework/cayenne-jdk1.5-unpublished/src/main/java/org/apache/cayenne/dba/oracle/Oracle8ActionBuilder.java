@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
@@ -53,9 +52,7 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
         // special handling for LOB updates
         if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
             // Special action for Oracle8. See CAY-1307.
-            OracleLOBBatchAction action = new Oracle8LOBBatchAction(query, getAdapter());
-            action.setJdbcEventLogger(logger);
-            return action;
+            return new Oracle8LOBBatchAction(query, getAdapter());
         }
         else {
             // optimistic locking is not supported in batches due to JDBC driver
@@ -63,11 +60,11 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
             boolean useOptimisticLock = query.isUsingOptimisticLocking();
             boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
 
-            BatchAction action = new OracleBatchAction(
+            OracleBatchAction action = new OracleBatchAction(
                     query,
                     adapter,
                     getEntityResolver());
-            ((OracleBatchAction) action).setBatch(runningAsBatch);
+            action.setBatch(runningAsBatch);
             return action;
         }
     }

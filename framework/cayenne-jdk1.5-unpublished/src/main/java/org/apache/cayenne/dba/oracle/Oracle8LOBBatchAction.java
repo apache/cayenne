@@ -26,7 +26,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.util.Util;
 
@@ -35,7 +35,7 @@ import org.apache.cayenne.util.Util;
  */
 class Oracle8LOBBatchAction extends OracleLOBBatchAction {
 
-    Oracle8LOBBatchAction(BatchQuery query, DbAdapter adapter) {
+    Oracle8LOBBatchAction(BatchQuery query, JdbcAdapter adapter) {
         super(query, adapter);
     }
 

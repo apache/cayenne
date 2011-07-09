@@ -36,7 +36,7 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -66,8 +66,6 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
 
-/**
- */
 public class MergerOptions extends CayenneController {
 
     protected MergerOptionsView view;
@@ -76,7 +74,7 @@ public class MergerOptions extends CayenneController {
 
     protected DBConnectionInfo connectionInfo;
     protected DataMap dataMap;
-    protected DbAdapter adapter;
+    protected JdbcAdapter adapter;
     protected String textForSQL;
 
     protected DbMerger merger;
@@ -161,7 +159,7 @@ public class MergerOptions extends CayenneController {
      */
     protected void prepareMigrator() {
         try {
-            adapter = connectionInfo.makeAdapter(getApplication()
+            adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication()
                     .getClassLoadingService());
             tokens.setMergerFactory(adapter.mergerFactory());
             merger = new DbMerger();
