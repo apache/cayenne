@@ -22,6 +22,7 @@ CAY-1545 cayenne-lifecycle Referenceable handler refactoring
 CAY-1547 cayenne-lifecycle: support for setting UuidRelationships
 CAY-1549 Migrate BatchQueryBuilderFactory to DI
 CAY-1553 cayenne-lifecycle: @SortWeight annotation 
+CAY-1573 QueryLogger to DI JdbcEventLogger migration
 CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
 
 Bug Fixes Since 3.1M2:
