@@ -106,12 +106,20 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     protected DataContext context;
 
+    /**
+     * @deprecated since 3.1
+     */
+    @Deprecated
     public ObjectStore() {
         this(null);
     }
 
+    /**
+     * @deprecated since 3.1
+     */
+    @Deprecated
     public ObjectStore(DataRowStore dataRowCache) {
-        this(dataRowCache, null);
+        this(dataRowCache, createObjectMap());
     }
 
     /**
@@ -123,7 +131,12 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     public ObjectStore(DataRowStore dataRowCache, Map<Object, Persistent> objectMap) {
         setDataRowCache(dataRowCache);
-        this.objectMap = objectMap != null ? objectMap : ObjectStore.createObjectMap();
+        if (objectMap != null) {
+            this.objectMap = objectMap;
+        }
+        else {
+            throw new CayenneRuntimeException("Object map is null.");
+        }
         this.changes = new HashMap<Object, ObjectDiff>();
     }
 

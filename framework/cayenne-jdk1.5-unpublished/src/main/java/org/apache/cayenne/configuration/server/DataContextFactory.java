@@ -24,6 +24,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
+import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
@@ -45,6 +46,9 @@ public class DataContextFactory implements ObjectContextFactory {
 
     @Inject
     protected Injector injector;
+    
+    @Inject
+    protected ObjectMapRetainStrategy retainStrategy;
 
     public ObjectContext createContext() {
         return createdFromDataDomain(dataDomain);
@@ -74,7 +78,8 @@ public class DataContextFactory implements ObjectContextFactory {
                 dataDomain.getProperties(),
                 eventManager);
 
-        DataContext context = new DataContext(parent, new ObjectStore(snapshotCache));
+        DataContext context = new DataContext(parent, new ObjectStore(snapshotCache, 
+                retainStrategy.createObjectMap()));
         context.setValidatingObjectsOnCommit(dataDomain.isValidatingObjectsOnCommit());
         context.setQueryCache(injector.getInstance(Key.get(
                 QueryCache.class,
@@ -85,7 +90,7 @@ public class DataContextFactory implements ObjectContextFactory {
     protected ObjectContext createFromDataContext(DataContext parent) {
         // child ObjectStore should not have direct access to snapshot cache, so do not
         // pass it in constructor.
-        ObjectStore objectStore = new ObjectStore();
+        ObjectStore objectStore = new ObjectStore(null, retainStrategy.createObjectMap());
 
         DataContext context = new DataContext(parent, objectStore);
 
@@ -106,12 +111,12 @@ public class DataContextFactory implements ObjectContextFactory {
                 .getSharedSnapshotCache() : new DataRowStore(parent.getName(), parent
                 .getProperties(), eventManager);
 
-        DataContext context = new DataContext(parent, new ObjectStore(snapshotCache));
+        DataContext context = new DataContext(parent, new ObjectStore(snapshotCache, 
+                retainStrategy.createObjectMap()));
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setQueryCache(injector.getInstance(Key.get(
                 QueryCache.class,
                 BaseContext.QUERY_CACHE_INJECTION_KEY)));
         return context;
     }
-
 }
