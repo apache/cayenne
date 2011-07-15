@@ -199,14 +199,17 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 1.2
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
-        // use a setter to properly initialize EntityResolver
-        setChannel(channel);
 
         // inject self as parent context
         if (objectStore != null) {
             this.objectStore = objectStore;
             objectStore.setContext(this);
+        }
+        
+        // use a setter to properly initialize EntityResolver
+        setChannel(channel);
 
+        if (objectStore != null) {
             DataDomain domain = getParentDataDomain();
             this.usingSharedSnaphsotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
