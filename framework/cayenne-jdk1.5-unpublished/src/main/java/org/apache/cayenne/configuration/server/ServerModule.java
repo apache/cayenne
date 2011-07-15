@@ -100,9 +100,7 @@ public class ServerModule implements Module {
         // configure empty global stack properties
         binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
 
-        CommonsJdbcEventLogger logger = new CommonsJdbcEventLogger();
-        QueryLogger.setLogger(logger);
-        binder.bind(JdbcEventLogger.class).toInstance(logger);
+        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically
