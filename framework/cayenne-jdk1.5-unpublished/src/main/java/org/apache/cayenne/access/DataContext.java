@@ -95,15 +95,17 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
 
-        if (channel != null) {
-            attachToChannel(channel);
-        }
-
         // inject self as parent context
         if (objectStore != null) {
             this.objectStore = objectStore;
             objectStore.setContext(this);
+        }
+        
+        if (channel != null) {
+            attachToChannel(channel);
+        }
 
+        if (objectStore != null) {
             DataDomain domain = getParentDataDomain();
             this.usingSharedSnaphsotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
