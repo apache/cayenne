@@ -24,6 +24,7 @@ CAY-1549 Migrate BatchQueryBuilderFactory to DI
 CAY-1553 cayenne-lifecycle: @SortWeight annotation 
 CAY-1573 QueryLogger to DI JdbcEventLogger migration
 CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
+CAY-1586 New extension point: a strategy for retaining objects in the ObjectStore
 
 Bug Fixes Since 3.1M2:
 
