@@ -20,25 +20,22 @@ originally developed at The ObjectStyle Group and donated to the ASF by its auth
 
 GUI TOOLS
 
-4. CayenneModeler and DVModeler includes JGoodies library developed by Karsten Lentzsch.
+4. CayenneModeler includes JGoodies library developed by Karsten Lentzsch.
 (http://www.jgoodies.com/)
 
-5. CayenneModeler includes the Scope library developed by The Scope team.
-(http://scope.sourceforge.net/)
-
-6. CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
+5. CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
 (http://www.ognl.org/)
 
-7. CayenneModeler includes HSQLDB library developed by The HSQL Development Group.
-(http://www.hsqldb.org/)
-
-8. CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
+6. CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
 (http://www.eclipse.org/).
 
-9. CayenneModeler includes jEdit-syntax library developed by Slava Pestov, Artur Biesiadowski, 
+7. CayenneModeler includes jEdit-syntax library developed by Slava Pestov, Artur Biesiadowski, 
 Clancy Malcolm, Jonathan Revusky, Juha Lindfors and Mike Dillon.
 (http://jedit-syntax.sourceforge.net/)
 
-10. CayenneModeler includes Inflector library developed by the Inflector project
+8. CayenneModeler includes Inflector library developed by the Inflector project
 (https://inflector.dev.java.net/)
+
+8. CayenneModeler includes JGraph library developed by JGraph Ltd
+(http://www.jgraph.com)
 
