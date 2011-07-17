@@ -51,6 +51,7 @@ public class ReturnTypesMappingTest extends ServerCase {
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("TYPES_MAPPING_TEST1");
         dbHelper.deleteAll("TYPES_MAPPING_TEST2");
+        dbHelper.deleteAll("DATE_TEST");
     }
 
     public void testBIGINT() throws Exception {
