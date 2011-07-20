@@ -189,12 +189,12 @@
 	</developers>
 	<scm>
 		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/trunk/cayenne
+			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/branches/mrelease-experiment
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/trunk/cayenne
+			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/branches/mrelease-experiment
 		</developerConnection>
-		<url>http://svn.apache.org/viewvc/cayenne/main/trunk/</url>
+		<url>http://svn.apache.org/viewvc/cayenne/main/branches/mrelease-experiment</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>
