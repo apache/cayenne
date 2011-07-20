@@ -27,7 +27,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>3.1X1</version>
+	<version>3.1X2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -188,12 +188,12 @@
 	</developers>
 	<scm>
 		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/tags/3.1X1
+			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/branches/mrelease-experiment
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/tags/3.1X1
+			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/branches/mrelease-experiment
 		</developerConnection>
-		<url>http://svn.apache.org/viewvc/cayenne/main/tags/3.1X1</url>
+		<url>http://svn.apache.org/viewvc/cayenne/main/branches/mrelease-experiment</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>
