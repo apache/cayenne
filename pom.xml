@@ -18,6 +18,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+	  <groupId>org.apache</groupId>
+	  <artifactId>apache</artifactId>
+	  <version>9</version>
+	</parent>
+	
 	<artifactId>cayenne-parent</artifactId>
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
@@ -181,13 +187,6 @@
 			</roles>
 		</developer>
 	</developers>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
 	<scm>
 		<connection>
 			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/trunk/cayenne
@@ -197,10 +196,6 @@
 		</developerConnection>
 		<url>http://svn.apache.org/viewvc/cayenne/main/trunk/</url>
 	</scm>
-	<organization>
-		<name>Apache Cayenne</name>
-		<url>http://cayenne.apache.org/</url>
-	</organization>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -460,21 +455,6 @@
 	
 	<repositories>
 		<repository>
-			<id>apache-snapshots</id>
-			<name>Apache Snapshots Repository</name>
-			<url>http://people.apache.org/repo/m2-snapshot-repository/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>weekly</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-
-		<repository>
 			<id>objectstyle</id>
 			<name>ObjectStyle Repository</name>
 			<url>http://objectstyle.org/maven2</url>
@@ -499,22 +479,6 @@
 			</releases>
 		</repository>
 	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>Maven Central Repo</id>
-			<name>Maven Central Repo</name>
-			<url>http://repo1.maven.org/maven2</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>weekly</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 	<build>
 		<defaultGoal>install</defaultGoal>
 		
@@ -544,15 +508,10 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
 					<configuration>
 						<source>1.5</source>
 						<target>1.5</target>
 					</configuration>
-				</plugin>
-				<plugin>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.5</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-jxr-plugin</artifactId>
@@ -563,14 +522,6 @@
 					<version>2.5</version>
 				</plugin>
 				<plugin>
-					<artifactId>maven-project-info-reports-plugin</artifactId>
-					<version>2.3.1</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.1.2</version>
-				</plugin>
-				<plugin>
 					<artifactId>maven-surefire-report-plugin</artifactId>
 					<version>2.8</version>
 				</plugin>
@@ -578,14 +529,6 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>taglist-maven-plugin</artifactId>
 					<version>2.4</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-remote-resources-plugin</artifactId>
-					<version>1.2</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -599,7 +542,6 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.5</version>
 				<configuration>
 					<argLine>
 						-DcayenneTestConnection=${cayenneTestConnection} -Djava.net.preferIPv4Stack=true
@@ -629,41 +571,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.3</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-5</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.0-beta-1</version>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2</version>
 			</plugin>
 		</plugins>
 	</build>
-	<distributionManagement>
-		<repository>
-			<id>apache-releases</id>
-			<name>Apache Snapshots Repository</name>
-			<url>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
-		</repository>
-		<snapshotRepository>
-			<id>apache-snapshots</id>
-			<name>Apache Snapshots Repository</name>
-			<url>
-				scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository
-			</url>
-		</snapshotRepository>
-	</distributionManagement>
 	<reporting>
 		<plugins>
 			<plugin>
@@ -718,28 +631,6 @@
 			<modules>
 				<module>assembly</module>
 			</modules>
-		</profile>
-
-		<!-- Optional profile used to sign artifacts -->
-		<profile>
-			<id>gpg</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<!-- Test DB Profiles (default is embedded HSQLDB) -->
