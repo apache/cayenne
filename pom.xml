@@ -14,8 +14,7 @@
 	the specific language governing permissions and limitations under the
 	License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -28,7 +27,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>3.1-SNAPSHOT</version>
+	<version>3.1X1</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -189,12 +188,12 @@
 	</developers>
 	<scm>
 		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/branches/mrelease-experiment
+			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/tags/3.1X1
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/branches/mrelease-experiment
+			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/tags/3.1X1
 		</developerConnection>
-		<url>http://svn.apache.org/viewvc/cayenne/main/branches/mrelease-experiment</url>
+		<url>http://svn.apache.org/viewvc/cayenne/main/tags/3.1X1</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>
