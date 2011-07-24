@@ -164,7 +164,7 @@ public class EJBQLJoinAppender {
 
                     }
 
-                    context.append(" JOIN ");
+                    context.append(' ').append(semantics).append(' ');
                     context.append(subqueryTargetTableName).append(' ').append(
                             subqueryTargetAlias);
                     generateJoiningExpression(

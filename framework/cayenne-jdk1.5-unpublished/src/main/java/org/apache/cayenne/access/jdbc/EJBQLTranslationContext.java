@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,12 +30,15 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * A context used for translating of EJBQL to SQL.
@@ -142,9 +146,9 @@ public class EJBQLTranslationContext {
     }
 
     List<DbRelationship> getIncomingRelationships(EJBQLTableId id) {
-
+        String resolvedEntityId = resolveId(id.getEntityId());
         List<DbRelationship> incoming = compiledExpression
-                .getIncomingRelationships(resolveId(id.getEntityId()));
+                .getIncomingRelationships(resolvedEntityId);
 
         // append tail of flattened relationships...
         if (id.getDbPath() != null) {
@@ -167,6 +171,39 @@ public class EJBQLTranslationContext {
             Iterator<?> it = entity.resolvePathComponents(id.getDbPath());
             while (it.hasNext()) {
                 incoming.add((DbRelationship) it.next());
+            }
+        } else {
+            // Check for vertical inheritance relationships
+            ClassDescriptor descriptor = compiledExpression.getEntityDescriptor(
+                    resolvedEntityId);
+            ObjEntity entity = descriptor.getEntity();
+            Collection<ObjAttribute> entityAttributes = entity.getDeclaredAttributes();
+            // Iterate over entity declared attributes, check for flattened attributes
+            for (ObjAttribute entityAttribute : entityAttributes) {
+                Iterator<CayenneMapEntry> entityAttributeDbPathIterator =
+                    entityAttribute.getDbPathIterator();
+                ArrayList<DbRelationship> entityAttributeDbPathRelationships =
+                    new ArrayList<DbRelationship>();
+                // Collect DB path relationships into list
+                while (entityAttributeDbPathIterator.hasNext()) {
+                    Object entityAttributeDbObject = entityAttributeDbPathIterator.next();
+                    if (entityAttributeDbObject instanceof DbRelationship) {
+                        entityAttributeDbPathRelationships.add((DbRelationship)
+                                entityAttributeDbObject);
+                    }
+                }
+                // Check attribute last DB relationship target entity
+                if (entityAttributeDbPathRelationships.size() > 0 &&
+                        !entityAttributeDbPathRelationships.get(
+                                entityAttributeDbPathRelationships.size() - 1)
+                                .getTargetEntityName().equals(id.getEntityId())) {
+                    // Entity attribute last DB relationship target is flattened vertical
+                    // inheritance attribute, so add its relationships to incoming
+                    // relationships
+                    incoming = new ArrayList<DbRelationship>(incoming);
+                    incoming.addAll(entityAttributeDbPathRelationships);
+                    break;
+                }
             }
         }
 
@@ -346,7 +383,6 @@ public class EJBQLTranslationContext {
      * such alias hasn't been used, it is created on the fly.
      */
     protected String getTableAlias(String idPath, String tableName) {
-
         if (!isUsingAliases()) {
             return tableName;
         }
