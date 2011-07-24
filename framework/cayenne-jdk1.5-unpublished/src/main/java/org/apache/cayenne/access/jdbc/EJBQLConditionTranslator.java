@@ -639,24 +639,14 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitIdentificationVariable(EJBQLExpression expression) {
         // this is a match on a variable, like "x = :x"
-        DbEntity table;
-        // first looking for joined entity
-        List<DbRelationship> joinRelationships = context.getIncomingRelationships(
-                new EJBQLTableId(expression.getText()));
-        if (!joinRelationships.isEmpty()) {
-            // joined entity, get last joined table as entity table
-            DbRelationship incoming = joinRelationships.get(joinRelationships.size() - 1);
-            table = (DbEntity) incoming.getTargetEntity();
-        } else {
-            // not joined entity, get entity table
+
         ClassDescriptor descriptor = context.getEntityDescriptor(expression.getText());
         if (descriptor == null) {
             throw new EJBQLException("Invalid identification variable: "
                     + expression.getText());
         }
-            table = descriptor.getEntity().getDbEntity();
-        }
 
+        DbEntity table = descriptor.getEntity().getDbEntity();
         String alias = context.getTableAlias(expression.getText(), table
                 .getFullyQualifiedName());
 
