@@ -147,7 +147,8 @@ public class SelectAction extends BaseSQLAction {
         // from Cayenne.
 
         int fetchLimit = query.getFetchLimit();
-        int offset = getInMemoryOffset(query.getFetchOffset());
+        int offset = translator.isSuppressingDistinct() ? query.getFetchOffset()
+                : getInMemoryOffset(query.getFetchOffset());
         if (fetchLimit > 0 || offset > 0) {
             it = new LimitResultIterator(it, offset, fetchLimit);
         }
