@@ -529,18 +529,9 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>cobertura-maven-plugin</artifactId>
-					<version>2.4</version>
-				</plugin>
-				<plugin>
 					<groupId>org.apache.cayenne.build-tools</groupId>
 					<artifactId>maven-cayenne-build-plugin</artifactId>
 					<version>${project.version}</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>2.6</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -666,32 +657,6 @@
 	</distributionManagement>
 	<reporting>
 		<plugins>
-			<plugin>
-				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-clover2-plugin</artifactId>
-				<version>3.0.5</version>
-				<configuration>
-					<generatePdf>false</generatePdf>
-					<generateXml>true</generateXml>
-					<generateHtml>true</generateHtml>
-					<licenseLocation>build-tools/clover.license</licenseLocation>
-					<excludes>
-						<exclude>org/apache/cayenne/modeler/**/*.java</exclude>
-						<exclude>org/apache/cayenne/tutorial/**/*.java</exclude>
-						<exclude>org/apache/cayenne/swing/**/*.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<findbugsXmlOutput>true</findbugsXmlOutput>
-					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-					<xmlOutput>true</xmlOutput>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
