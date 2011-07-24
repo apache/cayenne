@@ -303,6 +303,26 @@ public class SelectQueryTest extends ServerCase {
         }
     }
 
+    public void testSelectFetchLimit_Offset_DistinctClob() throws Exception {
+        if (accessStackAdapter.supportsLobs()) {
+            createClobDataSet();
+
+            // see CAY-1539... CLOB column causes suppression of DISTINCT in SQL, and
+            // hence the offset processing is done in memory
+            SelectQuery query = new SelectQuery(ClobTestEntity.class);
+            query.addOrdering(
+                    "db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN,
+                    SortOrder.ASCENDING);
+            query.setFetchLimit(1);
+            query.setFetchOffset(1);
+            query.setDistinct(true);
+
+            List<ClobTestEntity> objects = context.performQuery(query);
+            assertEquals(1, objects.size());
+            assertEquals(2, Cayenne.intPKForObject(objects.get(0)));
+        }
+    }
+
     public void testSelectEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
@@ -575,9 +595,9 @@ public class SelectQueryTest extends ServerCase {
         assertTrue(query.getQualifier().match(a1));
         assertTrue(query.getQualifier().match(a3));
 
-        assertEquals(query.getQualifier(), ExpressionFactory.matchAnyExp(Arrays.asList(
-                a1,
-                a3)));
+        assertEquals(
+                query.getQualifier(),
+                ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
     }
 
     /**
@@ -596,31 +616,29 @@ public class SelectQueryTest extends ServerCase {
                 numbers));
         context.performQuery(query);
     }
-    
+
     public void testCacheOffsetAndLimit() throws Exception {
         createArtistsDataSet();
-        
+
         SelectQuery query1 = new SelectQuery(Artist.class);
         query1.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         query1.setFetchOffset(0);
         query1.setFetchLimit(10);
         context.performQuery(query1);
-        
+
         SelectQuery query2 = new SelectQuery(Artist.class);
         query2.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         query2.setFetchOffset(10);
         query2.setFetchLimit(10);
         context.performQuery(query2);
-        
+
         SelectQuery query3 = new SelectQuery(Artist.class);
         query3.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         query3.setFetchOffset(10);
         query3.setFetchLimit(10);
         context.performQuery(query3);
-        
-        assertFalse(query1.metaData.getCacheKey()
-                .equals(query2.metaData.cacheKey));
-        assertEquals(query2.metaData.getCacheKey(), 
-                query3.metaData.getCacheKey());
+
+        assertFalse(query1.metaData.getCacheKey().equals(query2.metaData.cacheKey));
+        assertEquals(query2.metaData.getCacheKey(), query3.metaData.getCacheKey());
     }
 }
