@@ -24,11 +24,14 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance.vertical.Iv1Root;
 import org.apache.cayenne.testdo.inheritance.vertical.Iv1Sub1;
+import org.apache.cayenne.testdo.inheritance.vertical.Iv2Sub1;
+import org.apache.cayenne.testdo.inheritance.vertical.Iv2Sub2;
 import org.apache.cayenne.testdo.inheritance.vertical.IvRoot;
 import org.apache.cayenne.testdo.inheritance.vertical.IvSub1;
 import org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1;
@@ -55,6 +58,11 @@ public class VerticalInheritanceTest extends ServerCase {
 
         dbHelper.deleteAll("IV1_SUB1");
         dbHelper.deleteAll("IV1_ROOT");
+
+        dbHelper.deleteAll("IV2_SUB1_TO_IV2_SUB2");
+        dbHelper.deleteAll("IV2_SUB2");
+        dbHelper.deleteAll("IV2_SUB1");
+        dbHelper.deleteAll("IV2_ROOT");
     }
 
     public void testInsert_Root() throws Exception {
@@ -486,4 +494,262 @@ public class VerticalInheritanceTest extends ServerCase {
         assertEquals("xSUB1", sub1.getName());
     }
 
+    public void testEjbqlQuery_AttributeOverrides() throws Exception {
+
+        TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");
+        iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper iv1Sub1Table = new TableHelper(dbHelper, "IV1_SUB1");
+        iv1Sub1Table.setColumns("ID", "SUB1_NAME");
+
+        // insert
+        iv1RootTable.insert(1, "xROOT", null);
+        iv1RootTable.insert(2, "xSUB1_ROOT", "Iv1Sub1");
+        iv1Sub1Table.insert(2, "xSUB1");
+
+        EJBQLQuery query = new EJBQLQuery("SELECT iv1root FROM Iv1Root iv1root");
+        List<Iv1Root> results = context.performQuery(query);
+
+        assertEquals(2, results.size());
+
+        Map<String, Iv1Root> resultTypes = new HashMap<String, Iv1Root>();
+
+        for (Iv1Root result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(2, resultTypes.size());
+
+        Iv1Root root = resultTypes.get(Iv1Root.class.getName());
+        assertNotNull(root);
+        assertEquals("xROOT", root.getName());
+        assertNull(root.getDiscriminator());
+
+        Iv1Sub1 sub1 = (Iv1Sub1) resultTypes.get(Iv1Sub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1", sub1.getName());
+    }
+
+    public void testEjbqlQuery_SuperSub() throws Exception {
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        // insert
+        ivRootTable.insert(1, "xROOT", null);
+        ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
+        ivSub1Table.insert(2, "xSUB1");
+
+        EJBQLQuery query = new EJBQLQuery("SELECT ivroot FROM IvRoot ivroot");
+        List<IvRoot> results = context.performQuery(query);
+
+        assertEquals(2, results.size());
+
+        Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+
+        for (IvRoot result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(2, resultTypes.size());
+
+        IvRoot root = resultTypes.get(IvRoot.class.getName());
+        assertNotNull(root);
+        assertEquals("xROOT", root.getName());
+        assertNull(root.getDiscriminator());
+
+        IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1_ROOT", sub1.getName());
+        assertEquals("IvSub1", sub1.getDiscriminator());
+    }
+
+    public void testEjbqlQuery_MiddleLeaf() throws Exception {
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        TableHelper ivSub2Table = new TableHelper(dbHelper, "IV_SUB2");
+        ivSub2Table.setColumns("ID", "SUB2_NAME");
+
+        TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+        ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+
+        // insert
+        ivRootTable.insert(1, "xROOT", null);
+
+        ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
+        ivSub1Table.insert(2, "xSUB1");
+
+        ivRootTable.insert(3, "xSUB1_SUB1_ROOT", "IvSub1Sub1");
+        ivSub1Table.insert(3, "xSUB1_SUB1_SUBROOT");
+        ivSub1Sub1Table.insert(3, "xSUB1_SUB1");
+
+        ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
+        ivSub2Table.insert(4, "xSUB2");
+
+        EJBQLQuery query = new EJBQLQuery("SELECT DISTINCT ivsub1 FROM IvSub1 ivsub1");
+        List<IvRoot> results = context.performQuery(query);
+
+        assertEquals(2, results.size());
+
+        Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+
+        for (IvRoot result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(2, resultTypes.size());
+
+        IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1_ROOT", sub1.getName());
+        assertEquals("IvSub1", sub1.getDiscriminator());
+
+        IvSub1Sub1 sub1Sub1 = (IvSub1Sub1) resultTypes.get(IvSub1Sub1.class.getName());
+        assertNotNull(sub1Sub1);
+        assertEquals("xSUB1_SUB1_ROOT", sub1Sub1.getName());
+        assertEquals("IvSub1Sub1", sub1Sub1.getDiscriminator());
+        assertEquals("xSUB1_SUB1_SUBROOT", sub1Sub1.getSub1Name());
+        assertEquals("xSUB1_SUB1", sub1Sub1.getSub1Sub1Name());
+    }
+
+    public void testEjbqlQuery_DeepAndWide() throws Exception {
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        TableHelper ivSub2Table = new TableHelper(dbHelper, "IV_SUB2");
+        ivSub2Table.setColumns("ID", "SUB2_NAME");
+
+        TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+        ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+
+        // insert
+        ivRootTable.insert(1, "xROOT", null);
+
+        ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
+        ivSub1Table.insert(2, "xSUB1");
+
+        ivRootTable.insert(3, "xSUB1_SUB1_ROOT", "IvSub1Sub1");
+        ivSub1Table.insert(3, "xSUB1_SUB1_SUBROOT");
+        ivSub1Sub1Table.insert(3, "xSUB1_SUB1");
+
+        ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
+        ivSub2Table.insert(4, "xSUB2");
+
+        EJBQLQuery query = new EJBQLQuery("SELECT DISTINCT ivroot FROM IvRoot ivroot");
+        List<IvRoot> results = context.performQuery(query);
+
+        assertEquals(4, results.size());
+
+        Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+
+        for (IvRoot result : results) {
+            resultTypes.put(result.getClass().getName(), result);
+        }
+
+        assertEquals(4, resultTypes.size());
+
+        IvRoot root = resultTypes.get(IvRoot.class.getName());
+        assertNotNull(root);
+        assertEquals("xROOT", root.getName());
+        assertNull(root.getDiscriminator());
+
+        IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
+        assertNotNull(sub1);
+        assertEquals("xSUB1_ROOT", sub1.getName());
+        assertEquals("IvSub1", sub1.getDiscriminator());
+
+        IvSub1Sub1 sub1Sub1 = (IvSub1Sub1) resultTypes.get(IvSub1Sub1.class.getName());
+        assertNotNull(sub1Sub1);
+        assertEquals("xSUB1_SUB1_ROOT", sub1Sub1.getName());
+        assertEquals("IvSub1Sub1", sub1Sub1.getDiscriminator());
+        assertEquals("xSUB1_SUB1_SUBROOT", sub1Sub1.getSub1Name());
+        assertEquals("xSUB1_SUB1", sub1Sub1.getSub1Sub1Name());
+
+        IvSub2 sub2 = (IvSub2) resultTypes.get(IvSub2.class.getName());
+        assertNotNull(sub2);
+        assertEquals("xROOT_SUB2", sub2.getName());
+        assertEquals("IvSub2", sub2.getDiscriminator());
+        assertEquals("xSUB2", sub2.getSub2Name());
+    }
+
+    public void testEjbqlQuery_Flattened() throws Exception {
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV2_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub1Table = new TableHelper(dbHelper, "IV2_SUB1");
+        ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+        TableHelper ivSub2Table = new TableHelper(dbHelper, "IV2_SUB2");
+        ivSub2Table.setColumns("ID", "SUB2_NAME", "SUB2_ATTR");
+
+        TableHelper ivSub1ToSub2Table = new TableHelper(dbHelper, "IV2_SUB1_TO_IV2_SUB2");
+        ivSub1ToSub2Table.setColumns("ID", "SUB1_ID", "SUB2_ID");
+
+        // insert
+        ivRootTable.insert(1, "xROOT", null);
+
+        ivRootTable.insert(2, "xSUB1_ROOT", "Iv2Sub1");
+        ivSub1Table.insert(2, "xSUB1");
+
+        ivRootTable.insert(3, "xSUB2_ROOT", "Iv2Sub2");
+        ivSub2Table.insert(3, "xSUB2", "ySUB2");
+
+        ivSub1ToSub2Table.insert(1, 2, 3);
+
+        EJBQLQuery query = new EJBQLQuery("SELECT DISTINCT s1 FROM Iv2Sub1 s1 JOIN " +
+        		"s1.iv2sub2s s2 WHERE s2.sub2Attr = 'ySUB2'");
+        List<Iv2Sub1> results = context.performQuery(query);
+
+        assertEquals(1, results.size());
+
+        Iv2Sub1 sub1 = results.get(0);
+        assertNotNull(sub1);
+        assertEquals("xSUB1", sub1.getName());
+        assertEquals("Iv2Sub1", sub1.getDiscriminator());
+
+        List<Iv2Sub2> sub2s = sub1.getIv2sub2s();
+        assertNotNull(sub2s);
+        assertEquals(1, sub2s.size());
+
+        Iv2Sub2 sub2 = sub2s.get(0);
+        assertNotNull(sub2);
+        assertEquals("xSUB2", sub2.getName());
+        assertEquals("Iv2Sub2", sub2.getDiscriminator());
+        assertEquals("ySUB2", sub2.getSub2Attr());
+
+        query = new EJBQLQuery("SELECT COUNT(DISTINCT s1) FROM Iv2Sub1 s1 JOIN " +
+            "s1.iv2sub2s s2 WHERE s2.sub2Attr = 'ySUB2'");
+        List<?> countResult = context.performQuery(query);
+
+        assertEquals(1, countResult.size());
+
+        Long count = (Long) countResult.get(0);
+
+        assertEquals(1, count.longValue());
+
+        query = new EJBQLQuery("SELECT DISTINCT s1 FROM Iv2Sub1 s1 JOIN " +
+            "s1.iv2sub2s s2 WHERE s2 = :sub2");
+        query.setParameter("sub2", sub2);
+        results = context.performQuery(query);
+
+        assertEquals(1, results.size());
+
+        sub1 = results.get(0);
+        assertNotNull(sub1);
+        assertEquals("xSUB1", sub1.getName());
+        assertEquals("Iv2Sub1", sub1.getDiscriminator());
+    }
 }
