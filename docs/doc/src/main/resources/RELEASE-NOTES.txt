@@ -37,6 +37,7 @@ CAY-1581 Not-Escaping <> during serialization to *.map.xml
 CAY-1583 context.getObjectStore() returning null causing NullpointerException in DataMergeHandler
 CAY-1585 SelectQuery automatic cache key needs FetchOffset
 CAY-1582 EJBQL queries are broken for vertical inheritance entities
+CAY-1539 Incorrect offset handling on some queries against database with supported LIMIT/OFFSET clauses
 
 ----------------------------------
 Release: 3.1 M2
