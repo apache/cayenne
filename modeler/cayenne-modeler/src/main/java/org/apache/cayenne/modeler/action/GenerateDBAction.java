@@ -24,8 +24,6 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DBGeneratorOptions;
-import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
 /**
  * Action that generates database tables from a DataMap.
@@ -42,20 +40,6 @@ public class GenerateDBAction extends DBWizardAction {
 
     public void performAction(ActionEvent e) {
 
-        DBConnectionInfo nodeInfo = preferredDataSource();
-        String nodeKey = preferredDataSourceLabel(nodeInfo);
-
-        DataSourceWizard connectWizard = new DataSourceWizard(
-                getProjectController(),
-                "Generate DB Schema: Connect to Database",
-                nodeKey,
-                nodeInfo);
-
-        if (!connectWizard.startupAction()) {
-            // canceled
-            return;
-        }
-
         DataMap map = getProjectController().getCurrentDataMap();
 
         // sanity check
@@ -67,7 +51,6 @@ public class GenerateDBAction extends DBWizardAction {
         new DBGeneratorOptions(
                 getProjectController(),
                 "Generate DB Schema: Options",
-                connectWizard.getConnectionInfo(),
                 map).startupAction();
     }
 }
