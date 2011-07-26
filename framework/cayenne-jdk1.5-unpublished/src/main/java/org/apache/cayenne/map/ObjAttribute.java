@@ -344,4 +344,27 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
         return attribute;
     }
+    
+    /**
+     * Updates DbAttributePath for this ObjAttribute
+     */
+    public void updateDbAttributePath() {
+        
+        if (isFlattened()) {
+            StringBuilder newDbAttributePath = new StringBuilder();
+            
+            Iterator<CayenneMapEntry> dbPathIterator = getDbPathIterator();
+            
+            while (dbPathIterator.hasNext()) {
+                CayenneMapEntry next = dbPathIterator.next();
+                
+                newDbAttributePath.append(next.getName());
+                if (next instanceof DbRelationship) {
+                    newDbAttributePath.append('.');
+                }
+            }
+            
+            setDbAttributePath(newDbAttributePath.toString());
+        }
+    }
 }

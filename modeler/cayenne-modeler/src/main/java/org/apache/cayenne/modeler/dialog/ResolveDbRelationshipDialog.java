@@ -53,7 +53,6 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
@@ -326,11 +325,8 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         // handle name update
         if (!Util.nullSafeEquals(sourceEntityName, relationship.getName())) {
             String oldName = relationship.getName();
-
-            ProjectUtil.setRelationshipName(
-                    relationship.getSourceEntity(),
-                    relationship,
-                    sourceEntityName);
+            
+            relationship.setName(sourceEntityName);
 
             undo.addNameUndo(relationship, oldName, sourceEntityName);
 
@@ -374,11 +370,8 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
                     .nullSafeEquals(targetEntityName, reverseRelationship.getName())) {
 
                 String oldName = reverseRelationship.getName();
-
-                ProjectUtil.setRelationshipName(
-                        reverseRelationship.getSourceEntity(),
-                        reverseRelationship,
-                        targetEntityName);
+                
+                reverseRelationship.setName(targetEntityName);
 
                 undo.addNameUndo(reverseRelationship, oldName, targetEntityName);
 
