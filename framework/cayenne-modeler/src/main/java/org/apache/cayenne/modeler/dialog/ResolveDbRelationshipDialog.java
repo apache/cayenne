@@ -321,10 +321,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         if (!Util.nullSafeEquals(sourceEntityName, relationship.getName())) {
             String oldName = relationship.getName();
 
-            ProjectUtil.setRelationshipName(
-                    relationship.getSourceEntity(),
-                    relationship,
-                    sourceEntityName);
+            relationship.setName(sourceEntityName);
 
             undo.addNameUndo(relationship, oldName, sourceEntityName);
 
@@ -369,10 +366,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
                 String oldName = reverseRelationship.getName();
 
-                ProjectUtil.setRelationshipName(
-                        reverseRelationship.getSourceEntity(),
-                        reverseRelationship,
-                        targetEntityName);
+                reverseRelationship.setName(targetEntityName);
 
                 undo.addNameUndo(reverseRelationship, oldName, targetEntityName);
 

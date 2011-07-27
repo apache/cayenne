@@ -537,6 +537,18 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         // handle relationship name changes
         if (e.getId() == RelationshipEvent.CHANGE && e.isNameChange()) {
             String oldName = e.getOldName();
+            
+            DataMap map = getDataMap();
+            if (map != null) {
+                
+                // updating dbAttributePaths for attributes of all ObjEntities
+                for (ObjEntity objEntity : getDataMap().getObjEntities()) {
+                    
+                    for (ObjAttribute attribute : objEntity.getAttributes()) {
+                        attribute.updateDbAttributePath();
+                    }
+                }
+            }
 
             // clear the relationship out of the collection
             relationships.remove(oldName);
