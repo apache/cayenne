@@ -29,6 +29,7 @@ CAY-1590 DDL generation without a live datasource
 
 Bug Fixes Since 3.1M2:
 
+CAY-1469 Modeler: dbRelationships renaming problem
 CAY-1526 Preferences: java.lang.IllegalArgumentException: Key too long
 CAY-1546 cayenne-lifecycle: UuidBatchFault concurrency issues
 CAY-1555 Unpublished dependencies of Maven plugins
@@ -132,6 +133,7 @@ CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
 
 Bug Fixes Since 3.0.2:
 
+CAY-1469 Modeler: dbRelationships renaming problem
 CAY-1514 ClassCastException when EJQLQuery parameters is null.
 CAY-1577 SQL queries for LIKE expressions with escape character generated with syntax errors
 CAY-1581 Not-Escaping <> during serialization to *.map.xml
