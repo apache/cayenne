@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
@@ -59,7 +60,11 @@ public class DataContextEJBQLArrayResultTest extends ServerCase {
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
         tPainting.insert(33001, 33001, "P1", 3000);
         tPainting.insert(33002, 33002, "P2", 5000);
         tPainting.insert(33003, null, "P3", 5000);

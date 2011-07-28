@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -67,7 +68,11 @@ public class DataContextEJBQLSubqueryTest extends ServerCase {
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
     }
 
     private void createTwoArtistsFourPaintings() throws Exception {

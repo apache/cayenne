@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
@@ -58,7 +59,11 @@ public class DataContextEJBQLOrderByTest extends ServerCase {
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
     }
 
     private void createThreePaintings() throws Exception {
@@ -73,7 +78,7 @@ public class DataContextEJBQLOrderByTest extends ServerCase {
         tPainting.insert(33003, null, "C", 1000);
         tPainting.insert(33004, null, "C", 500);
     }
-    
+
     private void createTwoArtistsTwoPaintings() throws Exception {
         tArtist.insert(33001, "A");
         tArtist.insert(33002, "B");

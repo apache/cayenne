@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Date;
 
@@ -76,9 +77,13 @@ public class DataContextObjectTrackingTest extends ServerCase {
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
-                "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
     }
 
     protected void createArtistsDataSet() throws Exception {
@@ -90,7 +95,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
 
     protected void createMixedDataSet() throws Exception {
         tArtist.insert(33003, "artist3");
-        tPainting.insert(33003, "P_artist3", 33003, 3000);
+        tPainting.insert(33003, 33003, "P_artist3", 3000);
     }
 
     public void testUnregisterObject() {
@@ -207,8 +212,9 @@ public class DataContextObjectTrackingTest extends ServerCase {
                 assertSame(peerContext, hollowPeer.getObjectContext());
                 assertSame(context, hollow.getObjectContext());
 
-                Persistent committedPeer = peerContext.localObject(committed
-                        .getObjectId(), null);
+                Persistent committedPeer = peerContext.localObject(
+                        committed.getObjectId(),
+                        null);
                 assertEquals(PersistenceState.HOLLOW, committedPeer.getPersistenceState());
                 assertEquals(committed.getObjectId(), committedPeer.getObjectId());
                 assertSame(peerContext, committedPeer.getObjectContext());
@@ -270,8 +276,9 @@ public class DataContextObjectTrackingTest extends ServerCase {
                         null);
 
                 assertSame(peerModified, peerModified2);
-                assertEquals(PersistenceState.MODIFIED, peerModified2
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.MODIFIED,
+                        peerModified2.getPersistenceState());
                 assertEquals("M2", peerModified.getArtistName());
                 assertEquals("M1", modified.getArtistName());
             }

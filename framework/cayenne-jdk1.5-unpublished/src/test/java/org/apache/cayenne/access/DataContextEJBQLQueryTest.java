@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -79,7 +80,11 @@ public class DataContextEJBQLQueryTest extends ServerCase {
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
 
         tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPk.setColumns("KEY1", "KEY2");
@@ -114,8 +119,8 @@ public class DataContextEJBQLQueryTest extends ServerCase {
         LifecycleCallbackRegistry existingCallbacks = context
                 .getEntityResolver()
                 .getCallbackRegistry();
-        LifecycleCallbackRegistry testCallbacks = new LifecycleCallbackRegistry(context
-                .getEntityResolver());
+        LifecycleCallbackRegistry testCallbacks = new LifecycleCallbackRegistry(
+                context.getEntityResolver());
 
         DataContextEJBQLQueryCallback listener = new DataContextEJBQLQueryCallback();
         testCallbacks.addDefaultListener(LifecycleEvent.POST_LOAD, listener, "postLoad");

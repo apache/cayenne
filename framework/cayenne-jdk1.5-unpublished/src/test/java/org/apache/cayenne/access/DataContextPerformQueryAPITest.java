@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -75,9 +76,13 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
-                "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
     }
 
     private void createTwoArtists() throws Exception {
@@ -88,8 +93,8 @@ public class DataContextPerformQueryAPITest extends ServerCase {
     private void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {
         tArtist.insert(11, "artist2");
         tArtist.insert(101, "artist3");
-        tPainting.insert(6, "p_artist3", 101, 1000);
-        tPainting.insert(7, "p_artist2", 11, 2000);
+        tPainting.insert(6, 101, "p_artist3", 1000);
+        tPainting.insert(7, 11, "p_artist2", 2000);
     }
 
     public void testObjectQueryStringBoolean() throws Exception {
@@ -148,8 +153,12 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(1, artists.size());
 
         Artist artist = (Artist) artists.get(0);
-        assertEquals(11, ((Number) artist.getObjectId().getIdSnapshot().get(
-                Artist.ARTIST_ID_PK_COLUMN)).intValue());
+        assertEquals(
+                11,
+                ((Number) artist
+                        .getObjectId()
+                        .getIdSnapshot()
+                        .get(Artist.ARTIST_ID_PK_COLUMN)).intValue());
     }
 
     public void testNonSelectingQueryString() throws Exception {

@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,7 +70,12 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
                 "PAINTING_TITLE",
                 "ARTIST_ID",
                 "ESTIMATED_PRICE",
-                "GALLERY_ID");
+                "GALLERY_ID").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.BIGINT,
+                Types.DECIMAL,
+                Types.INTEGER);
 
         TableHelper tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
@@ -113,8 +119,9 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
 
         assertNotNull(objects);
         assertEquals(8, objects.size());
-        assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
-                .get(0) instanceof CompoundPainting);
+        assertTrue(
+                "CompoundPainting expected, got " + objects.get(0).getClass(),
+                objects.get(0) instanceof CompoundPainting);
 
         for (Iterator<?> i = objects.iterator(); i.hasNext();) {
             CompoundPainting painting = (CompoundPainting) i.next();
@@ -122,16 +129,18 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
                     .getObjectId()
                     .getIdSnapshot()
                     .get("PAINTING_ID");
-            assertEquals("CompoundPainting.getPaintingTitle(): "
-                    + painting.getPaintingTitle(), "painting" + id, painting
-                    .getPaintingTitle());
+            assertEquals(
+                    "CompoundPainting.getPaintingTitle(): " + painting.getPaintingTitle(),
+                    "painting" + id,
+                    painting.getPaintingTitle());
             if (painting.getToPaintingInfo() == null) {
                 assertNull(painting.getTextReview());
             }
             else {
-                assertEquals("CompoundPainting.getTextReview(): "
-                        + painting.getTextReview(), "painting review" + id, painting
-                        .getTextReview());
+                assertEquals(
+                        "CompoundPainting.getTextReview(): " + painting.getTextReview(),
+                        "painting review" + id,
+                        painting.getTextReview());
             }
             assertEquals(
                     "CompoundPainting.getArtistName(): " + painting.getArtistName(),
@@ -141,10 +150,10 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
                 assertNull(painting.getGalleryName());
             }
             else {
-                assertEquals("CompoundPainting.getGalleryName(): "
-                        + painting.getGalleryName(), painting
-                        .getToGallery()
-                        .getGalleryName(), painting.getGalleryName());
+                assertEquals(
+                        "CompoundPainting.getGalleryName(): " + painting.getGalleryName(),
+                        painting.getToGallery().getGalleryName(),
+                        painting.getGalleryName());
             }
         }
     }
@@ -155,14 +164,16 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
     // 14/01/2010 now it uses LEFT JOIN
     public void testSelectCompound2() throws Exception {
         createTestDataSet();
-        SelectQuery query = new SelectQuery(CompoundPainting.class, ExpressionFactory
-                .matchExp("artistName", "artist2"));
+        SelectQuery query = new SelectQuery(
+                CompoundPainting.class,
+                ExpressionFactory.matchExp("artistName", "artist2"));
         List<?> objects = context.performQuery(query);
 
         assertNotNull(objects);
         assertEquals(2, objects.size());
-        assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
-                .get(0) instanceof CompoundPainting);
+        assertTrue(
+                "CompoundPainting expected, got " + objects.get(0).getClass(),
+                objects.get(0) instanceof CompoundPainting);
 
         for (Iterator<?> i = objects.iterator(); i.hasNext();) {
             CompoundPainting painting = (CompoundPainting) i.next();
@@ -201,8 +212,9 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
 
         assertNotNull(objects);
         assertEquals(2, objects.size());
-        assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
-                .get(0) instanceof CompoundPainting);
+        assertTrue(
+                "CompoundPainting expected, got " + objects.get(0).getClass(),
+                objects.get(0) instanceof CompoundPainting);
         Iterator<?> i = objects.iterator();
         while (i.hasNext()) {
             CompoundPainting painting = (CompoundPainting) i.next();

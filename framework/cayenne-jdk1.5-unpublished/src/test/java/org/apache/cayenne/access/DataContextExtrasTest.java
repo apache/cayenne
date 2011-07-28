@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +55,7 @@ public class DataContextExtrasTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
-    
+
     @Inject
     protected JdbcEventLogger logger;
 
@@ -76,9 +77,13 @@ public class DataContextExtrasTest extends ServerCase {
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
-                "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "PAINTING_TITLE",
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
     }
 
     protected void createPhantomModificationDataSet() throws Exception {
@@ -88,7 +93,7 @@ public class DataContextExtrasTest extends ServerCase {
 
     protected void createPhantomModificationsValidateToOneDataSet() throws Exception {
         tArtist.insert(33001, "artist1");
-        tPainting.insert(33001, "P1", 33001, 3000);
+        tPainting.insert(33001, 33001, "P1", 3000);
     }
 
     protected void createValidateOnToManyChangeDataSet() throws Exception {
@@ -98,7 +103,7 @@ public class DataContextExtrasTest extends ServerCase {
     protected void createPhantomRelationshipModificationCommitDataSet() throws Exception {
         tArtist.insert(33001, "artist1");
         tArtist.insert(33002, "artist2");
-        tPainting.insert(33001, "P1", 33001, 3000);
+        tPainting.insert(33001, 33001, "P1", 3000);
     }
 
     public void testManualIdProcessingOnCommit() throws Exception {
@@ -163,8 +168,9 @@ public class DataContextExtrasTest extends ServerCase {
         DataContext context = (DataContext) this.context;
         assertTrue("No changes expected in context", !context.hasChanges());
         context.newObject("Artist");
-        assertTrue("Object added to context, expected to report changes", context
-                .hasChanges());
+        assertTrue(
+                "Object added to context, expected to report changes",
+                context.hasChanges());
     }
 
     public void testNewObject() {
@@ -328,8 +334,9 @@ public class DataContextExtrasTest extends ServerCase {
         p1.resetValidationFlags();
         context.commitChanges();
 
-        assertFalse("To-one relationship presence caused incorrect validation call.", p1
-                .isValidateForSaveCalled());
+        assertFalse(
+                "To-one relationship presence caused incorrect validation call.",
+                p1.isValidateForSaveCalled());
     }
 
     public void testValidateOnToManyChange() throws Exception {
