@@ -89,7 +89,7 @@ public class ServerRuntimeIntegrationTest extends ServerRuntimeCase {
 		DBHelper dbUtils = getDbUtils();
 		dbUtils.deleteAll("TABLE1");
 		dbUtils.insert("TABLE1", new String[] { "ID", "NAME" }, new Object[] {
-				1, "Abc" });
+				1, "Abc" }, null);
 
 		SelectQuery query = new SelectQuery(Table1.class);
 

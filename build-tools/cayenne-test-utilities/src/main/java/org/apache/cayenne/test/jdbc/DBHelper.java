@@ -81,9 +81,11 @@ public class DBHelper {
     }
 
     /**
-     * Inserts a single row.
+     * Inserts a single row. Columns types can be null and will be determined from
+     * ParameterMetaData in this case. The later scenario will not work if values contains
+     * nulls and the DB is Oracle.
      */
-    public void insert(String table, String[] columns, Object[] values)
+    public void insert(String table, String[] columns, Object[] values, int[] columnTypes)
             throws SQLException {
 
         if (columns.length != values.length) {
@@ -122,12 +124,22 @@ public class DBHelper {
 
                     if (values[i] == null) {
 
-                        // check for the right NULL type
-                        if (parameters == null) {
-                            parameters = st.getParameterMetaData();
+                        int type;
+
+                        if (columnTypes == null) {
+
+                            // check for the right NULL type
+                            if (parameters == null) {
+                                parameters = st.getParameterMetaData();
+                            }
+
+                            type = parameters.getParameterType(i + 1);
+                        }
+                        else {
+                            type = columnTypes[i];
                         }
 
-                        st.setNull(i + 1, parameters.getParameterType(i + 1));
+                        st.setNull(i + 1, type);
                     }
                     else {
                         st.setObject(i + 1, values[i]);
@@ -144,6 +156,7 @@ public class DBHelper {
         finally {
             c.close();
         }
+
     }
 
     public int deleteAll(String tableName) throws SQLException {

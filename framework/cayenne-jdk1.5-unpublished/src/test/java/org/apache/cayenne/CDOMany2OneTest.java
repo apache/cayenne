@@ -37,6 +37,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.hsqldb.Types;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class CDOMany2OneTest extends ServerCase {
@@ -68,7 +69,9 @@ public class CDOMany2OneTest extends ServerCase {
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
-        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
+        tPainting
+                .setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.INTEGER);
 
         tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");

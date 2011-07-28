@@ -31,6 +31,7 @@ public class TableHelper {
     protected String tableName;
     protected DBHelper dbHelper;
     protected String[] columns;
+    protected int[] columnTypes;
 
     public TableHelper(DBHelper dbHelper, String tableName) {
         this.dbHelper = dbHelper;
@@ -66,6 +67,16 @@ public class TableHelper {
         return this;
     }
 
+    /**
+     * Sets JDBC types of the table columns. Setting column types may be needed when
+     * inserting NULL values in certain DB's (Oracle) that can't figure out parameter
+     * types from PreparedStatement metadata.
+     */
+    public TableHelper setColumnTypes(int... columnTypes) {
+        this.columnTypes = columnTypes;
+        return this;
+    }
+
     public TableHelper insert(Object... values) throws SQLException {
         if (this.columns == null) {
             throw new IllegalStateException("Call 'setColumns' to prepare insert");
@@ -76,7 +87,13 @@ public class TableHelper {
                     "Columns and values arrays are of different size");
         }
 
-        dbHelper.insert(tableName, columns, values);
+        if (columnTypes != null && columns.length != columnTypes.length) {
+            throw new IllegalArgumentException(
+                    "Columns and columnTypes arrays are of different size");
+        }
+
+        dbHelper.insert(tableName, columns, values, columnTypes);
+
         return this;
     }
 
