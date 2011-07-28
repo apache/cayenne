@@ -121,6 +121,10 @@
 			<groupId>mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
