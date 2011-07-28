@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.hsqldb.Types;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class CDOMany2OneTest extends ServerCase {

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +36,6 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.hsqldb.Types;
 
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes
@@ -103,8 +103,9 @@ public class DataContextRefreshingTest extends ServerCase {
         String nameBefore = "artist2";
         String nameAfter = "not an artist";
 
-        SelectQuery queryBefore = new SelectQuery(Artist.class, ExpressionFactory
-                .matchExp("artistName", nameBefore));
+        SelectQuery queryBefore = new SelectQuery(
+                Artist.class,
+                ExpressionFactory.matchExp("artistName", nameBefore));
 
         Artist artist = (Artist) context.performQuery(queryBefore).get(0);
         assertEquals(nameBefore, artist.getArtistName());
@@ -115,8 +116,9 @@ public class DataContextRefreshingTest extends ServerCase {
         List<Artist> artists = context.performQuery(queryBefore);
         assertEquals(0, artists.size());
 
-        SelectQuery queryAfter = new SelectQuery(Artist.class, ExpressionFactory
-                .matchExp("artistName", nameAfter));
+        SelectQuery queryAfter = new SelectQuery(
+                Artist.class,
+                ExpressionFactory.matchExp("artistName", nameAfter));
 
         artist = (Artist) context.performQuery(queryAfter).get(0);
         assertNotNull(artist);

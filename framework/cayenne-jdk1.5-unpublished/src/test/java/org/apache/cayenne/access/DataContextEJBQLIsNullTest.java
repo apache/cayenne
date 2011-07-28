@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
@@ -53,7 +54,7 @@ public class DataContextEJBQLIsNullTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
-        
+
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
@@ -62,7 +63,11 @@ public class DataContextEJBQLIsNullTest extends ServerCase {
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
     }
 
     private void createTwoPaintings() throws Exception {

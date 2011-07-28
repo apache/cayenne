@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
@@ -61,7 +62,11 @@ public class DataContextEJBQLDeleteTest extends ServerCase {
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR,
+                Types.DECIMAL);
 
         tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
         tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");

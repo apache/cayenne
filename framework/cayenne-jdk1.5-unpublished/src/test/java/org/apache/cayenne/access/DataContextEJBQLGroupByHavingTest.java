@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -67,7 +68,12 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
                 "ARTIST_ID",
                 "GALLERY_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.DECIMAL);
 
         tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");

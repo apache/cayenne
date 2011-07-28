@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -65,7 +66,12 @@ public class DataContextEJBQLJoinsTest extends ServerCase {
                 "ARTIST_ID",
                 "GALLERY_ID",
                 "PAINTING_TITLE",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.DECIMAL);
 
         tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
@@ -216,7 +222,7 @@ public class DataContextEJBQLJoinsTest extends ServerCase {
 
     public void testMultipleJoinsToTheSameTable() throws Exception {
         createTwoArtistsThreePaintings();
-        
+
         String ejbql = "SELECT a "
                 + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
                 + "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'";
