@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +87,11 @@ public class DataContextPrefetchTest extends ServerCase {
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.BIGINT,
+                Types.DECIMAL);
 
         tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");

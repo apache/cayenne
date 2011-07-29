@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.ashwood;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +58,11 @@ public class AshwoodEntitySorterTest extends ServerCase {
                 "REFLEXIVE_AND_TO_ONE_ID",
                 "PARENT_ID",
                 "RELATIONSHIP_HELPER_ID",
-                "NAME");
+                "NAME").setColumnTypes(
+                Types.INTEGER,
+                Types.INTEGER,
+                Types.INTEGER,
+                Types.VARCHAR);
     }
 
     public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {

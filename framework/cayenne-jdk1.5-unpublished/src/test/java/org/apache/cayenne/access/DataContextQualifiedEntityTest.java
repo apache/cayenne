@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
@@ -58,7 +59,14 @@ public class DataContextQualifiedEntityTest extends ServerCase {
                 "NAME",
                 "PERSON_ID",
                 "PERSON_TYPE",
-                "SALARY");
+                "SALARY").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.INTEGER,
+                Types.CHAR,
+                Types.FLOAT);
     }
 
     protected void createPersonsDataSet() throws Exception {

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
@@ -45,7 +46,12 @@ public class DataContextEJBQLInheritanceTest extends ServerCase {
         dbHelper.deleteAll("PERSON");
 
         TableHelper person = new TableHelper(dbHelper, "PERSON");
-        person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY");
+        person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY")
+                .setColumnTypes(
+                        Types.INTEGER, 
+                        Types.VARCHAR, 
+                        Types.CHAR,
+                        Types.FLOAT);
 
         person.insert(1, "a", "EE", 20000);
         person.insert(2, "b", "EE", 25000);

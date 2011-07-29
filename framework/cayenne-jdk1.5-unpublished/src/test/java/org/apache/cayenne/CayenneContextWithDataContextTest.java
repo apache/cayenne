@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,7 +75,8 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
 
         tMtTable2 = new TableHelper(dbHelper, "MT_TABLE2");
-        tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE");
+        tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE").setColumnTypes(
+                Types.INTEGER, Types.INTEGER, Types.VARCHAR);
 
         tMtMeaningfulPK = new TableHelper(dbHelper, "MT_MEANINGFUL_PK");
         tMtMeaningfulPK.setColumns("PK");

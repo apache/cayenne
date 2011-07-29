@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,8 @@ public class OptimisticLockingTest extends ServerCase {
         dbHelper.deleteAll("SIMPLE_LOCKING_TEST");
 
         tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
-        tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION");
+        tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
         tRelLockingTest = new TableHelper(dbHelper, "REL_LOCKING_TEST");
         tRelLockingTest.setColumns(

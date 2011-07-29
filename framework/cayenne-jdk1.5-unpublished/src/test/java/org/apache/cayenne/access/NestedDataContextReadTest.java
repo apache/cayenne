@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -74,7 +75,11 @@ public class NestedDataContextReadTest extends ServerCase {
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.BIGINT,
+                Types.DECIMAL);
     }
 
     private void createArtistsDataSet() throws Exception {

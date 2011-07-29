@@ -77,7 +77,13 @@ public class SingleTableInheritanceTest extends ServerCase {
                 "PERSON_TYPE",
                 "SALARY",
                 "CLIENT_COMPANY_ID",
-                "DEPARTMENT_ID");
+                "DEPARTMENT_ID").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.CHAR,
+                Types.FLOAT,
+                Types.INTEGER,
+                Types.INTEGER);
 
         tAddress = new TableHelper(dbHelper, "ADDRESS");
         tAddress.setColumns("ADDRESS_ID", "CITY", "PERSON_ID");

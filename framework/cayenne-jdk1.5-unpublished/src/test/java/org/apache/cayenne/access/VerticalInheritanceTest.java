@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -234,7 +235,8 @@ public class VerticalInheritanceTest extends ServerCase {
     public void testSelectQuery_SuperSub() throws Exception {
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
-        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+                Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
@@ -273,7 +275,8 @@ public class VerticalInheritanceTest extends ServerCase {
     public void testSelectQuery_DeepAndWide() throws Exception {
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
-        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+                Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
@@ -339,7 +342,8 @@ public class VerticalInheritanceTest extends ServerCase {
     public void testSelectQuery_MiddleLeaf() throws Exception {
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
-        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+                Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
@@ -394,7 +398,8 @@ public class VerticalInheritanceTest extends ServerCase {
     public void testDelete_Mix() throws Exception {
 
         TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
-        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+                Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
         TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
         ivSub1Table.setColumns("ID", "SUB1_NAME");
@@ -451,7 +456,8 @@ public class VerticalInheritanceTest extends ServerCase {
     public void testSelectQuery_AttributeOverrides() throws Exception {
 
         TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");
-        iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+        iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+                Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
         TableHelper iv1Sub1Table = new TableHelper(dbHelper, "IV1_SUB1");
         iv1Sub1Table.setColumns("ID", "SUB1_NAME");

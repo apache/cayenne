@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +80,11 @@ public class DataContextSQLTemplateTest extends ServerCase {
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.BIGINT,
+                Types.DECIMAL);
 
         tCompoundPkTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPkTest.setColumns("KEY1", "KEY2");

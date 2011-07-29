@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,7 +76,8 @@ public class FlattenedRelationshipsTest extends ServerCase {
         tFlattenedTest2.setColumns("FT2_ID", "FT1_ID", "NAME");
 
         tFlattenedTest3 = new TableHelper(dbHelper, "FLATTENED_TEST_3");
-        tFlattenedTest3.setColumns("FT3_ID", "FT2_ID", "NAME");
+        tFlattenedTest3.setColumns("FT3_ID", "FT2_ID", "NAME").setColumnTypes(
+                Types.INTEGER, Types.INTEGER, Types.VARCHAR);
 
         tComplexJoin = new TableHelper(dbHelper, "COMPLEX_JOIN");
         tComplexJoin.setColumns("PK", "FT1_FK", "FT3_FK", "EXTRA_COLUMN");

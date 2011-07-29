@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.di.Inject;
@@ -51,7 +52,11 @@ public class CayenneContextInheritanceTest extends ClientCase {
                 "TABLE1_ID",
                 "GLOBAL_ATTRIBUTE1",
                 "SERVER_ATTRIBUTE1",
-                "SUBCLASS_ATTRIBUTE1");
+                "SUBCLASS_ATTRIBUTE1").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.VARCHAR,
+                Types.VARCHAR);
     }
 
     public void testInsertSubclass() throws Exception {

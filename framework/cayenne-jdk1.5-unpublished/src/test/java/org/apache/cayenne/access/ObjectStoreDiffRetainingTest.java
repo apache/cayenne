@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -49,7 +51,8 @@ public class ObjectStoreDiffRetainingTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
+                .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
@@ -57,7 +60,12 @@ public class ObjectStoreDiffRetainingTest extends ServerCase {
                 "ESTIMATED_PRICE",
                 "GALLERY_ID",
                 "PAINTING_ID",
-                "PAINTING_TITLE");
+                "PAINTING_TITLE").setColumnTypes(
+                 Types.BIGINT,
+                 Types.DECIMAL,
+                 Types.INTEGER,
+                 Types.INTEGER,
+                 Types.VARCHAR);
     }
 
     protected void createMixedDataSet() throws Exception {

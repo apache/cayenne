@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,7 +77,11 @@ public class NestedDataContextWriteTest extends ServerCase {
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.BIGINT,
+                Types.DECIMAL);
 
         tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW", "IMAGE_BLOB");

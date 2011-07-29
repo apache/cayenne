@@ -73,7 +73,11 @@ public class DataContextRefreshingTest extends ServerCase {
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
-                "ESTIMATED_PRICE");
+                "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                Types.BIGINT,
+                Types.DECIMAL);
     }
 
     protected void createSingleArtistDataSet() throws Exception {

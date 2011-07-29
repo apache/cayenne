@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
@@ -57,7 +58,10 @@ public class DataContextOuterJoinsTest extends ServerCase {
                 "PAINTING",
                 "PAINTING_ID",
                 "ARTIST_ID",
-                "PAINTING_TITLE");
+                "PAINTING_TITLE").setColumnTypes(
+                Types.INTEGER,
+                Types.BIGINT,
+                Types.VARCHAR);
 
         artgroupHelper = new TableHelper(dbHelper, "ARTGROUP", "GROUP_ID", "NAME");
         artistGroupHelper = new TableHelper(
