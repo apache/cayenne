@@ -39,7 +39,7 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new Oracle8SQLTemplateAction(query, adapter, getEntityResolver());
+        return new OracleSQLTemplateAction(query, adapter, getEntityResolver());
     }
 
     @Override
