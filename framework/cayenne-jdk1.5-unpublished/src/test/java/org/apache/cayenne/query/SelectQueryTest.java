@@ -324,7 +324,7 @@ public class SelectQueryTest extends ServerCase {
     }
 
     public void testSelectEqualsClob() throws Exception {
-        if (accessStackAdapter.supportsLobs()) {
+        if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
             SelectQuery query = new SelectQuery(ClobTestEntity.class);
             Expression qual = ExpressionFactory.matchExp("clobCol", "clob1");
@@ -335,7 +335,7 @@ public class SelectQueryTest extends ServerCase {
     }
 
     public void testSelectNotEqualsClob() throws Exception {
-        if (accessStackAdapter.supportsLobs()) {
+        if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
             SelectQuery query = new SelectQuery(ClobTestEntity.class);
             Expression qual = ExpressionFactory.noMatchExp("clobCol", "clob1");

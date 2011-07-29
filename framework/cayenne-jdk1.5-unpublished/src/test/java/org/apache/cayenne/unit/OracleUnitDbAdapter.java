@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.unit;
 
 import java.sql.Connection;
@@ -53,7 +52,7 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsStoredProcedures() {
         return true;
     }
-    
+
     @Override
     public boolean supportsBoolean() {
         return false;
@@ -95,6 +94,13 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     @Override
     public boolean supportsLobs() {
         return true;
+    }
+
+    @Override
+    public boolean supportsLobComparisons() {
+        // we can actually allow LOB comparisons with some Oracle trickery. E.g.:
+        // DBMS_LOB.SUBSTR(CLOB_COLUMN, LENGTH('string') + 1, 1) = 'string'
+        return false;
     }
 
     @Override

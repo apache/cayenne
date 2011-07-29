@@ -199,6 +199,10 @@ public class UnitDbAdapter {
     public boolean supportsLobs() {
         return false;
     }
+    
+    public boolean supportsLobComparisons() {
+        return supportsLobs();
+    }
 
     public boolean supportsBinaryPK() {
         return true;
