@@ -29,8 +29,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 
-/**
- */
 public class PostgresUnitDbAdapter extends UnitDbAdapter {
 
     public PostgresUnitDbAdapter(DbAdapter adapter) {

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.di.Inject;
@@ -50,11 +51,20 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
         dbHelper.deleteAll("QUALIFIED2");
         dbHelper.deleteAll("QUALIFIED1");
 
+        int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
+
         tQualified1 = new TableHelper(dbHelper, "QUALIFIED1");
-        tQualified1.setColumns("ID", "NAME", "DELETED");
+        tQualified1.setColumns("ID", "NAME", "DELETED").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                bool);
 
         tQualified2 = new TableHelper(dbHelper, "QUALIFIED2");
-        tQualified2.setColumns("ID", "NAME", "DELETED", "QUALIFIED1_ID");
+        tQualified2.setColumns("ID", "NAME", "DELETED", "QUALIFIED1_ID").setColumnTypes(
+                Types.INTEGER,
+                Types.VARCHAR,
+                bool,
+                Types.INTEGER);
     }
 
     private void createReadToManyDataSet() throws Exception {

@@ -53,6 +53,11 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsStoredProcedures() {
         return true;
     }
+    
+    @Override
+    public boolean supportsBoolean() {
+        return false;
+    }
 
     @Override
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)

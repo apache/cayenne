@@ -337,4 +337,8 @@ public class UnitDbAdapter {
     public boolean supportsNullBoolean() {
         return true;
     }
+    
+    public boolean supportsBoolean() {
+        return true;
+    }
 }
