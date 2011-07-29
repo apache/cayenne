@@ -114,6 +114,34 @@ public class JointPrefetchTest extends ServerCase {
         tPainting.insert(33003, "P_artist21", 33002, 3000, 33002);
     }
     
+    public void testJointPrefetchWithFetchLimit() throws Exception {
+        createJointPrefetchDataSet1();
+        
+        SelectQuery q = new SelectQuery(Painting.class);
+        q.setFetchLimit(2);
+        q.setFetchOffset(0);
+        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
+        q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
+                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        
+        final List<?> objects = context.performQuery(q);
+        
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            
+            public void execute() {
+                assertEquals(2, objects.size());
+
+                Iterator<?> it = objects.iterator();
+                while (it.hasNext()) {
+                    Painting p = (Painting) it.next();
+                    Artist target = p.getToArtist();
+                    assertNotNull(target);
+                    assertEquals(PersistenceState.COMMITTED, target.getPersistenceState());
+                }
+            }
+        });
+    }
+    
     public void testJointPrefetchDataRows() throws Exception {
         createJointPrefetchDataSet1();
 
