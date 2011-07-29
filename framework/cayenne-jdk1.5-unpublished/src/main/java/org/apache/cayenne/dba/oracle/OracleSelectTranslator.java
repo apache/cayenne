@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.oracle;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 
 import org.apache.cayenne.access.trans.SelectTranslator;
 
@@ -43,6 +44,25 @@ class OracleSelectTranslator extends SelectTranslator {
                     .append(max)
                     .append(") where rnum  > ")
                     .append(offset);
+        }
+    }
+    
+    @Override
+    protected void appendSelectColumns(StringBuilder buffer, List<String> selectColumnExpList) {
+        
+        // we need to add aliases to all columns to make fetch
+        // limit and offset work properly on Oracle (see CAY-1266)
+        
+        // append columns (unroll the loop's first element)
+        int columnCount = selectColumnExpList.size();
+        buffer.append(selectColumnExpList.get(0)).append(" AS c0");
+
+        // assume there is at least 1 element
+        for (int i = 1; i < columnCount; i++) {
+            buffer.append(", ");
+            buffer
+                    .append(selectColumnExpList.get(i))
+                    .append(" AS c" + i);
         }
     }
 

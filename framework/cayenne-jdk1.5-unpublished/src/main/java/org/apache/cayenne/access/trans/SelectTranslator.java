@@ -174,15 +174,7 @@ public class SelectTranslator extends QueryAssembler {
             }
         }
 
-        // append columns (unroll the loop's first element)
-        int columnCount = selectColumnExpList.size();
-        queryBuf.append(selectColumnExpList.get(0));
-
-        // assume there is at least 1 element
-        for (int i = 1; i < columnCount; i++) {
-            queryBuf.append(", ");
-            queryBuf.append(selectColumnExpList.get(i));
-        }
+        appendSelectColumns(queryBuf, selectColumnExpList);
 
         // append from clause
         queryBuf.append(" FROM ");
@@ -212,6 +204,22 @@ public class SelectTranslator extends QueryAssembler {
         }
 
         return queryBuf.toString();
+    }
+    
+    /**
+     * @since 3.1
+     */
+    protected void appendSelectColumns(StringBuilder buffer, List<String> selectColumnExpList) {
+        
+        // append columns (unroll the loop's first element)
+        int columnCount = selectColumnExpList.size();
+        buffer.append(selectColumnExpList.get(0));
+
+        // assume there is at least 1 element
+        for (int i = 1; i < columnCount; i++) {
+            buffer.append(", ");
+            buffer.append(selectColumnExpList.get(i));
+        }
     }
 
     /**
