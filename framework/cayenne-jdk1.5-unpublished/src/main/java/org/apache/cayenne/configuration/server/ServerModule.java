@@ -39,8 +39,10 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
+import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
+import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
@@ -186,5 +188,8 @@ public class ServerModule implements Module {
         
         // a default ObjectMapRetainStrategy used to create objects map for ObjectStore
         binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
+        
+        // a default ObjectStoreFactory used to create ObjectStores for contexts
+        binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
     }
 }

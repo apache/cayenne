@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -41,6 +42,9 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
+    
+    @Inject
+    private ObjectStoreFactory objectStoreFactory;
 
     @Inject
     private DBHelper dbHelper;
@@ -61,8 +65,10 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
                 Collections.EMPTY_MAP,
                 new DefaultEventManager());
 
-        c1 = new DataContext(runtime.getDataDomain(), new ObjectStore(cache));
-        c2 = new DataContext(runtime.getDataDomain(), new ObjectStore(cache));
+        c1 = new DataContext(runtime.getDataDomain(), 
+                objectStoreFactory.createObjectStore(cache));
+        c2 = new DataContext(runtime.getDataDomain(), 
+                objectStoreFactory.createObjectStore(cache));
 
         // prepare a single artist record
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");

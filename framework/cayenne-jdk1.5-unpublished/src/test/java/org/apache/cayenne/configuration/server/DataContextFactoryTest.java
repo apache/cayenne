@@ -29,7 +29,9 @@ import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -60,6 +62,7 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(RuntimeProperties.class).toInstance(
                         new DefaultRuntimeProperties(Collections.EMPTY_MAP));
                 binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
+                binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder
                         .bind(
                                 Key.get(
@@ -97,6 +100,7 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(RuntimeProperties.class).toInstance(
                         new DefaultRuntimeProperties(Collections.EMPTY_MAP));
                 binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
+                binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder
                         .bind(
                                 Key.get(

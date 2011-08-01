@@ -97,7 +97,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     protected transient DataRowStore dataRowCache;
 
     // used to avoid incorrect on-demand DataRowStore initialization after deserialization
-    private boolean dataRowCacheSet;
+    protected boolean dataRowCacheSet;
 
     private Collection<GraphDiff> lifecycleEventInducedChanges;
 

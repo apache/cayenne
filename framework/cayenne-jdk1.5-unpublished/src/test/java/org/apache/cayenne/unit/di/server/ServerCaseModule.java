@@ -23,9 +23,15 @@ import javax.sql.DataSource;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
+import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.DefaultAdhocObjectFactory;
+import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.ObjectStoreFactory;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
@@ -114,9 +120,13 @@ public class ServerCaseModule implements Module {
                 IngresUnitDbAdapter.class.getName()).put(
                 SQLiteAdapter.class.getName(),
                 SQLiteUnitDbAdapter.class.getName());
+        binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+        binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+        binder.bind(ObjectMapRetainStrategy.class).to(
+                DefaultObjectMapRetainStrategy.class);
 
         // singleton objects
         binder.bind(UnitTestLifecycleManager.class).toInstance(
@@ -143,6 +153,7 @@ public class ServerCaseModule implements Module {
         binder.bind(ServerCaseDataSourceFactory.class).to(
                 ServerCaseDataSourceFactory.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+        binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
 
         // test-scoped objects
         binder.bind(EntityResolver.class).toProvider(
