@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.util.Map;
-
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.access.NoSyncObjectStore;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
@@ -43,13 +40,9 @@ public class DefaultObjectStoreFactory implements ObjectStoreFactory {
     protected ObjectMapRetainStrategy retainStrategy;
     
     public ObjectStore createObjectStore(DataRowStore dataRowCache) {
-        return createObjectStore(dataRowCache, retainStrategy.createObjectMap());
-    }
-
-    public ObjectStore  createObjectStore(DataRowStore dataRowCache, Map<Object, Persistent> objectMap) {
         boolean sync = runtimeProperties.getBoolean(SYNC_PROPERTY, true);
         
-        return sync ? new ObjectStore(dataRowCache, objectMap) 
-                : new NoSyncObjectStore(dataRowCache, objectMap);
+        return sync ? new ObjectStore(dataRowCache, retainStrategy.createObjectMap()) 
+                : new NoSyncObjectStore(dataRowCache, retainStrategy.createObjectMap());
     }
 }

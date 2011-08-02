@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.util.Map;
-
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.access.ObjectStore;
 
@@ -37,10 +34,5 @@ public interface ObjectStoreFactory {
      * Creates an {@link ObjectStore} with provided dataRowCache
      */
     ObjectStore createObjectStore(DataRowStore dataRowCache);
-    
-    /**
-     * Creates an {@link ObjectStore} with provided dataRowCache and objectMap
-     */
-    ObjectStore createObjectStore(DataRowStore dataRowCache, Map<Object, Persistent> objectMap);
 
 }

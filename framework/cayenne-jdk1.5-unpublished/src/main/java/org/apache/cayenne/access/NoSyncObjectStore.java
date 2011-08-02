@@ -36,18 +36,8 @@ public class NoSyncObjectStore extends ObjectStore {
     
     @Override
     public void setDataRowCache(DataRowStore dataRowCache) {
-        if (dataRowCache == this.dataRowCache) {
-            return;
-        }
-
-        if (this.dataRowCache != null && this.dataRowCache.getEventManager() != null) {
-            this.dataRowCache.getEventManager().removeListener(
-                    this,
-                    this.dataRowCache.getSnapshotEventSubject());
-        }
 
         this.dataRowCache = dataRowCache;
-
         dataRowCacheSet = dataRowCache != null;
     }
 
