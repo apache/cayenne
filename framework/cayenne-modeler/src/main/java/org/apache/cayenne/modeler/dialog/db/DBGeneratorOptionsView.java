@@ -29,6 +29,7 @@ import java.awt.GridLayout;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -58,6 +59,7 @@ public class DBGeneratorOptionsView extends JDialog {
     protected JCheckBox dropPK;
     protected Component tables;
     protected JTabbedPane tabs;
+    protected JComboBox adapters;
 
     public DBGeneratorOptionsView(Component tables) {
         // create widgets
@@ -71,6 +73,8 @@ public class DBGeneratorOptionsView extends JDialog {
         this.dropPK = new JCheckBox("Drop Primary Key Support");
         this.tables = tables;
         this.tabs = new JTabbedPane(SwingConstants.TOP);
+        this.adapters = new JComboBox();
+        adapters.setEditable(true);
         this.sql = new JTextArea();
         sql.setEditable(false);
         sql.setLineWrap(true);
@@ -90,16 +94,21 @@ public class DBGeneratorOptionsView extends JDialog {
                 sql,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
+        
+        JPanel adapterPanel = new JPanel(new BorderLayout());
+        adapterPanel.add(adapters);
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "fill:min(50dlu;pref):grow",
-                "p, 3dlu, p, 9dlu, p, 3dlu, fill:40dlu:grow"));
+                "p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:40dlu:grow"));
         builder.setDefaultDialogBorder();
         builder.addSeparator("Options", cc.xywh(1, 1, 1, 1));
         builder.add(optionsPane, cc.xy(1, 3, "left,fill"));
-        builder.addSeparator("Generated SQL", cc.xywh(1, 5, 1, 1));
-        builder.add(sqlTextPanel, cc.xy(1, 7));
+        builder.addSeparator("Adapter", cc.xywh(1, 5, 1, 1));
+        builder.add(adapterPanel, cc.xy(1, 7));
+        builder.addSeparator("Generated SQL", cc.xywh(1, 9, 1, 1));
+        builder.add(sqlTextPanel, cc.xy(1, 11));
 
         tabs.addTab("SQL Options", builder.getPanel());
         tabs.addTab("Tables", new JScrollPane(
@@ -109,7 +118,7 @@ public class DBGeneratorOptionsView extends JDialog {
 
         // we need the right preferred size so that dialog "pack()" produces decent
         // default size...
-        tabs.setPreferredSize(new Dimension(450, 350));
+        tabs.setPreferredSize(new Dimension(450, 500));
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(saveSqlButton);
@@ -161,5 +170,9 @@ public class DBGeneratorOptionsView extends JDialog {
 
     public JTextArea getSql() {
         return sql;
+    }
+    
+    public JComboBox getAdapters() {
+        return adapters;
     }
 }
