@@ -80,4 +80,21 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
         assertFalse("XYZ".equals(md1.getCacheKey()));
     }
 
+    public void testCacheFetchLimitAndOffset() {
+        EntityResolver resolver = getDomain().getEntityResolver();
+        
+        SQLTemplate q1 = new SQLTemplate(Artist.class, "SELECT ME");
+        q1.setFetchOffset(5);
+        q1.setFetchLimit(10);
+        q1.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        
+        SQLTemplate q2 = new SQLTemplate(Artist.class, "SELECT ME");
+        q2.setFetchOffset(5);
+        q2.setFetchLimit(10);
+        q2.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
+                .getMetaData(resolver)
+                .getCacheKey());
+    }
 }

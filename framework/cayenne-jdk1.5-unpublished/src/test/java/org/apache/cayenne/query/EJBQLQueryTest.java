@@ -56,12 +56,16 @@ public class EJBQLQueryTest extends CayenneCase {
         EJBQLQuery q1 = new EJBQLQuery(ejbql1);
         q1.setParameter(1, "X");
         q1.setParameter("name", "Y");
+        q1.setFetchOffset(1);
+        q1.setFetchLimit(5);
         q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         String ejbql2 = "select a FROM Artist a WHERE a.artistName = ?1 OR a.artistName = :name";
         EJBQLQuery q2 = new EJBQLQuery(ejbql2);
         q2.setParameter(1, "X");
         q2.setParameter("name", "Y");
+        q2.setFetchOffset(1);
+        q2.setFetchLimit(5);
         q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         EntityResolver resolver = getDomain().getEntityResolver();
