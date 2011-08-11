@@ -178,15 +178,19 @@ public class LifecycleCallbackRegistry {
                     if (reader != null) {
 
                         Set<Class<?>> types = new HashSet<Class<?>>();
-                        for (Class<?> type : reader.entities(a)) {
+                        
+                        Class<?>[] entities = reader.entities(a);
+                        Class<? extends Annotation>[] entityAnnotations = 
+                                reader.entityAnnotations(a);
+                        
+                        for (Class<?> type : entities) {
                             // TODO: ignoring entity subclasses? whenever we add those,
                             // take
                             // into account "exlcudeSuperclassListeners" flag
                             types.add(type);
                         }
 
-                        for (Class<? extends Annotation> type : reader
-                                .entityAnnotations(a)) {
+                        for (Class<? extends Annotation> type : entityAnnotations) {
                             types.addAll(getAnnotatedEntities(type));
                         }
 
@@ -195,6 +199,13 @@ public class LifecycleCallbackRegistry {
                                     type,
                                     listener,
                                     m);
+                        }
+                        
+                        // if no entities specified then adding global callback 
+                        if (entities.length == 0 && entityAnnotations.length == 0) {
+                            eventCallbacks[reader.eventType().ordinal()].addDefaultListener(
+                                    listener, 
+                                    m.getName());
                         }
                     }
                 }
