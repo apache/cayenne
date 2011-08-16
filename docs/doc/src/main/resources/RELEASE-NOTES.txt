@@ -34,6 +34,7 @@ Bug Fixes Since 3.1M2:
 
 CAY-1469 Modeler: dbRelationships renaming problem
 CAY-1526 Preferences: java.lang.IllegalArgumentException: Key too long
+CAY-1539 Incorrect offset handling on some queries against database with supported LIMIT/OFFSET clauses
 CAY-1546 cayenne-lifecycle: UuidBatchFault concurrency issues
 CAY-1555 Unpublished dependencies of Maven plugins
 CAY-1575 Error generating Embeddable classes in Cayenne Modeler
@@ -41,7 +42,7 @@ CAY-1577 SQL queries for LIKE expressions with escape character generated with s
 CAY-1581 Not-Escaping <> during serialization to *.map.xml
 CAY-1583 context.getObjectStore() returning null causing NullpointerException in DataMergeHandler
 CAY-1585 SelectQuery automatic cache key needs FetchOffset
-CAY-1539 Incorrect offset handling on some queries against database with supported LIMIT/OFFSET clauses
+CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
 
 ----------------------------------
 Release: 3.1 M2
@@ -143,6 +144,7 @@ CAY-1577 SQL queries for LIKE expressions with escape character generated with s
 CAY-1581 Not-Escaping <> during serialization to *.map.xml
 CAY-1583 context.getObjectStore() returning null causing NullpointerException in DataMergeHandler
 CAY-1585 SelectQuery automatic cache key needs FetchOffset
+CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
 
 ----------------------------------
 Release: 3.0.2

@@ -28,16 +28,17 @@ public class SQLServerSelectTranslator extends SelectTranslator {
         QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
         
         int limit = metadata.getFetchLimit();
+        int offset = metadata.getFetchOffset();
         
         if (limit > 0) {
         	String sql = buffer.toString();
         	
         	// If contains distinct insert top limit after
         	if (sql.startsWith("SELECT DISTINCT ")) {
-        		buffer.replace(0, 15, "SELECT DISTINCT TOP " + limit);	
+        		buffer.replace(0, 15, "SELECT DISTINCT TOP " + (offset + limit));	
         		
         	} else {
-        		buffer.replace(0, 6, "SELECT TOP " + limit);	
+        		buffer.replace(0, 6, "SELECT TOP " + (offset + limit));	
         	}
         }
     }
