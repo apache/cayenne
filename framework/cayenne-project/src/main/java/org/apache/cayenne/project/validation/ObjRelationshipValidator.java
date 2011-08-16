@@ -133,6 +133,36 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                 }
             }
         }
+        
+        // check for relationships with same source and target entities
+        ObjEntity entity = (ObjEntity) relationship.getSourceEntity();
+        for (ObjRelationship rel : entity.getRelationships()) {
+            if (relationship.getDbRelationshipPath().equals(rel.getDbRelationshipPath())) {
+                if (relationship != rel && 
+                        relationship.getTargetEntity() == rel.getTargetEntity() &&
+                        relationship.getSourceEntity() == rel.getSourceEntity()) {
+                    addFailure(
+                            validationResult, 
+                            relationship, 
+                            "ObjectRelationship '%s' duplicates relationship '%s'", 
+                            toString(relationship), 
+                            toString(rel));
+                }
+            }
+        }
+        
+        // check for invalid relationships in inherited entities
+        if (relationship.getReverseRelationship() != null) {
+            ObjRelationship revRel = relationship.getReverseRelationship();
+            if (relationship.getSourceEntity() != revRel.getTargetEntity() 
+                    || relationship.getTargetEntity() != revRel.getSourceEntity()) {
+                addFailure(
+                        validationResult,
+                        revRel,
+                        "Usage of super entity's relationships '%s' as reversed relationships for sub entity is discouraged",
+                        toString(revRel));
+            }
+        }
     }
 
     private String toString(ObjRelationship relationship) {
