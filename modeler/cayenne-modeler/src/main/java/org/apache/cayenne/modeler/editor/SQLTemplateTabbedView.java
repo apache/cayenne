@@ -106,4 +106,8 @@ public class SQLTemplateTabbedView extends JTabbedPane {
                 break;
         }
     }
+
+    public SQLTemplateScriptsTab getScriptsTab() {
+        return scriptsTab;
+    }
 }

@@ -38,6 +38,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.editor.EditorView;
+import org.apache.cayenne.modeler.editor.SQLTemplateTabbedView;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
@@ -49,6 +50,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private TreePath treePath;
     private int selectedTabIndex;
+    private int selectedItem;
     private JTabbedPane tabbedPane;
 
     private Object targetObject;
@@ -95,6 +97,12 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (targetObject instanceof SQLTemplate) {
             tabbedPane = editorView.getSqlTemplateView();
+            
+            if (tabbedPane != null) {
+                selectedItem = ((SQLTemplateTabbedView) tabbedPane)
+                        .getScriptsTab()
+                        .getSelectedIndex();
+            }
         }
 
         if (targetObject instanceof EJBQLQuery) {
@@ -129,6 +137,12 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (tabbedPane != null) {
             tabbedPane.setSelectedIndex(selectedTabIndex);
+            
+            if (tabbedPane instanceof SQLTemplateTabbedView) {
+                ((SQLTemplateTabbedView) tabbedPane)
+                        .getScriptsTab()
+                        .setSelectedIndex(selectedItem);
+            }
         }
     }
 

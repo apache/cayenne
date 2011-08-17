@@ -345,4 +345,12 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
             return c;
         }
     }
+    
+    public int getSelectedIndex() {
+        return scripts.getSelectedIndex();
+    }
+    
+    public void setSelectedIndex(int index) {
+        scripts.setSelectedIndex(index);
+    }
 }
