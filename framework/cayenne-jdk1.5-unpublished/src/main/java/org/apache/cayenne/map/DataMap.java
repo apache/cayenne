@@ -399,11 +399,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
             }
         }
 
-        // write entity listeners
-        for (EntityListener entityListener : getDefaultEntityListeners()) {
-            entityListener.encodeAsXML(encoder);
-        }
-
         encoder.indent(-1);
         encoder.println("</data-map>");
     }

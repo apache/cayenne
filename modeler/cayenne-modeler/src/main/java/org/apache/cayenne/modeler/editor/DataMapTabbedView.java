@@ -53,9 +53,6 @@ public class DataMapTabbedView extends JTabbedPane {
         // must be wrapped in a scroll pane
         JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
         addTab("DataMap", dataMapView);
-
-        DataMapCallbackListenersTab listenersPanel = new DataMapCallbackListenersTab(mediator);
-        addTab("Listeners", listenersPanel);
     }
 }
 

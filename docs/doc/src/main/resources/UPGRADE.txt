@@ -5,6 +5,25 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 3.1M3
+
+* DataMap listeners are no longer supported. Global listeners registered through
+  annotations API can be used instead. E.g.:
+
+	public class SomeListener {
+		@PrePersist
+		public void onPrePersist(Object object) {
+			// callback method
+		}
+	}
+
+  To register listener class use following API:
+
+	runtime.getChannel().getEntityResolver().getCallbackRegistry().addListener(listenerInstance);
+
+  Note that DataMap listeners entries from old *.map.xml files will be ignored.
+
+
 UPGRADING TO 3.1M1
 
 The most essential change in Cayenne 3.1 is a new Dependency-Injection (DI) based
@@ -16,7 +35,7 @@ application.
   CayenneModeler. Agree to perform an upgrade when asked. Note that Cayenne
   3.1 only supports one DataDomain per project, so if multiple domains existed in 
   the project, you'll end up with multiple project files  after the upgrade. Each 
-  will require instantiation of a separate ServerRuntime in the code.
+  will require instantiation of a separate ServerRuntime in the code. 
 
 * Upgrading 2.0.x and earlier mappings files: Note that CayenneModeler
   3.1 won't be able to upgrade projects created with a Modeler older than 3.0. To 
