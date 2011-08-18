@@ -28,6 +28,7 @@ CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
 CAY-1586 New extension point: a strategy for retaining objects in the ObjectStore
 CAY-1590 DDL generation without a live datasource
 CAY-1594 DI extension point: turning on/off cross-ObjectContext synchronization
+CAY-1598 Per DataMap listeners are called for all entities in DataDomain
 CAY-1599 Annotation-based global listeners registration
 
 Bug Fixes Since 3.1M2:
