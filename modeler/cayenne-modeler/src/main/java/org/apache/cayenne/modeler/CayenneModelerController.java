@@ -60,6 +60,8 @@ public class CayenneModelerController extends CayenneController {
     protected ProjectController projectController;
 
     protected CayenneModelerFrame frame;
+    
+    public CayenneModelerController(){}
 
     public CayenneModelerController(Application application) {
         super(application);

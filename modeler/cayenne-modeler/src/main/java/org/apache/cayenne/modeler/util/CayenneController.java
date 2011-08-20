@@ -54,6 +54,8 @@ public abstract class CayenneController implements BoundComponent {
     protected Application application;
     protected PropertyChangeSupport propertyChangeSupport;
     
+    public CayenneController(){}
+    
     public CayenneController(CayenneController parent) {
         this.application = (parent != null) ? parent.getApplication() : null;
         this.parent = parent;

@@ -43,92 +43,20 @@ import org.apache.cayenne.project.ConfigurationNodeParentGetter;
  */
 public class DefaultActionManager implements ActionManager {
 
-    static final Collection<String> SPECIAL_ACTIONS = Arrays.asList(SaveAction.class
-            .getName(), UndoAction.class.getName(), RedoAction.class.getName());
-
-    // search action added to project actions
-    static final Collection<String> PROJECT_ACTIONS = Arrays.asList(
-            RevertAction.class.getName(),
-            ProjectAction.class.getName(),
-            ValidateAction.class.getName(),
-            SaveAsAction.class.getName(),
-            FindAction.class.getName());
-
-    static final Collection<String> DOMAIN_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
-    static {
-        DOMAIN_ACTIONS.addAll(Arrays.asList(
-                ImportDataMapAction.class.getName(),
-                CreateDataMapAction.class.getName(),
-                RemoveAction.class.getName(),
-                CreateNodeAction.class.getName(),
-                ImportDBAction.class.getName(),
-                ImportEOModelAction.class.getName(),
-                PasteAction.class.getName()));
-    }
-
-    static final Collection<String> DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
-    static {
-        DATA_MAP_ACTIONS.addAll(Arrays.asList(
-                GenerateCodeAction.class.getName(),
-                CreateEmbeddableAction.class.getName(),
-                CreateObjEntityAction.class.getName(),
-                CreateDbEntityAction.class.getName(),
-                CreateQueryAction.class.getName(),
-                CreateProcedureAction.class.getName(),
-                GenerateDBAction.class.getName(),
-                MigrateAction.class.getName(),
-                InferRelationshipsAction.class.getName(),
-                CutAction.class.getName(),
-                CopyAction.class.getName()));
-    }
-
-    static final Collection<String> OBJ_ENTITY_ACTIONS = new HashSet<String>(
-            DATA_MAP_ACTIONS);
-    static {
-        OBJ_ENTITY_ACTIONS.addAll(Arrays.asList(
-                ObjEntitySyncAction.class.getName(),
-                CreateAttributeAction.class.getName(),
-                CreateRelationshipAction.class.getName(),
-                ShowGraphEntityAction.class.getName()));
-    }
-
-    static final Collection<String> DB_ENTITY_ACTIONS = new HashSet<String>(
-            DATA_MAP_ACTIONS);
-    static {
-        DB_ENTITY_ACTIONS.addAll(Arrays.asList(
-                CreateAttributeAction.class.getName(),
-                CreateRelationshipAction.class.getName(),
-                DbEntitySyncAction.class.getName(),
-                ShowGraphEntityAction.class.getName()));
-    }
-
-    static final Collection<String> EMBEDDABLE_ACTIONS = new HashSet<String>(
-            DATA_MAP_ACTIONS);
-    static {
-        EMBEDDABLE_ACTIONS.addAll(Arrays.asList(CreateAttributeAction.class.getName()));
-    }
-
-    static final Collection<String> PROCEDURE_ACTIONS = new HashSet<String>(
-            DATA_MAP_ACTIONS);
-    static {
-        PROCEDURE_ACTIONS.addAll(Arrays.asList(CreateProcedureParameterAction.class
-                .getName()));
-    }
-
-    static final Collection<String> MULTIPLE_OBJECTS_ACTIONS = new HashSet<String>(
-            PROJECT_ACTIONS);
-    static {
-        MULTIPLE_OBJECTS_ACTIONS.addAll(Arrays.asList(
-                RemoveAction.class.getName(),
-                CutAction.class.getName(),
-                CopyAction.class.getName(),
-                PasteAction.class.getName()));
-    }
+    private Collection<String> SPECIAL_ACTIONS;
+    private Collection<String> PROJECT_ACTIONS;
+    private Collection<String> DOMAIN_ACTIONS;
+    private Collection<String> DATA_MAP_ACTIONS;
+    private Collection<String> OBJ_ENTITY_ACTIONS;
+    private Collection<String> DB_ENTITY_ACTIONS;
+    private Collection<String> EMBEDDABLE_ACTIONS;
+    private Collection<String> PROCEDURE_ACTIONS;
+    private Collection<String> MULTIPLE_OBJECTS_ACTIONS;
 
     protected Map<String, Action> actionMap;
 
     public DefaultActionManager(@Inject Application application) {
-
+        initActions();
         this.actionMap = new HashMap<String, Action>(40);
 
         registerAction(new ProjectAction(application));
@@ -204,7 +132,80 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new ShowGraphEntityAction(application));
     }
 
-    private CayenneAction registerAction(CayenneAction action) {
+    private void initActions() {
+        SPECIAL_ACTIONS = Arrays.asList(
+                SaveAction.class.getName(),
+                UndoAction.class.getName(),
+                RedoAction.class.getName());
+
+        // search action added to project actions
+        PROJECT_ACTIONS = Arrays.asList(
+                RevertAction.class.getName(),
+                ProjectAction.class.getName(),
+                ValidateAction.class.getName(),
+                SaveAsAction.class.getName(),
+                FindAction.class.getName());
+
+        DOMAIN_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
+        DOMAIN_ACTIONS.addAll(Arrays.asList(
+                ImportDataMapAction.class.getName(),
+                CreateDataMapAction.class.getName(),
+                RemoveAction.class.getName(),
+                CreateNodeAction.class.getName(),
+                ImportDBAction.class.getName(),
+                ImportEOModelAction.class.getName(),
+                PasteAction.class.getName()));
+
+        DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
+        DATA_MAP_ACTIONS.addAll(Arrays.asList(
+                GenerateCodeAction.class.getName(),
+                CreateEmbeddableAction.class.getName(),
+                CreateObjEntityAction.class.getName(),
+                CreateDbEntityAction.class.getName(),
+                CreateQueryAction.class.getName(),
+                CreateProcedureAction.class.getName(),
+                GenerateDBAction.class.getName(),
+                MigrateAction.class.getName(),
+                InferRelationshipsAction.class.getName(),
+                CutAction.class.getName(),
+                CopyAction.class.getName()));
+
+        OBJ_ENTITY_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+
+        OBJ_ENTITY_ACTIONS.addAll(Arrays.asList(
+                ObjEntitySyncAction.class.getName(),
+                CreateAttributeAction.class.getName(),
+                CreateRelationshipAction.class.getName(),
+                ShowGraphEntityAction.class.getName()));
+
+        DB_ENTITY_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+
+        DB_ENTITY_ACTIONS.addAll(Arrays.asList(
+                CreateAttributeAction.class.getName(),
+                CreateRelationshipAction.class.getName(),
+                DbEntitySyncAction.class.getName(),
+                ShowGraphEntityAction.class.getName()));
+
+        EMBEDDABLE_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+
+        EMBEDDABLE_ACTIONS.addAll(Arrays.asList(CreateAttributeAction.class.getName()));
+
+        PROCEDURE_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+
+        PROCEDURE_ACTIONS.addAll(Arrays.asList(CreateProcedureParameterAction.class
+                .getName()));
+
+        MULTIPLE_OBJECTS_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
+
+        MULTIPLE_OBJECTS_ACTIONS.addAll(Arrays.asList(
+                RemoveAction.class.getName(),
+                CutAction.class.getName(),
+                CopyAction.class.getName(),
+                PasteAction.class.getName()));
+
+    }
+
+    protected CayenneAction registerAction(CayenneAction action) {
         Action oldAction = actionMap.put(action.getClass().getName(), action);
         if (oldAction != null && oldAction != action) {
 
@@ -215,6 +216,18 @@ public class DefaultActionManager implements ActionManager {
         }
 
         return action;
+    }
+
+    public void addProjectAction(String actionName) {
+        if (!PROJECT_ACTIONS.contains(actionName)) {
+            PROJECT_ACTIONS.add(actionName);
+        }
+    }
+
+    public void removeProjectaction(String actionName) {
+        if (PROJECT_ACTIONS.contains(actionName)) {
+            PROJECT_ACTIONS.remove(actionName);
+        }
     }
 
     public <T extends Action> T getAction(Class<T> actionClass) {
