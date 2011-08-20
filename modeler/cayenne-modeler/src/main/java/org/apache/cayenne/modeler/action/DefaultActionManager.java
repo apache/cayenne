@@ -133,18 +133,20 @@ public class DefaultActionManager implements ActionManager {
     }
 
     private void initActions() {
-        SPECIAL_ACTIONS = Arrays.asList(
+        SPECIAL_ACTIONS = new HashSet<String>();
+
+        SPECIAL_ACTIONS.addAll(Arrays.asList(
                 SaveAction.class.getName(),
                 UndoAction.class.getName(),
-                RedoAction.class.getName());
+                RedoAction.class.getName()));
 
-        // search action added to project actions
-        PROJECT_ACTIONS = Arrays.asList(
+        PROJECT_ACTIONS = new HashSet<String>();
+        PROJECT_ACTIONS.addAll(Arrays.asList(
                 RevertAction.class.getName(),
                 ProjectAction.class.getName(),
                 ValidateAction.class.getName(),
                 SaveAsAction.class.getName(),
-                FindAction.class.getName());
+                FindAction.class.getName()));
 
         DOMAIN_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
         DOMAIN_ACTIONS.addAll(Arrays.asList(
