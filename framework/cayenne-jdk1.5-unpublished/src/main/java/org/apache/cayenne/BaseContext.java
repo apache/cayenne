@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Key;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -154,9 +154,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     protected void attachToRuntime(Injector injector) {
         attachToChannel(injector.getInstance(DataChannel.class));
 
-        setQueryCache(injector.getInstance(Key.get(
-                QueryCache.class,
-                QUERY_CACHE_INJECTION_KEY)));
+        setQueryCache(
+                new NestedQueryCache(injector.getInstance(QueryCache.class)));                
     }
 
     /**

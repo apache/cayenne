@@ -29,6 +29,8 @@ import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.cache.NestedQueryCache;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -99,6 +101,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
     
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
+    
+    @Inject
+    protected QueryCache queryCache;
 
     public DataDomain get() throws ConfigurationException {
 
@@ -176,6 +181,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         DataChannelDescriptor descriptor = descriptorMerger.merge(descriptors);
         DataDomain dataDomain = createDataDomain(descriptor.getName());
 
+        dataDomain.setQueryCache(new NestedQueryCache(queryCache));
         dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
         dataDomain.setEventManager(injector.getInstance(EventManager.class));
 

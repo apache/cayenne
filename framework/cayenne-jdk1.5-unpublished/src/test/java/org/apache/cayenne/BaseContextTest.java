@@ -56,6 +56,7 @@ public class BaseContextTest extends TestCase {
                         QueryCache.class,
                         BaseContext.QUERY_CACHE_INJECTION_KEY);
                 binder.bind(cacheKey).toInstance(cache);
+                binder.bind(QueryCache.class).toInstance(cache);
             }
         };
 
@@ -72,7 +73,6 @@ public class BaseContextTest extends TestCase {
 
             assertTrue(context.attachToRuntimeIfNeeded());
             assertSame(channel, context.channel);
-            assertSame(cache, context.queryCache);
 
             assertFalse(context.attachToRuntimeIfNeeded());
             assertFalse(context.attachToRuntimeIfNeeded());

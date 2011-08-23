@@ -98,6 +98,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected DataRowStore sharedSnapshotCache;
     protected TransactionDelegate transactionDelegate;
     protected String name;
+    protected QueryCache queryCache;
 
     // these are initialized from properties...
     protected boolean sharedCacheEnabled;
@@ -113,12 +114,6 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.2
      */
     protected EntitySorter entitySorter;
-
-    /**
-     * @since 3.1
-     */
-    @Inject
-    protected QueryCache queryCache;
 
     protected boolean stopped;
 

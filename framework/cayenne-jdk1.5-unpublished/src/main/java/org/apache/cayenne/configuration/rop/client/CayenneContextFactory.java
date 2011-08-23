@@ -18,16 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Key;
 
 public class CayenneContextFactory implements ObjectContextFactory {
 
@@ -36,6 +35,9 @@ public class CayenneContextFactory implements ObjectContextFactory {
 
     @Inject
     protected RuntimeProperties properties;
+    
+    @Inject
+    protected QueryCache queryCache;
 
     @Inject
     protected Injector injector;
@@ -54,9 +56,7 @@ public class CayenneContextFactory implements ObjectContextFactory {
                 false);
 
         CayenneContext context = new CayenneContext(parent, changeEvents, lifecycleEvents);
-        context.setQueryCache(injector.getInstance(Key.get(
-                QueryCache.class,
-                BaseContext.QUERY_CACHE_INJECTION_KEY)));
+        context.setQueryCache(new NestedQueryCache(queryCache));
         return context;
     }
 }

@@ -73,6 +73,7 @@ public class ClientModule implements Module {
         binder.bind(EventManager.class).to(DefaultEventManager.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(DataChannel.class).toProvider(ClientChannelProvider.class);
+        binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
         binder
                 .bind(Key.get(QueryCache.class, BaseContext.QUERY_CACHE_INJECTION_KEY))
                 .toProvider(MapQueryCacheProvider.class)

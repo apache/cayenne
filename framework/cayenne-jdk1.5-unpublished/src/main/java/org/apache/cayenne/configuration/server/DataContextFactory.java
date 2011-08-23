@@ -18,19 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Key;
 import org.apache.cayenne.event.EventManager;
 
 /**
@@ -49,6 +48,9 @@ public class DataContextFactory implements ObjectContextFactory {
     
     @Inject
     protected ObjectStoreFactory objectStoreFactory;
+    
+    @Inject
+    protected QueryCache queryCache;
 
     public ObjectContext createContext() {
         return createdFromDataDomain(dataDomain);
@@ -81,9 +83,7 @@ public class DataContextFactory implements ObjectContextFactory {
         DataContext context = new DataContext(
                 parent, objectStoreFactory.createObjectStore(snapshotCache));
         context.setValidatingObjectsOnCommit(dataDomain.isValidatingObjectsOnCommit());
-        context.setQueryCache(injector.getInstance(Key.get(
-                QueryCache.class,
-                BaseContext.QUERY_CACHE_INJECTION_KEY)));
+        context.setQueryCache(new NestedQueryCache(queryCache));
         return context;
     }
 
@@ -96,9 +96,7 @@ public class DataContextFactory implements ObjectContextFactory {
 
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setUsingSharedSnapshotCache(parent.isUsingSharedSnapshotCache());
-        context.setQueryCache(injector.getInstance(Key.get(
-                QueryCache.class,
-                BaseContext.QUERY_CACHE_INJECTION_KEY)));
+        context.setQueryCache(new NestedQueryCache(queryCache));
 
         return context;
     }
@@ -114,9 +112,7 @@ public class DataContextFactory implements ObjectContextFactory {
         DataContext context = new DataContext(
                 parent, objectStoreFactory.createObjectStore(snapshotCache));
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
-        context.setQueryCache(injector.getInstance(Key.get(
-                QueryCache.class,
-                BaseContext.QUERY_CACHE_INJECTION_KEY)));
+        context.setQueryCache(new NestedQueryCache(queryCache));
         return context;
     }
 }

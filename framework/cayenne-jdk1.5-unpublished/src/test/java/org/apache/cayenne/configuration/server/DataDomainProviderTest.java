@@ -35,6 +35,7 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.AdhocObjectFactory;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -147,6 +148,7 @@ public class DataDomainProviderTest extends TestCase {
                         new MockDataSourceFactory());
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
             }
         };
 
