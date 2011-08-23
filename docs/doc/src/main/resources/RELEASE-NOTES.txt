@@ -18,6 +18,7 @@ CAY-1266 Joint prefetches with fetch limit and offset do not work on Oracle
 CAY-1461 CayenneModeler: remove ScopeMVC dependency - ObjRelationshipInfoDialog
 CAY-1556 Add path construction feature to make constructing paths from constants easier for queries and orderings
 CAY-1525 CharType: don't trim spaces on the left
+CAY-1537 Implement ObjectContext local caches as NestedQueryCache over the shared cache
 CAY-1544 Remove jdk1.6 module from Cayenne sources
 CAY-1545 cayenne-lifecycle Referenceable handler refactoring
 CAY-1547 cayenne-lifecycle: support for setting UuidRelationships
@@ -44,6 +45,7 @@ CAY-1581 Not-Escaping <> during serialization to *.map.xml
 CAY-1583 context.getObjectStore() returning null causing NullpointerException in DataMergeHandler
 CAY-1585 SelectQuery automatic cache key needs FetchOffset
 CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
+CAY-1602 OSCache clustering should be shared per JVM - @CacheGroup annotation causes creation of too many cluster listeners
 
 ----------------------------------
 Release: 3.1 M2
