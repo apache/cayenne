@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.osx;
 
+import java.awt.event.KeyEvent;
+
 import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
 import org.syntax.jedit.DefaultInputHandler;
 import org.syntax.jedit.JEditTextArea;
@@ -86,6 +88,16 @@ public class OSXWidgetFactory extends DefaultWidgetFactory {
             addKeyBinding("M+C", CLIP_COPY); // command + c
             addKeyBinding("M+V", CLIP_PASTE); // command + v
             addKeyBinding("M+X", CLIP_CUT); // command + x
+        }
+        
+        @Override
+        public void keyTyped(KeyEvent evt) {
+            
+            // keys pressed with command key shouldn't generate text
+            int modifiers = evt.getModifiers();
+            if ((modifiers & KeyEvent.META_MASK) == 0) {
+                super.keyTyped(evt);
+            }
         }
     }
 }
