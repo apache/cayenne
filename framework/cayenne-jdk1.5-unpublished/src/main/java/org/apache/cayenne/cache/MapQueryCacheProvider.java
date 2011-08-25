@@ -38,14 +38,9 @@ public class MapQueryCacheProvider implements Provider<QueryCache> {
 
     public QueryCache get() throws ConfigurationException {
 
-        return new QueryCacheLazyInitializationProxy(new Provider<QueryCache>() {
-
-            public QueryCache get() throws ConfigurationException {
-                int size = properties.getInt(
-                        CACHE_SIZE_PROPERTY,
-                        MapQueryCache.DEFAULT_CACHE_SIZE);
-                return new MapQueryCache(size);
-            }
-        });
+        int size = properties.getInt(
+                CACHE_SIZE_PROPERTY,
+                MapQueryCache.DEFAULT_CACHE_SIZE);
+        return new MapQueryCache(size);
     }
 }
