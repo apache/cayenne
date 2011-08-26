@@ -76,9 +76,9 @@
 
 	<repositories>
 		<repository>
-			<id>caucho</id>
-			<name>Caucho Repository</name>
-			<url>http://caucho.com/m2</url>
+			<id>objectstyle</id>
+			<name>ObjectStyle Repository</name>
+			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>

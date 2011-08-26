@@ -113,11 +113,14 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>wocommunity.org/plugin/releases</id>
-			<name>WOCommunity maven releases repo</name>
-			<url>http://maven.wocommunity.org/content/repositories/releases</url>
+			<id>objectstyle</id>
+			<name>ObjectStyle repository</name>
+			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
+			<layout>default</layout>
 			<snapshots>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
+				<updatePolicy>weekly</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>

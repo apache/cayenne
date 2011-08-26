@@ -466,36 +466,9 @@
 	
 	<repositories>
 		<repository>
-			<id>apache-snapshots</id>
-			<name>Apache Snapshots Repository</name>
-			<url>http://people.apache.org/repo/m2-snapshot-repository/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>weekly</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-
-		<repository>
 			<id>objectstyle</id>
 			<name>ObjectStyle Repository</name>
-			<url>http://objectstyle.org/maven2</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<repository>
-			<id>caucho</id>
-			<name>Caucho Repository</name>
-			<url>http://caucho.com/m2</url>
+			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>
@@ -507,9 +480,9 @@
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>Maven Central Repo</id>
-			<name>Maven Central Repo</name>
-			<url>http://repo1.maven.org/maven2</url>
+			<id>objectstyle</id>
+			<name>ObjectStyle repository</name>
+			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>true</enabled>
