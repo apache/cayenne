@@ -485,9 +485,7 @@
 			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
 			<layout>default</layout>
 			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>weekly</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
+				<enabled>false</enabled>
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>
