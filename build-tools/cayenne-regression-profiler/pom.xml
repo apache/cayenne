@@ -180,13 +180,18 @@
 	</profiles>
 
 	<repositories>
-
 		<repository>
 			<id>objectstyle</id>
-			<name>ObjectStyle Public Maven2 repo</name>
-			<url>http://objectstyle.org/maven2</url>
+			<name>ObjectStyle Repository</name>
+			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</repository>
-
 	</repositories>
 
 	<dependencies>
