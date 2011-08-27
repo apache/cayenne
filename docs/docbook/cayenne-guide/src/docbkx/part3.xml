@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
-        xml:id="part3" xmlns:xi="http://www.w3.org/2001/XInclude">
+        xml:id="cayenne-guide-part3" xmlns:xi="http://www.w3.org/2001/XInclude">
         <title>Cayenne Framework - Remote Object Persistence </title>
         <xi:include href="ch12.xml"/>
 		<xi:include href="ch13.xml"/>

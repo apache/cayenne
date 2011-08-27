@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
-        xml:id="part2" xmlns:xi="http://www.w3.org/2001/XInclude">
+        xml:id="cayenne-guide-part2" xmlns:xi="http://www.w3.org/2001/XInclude">
         <title>Cayenne Framework</title>
         <xi:include href="ch4.xml"/>
 		<xi:include href="ch5.xml"/>

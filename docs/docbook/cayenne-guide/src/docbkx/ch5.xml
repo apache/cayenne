@@ -3,7 +3,35 @@
 	version="5.0" xml:id="starting-cayenne">
 	<title>Starting Cayenne</title>
 	<section xml:id="starting-serverruntime">
-		<title>Starting ServerRuntime</title>
+		<title>Starting and Stopping ServerRuntime</title>
+		<para>In runtime Cayenne is accessed via org.apache.cayenne.configuration.server.ServerRuntime.
+			ServerRuntime is created simply by calling a
+			constructor:<programlisting>ServerRuntime runtime = new ServerRuntime("com/example/cayenne-mydomain.xml");</programlisting></para>
+		<para>The parameter you pass to the constructor is a location of the main project file. Location
+			is a '/'-separated path (same path separator is used on UNIX and Windows) that is
+			resolved relative to the application classpath. The project file can be placed in the
+			root package or in a subpackage (e.g. in the example above it is in "com/example"
+			subpackage).</para>
+		<para>ServerRuntime encapsulates a single Cayenne stack. Most applications will just have one
+			ServerRuntime using it to create as many ObjectContexts as needed, access the Dependency
+			Injection (DI) container and work with other Cayenne features. Internally ServerRuntime
+			is just a thin wrapper around the DI container. Detailed features of the DI container
+			are discussed in "Customizing Cayenne Runtime" chapter. Here we'll just show an example
+			of how an application might replace a default implementation of a certain internal
+			Cayenne service (in this case - QueryCache) with a different
+			class:<programlisting>public class MyExtensionsModule implements Module {
+	public void configure(Binder binder) {
+		binder.bind(QueryCache.class).to(EhCacheQueryCache.class);
+	}	
+}</programlisting><programlisting>Module extensions = new MyExtensionsModule();
+ServerRuntime runtime = new ServerRuntime("com/example/cayenne-mydomain.xml", extensions);</programlisting></para>
+		<para>It is a good idea to shut down the runtime when it is no longer needed, usually before
+			the application itself is shutdown:
+			<programlisting>runtime.shutdwon();</programlisting>When a runtime object has the same
+			scope as the application, this may not be absolutely necessary, however in some cases it
+			is essential, and is generally considered a good practice. E.g. web container hot
+			redeploy will cause resource leaks and eventual OutOfMemoryError if web applications
+			fail to shutdown CayenneRuntime.</para>
 	</section>
 	<section xml:id="webapps">
 		<title>Web Applications</title>
