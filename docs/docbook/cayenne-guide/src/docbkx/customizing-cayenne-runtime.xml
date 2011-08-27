@@ -4,8 +4,47 @@
 	<title>Customizing Cayenne Runtime</title>
 	<section xml:id="depdendency-injection-container">
 		<title>Dependency Injection Container</title>
+		<para>Cayenne runtime is built around a small powerful dependency injection (DI) container.
+			Just like other popular DI engines, such as Spring or Guice, Cayenne DI container
+			provides means for configuring a set of interdependent "services" using inversion of
+			control principles. Cayenne DI uses Java code to declare services (there are no XML
+			configuration files, and the bindings are type-safe) and does injection into instance
+			variables and constructor parameters based on Cayenne @Inject annotation. This mechanism
+			is very close to Google Guice.</para>
+		<para>While Cayenne DI container can be used as an application-wide DI engine, it's intended
+			purpose is to provide simple dynamic and customizable configuration facilities to
+			Cayenne runtime. It is embedded in Cayenne runtime and does not interfere with Spring,
+			Guice or any other frameworks used by the rest of the application.</para>
 		<section xml:id="di-bindings-api">
 			<title>DI Bindings API</title>
+			<para>Objects managed by the DI container are regular Java classes. We often call them
+				"services" in this document to distinguish from all other objects that are not bound
+				in DI and are not managed. DI container is responsible for instantiation of
+				services, injecting correct dependencies, maintaining scope, and passing lifecycle
+				events down to service instances. Here is an example of 2 service interfaces and two
+				implementations that can be managed by Cayenne
+				DI:<programlisting>public interface Service1 {
+
+	public String getString();
+}</programlisting><programlisting>public interface Service2 {
+
+	public int getInt();
+}</programlisting><programlisting>public class Service1Impl implements Service1 {
+
+	@Inject
+	private Service2 service2;
+	
+	public String getString() {
+		return service2.getInt() + "_Service1Impl";
+	}
+}
+</programlisting></para>
+			<para>DI configuration is defined in a set of configuration modules, each implementing
+				"org.apache.cayenne.tutorial.di.Module" interface. Each module defines bindings for
+				"services", keying them either by a service type (an interface or a class object) or
+				by a combination of type and a String key (to allow multiple instances of the same
+				service type). E.g.:<programlisting/></para>
+			<para>DI container class, called Injector, is created with one or more modules:</para>
 		</section>
 		<section xml:id="managing-services-lifecycle">
 			<title>Managing Services Lifecycle</title>
