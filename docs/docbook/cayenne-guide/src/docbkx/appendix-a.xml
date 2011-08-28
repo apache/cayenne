@@ -34,16 +34,80 @@
 					<td>weak</td>
 				</tr>
 				<tr>
+					<td><code>cayenne.jdbc.driver[.domain_name.node_name]</code> - defines the JDBC driver to use
+						when creating a DataSource. If domain name and optionally - node name are
+						specified, the setting overrides DataSource info just for this domain/node.
+						Otherwise the override is applied to all domains/nodes in the system.</td>
 					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.url[.domain_name.node_name] </code>- defines the DB URL
+						to use when creating a DataSource. If domain name and optionally - node name
+						are specified, the setting overrides DataSource info just for this
+						domain/node. Otherwise the override is applied to all domains/nodes in the
+						system.</td>
 					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.adapter[.domain_name.node_name]</code> - defines the class
+						name of the DbAdapter to use with the DataNodes. If domain name and
+						optionally - node name are specified, the setting overrides adapter info
+						just for this domain/node. Otherwise the override is applied to all
+						domains/nodes in the system.</td>
 					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.username[.domain_name.node_name] </code>- defines the DB
+						user name to use when creating a DataSource. If domain name and optionally -
+						node name are specified, the setting overrides DataSource info just for this
+						domain/node. Otherwise the override is applied to all domains/nodes in the
+						system.</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.password[.domain_name.node_name]</code> - defines the DB
+						password to use when creating a DataSource. If domain name and optionally -
+						node name are specified, the setting overrides DataSource info just for this
+						domain/node. Otherwise the override is applied to all domains/nodes in the
+						system</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.min.connections[.domain_name.node_name]</code> - defines
+						the DB connection pool minimal size. If domain name and optionally - node
+						name are specified, the setting overrides DataSource info just for this
+						domain/node. Otherwise the override is applied to all domains/nodes in the
+						system</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.max.conections[.domain_name.node_name]</code> - defines
+						the DB connection pool maximum size. If domain name and optionally - node
+						name are specified, the setting overrides DataSource info just for this
+						domain/node. Otherwise the override is applied to all domains/nodes in the
+						system</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.MapQueryCacheFactory.cacheSize</code> - defines the max size
+						of the LRU query cache map. Ignored if the default MapQueryCacheFactory is
+						overridden and a different cache provider is used.</td>
+					<td>an int defininging max number of entries in the cache</td>
+					<td>2000</td>
 				</tr>
 			</tbody>
 		</table>
 	</para>
 	<para>
 		<table frame="void">
-			<caption>ServerRuntime Service Collections</caption>
+			<caption>Service Collections Recognized by ServerRuntime</caption>
 			<col width="56%"/>
 			<col width="16%"/>
 			<col width="28%"/>

@@ -188,9 +188,13 @@ ServerRuntime runtime =
 					<code>org.apache.cayenne.configuration.DefaultRuntimeProperties.properties
 				</code>map (see the next section on how to do that). This map contains the default
 				property values and can accept application-specific values, overrding the defaults. </para>
-			<para>If the same property is specified on the command line and in the properties map,
-				the command-line value takes precedence, and the map value will be used. This way
-				Cayenne runtime can be reconfigured during deployment.</para>
+			<para>Note that if a property value is a name of a Java class, when this Java class is
+				instantiated by Cayenne, the container performs injection of instance variables. So
+				even the dynamically specified Java classes can use @Inject annotation to get a hold
+				of other Cayenne services.</para>
+			<para>If the same property is specified both in the command line and in the properties
+				map, the command-line value takes precedence. The map value will be ignored. This
+				way Cayenne runtime can be reconfigured during deployment.</para>
 		</section>
 		<section xml:id="contributing-to-service-lists-maps">
 			<title>Contributing to Service Collections</title>
@@ -217,11 +221,23 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
 		</section>
 		<section xml:id="alternative-service-implementations">
 			<title>Alternative Service Implementations</title>
-			<para/>
+			<para>As mentioned above, custom modules are loaded by ServerRuntime after the built-in
+				modules. So it is easy to redefine a built-in service in Cayenne by rebinding
+				desired implementations or providers. To do that, first we need to know what those
+				services to redefine are. While we describe some of them in the following sections,
+				the best way to get a full list is to check the source code of the Cayenne version
+				you are using and namely look in
+					<code>org.apache.cayenne.configuration.server.ServerModule</code> - the main
+				built-in module in Cayenne. </para>
+			<para>Now an example of overriding <code>QueryCache</code> service. The default
+				implementation of this service is provided by <code>MapQueryCacheProvider</code>.
+				But if we want to use <code>EhCacheQueryCache</code> (a Cayenne wrapper for the
+				EhCache framework), we can define it like
+				this:<programlisting>binder.bind(QueryCache.class).to(EhCacheQueryCache.class);</programlisting></para>
 		</section>
 	</section>
 	<section xml:id="noteworthy-runtime-components">
-		<title>Noteworthy Built In Services</title>
+		<title>Noteworthy Built-in Services</title>
 		<section>
 			<title>RuntimeProperties</title>
 		</section>
