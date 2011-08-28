@@ -2,4 +2,67 @@
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
 	version="5.0" xml:id="server-configuration-properties">
 	<title>Server Configuration Properties</title>
+	<para>
+		<table frame="void" width="737">
+			<caption>Configuration Properties Recognized by ServerRuntime</caption>
+			<col width="51%"/>
+			<col width="7%"/>
+			<col width="8%"/>
+			<col width="38%"/>
+			<thead>
+				<tr>
+					<th>Property</th>
+					<th>Possible Values</th>
+					<th>Default Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><code>org.apache.cayenne.sync_contexts</code> - defines whether peer ObjectContexts should
+						receive snapshot events after commits from other contexts. If true
+						(default), the contexts would automatically synchronize their state with
+						peers.</td>
+					<td>true, false</td>
+					<td>true</td>
+				</tr>
+				<tr>
+					<td><code>org.apache.cayenne.context_object_retain_strategy</code> - defines fetched objects
+						retain strategy for ObjectContexts. When weak or soft strategy is used,
+						objects retained by ObjectContext that have no local changes can potetially
+						get garbage collected when JVM feels like doing it.</td>
+					<td>weak, soft, hard</td>
+					<td>weak</td>
+				</tr>
+				<tr>
+					<td/>
+					<td/>
+					<td/>
+				</tr>
+			</tbody>
+		</table>
+	</para>
+	<para>
+		<table frame="void">
+			<caption>ServerRuntime Service Collections</caption>
+			<col width="56%"/>
+			<col width="16%"/>
+			<col width="28%"/>
+			<thead/>
+			<tbody>
+				<tr>
+					<td><code>org.apache.cayenne.configuration.DefaultRuntimeProperties.properties</code> -
+						Map&lt;String,String> of properties used by built-in Cayenne services. The
+						keys in this map are the property names from the previous table</td>
+				</tr>
+				<tr>
+					<td><code>org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors</code> -
+						List&lt;DbAdapterDetector> of detector objects that can discover the type of
+						current database and install the correct DbAdapter in runtime.</td>
+				</tr>
+				<tr>
+					<td/>
+				</tr>
+			</tbody>
+		</table>
+	</para>
 </appendix>

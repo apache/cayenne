@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-	version="5.0" xml:id="customizing-cayenne-runtime">
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" xml:id="customizing-cayenne-runtime">
 	<title>Customizing Cayenne Runtime</title>
 	<section xml:id="depdendency-injection-container">
 		<title>Dependency Injection Container</title>
@@ -19,10 +18,11 @@
 			constructor parameters based on the <code>@Inject</code> annotation. This mechanism is
 			very close to Google Guice.</para>
 		<para>The discussion later in this chapter demonstrates a standalone DI container. But keep in
-			mind that Cayenne already has a built-in Injector, and a set of default modules. The API
-			discussed is normally only used to write custom extension modules that will be loaded in
-			that existing container when creating ServerRuntime.  See "Starting and Stopping
-			ServerRuntime" chapter for an example of passing an extension module to Cayenne.</para>
+			mind that Cayenne already has a built-in Injector, and a set of default modules. A
+			Cayenne user would normally only use the API below to write custom extension modules
+			that will be loaded in that existing container when creating ServerRuntime. See
+			"Starting and Stopping ServerRuntime" chapter for an example of passing an extension
+			module to Cayenne.</para>
 		<para>Cayenne DI probably has ~80% of the features expected in a DI container and has no
 			dependency on the rest of Cayenne, so in theory can be used as an application-wide DI
 			engine. But it's primary purpose is still to serve Cayenne. Hence there are no plans to
@@ -124,21 +124,22 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 		</section>
 		<section xml:id="managing-services-lifecycle">
 			<title>Service Lifecycle</title>
-			<para>An important feature of the Cayenne DI container is instance <emphasis
-					role="italic">scope</emphasis>. The default scope (implicitly used in all
-				examples above) is "singleton", meaning that a binding would result in creation of
-				only one service instance, that will be repeatedly returned from
-				Injector.getInstance(..), as well as injected into classes that declare it as a
-				dependency. Another useful scope is "no scope", meaning that every time a container
-				is asked to provide a service instance for a given key, it will create a new
-				one:<programlisting>binder.bind(Service2.class).to(Service2Impl.class).withoutScope();</programlisting></para>
+			<para>An important feature of the Cayenne DI container is instance <emphasis role="italic">scope</emphasis>. The default scope (implicitly used in all examples above) is
+				"singleton", meaning that a binding would result in creation of only one service
+				instance, that will be repeatedly returned from
+					<code>Injector.getInstance(..)</code>, as well as injected into classes that
+				declare it as a dependency. Another useful scope is "no scope", meaning that every
+				time a container is asked to provide a service instance for a given key, a new
+				instance will be created and
+				returned:<programlisting>binder.bind(Service2.class).to(Service2Impl.class).withoutScope();</programlisting></para>
 			<para>Singleton scope dispatches a "BeforeScopeEnd" event to interested services. This
-				event occurs before the scope is shutdown, i.e. when Injector.shutdown() is called.
-				Note that the built-in Cayenne injector is shutdown behind the scenes when
-				ServerRuntime.shutdown() method is invoked. Services may register as listeners for
-				this event by annotating a no-argument method with <code>@BeforeScopeEnd</code>
-				annotation. Such method should be implemented if a service needs to clean up some
-				resources, stop threads, etc.</para>
+				event occurs before the scope is shutdown, i.e. when
+					<code>Injector.shutdown()</code> is called. Note that the built-in Cayenne
+				injector is shutdown behind the scenes when <code>ServerRuntime.shutdown()</code>
+				is invoked. Services may register as listeners for this event by annotating a
+				no-argument method with <code>@BeforeScopeEnd</code> annotation. Such method should
+				be implemented if a service needs to clean up some resources, stop threads,
+				etc.</para>
 			<para>Users can create their own scopes, e.g. a web application request scope or a
 				session scope. In many cases custom scopes can be built using Cayenne
 					<code>org.apache.cayenne.di.spi.DefaultScope</code> (singleton scope is
@@ -147,22 +148,83 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 		</section>
 		<section xml:id="overriding-services">
 			<title>Overriding Services</title>
+			<para>Cayenne DI allows to override services already definied in the current module, or
+				more commonly - some other module in the the same container. Actually there's no
+				special API to override a service, you'd just bind the service key again with a new
+				implementation or provider. The last binding for a key takes precedence. This means
+				that the order of modules is important when configuring a container. The built-in
+				Cayenne injector ensures that Cayenne standard modules are loaded first, followed by
+				optional user extension modules. This way the application can override the standard
+				services in Cayenne.</para>
 		</section>
 	</section>
 	<section xml:id="ways-to-customize-runtime">
 		<title>Ways to Customize Runtime</title>
+		<para>The previous section discussed how Cayenne DI works in general terms. Since Cayenne users
+			will mostly be dealing with an existing Injector provided by ServerRuntime, it is
+			important to understand how to build custom extensions to a preconfigured container. As
+			shown in "Starting and Stopping ServerRuntime" chapter, custom extensions are done by
+			writing an aplication DI module (or multiple modules) that configures service overrides.
+			This section shows all the configuration possibilities in detail, including changing
+			properties of the existing services, contributing services to standard service lists and
+			maps, and overriding service implementations. All the code examples later in this
+			section are assumed to be placed in an application module "configure" method:</para><programlisting>public class MyExtensionsModule implements Module {
+	public void configure(Binder binder) {
+		// customizations go here...
+	}	
+}</programlisting><programlisting>Module extensions = new MyExtensionsModule();
+ServerRuntime runtime = 
+	new ServerRuntime("com/example/cayenne-mydomain.xml", extensions);</programlisting>
 		<section xml:id="changing-properties-of-existing-services">
 			<title>Changing Properties of Existing Services</title>
+			<para>Many built-in Cayenne services change their behavior based on a value of some
+				environment property. A user may change Cayenne behavior without even knowing which
+				services are responsible for it, but setting a specific value of a known property.
+				Supported property names are listed in "Appendix A".</para>
+			<para>There are two ways to set service properties. The most obvious one is to pass it
+				to the JVM with -D flag on startup.
+				E.g.<programlisting>java -Dorg.apache.cayenne.sync_contexts=false ...</programlisting></para>
+			<para>A second one is to contribute a property to
+					<code>org.apache.cayenne.configuration.DefaultRuntimeProperties.properties
+				</code>map (see the next section on how to do that). This map contains the default
+				property values and can accept application-specific values, overrding the defaults. </para>
+			<para>If the same property is specified on the command line and in the properties map,
+				the command-line value takes precedence, and the map value will be used. This way
+				Cayenne runtime can be reconfigured during deployment.</para>
 		</section>
 		<section xml:id="contributing-to-service-lists-maps">
-			<title>Contributing to Service Lists and Maps</title>
+			<title>Contributing to Service Collections</title>
+			<para>Cayenne can be extended by adding custom objects to named maps or lists bound in
+				DI. We are calling these lists/maps "service collections". A service collection
+				allows things like appending a custom strategy to a list of built-in strategies.
+				E.g. an application that needs to install a custom DbAdapter for some database type
+				may contribute an instance of custom DbAdapterDetector to a
+					<code>org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors</code>
+				list:</para>
+			<programlisting>public class MyDbAdapterDetector implements DbAdapterDetector {
+	public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
+		// check if we support this database and retun custom adapter
+		...
+	}
+}</programlisting>
+			<programlisting>// since build-in list for this key is a singleton, repeated
+// calls to 'bindList' will return the same instance 
+binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
+       .add(MyDbAdapterDetector.class);</programlisting>
+			<para>Maps are customized using a similar "<code>bindMap</code>" method.</para>
+			<para>The names of built-in collections are listed in "ServerRuntime Service
+				Collections" table in "Appendix A".</para>
 		</section>
 		<section xml:id="alternative-service-implementations">
 			<title>Alternative Service Implementations</title>
+			<para/>
 		</section>
 	</section>
 	<section xml:id="noteworthy-runtime-components">
-		<title>Noteworthy Runtime Components</title>
+		<title>Noteworthy Built In Services</title>
+		<section>
+			<title>RuntimeProperties</title>
+		</section>
 		<section xml:id="jdbceventlogger">
 			<title>JdbcEventLogger</title>
 		</section>
