@@ -22,7 +22,6 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
@@ -36,7 +35,6 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
@@ -61,14 +59,9 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
                 binder.bind(RuntimeProperties.class).toInstance(
                         new DefaultRuntimeProperties(Collections.EMPTY_MAP));
-                binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
+                binder.bind(ObjectMapRetainStrategy.class).to(
+                        DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
-                binder
-                        .bind(
-                                Key.get(
-                                        QueryCache.class,
-                                        BaseContext.QUERY_CACHE_INJECTION_KEY))
-                        .toInstance(new MapQueryCache(5));
             }
         };
 
@@ -80,8 +73,9 @@ public class DataContextFactoryTest extends TestCase {
         DataContext c3 = (DataContext) factory.createContext();
         assertNotNull(c3.getObjectStore().getDataRowCache());
         assertNull(domain.getSharedSnapshotCache());
-        assertNotSame(c3.getObjectStore().getDataRowCache(), domain
-                .getSharedSnapshotCache());
+        assertNotSame(
+                c3.getObjectStore().getDataRowCache(),
+                domain.getSharedSnapshotCache());
     }
 
     public void testCreateDataContextValidation() throws Exception {
@@ -99,14 +93,9 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
                 binder.bind(RuntimeProperties.class).toInstance(
                         new DefaultRuntimeProperties(Collections.EMPTY_MAP));
-                binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
+                binder.bind(ObjectMapRetainStrategy.class).to(
+                        DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
-                binder
-                        .bind(
-                                Key.get(
-                                        QueryCache.class,
-                                        BaseContext.QUERY_CACHE_INJECTION_KEY))
-                        .toInstance(new MapQueryCache(5));
             }
         };
 

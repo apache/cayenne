@@ -29,7 +29,6 @@ import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 
 public class BaseContextTest extends TestCase {
@@ -52,10 +51,6 @@ public class BaseContextTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bind(DataChannel.class).toInstance(channel);
-                Key<QueryCache> cacheKey = Key.get(
-                        QueryCache.class,
-                        BaseContext.QUERY_CACHE_INJECTION_KEY);
-                binder.bind(cacheKey).toInstance(cache);
                 binder.bind(QueryCache.class).toInstance(cache);
             }
         };

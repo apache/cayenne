@@ -18,12 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
-import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
@@ -60,7 +58,6 @@ import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -139,10 +136,6 @@ public class ServerModule implements Module {
         binder.bind(EventManager.class).to(DefaultEventManager.class);
 
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
-        binder
-                .bind(Key.get(QueryCache.class, BaseContext.QUERY_CACHE_INJECTION_KEY))
-                .toProvider(MapQueryCacheProvider.class)
-                .withoutScope();
 
         // a service to provide the main stack DataDomain
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
@@ -185,10 +178,11 @@ public class ServerModule implements Module {
 
         binder.bind(BatchQueryBuilderFactory.class).to(
                 DefaultBatchQueryBuilderFactory.class);
-        
+
         // a default ObjectMapRetainStrategy used to create objects map for ObjectStore
-        binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
-        
+        binder.bind(ObjectMapRetainStrategy.class).to(
+                DefaultObjectMapRetainStrategy.class);
+
         // a default ObjectStoreFactory used to create ObjectStores for contexts
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
     }

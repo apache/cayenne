@@ -55,8 +55,6 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  */
 public abstract class BaseContext implements ObjectContext, DataChannel {
 
-    public static final String QUERY_CACHE_INJECTION_KEY = "local";
-
     /**
      * A holder of a ObjectContext bound to the current thread.
      * 
@@ -154,8 +152,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     protected void attachToRuntime(Injector injector) {
         attachToChannel(injector.getInstance(DataChannel.class));
 
-        setQueryCache(
-                new NestedQueryCache(injector.getInstance(QueryCache.class)));                
+        setQueryCache(new NestedQueryCache(injector.getInstance(QueryCache.class)));
     }
 
     /**
