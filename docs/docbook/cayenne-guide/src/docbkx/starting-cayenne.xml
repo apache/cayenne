@@ -8,7 +8,7 @@
 				<code>org.apache.cayenne.configuration.server.ServerRuntime</code>. ServerRuntime is
 			created simply by calling a
 			constructor:<programlisting>ServerRuntime runtime = 
-	new ServerRuntime("com/example/cayenne-mydomain.xml");</programlisting></para>
+	new ServerRuntime("com/example/cayenne-project.xml");</programlisting></para>
 		<para>The parameter you pass to the constructor is a location of the main project file.
 			Location is a '/'-separated path (same path separator is used on UNIX and Windows) that
 			is resolved relative to the application classpath. The project file can be placed in the
@@ -27,7 +27,7 @@
 	}	
 }</programlisting><programlisting>Module extensions = new MyExtensionsModule();
 ServerRuntime runtime = 
-	new ServerRuntime("com/example/cayenne-mydomain.xml", extensions);</programlisting></para>
+	new ServerRuntime("com/example/cayenne-project.xml", extensions);</programlisting></para>
 		<para>It is a good idea to shut down the runtime when it is no longer needed, usually before
 			the application itself is shutdown:
 			<programlisting>runtime.shutdwon();</programlisting>When a runtime object has the same
@@ -35,6 +35,20 @@ ServerRuntime runtime =
 			is essential, and is generally considered a good practice. E.g. web container hot
 			redeploy will cause resource leaks and eventual OutOfMemoryError if web applications
 			fail to shutdown CayenneRuntime.</para>
+	</section>
+	<section>
+		<title>Merging Multiple Projects</title>
+		<para>ServerRuntime requires at least one mapping project to run. But it can also take multiple
+			projects and merge them together in a single configuration. This way different parts of
+			a database can be mapped independenlty from each other (even by different software
+			providers), and combined in runtime when assembling an application. Doing it is as easy
+			as passing multiple project locations to ServerRuntime constructor:</para><programlisting>ServerRuntime runtime = 
+	new ServerRuntime(new String[] {
+		"com/example/cayenne-project.xml",
+		"org/foo/cayenne-library1.xml",
+		"org/foo/cayenne-library2.xml"
+	}
+);</programlisting>
 	</section>
 	<section xml:id="webapps">
 		<title>Web Applications</title>
