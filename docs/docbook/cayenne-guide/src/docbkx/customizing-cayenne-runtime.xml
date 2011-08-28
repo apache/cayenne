@@ -4,50 +4,146 @@
 	<title>Customizing Cayenne Runtime</title>
 	<section xml:id="depdendency-injection-container">
 		<title>Dependency Injection Container</title>
-		<para>Cayenne runtime is built around a small powerful dependency injection (DI) container.
-			Just like other popular DI engines, such as Spring or Guice, Cayenne DI container
-			provides means for configuring a set of interdependent "services" using inversion of
-			control principles. Cayenne DI uses Java code to declare services (there are no XML
-			configuration files, and the bindings are type-safe) and does injection into instance
-			variables and constructor parameters based on Cayenne @Inject annotation. This mechanism
-			is very close to Google Guice.</para>
-		<para>While Cayenne DI container can be used as an application-wide DI engine, it's intended
-			purpose is to provide simple dynamic and customizable configuration facilities to
-			Cayenne runtime. It is embedded in Cayenne runtime and does not interfere with Spring,
-			Guice or any other frameworks used by the rest of the application.</para>
+		<para>Cayenne runtime is built around a small powerful dependency injection (DI) container. Just
+			like other popular DI technologies, such as Spring or Guice, Cayenne DI container
+			manages sets of interdependent objects  and allows users to configure them. These
+			objects are regular Java objects. We are calling them "services" in this document to
+			distinguish from all other objects that are not configured in the container and are not
+			managed. DI container is responsible for service instantiation, injecting correct
+			dependencies, maintaining service instances scope, and dispatching scope events to
+			services. </para>
+		<para>The services are configured in special Java classes called "modules". Each module
+			defines binding of service interfaces to implementation instances, implementation types
+			or providers of implementation instances. There are no XML configuration files, and all
+			the bindings are type-safe. The container supports injection into instance variables and
+			constructor parameters based on the <code>@Inject</code> annotation. This mechanism is
+			very close to Google Guice.</para>
+		<para>The discussion later in this chapter demonstrates a standalone DI container. But keep in
+			mind that Cayenne already has a built-in Injector, and a set of default modules. The API
+			discussed is normally only used to write custom extension modules that will be loaded in
+			that existing container when creating ServerRuntime.  See "Starting and Stopping
+			ServerRuntime" chapter for an example of passing an extension module to Cayenne.</para>
+		<para>Cayenne DI probably has ~80% of the features expected in a DI container and has no
+			dependency on the rest of Cayenne, so in theory can be used as an application-wide DI
+			engine. But it's primary purpose is still to serve Cayenne. Hence there are no plans to
+			expand it beyond Cayenne needs. It is an ideal "embedded" DI that does not interfere
+			with Spring, Guice or any other such framework present elsewhere in the
+			application.</para>
 		<section xml:id="di-bindings-api">
 			<title>DI Bindings API</title>
-			<para>Objects managed by the DI container are regular Java classes. We often call them
-				"services" in this document to distinguish from all other objects that are not bound
-				in DI and are not managed. DI container is responsible for instantiation of
-				services, injecting correct dependencies, maintaining scope, and passing lifecycle
-				events down to service instances. Here is an example of 2 service interfaces and two
-				implementations that can be managed by Cayenne
-				DI:<programlisting>public interface Service1 {
-
+			<para>To have a working DI container, we need three things: service interfaces and
+				classes, a module that describes service bindings, a container that loads the
+				module, and resolves the depedencies. Let's start with service interfaces and
+				classes:<programlisting>public interface Service1 {
 	public String getString();
 }</programlisting><programlisting>public interface Service2 {
-
 	public int getInt();
-}</programlisting><programlisting>public class Service1Impl implements Service1 {
-
+}</programlisting></para>
+			<para>A service implementation using instance variable
+				injection:<programlisting>public class Service1Impl implements Service1 {
 	@Inject
 	private Service2 service2;
 	
 	public String getString() {
 		return service2.getInt() + "_Service1Impl";
 	}
+}</programlisting>Same
+				thing, but using constructor
+				injection:<programlisting>public class Service1Impl implements Service1 {
+
+	private Service2 service2;
+
+	public Service1Impl(@Inject Service2 service2) {
+		this.service2 = service2;
+	}
+
+	public String getString() {
+		return service2.getInt() + "_Service1Impl";
+	}
 }
-</programlisting></para>
-			<para>DI configuration is defined in a set of configuration modules, each implementing
-				"org.apache.cayenne.tutorial.di.Module" interface. Each module defines bindings for
-				"services", keying them either by a service type (an interface or a class object) or
-				by a combination of type and a String key (to allow multiple instances of the same
-				service type). E.g.:<programlisting/></para>
-			<para>DI container class, called Injector, is created with one or more modules:</para>
+</programlisting><programlisting>public class Service2Impl implements Service2 {
+	private int i;
+
+	public int getInt() {
+		return i++;
+	}
+}</programlisting></para>
+			<para>Now let's create a module implementing
+					<code>org.apache.cayenne.tutorial.di.Module</code> interface that will contain
+				DI configuration. A module binds service objects to keys that are reference. Binder
+				provided by container implements fluent API to connect the key to implementation,
+				and to configure various binding options (the options, such as scope, are
+				demonstrated later in this chapter). The simplest form of a key is a Java Class
+				object representing service interface. Here is a module that binds Service1 and
+				Service2 to corresponding default implementations:</para>
+			<para>
+				<programlisting>public class Module1 implements Module {
+
+	public void configure(Binder binder) {
+		binder.bind(Service1.class).to(Service1Impl.class);
+		binder.bind(Service2.class).to(Service2Impl.class);
+	}
+}</programlisting>
+			</para>
+			<para>Once we have at least one module, we can create a DI container.
+					<code>org.apache.cayenne.di.Injector</code> is the container class in
+				Cayenne:<programlisting>Injector injector = DIBootstrap.createInjector(new Module1());</programlisting></para>
+			<para>Now that we have created the container, we can obtain services from it and call
+				their
+				methods:<programlisting>Service1 s1 = injector.getInstance(Service1.class);
+for (int i = 0; i &lt; 5; i++) {
+	System.out.println("S1 String: " + s1.getString());
+}</programlisting></para>
+			<para>This outputs the following lines, demonstrating that s1 was Service1Impl and
+				Service2 injected into it was
+				Service2Impl:<programlisting>0_Service1Impl
+1_Service1Impl
+2_Service1Impl
+3_Service1Impl
+4_Service1Impl</programlisting></para>
+			<para>There are more flavors of bindings:
+				<programlisting>// binding to instance - allowing user to create and configure instance
+// inside the module class
+binder.bind(Service2.class).toInstance(new Service2Impl());
+
+// binding to provider - delegating instance creation to a special
+// provider class
+binder.bind(Service1.class).toProvider(Service1Provider.class);
+
+// binding to provider instance
+binder.bind(Service1.class).toProviderInstance(new Service1Provider());
+
+// multiple bindings of the same type using Key
+// injection can reference the key name in annotation:
+// @Inject("i1")
+// private Service2 service2;
+binder.bind(Key.get(Service2.class, "i1")).to(Service2Impl.class);
+binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisting></para>
+			<para>Another types of confiuguration that can be bound in the container are lists and
+				maps. They will be discussed in the following chapters. </para>
 		</section>
 		<section xml:id="managing-services-lifecycle">
-			<title>Managing Services Lifecycle</title>
+			<title>Service Lifecycle</title>
+			<para>An important feature of the Cayenne DI container is instance <emphasis
+					role="italic">scope</emphasis>. The default scope (implicitly used in all
+				examples above) is "singleton", meaning that a binding would result in creation of
+				only one service instance, that will be repeatedly returned from
+				Injector.getInstance(..), as well as injected into classes that declare it as a
+				dependency. Another useful scope is "no scope", meaning that every time a container
+				is asked to provide a service instance for a given key, it will create a new
+				one:<programlisting>binder.bind(Service2.class).to(Service2Impl.class).withoutScope();</programlisting></para>
+			<para>Singleton scope dispatches a "BeforeScopeEnd" event to interested services. This
+				event occurs before the scope is shutdown, i.e. when Injector.shutdown() is called.
+				Note that the built-in Cayenne injector is shutdown behind the scenes when
+				ServerRuntime.shutdown() method is invoked. Services may register as listeners for
+				this event by annotating a no-argument method with <code>@BeforeScopeEnd</code>
+				annotation. Such method should be implemented if a service needs to clean up some
+				resources, stop threads, etc.</para>
+			<para>Users can create their own scopes, e.g. a web application request scope or a
+				session scope. In many cases custom scopes can be built using Cayenne
+					<code>org.apache.cayenne.di.spi.DefaultScope</code> (singleton scope is
+				implemented this way). </para>
+			<para> </para>
 		</section>
 		<section xml:id="overriding-services">
 			<title>Overriding Services</title>
