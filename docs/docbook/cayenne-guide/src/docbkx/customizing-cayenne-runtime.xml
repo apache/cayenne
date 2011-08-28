@@ -124,14 +124,12 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 		</section>
 		<section xml:id="managing-services-lifecycle">
 			<title>Service Lifecycle</title>
-			<para>An important feature of the Cayenne DI container is instance <emphasis role="italic">scope</emphasis>. The default scope (implicitly used in all examples above) is
+			<para>An important feature of the Cayenne DI container is instance <emphasis role="italic"
+					>scope</emphasis>. The default scope (implicitly used in all examples above) is
 				"singleton", meaning that a binding would result in creation of only one service
 				instance, that will be repeatedly returned from
 					<code>Injector.getInstance(..)</code>, as well as injected into classes that
-				declare it as a dependency. Another useful scope is "no scope", meaning that every
-				time a container is asked to provide a service instance for a given key, a new
-				instance will be created and
-				returned:<programlisting>binder.bind(Service2.class).to(Service2Impl.class).withoutScope();</programlisting></para>
+				declare it as a dependency. </para>
 			<para>Singleton scope dispatches a "BeforeScopeEnd" event to interested services. This
 				event occurs before the scope is shutdown, i.e. when
 					<code>Injector.shutdown()</code> is called. Note that the built-in Cayenne
@@ -140,10 +138,14 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 				no-argument method with <code>@BeforeScopeEnd</code> annotation. Such method should
 				be implemented if a service needs to clean up some resources, stop threads,
 				etc.</para>
-			<para>Users can create their own scopes, e.g. a web application request scope or a
-				session scope. In many cases custom scopes can be built using Cayenne
-					<code>org.apache.cayenne.di.spi.DefaultScope</code> (singleton scope is
-				implemented this way). </para>
+			<para>Another useful scope is "no scope", meaning that every time a container is asked to provide
+				a service instance for a given key, a new instance will be created and
+				returned:<programlisting>binder.bind(Service2.class).to(Service2Impl.class).withoutScope();</programlisting>Users
+				can also create their own scopes, e.g. a web application request scope or a session
+				scope. Most often than not custom scopes can be created as instances of
+					<code>org.apache.cayenne.di.spi.DefaultScope</code> with startup and shutdown
+				managed by the application (e.g. singleton scope is a DefaultScope managed by the
+				Injector) . </para>
 			<para> </para>
 		</section>
 		<section xml:id="overriding-services">
@@ -159,7 +161,7 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 		</section>
 	</section>
 	<section xml:id="ways-to-customize-runtime">
-		<title>Ways to Customize Runtime</title>
+		<title> Customization Strategies</title>
 		<para>The previous section discussed how Cayenne DI works in general terms. Since Cayenne users
 			will mostly be dealing with an existing Injector provided by ServerRuntime, it is
 			important to understand how to build custom extensions to a preconfigured container. As
