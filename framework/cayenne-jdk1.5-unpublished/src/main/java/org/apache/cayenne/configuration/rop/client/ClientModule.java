@@ -45,6 +45,8 @@ public class ClientModule implements Module {
     public static final String ROP_SERVICE_SHARED_SESSION = "cayenne.config.rop.service.shared_session";
 
     public static final String CHANNEL_EVENTS = "cayenne.config.rop.client.channel.events";
+    
+    // TODO: this property name is exactly the same as CHANNEL_EVENTS... Seems messed up
     public static final String CHANNEL_REMOTE_EVENTS_OPTIONAL = "cayenne.config.rop.client.channel.events";
 
     public static final String CONTEXT_CHANGE_EVENTS = "cayenne.config.rop.client.context.change_events";

@@ -2,4 +2,71 @@
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
 	version="5.0" xml:id="client-configuration-properties">
 	<title>Client Configuration Properties</title>
+	<para>
+		<table frame="void" width="737">
+			<caption>Configuration Properties Recognized by ClientRuntime</caption>
+			<col width="51%"/>
+			<col width="7%"/>
+			<col width="8%"/>
+			<col width="38%"/>
+			<thead>
+				<tr>
+					<th>Property</th>
+					<th>Possible Values</th>
+					<th>Default Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><code>cayenne.config.rop.service.url</code> - defines the URL of the ROP
+						server</td>
+					<td/>
+					<td/>
+				</tr>
+				<tr>
+					<td><code>cayenne.config.rop.service.username</code> - defines the user name to
+						login to the ROP server.</td>
+					<td/>
+				</tr>
+				<tr>
+					<td><code>cayenne.config.rop.service.password</code> - defines the password to
+						login to the ROP server.</td>
+					<td/>
+					<td/>
+				</tr>
+				<tr>
+					<td><code>cayenne.config.rop.service.shared_session</code>- defines the name of
+						the shared session to join on the ROP server. If omitted a dedicated session
+						is created.</td>
+					<td/>
+					<td/>
+				</tr>
+				<tr>
+					<td><code>cayenne.config.rop.client.channel.events</code> - defines whether
+						client-side DataChannel should dispatch events to child ObjectContexts. If
+						set to true, ObjectContexts will receive commit events and merge changes
+						committed by peer contexts that passed through the common client
+						DataChannel.</td>
+					<td>true, false</td>
+					<td>false</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.config.rop.client.context.change_events</code>- defines whether object
+						property changes in the client context result in firing events. Client UI
+						components can listen to these events and update the UI. Disabled by
+						default.</td>
+					<td>true, false</td>
+					<td>false</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.config.rop.client.context.lifecycle_events</code> -  defines whether object
+						commit and rollback operations in the client context result in firing
+						events. Client UI components can listen to these events and update the UI.
+						Disabled by default.</td>
+					<td>true,false</td>
+					<td>\false</td>
+				</tr>
+			</tbody>
+		</table>
+	</para>
 </appendix>
