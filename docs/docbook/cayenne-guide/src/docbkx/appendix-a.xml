@@ -3,12 +3,11 @@
 	version="5.0" xml:id="server-configuration-properties">
 	<title>Server Configuration Properties</title>
 	<para>
-		<table frame="void" width="737">
+		<table frame="void" width="739">
 			<caption>Configuration Properties Recognized by ServerRuntime</caption>
-			<col width="51%"/>
-			<col width="7%"/>
-			<col width="8%"/>
-			<col width="38%"/>
+			<col width="77%"/>
+			<col width="10%"/>
+			<col width="13%"/>
 			<thead>
 				<tr>
 					<th>Property</th>
@@ -18,26 +17,28 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><code>org.apache.cayenne.sync_contexts</code> - defines whether peer ObjectContexts should
-						receive snapshot events after commits from other contexts. If true
-						(default), the contexts would automatically synchronize their state with
-						peers.</td>
+					<td><code>org.apache.cayenne.sync_contexts</code> - defines whether peer
+						ObjectContexts should receive snapshot events after commits from other
+						contexts. If true (default), the contexts would automatically synchronize
+						their state with peers.</td>
 					<td>true, false</td>
 					<td>true</td>
 				</tr>
 				<tr>
-					<td><code>org.apache.cayenne.context_object_retain_strategy</code> - defines fetched objects
-						retain strategy for ObjectContexts. When weak or soft strategy is used,
-						objects retained by ObjectContext that have no local changes can potetially
-						get garbage collected when JVM feels like doing it.</td>
+					<td><code>org.apache.cayenne.context_object_retain_strategy</code> - defines
+						fetched objects retain strategy for ObjectContexts. When weak or soft
+						strategy is used, objects retained by ObjectContext that have no local
+						changes can potetially get garbage collected when JVM feels like doing
+						it.</td>
 					<td>weak, soft, hard</td>
 					<td>weak</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.jdbc.driver[.domain_name.node_name]</code> - defines the JDBC driver to use
-						when creating a DataSource. If domain name and optionally - node name are
-						specified, the setting overrides DataSource info just for this domain/node.
-						Otherwise the override is applied to all domains/nodes in the system.</td>
+					<td><code>cayenne.jdbc.driver[.domain_name.node_name]</code> - defines the JDBC
+						driver to use when creating a DataSource. If domain name and optionally -
+						node name are specified, the setting overrides DataSource info just for this
+						domain/node. Otherwise the override is applied to all domains/nodes in the
+						system.</td>
 					<td/>
 					<td>none, project DataNode configuration is used</td>
 				</tr>
@@ -99,7 +100,7 @@
 					<td><code>cayenne.MapQueryCacheFactory.cacheSize</code> - defines the max size
 						of the LRU query cache map. Ignored if the default MapQueryCacheFactory is
 						overridden and a different cache provider is used.</td>
-					<td>an int defininging max number of entries in the cache</td>
+					<td>an int defining max number of entries in the cache</td>
 					<td>2000</td>
 				</tr>
 			</tbody>

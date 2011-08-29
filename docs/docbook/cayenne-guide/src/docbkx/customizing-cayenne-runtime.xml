@@ -146,7 +146,6 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 					<code>org.apache.cayenne.di.spi.DefaultScope</code> with startup and shutdown
 				managed by the application (e.g. singleton scope is a DefaultScope managed by the
 				Injector) . </para>
-			<para> </para>
 		</section>
 		<section xml:id="overriding-services">
 			<title>Overriding Services</title>
@@ -240,11 +239,15 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
 	</section>
 	<section xml:id="noteworthy-runtime-components">
 		<title>Noteworthy Built-in Services</title>
-		<section>
-			<title>RuntimeProperties</title>
-		</section>
 		<section xml:id="jdbceventlogger">
 			<title>JdbcEventLogger</title>
+			<para><code>org.apache.cayenne.log.JdbcEventLogger</code> is the service that defines
+				logging API for Cayenne internals. It provides facilities for logging queries,
+				commits, transactions, etc. The default implementation is
+					<code>org.apache.cayenne.log.CommonsJdbcEventLogger</code> that performs logging
+				via commons-logging library. Cayenne library includes another potentially useful
+				logger - <code>org.apache.cayenne.log.FormattedCommonsJdbcEventLogger</code> that
+				produces formatted multiline SQL output that can be easier to read.</para>
 		</section>
 		<section xml:id="datasourcefactory">
 			<title>DataSourceFactory</title>

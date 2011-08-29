@@ -4,9 +4,53 @@
 	<title>Including Cayenne in a Project</title>
 	<section xml:id="jar-files-and-depdendencies">
 		<title>Jar Files and Dependencies</title>
+		<para>Cayenne distribution contains the following core runtime jars in the distribution
+				<code>lib</code> directory: <itemizedlist>
+				<listitem>
+					<para><emphasis role="italic">cayenne-server-x.x.jar</emphasis> - contains full
+						Cayenne runtime (DI, adapters, DB access classes, etc.). Most applications
+						will use only this file.</para>
+				</listitem>
+				<listitem>
+					<para>cayenne-client-x.x.jar - a subset of cayenne-server.jar trimmed for use on
+						the client in an ROP application.</para>
+				</listitem>
+				<listitem>
+					<para>Other cayenne-* jars - various Cayenne extensions.</para>
+				</listitem>
+			</itemizedlist></para>
+		<para>When using <code>cayenne-server-x.x.jar</code> you'll need a few third party jars (all
+			included in <code>lib/third-party</code> directory of the distribution): <itemizedlist>
+				<listitem>
+					<para><link xlink:href="http://jakarta.apache.org/velocity/">Apache Velocity
+							Template Engine</link>, version 1.6.x (and all its dependencies bundled
+						with velocity-dep)</para>
+				</listitem>
+				<listitem>
+					<para><link xlink:href="http://jakarta.apache.org/commons/collections">Apache
+							Commons Collections</link>, version 3.1</para>
+				</listitem>
+				<listitem>
+					<para><link xlink:href="http://jakarta.apache.org/commons/logging/">Apache
+							Commons Logging</link>, version 1.1</para>
+				</listitem>
+			</itemizedlist></para>
+		<para>Cayenne integrates with various caching, clustering and other frameworks. These
+			optional integrations will require other third-party jars that the users will need to
+			obtain on their own.</para>
 	</section>
 	<section xml:id="maven-projects">
 		<title>Maven Projects</title>
+		<para>If you are using Maven, you won't have to deal with figuring out the dependencies. You
+			can simply include cayenne-server artifact in your
+			POM:<programlisting>&lt;dependency>
+   &lt;groupId>org.apache.cayenne&lt;/groupId>
+   &lt;artifactId>cayenne-server&lt;/artifactId>
+   &lt;version>X.Y.Z&lt;/version>
+&lt;/dependency></programlisting></para>
+		<para>Additionally Cayenne provides a set of plugins to perform various project tasks, such
+			as synching generated Java classes with the mapping, etc, described in the following
+			subsection.</para>
 		<section xml:id="mvn-cgen">
 			<title>cgen</title>
 		</section>
