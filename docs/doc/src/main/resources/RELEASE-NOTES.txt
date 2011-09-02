@@ -31,6 +31,7 @@ CAY-1590 DDL generation without a live datasource
 CAY-1594 DI extension point: turning on/off cross-ObjectContext synchronization
 CAY-1598 Per DataMap listeners are called for all entities in DataDomain
 CAY-1599 Annotation-based global listeners registration
+CAY-1605 Switch Cayenne to use unified Maven repository
 
 Bug Fixes Since 3.1M2:
 
@@ -139,6 +140,7 @@ Changes/New Features Since 3.0.2:
 
 CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
 CAY-1590 DDL generation without a live datasource
+CAY-1605 Switch Cayenne to use unified Maven repository
 
 Bug Fixes Since 3.0.2:
 
