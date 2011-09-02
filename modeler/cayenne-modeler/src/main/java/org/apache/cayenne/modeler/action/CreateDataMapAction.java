@@ -63,12 +63,9 @@ public class CreateDataMapAction extends CayenneAction {
                 .getProject()
                 .getRootNode();
 
-        // use domain name as DataMap base, as map names must be unique across the
-        // project...
         DataMap map = (DataMap) NamedObjectFactory.createObject(
                 DataMap.class,
-                currentDomain,
-                currentDomain.getName() + "Map");
+                currentDomain);
 
         // set configuration source for new dataMap
         Resource baseResource = currentDomain.getConfigurationSource();

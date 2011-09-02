@@ -98,8 +98,6 @@ public class CreateNodeAction extends CayenneAction {
                 .getProject()
                 .getRootNode();
 
-        // use domain name as DataNode base, as node names must be unique across the
-        // project...
         DataNodeDescriptor node = buildDataNode(domain);
 
         DataSourceInfo src = new DataSourceInfo();
@@ -118,8 +116,7 @@ public class CreateNodeAction extends CayenneAction {
     DataNodeDescriptor buildDataNode(DataChannelDescriptor domain) {
         String name = NamedObjectFactory.createName(
                 DataNodeDescriptor.class,
-                domain,
-                domain.getName() + "Node");
+                domain);
 
         DataNodeDescriptor node = new DataNodeDescriptor(name);
         node.setDataChannelDescriptor(domain);

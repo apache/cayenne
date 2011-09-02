@@ -190,7 +190,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            return "UntitledDomain";
+            return "project";
         }
 
         @Override
@@ -210,7 +210,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            return "UntitledMap";
+            return "datamap";
         }
 
         @Override
@@ -244,7 +244,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            return "UntitledObjEntity";
+            return "ObjEntity";
         }
 
         @Override
@@ -274,7 +274,7 @@ public abstract class NamedObjectFactory {
         @Override
         protected String nameBase() {
             if (getNameBase() == null) {
-                setNameBase("UntitledEmbeddable");
+                setNameBase("Embeddable");
             }
             return getNameBase();
 
@@ -322,7 +322,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            return "UntitledDbEntity";
+            return "db_entity";
         }
 
         @Override
@@ -370,7 +370,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            return "UntitledProcedure";
+            return "procedure";
         }
 
         @Override
@@ -389,7 +389,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            return "UntitledQuery";
+            return "query";
         }
 
         @Override
@@ -440,7 +440,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected String nameBase() {
-            return "UntitledDataNode";
+            return "datanode";
         }
 
         @Override
