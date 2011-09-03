@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
@@ -88,7 +86,7 @@ public class IdentityColumnsTest extends ServerCase {
         idObject.getObjectContext().commitChanges();
 
         ObjectId id = idObject.getObjectId();
-        context.invalidateObjects(Collections.singleton(idObject));
+        context.invalidateObjects(idObject);
 
         SelectQuery q = new SelectQuery(GeneratedColumnTestEntity.class);
         q.setPageSize(10);
@@ -114,7 +112,7 @@ public class IdentityColumnsTest extends ServerCase {
         assertTrue(id >= 0);
 
         // make sure that id is the same as id in the DB
-        context.invalidateObjects(Collections.singleton(idObject));
+        context.invalidateObjects(idObject);
         GeneratedColumnTestEntity object = Cayenne.objectForPK(
                 context,
                 GeneratedColumnTestEntity.class,
@@ -167,7 +165,7 @@ public class IdentityColumnsTest extends ServerCase {
         d.setToMaster(m);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(m, d));
+        context.invalidateObjects(m, d);
 
         context.prepareForAccess(d, null, false);
 
@@ -219,7 +217,7 @@ public class IdentityColumnsTest extends ServerCase {
             assertTrue(ids[i] > 0);
         }
 
-        context.invalidateObjects(Arrays.asList(idObjects));
+        context.invalidateObjects(idObjects);
 
         for (int i = 0; i < ids.length; i++) {
             GeneratedColumnTestEntity object = Cayenne.objectForPK(
@@ -274,7 +272,7 @@ public class IdentityColumnsTest extends ServerCase {
                     GeneratedColumnCompKey.GENERATED_COLUMN_PK_COLUMN);
             assertNotNull(dbGeneratedID2);
 
-            context.invalidateObjects(Arrays.asList(master, dep1, dep2));
+            context.invalidateObjects(master, dep1, dep2);
 
             Object fetchedDep2 = Cayenne.objectForPK(context, id2);
             assertNotNull(fetchedDep2);
@@ -309,7 +307,7 @@ public class IdentityColumnsTest extends ServerCase {
         assertTrue(id2 >= 0);
         assertEquals(id1, id2);
 
-        context.invalidateObjects(Arrays.asList(master2, dependent));
+        context.invalidateObjects(master2, dependent);
 
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
@@ -344,7 +342,7 @@ public class IdentityColumnsTest extends ServerCase {
         assertEquals(id1, id2);
 
         // refetch from DB
-        context.invalidateObjects(Arrays.asList(idObject, dependent));
+        context.invalidateObjects(idObject, dependent);
 
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));

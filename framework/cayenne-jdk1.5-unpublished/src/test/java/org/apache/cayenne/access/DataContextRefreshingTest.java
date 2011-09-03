@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.sql.Types;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -244,7 +243,7 @@ public class DataContextRefreshingTest extends ServerCase {
         // update via DataNode directly
         assertEquals(1, tArtist.update().set("ARTIST_NAME", nameAfter).execute());
 
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
         assertEquals(nameAfter, artist.getArtistName());
     }
 
@@ -260,7 +259,7 @@ public class DataContextRefreshingTest extends ServerCase {
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", null, Types.BIGINT).execute());
 
-        context.invalidateObjects(Collections.singletonList(painting));
+        context.invalidateObjects(painting);
         assertNull(painting.getToArtist());
     }
 
@@ -275,7 +274,7 @@ public class DataContextRefreshingTest extends ServerCase {
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", 6).execute());
 
-        context.invalidateObjects(Collections.singletonList(painting));
+        context.invalidateObjects(painting);
         assertNotSame(artistBefore, painting.getToArtist());
         assertEquals("artist3", painting.getToArtist().getArtistName());
     }
@@ -289,7 +288,7 @@ public class DataContextRefreshingTest extends ServerCase {
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", 5).execute());
 
-        context.invalidateObjects(Collections.singletonList(painting));
+        context.invalidateObjects(painting);
         assertNotNull(painting.getToArtist());
         assertEquals("artist2", painting.getToArtist().getArtistName());
     }
@@ -303,7 +302,7 @@ public class DataContextRefreshingTest extends ServerCase {
 
         assertEquals(1, tPainting.delete().execute());
 
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
         assertEquals(artist.getPaintingArray().size(), 0);
     }
 
@@ -318,7 +317,7 @@ public class DataContextRefreshingTest extends ServerCase {
         tPainting.insert(4, "p", 5, 1000);
 
         assertEquals(artist.getPaintingArray().size(), 0);
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
         assertEquals(artist.getPaintingArray().size(), 1);
     }
 
@@ -331,7 +330,7 @@ public class DataContextRefreshingTest extends ServerCase {
                 .get(0);
         assertNotNull(artist);
 
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
 
         int queries = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {

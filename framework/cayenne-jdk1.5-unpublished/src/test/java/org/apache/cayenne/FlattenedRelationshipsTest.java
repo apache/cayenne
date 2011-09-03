@@ -20,7 +20,6 @@
 package org.apache.cayenne;
 
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
@@ -129,7 +128,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
 
         int pk = Cayenne.intPKForObject(obj01);
 
-        context.invalidateObjects(Arrays.asList(obj01, obj11, obj12));
+        context.invalidateObjects(obj01, obj11, obj12);
 
         FlattenedTest1 fresh01 = Cayenne.objectForPK(context1, FlattenedTest1.class, pk);
 
@@ -226,7 +225,7 @@ public class FlattenedRelationshipsTest extends ServerCase {
         ft2.addToFt3Array(ft3);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(ft1, ft2, ft3));
+        context.invalidateObjects(ft1, ft2, ft3);
 
         SelectQuery q = new SelectQuery(FlattenedTest3.class);
         q.setQualifier(ExpressionFactory.matchExp("name", "FT3Name"));

@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -164,7 +163,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        context.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -190,7 +189,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        context.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -220,7 +219,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        context.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -335,7 +334,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        context.invalidateObjects(Collections.singletonList(p));
+        context.invalidateObjects(p);
         assertEquals(1101.01, p.getEstimatedPrice().doubleValue(), 0.02);
     }
 

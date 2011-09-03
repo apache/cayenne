@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -200,7 +199,7 @@ public class ToManyListTest extends ServerCase {
         p1.setPaintingTitle("p1");
 
         context.commitChanges();
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
 
         ToManyList list = (ToManyList) artist.getPaintingArray();
         assertTrue("List must be unresolved...", list.isFault());
@@ -231,7 +230,7 @@ public class ToManyListTest extends ServerCase {
         p1.setPaintingTitle("p1");
         artist.addToPaintingArray(p1);
         context.commitChanges();
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
 
         ToManyList list = (ToManyList) artist.getPaintingArray();
         assertTrue("List must be unresolved...", list.isFault());

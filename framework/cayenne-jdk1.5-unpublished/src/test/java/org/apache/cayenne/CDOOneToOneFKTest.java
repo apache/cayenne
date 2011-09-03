@@ -19,8 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -57,14 +55,14 @@ public class CDOOneToOneFKTest extends ServerCase {
         src.setToOneToFK(target);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(src, target));
+        context.invalidateObjects(src, target);
 
         ToOneFK2 src1 = (ToOneFK2) Cayenne.objectForPK(context, src.getObjectId());
         assertNotNull(src1.getToOneToFK());
         // resolve HOLLOW
         assertSame(src1, src1.getToOneToFK().getToPK());
 
-        context.invalidateObjects(Arrays.asList(src1, src1.getToOneToFK()));
+        context.invalidateObjects(src1, src1.getToOneToFK());
 
         ToOneFK1 target2 = (ToOneFK1) Cayenne.objectForPK(context, target.getObjectId());
         assertNotNull(target2.getToPK());

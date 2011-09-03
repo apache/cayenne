@@ -361,7 +361,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         employee.setPersonType("E");
 
         context.commitChanges();
-        context.invalidateObjects(Arrays.asList(company, rep, employee));
+        context.invalidateObjects(company, rep, employee);
 
         SelectQuery query = new SelectQuery(CustomerRepresentative.class);
         List<?> reps = context2.performQuery(query);

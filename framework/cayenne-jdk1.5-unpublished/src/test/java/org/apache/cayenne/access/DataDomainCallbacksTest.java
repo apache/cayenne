@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -157,7 +155,7 @@ public class DataDomainCallbacksTest extends ServerCase {
         p1.setPaintingTitle("XXX");
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(a1, p1));
+        context.invalidateObjects(a1, p1);
 
         SelectQuery q = new SelectQuery(Painting.class);
         p1 = (Painting) context1.performQuery(q).get(0);

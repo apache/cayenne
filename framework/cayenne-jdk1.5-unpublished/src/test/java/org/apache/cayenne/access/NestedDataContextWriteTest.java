@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import java.sql.Types;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -199,7 +198,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         final Artist childCommitted = (Artist) objects.get(1);
 
         final Artist childHollow = (Artist) objects.get(3);
-        childContext.invalidateObjects(Collections.singleton(childHollow));
+        childContext.invalidateObjects(childHollow);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -314,7 +313,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         childDeleted.setArtistName("DDD");
 
         Artist childHollow = (Artist) objects.get(3);
-        childContext.invalidateObjects(Collections.singleton(childHollow));
+        childContext.invalidateObjects(childHollow);
 
         childContext.commitChanges();
 

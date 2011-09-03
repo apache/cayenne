@@ -100,7 +100,7 @@ public class UuidRelationshipFilter implements DataChannelFilter {
     @PostPersist(entityAnnotations = UuidRelationship.class)
     void postCommit(DataObject object) {
         // invalidate after commit to ensure UUID property is re-read...
-        object.getObjectContext().invalidateObjects(Collections.singleton(object));
+        object.getObjectContext().invalidateObjects(object);
     }
 
     /**

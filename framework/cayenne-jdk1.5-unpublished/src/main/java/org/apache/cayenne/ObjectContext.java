@@ -119,7 +119,7 @@ public interface ObjectContext extends Serializable {
      *             delete rule is applicable for object deletion.
      * @since 3.1
      */
-    void deleteObjects(Object... objects) throws DeleteDenyException;
+    <T> void deleteObjects(T... objects) throws DeleteDenyException;
 
     /**
      * A callback method that child Persistent objects are expected to call before
@@ -220,7 +220,7 @@ public interface ObjectContext extends Serializable {
      * 
      * @since 3.1
      */
-    void invalidateObjects(Object... objects);
+    <T> void invalidateObjects(T... objects);
 
     /**
      * Returns a user-defined property previously set via 'setUserProperty'. Note that it

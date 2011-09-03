@@ -682,6 +682,28 @@ public class DataContextTest extends ServerCase {
         assertTrue(context.hasChanges());
     }
 
+    public void testInvalidateObjects_Vararg() throws Exception {
+
+        DataRow row = new DataRow(10);
+        row.put("ARTIST_ID", new Integer(1));
+        row.put("ARTIST_NAME", "ArtistXYZ");
+        row.put("DATE_OF_BIRTH", new Date());
+        DataObject object = context.objectFromDataRow(Artist.class, row);
+        ObjectId oid = object.getObjectId();
+
+        // insert object into the ObjectStore
+        context.getObjectStore().registerNode(oid, object);
+
+        assertSame(object, context.getObjectStore().getNode(oid));
+        assertNotNull(context.getObjectStore().getCachedSnapshot(oid));
+
+        context.invalidateObjects(object);
+
+        assertSame(oid, object.getObjectId());
+        assertNull(context.getObjectStore().getCachedSnapshot(oid));
+        assertSame(object, context.getObjectStore().getNode(oid));
+    }
+    
     public void testInvalidateObjects() throws Exception {
 
         DataRow row = new DataRow(10);
@@ -697,7 +719,7 @@ public class DataContextTest extends ServerCase {
         assertSame(object, context.getObjectStore().getNode(oid));
         assertNotNull(context.getObjectStore().getCachedSnapshot(oid));
 
-        context.invalidateObjects(Collections.singletonList(object));
+        context.invalidateObjects(Collections.singleton(object));
 
         assertSame(oid, object.getObjectId());
         assertNull(context.getObjectStore().getCachedSnapshot(oid));

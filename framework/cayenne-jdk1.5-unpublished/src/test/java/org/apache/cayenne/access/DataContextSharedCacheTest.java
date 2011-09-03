@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -562,7 +561,7 @@ public class DataContextSharedCacheTest extends ServerCase {
     public void testSnapshotEvictedForHollow() throws Exception {
         String originalName = artist.getArtistName();
 
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
         assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
                 artist.getObjectId()));
@@ -587,7 +586,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         context1.prepareForAccess(altArtist, null, false);
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
-        context.invalidateObjects(Collections.singletonList(artist));
+        context.invalidateObjects(artist);
 
         // original context
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());

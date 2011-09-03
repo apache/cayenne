@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -442,7 +441,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         final ClientMtTable1 childCommitted = (ClientMtTable1) objects.get(1);
 
         final ClientMtTable1 childHollow = (ClientMtTable1) objects.get(3);
-        child.invalidateObjects(Collections.singleton(childHollow));
+        child.invalidateObjects(childHollow);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -605,7 +604,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         childDeleted.setGlobalAttribute1("DDD");
 
         ClientMtTable1 childHollow = (ClientMtTable1) objects.get(3);
-        child.invalidateObjects(Collections.singleton(childHollow));
+        child.invalidateObjects(childHollow);
 
         child.commitChanges();
 

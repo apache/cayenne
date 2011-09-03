@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.di.Inject;
@@ -64,7 +63,7 @@ public class DataContextCompoundRelTest extends ServerCase {
         detail.setName("d1");
 
         context.commitChanges();
-        context.invalidateObjects(Arrays.asList(master, detail));
+        context.invalidateObjects(master, detail);
 
         SelectQuery q = new SelectQuery(CompoundPkTestEntity.class);
         List<?> objs = context1.performQuery(q);
@@ -105,7 +104,7 @@ public class DataContextCompoundRelTest extends ServerCase {
         detail1.setName("d2");
 
         context.commitChanges();
-        context.invalidateObjects(Arrays.asList(master, master1, detail, detail1));
+        context.invalidateObjects(master, master1, detail, detail1);
 
         Expression qual = ExpressionFactory.matchExp("toCompoundPk", master);
         SelectQuery q = new SelectQuery(CompoundFkTestEntity.class, qual);
@@ -141,7 +140,7 @@ public class DataContextCompoundRelTest extends ServerCase {
         detail1.setName("d2");
 
         context.commitChanges();
-        context.invalidateObjects(Arrays.asList(master, master1, detail, detail1));
+        context.invalidateObjects(master, master1, detail, detail1);
 
         Expression qual = ExpressionFactory.matchExp("compoundFkArray", detail1);
         SelectQuery q = new SelectQuery(CompoundPkTestEntity.class, qual);

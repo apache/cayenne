@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
@@ -321,7 +320,7 @@ public class CayenneDataObjectInContextTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());
 
         // refetch
-        context.invalidateObjects(Collections.singleton(object));
+        context.invalidateObjects(object);
 
         Artist object2 = Cayenne.objectForPK(context, Artist.class, 3);
         assertNotNull(object2);

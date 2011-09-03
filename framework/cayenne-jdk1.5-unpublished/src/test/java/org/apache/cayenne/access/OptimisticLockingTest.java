@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.sql.Types;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -149,7 +148,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
 
         context.deleteObjects(object);
-        context.invalidateObjects(Collections.singletonList(object));
+        context.invalidateObjects(object);
         context.commitChanges();
     }
 
@@ -185,7 +184,7 @@ public class OptimisticLockingTest extends ServerCase {
         object.setDescription("first update");
         context.commitChanges();
 
-        context.invalidateObjects(Collections.singletonList(object));
+        context.invalidateObjects(object);
         context.deleteObjects(object);
         context.commitChanges();
     }
@@ -268,7 +267,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
 
         object.setDescription("second update");
-        context.invalidateObjects(Collections.singletonList(object));
+        context.invalidateObjects(object);
 
         context.commitChanges();
     }
@@ -286,7 +285,7 @@ public class OptimisticLockingTest extends ServerCase {
         object.setDescription("first update");
         context.commitChanges();
 
-        context.invalidateObjects(Collections.singletonList(object));
+        context.invalidateObjects(object);
         object.setDescription("second update");
 
         context.commitChanges();

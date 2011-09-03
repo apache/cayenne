@@ -19,8 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -63,7 +61,7 @@ public class CDOOneToManyFKTest extends ServerCase {
         src.addToDeps(target);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(src, target, src2));
+        context.invalidateObjects(src, target, src2);
 
         ToManyFkRoot src1 = (ToManyFkRoot) Cayenne
                 .objectForPK(context, src.getObjectId());
@@ -72,7 +70,7 @@ public class CDOOneToManyFKTest extends ServerCase {
         // resolve HOLLOW
         assertSame(src1, ((ToManyFkDep) src1.getDeps().get(0)).getRoot());
 
-        context.invalidateObjects(Arrays.asList(src1, src1.getDeps().get(0)));
+        context.invalidateObjects(src1, src1.getDeps().get(0));
 
         ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(context, target
                 .getObjectId());

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
@@ -81,7 +79,7 @@ public class DataContextBinaryPKTest extends ServerCase {
             master.addToBinaryPKDetails(detail);
 
             context.commitChanges();
-            context.invalidateObjects(Arrays.asList(master, detail));
+            context.invalidateObjects(master, detail);
 
             BinaryPKTest2 fetchedDetail = (BinaryPKTest2) context1.performQuery(
                     new SelectQuery(BinaryPKTest2.class)).get(0);

@@ -437,7 +437,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * @since 3.1
      */
-    public void invalidateObjects(Object... objects) {
+    public <T> void invalidateObjects(T... objects) {
         if (objects != null && objects.length > 0) {
             performGenericQuery(new RefreshQuery(Arrays.asList(objects)));
         }
@@ -538,7 +538,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * @since 3.1
      */
-    public void deleteObjects(Object... objects) throws DeleteDenyException {
+    public <T> void deleteObjects(T... objects) throws DeleteDenyException {
         if (objects == null || objects.length == 0) {
             return;
         }

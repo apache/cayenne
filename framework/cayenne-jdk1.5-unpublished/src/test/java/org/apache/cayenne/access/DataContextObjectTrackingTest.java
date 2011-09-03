@@ -120,7 +120,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
     }
 
-    public void testInvalidateObject() {
+    public void testInvalidateObjects_Vararg() {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(1));
@@ -133,7 +133,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
         assertSame(context, obj.getObjectContext());
         assertSame(obj, context.getGraphManager().getNode(oid));
 
-        context.invalidateObjects(Collections.singletonList(obj));
+        context.invalidateObjects(obj);
 
         assertEquals(PersistenceState.HOLLOW, obj.getPersistenceState());
         assertSame(context, obj.getObjectContext());

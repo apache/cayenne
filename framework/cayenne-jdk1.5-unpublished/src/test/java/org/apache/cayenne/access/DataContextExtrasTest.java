@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.sql.Types;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -129,7 +128,7 @@ public class DataContextExtrasTest extends ServerCase {
         o1.setArtistName("a");
         context.commitChanges();
 
-        context.invalidateObjects(Collections.singleton(o1));
+        context.invalidateObjects(o1);
         assertEquals(PersistenceState.HOLLOW, o1.getPersistenceState());
         assertNull(o1.readPropertyDirectly("artistName"));
 

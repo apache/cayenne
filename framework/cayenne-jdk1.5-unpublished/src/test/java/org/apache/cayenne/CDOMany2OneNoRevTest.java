@@ -19,8 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting1;
@@ -48,7 +46,7 @@ public class CDOMany2OneNoRevTest extends ServerCase {
         context.commitChanges();
         ObjectId aid = a1.getObjectId();
         ObjectId pid = p1.getObjectId();
-        context.invalidateObjects(Arrays.asList(a1, p1));
+        context.invalidateObjects(a1, p1);
 
         Painting1 p2 = (Painting1) Cayenne.objectForPK(context, pid);
         Artist a2 = p2.getToArtist();
