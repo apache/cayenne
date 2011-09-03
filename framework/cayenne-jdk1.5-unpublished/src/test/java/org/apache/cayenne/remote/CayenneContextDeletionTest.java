@@ -29,7 +29,7 @@ public class CayenneContextDeletionTest extends RemoteCayenneCase {
         ClientMtTable1 object = clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();
 
-        clientContext.deleteObject(object);
+        clientContext.deleteObjects(object);
 
         // now check that the object is unregistered
         clientContext.commitChanges();

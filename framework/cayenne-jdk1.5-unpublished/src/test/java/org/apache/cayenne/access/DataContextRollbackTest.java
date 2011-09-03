@@ -174,8 +174,8 @@ public class DataContextRollbackTest extends ServerCase {
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName(artistName);
         context.commitChanges();
-        // Save... cayenne doesn't yet handle deleting objects that are uncommitted
-        context.deleteObject(artist);
+       
+        context.deleteObjects(artist);
         context.rollbackChanges();
 
         // Now check everything is as it should be

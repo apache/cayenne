@@ -122,7 +122,7 @@ public class RemoteRollbackTest extends RemoteCayenneCase {
         o1.setGlobalAttribute1(o1Name);
         clientContext.commitChanges();
         // Save... cayenne doesn't yet handle deleting objects that are uncommitted
-        clientContext.deleteObject(o1);
+        clientContext.deleteObjects(o1);
         clientContext.rollbackChanges();
 
         //TODO: The state is committed for Cayenne context, but Hollow for DataContext?!

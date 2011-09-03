@@ -82,7 +82,7 @@ public class LightSuperClassTest extends RemoteCayenneCase {
 
         context.commitChanges();
 
-        context.deleteObject(country);
+        context.deleteObjects(country);
         assertEquals(continent.getCountries().size(), 0);
         continent.setName("Australia");
 

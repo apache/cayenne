@@ -77,7 +77,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         // Always good to commit before deleting... bad things happen otherwise
         context.commitChanges();
 
-        context.deleteObject(childGroup);
+        context.deleteObjects(childGroup);
 
         // The things we are testing.
         assertFalse(parentGroup.getChildGroupsArray().contains(childGroup));
@@ -110,7 +110,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         List<?> joins1 = context.performQuery(checkQuery);
         assertEquals(1, joins1.size());
 
-        context.deleteObject(anArtist);
+        context.deleteObjects(anArtist);
 
         assertEquals(PersistenceState.DELETED, aGroup.getPersistenceState());
         assertFalse(anArtist.getGroupArray().contains(aGroup));
@@ -145,7 +145,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         List<?> joins1 = context.performQuery(checkQuery);
         assertEquals(1, joins1.size());
 
-        context.deleteObject(aGroup);
+        context.deleteObjects(aGroup);
         assertFalse(anArtist.getGroupArray().contains(aGroup));
         context.commitChanges();
 
@@ -168,7 +168,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
 
         context.commitChanges();
 
-        context.deleteObject(parentGroup);
+        context.deleteObjects(parentGroup);
 
         // The things we are testing.
         assertNull(childGroup.getToParentGroup());
@@ -190,7 +190,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         // and everything must be committed for certain things to work
         context.commitChanges();
 
-        context.deleteObject(painting);
+        context.deleteObjects(painting);
 
         // info must also be deleted
         assertEquals(PersistenceState.DELETED, info.getPersistenceState());
@@ -219,7 +219,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         artistExhibit.setToExhibit(anExhibit);
         context.commitChanges();
 
-        context.deleteObject(anArtist);
+        context.deleteObjects(anArtist);
 
         // Test that the link record was deleted, and removed from the relationship
         assertEquals(PersistenceState.DELETED, artistExhibit.getPersistenceState());
@@ -237,7 +237,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         context.commitChanges();
 
         try {
-            context.deleteObject(gallery);
+            context.deleteObjects(gallery);
             fail("Should have thrown an exception");
         }
         catch (Exception e) {

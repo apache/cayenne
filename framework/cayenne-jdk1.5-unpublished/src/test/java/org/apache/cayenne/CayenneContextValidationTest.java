@@ -66,8 +66,8 @@ public class CayenneContextValidationTest extends ClientCase {
         assertTrue(o1.isValidatedForUpdate());
 
         o1.resetValidation(false);
-        context.deleteObject(o1);
-        context.deleteObject(o2);
+        context.deleteObjects(o1);
+        context.deleteObjects(o2);
 
         context.commitChanges();
         assertFalse(o1.isValidatedForInsert());

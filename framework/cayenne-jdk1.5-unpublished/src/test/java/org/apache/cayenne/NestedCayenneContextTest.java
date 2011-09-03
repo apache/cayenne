@@ -81,7 +81,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         clientContext.commitChanges();
 
-        clientContext.deleteObject(deleted);
+        clientContext.deleteObjects(deleted);
         modified.setGlobalAttribute1("a");
 
         final ClientMtTable1 _new = clientContext.newObject(ClientMtTable1.class);
@@ -205,7 +205,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         // test how different object states appear in the child on select
 
-        clientContext.deleteObject(deleted);
+        clientContext.deleteObjects(deleted);
         modified.setGlobalAttribute1("a");
 
         ClientMtTable1 _new = clientContext.newObject(ClientMtTable1.class);
@@ -335,7 +335,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         child.commitChangesToParent();
 
-        child.deleteObject(p);
+        child.deleteObjects(p);
         aChild.removeFromTable2Array(p);
 
         child.commitChangesToParent();
@@ -554,7 +554,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         // delete AND modify
         ClientMtTable1 childDeleted = (ClientMtTable1) objects.get(2);
-        child.deleteObject(childDeleted);
+        child.deleteObjects(childDeleted);
         childDeleted.setGlobalAttribute1("DDD");
 
         // don't block queries - on delete Cayenne may need to resolve delete rules via
@@ -601,7 +601,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         // delete AND modify
         ClientMtTable1 childDeleted = (ClientMtTable1) objects.get(2);
-        child.deleteObject(childDeleted);
+        child.deleteObjects(childDeleted);
         childDeleted.setGlobalAttribute1("DDD");
 
         ClientMtTable1 childHollow = (ClientMtTable1) objects.get(3);
@@ -663,7 +663,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         a.removeFromTable2Array(p2);
 
         // this causes an error on commit
-        child.deleteObject(p2);
+        child.deleteObjects(p2);
 
         child.commitChangesToParent();
 

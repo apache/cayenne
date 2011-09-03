@@ -131,7 +131,7 @@ public class OptimisticLockingTest extends ServerCase {
         object.setDescription("first update");
         context.commitChanges();
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.commitChanges();
     }
 
@@ -148,7 +148,7 @@ public class OptimisticLockingTest extends ServerCase {
         object.setDescription("first update");
         context.commitChanges();
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.invalidateObjects(Collections.singletonList(object));
         context.commitChanges();
     }
@@ -167,7 +167,7 @@ public class OptimisticLockingTest extends ServerCase {
         object.setDescription("first update");
         context.commitChanges();
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.getObjectStore().getDataRowCache().forgetSnapshot(object.getObjectId());
         context.commitChanges();
     }
@@ -186,7 +186,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
 
         context.invalidateObjects(Collections.singletonList(object));
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.commitChanges();
     }
 
@@ -205,7 +205,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
 
         context.getObjectStore().getDataRowCache().forgetSnapshot(object.getObjectId());
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.commitChanges();
     }
 
@@ -225,7 +225,7 @@ public class OptimisticLockingTest extends ServerCase {
         // change row underneath, delete and save... optimistic lock failure expected
         createSimpleLockUpdate();
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
 
         try {
             context.commitChanges();

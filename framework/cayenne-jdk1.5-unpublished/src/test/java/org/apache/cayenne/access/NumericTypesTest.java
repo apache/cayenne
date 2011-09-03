@@ -278,7 +278,7 @@ public class NumericTypesTest extends ServerCase {
         ObjectId syntheticId = new ObjectId("DecimalPKTestEntity", map);
         assertSame(object, context.localObject(syntheticId, null));
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.commitChanges();
     }
 

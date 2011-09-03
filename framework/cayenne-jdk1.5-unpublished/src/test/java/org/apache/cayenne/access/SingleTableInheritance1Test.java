@@ -74,9 +74,9 @@ public class SingleTableInheritance1Test extends ServerCase {
         context.performQuery(query);
         context.commitChanges();
 
-        context.deleteObject(group1);
-        context.deleteObject(group2);
-        context.deleteObject(user);
+        context.deleteObjects(group1);
+        context.deleteObjects(group2);
+        context.deleteObjects(user);
         context.commitChanges();
     }
 
@@ -89,14 +89,14 @@ public class SingleTableInheritance1Test extends ServerCase {
         group.addToGroupMembers(user);
         context.commitChanges();
 
-        context.deleteObject(user);
+        context.deleteObjects(user);
         assertTrue(group.getGroupMembers().isEmpty());
 
         context.commitChanges();
 
         // here Cayenne would throw per CAY-1378 on an attempt to delete a previously
         // related transient object
-        context.deleteObject(group);
+        context.deleteObjects(group);
         context.commitChanges();
     }
 }

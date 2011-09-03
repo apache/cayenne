@@ -177,7 +177,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
                 }
             }.assertWithTimeout(200);
 
-            context.deleteObject(test);
+            context.deleteObjects(test);
             assertEquals(test.getPersistenceState(), PersistenceState.DELETED);
             context.commitChanges();
 

@@ -251,14 +251,14 @@ public class CayenneContextTest extends ClientCase {
 
         // TRANSIENT ... should quietly ignore it
         Persistent transientObject = new MockPersistentObject();
-        context.deleteObject(transientObject);
+        context.deleteObjects(transientObject);
         assertEquals(PersistenceState.TRANSIENT, transientObject.getPersistenceState());
 
         // NEW ... should make it TRANSIENT
         // create via context to make sure that object store would register it
         Persistent newObject = context.newObject(MockPersistentObject.class);
         assertNotNull(newObject.getObjectContext());
-        context.deleteObject(newObject);
+        context.deleteObjects(newObject);
         assertNull(newObject.getObjectContext());
         assertEquals(PersistenceState.TRANSIENT, newObject.getPersistenceState());
         assertFalse(context.internalGraphManager().dirtyNodes().contains(
@@ -272,7 +272,7 @@ public class CayenneContextTest extends ClientCase {
         committed.setPersistenceState(PersistenceState.COMMITTED);
         committed.setObjectId(new ObjectId("test_entity", "key", "value1"));
         committed.setObjectContext(context);
-        context.deleteObject(committed);
+        context.deleteObjects(committed);
         assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
 
         // MODIFIED
@@ -280,7 +280,7 @@ public class CayenneContextTest extends ClientCase {
         modified.setPersistenceState(PersistenceState.MODIFIED);
         modified.setObjectId(new ObjectId("test_entity", "key", "value2"));
         modified.setObjectContext(context);
-        context.deleteObject(modified);
+        context.deleteObjects(modified);
         assertEquals(PersistenceState.DELETED, modified.getPersistenceState());
 
         // DELETED
@@ -288,7 +288,7 @@ public class CayenneContextTest extends ClientCase {
         deleted.setPersistenceState(PersistenceState.DELETED);
         deleted.setObjectId(new ObjectId("test_entity", "key", "value3"));
         deleted.setObjectContext(context);
-        context.deleteObject(deleted);
+        context.deleteObjects(deleted);
         assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
     }
 
@@ -393,7 +393,7 @@ public class CayenneContextTest extends ClientCase {
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
 
         // testing this...
-        context.deleteObject(hollow);
+        context.deleteObjects(hollow);
         assertSame(hollow, context.getGraphManager().getNode(gid));
         assertEquals(inflated.getGlobalAttribute1Direct(), hollow
                 .getGlobalAttribute1Direct());

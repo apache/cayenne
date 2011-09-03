@@ -62,34 +62,34 @@ public class CDOReflexiveRelDeleteTest extends ServerCase {
     // encompass the various orders that might be a problem. Add more if additional
     // problems come to light
     public void testReflexiveRelationshipDelete1() {
-        context.deleteObject(parentGroup);
-        context.deleteObject(childGroup1);
-        context.deleteObject(childGroup2);
-        context.deleteObject(childGroup3);
+        context.deleteObjects(parentGroup);
+        context.deleteObjects(childGroup1);
+        context.deleteObjects(childGroup2);
+        context.deleteObjects(childGroup3);
         context.commitChanges();
     }
 
     public void testReflexiveRelationshipDelete2() {
-        context.deleteObject(childGroup1);
-        context.deleteObject(parentGroup);
-        context.deleteObject(childGroup2);
-        context.deleteObject(childGroup3);
+        context.deleteObjects(childGroup1);
+        context.deleteObjects(parentGroup);
+        context.deleteObjects(childGroup2);
+        context.deleteObjects(childGroup3);
         context.commitChanges();
     }
 
     public void testReflexiveRelationshipDelete3() {
-        context.deleteObject(childGroup1);
-        context.deleteObject(childGroup3);
-        context.deleteObject(parentGroup);
-        context.deleteObject(childGroup2);
+        context.deleteObjects(childGroup1);
+        context.deleteObjects(childGroup3);
+        context.deleteObjects(parentGroup);
+        context.deleteObjects(childGroup2);
         context.commitChanges();
     }
 
     public void testReflexiveRelationshipDelete4() {
-        context.deleteObject(childGroup3);
-        context.deleteObject(parentGroup);
-        context.deleteObject(childGroup1);
-        context.deleteObject(childGroup2);
+        context.deleteObjects(childGroup3);
+        context.deleteObjects(parentGroup);
+        context.deleteObjects(childGroup1);
+        context.deleteObjects(childGroup2);
         context.commitChanges();
     }
 

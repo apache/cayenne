@@ -565,7 +565,7 @@ public class DataContextTest extends ServerCase {
                 Artist.ARTIST_NAME_PROPERTY,
                 "artist1"));
         ROArtist a1 = (ROArtist) context.performQuery(query).get(0);
-        context.deleteObject(a1);
+        context.deleteObjects(a1);
 
         try {
             context.commitChanges();
@@ -717,7 +717,7 @@ public class DataContextTest extends ServerCase {
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
 
         // testing this...
-        context.deleteObject(hollow);
+        context.deleteObjects(hollow);
         assertSame(hollow, context.getGraphManager().getNode(gid));
         assertEquals(inflated.getArtistName(), hollow.getArtistName());
 

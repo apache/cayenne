@@ -321,7 +321,7 @@ public class DataDomainCallbacksTest extends ServerCase {
                 listener2,
                 "publicCallback");
 
-        context.deleteObject(a1);
+        context.deleteObjects(a1);
         context.commitChanges();
 
         assertTrue(a1.isPostRemoved());
@@ -352,7 +352,7 @@ public class DataDomainCallbacksTest extends ServerCase {
 
         // change before removing
         a1.setArtistName("YY");
-        context.deleteObject(a1);
+        context.deleteObjects(a1);
         context.commitChanges();
 
         assertNull(listener2.getPublicCalledbackEntity());
@@ -386,7 +386,7 @@ public class DataDomainCallbacksTest extends ServerCase {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
-        context.deleteObject(a1);
+        context.deleteObjects(a1);
         context.commitChanges();
 
         assertNull(listener0.getPublicCalledbackEntity());

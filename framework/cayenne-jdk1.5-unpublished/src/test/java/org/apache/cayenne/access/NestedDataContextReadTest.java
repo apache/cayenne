@@ -165,7 +165,7 @@ public class NestedDataContextReadTest extends ServerCase {
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         33004)));
-        context.deleteObject(deleted);
+        context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, committed.getPersistenceState());
@@ -315,7 +315,7 @@ public class NestedDataContextReadTest extends ServerCase {
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         33004)));
-        context.deleteObject(deleted);
+        context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, committed.getPersistenceState());
@@ -370,7 +370,7 @@ public class NestedDataContextReadTest extends ServerCase {
                 deletedTargetSrcId);
         Artist deletedTarget = deletedTargetSrc.getToArtist();
         deletedTargetSrc.setToArtist(null);
-        context.deleteObject(deletedTarget);
+        context.deleteObjects(deletedTarget);
 
         Painting committedTargetSrc = Cayenne.objectForPK(
                 context,

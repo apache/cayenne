@@ -42,7 +42,7 @@ public class CDOReflexiveRelTest extends ServerCase {
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
 
-        context.deleteObject(parentGroup);
+        context.deleteObjects(parentGroup);
     }
 
     public void testAddDeleteWithCommit() {
@@ -54,7 +54,7 @@ public class CDOReflexiveRelTest extends ServerCase {
         childGroup1.setToParentGroup(parentGroup);
         context.commitChanges();
 
-        context.deleteObject(parentGroup);
+        context.deleteObjects(parentGroup);
         context.commitChanges();
     }
 
@@ -70,8 +70,8 @@ public class CDOReflexiveRelTest extends ServerCase {
 
         childGroup1.setToParentGroup(parentGroup2);
 
-        context.deleteObject(parentGroup1);
-        context.deleteObject(parentGroup2);
+        context.deleteObjects(parentGroup1);
+        context.deleteObjects(parentGroup2);
     }
 
     public void testReplaceDeleteWithCommit() {
@@ -86,8 +86,8 @@ public class CDOReflexiveRelTest extends ServerCase {
         childGroup1.setToParentGroup(parentGroup2);
         context.commitChanges();
 
-        context.deleteObject(parentGroup1);
-        context.deleteObject(parentGroup2);
+        context.deleteObjects(parentGroup1);
+        context.deleteObjects(parentGroup2);
         context.commitChanges();
     }
 

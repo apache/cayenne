@@ -140,7 +140,7 @@ public class DataContextCallbacksTest extends ServerCase {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
-        context.deleteObject(a1);
+        context.deleteObjects(a1);
         assertFalse(a1.isPostAdded());
         assertFalse(a1.isPreRemoved());
 
@@ -150,7 +150,7 @@ public class DataContextCallbacksTest extends ServerCase {
         Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("XX");
         context.commitChanges();
-        context.deleteObject(a2);
+        context.deleteObjects(a2);
         assertFalse(a2.isPostAdded());
         assertTrue(a2.isPreRemoved());
 
@@ -164,7 +164,7 @@ public class DataContextCallbacksTest extends ServerCase {
         Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("XX");
         context.commitChanges();
-        context.deleteObject(a3);
+        context.deleteObjects(a3);
         assertFalse(a3.isPostAdded());
         assertTrue(a3.isPreRemoved());
 
@@ -173,7 +173,7 @@ public class DataContextCallbacksTest extends ServerCase {
         Painting p3 = context.newObject(Painting.class);
         p3.setPaintingTitle("XX");
         context.commitChanges();
-        context.deleteObject(p3);
+        context.deleteObjects(p3);
         assertFalse(p3.isPostAdded());
         assertFalse(p3.isPreRemoved());
         assertSame(a3, listener2.getPublicCalledbackEntity());

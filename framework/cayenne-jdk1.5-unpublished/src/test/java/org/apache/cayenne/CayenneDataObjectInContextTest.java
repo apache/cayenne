@@ -188,7 +188,7 @@ public class CayenneDataObjectInContextTest extends ServerCase {
         context.commitChanges();
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
 
-        context.deleteObject(o1);
+        context.deleteObjects(o1);
         assertEquals(PersistenceState.DELETED, o1.getPersistenceState());
     }
 
@@ -198,7 +198,7 @@ public class CayenneDataObjectInContextTest extends ServerCase {
         o1.setArtistName("qY");
         context.commitChanges();
 
-        context.deleteObject(o1);
+        context.deleteObjects(o1);
         assertEquals(PersistenceState.DELETED, o1.getPersistenceState());
 
         context.commitChanges();

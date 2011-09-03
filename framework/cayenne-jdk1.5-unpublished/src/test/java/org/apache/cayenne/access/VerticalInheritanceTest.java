@@ -186,7 +186,7 @@ public class VerticalInheritanceTest extends ServerCase {
         assertEquals("BdE2", subdata[1]);
         assertEquals("BUuT", subdata[2]);
 
-        sub21.getObjectContext().deleteObject(sub21);
+        sub21.getObjectContext().deleteObjects(sub21);
         sub21.getObjectContext().commitChanges();
 
         assertEquals(0, ivRootTable.getRowCount());
@@ -437,10 +437,10 @@ public class VerticalInheritanceTest extends ServerCase {
         assertEquals(4, resultTypes.size());
 
         IvRoot root = resultTypes.get(IvRoot.class.getName());
-        context.deleteObject(root);
+        context.deleteObjects(root);
 
         IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
-        context.deleteObject(sub1);
+        context.deleteObjects(sub1);
 
         context.commitChanges();
 

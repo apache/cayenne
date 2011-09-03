@@ -89,7 +89,7 @@ public class DeleteObjectTest extends ServerCase {
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         assertEquals(PersistenceState.DELETED, artist.getPersistenceState());
         context.commitChanges();
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
@@ -187,7 +187,7 @@ public class DeleteObjectTest extends ServerCase {
         while (deleteIt.hasNext()) {
             Painting object = deleteIt.next();
             deleteIt.remove();
-            context.deleteObject(object);
+            context.deleteObjects(object);
         }
 
         // relationship list has to be cleaned up,
@@ -208,7 +208,7 @@ public class DeleteObjectTest extends ServerCase {
         Artist a = p.getToArtist();
 
         assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
-        context.deleteObject(a);
+        context.deleteObjects(a);
         assertEquals(PersistenceState.DELETED, a.getPersistenceState());
     }
 
@@ -217,7 +217,7 @@ public class DeleteObjectTest extends ServerCase {
         artist.setArtistName("a");
 
         assertEquals(PersistenceState.NEW, artist.getPersistenceState());
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
         context.rollbackChanges();
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());

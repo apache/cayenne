@@ -101,7 +101,7 @@ public class SimpleIdIncrementalFaultListTest extends ServerCase {
         assertEquals(25, list.size());
 
         Artist a1 = list.get(0);
-        context.deleteObject(a1);
+        context.deleteObjects(a1);
         context.commitChanges();
 
         list.remove(0);

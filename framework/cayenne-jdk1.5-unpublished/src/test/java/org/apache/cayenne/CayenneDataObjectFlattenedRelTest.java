@@ -210,7 +210,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         ArtGroup group = a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group); // Cause the delete of the link record
 
-        context.deleteObject(a1); // Cause the deletion of the artist
+        context.deleteObjects(a1); // Cause the deletion of the artist
 
         try {
             context.commitChanges();

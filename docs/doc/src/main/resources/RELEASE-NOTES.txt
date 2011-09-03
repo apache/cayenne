@@ -33,6 +33,7 @@ CAY-1598 Per DataMap listeners are called for all entities in DataDomain
 CAY-1599 Annotation-based global listeners registration
 CAY-1605 Switch Cayenne to use unified Maven repository
 CAY-1606 Change CayenneModeler new object naming strategy
+CAY-1610 ObjectContext API to use varargs
 
 Bug Fixes Since 3.1M2:
 

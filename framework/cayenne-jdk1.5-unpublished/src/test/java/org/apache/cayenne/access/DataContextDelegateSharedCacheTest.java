@@ -156,7 +156,7 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
         // Update and save artist in peer context
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         context.commitChanges();
 
         // assert that delegate was consulted when an object store
@@ -199,7 +199,7 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
         // Update and save artist in peer context
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         context.commitChanges();
 
         // assert that delegate was consulted when an object store

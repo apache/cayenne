@@ -139,7 +139,7 @@ public class NestedDataContextWriteTest extends ServerCase {
 
         childContext.commitChangesToParent();
 
-        childContext.deleteObject(p);
+        childContext.deleteObjects(p);
         a.removeFromPaintingArray(p);
 
         childContext.commitChangesToParent();
@@ -266,7 +266,7 @@ public class NestedDataContextWriteTest extends ServerCase {
 
         // delete AND modify
         Artist childDeleted = (Artist) objects.get(2);
-        childContext.deleteObject(childDeleted);
+        childContext.deleteObjects(childDeleted);
         childDeleted.setArtistName("DDD");
 
         // don't block queries - on delete Cayenne may need to resolve delete rules via
@@ -310,7 +310,7 @@ public class NestedDataContextWriteTest extends ServerCase {
 
         // delete AND modify
         Artist childDeleted = (Artist) objects.get(2);
-        childContext.deleteObject(childDeleted);
+        childContext.deleteObjects(childDeleted);
         childDeleted.setArtistName("DDD");
 
         Artist childHollow = (Artist) objects.get(3);
@@ -639,7 +639,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         a.removeFromPaintingArray(p2);
 
         // this causes an error on commit
-        child.deleteObject(p2);
+        child.deleteObjects(p2);
 
         child.commitChangesToParent();
 

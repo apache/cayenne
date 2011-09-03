@@ -64,7 +64,7 @@ public class RemoteCallbacksTest extends RemoteCayenneCase implements LifecycleL
         Thread.sleep(5); //until commit
         assertAll(1, 0, 1, 1, 1, 1, 0, 0);
         
-        context.deleteObject(l1);
+        context.deleteObjects(l1);
         assertAll(1, 0, 1, 1, 1, 1, 1, 0);
         
         context.commitChanges();

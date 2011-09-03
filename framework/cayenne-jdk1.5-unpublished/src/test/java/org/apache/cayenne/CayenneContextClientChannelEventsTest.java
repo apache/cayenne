@@ -112,7 +112,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         // insert, then delete - this shouldn't propagate via an event.
         ClientMtTable1 o1 = c1.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("X");
-        c1.deleteObject(o1);
+        c1.deleteObjects(o1);
 
         // introduce some other change so that commit can go ahead...
         ClientMtTable1 o1x = c1.newObject(ClientMtTable1.class);

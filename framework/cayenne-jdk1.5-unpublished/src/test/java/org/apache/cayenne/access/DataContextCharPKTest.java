@@ -80,7 +80,7 @@ public class DataContextCharPKTest extends ServerCase {
         object.setPkCol("PK1");
         context.commitChanges();
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.commitChanges();
 
         SQLTemplate q = new SQLTemplate(

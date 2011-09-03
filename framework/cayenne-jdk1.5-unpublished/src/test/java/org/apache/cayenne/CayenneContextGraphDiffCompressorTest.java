@@ -79,7 +79,7 @@ public class CayenneContextGraphDiffCompressorTest extends ClientCase {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("v1");
-        context.deleteObject(o1);
+        context.deleteObjects(o1);
 
         DataChannelSyncStats stats = clientServerInterceptor
                 .runWithSyncStatsCollection(new UnitTestClosure() {

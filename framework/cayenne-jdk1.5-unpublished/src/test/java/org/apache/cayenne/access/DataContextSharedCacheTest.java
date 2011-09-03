@@ -244,7 +244,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
         // Update Artist
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         context.commitChanges();
 
         // check underlying cache
@@ -280,7 +280,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertEquals(PersistenceState.HOLLOW, altArtist.getPersistenceState());
 
         // Update Artist
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         context.commitChanges();
 
         // check underlying cache
@@ -319,7 +319,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertEquals(PersistenceState.MODIFIED, altArtist.getPersistenceState());
 
         // Update Artist
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         context.commitChanges();
 
         // check underlying cache
@@ -366,10 +366,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertFalse(altArtist == artist);
 
         // delete peer
-        context1.deleteObject(altArtist);
+        context1.deleteObjects(altArtist);
 
         // Update Artist
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         context.commitChanges();
 
         // check underlying cache
@@ -434,7 +434,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertSame(altArtist, altPainting2.readPropertyDirectly("toArtist"));
 
         // delete painting
-        context.deleteObject(painting1);
+        context.deleteObjects(painting1);
         context.commitChanges();
 
         // check underlying cache
@@ -703,7 +703,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
         // delete object PRIOR to killing the snapshot
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
 
         context.getObjectStore().getDataRowCache().forgetSnapshot(id);
         assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(id));

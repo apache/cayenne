@@ -183,7 +183,7 @@ public class CDOOneToOneFKTest extends ServerCase {
         context.commitChanges();
 
         src.setToOneToFK(null);
-        context.deleteObject(target);
+        context.deleteObjects(target);
         context.commitChanges();
 
         // test database data

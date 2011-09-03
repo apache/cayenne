@@ -124,7 +124,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
         setExternalChange(Boolean.TRUE);
 
         try {
-            context.deleteObject(findObject(nodeId));
+            context.deleteObjects(findObject(nodeId));
         }
         finally {
             setExternalChange(Boolean.FALSE);

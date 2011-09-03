@@ -349,7 +349,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
 
         context.commitChanges();
 
-        context.deleteObject(o1);
+        context.deleteObjects(o1);
         context.commitChanges();
 
         Number artistCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(

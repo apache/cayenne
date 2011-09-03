@@ -173,7 +173,7 @@ public class ToManyListTest extends ServerCase {
 
         // now delete p2 and resolve list
         ((Artist) list.getRelationshipOwner()).removeFromPaintingArray(p2);
-        context.deleteObject(p2);
+        context.deleteObjects(p2);
         context.commitChanges();
 
         assertTrue("List must be unresolved...", list.isFault());

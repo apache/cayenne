@@ -44,7 +44,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         object.setNullify(related);
         context.commitChanges();
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         assertFalse(related.getFromNullify().contains(object));
         assertNull(object.getNullify());
 
@@ -60,7 +60,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         context.commitChanges();
 
         try {
-            context.deleteObject(object);
+            context.deleteObjects(object);
             fail("Should have thrown an exception");
         }
         catch (DeleteDenyException e) {
@@ -68,7 +68,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         }
 
         object.setDeny(null);
-        context.deleteObject(object);
+        context.deleteObjects(object);
         context.commitChanges();
     }
 
@@ -83,7 +83,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         object.setCascade(related);
         context.commitChanges();
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         assertEquals(PersistenceState.DELETED, related.getPersistenceState());
         assertTrue(context.deletedObjects().contains(related));
 
@@ -100,7 +100,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         object.setName("object");
         object.setCascade(related);
 
-        context.deleteObject(object);
+        context.deleteObjects(object);
         assertEquals(PersistenceState.TRANSIENT, object.getPersistenceState());
         assertEquals(PersistenceState.DELETED, related.getPersistenceState());
         assertFalse(context.deletedObjects().contains(object));

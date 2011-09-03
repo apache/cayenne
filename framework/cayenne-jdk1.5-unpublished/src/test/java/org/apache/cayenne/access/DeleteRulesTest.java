@@ -66,7 +66,7 @@ public class DeleteRulesTest extends ServerCase {
         context.commitChanges();
 
         try {
-            context.deleteObject(test1);
+            context.deleteObjects(test1);
             fail("Should have thrown an exception");
         }
         catch (Exception e) {
@@ -83,7 +83,7 @@ public class DeleteRulesTest extends ServerCase {
         context.commitChanges();
 
         // must go on without exceptions...
-        context.deleteObject(test3);
+        context.deleteObjects(test3);
         context.commitChanges();
     }
 
@@ -94,7 +94,7 @@ public class DeleteRulesTest extends ServerCase {
         context.commitChanges();
 
         // must go on without exceptions...
-        context.deleteObject(test2);
+        context.deleteObjects(test2);
 
         // don't commit, since this will cause a constraint exception
     }
@@ -111,7 +111,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             // must go on without exceptions...
-            context.deleteObject(a);
+            context.deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
@@ -139,7 +139,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             // must go on without exceptions...
-            context.deleteObject(a);
+            context.deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
@@ -164,7 +164,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             // must go on without exceptions...
-            context.deleteObject(a);
+            context.deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
@@ -190,7 +190,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             // must go on without exceptions...
-            context.deleteObject(a);
+            context.deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
@@ -215,7 +215,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             // must go on without exceptions...
-            context.deleteObject(a);
+            context.deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
@@ -241,7 +241,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             // must go on without exceptions...
-            context.deleteObject(a);
+            context.deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
@@ -266,7 +266,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             try {
-                context.deleteObject(a);
+                context.deleteObjects(a);
                 fail("Must have thrown a deny exception..");
             }
             catch (DeleteDenyException ex) {
@@ -291,7 +291,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
 
             try {
-                context.deleteObject(a);
+                context.deleteObjects(a);
                 fail("Must have thrown a deny exception..");
             }
             catch (DeleteDenyException ex) {

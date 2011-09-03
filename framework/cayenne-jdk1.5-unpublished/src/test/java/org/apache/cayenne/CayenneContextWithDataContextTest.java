@@ -270,7 +270,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
             clientContext.commitChanges();
             assertFalse(flag[0]);
 
-            clientContext.deleteObject(object);
+            clientContext.deleteObjects(object);
             clientContext.commitChanges();
             assertTrue(flag[0]);
         }
@@ -322,8 +322,8 @@ public class CayenneContextWithDataContextTest extends ClientCase {
             o2.setToParent(o1);
             clientContext.commitChanges();
 
-            clientContext.deleteObject(o1);
-            clientContext.deleteObject(o2);
+            clientContext.deleteObjects(o1);
+            clientContext.deleteObjects(o2);
             clientContext.commitChanges();
             // per CAY-830 an exception is thrown here
         }

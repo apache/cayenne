@@ -274,7 +274,7 @@ public class CayenneDataObjectRelationshipsTest extends ServerCase {
 
         context.commitChanges();
 
-        context.deleteObject(artist);
+        context.deleteObjects(artist);
         context.commitChanges();
     }
 

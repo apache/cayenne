@@ -177,7 +177,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         33004)));
-        context.deleteObject(deleted);
+        context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, committed.getPersistenceState());
