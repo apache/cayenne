@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
@@ -109,7 +110,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * 
      * @since 3.0
      */
-    protected Map<String, Object> userProperties;
+    protected volatile Map<String, Object> userProperties;
 
     protected BaseContext() {
         graphAction = new ObjectContextGraphAction(this);
@@ -449,10 +450,15 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @since 3.0
      */
     protected Map<String, Object> getUserProperties() {
+
         // as not all users will take advantage of properties, creating the
-        // map on demand to keep DataContext lean...
+        // map on demand to keep the context lean...
         if (userProperties == null) {
-            userProperties = new HashMap<String, Object>();
+            synchronized (this) {
+                if (userProperties == null) {
+                    userProperties = new ConcurrentHashMap<String, Object>();
+                }
+            }
         }
 
         return userProperties;

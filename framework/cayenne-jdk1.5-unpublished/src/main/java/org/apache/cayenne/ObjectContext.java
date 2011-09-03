@@ -223,18 +223,18 @@ public interface ObjectContext extends Serializable {
     <T> void invalidateObjects(T... objects);
 
     /**
-     * Returns a user-defined property previously set via 'setUserProperty'. Note that it
-     * is a caller responsibility to synchronize access to properties.
+     * Returns a user-defined property previously set via 'setUserProperty'. Concurrent
+     * access to properties does not require any special synchronization
      * 
      * @since 3.0
      */
-    public Object getUserProperty(String key);
+    Object getUserProperty(String key);
 
     /**
-     * Sets a user-defined property. Note that it is a caller responsibility to
-     * synchronize access to properties.
+     * Sets a user-defined property. Concurrent access to properties does not require any
+     * special synchronization
      * 
      * @since 3.0
      */
-    public void setUserProperty(String key, Object value);
+    void setUserProperty(String key, Object value);
 }
