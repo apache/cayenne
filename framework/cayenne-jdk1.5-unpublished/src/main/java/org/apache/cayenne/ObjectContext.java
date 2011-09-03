@@ -171,7 +171,6 @@ public interface ObjectContext extends Serializable {
     /**
      * Executes a selecting query, returning a list of persistent objects or data rows.
      */
-    @SuppressWarnings("unchecked")
     List performQuery(Query query);
 
     /**
