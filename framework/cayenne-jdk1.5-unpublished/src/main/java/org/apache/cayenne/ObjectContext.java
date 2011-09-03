@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.RefreshQuery;
 
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are used in
@@ -98,14 +97,29 @@ public interface ObjectContext extends Serializable {
      * 
      * @throws DeleteDenyException if a {@link org.apache.cayenne.map.DeleteRule#DENY}
      *             delete rule is applicable for object deletion.
+     * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
+     *             method is redundant.
      */
     void deleteObject(Object object) throws DeleteDenyException;
 
     /**
-     * Deletes a collection of objects by repeatedly calling deleteObject safely
-     * (avoiding a concurrent modification exception).
+     * Schedules deletion of a collection of persistent objects.
+     * 
+     * @throws DeleteDenyException if a {@link org.apache.cayenne.map.DeleteRule#DENY}
+     *             delete rule is applicable for object deletion.
      */
     void deleteObjects(Collection<?> objects) throws DeleteDenyException;
+
+    /**
+     * Schedules deletion of one or more persistent objects. Same as
+     * {@link #deleteObjects(Collection)} only with a vararg argument list for easier
+     * deletion of individual objects.
+     * 
+     * @throws DeleteDenyException if a {@link org.apache.cayenne.map.DeleteRule#DENY}
+     *             delete rule is applicable for object deletion.
+     * @since 3.1
+     */
+    void deleteObjects(Object... objects) throws DeleteDenyException;
 
     /**
      * A callback method that child Persistent objects are expected to call before
@@ -195,10 +209,18 @@ public interface ObjectContext extends Serializable {
      * objects already committed to the database and does nothing to the NEW objects. It
      * would remove each object's snapshot from caches and change object's state to
      * HOLLOW. On the next access to this object, the object will be refetched.
-     * 
-     * @see RefreshQuery
      */
-    void invalidateObjects(Collection objects);
+    void invalidateObjects(Collection<?> objects);
+
+    /**
+     * Invalidates one or more persistent objects. Same as
+     * {@link #invalidateObjects(Collection)} only with a vararg argument list for easier
+     * invalidation of individual objects. If no arguments are passed to this method, it
+     * does nothing.
+     * 
+     * @since 3.1
+     */
+    void invalidateObjects(Object... objects);
 
     /**
      * Returns a user-defined property previously set via 'setUserProperty'. Note that it

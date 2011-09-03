@@ -19,6 +19,7 @@
 package org.apache.cayenne;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -421,8 +422,25 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
-    public void invalidateObjects(Collection objects) {
-        performGenericQuery(new RefreshQuery(objects));
+    public void invalidateObjects(Collection<?> objects) {
+
+        // don't allow null collections as a matter of coding discipline
+        if (objects == null) {
+            throw new NullPointerException("Null collection of objects to invalidate");
+        }
+
+        if (!objects.isEmpty()) {
+            performGenericQuery(new RefreshQuery(objects));
+        }
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void invalidateObjects(Object... objects) {
+        if (objects != null && objects.length > 0) {
+            performGenericQuery(new RefreshQuery(Arrays.asList(objects)));
+        }
     }
 
     /**
@@ -510,20 +528,39 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @throws DeleteDenyException if a DENY delete rule is applicable for object
      *             deletion.
      * @throws NullPointerException if object is null.
+     * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
+     *             method is redundant.
      */
     public void deleteObject(Object object) {
-        new ObjectContextDeleteAction(this).performDelete((Persistent) object);
+        deleteObjects(object);
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void deleteObjects(Object... objects) throws DeleteDenyException {
+        if (objects == null || objects.length == 0) {
+            return;
+        }
+
+        ObjectContextDeleteAction action = new ObjectContextDeleteAction(this);
+
+        for (Object object : objects) {
+            action.performDelete((Persistent) object);
+        }
     }
 
     public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
-        if (objects.isEmpty())
+        if (objects.isEmpty()) {
             return;
+        }
 
-        // Don't call deleteObject() directly since it would be less efficient.
-        ObjectContextDeleteAction ocda = new ObjectContextDeleteAction(this);
+        ObjectContextDeleteAction action = new ObjectContextDeleteAction(this);
 
         // Make a copy to iterate over to avoid ConcurrentModificationException.
-        for (Persistent object : (ArrayList<Persistent>) new ArrayList(objects))
-            ocda.performDelete(object);
+        List<Object> copy = new ArrayList<Object>(objects);
+        for (Object object : copy) {
+            action.performDelete((Persistent) object);
+        }
     }
 }

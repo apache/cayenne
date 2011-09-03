@@ -90,10 +90,16 @@ public class MockObjectContext implements ObjectContext {
 
     }
 
+    /**
+     * @deprecated since 3.1
+     */
     public void deleteObject(Object object) {
     }
 
     public void deleteObjects(Collection<?> objects) {
+    }
+    
+    public void deleteObjects(Object... objects) throws DeleteDenyException {
     }
 
     public void registerNewObject(Object object) {
@@ -141,7 +147,10 @@ public class MockObjectContext implements ObjectContext {
         return false;
     }
 
-    public void invalidateObjects(Collection objects) {
+    public void invalidateObjects(Collection<?> objects) {
+    }
+    
+    public void invalidateObjects(Object... objects) {
     }
 
     public Object getUserProperty(String key) {
