@@ -53,7 +53,14 @@ public class MockObjectContext implements ObjectContext {
         return graphManager;
     }
 
+    /**
+     * @deprecated since 3.1
+     */
     public Persistent localObject(ObjectId id, Object prototype) {
+        return null;
+    }
+
+    public <T> T localObject(T objectFromAnotherContext) {
         return null;
     }
 
@@ -98,7 +105,7 @@ public class MockObjectContext implements ObjectContext {
 
     public void deleteObjects(Collection<?> objects) {
     }
-    
+
     public void deleteObjects(Object... objects) throws DeleteDenyException {
     }
 
@@ -149,7 +156,7 @@ public class MockObjectContext implements ObjectContext {
 
     public void invalidateObjects(Collection<?> objects) {
     }
-    
+
     public void invalidateObjects(Object... objects) {
     }
 

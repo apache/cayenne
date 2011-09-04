@@ -58,7 +58,7 @@ public class ObjectIdQuery extends IndirectQuery {
     }
 
     /**
-     * Creates a refreshing SingleObjectQuery.
+     * Creates a refreshing ObjectIdQuery.
      */
     public ObjectIdQuery(ObjectId objectID) {
         this(objectID, false, CACHE_REFRESH);

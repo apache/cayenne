@@ -21,7 +21,6 @@ package org.apache.cayenne;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -202,6 +201,72 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      */
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public <T> T localObject(T objectFromAnotherContext) {
+
+        if (objectFromAnotherContext == null) {
+            throw new NullPointerException("Null object argument");
+        }
+
+        ObjectId id = ((Persistent) objectFromAnotherContext).getObjectId();
+
+        // first look for the ID in the local GraphManager
+        T localObject = (T) getGraphManager().getNode(id);
+        if (localObject != null) {
+            return localObject;
+        }
+
+        // if the ID is not temporary, let's optimistically assume it exists in the DB,
+        // and return a hollow object ... avoid race condition by synchronizing object
+        // creation and inserting
+        if (!id.isTemporary()) {
+            synchronized (getGraphManager()) {
+
+                // check for race condition - the object appeared in the GraphManager just
+                // recently...
+                localObject = (T) getGraphManager().getNode(id);
+                if (localObject != null) {
+                    return localObject;
+                }
+
+                // create a hollow object
+
+                ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
+                        id.getEntityName());
+                Persistent persistent = (Persistent) descriptor.createObject();
+
+                persistent.setObjectContext(this);
+                persistent.setObjectId(id);
+                persistent.setPersistenceState(PersistenceState.HOLLOW);
+
+                getGraphManager().registerNode(id, persistent);
+
+                return (T) persistent;
+            }
+        }
+
+        // if the ID is temporary, we still have a chance of finding the object in the
+        // parent channel (not sure if that's a good strategy with ROP?)
+
+        // note that since the query is configured to only hit the cache and avoid going
+        // to DB, it will not throw, but rather return NULL if the object we are looking
+        // for is not found.
+        ObjectIdQuery query = new ObjectIdQuery(id, false, ObjectIdQuery.CACHE_NOREFRESH);
+
+        localObject = (T) Cayenne.objectForQuery(this, query);
+        if (localObject != null) {
+            return localObject;
+        }
+
+        // giving up...
+        throw new CayenneRuntimeException("A temporary ObjectId "
+                + id
+                + " was not found in the context and parent caches, "
+                + "so local version of the object can not be created.");
     }
 
     public abstract GraphManager getGraphManager();

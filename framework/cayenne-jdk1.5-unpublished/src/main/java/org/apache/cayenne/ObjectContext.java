@@ -73,8 +73,22 @@ public interface ObjectContext extends Serializable {
      * context) and "synchronization" (i.e. updating the state of the found object with
      * the state of the prototype object).
      * </p>
+     * 
+     * @deprecated since 3.1 Cayenne users should use {@link #localObject(Object)}; the
+     *             internal code has been refactored to avoid using this method all
+     *             together.
      */
     Persistent localObject(ObjectId id, Object prototype);
+
+    /**
+     * Returns a copy of 'objectFromAnotherContext' object that is registered in this
+     * context, creating and registering a local hollow object if needed. No DB query is
+     * performed. This method will cause an exception if an object is not already
+     * registered in this context or its parent DataChannel and the ObjectId is temporary.
+     * 
+     * @since 3.1
+     */
+    <T> T localObject(T objectFromAnotherContext);
 
     /**
      * Creates a new persistent object of a given class scheduled to be inserted to the
