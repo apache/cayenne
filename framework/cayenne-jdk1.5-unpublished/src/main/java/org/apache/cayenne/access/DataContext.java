@@ -100,7 +100,7 @@ public class DataContext extends BaseContext implements DataChannel {
             this.objectStore = objectStore;
             objectStore.setContext(this);
         }
-        
+
         if (channel != null) {
             attachToChannel(channel);
         }
@@ -116,7 +116,8 @@ public class DataContext extends BaseContext implements DataChannel {
      * Creates and returns a new child ObjectContext.
      * 
      * @since 3.0
-     * @deprecated Since 3.1 replaced by {@link DataContextFactory#createContext(DataChannel)}
+     * @deprecated Since 3.1 replaced by
+     *             {@link DataContextFactory#createContext(DataChannel)}
      */
     @Deprecated
     public ObjectContext createChildContext() {
@@ -335,8 +336,9 @@ public class DataContext extends BaseContext implements DataChannel {
                 ObjAttribute objAttr = property.getAttribute();
 
                 // processing compound attributes correctly
-                snapshot.put(objAttr.getDbAttributePath(), property
-                        .readPropertyDirectly(object));
+                snapshot.put(
+                        objAttr.getDbAttributePath(),
+                        property.readPropertyDirectly(object));
                 return true;
             }
 
@@ -1227,6 +1229,9 @@ public class DataContext extends BaseContext implements DataChannel {
                 if (prototype != null
                         && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
                     localObject.setPersistenceState(PersistenceState.COMMITTED);
+
+                    // *** the only line different from CayenneContext implementation. Not
+                    // clear why it is different?
                     descriptor.injectValueHolders(localObject);
                     descriptor.shallowMerge(prototype, localObject);
                 }
