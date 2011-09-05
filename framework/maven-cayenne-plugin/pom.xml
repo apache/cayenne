@@ -61,16 +61,6 @@
 			<version>2.0.5</version>
 		</dependency>
 
-		<!-- even though the runtime dependency is on 'cayenne-server', 
-			need to mention this one here as to fix the build failure from the parent folder
-		-->
-		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-project</artifactId>
@@ -87,18 +77,18 @@
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-tools</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>foundrylogic.vpp</groupId>
+					<artifactId>vpp</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>foundrylogic.vpp</groupId>
-			<artifactId>vpp</artifactId>
-			<scope>compile</scope>
 		</dependency>
 		
 		<dependency>

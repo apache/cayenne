@@ -51,8 +51,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
