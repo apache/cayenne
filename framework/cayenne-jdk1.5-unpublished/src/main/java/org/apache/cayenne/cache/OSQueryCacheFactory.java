@@ -25,8 +25,7 @@ import java.util.Map;
  * standard OSCache properties and also extra properties
  * 
  * @since 3.0
- * @deprecated since 3.1 OSQueryCacheFactory and QueryCacheFactory are unused. Analog of
- *             OSQueryCacheFactory is DI-friendly {@link OSQueryCacheProvider}.
+ * @deprecated since 3.1 OSQueryCacheFactory and QueryCacheFactory are unused.
  */
 public class OSQueryCacheFactory implements QueryCacheFactory {
 
