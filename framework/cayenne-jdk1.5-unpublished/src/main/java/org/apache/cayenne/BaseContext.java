@@ -145,20 +145,20 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Attaches this context to the Cayenne runtime whose Injector is passed as an
-     * argument to this method.
+     * Attaches this context to the CayenneRuntime whose Injector is passed as an argument
+     * to this method.
      * 
      * @since 3.1
      */
     protected void attachToRuntime(Injector injector) {
+        
+        // TODO: nested contexts handling??
         attachToChannel(injector.getInstance(DataChannel.class));
-
         setQueryCache(new NestedQueryCache(injector.getInstance(QueryCache.class)));
     }
 
     /**
-     * Initializes a DataChannel for this context, setting internal state using
-     * information from the
+     * Attaches to a provided DataChannel.
      * 
      * @since 3.1
      */
