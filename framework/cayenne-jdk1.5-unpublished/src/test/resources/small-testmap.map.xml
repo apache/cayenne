@@ -222,15 +222,4 @@
 	<obj-relationship name="toPaintingInfo" source="Painting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
 	<obj-relationship name="toArtist" source="Painting1" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
-
-	<entity-listener class="org.apache.cayenne.testdo.testmap.EntityListenerDataMap">
-		<post-add method-name="prePersistDataMap1"/>
-		<post-add method-name="prePersistDataMap2"/>
-		<post-persist method-name="postPersistDataMap"/>
-		<pre-update method-name="preUpdateDataMap"/>
-		<post-update method-name="postUpdateDataMap"/>
-		<pre-remove method-name="preRemoveDataMap"/>
-		<post-remove method-name="postRemoveDataMap"/>
-		<post-load method-name="postLoadDataMap"/>
-	</entity-listener>
 </data-map>
