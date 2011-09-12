@@ -1165,6 +1165,9 @@ public class DataContext extends BaseContext implements DataChannel {
      * way for Cayenne to determine the resulting local object state.
      * 
      * @since 1.2
+     * @deprecated since 3.1 Cayenne users should use {@link #localObject(Object)}; the
+     *             internal code has been refactored to avoid using this method all
+     *             together.
      */
     @Override
     public Persistent localObject(ObjectId id, Object prototype) {

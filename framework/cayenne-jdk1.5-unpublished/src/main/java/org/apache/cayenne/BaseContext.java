@@ -226,8 +226,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         if (!id.isTemporary()) {
             synchronized (getGraphManager()) {
 
-                // check for race condition - the object appeared in the GraphManager just
-                // recently...
+                // check for race condition - the object may have appeared in the
+                // GraphManager just recently...
                 localObject = (T) getGraphManager().getNode(id);
                 if (localObject != null) {
                     return localObject;
@@ -271,6 +271,11 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     public abstract GraphManager getGraphManager();
 
+    /**
+     * @deprecated since 3.1 Cayenne users should use {@link #localObject(Object)}; the
+     *             internal code has been refactored to avoid using this method all
+     *             together.
+     */
     public abstract Persistent localObject(ObjectId id, Object prototype);
 
     public abstract Collection<?> modifiedObjects();

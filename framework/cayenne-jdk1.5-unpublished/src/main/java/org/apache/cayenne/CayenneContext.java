@@ -301,6 +301,10 @@ public class CayenneContext extends BaseContext {
      * <i>Current limitation: all objects in the source list must be either in COMMITTED
      * or in HOLLOW state.</i>
      * </p>
+     * 
+     * @deprecated since 3.1 Cayenne users should use {@link #localObject(Object)}; the
+     *             internal code has been refactored to avoid using this method all
+     *             together.
      */
     @Override
     public Persistent localObject(ObjectId id, Object prototype) {
