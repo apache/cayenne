@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.di;
 
 /**
  * Creates objects for user-provided String class names, injecting dependencies into them.

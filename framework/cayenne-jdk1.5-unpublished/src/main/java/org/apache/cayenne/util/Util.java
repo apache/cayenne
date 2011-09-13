@@ -57,6 +57,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -69,6 +70,12 @@ import org.xml.sax.XMLReader;
  * Contains various unorganized static utility methods used across Cayenne.
  */
 public class Util {
+    
+    private static DefaultAdhocObjectFactory objectFactory;
+    
+    static {
+        objectFactory = new DefaultAdhocObjectFactory();
+    }
 
     /**
      * Converts URL to file. Throws {@link IllegalArgumentException} if the URL is not a
@@ -644,100 +651,7 @@ public class Util {
      * @since 1.2
      */
     public static Class<?> getJavaClass(String className) throws ClassNotFoundException {
-
-        // is there a better way to get array class from string name?
-
-        if (className == null) {
-            throw new ClassNotFoundException("Null class name");
-        }
-
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        if (classLoader == null) {
-            classLoader = Util.class.getClassLoader();
-        }
-
-        // use custom logic on failure only, assuming primitives and arrays are not that
-        // common
-        try {
-            return Class.forName(className, true, classLoader);
-        }
-        catch (ClassNotFoundException e) {
-            if (!className.endsWith("[]")) {
-                if ("byte".equals(className)) {
-                    return Byte.TYPE;
-                }
-                else if ("int".equals(className)) {
-                    return Integer.TYPE;
-                }
-                else if ("short".equals(className)) {
-                    return Short.TYPE;
-                }
-                else if ("char".equals(className)) {
-                    return Character.TYPE;
-                }
-                else if ("double".equals(className)) {
-                    return Double.TYPE;
-                }
-                else if ("long".equals(className)) {
-                    return Long.TYPE;
-                }
-                else if ("float".equals(className)) {
-                    return Float.TYPE;
-                }
-                else if ("boolean".equals(className)) {
-                    return Boolean.TYPE;
-                }
-                // try inner class often specified with "." instead of $
-                else {
-                    int dot = className.lastIndexOf('.');
-                    if (dot > 0 && dot + 1 < className.length()) {
-                        className = className.substring(0, dot)
-                                + "$"
-                                + className.substring(dot + 1);
-                        try {
-                            return Class.forName(className, true, classLoader);
-                        }
-                        catch (ClassNotFoundException nestedE) {
-                            // ignore, throw the original exception...
-                        }
-                    }
-                }
-
-                throw e;
-            }
-
-            if (className.length() < 3) {
-                throw new IllegalArgumentException("Invalid class name: " + className);
-            }
-
-            // TODO: support for multi-dim arrays
-            className = className.substring(0, className.length() - 2);
-
-            if ("byte".equals(className)) {
-                return byte[].class;
-            }
-            else if ("int".equals(className)) {
-                return int[].class;
-            }
-            else if ("short".equals(className)) {
-                return short[].class;
-            }
-            else if ("char".equals(className)) {
-                return char[].class;
-            }
-            else if ("double".equals(className)) {
-                return double[].class;
-            }
-            else if ("float".equals(className)) {
-                return float[].class;
-            }
-            else if ("boolean".equals(className)) {
-                return boolean[].class;
-            }
-
-            return Class.forName("[L" + className + ";", true, classLoader);
-        }
+        return objectFactory.getJavaClass(className);
     }
 
     static void setReverse(
