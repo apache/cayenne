@@ -68,8 +68,13 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
     public DbAdapter createAdapter(
             final DataNodeDescriptor nodeDescriptor,
             final DataSource dataSource) throws Exception {
+        
+        String adapterType = null;
+        
+        if (nodeDescriptor != null) {
+            adapterType = nodeDescriptor.getAdapterType();
+        }
 
-        String adapterType = nodeDescriptor.getAdapterType();
         if (adapterType != null) {
             return objectFactory.newInstance(DbAdapter.class, adapterType);
         }
@@ -77,15 +82,13 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
             return new AutoAdapter(new Provider<DbAdapter>() {
 
                 public DbAdapter get() {
-                    return detectAdapter(nodeDescriptor, dataSource);
+                    return detectAdapter(dataSource);
                 }
             }, jdbcEventLogger);
         }
     }
 
-    protected DbAdapter detectAdapter(
-            DataNodeDescriptor nodeDescriptor,
-            DataSource dataSource) {
+    protected DbAdapter detectAdapter(DataSource dataSource) {
 
         if (detectors.isEmpty()) {
             return defaultAdapter();

@@ -25,6 +25,8 @@ import java.sql.SQLException;
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 
 /**
  * Detects Sybase database from JDBC metadata.
@@ -32,6 +34,12 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * @since 1.2
  */
 public class SybaseSniffer implements DbAdapterFactory, DbAdapterDetector {
+    
+    protected AdhocObjectFactory objectFactory;
+    
+    public SybaseSniffer(@Inject AdhocObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {    	
     	// JTDS driver returns "sql server" for Sybase, so need to handle it differently
@@ -39,13 +47,13 @@ public class SybaseSniffer implements DbAdapterFactory, DbAdapterDetector {
     	if(driver != null && driver.toLowerCase().startsWith("jtds")) {
     		String url = md.getURL();
     		return url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
-    		        ? new SybaseAdapter()
+    		        ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName())
                     : null;
     	}
     	else {
             String dbName = md.getDatabaseProductName();
             return dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
-                    ? new SybaseAdapter()
+                    ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName())
                     : null;
     	}
     }

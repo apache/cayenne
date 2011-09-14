@@ -25,16 +25,26 @@ import java.sql.SQLException;
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 
 /**
  * @since 1.2
  */
 public class FrontBaseSniffer implements DbAdapterFactory, DbAdapterDetector {
+    
+    protected AdhocObjectFactory objectFactory;
+    
+    public FrontBaseSniffer(@Inject AdhocObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("FRONTBASE")
-                ? new FrontBaseAdapter()
+                ? objectFactory.newInstance(
+                        DbAdapter.class, 
+                        FrontBaseAdapter.class.getName())
                 : null;
     }
 }

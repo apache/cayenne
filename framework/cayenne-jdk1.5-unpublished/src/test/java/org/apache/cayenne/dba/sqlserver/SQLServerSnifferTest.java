@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
@@ -39,10 +40,13 @@ public class SQLServerSnifferTest extends ServerCase {
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testCreateAdapter() throws Exception {
 
-        SQLServerSniffer sniffer = new SQLServerSniffer();
+        SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
 
         DbAdapter adapter = null;
         Connection c = dataSource.getConnection();

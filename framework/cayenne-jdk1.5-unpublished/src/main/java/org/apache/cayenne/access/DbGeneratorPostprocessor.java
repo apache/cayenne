@@ -43,10 +43,8 @@ class DbGeneratorPostprocessor {
         postprocessors.put(HSQLDBAdapter.class.getName(), new HSQLDBPostprocessor());
     }
 
-    void execute(Connection connection) throws SQLException {
+    void execute(Connection connection, DbAdapter adapter) throws SQLException {
 
-        DbAdapter adapter = AutoAdapter.getDefaultFactory().createAdapter(
-                connection.getMetaData());
         if (adapter != null) {
             Postprocessor postprocessor = postprocessors.get(adapter
                     .getClass()

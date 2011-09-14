@@ -25,10 +25,13 @@ import java.util.prefs.Preferences;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.util.Util;
@@ -179,14 +182,21 @@ public class DBConnectionInfo extends CayennePreference {
      */
     public DbAdapter makeAdapter(ClassLoadingService classLoader) throws Exception {
         String adapterClassName = getDbAdapter();
+        Application appInstance = Application.getInstance();
 
         if (adapterClassName == null
                 || AutoAdapter.class.getName().equals(adapterClassName)) {
-            return new AutoAdapter(makeDataSource(classLoader));
+            return appInstance
+                    .getInjector()
+                    .getInstance(DbAdapterFactory.class)
+                    .createAdapter(null, makeDataSource(classLoader));
         }
 
         try {
-            return classLoader.loadClass(DbAdapter.class, adapterClassName).newInstance();
+            return appInstance
+                    .getInjector()
+                    .getInstance(AdhocObjectFactory.class)
+                    .newInstance(DbAdapter.class, adapterClassName);
         }
         catch (Throwable th) {
             th = Util.unwindException(th);

@@ -100,24 +100,27 @@ public class ServerModule implements Module {
         binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
 
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+        
+        AdhocObjectFactory objectFactory = new DefaultAdhocObjectFactory();
+        binder.bind(AdhocObjectFactory.class).toInstance(objectFactory);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically
         binder
                 .bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
-                .add(new OpenBaseSniffer())
-                .add(new FrontBaseSniffer())
-                .add(new IngresSniffer())
-                .add(new SQLiteSniffer())
-                .add(new DB2Sniffer())
-                .add(new H2Sniffer())
-                .add(new HSQLDBSniffer())
-                .add(new SybaseSniffer())
-                .add(new DerbySniffer())
-                .add(new SQLServerSniffer())
-                .add(new OracleSniffer())
-                .add(new PostgresSniffer())
-                .add(new MySQLSniffer());
+                .add(new OpenBaseSniffer(objectFactory))
+                .add(new FrontBaseSniffer(objectFactory))
+                .add(new IngresSniffer(objectFactory))
+                .add(new SQLiteSniffer(objectFactory))
+                .add(new DB2Sniffer(objectFactory))
+                .add(new H2Sniffer(objectFactory))
+                .add(new HSQLDBSniffer(objectFactory))
+                .add(new SybaseSniffer(objectFactory))
+                .add(new DerbySniffer(objectFactory))
+                .add(new SQLServerSniffer(objectFactory))
+                .add(new OracleSniffer(objectFactory))
+                .add(new PostgresSniffer(objectFactory))
+                .add(new MySQLSniffer(objectFactory));
 
         // configure an empty filter chain
         binder.bindList(DataDomainProvider.FILTERS_LIST);
@@ -129,7 +132,6 @@ public class ServerModule implements Module {
             locationsListBuilder.add(location);
         }
 
-        binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ConfigurationNameMapper.class).to(
                 DefaultConfigurationNameMapper.class);
 

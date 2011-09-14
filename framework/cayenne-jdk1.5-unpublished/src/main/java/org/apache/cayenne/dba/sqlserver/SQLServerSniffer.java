@@ -25,6 +25,8 @@ import java.sql.SQLException;
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 
 /**
  * Detects SQLServer database from JDBC metadata.
@@ -32,6 +34,12 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * @since 1.2
  */
 public class SQLServerSniffer implements DbAdapterFactory, DbAdapterDetector {
+    
+    protected AdhocObjectFactory objectFactory;
+    
+    public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
@@ -39,7 +47,9 @@ public class SQLServerSniffer implements DbAdapterFactory, DbAdapterDetector {
             return null;
         }
 
-        SQLServerAdapter adapter = new SQLServerAdapter();
+        SQLServerAdapter adapter = objectFactory.newInstance(
+                SQLServerAdapter.class, 
+                SQLServerAdapter.class.getName());
 
         // detect whether generated keys are supported
 

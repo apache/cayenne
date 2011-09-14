@@ -27,6 +27,8 @@ import java.sql.Statement;
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterFactory;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 
 /**
  * Detects MySQL database from JDBC metadata.
@@ -34,6 +36,12 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * @since 1.2
  */
 public class MySQLSniffer implements DbAdapterFactory, DbAdapterDetector {
+    
+    protected AdhocObjectFactory objectFactory;
+    
+    public MySQLSniffer(@Inject AdhocObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
@@ -69,7 +77,9 @@ public class MySQLSniffer implements DbAdapterFactory, DbAdapterDetector {
             statement.close();
         }
 
-        MySQLAdapter adapter = new MySQLAdapter();
+        MySQLAdapter adapter = objectFactory.newInstance(
+                MySQLAdapter.class, 
+                MySQLAdapter.class.getName());
         adapter.setSupportsFkConstraints(supportFK);
         adapter.setStorageEngine(adapterStorageEngine);
         return adapter;

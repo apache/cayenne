@@ -356,7 +356,7 @@ public class DbGenerator {
                 }
             }
 
-            new DbGeneratorPostprocessor().execute(connection);
+            new DbGeneratorPostprocessor().execute(connection, getAdapter());
         }
         finally {
             connection.close();
