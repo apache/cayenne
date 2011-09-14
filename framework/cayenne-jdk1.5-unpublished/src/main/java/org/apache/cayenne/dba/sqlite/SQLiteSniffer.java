@@ -46,6 +46,6 @@ public class SQLiteSniffer implements DbAdapterFactory, DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.newInstance(DbAdapter.class, SQLiteAdapter.class.getName());
+        return (DbAdapter)objectFactory.newInstance(DbAdapter.class, SQLiteAdapter.class.getName());
     }
 }

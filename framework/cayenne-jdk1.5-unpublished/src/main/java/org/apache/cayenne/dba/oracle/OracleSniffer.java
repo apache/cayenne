@@ -46,7 +46,7 @@ public class OracleSniffer implements DbAdapterFactory, DbAdapterDetector {
         }
 
         return (md.getDriverMajorVersion() <= 8)
-                ? objectFactory.newInstance(DbAdapter.class, Oracle8Adapter.class.getName())
-                : objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
+                ? (DbAdapter)objectFactory.newInstance(DbAdapter.class, Oracle8Adapter.class.getName())
+                : (DbAdapter)objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
     }
 }

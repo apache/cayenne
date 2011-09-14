@@ -64,8 +64,8 @@ public class HSQLDBSniffer implements DbAdapterFactory, DbAdapterDetector {
         }
         
         return supportsSchema
-            ? objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
-            : objectFactory.newInstance(
+            ? (DbAdapter)objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
+            : (DbAdapter)objectFactory.newInstance(
                     DbAdapter.class, 
                     HSQLDBNoSchemaAdapter.class.getName());
     }

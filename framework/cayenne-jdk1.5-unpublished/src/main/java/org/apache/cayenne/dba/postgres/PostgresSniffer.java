@@ -42,7 +42,7 @@ public class PostgresSniffer implements DbAdapterFactory, DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("POSTGRESQL")
-                ? objectFactory.newInstance(DbAdapter.class, PostgresAdapter.class.getName())
+                ? (DbAdapter)objectFactory.newInstance(DbAdapter.class, PostgresAdapter.class.getName())
                 : null;
     }
 }
