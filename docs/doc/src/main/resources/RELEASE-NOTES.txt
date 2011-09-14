@@ -8,6 +8,14 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.1M4
+Date:
+----------------------------------
+Changes/New Features Since 3.1M3:
+
+CAY-1608 Implement constructor injection support for DefaultAdhocObjectFactory
+
+----------------------------------
 Release: 3.1 M3
 Date: 
 ----------------------------------
