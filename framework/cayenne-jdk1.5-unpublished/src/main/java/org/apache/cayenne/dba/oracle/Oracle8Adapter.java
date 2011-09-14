@@ -25,6 +25,8 @@ import java.net.URL;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -40,6 +42,10 @@ public class Oracle8Adapter extends OracleAdapter {
 
     static {
         initOracle8DriverInformation();
+    }
+    
+    public Oracle8Adapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
     }
 
     private static void initOracle8DriverInformation() {
@@ -86,6 +92,9 @@ public class Oracle8Adapter extends OracleAdapter {
 
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new Oracle8QualifierTranslator(queryAssembler);
+        QualifierTranslator translator = new Oracle8QualifierTranslator(queryAssembler);
+        translator.setCaseInsensitive(
+                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
 }

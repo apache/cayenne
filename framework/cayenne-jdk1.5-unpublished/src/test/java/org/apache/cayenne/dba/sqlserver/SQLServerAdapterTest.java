@@ -20,16 +20,23 @@ package org.apache.cayenne.dba.sqlserver;
 
 import java.sql.Types;
 
-import junit.framework.TestCase;
-
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-
-public class SQLServerAdapterTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class SQLServerAdapterTest extends ServerCase {
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
     
     public void testCreateTableWithFloatAttributeWithScale () {
-        SQLServerAdapter adapter = new SQLServerAdapter();
+        SQLServerAdapter adapter = objectFactory.newInstance(
+                SQLServerAdapter.class, 
+                SQLServerAdapter.class.getName());
         DbEntity e = new DbEntity("Test");
         DbAttribute dblPrec = new DbAttribute("dbl1");
         dblPrec.setType(Types.FLOAT);

@@ -21,15 +21,23 @@ package org.apache.cayenne.dba.hsqldb;
 
 import java.sql.Types;
 
-import junit.framework.TestCase;
-
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class HSQLDBAdapterTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class HSQLDBAdapterTest extends ServerCase {
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testCreateTableIgnoresDoublePrecision() {
-        HSQLDBAdapter adapter = new HSQLDBAdapter();
+        HSQLDBAdapter adapter = objectFactory.newInstance(
+                HSQLDBAdapter.class, 
+                HSQLDBAdapter.class.getName());
         DbEntity e = new DbEntity("Test");
         DbAttribute dblPrec = new DbAttribute("dbl1");
         dblPrec.setType(Types.DOUBLE);
@@ -45,7 +53,9 @@ public class HSQLDBAdapterTest extends TestCase {
     }
     
     public void testCreateTableAddsCachedKeyword() {
-        HSQLDBAdapter adapter = new HSQLDBAdapter();
+        HSQLDBAdapter adapter = objectFactory.newInstance(
+                HSQLDBAdapter.class, 
+                HSQLDBAdapter.class.getName());
         DbEntity e = new DbEntity("Test");
         DbAttribute dblPrec = new DbAttribute("dbl1");
         dblPrec.setType(Types.INTEGER);

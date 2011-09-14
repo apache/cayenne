@@ -21,6 +21,7 @@ package org.apache.cayenne.access.trans;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -36,9 +37,14 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testConstructor() throws Exception {
-        DbAdapter adapter = new JdbcAdapter();
+        DbAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class, 
+                JdbcAdapter.class.getName());
 
         DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
 
@@ -50,7 +56,8 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
                 SimpleLockingTestEntity.class).getDbEntity();
 
         InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
-        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(new JdbcAdapter());
+        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(
+                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals("INSERT INTO "

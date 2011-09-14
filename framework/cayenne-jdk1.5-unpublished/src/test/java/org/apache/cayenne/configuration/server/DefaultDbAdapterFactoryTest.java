@@ -31,6 +31,8 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
@@ -94,8 +96,10 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(BatchQueryBuilderFactory.class).toInstance(
                         mock(BatchQueryBuilderFactory.class));
             }
@@ -127,8 +131,10 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(BatchQueryBuilderFactory.class).toInstance(
                         mock(BatchQueryBuilderFactory.class));
             }

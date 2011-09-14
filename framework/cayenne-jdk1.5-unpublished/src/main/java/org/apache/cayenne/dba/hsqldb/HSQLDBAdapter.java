@@ -25,8 +25,10 @@ import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -48,6 +50,10 @@ import org.apache.cayenne.query.SQLAction;
  * </pre>
  */
 public class HSQLDBAdapter extends JdbcAdapter {
+    
+    public HSQLDBAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
+    }
 
     /**
      * Generate fully-qualified name for 1.8 and on. Subclass generates unqualified name.

@@ -22,8 +22,16 @@ package org.apache.cayenne.access;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class DataNodeTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class DataNodeTest extends ServerCase {
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testName() throws Exception {
         String tstName = "tst_name";
@@ -63,12 +71,16 @@ public class DataNodeTest extends TestCase {
 
         assertNull(node.getAdapter());
 
-        JdbcAdapter a1 = new JdbcAdapter();
+        JdbcAdapter a1 = objectFactory.newInstance(
+                JdbcAdapter.class, 
+                JdbcAdapter.class.getName());
         node.setAdapter(a1);
 
         assertSame(a1, node.getAdapter());
 
-        JdbcAdapter a2 = new JdbcAdapter();
+        JdbcAdapter a2 = objectFactory.newInstance(
+                JdbcAdapter.class, 
+                JdbcAdapter.class.getName());
         node.setAdapter(a2);
 
         assertSame(a2, node.getAdapter());

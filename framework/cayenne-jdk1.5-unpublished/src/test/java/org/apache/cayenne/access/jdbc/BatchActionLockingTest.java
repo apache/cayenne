@@ -31,6 +31,7 @@ import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DbAttribute;
@@ -52,6 +53,9 @@ public class BatchActionLockingTest extends ServerCase {
 
     @Inject
     private Injector injector;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
     
     public void testRunAsIndividualQueriesSuccess() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -154,7 +158,7 @@ public class BatchActionLockingTest extends ServerCase {
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-        JdbcAdapter adapter = new JdbcAdapter();
+        JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
         injector.injectMembers(adapter);
         return adapter;

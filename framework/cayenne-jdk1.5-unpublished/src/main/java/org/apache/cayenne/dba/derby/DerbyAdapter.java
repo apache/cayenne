@@ -31,10 +31,12 @@ import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
@@ -64,7 +66,8 @@ public class DerbyAdapter extends JdbcAdapter {
 
     static final String FOR_BIT_DATA_SUFFIX = " FOR BIT DATA";
 
-    public DerbyAdapter() {
+    public DerbyAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
         setSupportsGeneratedKeys(true);
         setSupportsBatchUpdates(true);
     }
@@ -185,7 +188,9 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new DerbyQualifierTranslator(queryAssembler, "RTRIM");
+        QualifierTranslator translator = new DerbyQualifierTranslator(queryAssembler, "RTRIM");
+        translator.setCaseInsensitive(runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
     
     @Override

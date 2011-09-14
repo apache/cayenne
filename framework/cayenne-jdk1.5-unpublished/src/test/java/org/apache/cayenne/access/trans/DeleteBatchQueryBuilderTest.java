@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -43,9 +44,14 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testConstructor() throws Exception {
-        DbAdapter adapter = new JdbcAdapter();
+        DbAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class, 
+                JdbcAdapter.class.getName());
 
         DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
 
@@ -60,7 +66,8 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
                 .getAttribute("LOCKING_TEST_ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(new JdbcAdapter());
+        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
+                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals(
@@ -83,7 +90,8 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
                 idAttributes,
                 nullAttributes,
                 1);
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(new JdbcAdapter());
+        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
+                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM "

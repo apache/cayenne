@@ -71,4 +71,24 @@ class MySQLEJBQLConditionTranslator extends EJBQLConditionTranslator {
         context.append("BOTH");
         return false;
     }
+    
+    @Override
+    public boolean visitLike(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex == 0) {
+            if (checkNullParameter(expression, " IS NULL")) {
+                return false;
+            }
+            
+            if (expression.isNegated()) {
+                context.append(" NOT");
+            }
+            context.append(" LIKE");
+            
+            if (context.isCaseInsensitive()) {
+                context.append(" BINARY");
+            }
+        }
+
+        return true;
+    }
 }

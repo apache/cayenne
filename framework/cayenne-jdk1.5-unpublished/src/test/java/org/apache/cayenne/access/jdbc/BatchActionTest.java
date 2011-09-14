@@ -21,6 +21,7 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -34,6 +35,9 @@ public class BatchActionTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testHasGeneratedKeys1() throws Exception {
         EntityResolver resolver = runtime.getChannel().getEntityResolver();
@@ -66,7 +70,9 @@ public class BatchActionTest extends ServerCase {
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-        JdbcAdapter adapter = new JdbcAdapter();
+        JdbcAdapter adapter = objectFactory.newInstance(
+                JdbcAdapter.class, 
+                JdbcAdapter.class.getName());
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
         return adapter;
     }

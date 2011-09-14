@@ -22,7 +22,9 @@ package org.apache.cayenne.dba.sqlserver;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
@@ -77,7 +79,9 @@ public class SQLServerAdapter extends SybaseAdapter {
 
     public static final String TRIM_FUNCTION = "RTRIM";
 
-    public SQLServerAdapter() {
+    public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
+        
         // TODO: i wonder if Sybase supports generated keys... 
         // in this case we need to move this to the super.
         this.setSupportsGeneratedKeys(true);
@@ -102,9 +106,12 @@ public class SQLServerAdapter extends SybaseAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new SQLServerTrimmingQualifierTranslator(
+        QualifierTranslator translator = new SQLServerTrimmingQualifierTranslator(
                 queryAssembler,
                 SQLServerAdapter.TRIM_FUNCTION);
+        translator.setCaseInsensitive(
+                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
 
     

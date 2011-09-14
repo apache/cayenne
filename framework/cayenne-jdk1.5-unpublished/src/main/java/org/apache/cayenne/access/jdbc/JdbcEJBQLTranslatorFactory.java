@@ -28,6 +28,8 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
 
     protected static final String JOIN_APPENDER_KEY = "$JoinAppender";
+    
+    protected boolean caseInsensitive = false;
 
     public EJBQLJoinAppender getJoinAppender(EJBQLTranslationContext context) {
         EJBQLJoinAppender appender = (EJBQLJoinAppender) context
@@ -61,6 +63,7 @@ public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
     }
 
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
+        context.setCaseInsensitive(caseInsensitive);
         return new EJBQLConditionTranslator(context);
     }
 
@@ -93,5 +96,9 @@ public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
 
     public EJBQLExpressionVisitor getUpdateItemTranslator(EJBQLTranslationContext context) {
         return new EJBQLUpdateItemTranslator(context);
+    }
+    
+    public void setCaseInsensitive(boolean caseInsensitive) {
+        this.caseInsensitive = caseInsensitive;
     }
 }

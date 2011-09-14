@@ -56,6 +56,7 @@ public class EJBQLTranslationContext {
     private Map<String, String> idAliases;
     private int resultDescriptorPosition;
     private boolean usingAliases;
+    private boolean caseInsensitive;
     private List<StringBuilder> bufferStack;
     private List<StringBuilder> bufferChain;
     private StringBuilder stackTop;
@@ -78,6 +79,7 @@ public class EJBQLTranslationContext {
         this.positionalParameters = query.getPositionalParameters();
         this.translatorFactory = translatorFactory;
         this.usingAliases = true;
+        this.caseInsensitive = false;
         this.queryMetadata = query.getMetaData(entityResolver);
         // buffer stack will hold named buffers during translation in the order they were
         // requested
@@ -426,6 +428,14 @@ public class EJBQLTranslationContext {
 
     public void setUsingAliases(boolean useAliases) {
         this.usingAliases = useAliases;
+    }
+    
+    public boolean isCaseInsensitive() {
+        return caseInsensitive;
+    }
+    
+    public void setCaseInsensitive(boolean caseInsensitive) {
+        this.caseInsensitive = caseInsensitive;
     }
 
     public void onSubselect() {

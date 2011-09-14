@@ -31,15 +31,18 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -76,7 +79,8 @@ public class MySQLAdapter extends JdbcAdapter {
     protected String storageEngine;
     protected boolean supportsFkConstraints;
 
-    public MySQLAdapter() {
+    public MySQLAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
 
         // init defaults
         this.storageEngine = DEFAULT_STORAGE_ENGINE;
@@ -100,7 +104,9 @@ public class MySQLAdapter extends JdbcAdapter {
     
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new MySQLQualifierTranslator(queryAssembler);
+        QualifierTranslator translator = new MySQLQualifierTranslator(queryAssembler);
+        translator.setCaseInsensitive(runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
 
     /**
@@ -219,7 +225,11 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        return new MySQLEJBQLTranslatorFactory();
+        JdbcEJBQLTranslatorFactory translatorFactory = 
+                new MySQLEJBQLTranslatorFactory();
+        translatorFactory.setCaseInsensitive(
+                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translatorFactory;
     }
 
     /**

@@ -31,6 +31,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
@@ -57,6 +58,9 @@ public class DataContextExtrasTest extends ServerCase {
 
     @Inject
     protected JdbcEventLogger logger;
+    
+    @Inject
+    protected RuntimeProperties runtimeProperties;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -234,7 +238,7 @@ public class DataContextExtrasTest extends ServerCase {
 
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception
-        PkGenerator newGenerator = new JdbcPkGenerator(new JdbcAdapter()) {
+        PkGenerator newGenerator = new JdbcPkGenerator(new JdbcAdapter(runtimeProperties)) {
 
             @Override
             public Object generatePk(DataNode node, DbAttribute pk) throws Exception {

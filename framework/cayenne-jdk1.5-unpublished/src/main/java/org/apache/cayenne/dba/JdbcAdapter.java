@@ -36,6 +36,7 @@ import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -55,6 +56,9 @@ import org.apache.cayenne.util.Util;
  * of a concrete adapter implementation.
  */
 public class JdbcAdapter implements DbAdapter {
+    
+    // defines if database uses case-insensitive collation
+    public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
 
     final static String DEFAULT_IDENTIFIERS_START_QUOTE = "\"";
     final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
@@ -72,6 +76,7 @@ public class JdbcAdapter implements DbAdapter {
     protected String identifiersEndQuote;
 
     protected ResourceLocator resourceLocator;
+    protected RuntimeProperties runtimeProperties;
 
     /**
      * @since 3.1
@@ -99,19 +104,20 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * Creates new JdbcAdapter with a set of default parameters.
      */
-    public JdbcAdapter() {
+    public JdbcAdapter(@Inject RuntimeProperties runtimeProperties) {
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
+        this.runtimeProperties = runtimeProperties;
 
         // TODO: andrus 05.02.2010 - ideally this should be injected
         this.resourceLocator = new ClassLoaderResourceLocator();
         
         this.pkGenerator = createPkGenerator();
+        this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
         this.configureExtendedTypes(extendedTypes);
-        this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
         initIdentifiersQuotes();
     }
 
@@ -185,7 +191,11 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        return new JdbcEJBQLTranslatorFactory();
+        JdbcEJBQLTranslatorFactory translatorFactory = 
+                new JdbcEJBQLTranslatorFactory();
+        translatorFactory.setCaseInsensitive(
+                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translatorFactory;
     }
 
     /**
@@ -503,7 +513,9 @@ public class JdbcAdapter implements DbAdapter {
      * Creates and returns a default implementation of a qualifier translator.
      */
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new QualifierTranslator(queryAssembler);
+        QualifierTranslator translator = new QualifierTranslator(queryAssembler);
+        translator.setCaseInsensitive(runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
 
     /**

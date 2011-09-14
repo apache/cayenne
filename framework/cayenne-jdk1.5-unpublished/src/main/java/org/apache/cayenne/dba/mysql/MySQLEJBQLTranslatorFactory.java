@@ -29,6 +29,7 @@ class MySQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
 
     @Override
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
+        context.setCaseInsensitive(caseInsensitive);
         return new MySQLEJBQLConditionTranslator(context);
     }
 }

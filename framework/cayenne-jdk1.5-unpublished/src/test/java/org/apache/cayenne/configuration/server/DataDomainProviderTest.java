@@ -34,6 +34,8 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
@@ -44,9 +46,24 @@ import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.db2.DB2Sniffer;
+import org.apache.cayenne.dba.derby.DerbySniffer;
+import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
+import org.apache.cayenne.dba.h2.H2Sniffer;
+import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
+import org.apache.cayenne.dba.ingres.IngresSniffer;
+import org.apache.cayenne.dba.mysql.MySQLSniffer;
+import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
+import org.apache.cayenne.dba.oracle.OracleSniffer;
+import org.apache.cayenne.dba.postgres.PostgresSniffer;
+import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
+import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
+import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -117,6 +134,26 @@ public class DataDomainProviderTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                final AdhocObjectFactory objectFactory = new DefaultAdhocObjectFactory();
+                binder.bind(AdhocObjectFactory.class).toInstance(objectFactory);
+                
+                binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+                
+                binder
+                        .bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
+                        .add(new OpenBaseSniffer(objectFactory))
+                        .add(new FrontBaseSniffer(objectFactory))
+                        .add(new IngresSniffer(objectFactory))
+                        .add(new SQLiteSniffer(objectFactory))
+                        .add(new DB2Sniffer(objectFactory))
+                        .add(new H2Sniffer(objectFactory))
+                        .add(new HSQLDBSniffer(objectFactory))
+                        .add(new SybaseSniffer(objectFactory))
+                        .add(new DerbySniffer(objectFactory))
+                        .add(new SQLServerSniffer(objectFactory))
+                        .add(new OracleSniffer(objectFactory))
+                        .add(new PostgresSniffer(objectFactory))
+                        .add(new MySQLSniffer(objectFactory));
                 binder.bindList(DataDomainProvider.FILTERS_LIST);
                 binder.bindList(DataDomainProvider.LOCATIONS_LIST).add(testConfigName);
                 binder.bind(EventManager.class).toInstance(eventManager);
@@ -129,20 +166,10 @@ public class DataDomainProviderTest extends TestCase {
                 binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
                 binder.bind(SchemaUpdateStrategy.class).toInstance(
                         new SkipSchemaUpdateStrategy());
-                binder.bind(DbAdapterFactory.class).toInstance(new DbAdapterFactory() {
-
-                    public DbAdapter createAdapter(
-                            DataNodeDescriptor nodeDescriptor,
-                            DataSource dataSource) throws Exception {
-
-                        if (nodeDescriptor.getAdapterType() != null) {
-                            return (DbAdapter) Class.forName(
-                                    nodeDescriptor.getAdapterType()).newInstance();
-                        }
-
-                        return mockAdapter;
-                    }
-                });
+                binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+                binder.bind(BatchQueryBuilderFactory.class).to(
+                        DefaultBatchQueryBuilderFactory.class);
 
                 binder.bind(DataSourceFactory.class).toInstance(
                         new MockDataSourceFactory());
@@ -208,6 +235,5 @@ public class DataDomainProviderTest extends TestCase {
                 .getName());
 
         assertNotNull(node2.getAdapter());
-        assertSame(mockAdapter, node2.getAdapter());
     }
 }

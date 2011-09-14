@@ -49,9 +49,12 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
     protected DataObjectMatchTranslator objectMatchTranslator;
     protected boolean matchingObject;
+    protected boolean caseInsensitive;
 
     public QualifierTranslator(QueryAssembler queryAssembler) {
         super(queryAssembler);
+        
+        caseInsensitive = false;
     }
 
     /**
@@ -63,6 +66,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     @Override
     protected void doAppendPart() throws IOException {
         doAppendPart(extractQualifier());
+    }
+    
+    public void setCaseInsensitive(boolean caseInsensitive) {
+        this.caseInsensitive = caseInsensitive;
     }
 
     /**
@@ -253,10 +260,20 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                     out.append(" NOT LIKE ");
                     break;
                 case Expression.LIKE_IGNORE_CASE:
-                    out.append(") LIKE UPPER(");
+                    if (caseInsensitive) {
+                        out.append(" LIKE ");
+                    }
+                    else {
+                        out.append(") LIKE UPPER(");
+                    }
                     break;
                 case Expression.NOT_LIKE_IGNORE_CASE:
-                    out.append(") NOT LIKE UPPER(");
+                    if (caseInsensitive) {
+                        out.append(" NOT LIKE ");
+                    }
+                    else {
+                        out.append(") NOT LIKE UPPER(");
+                    }
                     break;
                 case Expression.ADD:
                     out.append(" + ");
@@ -327,8 +344,9 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 else if (node.getType() == Expression.NOT)
                     out.append("NOT ");
             }
-            else if (node.getType() == Expression.LIKE_IGNORE_CASE
-                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
+            else if ((node.getType() == Expression.LIKE_IGNORE_CASE
+                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE)
+                    && !caseInsensitive) {
                 out.append("UPPER(");
             }
         }
@@ -361,7 +379,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             if (isPatternMatchNode && !likeIgnoreCase)
                 appendLikeEscapeCharacter((PatternMatchNode) node);
             
-            if (likeIgnoreCase)
+            if (likeIgnoreCase && !caseInsensitive)
                 out.append(')');
 
             if (isPatternMatchNode && likeIgnoreCase)

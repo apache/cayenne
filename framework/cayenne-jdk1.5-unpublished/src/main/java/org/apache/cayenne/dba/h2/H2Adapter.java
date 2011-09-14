@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.dba.h2;
 
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.merge.MergerFactory;
 
@@ -27,7 +29,8 @@ import org.apache.cayenne.merge.MergerFactory;
  * @since 3.0
  */
 public class H2Adapter extends JdbcAdapter {
-    public H2Adapter() {
+    public H2Adapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
         setSupportsGeneratedKeys(true);
     }
 

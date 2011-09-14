@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
@@ -31,12 +32,16 @@ public class OraclePkGeneratorTest extends ServerCase {
     
     @Inject
     protected JdbcEventLogger logger;
+    
+    @Inject
+    protected AdhocObjectFactory objectFactory;
 
     private OraclePkGenerator pkGenerator;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        pkGenerator = new OraclePkGenerator(new OracleAdapter());
+        pkGenerator = new OraclePkGenerator(
+                objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName()));
     }
 
     public void testSequenceNameDefault() throws Exception {

@@ -26,16 +26,24 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class BatchQueryBuilderTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class BatchQueryBuilderTest extends ServerCase {
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
 	public void testConstructor() throws Exception {
-		DbAdapter adapter = new JdbcAdapter();
+		DbAdapter adapter = objectFactory.newInstance(
+		        DbAdapter.class, 
+		        JdbcAdapter.class.getName());
 		BatchQueryBuilder builder =
 			new BatchQueryBuilder(adapter) {
 			@Override
@@ -48,7 +56,9 @@ public class BatchQueryBuilderTest extends TestCase {
 	}
 
 	public void testAppendDbAttribute1() throws Exception {
-		DbAdapter adapter = new JdbcAdapter();
+	    DbAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class, 
+                JdbcAdapter.class.getName());
 		String trimFunction = "testTrim";
 
 		BatchQueryBuilder builder =
@@ -76,7 +86,9 @@ public class BatchQueryBuilderTest extends TestCase {
 	}
 
 	public void testAppendDbAttribute2() throws Exception {
-		DbAdapter adapter = new JdbcAdapter();
+	    DbAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class, 
+                JdbcAdapter.class.getName());
 
 		BatchQueryBuilder builder = new BatchQueryBuilder(adapter) {
 			@Override

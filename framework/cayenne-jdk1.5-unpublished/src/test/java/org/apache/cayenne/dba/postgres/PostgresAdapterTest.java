@@ -20,16 +20,23 @@ package org.apache.cayenne.dba.postgres;
 
 import java.sql.Types;
 
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-import junit.framework.TestCase;
-
-
-public class PostgresAdapterTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class PostgresAdapterTest extends ServerCase {
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
     
     public void testCreateTableWithFloatAttributeWithScale () {
-        PostgresAdapter adapter = new PostgresAdapter();
+        PostgresAdapter adapter = objectFactory.newInstance(
+                PostgresAdapter.class, 
+                PostgresAdapter.class.getName());
         DbEntity e = new DbEntity("Test");
         DbAttribute dblPrec = new DbAttribute("dbl1");
         dblPrec.setType(Types.FLOAT);

@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.UpdateBatchQuery;
@@ -42,9 +43,14 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testConstructor() throws Exception {
-        DbAdapter adapter = new JdbcAdapter();
+        DbAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class, 
+                JdbcAdapter.class.getName());
         UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
         assertSame(adapter, builder.getAdapter());
     }
@@ -64,7 +70,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
                 updatedAttributes,
                 null,
                 1);
-        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(new JdbcAdapter());
+        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
+                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
         String generatedSql = builder.createSqlString(updateQuery);
         assertNotNull(generatedSql);
         assertEquals("UPDATE "
@@ -90,7 +97,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
                 updatedAttributes,
                 nullAttributes,
                 1);
-        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(new JdbcAdapter());
+        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
+                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
         String generatedSql = builder.createSqlString(updateQuery);
         assertNotNull(generatedSql);
 

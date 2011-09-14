@@ -39,9 +39,11 @@ import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
@@ -152,7 +154,9 @@ public class OracleAdapter extends JdbcAdapter {
         return oracleCursorType;
     }
 
-    public OracleAdapter() {
+    public OracleAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
+        
         // enable batch updates by default
         setSupportsBatchUpdates(true);
     }
@@ -288,7 +292,10 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new OracleQualifierTranslator(queryAssembler);
+        QualifierTranslator translator = new Oracle8QualifierTranslator(queryAssembler);
+        translator.setCaseInsensitive(
+                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
 
     /**

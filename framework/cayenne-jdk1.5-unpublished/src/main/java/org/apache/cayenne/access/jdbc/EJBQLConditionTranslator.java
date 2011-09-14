@@ -390,7 +390,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
      * For that, we'll append IS NULL or IS NOT NULL instead of =null or <>null
      * @return whether replacement was done and there's no need for normal expression processing
      */
-    boolean checkNullParameter(EJBQLExpression expression, String toAppend) {
+    protected boolean checkNullParameter(EJBQLExpression expression, String toAppend) {
         if (expression.getChildrenCount() == 2) {
             // We rewrite expression "parameter = :x" where x=null
             // as "parameter IS NULL"

@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 
 class MySQLQualifierTranslator extends QualifierTranslator {
@@ -51,4 +52,40 @@ class MySQLQualifierTranslator extends QualifierTranslator {
         }
     }
 
+    @Override
+    public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
+        
+        if (!caseInsensitive) {
+            super.finishedChild(node, childIndex, hasMoreChildren);
+        }
+        else {
+            
+            if (!hasMoreChildren) {
+                return;
+            }
+            
+            // if we have something except LIKE or NOT LIKE then no need in specific handling
+            if (node.getType() != Expression.LIKE
+                    && node.getType() != Expression.NOT_LIKE) {
+                super.finishedChild(node, childIndex, hasMoreChildren);
+                return;
+            }
+            
+            try {
+                Appendable out = (matchingObject) ? new StringBuilder() : this.out;
+                
+                switch (node.getType()) {
+                    case Expression.LIKE:
+                        out.append(" LIKE BINARY ");
+                        break;
+                    case Expression.NOT_LIKE:
+                        out.append(" NOT LIKE BINARY ");
+                        break;
+                }
+            }
+            catch (IOException ioex) {
+                throw new CayenneRuntimeException("Error appending content", ioex);
+            }
+        }
+    }
 }

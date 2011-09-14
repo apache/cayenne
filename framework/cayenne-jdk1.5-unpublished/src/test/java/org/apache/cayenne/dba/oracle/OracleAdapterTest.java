@@ -22,6 +22,7 @@ package org.apache.cayenne.dba.oracle;
 import java.sql.Types;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -33,6 +34,9 @@ public class OracleAdapterTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testUpdatesLOBColumns() throws Exception {
         DataMap map = runtime.getDataDomain().getDataMap("testmap");
@@ -45,8 +49,12 @@ public class OracleAdapterTest extends ServerCase {
     }
 
     public void testTimestampMapping() throws Exception {
+        
+        OracleAdapter adapter = objectFactory.newInstance(
+                OracleAdapter.class, 
+                OracleAdapter.class.getName());
 
-        String[] types = new OracleAdapter().externalTypesForJdbcType(Types.TIMESTAMP);
+        String[] types = adapter.externalTypesForJdbcType(Types.TIMESTAMP);
         assertNotNull(types);
         assertEquals(1, types.length);
         assertEquals("TIMESTAMP", types[0]);

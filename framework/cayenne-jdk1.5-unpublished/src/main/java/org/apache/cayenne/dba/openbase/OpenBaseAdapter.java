@@ -32,10 +32,12 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -60,7 +62,9 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class OpenBaseAdapter extends JdbcAdapter {
 
-    public OpenBaseAdapter() {
+    public OpenBaseAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
+        
         // init defaults
         this.setSupportsUniqueConstraints(false);
     }

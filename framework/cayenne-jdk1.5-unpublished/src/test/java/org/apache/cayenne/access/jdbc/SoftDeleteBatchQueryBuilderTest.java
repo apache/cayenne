@@ -28,6 +28,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -48,9 +49,13 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     protected DbAdapter adapter;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     private DeleteBatchQueryBuilder createBuilder() {
-        return createBuilder(new JdbcAdapter());
+        return createBuilder(
+                objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName()));
     }
 
     private DeleteBatchQueryBuilder createBuilder(JdbcAdapter adapter) {

@@ -29,8 +29,10 @@ import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.merge.MergerFactory;
 
 /**
@@ -40,6 +42,10 @@ public class SybaseAdapter extends JdbcAdapter {
 
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "[";
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "]";
+    
+    public SybaseAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
+    }
 
     /**
      * @since 3.0

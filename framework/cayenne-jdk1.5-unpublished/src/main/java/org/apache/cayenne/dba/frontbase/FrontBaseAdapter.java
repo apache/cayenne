@@ -27,10 +27,12 @@ import java.util.Iterator;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
@@ -58,7 +60,8 @@ import org.apache.cayenne.query.SQLAction;
 // what to do about it.
 public class FrontBaseAdapter extends JdbcAdapter {
 
-    public FrontBaseAdapter() {
+    public FrontBaseAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
         setSupportsBatchUpdates(true);
     }
 

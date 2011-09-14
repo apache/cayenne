@@ -22,6 +22,7 @@ package org.apache.cayenne.dba;
 import java.sql.Types;
 
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -35,6 +36,9 @@ public class JdbcAdapterTest extends ServerCase {
 
     @Inject
     private DbAdapter dbAdapter;
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testExternalTypesForJdbcType() throws Exception {
         // check a few types
@@ -45,7 +49,9 @@ public class JdbcAdapterTest extends ServerCase {
     }
 
     private void checkType(int type) throws java.lang.Exception {
-        JdbcAdapter adapter = new JdbcAdapter();
+        JdbcAdapter adapter = objectFactory.newInstance(
+                JdbcAdapter.class, 
+                JdbcAdapter.class.getName());
 
         String[] types = adapter.externalTypesForJdbcType(type);
         assertNotNull(types);

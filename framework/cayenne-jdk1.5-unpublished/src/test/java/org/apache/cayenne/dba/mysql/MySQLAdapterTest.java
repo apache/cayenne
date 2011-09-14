@@ -19,15 +19,23 @@
 
 package org.apache.cayenne.dba.mysql;
 
-import junit.framework.TestCase;
-
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class MySQLAdapterTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class MySQLAdapterTest extends ServerCase {
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testCreateTableAppendPKClause() {
-        MySQLAdapter adapter = new MySQLAdapter();
+        MySQLAdapter adapter = objectFactory.newInstance(
+                MySQLAdapter.class, 
+                MySQLAdapter.class.getName());
 
         DbEntity e = new DbEntity("Test");
         DbAttribute pk1 = new DbAttribute("PK1");

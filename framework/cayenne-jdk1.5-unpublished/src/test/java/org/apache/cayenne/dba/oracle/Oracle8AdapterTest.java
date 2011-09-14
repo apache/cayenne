@@ -22,21 +22,36 @@ package org.apache.cayenne.dba.oracle;
 import java.net.URL;
 import java.sql.Types;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-public class Oracle8AdapterTest extends TestCase {
+@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+public class Oracle8AdapterTest extends ServerCase {
+    
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
     public void testTimestampMapping() throws Exception {
+        
+        Oracle8Adapter adapter = objectFactory.newInstance(
+                Oracle8Adapter.class, 
+                Oracle8Adapter.class.getName());
 
-        String[] types = new Oracle8Adapter().externalTypesForJdbcType(Types.TIMESTAMP);
+        String[] types = adapter.externalTypesForJdbcType(Types.TIMESTAMP);
         assertNotNull(types);
         assertEquals(1, types.length);
         assertEquals("DATE", types[0]);
     }
 
     public void testFindAdapterResource() throws Exception {
+        
+        Oracle8Adapter adapter = objectFactory.newInstance(
+                Oracle8Adapter.class, 
+                Oracle8Adapter.class.getName());
 
-        URL typesURL = new Oracle8Adapter().findResource("/types.xml");
+        URL typesURL = adapter.findResource("/types.xml");
         assertNotNull(typesURL);
         assertTrue("Unexpected url:" + typesURL, typesURL.toExternalForm().endsWith(
                 "types-oracle8.xml"));

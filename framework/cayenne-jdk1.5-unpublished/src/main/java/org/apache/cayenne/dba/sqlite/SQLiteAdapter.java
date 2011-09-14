@@ -24,7 +24,9 @@ import java.util.GregorianCalendar;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -48,7 +50,8 @@ import org.apache.cayenne.query.SQLAction;
 // check http://cwiki.apache.org/CAY/sqliteadapter.html for current limitations.
 public class SQLiteAdapter extends JdbcAdapter {
 
-    public SQLiteAdapter() {
+    public SQLiteAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
         this.setSupportsUniqueConstraints(false);
         this.setSupportsGeneratedKeys(true);
     }

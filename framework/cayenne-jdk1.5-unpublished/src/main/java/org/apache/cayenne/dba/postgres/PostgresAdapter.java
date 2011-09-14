@@ -30,10 +30,12 @@ import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
@@ -57,7 +59,8 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class PostgresAdapter extends JdbcAdapter {
 
-    public PostgresAdapter() {
+    public PostgresAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
         setSupportsBatchUpdates(true);
     }
 
@@ -255,7 +258,10 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new PostgresQualifierTranslator(queryAssembler);
+        QualifierTranslator translator = new PostgresQualifierTranslator(queryAssembler);
+        translator.setCaseInsensitive(
+                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
 
     /**

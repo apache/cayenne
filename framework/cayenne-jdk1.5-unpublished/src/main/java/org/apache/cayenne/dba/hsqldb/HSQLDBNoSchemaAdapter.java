@@ -22,6 +22,8 @@ package org.apache.cayenne.dba.hsqldb;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 
 /**
@@ -30,6 +32,10 @@ import org.apache.cayenne.map.DbEntity;
  * @since 1.2
  */
 public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
+    
+    public HSQLDBNoSchemaAdapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
+    }
 
     /**
      * Generate unqualified name without schema.

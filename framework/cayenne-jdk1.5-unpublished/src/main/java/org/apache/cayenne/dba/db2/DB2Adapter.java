@@ -31,10 +31,12 @@ import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
@@ -55,7 +57,8 @@ import org.apache.cayenne.merge.MergerFactory;
  */
 public class DB2Adapter extends JdbcAdapter {
 
-    public DB2Adapter() {
+    public DB2Adapter(@Inject RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
         setSupportsGeneratedKeys(true);
     }
 
@@ -194,7 +197,10 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new DB2QualifierTranslator(queryAssembler, "RTRIM");
+        QualifierTranslator translator = new DB2QualifierTranslator(queryAssembler, "RTRIM");
+        translator.setCaseInsensitive(
+                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        return translator;
     }
 
     final class DB2BooleanType extends BooleanType {
