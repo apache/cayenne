@@ -20,9 +20,13 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.util.Util;
@@ -131,6 +135,9 @@ public class DbGeneratorMojo extends AbstractMojo {
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+    	
+    	Injector injector = DIBootstrap.createInjector(new ToolModule());
+    	AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
 		Log logger = new MavenLogger(this);
 
@@ -140,8 +147,9 @@ public class DbGeneratorMojo extends AbstractMojo {
                 dropTables, dropPK, createTables, createPK, createFK));
 
         try {
-            final DbAdapter adapterInst = (adapter == null) ? new JdbcAdapter()
-                                                            : (DbAdapter) Class.forName(adapter).newInstance();
+            final DbAdapter adapterInst = (adapter == null) ? 
+            		objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) : 
+            		objectFactory.newInstance(DbAdapter.class, adapter);
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();

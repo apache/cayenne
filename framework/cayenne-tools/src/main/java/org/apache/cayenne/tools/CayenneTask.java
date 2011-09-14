@@ -26,7 +26,11 @@ import org.apache.tools.ant.types.Reference;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.xml.sax.InputSource;
 
 import java.io.File;
@@ -93,22 +97,11 @@ public abstract class CayenneTask extends Task
      * @param adapter The db adapter to set.
      */
     public void setAdapter(String adapter) {
-        ClassLoader loader = null;
         if (adapter != null) {
-            // Try to create an instance of the DB adapter.
-            try {
-                loader = Thread.currentThread().getContextClassLoader();
-                Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
-
-                Class<?> c = Util.getJavaClass(adapter);
-                this.adapter = (DbAdapter) c.newInstance();
-            }
-            catch (Exception e) {
-                throw new BuildException("Can't load DbAdapter: " + adapter,e);
-            }
-            finally{
-                Thread.currentThread().setContextClassLoader(loader);
-            }
+            Injector injector = DIBootstrap.createInjector(new ToolModule());
+            AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
+            
+            this.adapter = objectFactory.newInstance(DbAdapter.class, adapter);
         }
     }
 

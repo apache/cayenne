@@ -20,8 +20,13 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
@@ -48,10 +53,13 @@ public class DbGeneratorTask extends CayenneTask {
 
     @Override
     public void execute() {
+        
+        Injector injector = DIBootstrap.createInjector(new ToolModule());
+        AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         // prepare defaults
         if (adapter == null) {
-            adapter = new JdbcAdapter();
+            adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         }
         
         log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName), Project.MSG_VERBOSE);

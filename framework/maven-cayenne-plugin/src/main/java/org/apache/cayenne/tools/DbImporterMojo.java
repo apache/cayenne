@@ -22,6 +22,7 @@ package org.apache.cayenne.tools;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -31,6 +32,9 @@ import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.conn.DriverDataSource;
@@ -175,6 +179,9 @@ public class DbImporterMojo extends AbstractMojo {
     private File mapFile;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+    	
+    	Injector injector = DIBootstrap.createInjector(new ToolModule());
+    	AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         logger = new MavenLogger(this);
 
@@ -184,8 +191,9 @@ public class DbImporterMojo extends AbstractMojo {
                 map, overwriteExisting, schemaName, tablePattern, importProcedures, procedurePattern, meaningfulPk, namingStrategy));
 
         try {
-            final DbAdapter adapterInst = (adapter == null) ? new JdbcAdapter()
-                                                                : (DbAdapter) Class.forName(adapter).newInstance();
+            final DbAdapter adapterInst = (adapter == null) ? 
+                    objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) : 
+                    objectFactory.newInstance(DbAdapter.class, adapter);
 
             // load driver taking custom CLASSPATH into account...
             DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url, username, password);
