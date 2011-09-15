@@ -192,8 +192,8 @@ public class DbImporterMojo extends AbstractMojo {
 
         try {
             final DbAdapter adapterInst = (adapter == null) ? 
-                    objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) : 
-                    objectFactory.newInstance(DbAdapter.class, adapter);
+                    (DbAdapter)objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) : 
+                    (DbAdapter)objectFactory.newInstance(DbAdapter.class, adapter);
 
             // load driver taking custom CLASSPATH into account...
             DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url, username, password);

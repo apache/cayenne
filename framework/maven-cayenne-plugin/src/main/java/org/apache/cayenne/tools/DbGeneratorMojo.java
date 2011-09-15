@@ -148,8 +148,8 @@ public class DbGeneratorMojo extends AbstractMojo {
 
         try {
             final DbAdapter adapterInst = (adapter == null) ? 
-            		objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) : 
-            		objectFactory.newInstance(DbAdapter.class, adapter);
+            		(DbAdapter)objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) : 
+            		(DbAdapter)objectFactory.newInstance(DbAdapter.class, adapter);
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
