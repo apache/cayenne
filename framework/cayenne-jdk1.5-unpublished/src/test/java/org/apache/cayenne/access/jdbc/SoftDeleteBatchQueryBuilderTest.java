@@ -54,8 +54,10 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
     private AdhocObjectFactory objectFactory;
 
     private DeleteBatchQueryBuilder createBuilder() {
-        return createBuilder(
-                objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName()));
+        JdbcAdapter adapter = objectFactory.newInstance(
+                JdbcAdapter.class, 
+                JdbcAdapter.class.getName());
+        return createBuilder(adapter);
     }
 
     private DeleteBatchQueryBuilder createBuilder(JdbcAdapter adapter) {

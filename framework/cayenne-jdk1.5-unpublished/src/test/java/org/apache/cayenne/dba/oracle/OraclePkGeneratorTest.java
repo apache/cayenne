@@ -40,8 +40,8 @@ public class OraclePkGeneratorTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        pkGenerator = new OraclePkGenerator(
-                objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName()));
+        OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
+        pkGenerator = new OraclePkGenerator(adapter);
     }
 
     public void testSequenceNameDefault() throws Exception {

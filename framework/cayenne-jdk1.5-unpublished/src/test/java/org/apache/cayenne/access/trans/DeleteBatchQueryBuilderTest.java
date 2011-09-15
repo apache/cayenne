@@ -66,8 +66,9 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
                 .getAttribute("LOCKING_TEST_ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
-                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
+        
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals(
@@ -90,8 +91,9 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
                 idAttributes,
                 nullAttributes,
                 1);
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
-                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
+        
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM "

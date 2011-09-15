@@ -55,9 +55,9 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
 
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
-        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(
-                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
+        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(adapter);
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals("INSERT INTO "

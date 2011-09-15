@@ -70,8 +70,9 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
                 updatedAttributes,
                 null,
                 1);
-        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
-                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
+        
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
         String generatedSql = builder.createSqlString(updateQuery);
         assertNotNull(generatedSql);
         assertEquals("UPDATE "
@@ -97,8 +98,9 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
                 updatedAttributes,
                 nullAttributes,
                 1);
-        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
-                objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()));
+        
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
         String generatedSql = builder.createSqlString(updateQuery);
         assertNotNull(generatedSql);
 
