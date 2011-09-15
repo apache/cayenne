@@ -26,6 +26,7 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.util.Util;
@@ -34,16 +35,19 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
 
     static final String TEST_ADAPTERS_MAP = "org.apache.cayenne.unit.di.server.CayenneResourcesAccessStackAdapterProvider.adapters";
 
+    private Injector injector;
     private DbAdapter adapter;
     private DataSourceInfo dataSourceInfo;
     private Map<String, String> adapterTypesMap;
 
     public UnitDbAdapterProvider(
             @Inject(TEST_ADAPTERS_MAP) Map<String, String> adapterTypesMap,
-            @Inject DataSourceInfo dataSourceInfo, @Inject DbAdapter adapter) {
+            @Inject DataSourceInfo dataSourceInfo, @Inject DbAdapter adapter,
+            @Inject Injector injector) {
         this.dataSourceInfo = dataSourceInfo;
         this.adapterTypesMap = adapterTypesMap;
         this.adapter = adapter;
+        this.injector = injector;
     }
 
     public UnitDbAdapter get() throws ConfigurationException {
@@ -74,7 +78,9 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
 
         try {
             Constructor<UnitDbAdapter> c = type.getConstructor(DbAdapter.class);
-            return c.newInstance(adapter);
+            UnitDbAdapter unitAdapter = c.newInstance(adapter);
+            injector.injectMembers(unitAdapter);
+            return unitAdapter;
         }
         catch (Exception e) {
             throw new ConfigurationException("Error instantiating " + testAdapterType, e);

@@ -34,8 +34,11 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
@@ -51,6 +54,9 @@ import org.apache.commons.logging.LogFactory;
 public class UnitDbAdapter {
 
     private static Log logger = LogFactory.getLog(UnitDbAdapter.class);
+    
+    @Inject
+    protected RuntimeProperties runtimeProperties;
 
     protected DbAdapter adapter;
 
@@ -213,7 +219,7 @@ public class UnitDbAdapter {
     }
 
     public boolean supportsCaseSensitiveLike() {
-        return true;
+        return !runtimeProperties.getBoolean(JdbcAdapter.CI_PROPERTY, false);
     }
 
     public boolean supportsCaseInsensitiveOrder() {
