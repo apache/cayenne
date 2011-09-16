@@ -14,6 +14,7 @@ Date:
 Changes/New Features Since 3.1M3:
 
 CAY-1608 Implement constructor injection support for DefaultAdhocObjectFactory
+CAY-1618 Create database adapters instances with proper injection
 
 ----------------------------------
 Release: 3.1 M3
