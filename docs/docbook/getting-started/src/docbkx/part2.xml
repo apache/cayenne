@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<part xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
+    xml:id="getting-started-part2" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Learning mapping basics</title>
+    <xi:include href="starting-project.xml"/>
+    <xi:include href="object-relational-mapping.xml"/>
+    <xi:include href="java-classes.xml"/>
+</part>

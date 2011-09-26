@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Deleting objects...</title>
+    <para>This section explains how to model relationship delete rules and how to delete individual
+        objects as well as sets of objects. Also demonstrated the use of Cayenne class to run a
+        query.</para>
+    <section xml:id="setup-delete-rules">
+        <title>Setting Up Delete Rules</title>
+        <para>Before we discuss the API for object deletion, lets go back to CayenneModeler and set
+            up some <link xlink:href="http://cayenne.apache.org/doc/delete-rules.html">delete
+                rules</link>. Doing this is optional but will simplify correct handling of the
+            objects related to deleted objects.</para>
+        <para>In the Modeler go to "Artist" ObjEntity, "Relationships" tab and select "Cascade" for
+            the "paintings" relationship delete rule:</para>
+        <para> Unable to render embedded object: File (modeler-deleterule.png) not found. </para>
+        <para>Repeat this step for other relationships:</para>
+        <itemizedlist>
+            <listitem>
+                <para>For Gallery set "paintings" relationship to be "Nullify", as a painting can
+                    exist without being displayed in a gallery.</para>
+            </listitem>
+            <listitem>
+                <para>For Painting et both relationships rules to "Nullify".</para>
+            </listitem>
+        </itemizedlist>
+        <para>Now save the mapping, and refresh the project in Eclispe.</para>
+    </section>
+    <section xml:id="deleting-objects">
+        <title>Deleting Objects</title>
+        <para>While deleting objects is possible via SQL, qualifying a delete on one or more IDs, a
+            more common way in Cayenne (or ORM in general) is to get a hold of the object first, and
+            then delete it via the context. Let's use utility class Cayenne to find an
+            artist:</para>
+        <programlisting>Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY, "Pablo Picasso");
+SelectQuery select = new SelectQuery(Artist.class, qualifier);
+Artist picasso = (Artist) Cayenne.objectForQuery(context, select);</programlisting>
+        <para>Now let's delete the artist:</para>
+        <programlisting>if (picasso != null) {
+    context.deleteObject(picasso);
+    context.commitChanges();
+}</programlisting>
+        <para>Since we set up "Cascade" delete rule for the Artist.paintings relationships, Cayenne
+            will automatically delete all paintings of this artist. So when your run the app you'll
+            see this output:</para>
+        <programlisting>INFO: SELECT t0.DATE_OF_BIRTH, t0.ID, t0.NAME FROM ARTIST t0 WHERE t0.NAME = ? 
+ [bind: 1-&gt;NAME:'Pablo Picasso']
+INFO: === returned 1 row. - took 5 ms.
+INFO: +++ transaction committed.
+INFO: --- will run 2 queries.
+INFO: --- transaction started.
+INFO: DELETE FROM PAINTING WHERE ID = ?
+INFO: [batch bind: 1-&gt;ID:2]
+INFO: [batch bind: 1-&gt;ID:1]
+INFO: === updated 2 rows.
+INFO: DELETE FROM ARTIST WHERE ID = ?
+INFO: [batch bind: 1-&gt;ID:1]
+INFO: === updated 1 row.
+INFO: +++ transaction committed.
+</programlisting>
+    </section>
+</chapter>

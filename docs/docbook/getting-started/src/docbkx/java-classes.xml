@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Creating Java Classes...</title>
+    <para>Here we'll generate the Java classes from the model that was created in the previous
+        section. CayenneModeler can be used to also generate the database schema, but since we
+        specified "CreateIfNoSchemaStrategy" earlier when we created a DataNode, we'll skip the
+        database schema step. Still be aware that you can do it if you need to via "Tools &gt;
+        Create Database Schema".
+    </para>
+    <section xml:id="creating-java-classes">
+        <title>Creating Java Classes</title>
+        <itemizedlist>
+            <listitem>
+                <para>Select "Tools &gt; Generate Classes" menu.</para>
+            </listitem>
+            <listitem>
+                <para>For "Type" select "Standard Persistent Objects", if it is not already
+                    selected.</para>
+            </listitem>
+            <listitem>
+                <para>For the "Output Directory" select "src/main/java" folder under your Eclipse
+                    project folder (this is a "peer" location to the cayenne.xml location we
+                    selected before).</para>
+            </listitem>
+            <listitem>
+                <para>Click on "Entities" tab and check the "Check All Entities" checkbox (unless it
+                    is already checked and reads "Uncheck all Entities").</para>
+            </listitem>
+            <listitem>
+                <para>Click "Generate"</para>
+            </listitem>
+        </itemizedlist>
+        <para>Now go back to Eclipse, right click on "tutorial" project and select "Refresh" - you
+            should see pairs of classes generated for each mapped entity. You probably also see that
+            there's a bunch of red squiggles next to the newly generated Java classes in Eclipse.
+            This is because our project does not include Cayenne as a Maven dependency yet. Let's
+            fix it now by adding "cayenne-server" artifact in the bottom of the pom.xml file. The
+            resulting POM should look like
+            this:<programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+	&lt;groupId&gt;org.example.cayenne&lt;/groupId&gt;
+	&lt;artifactId&gt;tutorial&lt;/artifactId&gt;
+	&lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+
+	&lt;dependencies&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
+			&lt;artifactId&gt;cayenne-server&lt;/artifactId&gt;
+   &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
+			&lt;version&gt;3.1M1&lt;/version&gt;
+		&lt;/dependency&gt;
+	&lt;/dependencies&gt;
+&lt;/project&gt;</programlisting></para>
+        <para>Your computer must be connected to the internet. Once you save the pom.xml, Eclipse
+            will download the needed Cayenne jar file and add it to the project build path. As a
+            result, all the errors should disappear.</para>
+        <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g.
+                <emphasis role="italic">Artist) and a subclass (e.g. Artist). You <emphasis
+                    role="bold">should not</emphasis> modify the superclasses whose names start with
+                "</emphasis>" (underscore), as they will be replaced on subsequent generator runs.
+            Instead all custom logic should be placed in the subclasses in
+            "org.example.cayenne.persistent" package - those will never be overwritten by the class
+            generator.</para>
+        <para>
+            <informaltable>
+                <col width="3%"/>
+                <col width="97%"/>
+                <tr>
+                    <td rowspan="1" colspan="1" valign="top">
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata
+                                    fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                    depth="16" width="16"/>
+                            </imageobject>
+                        </mediaobject>
+                    </td>
+                    <td rowspan="1" colspan="1"><emphasis role="bold">Class Generation
+                            Hint</emphasis>Often you'd start by generating classes from the Modeler,
+                        but at the later stages of the project the generation is usually automated
+                        either via <link xlink:href="http://cayenne.apache.org/doc/cgen.html">Ant
+                            cgen task</link> or <link
+                            xlink:href="http://cayenne.apache.org/doc/maven2-cgen.html">Maven cgen
+                            mojo</link>. All three methods are interchangeable, however Ant and
+                        Maven methods would ensure that you never forget to regenerate classes on
+                        mapping changes, as they are integrated into the build cycle.</td>
+                </tr>
+            </informaltable>
+        </para>
+        
+    </section>
+</chapter>

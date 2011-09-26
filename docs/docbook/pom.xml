@@ -32,6 +32,7 @@
 	
 	<modules>
 		<module>cayenne-guide</module>
+		<module>getting-started</module>
 	</modules>
 
 	<groupId>org.apache.cayenne.docs</groupId>

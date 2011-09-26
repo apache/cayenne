@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Getting started with ObjectContext...</title>
+    <para>In this section we'll write a simple main class to run our application, and get a brief
+    introduction to Cayenne ObjectContext.</para>
+    <section xml:id="creating-main-class">
+        <title>Creating the Main Class</title>
+        <itemizedlist>
+            <listitem>
+                <para>In Eclipse create a new class called "Main" in the "org.example.cayenne"
+                    package.</para>
+            </listitem>
+            <listitem>
+                <para>Create a standard "main" method to make it a runnable
+                    class:<programlisting>package org.example.cayenne;
+
+public class Main {
+
+	public static void main(String[] args) {
+
+	}
+}</programlisting></para>
+            </listitem>
+            <listitem>
+                <para>The first thing you need to be able to access the database is to create a
+                    ServerRuntime object (which is essentially a wrapper around Cayenne stack) and
+                    use it to obtain an instance of an
+                    ObjectContext.<programlisting>package org.example.cayenne;
+
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataContext;
+
+public class Main {
+
+	public static void main(String[] args) {
+                ServerRuntime cayenneRuntime = new ServerRuntime(
+				"cayenne-UntitledDomain.xml");
+		ObjectContext context = cayenneRuntime.getContext();
+	}
+}</programlisting></para>
+                <para>ObjectContext is an isolated "session" in Cayenne that provides all needed API
+                    to work with data. ObjectContext has methods to execute queries and manage
+                    persistent objects. We'll discuss them in the following sections. When the first
+                    ObjectContext is created in the application, Cayenne loads XML mapping files and
+                    creates a shared access stack that is later reused by other ObjectContexts.
+                </para>
+            </listitem>
+        </itemizedlist>
+    </section>
+    <section xml:id="runnning-app">
+        <title>Running Application</title>
+        <para>Let's check what happens when you run the application. But before we do that we need
+            to add another dependency to the pom.xml - Apache Derby, our embedded database engine.
+            The following piece of XML needs to be added to the
+            &lt;dependencies&gt;...&lt;/dependencies&gt; section, where we already have Cayenne
+            jars:<programlisting>&lt;dependency&gt;
+   &lt;groupId&gt;org.apache.derby&lt;/groupId&gt;
+   &lt;artifactId&gt;derby&lt;/artifactId&gt;
+   &lt;version&gt;10.5.3.0_1&lt;/version&gt;
+&lt;/dependency&gt;</programlisting>Now
+            we are ready to run. Right click the "Main" class in Eclipse and select "Run As &gt;
+            Java Application". In the console you'll see output similar to this, indicating that
+            Cayenne stack has been started:<programlisting>INFO: started configuration loading.
+INFO: loaded domain: UntitledDomain
+INFO: loaded &lt;map name='UntitledDomainMap' location='UntitledDomainMap.map.xml'&gt;.
+INFO: loading &lt;node name='UntitledDomainNode' datasource='UntitledDomainNode.driver.xml' 
+factory='org.apache.cayenne.conf.DriverDataSourceFactory' 
+schema-update-strategy='org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy'&gt;.
+INFO: using factory: org.apache.cayenne.conf.DriverDataSourceFactory
+INFO: loading driver information from 'UntitledDomainNode.driver.xml'.
+INFO: loading driver org.apache.derby.jdbc.EmbeddedDriver
+INFO: loading user name and password.
+INFO: Created connection pool: jdbc:derby:memory:testdb;create=true 
+	Driver class: org.apache.derby.jdbc.EmbeddedDriver
+	Min. connections in the pool: 1
+	Max. connections in the pool: 1
+INFO: loaded datasource.
+INFO: no adapter set, using automatic adapter.
+INFO: loaded map-ref: UntitledDomainMap.
+INFO: finished configuration loading in 396 ms.</programlisting><informaltable>
+                <col width="5%"/>
+                <col width="95%"/>
+                <tr>
+                    <td rowspan="1" colspan="1" valign="top">
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata
+                                    fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                    depth="16" width="16"/>
+                            </imageobject>
+                        </mediaobject>
+                    </td>
+                    <td rowspan="1" colspan="1"><emphasis role="bold">How to Configure Cayenne
+                            Logging</emphasis>You can tweak more or less detailed output by
+                        following the instructions in the <link
+                            xlink:href="http://cayenne.apache.org/doc/configuring-logging.html"
+                            >logging chapter</link>.</td>
+                </tr>
+            </informaltable>Nothing much happened here, but we've been able to create a working
+            Cayenne stack. In the following chapters we'll use the ObjectContext for more
+            interesting things.</para>
+    </section>
+</chapter>

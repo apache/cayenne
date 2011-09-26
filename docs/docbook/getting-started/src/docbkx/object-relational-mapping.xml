@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Getting started with Object Relational Mapping (ORM)...</title>
+    <para> The goal of this section is to learn how to create a simple Object-Relational model with
+        CayenneModeler. We will create a complete ORM model for the following database
+        schema:</para>
+    <para><inlinemediaobject>
+            <imageobject>
+                <imagedata fileref="../images/database-schema.jpg"/>
+            </imageobject>
+    </inlinemediaobject>
+    </para>
+    <para>
+        <informaltable>
+            <col width="3%"/>
+            <col width="97%"/>
+            <tr>
+                <td rowspan="1" colspan="1" valign="top">
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata
+                                fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                depth="16" width="16"/>
+                        </imageobject>
+                    </mediaobject>
+                </td>
+                <td rowspan="1" colspan="1">Very often you'd have an existing database already, and
+                    it can be quickly imported in Cayenne via "Tools &gt; Reengineer Database
+                    Schema". This will save you lots of time compared to manual mapping. However
+                    understanding how to create the mapping by hand is important, so we are showing
+                    the "manual" approach below.</td>
+            </tr>
+        </informaltable>
+    </para>
+    <section xml:id="mapping-db-tables-and-columns">
+        <title>Mapping Database Tables and Columns</title>
+        <para>Lets go back to CayenneModeler where we have the newly created project open and start
+            by adding the ARTIST table. Database tables are called <emphasis role="bold"
+                >"DbEntities"</emphasis> in Cayenne mapping (those can be actual tables or database
+            views). </para>
+        <para>Select "UntitledDomainMap" on the left-hand side project tree and click "Create
+            DbEntity" button (or use "Project &gt; Create DbEntity" menu). A new DbEntity is
+            created. In "DbEntity Name" field enter "ARTIST". Then click on "Create Attribute"
+            button on the entity toolbar (third button from the left). This action changes the view
+            to the "Attribute" tab and adds a new attribute (attribute means a "table column" in
+            this case) called "untitledAttr". Let's rename it to ID, make it an INTEGER and make it
+            a PK:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/modeler-artistid.png" scalefit="1"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Similarly add NAME VARCHAR(200) and DATE_OF_BIRTH DATE attributes. After that repeat
+            this procedure for PAINTING and GALLERY entities to match DB schema shown above.</para>
+        <para>
+            <informaltable>
+                <col width="4%"/>
+                <col width="96%"/>
+                <tr>
+                    <td rowspan="1" colspan="1" valign="top">
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata
+                                    fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                    depth="16" width="16"/>
+                            </imageobject>
+                        </mediaobject>
+                    </td>
+                    <td rowspan="1" colspan="1">Don't forget to save your project periodically to
+                        avoid losing your work. You will also have to refresh the project in Eclipse
+                        after every CayenneModeler save, as Eclipse is by default unaware of any
+                        changes made in the Modeler.</td>
+                </tr>
+            </informaltable>
+        </para>
+    </section>
+    <section xml:id="mapping-db-relationships">
+        <title>Mapping Database Relationships</title>
+        <para>Now we need to specify relationships between ARTIST, PAINTING and GALLERY tables.
+            Start by creating a one-to-many ARTIST/PAINTING relationship:</para>
+        <itemizedlist>
+            <listitem>
+                <para>Select the ARTIST DbEntity on the left and click on the "Relationships"
+                    tab.</para>
+            </listitem>
+            <listitem>
+                <para>Click on "Create Relationship" button on the entity toolbar (second button
+                    from the left) - a relationship called "untitledRel" is created.</para>
+            </listitem>
+            <listitem>
+                <para>Choose the "Target" to be "Painting".</para>
+            </listitem>
+            <listitem>
+                <para>Click on the "Database Mapping" button (letter "I" in a circle) - relationship
+                    configuration dialog is presented. Here you can assign a name to the
+                    relationship and also its complimentary reverse relationship. This name can be
+                    anything (this is really a symbolic name of the database referential
+                    constraint), but it is recommended to use a valid Java identifier, as this will
+                    save some typing later. We'll call the relationship "paintings" and reverse
+                    relationship "artist".</para>
+            </listitem>
+            <listitem>
+                <para>Click on "Add" button on the right to add a join</para>
+            </listitem>
+            <listitem>
+                <para>Select "ID" column for the "Source" and "ARTIST_ID" column for the
+                    target.</para>
+            </listitem>
+            <listitem>
+                <para>Relationship information should now look like this:</para>
+            </listitem>
+        </itemizedlist>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/modeler-dbrelationship.png"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <itemizedlist>
+            <listitem>
+                <para>Click "Done" to confirm the changes and close the dialog.</para>
+            </listitem>
+            <listitem>
+                <para>Two complimentary relationships have been created - from ARTIST to PAINTING
+                    and back. Still you may have noticed one thing is missing - "paintings"
+                    relationship should be to-many, but "To Many" checkbox is not checked. Let's
+                    change that - check the checkbox for "paintings" relationship, and then click on
+                    PAINTING DbEntity, and uncheck "artist" relationship "To Many" to make the
+                    reverse relationship "to-one" as it should be.</para>
+            </listitem>
+            <listitem>
+                <para>Repeat the steps above to create a many-to-one relationship from PAINTING to
+                    GALLERY, calling the relationships pair "gallery" and "paintings".</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+    <section xml:id="mapping-java-classes">
+        <title>Mapping Java Classes</title>
+        <para>Now that the database schema mapping is complete, CayenneModeler can create mappings
+            of Java classes (aka "ObjEntities") by deriving everything from DbEntities. At present
+            there is no way to do it for the entire DataMap in one click, so we'll do it for each
+            table individually.</para>
+        <itemizedlist>
+            <listitem>
+                <para>Select "ARTIST" DbEntity and click on "Create ObjEntity" button (a green class
+                    icon) either on the entity toolbar or on the main toolbar. An ObjEntity called
+                    "Artist" is created with a Java class field set to "cayenne.tutorial.Artist".
+                    The modeler transformed the database names to the Java-friendly names (e.g., if
+                    you click on the "Attributes" tab, you'll see that "DATE_OF_BIRTH" column was
+                    converted to "dateOfBirth" Java class attribute).</para>
+            </listitem>
+            <listitem>
+                <para>Select "GALLERY" DbEntity and click on "Create ObjEntity" button again -
+                    you'll see a "Gallery" ObjEntity created.</para>
+            </listitem>
+            <listitem>
+                <para>Finally, do the same thing for "PAINTING".</para>
+            </listitem>
+        </itemizedlist>
+        <para>Now you need to synchronize relationships. Artist and Gallery entities were created
+            when there was no related "Painting" entity, so their relationships were not set. <itemizedlist>
+                <listitem>
+                    <para>Click on the "Artist" ObjEntity and (optinally) change to the
+                        "Relationships" tab. Now click on "Sync ObjEntity with DbEntity" button on
+                        the toolbar (two yellow arrows) - you will see the "paintings" relationship
+                        appear.</para>
+                </listitem>
+                <listitem>
+                    <para>Do the same for the "Gallery" entity.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Unless you want to customize the Java class and property names (which you can do
+            easily) the mapping is complete. </para>
+    </section>
+</chapter>

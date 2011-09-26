@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Starting a project...</title>
+    <para>
+        The goal of this chapter is to create a new Java project in Eclipse 
+        containing a basic Cayenne mapping. It presents an introduction to 
+        CayenneModeler GUI tool, showing how to create the initial mapping 
+        objects: DataDomain, DataNode, DataMap.
+    </para>
+    <section xml:id="create-new-project">
+        <title>Create a new Project in Eclipse </title>
+        <para>
+            In Eclipse select "File > New > Other..." and then "Maven > 
+            Maven Project". Click "Next". On the following screen check 
+            "Create a simple project" checkbox and click "Next" again. 
+            In the dialog shown on the screenshot below, fill the "Group Id" 
+            and "Artifact Id" fields and click "Finish". 
+        </para>
+        <para>
+            <inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/tutorial-eclipse-project.png"/>
+                </imageobject>
+            </inlinemediaobject>
+        </para>
+        <para>
+            Now you should have a new empty project in the Eclipse workspace. 
+            Check that the project Java compiler settings are correct. Rightclick 
+            on the "tutorial" project, select "Properties > Java Compiler" and 
+            ensure that "Compiler compliance level" is at least "1.5" 
+            (some versions of Maven plugin seem to be setting it to 1.4 by default).
+        </para>
+    </section>
+    <section xml:id="download-and-start-cayenne-modeler">
+        <title>Download and Start CayenneModeler</title>
+        <para>
+            Although later in this tutorial we'll be using Maven to include Cayenne 
+            runtime jars in the project, you'll still need to download Cayenne to 
+            get access to the CayenneModeler tool. 
+        </para>
+        <para>
+            <informaltable>
+                <tr>
+                    <td rowspan="1" colspan="1" valign="top">
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata
+                                    fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                    depth="16" width="16"/>
+                            </imageobject>
+                        </mediaobject>
+                    </td>
+                    <td rowspan="1" colspan="1">If you are really into Maven, you can <link
+                            xlink:href="http://cayenne.apache.org/doc/maven2-modeler.html">start
+                            CayenneModeler from Maven</link> if you wish. We'll do it in a more
+                        traditional way here.</td>
+                </tr>
+            </informaltable>
+        </para>
+        <para>
+            Download the latest release <link xlink:href="http://cayenne.apache.org/download.html"
+                >from here</link>. Unpack the distribution somewhere in the file system and start
+            CayenneModeler, following <link
+                xlink:href="http://cayenne.apache.org/doc/running-cayennemodeler.html"
+                >platform-specific instructions</link>. On most platforms it is done simply by
+            doubleclicking the Modeler icon. The welcome screen of the Modeler looks like
+            this:
+        </para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/modeler-started.png" scalefit="1"/>
+                </imageobject>
+            </inlinemediaobject></para>
+    </section>
+    <section xml:id="create-new-mapping-project">
+        <title>Create a New Mapping Project in CayenneModeler</title>
+        <para>Click on the "New Project" button on Welcome screen. A new mapping project will appear
+            that contains a single <emphasis role="bold">DataDomain</emphasis>. The meaning of a
+            DataDomain is explained elsewhere in the User Guide. For now it is sufficient to
+            understand that DataDomain is the root of your mapping project.</para>
+        
+    </section>
+    <section xml:id="create-datanode">
+        <title>Create a DataNode</title>
+        <para>The next project object you will create is a <emphasis role="bold"
+            >DataNode</emphasis>. DataNode is a descriptor of a single database your application
+            will connect to. Cayenne mapping project can use more than one database, but for now,
+            we'll only use one. With "UntitledDomain" selected on the left, click on "Create
+            DataNode" button on the toolbar (or select "Project &gt; Create DataNode" from the
+            menu.</para>
+        <para>A new DataNode is displayed. Now you need to specify JDBC connection parameters. For
+            an in-memory Derby database you can enter the following settings: <itemizedlist>
+                <listitem>
+                    <para>JDBC Driver: org.apache.derby.jdbc.EmbeddedDriver</para>
+                </listitem>
+                <listitem>
+                    <para>DB URL: jdbc:derby:memory:testdb;create=true</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>
+            <informaltable>
+                <tr>
+                    <td rowspan="1" colspan="1" valign="top">
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata
+                                    fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                    depth="16" width="16"/>
+                            </imageobject>
+                        </mediaobject>
+                    </td>
+                    <td rowspan="1" colspan="1">We are creating an in-memory database here. So when
+                        you stop your application, all the data will be lost. In most real-life
+                        cases you'll be connecting to a database that actually persists its data on
+                        disk, but an in-memory DB will do for the simple tutorial.</td>
+                </tr>
+            </informaltable>
+        </para>
+        <para>Also you will need to change "Schema Update Strategy". Select
+            "org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy" from the dropdown, so that
+            Cayenne creates a new schema on Derby based on the ORM mapping when the application
+            starts.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/base-datanode.png" scalefit="1"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        
+    </section>
+    <section xml:id="create-datamap">
+        <title>Create a DataMap</title>
+        <para>Now you will create a <emphasis role="bold">DataMap</emphasis>. DataMap is an object
+            that holds all the mapping information. To create it, click on "Create DataMap" button
+            (or select a corresponding menu item). Note that the newly created DataMap is
+            automatically linked to the DataNode that you created in the previous step. If there is
+            more than one DataNode, you may need to link a DataMap to the correct node manually. In
+            other words a DataMap within DataDomain must point to a database described by the
+            map.</para>
+        <para>You can leave all the DataMap defaults unchanged except for one - "Java Package".
+            Enter "org.example.cayenne.persistent". This name will later be used for all persistent
+            classes.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/base-datamap.png" scalefit="1"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        
+    </section>
+    <section xml:id="save-project">
+        <title>Save the Project</title>
+        <para>Before you proceed with the actual mapping, let's save the project. Click on "Save"
+            button in the toolbar and navigate to the "tutorial" Eclipse project folder that was
+            created earlier in this section and its "src/main/resources" subfolder and save the
+            project there. Now go back to Eclipse, right click on "tutorial" project and select
+            "Refresh", you will see three Cayenne XML files.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/eclipse-xmlfiles.png"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Note that the location of the XML files is not coincidental. Cayenne runtime looks for
+            "cayenne.xml" file in the application CLASSPATH and "src/main/resources" folder should
+            already be a "class folder" in Eclipse for our project (and is also a standard location
+            that Maven would copy to a jar file, if we were using Maven from command-line).</para>
+    </section>
+</chapter>

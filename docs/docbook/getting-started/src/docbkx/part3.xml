@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<part xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
+    xml:id="getting-started-part3" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Learning Cayenne API</title>
+    <xi:include href="object-context.xml"/>
+    <xi:include href="persistent-objects.xml"/>
+    <xi:include href="select-query.xml"/>
+    <xi:include href="delete.xml"/>
+</part>
