@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
+    xml:id="getting-started-rop-part2" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Remote Object Persistence Quick Start</title>
+    <xi:include href="client-project.xml"/>
+    <xi:include href="web-service.xml"/>
+    <xi:include href="client-code.xml"/>
+    <xi:include href="authentification.xml"/>
+</part>

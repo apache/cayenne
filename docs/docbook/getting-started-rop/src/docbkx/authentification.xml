@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Adding BASIC authentication...</title>
+    <para>You probably don't want everybody in the world to connect to your service and access (and
+        update!) arbitrary data in the database. The first step in securing Cayenne service is
+        implementing client authentication. The easiest way to do it is to delegate the
+        authentication task to the web container that is running the service. HessianConnection used
+        in the previous chapter supports BASIC authentication on the client side, so we'll
+        demonstrate how to set it up here.</para>
+    <section xml:id="securing-rop-server-app">
+        <title>Securing ROP Server Application</title>
+        <para>Open web.xml file in the server project and setup security constraints with BASIC
+            authentication for the ROP service:</para>
+        <programlisting>&lt;security-constraint&gt;
+    &lt;web-resource-collection&gt;
+        &lt;web-resource-name&gt;CayenneService&lt;/web-resource-name&gt;
+        &lt;url-pattern&gt;/cayenne-service&lt;/url-pattern&gt;
+    &lt;/web-resource-collection&gt;
+    &lt;auth-constraint&gt;
+        &lt;role-name&gt;cayenne-service-user&lt;/role-name&gt;
+    &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+    
+&lt;login-config&gt;
+    &lt;auth-method&gt;BASIC&lt;/auth-method&gt;
+    &lt;realm-name&gt;Cayenne Realm&lt;/realm-name&gt;
+&lt;/login-config&gt;
+	
+&lt;security-role&gt;
+    &lt;role-name&gt;cayenne-service-user&lt;/role-name&gt;
+&lt;/security-role&gt;</programlisting>
+    </section>
+    <section xml:id="configuring-jetty">
+        <title>Configuring Jetty for BASIC Authentication</title>
+        <informaltable class="noteMacro">
+            <col width="4%"/>
+            <col width="96%"/>
+            <tbody>
+                <tr>
+                    <td rowspan="1" colspan="1" valign="top">
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata
+                                    fileref="../images/warning.gif"
+                                    depth="16" width="16"/>
+                            </imageobject>
+                        </mediaobject>
+                    </td>
+                    <td rowspan="1" colspan="1">These instructions are specific to Jetty 6. Other
+                        containers (and versions of Jetty) will have different mechansims to achieve
+                        the same thing.</td>
+                </tr>
+            </tbody>
+        </informaltable>
+        <para>Open pom.xml in the server project and configure a "userRealm" for the Jetty
+            plugin:</para>
+        <programlisting>&lt;plugin&gt;
+	&lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
+		&lt;artifactId&gt;maven-jetty-plugin&lt;/artifactId&gt;
+		&lt;version&gt;6.1.22&lt;/version&gt;
+		&lt;!-- adding configuration below: --&gt;
+		&lt;configuration&gt;
+			&lt;userRealms&gt;
+				&lt;userRealm implementation="org.mortbay.jetty.security.HashUserRealm"&gt;
+					&lt;!-- this name must match the realm-name in web.xml --&gt;
+					&lt;name&gt;Cayenne Realm&lt;/name&gt;
+					&lt;config&gt;realm.properties&lt;/config&gt;
+				&lt;/userRealm&gt;
+			&lt;/userRealms&gt;
+		&lt;/configuration&gt;
+	&lt;/plugin&gt;
+&lt;/plugins&gt;</programlisting>
+        <para>Now create a new file called {["realm.properties"}} <emphasis role="italic">at the
+                root of the server project</emphasis> and put user login/password in there:</para>
+        <programlisting>cayenne-user: secret,cayenne-service-user</programlisting>
+        <para>.</para>
+        <para>Now let's stop the server and start it again. Everything should start as before, but
+            if you go to <emphasis role="italic"
+                >http://localhost:8080/tutorial/cayenne-service</emphasis>, your browser should pop
+            up authentication dialog. Enter "<emphasis role="italic">cayenne-user/secret</emphasis>"
+            for user name / password, and you should see "<emphasis role="italic">Hessian Requires
+                POST</emphasis>" message. So the server is now secured.</para>
+    </section>
+    <section xml:id="running-client">
+        <title>Running Client with Basic Authentication</title>
+        <para>If you run the client without any changes, you'll get the following error:</para>
+        <programlisting>Jan 16, 2010 6:09:03 PM org.apache.cayenne.remote.hessian.HessianConnection connect
+INFO: Connecting to [http://localhost:8080/tutorial/cayenne-service] - dedicated session.
+Jan 16, 2010 6:09:03 PM org.apache.cayenne.remote.hessian.HessianConnection connect
+INFO: Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
+CAUSE - cannot retry due to server authentication, in streaming mode
+java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1034)
+	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:367)
+	at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
+	at $Proxy0.establishSession(Unknown Source)
+	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
+	at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
+	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:256)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:94)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:76)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:71)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:67)
+	at org.example.cayenne.persistent.client.Main.main(Main.java:25)
+Exception in thread "main" org.apache.cayenne.CayenneRuntimeException: [v.3.0RC1 Jan 05 2010 14:44:59] Error 
+establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
+CAUSE - cannot retry due to server authentication, in streaming mode
+	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:229)
+	at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
+	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:256)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:94)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:76)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:71)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:67)
+	at org.example.cayenne.persistent.client.Main.main(Main.java:25)
+Caused by: java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1034)
+	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:367)
+	at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
+	at $Proxy0.establishSession(Unknown Source)
+	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
+	... 7 more</programlisting>
+        <para>Which is exactly what you'd expect, as the client is not authenticating itself. So
+            change the line in Main.java where we obtained an ROP connection to this:</para>
+        <programlisting>ClientConnection connection = new HessianConnection(
+		"http://localhost:8080/tutorial/cayenne-service",
+ "cayenne-user", "secret", null);</programlisting>
+        <para>Try running again, and everything should work as before. Obviously in production
+            environment, in addition to authentication you'll need to use HTTPS to access the server
+            to prevent third-party evesdropping on your password and data.</para>
+        <para>Congratulations, you are done with the ROP tutorial!</para>
+    </section>
+</chapter>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Prerequisites...</title>
+    <para>This tutorial starts where "Getting Started with Cayenne" left
+        off. If you have gone through the previous tutorial, and have the "tutorial" project open in
+        Eclipse, you can go directly to the 
+        next step. If not, here are the compressed instructions to prepare you for work
+        with ROP:</para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                Step 1 - Eclipse Setup
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Step 2 - Create a project
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+               Step 3 - Create Cayenne OR Mapping
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Step 4 - Create Java Classes
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Step 5 - Convert the project to webapp.</para>
+        </listitem>
+    </itemizedlist>
+    <para>Note that at "Step 5" you can skip the JSP creation part. Just setup web.xml and
+        maven-jetty-plugin in the POM.</para>
+</chapter>
