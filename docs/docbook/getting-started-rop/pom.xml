@@ -27,5 +27,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.cayenne.docs</groupId>
 	<artifactId>getting-started-rop</artifactId>
+	<packaging>jar</packaging>
 	<name>Docbook: Getting Started with Cayenne ROP</name>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>target/site</directory>
+			</resource>
+		</resources>
+	</build>
 </project>
