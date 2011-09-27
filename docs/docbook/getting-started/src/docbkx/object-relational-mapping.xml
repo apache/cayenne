@@ -14,14 +14,14 @@
     </para>
     <para>
         <informaltable>
-            <col width="3%"/>
-            <col width="97%"/>
+            <col width="4%"/>
+            <col width="96%"/>
             <tr>
                 <td rowspan="1" colspan="1" valign="top">
                     <mediaobject>
                         <imageobject>
                             <imagedata
-                                fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                fileref="../images/warning.gif"
                                 depth="16" width="16"/>
                         </imageobject>
                     </mediaobject>
@@ -49,7 +49,7 @@
             a PK:</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/modeler-artistid.png" scalefit="1"/>
+                    <imagedata fileref="../images/modeler-artistid.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>Similarly add NAME VARCHAR(200) and DATE_OF_BIRTH DATE attributes. After that repeat
@@ -63,7 +63,7 @@
                         <mediaobject>
                             <imageobject>
                                 <imagedata
-                                    fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                    fileref="../images/warning.gif"
                                     depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
@@ -114,7 +114,7 @@
         </itemizedlist>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/modeler-dbrelationship.png"/>
+                    <imagedata fileref="../images/modeler-dbrelationship.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         <itemizedlist>

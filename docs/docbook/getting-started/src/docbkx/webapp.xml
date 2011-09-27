@@ -203,7 +203,7 @@
                     screenshot:</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="../images/eclipse-mvnrun.png" scalefit="1"/>
+                            <imagedata fileref="../images/eclipse-mvnrun.png" scalefit="1" width="100%"/>
                         </imageobject>
                     </inlinemediaobject></para>
             </listitem>
@@ -291,7 +291,7 @@ INFO: +++ transaction committed.</programlisting>
                     can be edited by clicking on their name:</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="../images/firefox-webapp.png" scalefit="1"/>
+                            <imagedata fileref="../images/firefox-webapp.png" scalefit="1" width="100%"/>
                         </imageobject>
                     </inlinemediaobject></para>
             </listitem>

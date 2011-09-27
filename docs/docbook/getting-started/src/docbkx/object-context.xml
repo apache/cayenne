@@ -80,8 +80,8 @@ INFO: loaded datasource.
 INFO: no adapter set, using automatic adapter.
 INFO: loaded map-ref: UntitledDomainMap.
 INFO: finished configuration loading in 396 ms.</programlisting><informaltable>
-                <col width="5%"/>
-                <col width="95%"/>
+                <col width="4%"/>
+                <col width="96%"/>
                 <tr>
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>

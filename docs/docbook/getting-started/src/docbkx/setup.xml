@@ -27,7 +27,7 @@
         <para>
             <inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/maven-plugin-install.png" scalefit="1"/>
+                    <imagedata fileref="../images/maven-plugin-install.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>
