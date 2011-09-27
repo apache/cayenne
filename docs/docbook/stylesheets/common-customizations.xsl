@@ -20,12 +20,13 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 	<!-- The next line is needed to work with maven injecting the docbook stylesheets -->
-    <xsl:import href="urn:docbkx:stylesheet" />
+	<xsl:import href="urn:docbkx:stylesheet" />
+	<xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/> 
 
 	<xsl:param name="keep.relative.image.uris" select="1"/>
-    <xsl:param name="toc.section.depth">1</xsl:param>
-    
-    <!-- disable TOC for each part -->
-    <xsl:template name="generate.part.toc"></xsl:template>
-    
+	<xsl:param name="toc.section.depth">1</xsl:param>
+
+	<!-- disable TOC for each part -->
+	<xsl:template name="generate.part.toc"></xsl:template>
+
 </xsl:stylesheet>
