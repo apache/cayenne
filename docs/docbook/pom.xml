@@ -33,6 +33,7 @@
 	<modules>
 		<module>cayenne-guide</module>
 		<module>getting-started</module>
+		<module>getting-started-rop</module>
 	</modules>
 
 	<groupId>org.apache.cayenne.docs</groupId>
