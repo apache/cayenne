@@ -8,5 +8,5 @@ package org.apache.cayenne.tutorial.persistent.auto;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public class _UntitledDomainMap {
+public class _Datamap {
 }
