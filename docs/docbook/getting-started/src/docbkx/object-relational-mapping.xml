@@ -13,16 +13,14 @@
     </inlinemediaobject>
     </para>
     <para>
-        <informaltable>
+        <informaltable border="1">
             <col width="4%"/>
             <col width="96%"/>
             <tr>
                 <td rowspan="1" colspan="1" valign="top">
                     <mediaobject>
                         <imageobject>
-                            <imagedata
-                                fileref="images/warning.gif"
-                                depth="16" width="16"/>
+                            <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                         </imageobject>
                     </mediaobject>
                 </td>
@@ -55,16 +53,14 @@
         <para>Similarly add NAME VARCHAR(200) and DATE_OF_BIRTH DATE attributes. After that repeat
             this procedure for PAINTING and GALLERY entities to match DB schema shown above.</para>
         <para>
-            <informaltable>
+            <informaltable border="1">
                 <col width="4%"/>
                 <col width="96%"/>
                 <tr>
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata
-                                    fileref="images/warning.gif"
-                                    depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>

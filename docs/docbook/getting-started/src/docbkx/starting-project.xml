@@ -41,16 +41,14 @@
             get access to the CayenneModeler tool. 
         </para>
         <para>
-            <informaltable>
+            <informaltable border="1">
                 <col width="4%"/>
                 <col width="96%"/>
                 <tr>
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata
-                                    fileref="images/warning.gif"
-                                    depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
@@ -83,9 +81,8 @@
         <para>The next project object you will create is a <emphasis role="bold"
             >DataNode</emphasis>. DataNode is a descriptor of a single database your application
             will connect to. Cayenne mapping project can use more than one database, but for now,
-            we'll only use one. With "UntitledDomain" selected on the left, click on "Create
-            DataNode" button on the toolbar (or select "Project &gt; Create DataNode" from the
-            menu.</para>
+            we'll only use one. With "project" selected on the left, click on "Create DataNode"
+            button on the toolbar (or select "Project &gt; Create DataNode" from the menu.</para>
         <para>A new DataNode is displayed. Now you need to specify JDBC connection parameters. For
             an in-memory Derby database you can enter the following settings: <itemizedlist>
                 <listitem>
@@ -96,16 +93,14 @@
                 </listitem>
             </itemizedlist></para>
         <para>
-            <informaltable>
+            <informaltable border="1">
                 <col width="4%"/>
                 <col width="96%"/>
                 <tr>
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata
-                                    fileref="images/warning.gif"
-                                    depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
@@ -159,7 +154,7 @@
                 </imageobject>
             </inlinemediaobject></para>
         <para>Note that the location of the XML files is not coincidental. Cayenne runtime looks for
-            "cayenne.xml" file in the application CLASSPATH and "src/main/resources" folder should
+            "cayenne-*.xml" file in the application CLASSPATH and "src/main/resources" folder should
             already be a "class folder" in Eclipse for our project (and is also a standard location
             that Maven would copy to a jar file, if we were using Maven from command-line).</para>
     </section>

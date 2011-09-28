@@ -21,12 +21,12 @@
             </listitem>
             <listitem>
                 <para>For the "Output Directory" select "src/main/java" folder under your Eclipse
-                    project folder (this is a "peer" location to the cayenne.xml location we
+                    project folder (this is a "peer" location to the cayenne-*.xml location we
                     selected before).</para>
             </listitem>
             <listitem>
-                <para>Click on "Entities" tab and check the "Check All Entities" checkbox (unless it
-                    is already checked and reads "Uncheck all Entities").</para>
+                <para>Click on "Entities" tab and check the "Check All Classes" checkbox (unless it
+                    is already checked and reads "Uncheck all Classes").</para>
             </listitem>
             <listitem>
                 <para>Click "Generate"</para>
@@ -50,7 +50,7 @@
 			&lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
 			&lt;artifactId&gt;cayenne-server&lt;/artifactId&gt;
    &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
-			&lt;version&gt;3.1M1&lt;/version&gt;
+			&lt;version&gt;3.1M3&lt;/version&gt;
 		&lt;/dependency&gt;
 	&lt;/dependencies&gt;
 &lt;/project&gt;</programlisting></para>
@@ -64,23 +64,21 @@
             in "org.example.cayenne.persistent" package - those will never be overwritten by the
             class generator.</para>
         <para>
-            <informaltable>
+            <informaltable border="1">
                 <col width="4%"/>
                 <col width="96%"/>
                 <tr>
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata
-                                    fileref="images/warning.gif"
-                                    depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
                     <td rowspan="1" colspan="1"><emphasis role="bold">Class Generation
-                            Hint</emphasis>Often you'd start by generating classes from the Modeler,
-                        but at the later stages of the project the generation is usually automated
-                        either via Ant cgen task or Maven cgen mojo. All three methods are
+                            Hint</emphasis> Often you'd start by generating classes from the
+                        Modeler, but at the later stages of the project the generation is usually
+                        automated either via Ant cgen task or Maven cgen mojo. All three methods are
                         interchangeable, however Ant and Maven methods would ensure that you never
                         forget to regenerate classes on mapping changes, as they are integrated into
                         the build cycle.</td>

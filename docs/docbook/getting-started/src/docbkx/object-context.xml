@@ -18,9 +18,9 @@
 
 public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-	}
+    }
 }</programlisting></para>
             </listitem>
             <listitem>
@@ -30,15 +30,15 @@ public class Main {
                     ObjectContext.<programlisting>package org.example.cayenne;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 
 public class Main {
 
-	public static void main(String[] args) {
-                ServerRuntime cayenneRuntime = new ServerRuntime(
-				"cayenne-UntitledDomain.xml");
-		ObjectContext context = cayenneRuntime.getContext();
-	}
+    public static void main(String[] args) {
+        ServerRuntime cayenneRuntime = new ServerRuntime(
+                "cayenne-project.xml");
+        ObjectContext context = cayenneRuntime.getContext();
+    }
 }</programlisting></para>
                 <para>ObjectContext is an isolated "session" in Cayenne that provides all needed API
                     to work with data. ObjectContext has methods to execute queries and manage
@@ -58,42 +58,30 @@ public class Main {
             jars:<programlisting>&lt;dependency&gt;
    &lt;groupId&gt;org.apache.derby&lt;/groupId&gt;
    &lt;artifactId&gt;derby&lt;/artifactId&gt;
-   &lt;version&gt;10.5.3.0_1&lt;/version&gt;
+   &lt;version&gt;10.8.1.2&lt;/version&gt;
 &lt;/dependency&gt;</programlisting>Now
             we are ready to run. Right click the "Main" class in Eclipse and select "Run As &gt;
             Java Application". In the console you'll see output similar to this, indicating that
-            Cayenne stack has been started:<programlisting>INFO: started configuration loading.
-INFO: loaded domain: UntitledDomain
-INFO: loaded &lt;map name='UntitledDomainMap' location='UntitledDomainMap.map.xml'&gt;.
-INFO: loading &lt;node name='UntitledDomainNode' datasource='UntitledDomainNode.driver.xml' 
-factory='org.apache.cayenne.conf.DriverDataSourceFactory' 
-schema-update-strategy='org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy'&gt;.
-INFO: using factory: org.apache.cayenne.conf.DriverDataSourceFactory
-INFO: loading driver information from 'UntitledDomainNode.driver.xml'.
-INFO: loading driver org.apache.derby.jdbc.EmbeddedDriver
+            Cayenne stack has been
+                started:<programlisting>INFO: Loading XML configuration resource from file:cayenne-project.xml
 INFO: loading user name and password.
-INFO: Created connection pool: jdbc:derby:memory:testdb;create=true 
+INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
 	Driver class: org.apache.derby.jdbc.EmbeddedDriver
 	Min. connections in the pool: 1
-	Max. connections in the pool: 1
-INFO: loaded datasource.
-INFO: no adapter set, using automatic adapter.
-INFO: loaded map-ref: UntitledDomainMap.
-INFO: finished configuration loading in 396 ms.</programlisting><informaltable>
+	Max. connections in the pool: 1</programlisting><informaltable
+                border="1">
                 <col width="4%"/>
                 <col width="96%"/>
                 <tr>
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata
-                                    fileref="images/warning.gif"
-                                    depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
                     <td rowspan="1" colspan="1"><emphasis role="bold">How to Configure Cayenne
-                            Logging</emphasis>You can tweak more or less detailed output by
+                            Logging</emphasis> You can tweak more or less detailed output by
                         following the instructions in the logging chapter.</td>
                 </tr>
             </informaltable>Nothing much happened here, but we've been able to create a working

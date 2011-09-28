@@ -3,7 +3,7 @@
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Converting to web application...</title>
-    <para>This sections shows how to work with Cayenne in a web application.</para>
+    <para>This chapter shows how to work with Cayenne in a web application.</para>
     <section xml:id="converting-to-webapp">
         <title>Converting Tutorial to a Web Application</title>
         <para>The web part of the web application tutorial is done in JSP, which is the least common
@@ -50,11 +50,11 @@
          as it points it to the right named configuration file.
     --&gt;
     &lt;filter&gt;
-        &lt;filter-name&gt;cayenne-UntitledDomain&lt;/filter-name&gt;
+        &lt;filter-name&gt;cayenne-project&lt;/filter-name&gt;
         &lt;filter-class&gt;org.apache.cayenne.configuration.web.CayenneFilter&lt;/filter-class&gt;
     &lt;/filter&gt;
     &lt;filter-mapping&gt;
-        &lt;filter-name&gt;cayenne-UntitledDomain&lt;/filter-name&gt;
+        &lt;filter-name&gt;cayenne-project&lt;/filter-name&gt;
         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
     &lt;/filter-mapping&gt;
     &lt;welcome-file-list&gt;
@@ -181,13 +181,13 @@
             the following piece of code to the "pom.xml" file, following the "dependencies" section
             and save the POM:</para>
         <programlisting>&lt;build&gt;
-	&lt;plugins&gt;
-		&lt;plugin&gt;
-			&lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
-			&lt;artifactId&gt;maven-jetty-plugin&lt;/artifactId&gt;
-			&lt;version&gt;6.1.22&lt;/version&gt;
-		&lt;/plugin&gt;
-	&lt;/plugins&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-jetty-plugin&lt;/artifactId&gt;
+            &lt;version&gt;6.1.22&lt;/version&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
 &lt;/build&gt;</programlisting>
         <itemizedlist>
             <listitem>
@@ -235,29 +235,29 @@ INFO: loading driver information from 'UntitledDomainNode.driver.xml'.
 INFO: loading driver org.apache.derby.jdbc.EmbeddedDriver
 INFO: loading user name and password.
 INFO: Created connection pool: jdbc:derby:memory:testdb;create=true 
-	Driver class: org.apache.derby.jdbc.EmbeddedDriver
-	Min. connections in the pool: 1
-	Max. connections in the pool: 1
+    Driver class: org.apache.derby.jdbc.EmbeddedDriver
+    Min. connections in the pool: 1
+    Max. connections in the pool: 1
 INFO: loaded datasource.
 INFO: no adapter set, using automatic adapter.
 INFO: loaded map-ref: UntitledDomainMap.
 INFO: finished configuration loading in 355 ms.
 2009-12-22 14:08:07.081::INFO:  Started SelectChannelConnector@0.0.0.0:8080
 [INFO] Started Jetty Server</programlisting>
+                </listitem>
+        </itemizedlist>
         <itemizedlist>
-            <listitem>
+        <listitem>
                 <para>So the Jetty container just started and loaded Cayenne.</para>
             </listitem>
             <listitem>
                 <para>Now go to <emphasis role="italic">http://localhost:8080/tutorial/</emphasis>
                             URL. You should see "No artists found message" in the web browser and
                             the following output in the Eclipse console:</para>
-            </listitem>
-        </itemizedlist>
         <programlisting>INFO: --- will run 1 query.
 INFO: Opening connection: jdbc:derby:memory:testdb;create=true 
-	Login: null
-	Password: *******
+    Login: null
+    Password: *******
 INFO: +++ Connecting: SUCCESS.
 INFO: --- transaction started.
 INFO: Detected and installed adapter: org.apache.cayenne.dba.derby.DerbyAdapter
