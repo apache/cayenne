@@ -57,13 +57,12 @@
         <para>Your computer must be connected to the internet. Once you save the pom.xml, Eclipse
             will download the needed Cayenne jar file and add it to the project build path. As a
             result, all the errors should disappear.</para>
-        <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g.
-                <emphasis role="italic">Artist) and a subclass (e.g. Artist). You <emphasis
-                    role="bold">should not</emphasis> modify the superclasses whose names start with
-                "</emphasis>" (underscore), as they will be replaced on subsequent generator runs.
-            Instead all custom logic should be placed in the subclasses in
-            "org.example.cayenne.persistent" package - those will never be overwritten by the class
-            generator.</para>
+        <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g. Artist)
+            and a subclass (e.g. Artist). You <emphasis role="bold">should not</emphasis> modify the
+            superclasses whose names start with "_" (underscore), as they will be replaced on
+            subsequent generator runs. Instead all custom logic should be placed in the subclasses
+            in "org.example.cayenne.persistent" package - those will never be overwritten by the
+            class generator.</para>
         <para>
             <informaltable>
                 <col width="4%"/>
@@ -73,7 +72,7 @@
                         <mediaobject>
                             <imageobject>
                                 <imagedata
-                                    fileref="../images/warning.gif"
+                                    fileref="images/warning.gif"
                                     depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
@@ -81,12 +80,10 @@
                     <td rowspan="1" colspan="1"><emphasis role="bold">Class Generation
                             Hint</emphasis>Often you'd start by generating classes from the Modeler,
                         but at the later stages of the project the generation is usually automated
-                        either via <link xlink:href="http://cayenne.apache.org/doc/cgen.html">Ant
-                            cgen task</link> or <link
-                            xlink:href="http://cayenne.apache.org/doc/maven2-cgen.html">Maven cgen
-                            mojo</link>. All three methods are interchangeable, however Ant and
-                        Maven methods would ensure that you never forget to regenerate classes on
-                        mapping changes, as they are integrated into the build cycle.</td>
+                        either via Ant cgen task or Maven cgen mojo. All three methods are
+                        interchangeable, however Ant and Maven methods would ensure that you never
+                        forget to regenerate classes on mapping changes, as they are integrated into
+                        the build cycle.</td>
                 </tr>
             </informaltable>
         </para>

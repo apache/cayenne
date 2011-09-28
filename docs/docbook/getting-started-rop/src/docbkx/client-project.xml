@@ -4,9 +4,9 @@
     <title>Starting client project...</title>
     <section xml:id="create-rop-client-project">
         <title>Create an ROP Client Project in Eclipse</title>
-        <para>Creation of a new Eclipse project has been discussed in some details <link
-                xlink:href="http://cayenne.apache.org/doc30/tutorial-starting-project.html"
-                >here</link>, so we will omit the screenshots for the common parts.</para>
+        <para>Creation of a new Eclipse project has been discussed in some details in "Getting
+            Started with Cayenne" guide, so we will omit the screenshots for the common
+            parts.</para>
         <para>In Eclipse select "File &gt; New &gt; Other..." and then "Maven &gt; Maven Project".
             Click "Next". On the following screen check "Create a simple project" checkbox and click
             "Next" again. In the dialog shown on the screenshot below, enter "org.example.cayenne"
@@ -38,7 +38,7 @@
                     all entities.</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="../images/datamap-enableclient.png" scalefit="1" width="100%"/>
+                            <imagedata fileref="images/datamap-enableclient.png" scalefit="1" width="100%"/>
                         </imageobject>
                     </inlinemediaobject></para>
             </listitem>

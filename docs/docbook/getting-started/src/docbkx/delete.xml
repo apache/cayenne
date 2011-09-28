@@ -9,8 +9,7 @@
     <section xml:id="setup-delete-rules">
         <title>Setting Up Delete Rules</title>
         <para>Before we discuss the API for object deletion, lets go back to CayenneModeler and set
-            up some <link xlink:href="http://cayenne.apache.org/doc/delete-rules.html">delete
-                rules</link>. Doing this is optional but will simplify correct handling of the
+            up some delete rules. Doing this is optional but will simplify correct handling of the
             objects related to deleted objects.</para>
         <para>In the Modeler go to "Artist" ObjEntity, "Relationships" tab and select "Cascade" for
             the "paintings" relationship delete rule:</para>

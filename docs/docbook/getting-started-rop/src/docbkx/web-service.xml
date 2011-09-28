@@ -46,12 +46,12 @@
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata fileref="../images/warning.gif" depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
                     <td rowspan="1" colspan="1"><emphasis role="bold">Maven Optimization
-                            Hint</emphasis>On a real project both server and client modules will
+                            Hint</emphasis> On a real project both server and client modules will
                         likely share a common parent pom.xml where common repository delcaration can
                         be placed, with child pom's "inheriting" it from parent. This would reduce
                         build code duplication.</td>
@@ -94,14 +94,15 @@
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata fileref="../images/warning.gif" depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
                     <td rowspan="1" colspan="1"><emphasis role="bold">Extending Server Behavior via
-                            Callbacks</emphasis>While no custom Java code is required on the server,
-                        just a service declaration, it is possible to customizing server-side
-                        behavior via callbacks and listeners (not shown in the tutorial).</td>
+                            Callbacks</emphasis> While no custom Java code is required on the
+                        server, just a service declaration, it is possible to customizing
+                        server-side behavior via callbacks and listeners (not shown in the
+                        tutorial).</td>
                 </tr>
             </tbody>
         </informaltable>

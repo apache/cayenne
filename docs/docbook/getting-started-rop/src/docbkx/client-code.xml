@@ -127,7 +127,8 @@ INFO: === returned 2 rows. - took 15 ms.
 INFO: +++ transaction committed.
 INFO: --- will run 1 query.
 INFO: --- transaction started.
-INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0 WHERE UPPER(t0.NAME) LIKE UPPER(?) [bind: 1-&gt;NAME:'gi%']
+INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0
+      WHERE UPPER(t0.NAME) LIKE UPPER(?) [bind: 1-&gt;NAME:'gi%']
 INFO: === returned 1 row. - took 9 ms.
 INFO: +++ transaction committed.
 INFO: --- will run 1 query.

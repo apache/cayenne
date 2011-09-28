@@ -21,7 +21,7 @@
         <para>
             <inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/tutorial-eclipse-project.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="images/tutorial-eclipse-project.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject>
         </para>
@@ -49,30 +49,24 @@
                         <mediaobject>
                             <imageobject>
                                 <imagedata
-                                    fileref="../images/warning.gif"
+                                    fileref="images/warning.gif"
                                     depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
-                    <td rowspan="1" colspan="1">If you are really into Maven, you can <link
-                            xlink:href="http://cayenne.apache.org/doc/maven2-modeler.html">start
-                            CayenneModeler from Maven</link> if you wish. We'll do it in a more
-                        traditional way here.</td>
+                    <td rowspan="1" colspan="1">If you are really into Maven, you can start
+                        CayenneModeler from Maven if you wish. We'll do it in a more traditional way
+                        here.</td>
                 </tr>
             </informaltable>
         </para>
-        <para>
-            Download the latest release <link xlink:href="http://cayenne.apache.org/download.html"
-                >from here</link>. Unpack the distribution somewhere in the file system and start
-            CayenneModeler, following <link
-                xlink:href="http://cayenne.apache.org/doc/running-cayennemodeler.html"
-                >platform-specific instructions</link>. On most platforms it is done simply by
-            doubleclicking the Modeler icon. The welcome screen of the Modeler looks like
-            this:
-        </para>
+        <para> Download the latest release. Unpack the distribution somewhere in the file system and
+            start CayenneModeler, following platform-specific instructions. On most platforms it is
+            done simply by doubleclicking the Modeler icon. The welcome screen of the Modeler looks
+            like this: </para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/modeler-started.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="images/modeler-started.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
     </section>
@@ -110,7 +104,7 @@
                         <mediaobject>
                             <imageobject>
                                 <imagedata
-                                    fileref="../images/warning.gif"
+                                    fileref="images/warning.gif"
                                     depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
@@ -128,7 +122,7 @@
             starts.</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/base-datanode.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="images/base-datanode.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         
@@ -147,7 +141,7 @@
             classes.</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/base-datamap.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="images/base-datamap.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         
@@ -161,7 +155,7 @@
             "Refresh", you will see three Cayenne XML files.</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/eclipse-xmlfiles.png"/>
+                    <imagedata fileref="images/eclipse-xmlfiles.png"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>Note that the location of the XML files is not coincidental. Cayenne runtime looks for

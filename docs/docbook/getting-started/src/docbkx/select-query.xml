@@ -6,15 +6,11 @@
     <para>This section shows how to select objects from the database using SelectQuery. </para>
     <section xml:id="introducing-select-query">
         <title>Introducing SelectQuery</title>
-        <para>It was shown before how to <link
-                xlink:href="http://cayenne.apache.org/doc/tutorial-persistent-objects.html">persist
-                new objects</link>. Cayenne <link
-                xlink:href="http://cayenne.apache.org/doc/queries.html">queries</link> are used to
-            access already saved objects. The primary query type used for selecting objects is <link
-                xlink:href="http://cayenne.apache.org/doc/selectquery.html">SelectQuery</link>. It
-            can be mapped in CayenneModeler or created via the API. We'll use the later approach in
-            this section. We don't have too much data in the database yet, but we can still
-            demonstrate the main principles below.</para>
+        <para>It was shown before how to persist new objects. Cayenne queries are used to access
+            already saved objects. The primary query type used for selecting objects is <emphasis
+                role="italic">SelectQuery</emphasis>. It can be mapped in CayenneModeler or created
+            via the API. We'll use the later approach in this section. We don't have too much data
+            in the database yet, but we can still demonstrate the main principles below.</para>
         <itemizedlist>
             <listitem>
                 <para>Select all paintings (the code, and the log output it generates):</para>
@@ -26,10 +22,7 @@ List paintings1 = context.performQuery(select1);</programlisting>
 INFO: === returned 2 rows. - took 18 ms.</programlisting>
         <itemizedlist>
             <listitem>
-                <para>Select paintings that start with "gi", ignoring case (read more about
-                    qualifier Expressions and ExpressionFactory <link
-                        xlink:href="http://cayenne.apache.org/doc/expressions.html"
-                    >here</link>:</para>
+                <para>Select paintings that start with "gi", ignoring case:</para>
             </listitem>
         </itemizedlist>
         <programlisting>Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(

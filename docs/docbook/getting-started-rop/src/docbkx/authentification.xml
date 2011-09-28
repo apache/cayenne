@@ -42,7 +42,7 @@
                         <mediaobject>
                             <imageobject>
                                 <imagedata
-                                    fileref="../images/warning.gif"
+                                    fileref="images/warning.gif"
                                     depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>

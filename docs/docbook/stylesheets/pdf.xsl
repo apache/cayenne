@@ -109,5 +109,7 @@
 	<xsl:attribute-set name="monospace.verbatim.properties">
 		<xsl:attribute name="font-size">7pt</xsl:attribute>
 	</xsl:attribute-set>
+	
+	<xsl:param name="img.src.path">../</xsl:param>
 
 </xsl:stylesheet>

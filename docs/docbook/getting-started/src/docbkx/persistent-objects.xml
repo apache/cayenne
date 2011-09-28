@@ -3,18 +3,15 @@
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Getting started with persistent objects...</title>
-    <para>In this section we'll learn about persistent objects, how to customize them and how to
+    <para>In this chapter we'll learn about persistent objects, how to customize them and how to
         create and save them in DB.</para>
     <section xml:id="customizing-persistent-objects">
         <title>Inspecting and Customizing Persistent Objects</title>
-        <para>Persistent classes in Cayenne implement a <link
-                xlink:href="http://cayenne.apache.org/doc/dataobjects.html">DataObject
-                interface</link>. If you inspect any of the classes <link
-                xlink:href="http://cayenne.apache.org/doc/tutorial-java-classes.html">generated
-                earlier</link> in this tutorial (e.g. org.example.cayenne.persistent.Artist), you'll
-            see that it extends a class with the name that starts with underscore
-            (org.example.cayenne.persistent.auto._Artist), which in turn extends from
-            org.apache.cayenne.CayenneDataObject. Splitting each persistent class into
+        <para>Persistent classes in Cayenne implement a DataObject interface. If you inspect any of
+            the classes generated earlier in this tutorial (e.g.
+            org.example.cayenne.persistent.Artist), you'll see that it extends a class with the name
+            that starts with underscore (org.example.cayenne.persistent.auto._Artist), which in turn
+            extends from org.apache.cayenne.CayenneDataObject. Splitting each persistent class into
             user-customizable subclass (Xyz) and a generated superclass (_Xyz) is a useful technique
             to avoid overwriting the custom code when refreshing classes from the mapping
             model.</para>
@@ -88,9 +85,8 @@ girl.setGallery(metropolitan);
 stein.setGallery(metropolitan);</programlisting>
         <para>Now lets save all five new objects, in a single method call:</para>
         <programlisting>context.commitChanges();</programlisting>
-        <para>Now you can run the application again as described <link
-                xlink:href="http://cayenne.apache.org/doc/tutorial-objectcontext.html">in the
-                previous section</link>. The new output will show a few actual DB operations:</para>
+        <para>Now you can run the application again as described in the previous chapter. The new
+            output will show a few actual DB operations:</para>
         <programlisting>Dec 20, 2009 11:11:37 PM org.apache.cayenne.conf.RuntimeLoadDelegate startedLoading
 INFO: started configuration loading.
 ... 

@@ -87,16 +87,14 @@ INFO: finished configuration loading in 396 ms.</programlisting><informaltable>
                         <mediaobject>
                             <imageobject>
                                 <imagedata
-                                    fileref="https://cwiki.apache.org/confluence/images/icons/emoticons/warning.gif"
+                                    fileref="images/warning.gif"
                                     depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
                     <td rowspan="1" colspan="1"><emphasis role="bold">How to Configure Cayenne
                             Logging</emphasis>You can tweak more or less detailed output by
-                        following the instructions in the <link
-                            xlink:href="http://cayenne.apache.org/doc/configuring-logging.html"
-                            >logging chapter</link>.</td>
+                        following the instructions in the logging chapter.</td>
                 </tr>
             </informaltable>Nothing much happened here, but we've been able to create a working
             Cayenne stack. In the following chapters we'll use the ObjectContext for more

@@ -13,21 +13,19 @@
     </section>
     <section xml:id="install-eclipse-and-maven">
         <title>Install Eclipse IDE and the Maven Plugin</title>
-        <para> Download Eclipse <link xlink:href="http://www.eclipse.org/downloads/">from
-                here</link>. This tutorial is based on the Galileo package (Eclipse 3.5), JEE
+        <para> Download Eclipse. This tutorial is based on the Galileo package (Eclipse 3.5), JEE
             edition, still it should work with any recent vanilla Eclipse distribution. </para>
         <para> After downloading Eclipse, unpack it somewhere in the filesystem, and start it. The
-            only plugin that you need for the tutorial is <link
-                xlink:href="http://m2eclipse.sonatype.org/">m2eclipse</link>. To install it, in
-            Eclipse go to "Help > Install New Software", then click on "Add.." to add a new download
-            site, and enter "Maven" in the "Name" field, and
-            "http://m2eclipse.sonatype.org/sites/m2e" in the "Location" field. You may install any
-            of the optional components that you think you need, but for this tutorial we only select
-            a few basic components as shown on the following screenshot: </para>
+            only plugin that you need for the tutorial is m2eclipse. To install it, in Eclipse go to
+            "Help > Install New Software", then click on "Add.." to add a new download site, and
+            enter "Maven" in the "Name" field, and "<emphasis role="italic"
+                >http://m2eclipse.sonatype.org/sites/m2e</emphasis>" in the "Location" field. You
+            may install any of the optional components that you think you need, but for this
+            tutorial we only select a few basic components as shown on the following screenshot: </para>
         <para>
             <inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/maven-plugin-install.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="images/maven-plugin-install.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>
