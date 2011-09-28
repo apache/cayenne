@@ -39,7 +39,7 @@ public class Main {
 
 		// starting Cayenne
 		ServerRuntime cayenneRuntime = new ServerRuntime(
-				"cayenne-UntitledDomain.xml");
+				"cayenne-project.xml");
 
 		// getting a hold of ObjectContext
 		ObjectContext context = cayenneRuntime.getContext();
