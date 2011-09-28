@@ -23,12 +23,12 @@
 <web-app>
 	<display-name>Cayenne Tutorial</display-name>
 	<servlet>
-		<servlet-name>cayenne-UntitledDomain</servlet-name>
+		<servlet-name>cayenne-project</servlet-name>
 		<servlet-class>org.apache.cayenne.configuration.rop.server.ROPHessianServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>cayenne-UntitledDomain</servlet-name>
+		<servlet-name>cayenne-project</servlet-name>
 		<url-pattern>/cayenne-service</url-pattern>
 	</servlet-mapping>
 	
