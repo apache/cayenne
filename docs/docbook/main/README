@@ -1,1 +1,0 @@
-Although it would be tempting to arrange the docbook source into various folders to organise them better, this causes havoc to relative image links once the source is transformed into html.
