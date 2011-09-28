@@ -15,14 +15,14 @@
 
 public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-	}
+    }
 }</programlisting>
         <para>Now the part that is actually different from regular Cayenne - establishing the server
             connection and obtaining the ObjectContext:</para>
         <programlisting>ClientConnection connection = new HessianConnection("http://localhost:8080/tutorial/cayenne-service");
-DataChannel channel = new ClientChannel(connection);
+DataChannel channel = new ClientChannel(connection, false, new DefaultEventManager(), false);
 ObjectContext context = new CayenneContext(channel);</programlisting>
         <para>Note that the "channel" can be used to create as many peer ObjectContexts as needed
             over the same connection, while ObjectContext is a kind of isolated "persistence
@@ -60,90 +60,85 @@ SelectQuery select1 = new SelectQuery(Painting.class);
 List&lt;Painting&gt; paintings1 = context.performQuery(select1);
 
 Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
-		Painting.NAME_PROPERTY, "gi%");
+        Painting.NAME_PROPERTY, "gi%");
 SelectQuery select2 = new SelectQuery(Painting.class, qualifier2);
 List&lt;Painting&gt; paintings2 = context.performQuery(select2);</programlisting>
         <para>Now, delete:</para>
         <programlisting>Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
-				"Pablo Picasso");
+                "Pablo Picasso");
 SelectQuery selectToDelete = new SelectQuery(Artist.class, qualifier);
 Artist picasso = (Artist) DataObjectUtils.objectForQuery(context,
-		selectToDelete);
+        selectToDelete);
 
 if (picasso != null) {
-	context.deleteObject(picasso);
-	context.commitChanges();
+    context.deleteObject(picasso);
+    context.commitChanges();
 }</programlisting>
         <para>This code is exactly the same as in the first tutorial. So now let's try running the
-            client and see what happens. In Eclipse open main class and select "Run &gt; Rus As &gt;
+            client and see what happens. In Eclipse open main class and select "Run &gt; Run As &gt;
             Java Application" from the menu (assuming the ROP server started in the previous step is
             still running). You will some output in both server and client process consoles.
             Client:</para>
         <programlisting>INFO: Connecting to [http://localhost:8080/tutorial/cayenne-service] - dedicated session.
-INFO: === Connected, session: org.apache.cayenne.remote.RemoteSession@9e09a4[sessionId=10qsakj1mj806] - took 219 ms.
+INFO: === Connected, session: org.apache.cayenne.remote.RemoteSession@26544ec1[sessionId=17uub1h34r9x1] - took 111 ms.
 INFO: --- Message 0: Bootstrap
-INFO: === Message 0: Bootstrap done - took 71 ms.
+INFO: === Message 0: Bootstrap done - took 58 ms.
 INFO: --- Message 1: flush-cascade-sync
-INFO: === Message 1: flush-cascade-sync done - took 1342 ms.
+INFO: === Message 1: flush-cascade-sync done - took 1119 ms.
 INFO: --- Message 2: Query
-INFO: === Message 2: Query done - took 58 ms.
+INFO: === Message 2: Query done - took 48 ms.
 INFO: --- Message 3: Query
-INFO: === Message 3: Query done - took 21 ms.
+INFO: === Message 3: Query done - took 63 ms.
 INFO: --- Message 4: Query
-INFO: === Message 4: Query done - took 22 ms.
+INFO: === Message 4: Query done - took 19 ms.
 INFO: --- Message 5: Query
-INFO: === Message 5: Query done - took 16 ms.
+INFO: === Message 5: Query done - took 7 ms.
 INFO: --- Message 6: Query
-INFO: === Message 6: Query done - took 2 ms.
+INFO: === Message 6: Query done - took 5 ms.
 INFO: --- Message 7: Query
 INFO: === Message 7: Query done - took 2 ms.
 INFO: --- Message 8: Query
-INFO: === Message 8: Query done - took 2 ms.
+INFO: === Message 8: Query done - took 4 ms.
 INFO: --- Message 9: flush-cascade-sync
-INFO: === Message 9: flush-cascade-sync done - took 30 ms.</programlisting>
+INFO: === Message 9: flush-cascade-sync done - took 34 ms.</programlisting>
         <para>As you see client prints no SQL statmenets, just a bunch of query and flush messages
             sent to the server. The server side is more verbose, showing the actual client queries
             executed against the database:</para>
         <programlisting>...
-INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'GALLERY']
 INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'ARTIST']
+INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'GALLERY']
 INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'PAINTING']
-INFO: --- will run 3 queries.
-INFO: INSERT INTO GALLERY (ID, NAME) VALUES (?, ?)
-INFO: [batch bind: 1-&gt;ID:200, 2-&gt;NAME:'Metropolitan Museum of Art']
-INFO: === updated 1 row.
 INFO: INSERT INTO ARTIST (DATE_OF_BIRTH, ID, NAME) VALUES (?, ?, ?)
-INFO: [batch bind: 1-&gt;DATE_OF_BIRTH:NULL, 2-&gt;ID:200, 3-&gt;NAME:'Pablo Picasso']
+INFO: [batch bind: 1->DATE_OF_BIRTH:NULL, 2->ID:200, 3->NAME:'Pablo Picasso']
+INFO: === updated 1 row.
+INFO: INSERT INTO GALLERY (ID, NAME) VALUES (?, ?)
+INFO: [batch bind: 1->ID:200, 2->NAME:'Metropolitan Museum of Art']
 INFO: === updated 1 row.
 INFO: INSERT INTO PAINTING (ARTIST_ID, GALLERY_ID, ID, NAME) VALUES (?, ?, ?, ?)
-INFO: [batch bind: 1-&gt;ARTIST_ID:200, 2-&gt;GALLERY_ID:200, 3-&gt;ID:200, 4-&gt;NAME:'Girl Reading at a Table']
-INFO: [batch bind: 1-&gt;ARTIST_ID:200, 2-&gt;GALLERY_ID:200, 3-&gt;ID:201, 4-&gt;NAME:'Gertrude Stein']
+INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:200, 4->NAME:'Girl Reading at a Table']
+INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:201, 4->NAME:'Gertrude Stein']
 INFO: === updated 2 rows.
 INFO: +++ transaction committed.
-INFO: --- will run 1 query.
 INFO: --- transaction started.
-INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0
-INFO: === returned 2 rows. - took 15 ms.
+INFO: SELECT t0.GALLERY_ID, t0.NAME, t0.ARTIST_ID, t0.ID FROM PAINTING t0
+INFO: === returned 2 rows. - took 14 ms.
 INFO: +++ transaction committed.
-INFO: --- will run 1 query.
 INFO: --- transaction started.
-INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0
-      WHERE UPPER(t0.NAME) LIKE UPPER(?) [bind: 1-&gt;NAME:'gi%']
-INFO: === returned 1 row. - took 9 ms.
+INFO: SELECT t0.GALLERY_ID, t0.NAME, t0.ARTIST_ID, t0.ID FROM PAINTING t0 
+      WHERE UPPER(t0.NAME) LIKE UPPER(?) [bind: 1->NAME:'gi%']
+INFO: === returned 1 row. - took 10 ms.
 INFO: +++ transaction committed.
-INFO: --- will run 1 query.
 INFO: --- transaction started.
-INFO: SELECT t0.DATE_OF_BIRTH, t0.ID, t0.NAME FROM ARTIST t0 WHERE t0.NAME = ? [bind: 1-&gt;NAME:'Pablo Picasso']
-INFO: === returned 1 row. - took 7 ms.
+INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 WHERE t0.NAME = ? [bind: 1->NAME:'Pablo Picasso']
+INFO: === returned 1 row. - took 8 ms.
 INFO: +++ transaction committed.
-INFO: --- will run 2 queries.
 INFO: --- transaction started.
 INFO: DELETE FROM PAINTING WHERE ID = ?
-INFO: [batch bind: 1-&gt;ID:200]
-INFO: [batch bind: 1-&gt;ID:201]
+INFO: [batch bind: 1->ID:200]
+INFO: [batch bind: 1->ID:201]
 INFO: === updated 2 rows.
 INFO: DELETE FROM ARTIST WHERE ID = ?
-INFO: [batch bind: 1-&gt;ID:200]
+INFO: [batch bind: 1->ID:200]
 INFO: === updated 1 row.
 INFO: +++ transaction committed.</programlisting>
         <para>You are done with the basic ROP client!</para>

@@ -38,7 +38,7 @@
 		&lt;/repository&gt;
 	&lt;/repositories&gt;
 &lt;/project&gt;</programlisting>
-        <informaltable class="noteMacro">
+        <informaltable class="noteMacro" border="1">
             <col width="4%"/>
             <col width="96%"/>
             <tbody>
@@ -70,23 +70,24 @@
     <section xml:id="configuring-web-xml">
         <title>Configuring web.xml</title>
         <para>Cayenne web service is declared in the web.xml. It is implemented as a servlet
-            "org.apache.cayenne.remote.hessian.service.HessianServlet". Open
+            "org.apache.cayenne.configuration.rop.server.ROPHessianServlet". Open
             tutorial/src/main/webapp/WEB-INF/web.xml in Eclipse and add a service declaration: </para>
         <programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
  &lt;!DOCTYPE web-app
-   PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"  "http://java.sun.com/dtd/web-app_2_3.dtd"&gt;
+   PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+   "http://java.sun.com/dtd/web-app_2_3.dtd"&gt;
 &lt;web-app&gt;
 	&lt;display-name&gt;Cayenne Tutorial&lt;/display-name&gt;
 	&lt;servlet&gt;
-		&lt;servlet-name&gt;cayenne-service&lt;/servlet-name&gt;
-		&lt;servlet-class&gt;org.apache.cayenne.remote.hessian.service.HessianServlet&lt;/servlet-class&gt;
+		&lt;servlet-name&gt;cayenne-project&lt;/servlet-name&gt;
+		&lt;servlet-class&gt;org.apache.cayenne.configuration.rop.server.ROPHessianServlet&lt;/servlet-class&gt;
 	&lt;/servlet&gt;
 	&lt;servlet-mapping&gt;
-		&lt;servlet-name&gt;cayenne-service&lt;/servlet-name&gt;
+		&lt;servlet-name&gt;cayenne-project&lt;/servlet-name&gt;
 		&lt;url-pattern&gt;/cayenne-service&lt;/url-pattern&gt;
 	&lt;/servlet-mapping&gt;
 &lt;/web-app&gt;</programlisting>
-        <informaltable class="noteMacro">
+        <informaltable class="noteMacro" border="1">
             <col width="4%"/>
             <col width="96%"/>
             <tbody>
@@ -115,39 +116,23 @@
                 one if none exists yet). You should see output in the Eclipse console similar
             to the following:</para>
         <programlisting>[INFO] Scanning for projects...
+[INFO]                                                                         
 [INFO] ------------------------------------------------------------------------
-[INFO] Building Cayenne Tutorial
-[INFO] 
-[INFO] Id: org.example.cayenne:tutorial:jar:0.0.1-SNAPSHOT
-[INFO] task-segment: [jetty:run]
+[INFO] Building tutorial 0.0.1-SNAPSHOT
 [INFO] ------------------------------------------------------------------------
-...
-[INFO] [jetty:run]
-[INFO] Configuring Jetty for project: Cayenne Tutorial
-[INFO] Webapp source directory = /Users/andrus-tutorial/Desktop/work/tutorial/src/main/webapp
 ...
 [INFO] Starting jetty 6.1.22 ...
-2010-01-16 17:22:16.906:INFO::jetty-6.1.22
-2010-01-16 17:22:17.027:INFO::No Transaction manager found - if your webapp requires one, please configure one.
-INFO: started configuration loading.
-INFO: loaded domain: UntitledDomain
-INFO: loaded &lt;map name='UntitledDomainMap' location='UntitledDomainMap.map.xml'&gt;.
-INFO: loading &lt;node name='UntitledDomainNode' datasource='UntitledDomainNode.driver.xml' 
-factory='org.apache.cayenne.conf.DriverDataSourceFactory' 
-schema-update-strategy='org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy'&gt;.
-INFO: using factory: org.apache.cayenne.conf.DriverDataSourceFactory
-INFO: loading driver information from 'UntitledDomainNode.driver.xml'.
-INFO: loading driver org.apache.derby.jdbc.EmbeddedDriver
+2011-09-28 15:06:27.369:INFO::jetty-6.1.22
+2011-09-28 15:06:27.452:INFO::No Transaction manager found - if your webapp requires one, please configure one.
+2011-09-28 15:06:27.671:INFO::Started SelectChannelConnector@0.0.0.0:8080
+[INFO] Started Jetty Server
+INFO: Loading XML configuration resource from file:cayenne-project.xml
 INFO: loading user name and password.
-INFO: Created connection pool: jdbc:derby:memory:testdb;create=true 
+INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
 	Driver class: org.apache.derby.jdbc.EmbeddedDriver
 	Min. connections in the pool: 1
 	Max. connections in the pool: 1
-INFO: loaded datasource.
-INFO: no adapter set, using automatic adapter.
-INFO: loaded map-ref: UntitledDomainMap.
-INFO: finished configuration loading in 549 ms.
-2010-01-16 17:22:17.960:INFO::Started SelectChannelConnector@0.0.0.0:8080</programlisting>
+</programlisting>
         <para>Cayenne ROP service URL is <emphasis role="italic"
                 >http://localhost:8080/tutorial/cayenne-service</emphasis>. If you click on it, you
             will see "Hessian Requires POST" message, that means that the service is alive, but you

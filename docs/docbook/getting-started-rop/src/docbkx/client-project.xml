@@ -29,7 +29,7 @@
                     under "tutorial/src/main/resources", unless it is already open.</para>
             </listitem>
             <listitem>
-                <para>Select the "UntitledDomainMap" DataMap and check "Allow Client Entities"
+                <para>Select the "datamap" DataMap and check "Allow Client Entities"
                     checkbox.</para>
             </listitem>
             <listitem>
@@ -56,8 +56,8 @@
                     project).</para>
             </listitem>
             <listitem>
-                <para>Click on "Entities" tab and check the "Check All Entities" checkbox (unless it
-                    is already checked and reads "Uncheck all Entities").</para>
+                <para>Click on "Entities" tab and check the "Check All Classes" checkbox (unless it
+                    is already checked and reads "Uncheck all Classes").</para>
             </listitem>
             <listitem>
                 <para>Click "Generate".</para>
@@ -70,40 +70,40 @@
             pom.xml file. We also need to add Caucho M2 repository to pull Hessian jar files. The
             resulting POM should look like this:</para>
         <programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
-	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-	&lt;groupId&gt;org.example.cayenne&lt;/groupId&gt;
-	&lt;artifactId&gt;tutorial-rop-client&lt;/artifactId&gt;
-	&lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;org.example.cayenne&lt;/groupId&gt;
+    &lt;artifactId&gt;tutorial-rop-client&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
 
-	&lt;dependencies&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
-			&lt;artifactId&gt;cayenne-client&lt;/artifactId&gt;
-   &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
-			&lt;version&gt;3.0RC2&lt;/version&gt;
-		&lt;/dependency&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;com.caucho&lt;/groupId&gt;
-			&lt;artifactId&gt;resin-hessian&lt;/artifactId&gt;
-			&lt;version&gt;3.1.6&lt;/version&gt;
-		&lt;/dependency&gt;
-	&lt;/dependencies&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
+            &lt;artifactId&gt;cayenne-client&lt;/artifactId&gt;
+            &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
+            &lt;version&gt;3.1M3&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+        &lt;groupId&gt;com.caucho&lt;/groupId&gt;
+            &lt;artifactId&gt;resin-hessian&lt;/artifactId&gt;
+            &lt;version&gt;3.1.6&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
 
-	&lt;repositories&gt;
-		&lt;repository&gt;
-			&lt;id&gt;caucho&lt;/id&gt;
-			&lt;name&gt;Caucho Repository&lt;/name&gt;
-			&lt;url&gt;http://caucho.com/m2&lt;/url&gt;
-			&lt;layout&gt;default&lt;/layout&gt;
-			&lt;snapshots&gt;
-				&lt;enabled&gt;false&lt;/enabled&gt;
-			&lt;/snapshots&gt;
-			&lt;releases&gt;
-				&lt;enabled&gt;true&lt;/enabled&gt;
-			&lt;/releases&gt;
-		&lt;/repository&gt;
-	&lt;/repositories&gt;
+    &lt;repositories&gt;
+        &lt;repository&gt;
+            &lt;id&gt;caucho&lt;/id&gt;
+            &lt;name&gt;Caucho Repository&lt;/name&gt;
+            &lt;url&gt;http://caucho.com/m2&lt;/url&gt;
+            &lt;layout&gt;default&lt;/layout&gt;
+            &lt;snapshots&gt;
+                &lt;enabled&gt;false&lt;/enabled&gt;
+            &lt;/snapshots&gt;
+            &lt;releases&gt;
+                &lt;enabled&gt;true&lt;/enabled&gt;
+            &lt;/releases&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
 &lt;/project&gt;</programlisting>
         <para>Your computer must be connected to the internet. Once you save the pom.xml, Eclipse
             will download the needed jar files and add them to the project build path. After that

@@ -33,7 +33,7 @@
     </section>
     <section xml:id="configuring-jetty">
         <title>Configuring Jetty for BASIC Authentication</title>
-        <informaltable class="noteMacro">
+        <informaltable class="noteMacro" border="1">
             <col width="4%"/>
             <col width="96%"/>
             <tbody>
@@ -41,9 +41,7 @@
                     <td rowspan="1" colspan="1" valign="top">
                         <mediaobject>
                             <imageobject>
-                                <imagedata
-                                    fileref="images/warning.gif"
-                                    depth="16" width="16"/>
+                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
                             </imageobject>
                         </mediaobject>
                     </td>
@@ -124,8 +122,8 @@ Caused by: java.net.HttpRetryException: cannot retry due to server authenticatio
         <para>Which is exactly what you'd expect, as the client is not authenticating itself. So
             change the line in Main.java where we obtained an ROP connection to this:</para>
         <programlisting>ClientConnection connection = new HessianConnection(
-		"http://localhost:8080/tutorial/cayenne-service",
- "cayenne-user", "secret", null);</programlisting>
+        "http://localhost:8080/tutorial/cayenne-service",
+        "cayenne-user", "secret", null);</programlisting>
         <para>Try running again, and everything should work as before. Obviously in production
             environment, in addition to authentication you'll need to use HTTPS to access the server
             to prevent third-party evesdropping on your password and data.</para>
