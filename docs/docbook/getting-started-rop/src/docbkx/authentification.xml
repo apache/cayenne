@@ -83,42 +83,36 @@
     <section xml:id="running-client">
         <title>Running Client with Basic Authentication</title>
         <para>If you run the client without any changes, you'll get the following error:</para>
-        <programlisting>Jan 16, 2010 6:09:03 PM org.apache.cayenne.remote.hessian.HessianConnection connect
+        <programlisting>Sep 29, 2011 11:58:09 AM org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Connecting to [http://localhost:8080/tutorial/cayenne-service] - dedicated session.
-Jan 16, 2010 6:09:03 PM org.apache.cayenne.remote.hessian.HessianConnection connect
+Sep 29, 2011 11:58:09 AM org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
-CAUSE - cannot retry due to server authentication, in streaming mode
+      CAUSE - cannot retry due to server authentication, in streaming mode
 java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
-	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1034)
-	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:367)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
+	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
 	at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
 	at $Proxy0.establishSession(Unknown Source)
 	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
 	at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
-	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:256)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:94)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:76)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:71)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:67)
-	at org.example.cayenne.persistent.client.Main.main(Main.java:25)
-Exception in thread "main" org.apache.cayenne.CayenneRuntimeException: [v.3.0RC1 Jan 05 2010 14:44:59] Error 
-establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
+	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init>(ClientChannel.java:108)
+	at org.example.cayenne.Main.main(Main.java:25)
+Exception in thread "main" org.apache.cayenne.CayenneRuntimeException: [v.3.1M3 Sep 19 2011 07:12:41] 
+Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
 CAUSE - cannot retry due to server authentication, in streaming mode
 	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:229)
 	at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
-	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:256)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:94)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:76)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:71)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init&gt;(ClientChannel.java:67)
-	at org.example.cayenne.persistent.client.Main.main(Main.java:25)
+	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
+	at org.apache.cayenne.remote.ClientChannel.&lt;init>(ClientChannel.java:108)
+	at org.example.cayenne.Main.main(Main.java:25)
 Caused by: java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
-	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1034)
-	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:367)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
+	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
 	at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
 	at $Proxy0.establishSession(Unknown Source)
 	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
-	... 7 more</programlisting>
+	... 4 more</programlisting>
         <para>Which is exactly what you'd expect, as the client is not authenticating itself. So
             change the line in Main.java where we obtained an ROP connection to this:</para>
         <programlisting>ClientConnection connection = new HessianConnection(

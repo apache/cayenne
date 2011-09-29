@@ -38,13 +38,12 @@
             by adding the ARTIST table. Database tables are called <emphasis role="bold"
                 >"DbEntities"</emphasis> in Cayenne mapping (those can be actual tables or database
             views). </para>
-        <para>Select "UntitledDomainMap" on the left-hand side project tree and click "Create
-            DbEntity" button (or use "Project &gt; Create DbEntity" menu). A new DbEntity is
-            created. In "DbEntity Name" field enter "ARTIST". Then click on "Create Attribute"
-            button on the entity toolbar (third button from the left). This action changes the view
-            to the "Attribute" tab and adds a new attribute (attribute means a "table column" in
-            this case) called "untitledAttr". Let's rename it to ID, make it an INTEGER and make it
-            a PK:</para>
+        <para>Select "datamap" on the left-hand side project tree and click "Create DbEntity" button
+            (or use "Project &gt; Create DbEntity" menu). A new DbEntity is created. In "DbEntity
+            Name" field enter "ARTIST". Then click on "Create Attribute" button on the entity
+            toolbar (third button from the left). This action changes the view to the "Attribute"
+            tab and adds a new attribute (attribute means a "table column" in this case) called
+            "untitledAttr". Let's rename it to ID, make it an INTEGER and make it a PK:</para>
         <para><inlinemediaobject>
                 <imageobject>
                     <imagedata fileref="images/modeler-artistid.png" scalefit="1" width="100%"/>

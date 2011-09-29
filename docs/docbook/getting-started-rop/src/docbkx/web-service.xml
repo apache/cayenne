@@ -72,21 +72,22 @@
         <para>Cayenne web service is declared in the web.xml. It is implemented as a servlet
             "org.apache.cayenne.configuration.rop.server.ROPHessianServlet". Open
             tutorial/src/main/webapp/WEB-INF/web.xml in Eclipse and add a service declaration: </para>
-        <programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+        <programlisting>&lt;?xml version="1.0" encoding="utf-8"?>
  &lt;!DOCTYPE web-app
    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-   "http://java.sun.com/dtd/web-app_2_3.dtd"&gt;
-&lt;web-app&gt;
-	&lt;display-name&gt;Cayenne Tutorial&lt;/display-name&gt;
-	&lt;servlet&gt;
-		&lt;servlet-name&gt;cayenne-project&lt;/servlet-name&gt;
-		&lt;servlet-class&gt;org.apache.cayenne.configuration.rop.server.ROPHessianServlet&lt;/servlet-class&gt;
-	&lt;/servlet&gt;
-	&lt;servlet-mapping&gt;
-		&lt;servlet-name&gt;cayenne-project&lt;/servlet-name&gt;
-		&lt;url-pattern&gt;/cayenne-service&lt;/url-pattern&gt;
-	&lt;/servlet-mapping&gt;
-&lt;/web-app&gt;</programlisting>
+   "http://java.sun.com/dtd/web-app_2_3.dtd">
+&lt;web-app>
+	&lt;display-name>Cayenne Tutorial&lt;/display-name>
+	&lt;servlet>
+		&lt;servlet-name>cayenne-project&lt;/servlet-name>
+		&lt;servlet-class>org.apache.cayenne.configuration.rop.server.ROPHessianServlet&lt;/servlet-class>
+        &lt;load-on-startup>0&lt;/load-on-startup>
+	&lt;/servlet>
+	&lt;servlet-mapping>
+		&lt;servlet-name>cayenne-project&lt;/servlet-name>
+		&lt;url-pattern>/cayenne-service&lt;/url-pattern>
+	&lt;/servlet-mapping>
+&lt;/web-app></programlisting>
         <informaltable class="noteMacro" border="1">
             <col width="4%"/>
             <col width="96%"/>
@@ -131,8 +132,7 @@ INFO: loading user name and password.
 INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
 	Driver class: org.apache.derby.jdbc.EmbeddedDriver
 	Min. connections in the pool: 1
-	Max. connections in the pool: 1
-</programlisting>
+	Max. connections in the pool: 1</programlisting>
         <para>Cayenne ROP service URL is <emphasis role="italic"
                 >http://localhost:8080/tutorial/cayenne-service</emphasis>. If you click on it, you
             will see "Hessian Requires POST" message, that means that the service is alive, but you
