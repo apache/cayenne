@@ -45,6 +45,29 @@
 			</excludes>
 		</fileSet>
 	</fileSets>
+
+	<files>
+		<file>
+			<source>../docs/docbook/getting-started/target/site/getting-started.pdf</source>
+			<outputDirectory>doc</outputDirectory>
+			<destName>getting-started.pdf</destName>
+		</file>
+		<file>
+			<source>../docs/docbook/getting-started-rop/target/site/getting-started-rop.pdf</source>
+			<outputDirectory>doc</outputDirectory>
+			<destName>getting-started-rop.pdf</destName>
+		</file>
+		<file>
+			<source>../docs/docbook/cayenne-guide/target/site/cayenne-guide.pdf</source>
+			<outputDirectory>doc</outputDirectory>
+			<destName>cayenne-guide.pdf</destName>
+		</file>
+		<file>
+			<source>../docs/docbook/upgrade-guide/target/site/upgrade-guide.pdf</source>
+			<outputDirectory>doc</outputDirectory>
+			<destName>upgrade-guide.pdf</destName>
+		</file>
+	</files>
 	
 	<dependencySets>
 		<dependencySet>
