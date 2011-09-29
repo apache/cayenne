@@ -140,10 +140,11 @@
             <listitem>
                 <para>Select "ARTIST" DbEntity and click on "Create ObjEntity" button (a green class
                     icon) either on the entity toolbar or on the main toolbar. An ObjEntity called
-                    "Artist" is created with a Java class field set to "cayenne.tutorial.Artist".
-                    The modeler transformed the database names to the Java-friendly names (e.g., if
-                    you click on the "Attributes" tab, you'll see that "DATE_OF_BIRTH" column was
-                    converted to "dateOfBirth" Java class attribute).</para>
+                    "Artist" is created with a Java class field set to
+                    "org.example.cayenne.persistent.Artist". The modeler transformed the database
+                    names to the Java-friendly names (e.g., if you click on the "Attributes" tab,
+                    you'll see that "DATE_OF_BIRTH" column was converted to "dateOfBirth" Java class
+                    attribute).</para>
             </listitem>
             <listitem>
                 <para>Select "GALLERY" DbEntity and click on "Create ObjEntity" button again -

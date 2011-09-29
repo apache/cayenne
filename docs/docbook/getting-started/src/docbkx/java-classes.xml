@@ -57,6 +57,11 @@
         <para>Your computer must be connected to the internet. Once you save the pom.xml, Eclipse
             will download the needed Cayenne jar file and add it to the project build path. As a
             result, all the errors should disappear.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="images/eclipse-generatedclasses.png"/>
+                </imageobject>
+            </inlinemediaobject></para>
         <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g. Artist)
             and a subclass (e.g. Artist). You <emphasis role="bold">should not</emphasis> modify the
             superclasses whose names start with "_" (underscore), as they will be replaced on
