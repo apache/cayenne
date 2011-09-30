@@ -59,7 +59,7 @@
             result, all the errors should disappear.</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="images/eclipse-generatedclasses.png"/>
+                    <imagedata fileref="images/eclipse-generatedclasses.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g. Artist)
