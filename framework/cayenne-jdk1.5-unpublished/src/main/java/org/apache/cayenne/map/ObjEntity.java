@@ -1277,7 +1277,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         for (ObjRelationship rel : getRelationships()) {
             dout.writeUTF(rel.getName());
             dout.writeUTF(rel.getCollectionType() != null 
-                    ? rel.getCollectionType() : "to-one");
+                    ? rel.getCollectionType() : rel.getTargetEntityName());
         }
 
         dout.flush();
