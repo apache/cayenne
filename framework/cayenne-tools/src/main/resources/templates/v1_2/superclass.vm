@@ -54,6 +54,9 @@ ${importUtils.generate()}
  */
 public abstract class ${superClassName} extends ${baseClassName} {
 
+## SerialVersionUID
+    private static final long serialVersionUID = ${object.SerialVersionUID}L;
+
 ## Create property names
 #foreach( $attr in ${object.DeclaredAttributes} )
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
