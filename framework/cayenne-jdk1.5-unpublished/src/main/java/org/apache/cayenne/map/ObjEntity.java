@@ -1253,42 +1253,4 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     public void setExcludingSuperclassListeners(boolean excludingSuperclassListeners) {
         this.excludingSuperclassListeners = excludingSuperclassListeners;
     }
-    
-    /**
-     * Returns unique id for this ObjEntity.
-     * 
-     * @since 3.1
-     */
-    public long getSerialVersionUID() throws Exception {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        DataOutputStream dout = new DataOutputStream(bout);
-            
-        dout.writeUTF(getClassName());
-        
-        if (getSuperClassName() != null) {
-            dout.writeUTF(getSuperClassName());
-        }
-  
-        for (ObjAttribute attr : getAttributes()) {
-            dout.writeUTF(attr.getName());
-            dout.writeUTF(attr.getType());
-        }
-        
-        for (ObjRelationship rel : getRelationships()) {
-            dout.writeUTF(rel.getName());
-            dout.writeUTF(rel.getCollectionType() != null 
-                    ? rel.getCollectionType() : rel.getTargetEntityName());
-        }
-
-        dout.flush();
-
-        MessageDigest md = MessageDigest.getInstance("SHA");
-        byte[] hashBytes = md.digest(bout.toByteArray());
-        long hash = 0;
-        for (int i = Math.min(hashBytes.length, 8) - 1; i >= 0; i--) {
-            hash = (hash << 8) | (hashBytes[i] & 0xFF);
-        }
-        return hash;
-    }
-
 }
