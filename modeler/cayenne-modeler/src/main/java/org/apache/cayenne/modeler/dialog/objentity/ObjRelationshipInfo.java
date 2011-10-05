@@ -94,7 +94,6 @@ public class ObjRelationshipInfo extends CayenneController implements
     public ObjRelationshipInfo(ProjectController mediator,ObjRelationship relationship) {
         super(mediator);
         this.view = new ObjRelationshipInfoView(mediator);
-        initController();
         this.mediator=mediator;
         ObjEntity target = getObjectTarget();
         getPathBrowser().addTreeSelectionListener(this);
@@ -125,35 +124,22 @@ public class ObjRelationshipInfo extends CayenneController implements
         targetCollections.add(COLLECTION_TYPE_MAP);
         targetCollections.add(COLLECTION_TYPE_SET);
         
-        for( ObjEntity s : objectTargets) {
-            view.targetCombo.addItem(s.getName());
-        }
-        
         for( String s : targetCollections) {
             view.collectionTypeCombo.addItem(s);
         }
        
         this.mapKeys = new ArrayList<String>();
         initMapKeys();
-        
-     
-        for(String s : mapKeys) {
-            view.mapKeysCombo.addItem(s);
-        }
-        view.collectionTypeCombo.addActionListener(new ActionListener() {
 
-            public void actionPerformed(ActionEvent action) {
-                updateCollectionChoosers();
-            }
-        });
-      
         // setup path
         dbRelationships = new ArrayList<DbRelationship>(relationship.getDbRelationships());
         selectPath();
+        updateCollectionChoosers();
        
         // add dummy last relationship if we are not connected
         connectEnds();
         initFromModel();
+        initController();
     }
     
     private void initController() {
@@ -181,13 +167,21 @@ public class ObjRelationshipInfo extends CayenneController implements
                 selectPath();
             }
         });  
+        view.getCollectionTypeCombo().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                setCollectionType();
+            }
+        });
+        view.getMapKeysCombo().addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                setMapKey();
+            }
+        });
     }
     
     void initFromModel() {
-        // called too early in the cycle...
-        if (!updateCollectionChoosers()) {
-            return;
-        }
 
         if (view.pathBrowser.getModel() == null) {
             EntityTreeModel treeModel = new EntityTreeModel(getStartEntity());
@@ -229,6 +223,24 @@ public class ObjRelationshipInfo extends CayenneController implements
 
         view.pathBrowser.setSelectionPath(new TreePath(path));
     }
+    
+    public void setCollectionType() {
+        setTargetCollection((String)view.collectionTypeCombo.getSelectedItem());
+        
+        if (COLLECTION_TYPE_MAP.equals(targetCollection)){
+            view.mapKeysLabel.setEnabled(true);
+            view.mapKeysCombo.setEnabled(true);
+            setMapKey();
+        }
+        else {
+            view.mapKeysLabel.setEnabled(false);
+            view.mapKeysCombo.setEnabled(false);
+        }
+    }
+    
+    public void setMapKey() {
+        setMapKey((String)view.mapKeysCombo.getSelectedItem());
+    }
 
     @Override
     public Component getView() {
@@ -266,18 +278,22 @@ public class ObjRelationshipInfo extends CayenneController implements
     /**
      * Updates 'collection type' and 'map keys' comboboxes
      */
-    boolean updateCollectionChoosers() {
+    protected void updateCollectionChoosers() {
         boolean collectionTypeEnabled = isToMany();
         view.collectionTypeCombo.setEnabled(collectionTypeEnabled);
         view.collectionTypeLabel.setEnabled(collectionTypeEnabled);
+        if (collectionTypeEnabled) {
+            view.collectionTypeCombo.setSelectedItem(targetCollection);
+        }
 
         boolean mapKeysEnabled = collectionTypeEnabled
                 && ObjRelationshipInfo.COLLECTION_TYPE_MAP
                         .equals(view.collectionTypeCombo.getSelectedItem());
         view.mapKeysCombo.setEnabled(mapKeysEnabled);
         view.mapKeysLabel.setEnabled(mapKeysEnabled);
-
-        return true;
+        if (mapKeysEnabled) {
+            view.mapKeysCombo.setSelectedItem(mapKey);
+        }
     }
     
     /**
@@ -461,7 +477,7 @@ public class ObjRelationshipInfo extends CayenneController implements
             Collections.sort(objectTargets, Comparators.getNamedObjectComparator());
         }
         view.targetCombo.removeAllItems();
-        for( ObjEntity s :objectTargets) {
+        for( ObjEntity s : objectTargets) {
            view.targetCombo.addItem(s.getName());
         }
     }
@@ -501,6 +517,8 @@ public class ObjRelationshipInfo extends CayenneController implements
         updateTargetCombo(rels.size() > 0 ? (DbEntity) rels
                 .get(rels.size() - 1)
                 .getTargetEntity() : null);
+        
+        updateCollectionChoosers();
     }
     
     /**

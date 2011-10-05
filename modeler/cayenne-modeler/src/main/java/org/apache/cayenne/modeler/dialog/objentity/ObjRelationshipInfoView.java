@@ -176,4 +176,12 @@ public class ObjRelationshipInfoView extends JDialog{
     {
         return targetCombo;
     }
+    
+    public JComboBox getCollectionTypeCombo() {
+        return collectionTypeCombo;
+    }
+    
+    public JComboBox getMapKeysCombo() {
+        return mapKeysCombo;
+    }
 }
