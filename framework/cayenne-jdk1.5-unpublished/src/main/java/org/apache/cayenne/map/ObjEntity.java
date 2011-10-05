@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
