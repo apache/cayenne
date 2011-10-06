@@ -22,6 +22,8 @@ package org.apache.cayenne.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
@@ -219,9 +221,17 @@ public abstract class ObjectContextQueryAction {
                             if (related == null) {
                                 result = new ArrayList(1);
                             }
-                            // to-many
+                            // to-many List
                             else if (related instanceof List) {
                                 result = (List) related;
+                            }
+                            // to-many Set
+                            else if (related instanceof Set) {
+                                result = new ArrayList((Set) related);
+                            }
+                            // to-many Map
+                            else if (related instanceof Map) {
+                                result = new ArrayList(((Map) related).values());
                             }
                             // non-null to-one
                             else {
