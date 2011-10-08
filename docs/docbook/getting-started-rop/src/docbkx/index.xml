@@ -7,14 +7,6 @@
             <year>2011</year>
             <holder>Apache Software Foundation and individual authors</holder>
         </copyright>
-        <authorgroup>
-            <author>
-                <personname>Aristedes Maniatis</personname>
-            </author>
-            <author>
-                <personname>Andrus Adamchik</personname>
-            </author>
-        </authorgroup>
         <legalnotice>
             <title>License</title>
             <para>Licensed to the Apache Software Foundation (ASF) under one or more contributor
