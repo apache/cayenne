@@ -19,9 +19,7 @@
 
 package org.apache.cayenne.access.types;
 
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -70,39 +68,7 @@ public class ExtendedTypeMap {
         this.extendedTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
         this.internalTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
 
-        initDefaultTypes();
         initDefaultFactories();
-    }
-
-    /**
-     * Registers default extended types. This method is called from constructor.
-     */
-    protected void initDefaultTypes() {
-        registerType(new VoidType());
-
-        registerType(new BigDecimalType());
-        registerType(new BigIntegerType());
-        registerType(new BooleanType());
-        registerType(new ByteArrayType(false, true));
-        registerType(new ByteType(false));
-        registerType(new CharType(false, true));
-        registerType(new DateType());
-        registerType(new DoubleType());
-        registerType(new FloatType());
-        registerType(new IntegerType());
-        registerType(new LongType());
-        registerType(new ShortType(false));
-        registerType(new TimeType());
-        registerType(new TimestampType());
-
-        registerType(new UtilDateType());
-
-        // TODO: andrus 9/1/2006 - maybe use ExtendedTypeFactory to handle all calendar
-        // subclasses at once
-        registerType(new CalendarType<GregorianCalendar>(GregorianCalendar.class));
-        registerType(new CalendarType<Calendar>(Calendar.class));
-
-        registerType(new UUIDType());
     }
 
     /**

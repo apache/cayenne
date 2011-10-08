@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QualifierTranslator;
@@ -30,6 +31,8 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -57,8 +60,11 @@ import org.apache.cayenne.merge.MergerFactory;
  */
 public class DB2Adapter extends JdbcAdapter {
 
-    public DB2Adapter(@Inject RuntimeProperties runtimeProperties) {
-        super(runtimeProperties);
+    public DB2Adapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         setSupportsGeneratedKeys(true);
     }
 

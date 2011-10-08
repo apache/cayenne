@@ -37,6 +37,7 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -154,8 +155,11 @@ public class OracleAdapter extends JdbcAdapter {
         return oracleCursorType;
     }
 
-    public OracleAdapter(@Inject RuntimeProperties runtimeProperties) {
-        super(runtimeProperties);
+    public OracleAdapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         
         // enable batch updates by default
         setSupportsBatchUpdates(true);

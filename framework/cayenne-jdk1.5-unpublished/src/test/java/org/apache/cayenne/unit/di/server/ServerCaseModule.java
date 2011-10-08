@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ObjectContext;
@@ -26,6 +29,24 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.access.types.BigDecimalType;
+import org.apache.cayenne.access.types.BigIntegerType;
+import org.apache.cayenne.access.types.BooleanType;
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.ByteType;
+import org.apache.cayenne.access.types.CalendarType;
+import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.DateType;
+import org.apache.cayenne.access.types.DoubleType;
+import org.apache.cayenne.access.types.FloatType;
+import org.apache.cayenne.access.types.IntegerType;
+import org.apache.cayenne.access.types.LongType;
+import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.access.types.TimeType;
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.access.types.UUIDType;
+import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
@@ -121,6 +142,31 @@ public class ServerCaseModule implements Module {
                 SQLiteAdapter.class.getName(),
                 SQLiteUnitDbAdapter.class.getName());
         binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+        
+        // configure extended types
+        binder
+                .bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST)
+                .add(new VoidType())
+                .add(new BigDecimalType())
+                .add(new BigIntegerType())
+                .add(new BooleanType())
+                .add(new ByteArrayType(false, true))
+                .add(new ByteType(false))
+                .add(new CharType(false, true))
+                .add(new DateType())
+                .add(new DoubleType())
+                .add(new FloatType())
+                .add(new IntegerType())
+                .add(new LongType())
+                .add(new ShortType(false))
+                .add(new TimeType())
+                .add(new TimestampType())
+                .add(new UtilDateType())
+                .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
+                .add(new CalendarType<Calendar>(Calendar.class))
+                .add(new UUIDType());
+        binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
+        binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);

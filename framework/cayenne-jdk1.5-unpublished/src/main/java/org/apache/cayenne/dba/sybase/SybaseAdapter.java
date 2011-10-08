@@ -22,11 +22,14 @@ package org.apache.cayenne.dba.sybase;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 
 import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -43,8 +46,11 @@ public class SybaseAdapter extends JdbcAdapter {
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "[";
     final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "]";
     
-    public SybaseAdapter(@Inject RuntimeProperties runtimeProperties) {
-        super(runtimeProperties);
+    public SybaseAdapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
     }
 
     /**

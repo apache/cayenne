@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.dba.h2;
 
+import java.util.List;
+
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
@@ -29,8 +33,11 @@ import org.apache.cayenne.merge.MergerFactory;
  * @since 3.0
  */
 public class H2Adapter extends JdbcAdapter {
-    public H2Adapter(@Inject RuntimeProperties runtimeProperties) {
-        super(runtimeProperties);
+    public H2Adapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         setSupportsGeneratedKeys(true);
     }
 

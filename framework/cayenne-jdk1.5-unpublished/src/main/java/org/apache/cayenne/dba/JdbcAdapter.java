@@ -26,6 +26,7 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -35,6 +36,7 @@ import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -59,6 +61,10 @@ public class JdbcAdapter implements DbAdapter {
     
     // defines if database uses case-insensitive collation
     public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
+    
+    public static final String DEFAULT_EXTENDED_TYPE_LIST = "org.apache.cayenne.dba.JdbcAdapter.defaultExtendedTypes";
+    public static final String USER_EXTENDED_TYPE_LIST = "org.apache.cayenne.dba.JdbcAdapter.userExtendedTypes";
+    public static final String EXTENDED_TYPE_FACTORY_LIST = "org.apache.cayenne.dba.JdbcAdapter.extendedTypeFactories";
 
     final static String DEFAULT_IDENTIFIERS_START_QUOTE = "\"";
     final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
@@ -74,6 +80,10 @@ public class JdbcAdapter implements DbAdapter {
 
     protected String identifiersStartQuote;
     protected String identifiersEndQuote;
+    
+    protected List<ExtendedType> defaultExtendedTypes;
+    protected List<ExtendedType> userExtendedTypes;
+    protected List<ExtendedTypeFactory> extendedTypeFactories;
 
     protected ResourceLocator resourceLocator;
     protected RuntimeProperties runtimeProperties;
@@ -104,7 +114,15 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * Creates new JdbcAdapter with a set of default parameters.
      */
-    public JdbcAdapter(@Inject RuntimeProperties runtimeProperties) {
+    public JdbcAdapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        
+        this.defaultExtendedTypes = defaultExtendedTypes;
+        this.userExtendedTypes = userExtendedTypes;
+        this.extendedTypeFactories = extendedTypeFactories;
+        
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
@@ -117,7 +135,7 @@ public class JdbcAdapter implements DbAdapter {
         this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
-        this.configureExtendedTypes(extendedTypes);
+        this.initExtendedTypes();
         initIdentifiersQuotes();
     }
 
@@ -172,6 +190,22 @@ public class JdbcAdapter implements DbAdapter {
      */
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         // noop... subclasses may override to install custom types
+    }
+    
+    protected void initExtendedTypes() {
+        for (ExtendedType type : defaultExtendedTypes) {
+            extendedTypes.registerType(type);
+        }
+        
+        // loading adapter specific extended types
+        configureExtendedTypes(extendedTypes);
+        
+        for (ExtendedType type: userExtendedTypes) {
+            extendedTypes.registerType(type);
+        }
+        for (ExtendedTypeFactory typeFactory : extendedTypeFactories) {
+            extendedTypes.addFactory(typeFactory);
+        }
     }
 
     /**

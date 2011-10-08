@@ -35,6 +35,7 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -97,6 +98,10 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+                binder.bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST);
+                binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
+                binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+                
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
@@ -132,6 +137,10 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
             public void configure(Binder binder) {
                 binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+                binder.bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST);
+                binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
+                binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+                
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);

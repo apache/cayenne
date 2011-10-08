@@ -26,7 +26,7 @@ import org.apache.cayenne.ExtendedEnumeration;
  * 
  * @since 3.0
  */
-class EnumTypeFactory implements ExtendedTypeFactory {
+public class EnumTypeFactory implements ExtendedTypeFactory {
 
     @SuppressWarnings("unchecked")
     public ExtendedType getType(Class<?> objectClass) {

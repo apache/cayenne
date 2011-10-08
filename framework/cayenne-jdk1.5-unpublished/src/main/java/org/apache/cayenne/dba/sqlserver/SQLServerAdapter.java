@@ -19,9 +19,13 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import java.util.List;
+
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.Inject;
@@ -79,8 +83,11 @@ public class SQLServerAdapter extends SybaseAdapter {
 
     public static final String TRIM_FUNCTION = "RTRIM";
 
-    public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties) {
-        super(runtimeProperties);
+    public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         
         // TODO: i wonder if Sybase supports generated keys... 
         // in this case we need to move this to the super.

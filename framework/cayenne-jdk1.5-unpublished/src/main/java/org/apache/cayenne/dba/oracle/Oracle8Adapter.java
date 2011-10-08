@@ -21,10 +21,13 @@ package org.apache.cayenne.dba.oracle;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.Query;
@@ -44,8 +47,11 @@ public class Oracle8Adapter extends OracleAdapter {
         initOracle8DriverInformation();
     }
     
-    public Oracle8Adapter(@Inject RuntimeProperties runtimeProperties) {
-        super(runtimeProperties);
+    public Oracle8Adapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
     }
 
     private static void initOracle8DriverInformation() {

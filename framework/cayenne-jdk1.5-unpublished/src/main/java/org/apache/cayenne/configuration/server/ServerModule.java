@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
@@ -26,6 +29,24 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
+import org.apache.cayenne.access.types.BigDecimalType;
+import org.apache.cayenne.access.types.BigIntegerType;
+import org.apache.cayenne.access.types.BooleanType;
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.ByteType;
+import org.apache.cayenne.access.types.CalendarType;
+import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.DateType;
+import org.apache.cayenne.access.types.DoubleType;
+import org.apache.cayenne.access.types.FloatType;
+import org.apache.cayenne.access.types.IntegerType;
+import org.apache.cayenne.access.types.LongType;
+import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.access.types.TimeType;
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.access.types.UUIDType;
+import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
@@ -42,6 +63,7 @@ import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
@@ -124,6 +146,31 @@ public class ServerModule implements Module {
 
         // configure an empty filter chain
         binder.bindList(DataDomainProvider.FILTERS_LIST);
+        
+        // configure extended types
+        binder
+                .bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST)
+                .add(new VoidType())
+                .add(new BigDecimalType())
+                .add(new BigIntegerType())
+                .add(new BooleanType())
+                .add(new ByteArrayType(false, true))
+                .add(new ByteType(false))
+                .add(new CharType(false, true))
+                .add(new DateType())
+                .add(new DoubleType())
+                .add(new FloatType())
+                .add(new IntegerType())
+                .add(new LongType())
+                .add(new ShortType(false))
+                .add(new TimeType())
+                .add(new TimestampType())
+                .add(new UtilDateType())
+                .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
+                .add(new CalendarType<Calendar>(Calendar.class))
+                .add(new UUIDType()); 
+        binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
+        binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
 
         // configure explicit configurations
         ListBuilder<Object> locationsListBuilder = binder

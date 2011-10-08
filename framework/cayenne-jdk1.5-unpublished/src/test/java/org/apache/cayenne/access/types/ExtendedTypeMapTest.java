@@ -94,7 +94,7 @@ public class ExtendedTypeMapTest extends TestCase {
     }
 
     public void testRegisteredTypeName() throws Exception {
-        ExtendedTypeMap map = new TstTypeMap();
+        ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType = new MockExtendedType();
 
         assertNotNull(map.getRegisteredTypeNames());
@@ -105,13 +105,5 @@ public class ExtendedTypeMapTest extends TestCase {
         assertNotNull(map.getRegisteredTypeNames());
         assertEquals(1, map.getRegisteredTypeNames().length);
         assertEquals(tstType.getClassName(), map.getRegisteredTypeNames()[0]);
-    }
-
-    class TstTypeMap extends ExtendedTypeMap {
-
-        @Override
-        protected void initDefaultTypes() {
-            // noop to avoid any default types
-        }
     }
 }

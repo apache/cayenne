@@ -23,8 +23,6 @@ import static org.mockito.Mockito.mock;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.sql.DataSource;
-
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ConfigurationException;
@@ -49,7 +47,7 @@ import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
@@ -87,8 +85,6 @@ public class DataDomainProviderTest extends TestCase {
         // create dependencies
         final String testConfigName = "testConfig";
         final DataChannelDescriptor testDescriptor = new DataChannelDescriptor();
-
-        final DbAdapter mockAdapter = mock(DbAdapter.class);
 
         DataMap map1 = new DataMap("map1");
         testDescriptor.getDataMaps().add(map1);
@@ -156,6 +152,12 @@ public class DataDomainProviderTest extends TestCase {
                         .add(new MySQLSniffer(objectFactory));
                 binder.bindList(DataDomainProvider.FILTERS_LIST);
                 binder.bindList(DataDomainProvider.LOCATIONS_LIST).add(testConfigName);
+                
+                // configure extended types
+                binder.bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST);
+                binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);        
+                binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+                
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
                 binder.bind(ResourceLocator.class).toInstance(locator);

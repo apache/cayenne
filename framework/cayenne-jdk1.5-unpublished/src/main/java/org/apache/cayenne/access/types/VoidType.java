@@ -29,7 +29,7 @@ import java.sql.ResultSet;
  * 
  * @since 1.2
  */
-class VoidType implements ExtendedType {
+public class VoidType implements ExtendedType {
 
     public String getClassName() {
         return Void.TYPE.getName();

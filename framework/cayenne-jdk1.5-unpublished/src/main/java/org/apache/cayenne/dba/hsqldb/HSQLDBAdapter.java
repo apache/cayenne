@@ -22,9 +22,12 @@ package org.apache.cayenne.dba.hsqldb;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -51,8 +54,11 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class HSQLDBAdapter extends JdbcAdapter {
     
-    public HSQLDBAdapter(@Inject RuntimeProperties runtimeProperties) {
-        super(runtimeProperties);
+    public HSQLDBAdapter(@Inject RuntimeProperties runtimeProperties,
+            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
     }
 
     /**
