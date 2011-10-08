@@ -81,10 +81,6 @@ public class JdbcAdapter implements DbAdapter {
     protected String identifiersStartQuote;
     protected String identifiersEndQuote;
     
-    protected List<ExtendedType> defaultExtendedTypes;
-    protected List<ExtendedType> userExtendedTypes;
-    protected List<ExtendedTypeFactory> extendedTypeFactories;
-
     protected ResourceLocator resourceLocator;
     protected RuntimeProperties runtimeProperties;
 
@@ -118,11 +114,7 @@ public class JdbcAdapter implements DbAdapter {
             @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        
-        this.defaultExtendedTypes = defaultExtendedTypes;
-        this.userExtendedTypes = userExtendedTypes;
-        this.extendedTypeFactories = extendedTypeFactories;
-        
+
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
@@ -130,12 +122,12 @@ public class JdbcAdapter implements DbAdapter {
 
         // TODO: andrus 05.02.2010 - ideally this should be injected
         this.resourceLocator = new ClassLoaderResourceLocator();
-        
+
         this.pkGenerator = createPkGenerator();
         this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
-        this.initExtendedTypes();
+        initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         initIdentifiersQuotes();
     }
 
@@ -185,22 +177,30 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Installs appropriate ExtendedTypes as converters for passing values between JDBC
-     * and Java layers. Called from default constructor.
+     * Called from {@link #initExtendedTypes(List, List, List)} to load adapter-specific
+     * types into the ExtendedTypeMap right after the default types are loaded, but before
+     * the DI overrides are. This method has specific implementations in JdbcAdapter
+     * subclasses.
      */
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         // noop... subclasses may override to install custom types
     }
     
-    protected void initExtendedTypes() {
+    /**
+     * @since 3.1
+     */
+    protected void initExtendedTypes(
+            List<ExtendedType> defaultExtendedTypes,
+            List<ExtendedType> userExtendedTypes,
+            List<ExtendedTypeFactory> extendedTypeFactories) {
         for (ExtendedType type : defaultExtendedTypes) {
             extendedTypes.registerType(type);
         }
-        
+
         // loading adapter specific extended types
         configureExtendedTypes(extendedTypes);
-        
-        for (ExtendedType type: userExtendedTypes) {
+
+        for (ExtendedType type : userExtendedTypes) {
             extendedTypes.registerType(type);
         }
         for (ExtendedTypeFactory typeFactory : extendedTypeFactories) {
