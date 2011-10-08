@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features Since 3.1M3:
 
+CAY-1603 Improve custom ExtendedType registration API
 CAY-1608 Implement constructor injection support for DefaultAdhocObjectFactory
 CAY-1618 Create database adapters instances with proper injection
 
