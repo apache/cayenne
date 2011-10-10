@@ -59,6 +59,8 @@ public class PoolManager implements DataSource, ConnectionEventListener {
     protected List<PooledConnection> usedPool;
 
     private PoolMaintenanceThread poolMaintenanceThread;
+    
+    private boolean shuttingDown;
 
     /**
      * Creates new PoolManager using org.apache.cayenne.conn.PoolDataSource for an
@@ -186,31 +188,36 @@ public class PoolManager implements DataSource, ConnectionEventListener {
      */
     @BeforeScopeEnd
     public void shutdown() throws SQLException {
-        synchronized (this) {
-            // clean connections from the pool
-            ListIterator<PooledConnection> unusedIterator = unusedPool.listIterator();
-            while (unusedIterator.hasNext()) {
-                PooledConnection con = unusedIterator.next();
-                // close connection
-                con.close();
-                // remove connection from the list
-                unusedIterator.remove();
-            }
+        
+        // disposing maintenance thread first to avoid any changes to pools
+        // during shutdown
+        disposeOfMaintenanceThread();
+        
+        // using boolean variable instead of locking PoolManager instance due to
+        // possible deadlock during shutdown when one of connections locks its
+        // event listeners list trying to invoke locked PoolManager's listener methods 
+        shuttingDown = true;
 
-            // clean used connections
-            ListIterator<PooledConnection> usedIterator = usedPool.listIterator();
-            while (usedIterator.hasNext()) {
-                PooledConnection con = usedIterator.next();
-                // stop listening for connection events
-                con.removeConnectionEventListener(this);
-                // close connection
-                con.close();
-                // remove connection from the list
-                usedIterator.remove();
-            }
+        ListIterator<PooledConnection> unusedIterator = unusedPool.listIterator();
+        while (unusedIterator.hasNext()) {
+            PooledConnection con = unusedIterator.next();
+            // close connection
+            con.close();
+            // remove connection from the list
+            unusedIterator.remove();
         }
 
-        disposeOfMaintenanceThread();
+        // clean used connections
+        ListIterator<PooledConnection> usedIterator = usedPool.listIterator();
+        while (usedIterator.hasNext()) {
+            PooledConnection con = usedIterator.next();
+            // stop listening for connection events
+            con.removeConnectionEventListener(this);
+            // close connection
+            con.close();
+            // remove connection from the list
+            usedIterator.remove();
+        }
     }
 
     protected void disposeOfMaintenanceThread() {
@@ -350,6 +357,10 @@ public class PoolManager implements DataSource, ConnectionEventListener {
     /** Returns connection from the pool. */
     public synchronized Connection getConnection(String userName, String password)
             throws SQLException {
+        
+        if (shuttingDown) {
+            throw new SQLException("Pool manager is shutting down.");
+        }
 
         PooledConnection pooledConnection = uncheckPooledConnection(userName, password);
 
@@ -451,6 +462,11 @@ public class PoolManager implements DataSource, ConnectionEventListener {
      * Returns closed connection to the pool.
      */
     public synchronized void connectionClosed(ConnectionEvent event) {
+        
+        if (shuttingDown) {
+            return;
+        }
+        
         // return connection to the pool
         PooledConnection closedConn = (PooledConnection) event.getSource();
 
@@ -476,6 +492,11 @@ public class PoolManager implements DataSource, ConnectionEventListener {
      * is in invalid state.
      */
     public synchronized void connectionErrorOccurred(ConnectionEvent event) {
+        
+        if (shuttingDown) {
+            return;
+        }
+        
         // later on we should analyze the error to see if this
         // is fatal... right now just kill this PooledConnection
 
