@@ -187,7 +187,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
      * @since 3.1
      */
     @BeforeScopeEnd
-    public void shutdown() throws SQLException {
+    public synchronized void shutdown() throws SQLException {
         
         // disposing maintenance thread first to avoid any changes to pools
         // during shutdown
@@ -544,14 +544,14 @@ public class PoolManager implements DataSource, ConnectionEventListener {
                     // ignore...
                 }
 
-                if (shouldDie) {
-                    break;
-                }
-
                 synchronized (pool) {
                     // TODO: implement a smarter algorithm for pool management...
                     // right now it will simply close one connection if the count is
                     // above median and there are any idle connections.
+                    
+                    if (shouldDie) {
+                        break;
+                    }
 
                     int unused = pool.getCurrentlyUnused();
                     int used = pool.getCurrentlyInUse();
