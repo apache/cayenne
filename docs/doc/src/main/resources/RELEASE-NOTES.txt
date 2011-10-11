@@ -19,6 +19,7 @@ CAY-1618 Create database adapters instances with proper injection
 
 Bug Fixes Since 3.1M3:
 
+CAY-1477 Modeler: Better validation for erroneous horizontal inheritance mapping
 CAY-1513 Deadlock in PoolManager
 CAY-1627 CayenneModeler: collection types for to-many relationships are not saved
 CAY-1628 ClassCastException when using java.util.Set or java.util.Map as collection type for to-many relationship

@@ -145,8 +145,14 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
 
         if (getDbEntityName() != null && getDbEntity() != null) {
-            encoder.print("\" dbEntityName=\"");
-            encoder.print(Util.encodeXmlAttribute(getDbEntityName()));
+            
+            // not writing DbEntity name if sub entity has same DbEntity 
+            // as super entity, see CAY-1477
+            if (!(getSuperEntity() != null 
+                    && getSuperEntity().getDbEntity() == getDbEntity())) {
+                encoder.print("\" dbEntityName=\"");
+                encoder.print(Util.encodeXmlAttribute(getDbEntityName()));
+            }
         }
 
         if (getSuperEntityName() == null && getSuperClassName() != null) {

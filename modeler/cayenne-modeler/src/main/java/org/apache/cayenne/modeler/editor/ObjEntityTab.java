@@ -301,6 +301,14 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
                     }
                     entity.setSuperEntityName(name);
+                    
+                    if (name == null) {
+                        dbEntityCombo.setEnabled(true);
+                    }
+                    else {
+                        dbEntityCombo.setEnabled(false);
+                        dbEntityCombo.getModel().setSelectedItem(null);
+                    }
 
                     // if a super-entity selected, disable table selection
                     // and also update parent DbEntity selection...
@@ -459,6 +467,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         dbModel.setSelectedItem(entity.getDbEntity());
         dbEntityCombo.setRenderer(CellRenderers.entityListRendererWithIcons(map));
         dbEntityCombo.setModel(dbModel);
+        dbEntityCombo.setEnabled(entity.getSuperClassName() == null);
 
         // toggle visibilty and editability rules
 

@@ -108,6 +108,15 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
                     entity.getName(),
                     superClassName);
         }
+        
+        if (entity.getDbEntityName() != null && entity.getSuperEntityName() != null) {
+            addFailure(
+                    validationResult,
+                    entity,
+                    "Sub ObjEntity '%s' has database table declaration different from super ObjEntity '%s'",
+                    entity.getName(),
+                    entity.getSuperEntityName());
+        }
 
         DataMap map = entity.getDataMap();
         if (map == null) {
