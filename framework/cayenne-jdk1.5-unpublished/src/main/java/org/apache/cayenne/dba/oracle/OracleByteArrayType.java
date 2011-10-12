@@ -27,8 +27,8 @@ import org.apache.cayenne.access.types.ByteArrayType;
 
 public class OracleByteArrayType extends ByteArrayType {
     
-    public OracleByteArrayType(boolean trimmingBytes, boolean usingBlobs) {
-        super(trimmingBytes, usingBlobs);
+    public OracleByteArrayType() {
+        super(true, true);
     }
     
     @Override

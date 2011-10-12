@@ -184,7 +184,7 @@ public class OracleAdapter extends JdbcAdapter {
         map.registerType(new OracleCharType());
 
         // create specially configured ByteArrayType handler
-        map.registerType(new OracleByteArrayType(true, true));
+        map.registerType(new OracleByteArrayType());
 
         // override date handler with Oracle handler
         map.registerType(new OracleUtilDateType());
