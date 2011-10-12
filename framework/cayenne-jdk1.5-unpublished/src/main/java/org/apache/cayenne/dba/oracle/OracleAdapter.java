@@ -34,7 +34,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -185,7 +184,7 @@ public class OracleAdapter extends JdbcAdapter {
         map.registerType(new OracleCharType());
 
         // create specially configured ByteArrayType handler
-        map.registerType(new ByteArrayType(true, true));
+        map.registerType(new OracleByteArrayType(true, true));
 
         // override date handler with Oracle handler
         map.registerType(new OracleUtilDateType());

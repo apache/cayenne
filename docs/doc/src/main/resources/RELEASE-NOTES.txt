@@ -23,6 +23,7 @@ CAY-1477 Modeler: Better validation for erroneous horizontal inheritance mapping
 CAY-1513 Deadlock in PoolManager
 CAY-1627 CayenneModeler: collection types for to-many relationships are not saved
 CAY-1628 ClassCastException when using java.util.Set or java.util.Map as collection type for to-many relationship
+CAY-1631 Oracle - passing blobs as stored procedure parameters
 
 ----------------------------------
 Release: 3.1 M3
