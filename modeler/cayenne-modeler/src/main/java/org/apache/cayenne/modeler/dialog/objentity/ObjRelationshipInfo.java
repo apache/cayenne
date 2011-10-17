@@ -252,7 +252,7 @@ public class ObjRelationshipInfo extends CayenneController implements
 
         String currPath = "";
         for (DbRelationship rel : rels) {
-            currPath = "->" + rel.getName();
+            currPath += "->" + rel.getName();
         }
 
         if (rels.size() > 0) {
