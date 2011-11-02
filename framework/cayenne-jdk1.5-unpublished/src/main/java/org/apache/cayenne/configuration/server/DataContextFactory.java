@@ -80,7 +80,7 @@ public class DataContextFactory implements ObjectContextFactory {
                 dataDomain.getProperties(),
                 eventManager);
 
-        DataContext context = new DataContext(
+        DataContext context = newInstance(
                 parent, objectStoreFactory.createObjectStore(snapshotCache));
         context.setValidatingObjectsOnCommit(dataDomain.isValidatingObjectsOnCommit());
         context.setQueryCache(new NestedQueryCache(queryCache));
@@ -92,7 +92,7 @@ public class DataContextFactory implements ObjectContextFactory {
         // pass it in constructor.
         ObjectStore objectStore = objectStoreFactory.createObjectStore(null);
 
-        DataContext context = new DataContext(parent, objectStore);
+        DataContext context = newInstance(parent, objectStore);
 
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setUsingSharedSnapshotCache(parent.isUsingSharedSnapshotCache());
@@ -109,10 +109,14 @@ public class DataContextFactory implements ObjectContextFactory {
                 .getSharedSnapshotCache() : new DataRowStore(parent.getName(), parent
                 .getProperties(), eventManager);
 
-        DataContext context = new DataContext(
+        DataContext context = newInstance(
                 parent, objectStoreFactory.createObjectStore(snapshotCache));
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setQueryCache(new NestedQueryCache(queryCache));
         return context;
+    }
+    
+    protected DataContext newInstance(DataChannel parent, ObjectStore objectStore) {
+        return new DataContext(parent, objectStore);
     }
 }

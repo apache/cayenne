@@ -55,8 +55,12 @@ public class CayenneContextFactory implements ObjectContextFactory {
                 ClientModule.CONTEXT_LIFECYCLE_EVENTS,
                 false);
 
-        CayenneContext context = new CayenneContext(parent, changeEvents, lifecycleEvents);
+        CayenneContext context = newInstance(parent, changeEvents, lifecycleEvents);
         context.setQueryCache(new NestedQueryCache(queryCache));
         return context;
+    }
+    
+    protected CayenneContext newInstance(DataChannel parent, boolean changeEventsEnabled, boolean lifecycleEventsEnabled) {
+        return new CayenneContext(parent, changeEventsEnabled, lifecycleEventsEnabled);
     }
 }
