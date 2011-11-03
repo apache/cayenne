@@ -76,7 +76,6 @@ public class DataContext extends BaseContext implements DataChannel {
 
     private DataContextDelegate delegate;
     protected boolean usingSharedSnaphsotCache;
-    protected boolean validatingObjectsOnCommit;
     protected ObjectStore objectStore;
 
     protected transient DataContextMergeHandler mergeHandler;
@@ -1074,26 +1073,6 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     public void setUsingSharedSnapshotCache(boolean flag) {
         this.usingSharedSnaphsotCache = flag;
-    }
-
-    /**
-     * Returns whether this DataContext performs object validation before commit is
-     * executed.
-     * 
-     * @since 1.1
-     */
-    public boolean isValidatingObjectsOnCommit() {
-        return validatingObjectsOnCommit;
-    }
-
-    /**
-     * Sets the property defining whether this DataContext should perform object
-     * validation before commit is executed.
-     * 
-     * @since 1.1
-     */
-    public void setValidatingObjectsOnCommit(boolean flag) {
-        this.validatingObjectsOnCommit = flag;
     }
 
     // ---------------------------------------------

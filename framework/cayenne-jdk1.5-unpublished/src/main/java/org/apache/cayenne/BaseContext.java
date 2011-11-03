@@ -96,6 +96,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     protected transient DataChannel channel;
     protected transient QueryCache queryCache;
     protected transient EntityResolver entityResolver;
+    
+    protected boolean validatingObjectsOnCommit = true;
 
     /**
      * Graph action that handles property changes
@@ -203,6 +205,26 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         this.entityResolver = entityResolver;
     }
 
+    /**
+     * Returns whether this ObjectContext performs object validation before commit is
+     * executed.
+     * 
+     * @since 1.1
+     */
+    public boolean isValidatingObjectsOnCommit() {
+        return validatingObjectsOnCommit;
+    }
+
+    /**
+     * Sets the property defining whether this ObjectContext should perform object
+     * validation before commit is executed.
+     * 
+     * @since 1.1
+     */
+    public void setValidatingObjectsOnCommit(boolean flag) {
+        this.validatingObjectsOnCommit = flag;
+    }
+    
     /**
      * @since 3.1
      */

@@ -132,7 +132,7 @@ public class CayenneContext extends BaseContext {
     CayenneContextGraphManager internalGraphManager() {
         return graphManager;
     }
-
+    
     /**
      * Commits changes to uncommitted objects. First checks if there are changes in this
      * context and if any changes are detected, sends a commit message to remote Cayenne
@@ -155,28 +155,30 @@ public class CayenneContext extends BaseContext {
 
             if (graphManager.hasChanges()) {
 
-                ValidationResult result = new ValidationResult();
-                Iterator<?> it = graphManager.dirtyNodes().iterator();
-                while (it.hasNext()) {
-                    Persistent p = (Persistent) it.next();
-                    if (p instanceof Validating) {
-                        switch (p.getPersistenceState()) {
-                            case PersistenceState.NEW:
-                                ((Validating) p).validateForInsert(result);
-                                break;
-                            case PersistenceState.MODIFIED:
-                                ((Validating) p).validateForUpdate(result);
-                                break;
-                            case PersistenceState.DELETED:
-                                ((Validating) p).validateForDelete(result);
-                                break;
+            	if (isValidatingObjectsOnCommit()) {
+                    ValidationResult result = new ValidationResult();
+                    Iterator<?> it = graphManager.dirtyNodes().iterator();
+                    while (it.hasNext()) {
+                        Persistent p = (Persistent) it.next();
+                        if (p instanceof Validating) {
+                            switch (p.getPersistenceState()) {
+                                case PersistenceState.NEW:
+                                    ((Validating) p).validateForInsert(result);
+                                    break;
+                                case PersistenceState.MODIFIED:
+                                    ((Validating) p).validateForUpdate(result);
+                                    break;
+                                case PersistenceState.DELETED:
+                                    ((Validating) p).validateForDelete(result);
+                                    break;
+                            }
                         }
                     }
-                }
-
-                if (result.hasFailures()) {
-                    throw new ValidationException(result);
-                }
+    
+                    if (result.hasFailures()) {
+                        throw new ValidationException(result);
+                    }
+            	}
 
                 graphManager.graphCommitStarted();
 
