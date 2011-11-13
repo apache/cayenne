@@ -20,6 +20,7 @@ CAY-1605 Switch Cayenne to use unified Maven repository
 Bug Fixes Since 3.0.2:
 
 CAY-1469 Modeler: dbRelationships renaming problem
+CAY-1513 Deadlock in PoolManager
 CAY-1514 ClassCastException when EJQLQuery parameters is null.
 CAY-1577 SQL queries for LIKE expressions with escape character generated with syntax errors
 CAY-1581 Not-Escaping <> during serialization to *.map.xml
