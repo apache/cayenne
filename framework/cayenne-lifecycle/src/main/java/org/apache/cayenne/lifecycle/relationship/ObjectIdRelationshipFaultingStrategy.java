@@ -16,25 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.relationship.update;
+package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.lifecycle.ref.ReferenceableHandler;
-import org.apache.commons.collections.Factory;
+import org.apache.cayenne.DataObject;
 
 /**
+ * An abstract strategy for resolving ObjectId relationships.
+ * 
  * @since 3.1
  */
-public class UuidPropagatedValueFactory implements Factory {
+public interface ObjectIdRelationshipFaultingStrategy {
 
-    private ReferenceableHandler referenceableHandler;
-    private Object to;
+    void afterObjectLoaded(DataObject object);
 
-    public UuidPropagatedValueFactory(ReferenceableHandler referenceableHandler, Object to) {
-        this.referenceableHandler = referenceableHandler;
-        this.to = to;
-    }
-
-    public Object create() {
-        return referenceableHandler.getUuid(to);
-    }
+    void afterQuery();
 }

@@ -24,67 +24,67 @@ import java.util.List;
 import org.apache.cayenne.DataObject;
 
 /**
- * A faulting strategy that does batch-faulting of related objects whenever a first UUID
- * relationship is accessed.
+ * A faulting strategy that does batch-faulting of related objects whenever a first
+ * ObjectId relationship is accessed.
  * 
  * @since 3.1
  */
-public class UuidRelationshipBatchFaultingStrategy implements
-        UuidRelationshipFaultingStrategy {
+public class ObjectIdRelationshipBatchFaultingStrategy implements
+        ObjectIdRelationshipFaultingStrategy {
 
-    private ThreadLocal<List<UuidBatchSourceItem>> batchSources;
+    private ThreadLocal<List<ObjectIdBatchSourceItem>> batchSources;
 
-    public UuidRelationshipBatchFaultingStrategy() {
-        this.batchSources = new ThreadLocal<List<UuidBatchSourceItem>>();
+    public ObjectIdRelationshipBatchFaultingStrategy() {
+        this.batchSources = new ThreadLocal<List<ObjectIdBatchSourceItem>>();
     }
 
     public void afterObjectLoaded(DataObject object) {
 
-        String uuidProperty = uuidPropertyName(object);
-        String uuidRelationship = uuidRelationshipName(uuidProperty);
+        String uuidProperty = objectIdPropertyName(object);
+        String uuidRelationship = objectIdRelationshipName(uuidProperty);
         String uuid = (String) object.readProperty(uuidProperty);
         if (uuid == null) {
             object.writePropertyDirectly(uuidRelationship, null);
         }
         else {
-            List<UuidBatchSourceItem> sources = batchSources.get();
+            List<ObjectIdBatchSourceItem> sources = batchSources.get();
 
             if (sources == null) {
-                sources = new ArrayList<UuidBatchSourceItem>();
+                sources = new ArrayList<ObjectIdBatchSourceItem>();
                 batchSources.set(sources);
             }
 
-            sources.add(new UuidBatchSourceItem(object, uuid, uuidRelationship));
+            sources.add(new ObjectIdBatchSourceItem(object, uuid, uuidRelationship));
         }
     }
 
     public void afterQuery() {
 
-        List<UuidBatchSourceItem> sources = batchSources.get();
+        List<ObjectIdBatchSourceItem> sources = batchSources.get();
         if (sources != null) {
             batchSources.set(null);
 
-            UuidBatchFault batchFault = new UuidBatchFault(sources
+            ObjectIdBatchFault batchFault = new ObjectIdBatchFault(sources
                     .get(0)
                     .getObject()
                     .getObjectContext(), sources);
 
-            for (UuidBatchSourceItem source : sources) {
+            for (ObjectIdBatchSourceItem source : sources) {
                 source.getObject().writePropertyDirectly(
-                        source.getUuidRelationship(),
-                        new UuidFault(batchFault, source.getUuid()));
+                        source.getObjectIdRelationship(),
+                        new ObjectIdFault(batchFault, source.getId()));
             }
         }
     }
 
-    String uuidRelationshipName(String uuidPropertyName) {
+    String objectIdRelationshipName(String uuidPropertyName) {
         return "cay:related:" + uuidPropertyName;
     }
 
-    String uuidPropertyName(DataObject object) {
+    String objectIdPropertyName(DataObject object) {
 
-        UuidRelationship annotation = object.getClass().getAnnotation(
-                UuidRelationship.class);
+        ObjectIdRelationship annotation = object.getClass().getAnnotation(
+                ObjectIdRelationship.class);
 
         if (annotation == null) {
             throw new IllegalArgumentException(

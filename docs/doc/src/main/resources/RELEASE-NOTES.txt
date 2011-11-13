@@ -18,6 +18,7 @@ CAY-1608 Implement constructor injection support for DefaultAdhocObjectFactory
 CAY-1618 Create database adapters instances with proper injection
 CAY-1637 [PATCH] DataContextFactory is cumbersome to customize
 CAY-1638 [PATCH] Can't disable validation for CayenneContext
+CAY-1639 cayenne-lifecycle: don't call String representation of ObjectId a UUID
 
 Bug Fixes Since 3.1M3:
 

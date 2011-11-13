@@ -18,24 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.lifecycle.id.IdCoder;
+import org.apache.commons.collections.Factory;
 
 /**
  * @since 3.1
  */
-class UuidFault extends Fault {
+class ObjectIdPropagatedValueFactory implements Factory {
 
-    private String uuid;
-    private UuidBatchFault batchFault;
+    private IdCoder referenceableHandler;
+    private Persistent to;
 
-    UuidFault(UuidBatchFault batchFault, String uuid) {
-        this.batchFault = batchFault;
-        this.uuid = uuid;
+    ObjectIdPropagatedValueFactory(IdCoder referenceableHandler, Persistent to) {
+        this.referenceableHandler = referenceableHandler;
+        this.to = to;
     }
 
-    @Override
-    public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        return uuid != null ? batchFault.getObjects().get(uuid) : null;
+    public Object create() {
+        return referenceableHandler.getStringId(to);
     }
 }

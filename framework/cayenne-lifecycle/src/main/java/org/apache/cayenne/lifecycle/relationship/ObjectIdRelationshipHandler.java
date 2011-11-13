@@ -19,28 +19,27 @@
 package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.lifecycle.ref.ReferenceableHandler;
-import org.apache.cayenne.lifecycle.relationship.update.UuidPropagatedValueFactory;
+import org.apache.cayenne.lifecycle.id.IdCoder;
 
 /**
  * @since 3.1
  */
-public class UuidRelationshipHandler {
+public class ObjectIdRelationshipHandler {
 
-    protected ReferenceableHandler referenceableHandler;
+    protected IdCoder referenceableHandler;
 
-    public UuidRelationshipHandler(ReferenceableHandler referenceableHandler) {
+    public ObjectIdRelationshipHandler(IdCoder referenceableHandler) {
         this.referenceableHandler = referenceableHandler;
     }
 
-    public String uuidRelationshipName(String uuidPropertyName) {
+    public String objectIdRelationshipName(String uuidPropertyName) {
         return "cay:related:" + uuidPropertyName;
     }
 
-    public String uuidPropertyName(DataObject object) {
+    public String objectIdPropertyName(DataObject object) {
 
-        UuidRelationship annotation = object.getClass().getAnnotation(
-                UuidRelationship.class);
+        ObjectIdRelationship annotation = object.getClass().getAnnotation(
+                ObjectIdRelationship.class);
 
         if (annotation == null) {
             throw new IllegalArgumentException(
@@ -55,8 +54,8 @@ public class UuidRelationshipHandler {
     }
 
     /**
-     * Establishes a UUID relationship between two objects. Objects must be registered in
-     * the same ObjectContext. "from" argument is the object annotated with
+     * Establishes an ObjectId relationship between two objects. Objects must be
+     * registered in the same ObjectContext. "from" argument is the object annotated with
      * UuidRelationship. Second argument can optionally be null.
      */
     public void relate(DataObject from, DataObject to) {
@@ -65,8 +64,8 @@ public class UuidRelationshipHandler {
             throw new IllegalArgumentException("'from' has null ObjectContext");
         }
 
-        String property = uuidPropertyName(from);
-        String relationship = uuidRelationshipName(property);
+        String property = objectIdPropertyName(from);
+        String relationship = objectIdRelationshipName(property);
 
         if (to != null) {
             if (to.getObjectContext() == null) {
@@ -83,13 +82,13 @@ public class UuidRelationshipHandler {
             if (to.getObjectId().isTemporary()
                     && !to.getObjectId().isReplacementIdAttached()) {
 
-                // defer UUID resolving till commit
-                from.writeProperty(property, new UuidPropagatedValueFactory(
+                // defer ObjectId resolving till commit
+                from.writeProperty(property, new ObjectIdPropagatedValueFactory(
                         referenceableHandler,
                         to));
             }
             else {
-                String uuid = referenceableHandler.getUuid(to);
+                String uuid = referenceableHandler.getStringId(to);
                 from.writeProperty(property, uuid);
             }
         }

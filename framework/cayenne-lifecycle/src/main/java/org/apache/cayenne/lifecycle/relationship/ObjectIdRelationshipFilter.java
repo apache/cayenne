@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import java.util.Collections;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelFilterChain;
@@ -30,48 +28,23 @@ import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostUpdate;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 
 /**
- * A {@link DataChannelFilter} that implements UUID relationships read functionality.
+ * A {@link DataChannelFilter} that implements ObjectId relationships read functionality.
  * 
  * @since 3.1
  */
-public class UuidRelationshipFilter implements DataChannelFilter {
+public class ObjectIdRelationshipFilter implements DataChannelFilter {
 
-    private UuidRelationshipFaultingStrategy faultingStrategy;
+    private ObjectIdRelationshipFaultingStrategy faultingStrategy;
 
     public void init(DataChannel channel) {
         this.faultingStrategy = createFaultingStrategy();
-        registerUuidRelationships(channel);
     }
 
-    protected void registerUuidRelationships(DataChannel channel) {
-
-        // TODO: create a DI-managed chain of mapping post processors, and extract this
-        // code to a UuidRelationshipModule. The following code in DataDomainProvider
-        // should be in the standard chain, and this method code - in an extension
-        // dataDomain.getEntityResolver().applyDBLayerDefaults();
-        // dataDomain.getEntityResolver().applyObjectLayerDefaults();
-
-        EntityResolver resolver = channel.getEntityResolver();
-        for (ObjEntity entity : resolver.getObjEntities()) {
-
-            Class<?> type = resolver
-                    .getClassDescriptor(entity.getName())
-                    .getObjectClass();
-            
-            UuidRelationship a = type.getAnnotation(UuidRelationship.class);
-            if(a != null) {
-                
-            }
-        }
-    }
-
-    protected UuidRelationshipFaultingStrategy createFaultingStrategy() {
-        return new UuidRelationshipBatchFaultingStrategy();
+    protected ObjectIdRelationshipFaultingStrategy createFaultingStrategy() {
+        return new ObjectIdRelationshipBatchFaultingStrategy();
     }
 
     public GraphDiff onSync(
@@ -96,8 +69,8 @@ public class UuidRelationshipFilter implements DataChannelFilter {
         }
     }
 
-    @PostUpdate(entityAnnotations = UuidRelationship.class)
-    @PostPersist(entityAnnotations = UuidRelationship.class)
+    @PostUpdate(entityAnnotations = ObjectIdRelationship.class)
+    @PostPersist(entityAnnotations = ObjectIdRelationship.class)
     void postCommit(DataObject object) {
         // invalidate after commit to ensure UUID property is re-read...
         object.getObjectContext().invalidateObjects(object);
@@ -107,7 +80,7 @@ public class UuidRelationshipFilter implements DataChannelFilter {
      * A lifecycle callback method that delegates object post load event processing to the
      * underlying faulting strategy.
      */
-    @PostLoad(entityAnnotations = UuidRelationship.class)
+    @PostLoad(entityAnnotations = ObjectIdRelationship.class)
     void postLoad(DataObject object) {
         faultingStrategy.afterObjectLoaded(object);
     }

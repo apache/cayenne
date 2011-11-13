@@ -16,15 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.ref;
+package org.apache.cayenne.lifecycle.id;
 
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.db.E1;
+import org.apache.cayenne.lifecycle.id.IdCoder;
 
-public class ReferenceableHandlerTest extends TestCase {
+public class IdCoderTest extends TestCase {
 
     private ServerRuntime runtime;
 
@@ -38,41 +39,35 @@ public class ReferenceableHandlerTest extends TestCase {
         runtime.shutdown();
     }
 
-    public void testGetUuid() {
-        ReferenceableHandler handler = new ReferenceableHandler(runtime
-                .getChannel()
-                .getEntityResolver());
+    public void testGetStringId() {
+        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         E1 e1 = new E1();
         e1.setObjectId(new ObjectId("E1", "ID", 5));
-        assertEquals("E1:5", handler.getUuid(e1));
+        assertEquals("E1:5", handler.getStringId(e1));
     }
 
-    public void testGetUuid_TempException() {
-        ReferenceableHandler handler = new ReferenceableHandler(runtime
-                .getChannel()
-                .getEntityResolver());
+    public void testGetStringId_TempException() {
+        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         E1 e1 = new E1();
         e1.setObjectId(new ObjectId("E1"));
 
         try {
-            handler.getUuid(e1);
+            handler.getStringId(e1);
         }
         catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testGetUuid_TempWithReplacement() {
-        ReferenceableHandler handler = new ReferenceableHandler(runtime
-                .getChannel()
-                .getEntityResolver());
+    public void testGetSringId_TempWithReplacement() {
+        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         E1 e1 = new E1();
         e1.setObjectId(new ObjectId("E1"));
         e1.getObjectId().getReplacementIdMap().put("ID", 6);
 
-        assertEquals("E1:6", handler.getUuid(e1));
+        assertEquals("E1:6", handler.getStringId(e1));
     }
 }

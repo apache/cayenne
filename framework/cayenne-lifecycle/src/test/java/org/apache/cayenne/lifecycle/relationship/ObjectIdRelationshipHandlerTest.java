@@ -25,12 +25,12 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.db.UuidRoot1;
-import org.apache.cayenne.lifecycle.ref.ReferenceableHandler;
+import org.apache.cayenne.lifecycle.id.IdCoder;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
-public class UuidRelationshipHandlerTest extends TestCase {
+public class ObjectIdRelationshipHandlerTest extends TestCase {
 
     private ServerRuntime runtime;
 
@@ -42,7 +42,7 @@ public class UuidRelationshipHandlerTest extends TestCase {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
 
         // a filter is required to invalidate root objects after commit
-        UuidRelationshipFilter filter = new UuidRelationshipFilter();
+        ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();
         runtime.getDataDomain().addFilter(filter);
         runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(
                 filter);
@@ -70,9 +70,9 @@ public class UuidRelationshipHandlerTest extends TestCase {
 
         UuidRoot1 r1 = context.newObject(UuidRoot1.class);
 
-        ReferenceableHandler refHandler = new ReferenceableHandler(context
+        IdCoder refHandler = new IdCoder(context
                 .getEntityResolver());
-        UuidRelationshipHandler handler = new UuidRelationshipHandler(refHandler);
+        ObjectIdRelationshipHandler handler = new ObjectIdRelationshipHandler(refHandler);
         handler.relate(r1, e1);
 
         assertEquals("E1:1", r1.getUuid());
@@ -91,9 +91,9 @@ public class UuidRelationshipHandlerTest extends TestCase {
 
         UuidRoot1 r1 = context.newObject(UuidRoot1.class);
 
-        ReferenceableHandler refHandler = new ReferenceableHandler(context
+        IdCoder refHandler = new IdCoder(context
                 .getEntityResolver());
-        UuidRelationshipHandler handler = new UuidRelationshipHandler(refHandler);
+        ObjectIdRelationshipHandler handler = new ObjectIdRelationshipHandler(refHandler);
         handler.relate(r1, e1);
 
         assertSame(e1, r1.readPropertyDirectly("cay:related:uuid"));
@@ -119,9 +119,9 @@ public class UuidRelationshipHandlerTest extends TestCase {
 
         E1 e1 = context.newObject(E1.class);
 
-        ReferenceableHandler refHandler = new ReferenceableHandler(context
+        IdCoder refHandler = new IdCoder(context
                 .getEntityResolver());
-        UuidRelationshipHandler handler = new UuidRelationshipHandler(refHandler);
+        ObjectIdRelationshipHandler handler = new ObjectIdRelationshipHandler(refHandler);
         handler.relate(r1, e1);
 
         assertSame(e1, r1.readPropertyDirectly("cay:related:uuid"));

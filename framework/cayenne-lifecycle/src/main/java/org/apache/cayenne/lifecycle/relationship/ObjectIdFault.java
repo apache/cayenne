@@ -18,16 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Fault;
+import org.apache.cayenne.Persistent;
 
 /**
- * An abstract strategy for resolving UUID relationships.
- * 
  * @since 3.1
  */
-public interface UuidRelationshipFaultingStrategy {
+class ObjectIdFault extends Fault {
 
-    void afterObjectLoaded(DataObject object);
+    private String id;
+    private ObjectIdBatchFault batchFault;
 
-    void afterQuery();
+    ObjectIdFault(ObjectIdBatchFault batchFault, String id) {
+        this.batchFault = batchFault;
+        this.id = id;
+    }
+
+    @Override
+    public Object resolveFault(Persistent sourceObject, String relationshipName) {
+        return id != null ? batchFault.getObjects().get(id) : null;
+    }
 }

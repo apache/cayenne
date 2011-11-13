@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.uuid;
+package org.apache.cayenne.lifecycle.id;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,12 +28,12 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.lifecycle.uuid.UuidCoder;
+import org.apache.cayenne.lifecycle.id.EntityIdCoder;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
-public class UuidCoderTest extends TestCase {
+public class EntityIdCoderTest extends TestCase {
 
     public void testSingleIntPk() {
         DbEntity dbEntity = new DbEntity("X");
@@ -49,8 +49,8 @@ public class UuidCoderTest extends TestCase {
 
         ObjectId id = new ObjectId("x", "ID", 3);
 
-        UuidCoder coder = new UuidCoder(entity);
-        assertEquals("x:3", coder.toUuid(id));
+        EntityIdCoder coder = new EntityIdCoder(entity);
+        assertEquals("x:3", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:3");
         assertEquals(id, parsedId);
@@ -70,8 +70,8 @@ public class UuidCoderTest extends TestCase {
 
         ObjectId id = new ObjectId("x", "ID", 3l);
 
-        UuidCoder coder = new UuidCoder(entity);
-        assertEquals("x:3", coder.toUuid(id));
+        EntityIdCoder coder = new EntityIdCoder(entity);
+        assertEquals("x:3", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:3");
         assertEquals(id, parsedId);
@@ -89,10 +89,10 @@ public class UuidCoderTest extends TestCase {
         when(entity.getDbEntityName()).thenReturn(dbEntity.getName());
         when(entity.getDbEntity()).thenReturn(dbEntity);
 
-        UuidCoder coder = new UuidCoder(entity);
+        EntityIdCoder coder = new EntityIdCoder(entity);
 
         ObjectId id = new ObjectId("x", "ID", "AbC");
-        assertEquals("x:AbC", coder.toUuid(id));
+        assertEquals("x:AbC", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:AbC");
         assertEquals(id, parsedId);
@@ -110,10 +110,10 @@ public class UuidCoderTest extends TestCase {
         when(entity.getDbEntityName()).thenReturn(dbEntity.getName());
         when(entity.getDbEntity()).thenReturn(dbEntity);
 
-        UuidCoder coder = new UuidCoder(entity);
+        EntityIdCoder coder = new EntityIdCoder(entity);
 
         ObjectId id = new ObjectId("x", "ID", "Ab:C");
-        assertEquals("x:Ab%3AC", coder.toUuid(id));
+        assertEquals("x:Ab%3AC", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:Ab%3AC");
         assertEquals(id, parsedId);
@@ -141,14 +141,14 @@ public class UuidCoderTest extends TestCase {
         when(entity.getDbEntityName()).thenReturn(dbEntity.getName());
         when(entity.getDbEntity()).thenReturn(dbEntity);
 
-        UuidCoder coder = new UuidCoder(entity);
+        EntityIdCoder coder = new EntityIdCoder(entity);
 
         Map<String, Object> idMap = new HashMap<String, Object>();
         idMap.put("ID", "X;Y");
         idMap.put("ABC", 6783463l);
         idMap.put("ZZZ", "'_'");
         ObjectId id = new ObjectId("x", idMap);
-        assertEquals("x:6783463:X%3BY:%27_%27", coder.toUuid(id));
+        assertEquals("x:6783463:X%3BY:%27_%27", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:6783463:X%3BY:%27_%27");
         assertEquals(id, parsedId);

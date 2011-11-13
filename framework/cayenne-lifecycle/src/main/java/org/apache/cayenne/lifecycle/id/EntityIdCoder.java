@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.uuid;
+package org.apache.cayenne.lifecycle.id;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -37,11 +37,11 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 
 /**
- * An object to encode/decode persistent objects UUIDs.
+ * An object to encode/decode ObjectIds for a single mapped entity.
  * 
  * @since 3.1
  */
-public class UuidCoder {
+public class EntityIdCoder {
 
     static final String UUID_SEPARATOR = ":";
 
@@ -49,24 +49,25 @@ public class UuidCoder {
     private SortedMap<String, Converter> converters;
     private int idSize;
 
-    public static String getEntityName(String uuid) {
-        int separator = uuid.indexOf(UUID_SEPARATOR);
-        if (separator <= 0 || separator == uuid.length() - 1) {
-            throw new IllegalArgumentException("Invalid uuid: " + uuid);
+    public static String getEntityName(String id) {
+        int separator = id.indexOf(UUID_SEPARATOR);
+        if (separator <= 0 || separator == id.length() - 1) {
+            throw new IllegalArgumentException("Invalid uuid: " + id);
         }
 
-        return uuid.substring(0, separator);
+        return id.substring(0, separator);
     }
 
-    public UuidCoder(ObjEntity entity) {
+    public EntityIdCoder(ObjEntity entity) {
 
         this.entityName = entity.getName();
         this.converters = new TreeMap<String, Converter>();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
             if (attribute.isPrimaryKey()) {
-                converters.put(attribute.getDbAttributeName(), create(attribute
-                        .getJavaClass()));
+                converters.put(
+                        attribute.getDbAttributeName(),
+                        create(attribute.getJavaClass()));
             }
         }
 
@@ -92,7 +93,10 @@ public class UuidCoder {
         this.idSize = (int) Math.ceil(converters.size() / 0.75d);
     }
 
-    public String toUuid(ObjectId id) {
+    /**
+     * Returns a consistent String representation of the ObjectId
+     */
+    public String toStringId(ObjectId id) {
 
         if (id.isTemporary() && !id.isReplacementIdAttached()) {
             throw new IllegalArgumentException(

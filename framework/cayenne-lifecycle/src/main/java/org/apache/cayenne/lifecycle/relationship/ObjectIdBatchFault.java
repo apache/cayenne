@@ -29,24 +29,25 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.lifecycle.uuid.UuidCoder;
+import org.apache.cayenne.lifecycle.id.EntityIdCoder;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * Provides lazy faulting functionality for a map of objects identified by UUID.
+ * Provides lazy faulting functionality for a map of objects identified by String
+ * ObjectId.
  * 
  * @since 3.1
  */
-class UuidBatchFault {
+class ObjectIdBatchFault {
 
     private ObjectContext context;
-    private List<UuidBatchSourceItem> sources;
+    private List<ObjectIdBatchSourceItem> sources;
     private volatile Map<String, Object> resolved;
 
-    UuidBatchFault(ObjectContext context, List<UuidBatchSourceItem> sources) {
+    ObjectIdBatchFault(ObjectContext context, List<ObjectIdBatchSourceItem> sources) {
         this.context = context;
         this.sources = sources;
     }
@@ -77,11 +78,11 @@ class UuidBatchFault {
         // simple case of one query, handle it separately for performance reasons
         if (sources.size() == 1) {
 
-            String uuid = sources.get(0).getUuid();
-            String entityName = UuidCoder.getEntityName(uuid);
+            String uuid = sources.get(0).getId();
+            String entityName = EntityIdCoder.getEntityName(uuid);
 
             ObjEntity entity = resolver.getObjEntity(entityName);
-            ObjectId id = new UuidCoder(entity).toObjectId(uuid);
+            ObjectId id = new EntityIdCoder(entity).toObjectId(uuid);
 
             Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
             if (object == null) {
@@ -93,17 +94,17 @@ class UuidBatchFault {
         }
 
         Map<String, SelectQuery> queriesByEntity = new HashMap<String, SelectQuery>();
-        Map<String, UuidCoder> codersByEntity = new HashMap<String, UuidCoder>();
+        Map<String, EntityIdCoder> codersByEntity = new HashMap<String, EntityIdCoder>();
 
-        for (UuidBatchSourceItem source : sources) {
+        for (ObjectIdBatchSourceItem source : sources) {
 
-            String uuid = source.getUuid();
-            String entityName = UuidCoder.getEntityName(uuid);
-            UuidCoder coder = codersByEntity.get(entityName);
+            String uuid = source.getId();
+            String entityName = EntityIdCoder.getEntityName(uuid);
+            EntityIdCoder coder = codersByEntity.get(entityName);
             SelectQuery query;
 
             if (coder == null) {
-                coder = new UuidCoder(resolver.getObjEntity(entityName));
+                coder = new EntityIdCoder(resolver.getObjEntity(entityName));
                 codersByEntity.put(entityName, coder);
 
                 query = new SelectQuery(entityName);
@@ -125,10 +126,10 @@ class UuidBatchFault {
 
         for (SelectQuery query : queriesByEntity.values()) {
 
-            UuidCoder coder = codersByEntity.get(query.getRoot());
+            EntityIdCoder coder = codersByEntity.get(query.getRoot());
             List<DataObject> objects = context.performQuery(query);
             for (DataObject object : objects) {
-                String uuid = coder.toUuid(object.getObjectId());
+                String uuid = coder.toStringId(object.getObjectId());
                 results.put(uuid, object);
             }
         }

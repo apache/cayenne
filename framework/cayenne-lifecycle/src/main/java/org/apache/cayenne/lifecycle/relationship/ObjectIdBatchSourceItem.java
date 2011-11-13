@@ -18,30 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.cayenne.DataObject;
 
-/**
- * Defines a "virtual" read-only to-one relationship based on an FK that is a UUID. This
- * way a related object can be of any entity type.
- * 
- * @since 3.1
- */
-@Target( {
-    ElementType.TYPE
-})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface UuidRelationship {
+final class ObjectIdBatchSourceItem {
 
-    /**
-     * Returns the name of the property of the source entity of the relationship that
-     * stores a UUID "FK" of a related entity.
-     */
-    String value() default "";
+    private final DataObject object;
+    private final String id;
+    private final String objectIdRelationship;
+
+    ObjectIdBatchSourceItem(DataObject object, String id, String objectIdRelationship) {
+        this.object = object;
+        this.id = id;
+        this.objectIdRelationship = objectIdRelationship;
+    }
+
+    DataObject getObject() {
+        return object;
+    }
+
+    String getObjectIdRelationship() {
+        return objectIdRelationship;
+    }
+
+    String getId() {
+        return id;
+    }
 }

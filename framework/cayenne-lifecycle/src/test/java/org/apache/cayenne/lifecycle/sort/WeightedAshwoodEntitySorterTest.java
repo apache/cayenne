@@ -24,7 +24,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.lifecycle.relationship.UuidRelationshipFilter;
+import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipFilter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 
@@ -38,7 +38,7 @@ public class WeightedAshwoodEntitySorterTest extends TestCase {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
 
         // a filter is required to invalidate root objects after commit
-        UuidRelationshipFilter filter = new UuidRelationshipFilter();
+        ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();
         runtime.getDataDomain().addFilter(filter);
         runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(
                 filter);

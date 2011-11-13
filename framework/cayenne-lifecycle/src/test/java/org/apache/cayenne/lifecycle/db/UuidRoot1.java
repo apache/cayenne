@@ -1,9 +1,9 @@
 package org.apache.cayenne.lifecycle.db;
 
 import org.apache.cayenne.lifecycle.db.auto._UuidRoot1;
-import org.apache.cayenne.lifecycle.relationship.UuidRelationship;
+import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationship;
 
-@UuidRelationship(_UuidRoot1.UUID_PROPERTY)
+@ObjectIdRelationship(_UuidRoot1.UUID_PROPERTY)
 public class UuidRoot1 extends _UuidRoot1 {
 
 }
