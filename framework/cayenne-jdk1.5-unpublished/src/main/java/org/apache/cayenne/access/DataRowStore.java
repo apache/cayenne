@@ -480,11 +480,17 @@ public class DataRowStore implements Serializable {
                     // case 4 above... have to throw out the snapshot since
                     // no good options exist to tell how to merge the two.
                     if (oldSnapshot.getVersion() != newSnapshot.getReplacesVersion()) {
-                        logger
-                                .debug("snapshot version changed, don't know what to do... Old: "
-                                        + oldSnapshot
-                                        + ", New: "
-                                        + newSnapshot);
+
+                        // snapshots can be huge potentially.. so print them only if the
+                        // user is expecting them to be printed
+                        if (logger.isDebugEnabled()) {
+                            logger
+                                    .debug("snapshot version changed, don't know what to do... Old: "
+                                            + oldSnapshot
+                                            + ", New: "
+                                            + newSnapshot);
+                        }
+                        
                         forgetSnapshot(key);
                         continue;
                     }
