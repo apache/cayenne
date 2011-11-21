@@ -196,6 +196,7 @@ public class HessianConnection extends BaseConnection {
                 null));
         factory.setUser(userName);
         factory.setPassword(password);
+        factory.setReadTimeout(getReadTimeout());
         try {
             this.service = (RemoteService) factory.create(RemoteService.class, url);
         }

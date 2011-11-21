@@ -44,7 +44,15 @@ public class HessianConnectionProvider implements Provider<ClientConnection> {
         String password = runtimeProperties.get(ClientModule.ROP_SERVICE_PASSWORD);
         String sharedSession = runtimeProperties
                 .get(ClientModule.ROP_SERVICE_SHARED_SESSION);
+        String readTimeoutStr = runtimeProperties
+                .get(ClientModule.ROP_SERVICE_TIMEOUT);
+        
+        HessianConnection result = new HessianConnection(url, userName, password, sharedSession);
+        
+        if (readTimeoutStr != null && readTimeoutStr.length() != 0) {
+            result.setReadTimeout(Long.parseLong(readTimeoutStr));
+        }
 
-        return new HessianConnection(url, userName, password, sharedSession);
+        return result;
     }
 }

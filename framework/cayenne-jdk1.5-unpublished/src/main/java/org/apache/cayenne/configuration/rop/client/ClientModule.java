@@ -43,6 +43,7 @@ public class ClientModule implements Module {
     public static final String ROP_SERVICE_USER_NAME = "cayenne.config.rop.service.username";
     public static final String ROP_SERVICE_PASSWORD = "cayenne.config.rop.service.password";
     public static final String ROP_SERVICE_SHARED_SESSION = "cayenne.config.rop.service.shared_session";
+    public static final String ROP_SERVICE_TIMEOUT = "cayenne.config.rop.service.timeout";
 
     public static final String CHANNEL_EVENTS = "cayenne.config.rop.client.channel.events";
     

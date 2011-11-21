@@ -19,6 +19,7 @@ CAY-1618 Create database adapters instances with proper injection
 CAY-1637 [PATCH] DataContextFactory is cumbersome to customize
 CAY-1638 [PATCH] Can't disable validation for CayenneContext
 CAY-1639 cayenne-lifecycle: don't call String representation of ObjectId a UUID
+CAY-1642 [PATCH] add ability to customize connection "timeout" setting for ROP
 
 Bug Fixes Since 3.1M3:
 

@@ -33,7 +33,8 @@ public abstract class BaseConnection implements ClientConnection {
 
     protected Log logger;
     protected long messageId;
-
+    protected long readTimeout = 0L;
+    
     /**
      * Default constructor that initializes logging and a single threaded EventManager.
      */
@@ -111,6 +112,26 @@ public abstract class BaseConnection implements ClientConnection {
         return messageId + 1;
     }
 
+    /**
+     * The socket timeout on requests in milliseconds. Defaults to infinity.
+     * 
+     * @since 3.1
+     */
+    public long getReadTimeout() {
+        return readTimeout;
+    }
+    
+    /**
+     * Sets the socket timeout.
+     * 
+     * @param readTimeout The socket timeout on requests in milliseconds.
+     * 
+     * @since 3.1
+     */
+    public void setReadTimeout(long readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+    
     /**
      * Called before logging the beginning of message processing.
      */
