@@ -130,7 +130,7 @@ public class StringUtils {
      * @since 3.1
      */
     public String pluralize(String str) {
-        if (str == null || str.isEmpty()) {
+        if (str == null || str.length() == 0) {
             return str;
         }
         else if (str.endsWith("s") || str.endsWith("x")) {
