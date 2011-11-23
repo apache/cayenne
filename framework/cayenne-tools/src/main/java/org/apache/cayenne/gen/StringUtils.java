@@ -25,7 +25,6 @@ import org.apache.cayenne.util.Util;
 
 /**
  * Methods for mangling strings.
- * 
  */
 public class StringUtils {
 
@@ -114,5 +113,34 @@ public class StringUtils {
             return name;
 
         return NameConverter.javaToUnderscored(name);
+    }
+
+    /**
+     * Converts entity or property name to a plural form. For example:
+     * <ul>
+     * <li>pluralize("Word") == "Words"</li>
+     * <li>pluralize("Status") == "Statuses"</li>
+     * <li>pluralize("Index") == "Indexes"</li>
+     * <li>pluralize("Factory") == "Factories"</li>
+     * </ul>
+     * <p>
+     * As of 3.1 this method is not used in bundled templates, and is present here for
+     * user templates convenience.
+     * 
+     * @since 3.1
+     */
+    public String pluralize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        else if (str.endsWith("s") || str.endsWith("x")) {
+            return str + "es";
+        }
+        else if (str.endsWith("y")) {
+            return str.substring(0, str.length() - 1) + "ies";
+        }
+        else {
+            return str + "s";
+        }
     }
 }
