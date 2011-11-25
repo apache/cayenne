@@ -111,7 +111,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
 
     public Object setValue(Object value) throws CayenneRuntimeException {
         resolvedObjectList();
-        return setValueDirectly(objectList);
+        return setValueDirectly(value);
     }
 
     public void setObjectList(List objectList) {
