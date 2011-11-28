@@ -86,7 +86,7 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
         }
 
         Object oldValue = setValueDirectly(value);
-        if (oldValue != value) {
+        if (oldValue != value && relationshipOwner.getObjectContext() != null) {
             relationshipOwner.getObjectContext().propertyChanged(relationshipOwner, relationshipName, oldValue, value);
     
             if (oldValue instanceof Persistent) {
