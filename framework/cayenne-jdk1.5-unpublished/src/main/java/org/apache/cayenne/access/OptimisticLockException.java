@@ -119,7 +119,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
     }
 
     /**
-     * Returns the object that caused the OptimisticLockException.
+     * Returns the ObjectId of the object that caused the OptimisticLockException.
      * 
      * @since 3.1
      */
