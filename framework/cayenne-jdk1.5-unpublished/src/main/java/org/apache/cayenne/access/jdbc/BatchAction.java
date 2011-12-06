@@ -216,6 +216,7 @@ public class BatchAction extends BaseSQLAction {
                     }
 
                     throw new OptimisticLockException(
+                            query.getObjectId(),
                             query.getDbEntity(),
                             queryStr,
                             snapshot);

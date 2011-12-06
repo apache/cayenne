@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -39,14 +40,16 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class OptimisticLockException extends CayenneRuntimeException {
 
+    protected ObjectId failedObjectId;
     protected String querySQL;
     protected DbEntity rootEntity;
     protected Map qualifierSnapshot;
 
-    public OptimisticLockException(DbEntity rootEntity, String querySQL,
+    public OptimisticLockException(ObjectId id, DbEntity rootEntity, String querySQL,
             Map qualifierSnapshot) {
         super("Optimistic Lock Failure");
 
+        this.failedObjectId = id;
         this.rootEntity = rootEntity;
         this.querySQL = querySQL;
         this.qualifierSnapshot = (qualifierSnapshot != null)
@@ -113,5 +116,14 @@ public class OptimisticLockException extends CayenneRuntimeException {
         }
 
         return buffer.toString();
+    }
+
+    /**
+     * Returns the object that caused the OptimisticLockException.
+     * 
+     * @since 3.1
+     */
+    public ObjectId getFailedObjectId() {
+        return failedObjectId;
     }
 }

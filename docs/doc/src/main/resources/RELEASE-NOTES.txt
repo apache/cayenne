@@ -18,6 +18,7 @@ CAY-1607 [PATCH] add pluralize method to StringUtils for use in templates
 CAY-1608 Implement constructor injection support for DefaultAdhocObjectFactory
 CAY-1618 Create database adapters instances with proper injection
 CAY-1629 [PATCH] Can't add custom Hessian serializers to the client
+CAY-1630 [PATCH] On OptimisticLockException, add method to return the object that caused the failure
 CAY-1637 [PATCH] DataContextFactory is cumbersome to customize
 CAY-1638 [PATCH] Can't disable validation for CayenneContext
 CAY-1639 cayenne-lifecycle: don't call String representation of ObjectId a UUID

@@ -384,6 +384,7 @@ public class OptimisticLockingTest extends ServerCase {
         }
         catch (OptimisticLockException ex) {
             // optimistic lock failure expected...
+            assertEquals(object.getObjectId(), ex.getFailedObjectId());
         }
     }
 
