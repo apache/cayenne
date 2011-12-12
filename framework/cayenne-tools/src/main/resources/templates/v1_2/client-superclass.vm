@@ -47,6 +47,10 @@ $importUtils.addType(${rel.CollectionType})##
 #end
 #if( ${entityUtils.hasToOneDeclaredRelationships()} )
 ${importUtils.addType('org.apache.cayenne.ValueHolder')}##
+${importUtils.addType('org.apache.cayenne.util.PersistentObjectHolder')}##
+#end
+#if( ${entityUtils.hasToManyDeclaredRelationships()} )
+${importUtils.addType('org.apache.cayenne.util.PersistentObjectList')}##
 #end
 ${importUtils.generate()}
 
@@ -107,12 +111,12 @@ public abstract class ${superClassName} extends ${baseClassName} {
         }
 
         Object oldValue = this.${stringUtils.formatVariableName($attr.Name)};
-        this.${stringUtils.formatVariableName($attr.Name)} = ${stringUtils.formatVariableName($attr.Name)};
-
         // notify objectContext about simple property change
         if(objectContext != null) {
-            objectContext.propertyChanged(this, "${attr.Name}", oldValue, ${stringUtils.formatVariableName($attr.Name)});
+            objectContext.propertyChanged(this, "${attr.Name}", oldValue, $stringUtils.formatVariableName(${attr.Name}));
         }
+        
+        this.${stringUtils.formatVariableName($attr.Name)} = ${stringUtils.formatVariableName($attr.Name)};
     }
 #end
 
@@ -129,7 +133,13 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        }
+        } else if (this.$rel.Name == null) {
+#if ( ${rel.CollectionType} == "java.util.Map")
+        	throw new RuntimeException("Map relationships cannot be accessed for transient objects");
+#else
+        	this.$rel.Name = new PersistentObjectList(this, "${rel.Name}");
+#end
+		}
 
         return ${rel.Name};
     }
@@ -138,6 +148,8 @@ public abstract class ${superClassName} extends ${baseClassName} {
 	public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
+        } else if (this.$rel.Name == null) {
+        	throw new RuntimeException("Map relationships cannot be accessed for transient objects");        
         }
 
         this.${rel.Name}.put(getMapKey("${rel.Name}", object), object);
@@ -145,6 +157,8 @@ public abstract class ${superClassName} extends ${baseClassName} {
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
+        } else if (this.$rel.Name == null) {
+        	throw new RuntimeException("Map relationships cannot be accessed for transient objects");        
         }
 
         this.${rel.Name}.remove(getMapKey("${rel.Name}", object));
@@ -153,14 +167,18 @@ public abstract class ${superClassName} extends ${baseClassName} {
     public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        }
+        } else if (this.$rel.Name == null) {
+        	this.$rel.Name = new PersistentObjectList(this, "${rel.Name}");
+		}
 
         this.${rel.Name}.add(object);
     }
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        }
+        } else if (this.$rel.Name == null) {
+        	this.$rel.Name = new PersistentObjectList(this, "${rel.Name}");
+		}
 
         this.${rel.Name}.remove(object);
     }
@@ -170,7 +188,9 @@ public abstract class ${superClassName} extends ${baseClassName} {
     public $importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) get${stringUtils.capitalized($rel.Name)}() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        }
+        } else if (this.$rel.Name == null) {
+        	this.$rel.Name = new PersistentObjectHolder(this, "$rel.Name");
+		}
 
         return ($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})) ${rel.Name}.getValue();
     }
@@ -178,8 +198,17 @@ public abstract class ${superClassName} extends ${baseClassName} {
     public void set${stringUtils.capitalized($rel.Name)}(${importUtils.formatJavaType($rel.TargetEntity.ClientClassName)} $stringUtils.formatVariableName(${rel.Name})) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        }
+        } else if (this.$rel.Name == null) {
+        	this.$rel.Name = new PersistentObjectHolder(this, "$rel.Name");
+		}
 
+        // note how we notify ObjectContext of change BEFORE the object is actually
+        // changed... this is needed to take a valid current snapshot
+        Object oldValue = this.${rel.Name}.getValueDirectly();
+        if (objectContext != null) {
+        	objectContext.propertyChanged(this, "$rel.Name", oldValue, $stringUtils.formatVariableName(${rel.Name}));
+        }
+        
         this.${stringUtils.formatVariableName($rel.Name)}.setValue(${stringUtils.formatVariableName($rel.Name)});
     }
 #end
