@@ -16,11 +16,11 @@ public abstract class _MtTooneMaster extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setToDependent(MtTooneDep toDependent) {
-        setToOneTarget("toDependent", toDependent, true);
+        setToOneTarget(TO_DEPENDENT_PROPERTY, toDependent, true);
     }
 
     public MtTooneDep getToDependent() {
-        return (MtTooneDep)readProperty("toDependent");
+        return (MtTooneDep)readProperty(TO_DEPENDENT_PROPERTY);
     }
 
 

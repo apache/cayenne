@@ -16,18 +16,18 @@ public abstract class _MtTablePrimitives extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setBooleanColumn(boolean booleanColumn) {
-        writeProperty("booleanColumn", booleanColumn);
+        writeProperty(BOOLEAN_COLUMN_PROPERTY, booleanColumn);
     }
 	public boolean isBooleanColumn() {
-        Boolean value = (Boolean)readProperty("booleanColumn");
+        Boolean value = (Boolean)readProperty(BOOLEAN_COLUMN_PROPERTY);
         return (value != null) ? value.booleanValue() : false;
     }
 
     public void setIntColumn(int intColumn) {
-        writeProperty("intColumn", intColumn);
+        writeProperty(INT_COLUMN_PROPERTY, intColumn);
     }
     public int getIntColumn() {
-        Object value = readProperty("intColumn");
+        Object value = readProperty(INT_COLUMN_PROPERTY);
         return (value != null) ? (Integer) value : 0;
     }
 

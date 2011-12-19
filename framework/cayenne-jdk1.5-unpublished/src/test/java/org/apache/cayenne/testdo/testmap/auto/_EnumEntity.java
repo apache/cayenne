@@ -16,10 +16,10 @@ public abstract class _EnumEntity extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setEnumAttribute(Enum1 enumAttribute) {
-        writeProperty("enumAttribute", enumAttribute);
+        writeProperty(ENUM_ATTRIBUTE_PROPERTY, enumAttribute);
     }
     public Enum1 getEnumAttribute() {
-        return (Enum1)readProperty("enumAttribute");
+        return (Enum1)readProperty(ENUM_ATTRIBUTE_PROPERTY);
     }
 
 }

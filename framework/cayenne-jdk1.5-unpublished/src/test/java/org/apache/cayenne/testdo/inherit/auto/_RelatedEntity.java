@@ -20,26 +20,26 @@ public abstract class _RelatedEntity extends CayenneDataObject {
     public static final String RELATED_ENTITY_ID_PK_COLUMN = "RELATED_ENTITY_ID";
 
     public void addToBaseEntities(BaseEntity obj) {
-        addToManyTarget("baseEntities", obj, true);
+        addToManyTarget(BASE_ENTITIES_PROPERTY, obj, true);
     }
     public void removeFromBaseEntities(BaseEntity obj) {
-        removeToManyTarget("baseEntities", obj, true);
+        removeToManyTarget(BASE_ENTITIES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<BaseEntity> getBaseEntities() {
-        return (List<BaseEntity>)readProperty("baseEntities");
+        return (List<BaseEntity>)readProperty(BASE_ENTITIES_PROPERTY);
     }
 
 
     public void addToSubEntities(SubEntity obj) {
-        addToManyTarget("subEntities", obj, true);
+        addToManyTarget(SUB_ENTITIES_PROPERTY, obj, true);
     }
     public void removeFromSubEntities(SubEntity obj) {
-        removeToManyTarget("subEntities", obj, true);
+        removeToManyTarget(SUB_ENTITIES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<SubEntity> getSubEntities() {
-        return (List<SubEntity>)readProperty("subEntities");
+        return (List<SubEntity>)readProperty(SUB_ENTITIES_PROPERTY);
     }
 
 

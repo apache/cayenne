@@ -21,30 +21,30 @@ public abstract class _Department extends CayenneDataObject {
     public static final String DEPARTMENT_ID_PK_COLUMN = "DEPARTMENT_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToEmployees(Employee obj) {
-        addToManyTarget("employees", obj, true);
+        addToManyTarget(EMPLOYEES_PROPERTY, obj, true);
     }
     public void removeFromEmployees(Employee obj) {
-        removeToManyTarget("employees", obj, true);
+        removeToManyTarget(EMPLOYEES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Employee> getEmployees() {
-        return (List<Employee>)readProperty("employees");
+        return (List<Employee>)readProperty(EMPLOYEES_PROPERTY);
     }
 
 
     public void setToManager(Manager toManager) {
-        setToOneTarget("toManager", toManager, true);
+        setToOneTarget(TO_MANAGER_PROPERTY, toManager, true);
     }
 
     public Manager getToManager() {
-        return (Manager)readProperty("toManager");
+        return (Manager)readProperty(TO_MANAGER_PROPERTY);
     }
 
 

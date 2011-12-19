@@ -20,30 +20,30 @@ public abstract class _MtReflexive extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToChildren(MtReflexive obj) {
-        addToManyTarget("children", obj, true);
+        addToManyTarget(CHILDREN_PROPERTY, obj, true);
     }
     public void removeFromChildren(MtReflexive obj) {
-        removeToManyTarget("children", obj, true);
+        removeToManyTarget(CHILDREN_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtReflexive> getChildren() {
-        return (List<MtReflexive>)readProperty("children");
+        return (List<MtReflexive>)readProperty(CHILDREN_PROPERTY);
     }
 
 
     public void setToParent(MtReflexive toParent) {
-        setToOneTarget("toParent", toParent, true);
+        setToOneTarget(TO_PARENT_PROPERTY, toParent, true);
     }
 
     public MtReflexive getToParent() {
-        return (MtReflexive)readProperty("toParent");
+        return (MtReflexive)readProperty(TO_PARENT_PROPERTY);
     }
 
 

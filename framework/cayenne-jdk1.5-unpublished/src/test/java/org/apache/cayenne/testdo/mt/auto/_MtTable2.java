@@ -19,27 +19,27 @@ public abstract class _MtTable2 extends CayenneDataObject {
     public static final String TABLE2_ID_PK_COLUMN = "TABLE2_ID";
 
     public void setGlobalAttribute(String globalAttribute) {
-        writeProperty("globalAttribute", globalAttribute);
+        writeProperty(GLOBAL_ATTRIBUTE_PROPERTY, globalAttribute);
     }
     public String getGlobalAttribute() {
-        return (String)readProperty("globalAttribute");
+        return (String)readProperty(GLOBAL_ATTRIBUTE_PROPERTY);
     }
 
     public void setTable1(MtTable1 table1) {
-        setToOneTarget("table1", table1, true);
+        setToOneTarget(TABLE1_PROPERTY, table1, true);
     }
 
     public MtTable1 getTable1() {
-        return (MtTable1)readProperty("table1");
+        return (MtTable1)readProperty(TABLE1_PROPERTY);
     }
 
 
     public void setTable3(MtTable3 table3) {
-        setToOneTarget("table3", table3, true);
+        setToOneTarget(TABLE3_PROPERTY, table3, true);
     }
 
     public MtTable3 getTable3() {
-        return (MtTable3)readProperty("table3");
+        return (MtTable3)readProperty(TABLE3_PROPERTY);
     }
 
 

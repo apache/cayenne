@@ -23,46 +23,46 @@ public abstract class _Quote_Person extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setDAte(Date dAte) {
-        writeProperty("dAte", dAte);
+        writeProperty(D_ATE_PROPERTY, dAte);
     }
     public Date getDAte() {
-        return (Date)readProperty("dAte");
+        return (Date)readProperty(D_ATE_PROPERTY);
     }
 
     public void setFULL_name(String fULL_name) {
-        writeProperty("fULL_name", fULL_name);
+        writeProperty(F_ULL_NAME_PROPERTY, fULL_name);
     }
     public String getFULL_name() {
-        return (String)readProperty("fULL_name");
+        return (String)readProperty(F_ULL_NAME_PROPERTY);
     }
 
     public void setGroup(String group) {
-        writeProperty("group", group);
+        writeProperty(GROUP_PROPERTY, group);
     }
     public String getGroup() {
-        return (String)readProperty("group");
+        return (String)readProperty(GROUP_PROPERTY);
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setSalary(Integer salary) {
-        writeProperty("salary", salary);
+        writeProperty(SALARY_PROPERTY, salary);
     }
     public Integer getSalary() {
-        return (Integer)readProperty("salary");
+        return (Integer)readProperty(SALARY_PROPERTY);
     }
 
     public void setAddress_Rel(QuoteAdress address_Rel) {
-        setToOneTarget("address_Rel", address_Rel, true);
+        setToOneTarget(ADDRESS_REL_PROPERTY, address_Rel, true);
     }
 
     public QuoteAdress getAddress_Rel() {
-        return (QuoteAdress)readProperty("address_Rel");
+        return (QuoteAdress)readProperty(ADDRESS_REL_PROPERTY);
     }
 
 

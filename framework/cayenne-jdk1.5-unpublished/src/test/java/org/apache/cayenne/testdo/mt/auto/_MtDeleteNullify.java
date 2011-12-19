@@ -17,18 +17,18 @@ public abstract class _MtDeleteNullify extends CayenneDataObject {
     public static final String DELETE_NULLIFY_ID_PK_COLUMN = "DELETE_NULLIFY_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setNullify(MtDeleteRule nullify) {
-        setToOneTarget("nullify", nullify, true);
+        setToOneTarget(NULLIFY_PROPERTY, nullify, true);
     }
 
     public MtDeleteRule getNullify() {
-        return (MtDeleteRule)readProperty("nullify");
+        return (MtDeleteRule)readProperty(NULLIFY_PROPERTY);
     }
 
 

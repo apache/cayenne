@@ -17,18 +17,18 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
     public void setClientContactType(String clientContactType) {
-        writeProperty("clientContactType", clientContactType);
+        writeProperty(CLIENT_CONTACT_TYPE_PROPERTY, clientContactType);
     }
     public String getClientContactType() {
-        return (String)readProperty("clientContactType");
+        return (String)readProperty(CLIENT_CONTACT_TYPE_PROPERTY);
     }
 
     public void setToClientCompany(ClientCompany toClientCompany) {
-        setToOneTarget("toClientCompany", toClientCompany, true);
+        setToOneTarget(TO_CLIENT_COMPANY_PROPERTY, toClientCompany, true);
     }
 
     public ClientCompany getToClientCompany() {
-        return (ClientCompany)readProperty("toClientCompany");
+        return (ClientCompany)readProperty(TO_CLIENT_COMPANY_PROPERTY);
     }
 
 

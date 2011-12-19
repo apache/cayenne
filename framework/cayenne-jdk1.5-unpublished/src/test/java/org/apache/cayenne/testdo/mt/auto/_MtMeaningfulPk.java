@@ -15,10 +15,10 @@ public abstract class _MtMeaningfulPk extends CayenneDataObject {
     public static final String PK_PK_COLUMN = "PK";
 
     public void setPk(String pk) {
-        writeProperty("pk", pk);
+        writeProperty(PK_PROPERTY, pk);
     }
     public String getPk() {
-        return (String)readProperty("pk");
+        return (String)readProperty(PK_PROPERTY);
     }
 
 }

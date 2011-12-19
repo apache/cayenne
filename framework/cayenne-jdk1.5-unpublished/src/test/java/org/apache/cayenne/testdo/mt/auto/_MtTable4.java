@@ -18,14 +18,14 @@ public abstract class _MtTable4 extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void addToTable5s(MtTable5 obj) {
-        addToManyTarget("table5s", obj, true);
+        addToManyTarget(TABLE5S_PROPERTY, obj, true);
     }
     public void removeFromTable5s(MtTable5 obj) {
-        removeToManyTarget("table5s", obj, true);
+        removeToManyTarget(TABLE5S_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtTable5> getTable5s() {
-        return (List<MtTable5>)readProperty("table5s");
+        return (List<MtTable5>)readProperty(TABLE5S_PROPERTY);
     }
 
 

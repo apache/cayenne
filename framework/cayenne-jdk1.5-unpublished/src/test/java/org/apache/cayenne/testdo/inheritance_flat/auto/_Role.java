@@ -21,37 +21,37 @@ public abstract class _Role extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setId(long id) {
-        writeProperty("id", id);
+        writeProperty(ID_PROPERTY, id);
     }
     public long getId() {
-        Object value = readProperty("id");
+        Object value = readProperty(ID_PROPERTY);
         return (value != null) ? (Long) value : 0;
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setType(int type) {
-        writeProperty("type", type);
+        writeProperty(TYPE_PROPERTY, type);
     }
     public int getType() {
-        Object value = readProperty("type");
+        Object value = readProperty(TYPE_PROPERTY);
         return (value != null) ? (Integer) value : 0;
     }
 
     public void addToRoleGroups(Group obj) {
-        addToManyTarget("roleGroups", obj, true);
+        addToManyTarget(ROLE_GROUPS_PROPERTY, obj, true);
     }
     public void removeFromRoleGroups(Group obj) {
-        removeToManyTarget("roleGroups", obj, true);
+        removeToManyTarget(ROLE_GROUPS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Group> getRoleGroups() {
-        return (List<Group>)readProperty("roleGroups");
+        return (List<Group>)readProperty(ROLE_GROUPS_PROPERTY);
     }
 
 

@@ -17,18 +17,18 @@ public abstract class _MtDeleteCascade extends CayenneDataObject {
     public static final String DELETE_CASCADE_ID_PK_COLUMN = "DELETE_CASCADE_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setCascade(MtDeleteRule cascade) {
-        setToOneTarget("cascade", cascade, true);
+        setToOneTarget(CASCADE_PROPERTY, cascade, true);
     }
 
     public MtDeleteRule getCascade() {
-        return (MtDeleteRule)readProperty("cascade");
+        return (MtDeleteRule)readProperty(CASCADE_PROPERTY);
     }
 
 

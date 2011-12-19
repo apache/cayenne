@@ -18,14 +18,14 @@ public abstract class _MtMapToMany extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void addToTargets(MtMapToManyTarget obj) {
-        addToManyTarget("targets", obj, true);
+        addToManyTarget(TARGETS_PROPERTY, obj, true);
     }
     public void removeFromTargets(MtMapToManyTarget obj) {
-        removeToManyTarget("targets", obj, true);
+        removeToManyTarget(TARGETS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public Map<Object, MtMapToManyTarget> getTargets() {
-        return (Map<Object, MtMapToManyTarget>)readProperty("targets");
+        return (Map<Object, MtMapToManyTarget>)readProperty(TARGETS_PROPERTY);
     }
 
 

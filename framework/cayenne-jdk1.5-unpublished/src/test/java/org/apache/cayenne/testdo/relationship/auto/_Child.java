@@ -16,11 +16,11 @@ public abstract class _Child extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setMaster(Master master) {
-        setToOneTarget("master", master, true);
+        setToOneTarget(MASTER_PROPERTY, master, true);
     }
 
     public Master getMaster() {
-        return (Master)readProperty("master");
+        return (Master)readProperty(MASTER_PROPERTY);
     }
 
 

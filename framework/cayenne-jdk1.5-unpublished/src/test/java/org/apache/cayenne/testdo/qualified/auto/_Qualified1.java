@@ -20,28 +20,28 @@ public abstract class _Qualified1 extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setDeleted(Boolean deleted) {
-        writeProperty("deleted", deleted);
+        writeProperty(DELETED_PROPERTY, deleted);
     }
     public Boolean getDeleted() {
-        return (Boolean)readProperty("deleted");
+        return (Boolean)readProperty(DELETED_PROPERTY);
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToQualified2s(Qualified2 obj) {
-        addToManyTarget("qualified2s", obj, true);
+        addToManyTarget(QUALIFIED2S_PROPERTY, obj, true);
     }
     public void removeFromQualified2s(Qualified2 obj) {
-        removeToManyTarget("qualified2s", obj, true);
+        removeToManyTarget(QUALIFIED2S_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Qualified2> getQualified2s() {
-        return (List<Qualified2>)readProperty("qualified2s");
+        return (List<Qualified2>)readProperty(QUALIFIED2S_PROPERTY);
     }
 
 

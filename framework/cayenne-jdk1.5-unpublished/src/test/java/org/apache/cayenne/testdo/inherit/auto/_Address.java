@@ -17,18 +17,18 @@ public abstract class _Address extends CayenneDataObject {
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS_ID";
 
     public void setCity(String city) {
-        writeProperty("city", city);
+        writeProperty(CITY_PROPERTY, city);
     }
     public String getCity() {
-        return (String)readProperty("city");
+        return (String)readProperty(CITY_PROPERTY);
     }
 
     public void setToEmployee(Employee toEmployee) {
-        setToOneTarget("toEmployee", toEmployee, true);
+        setToOneTarget(TO_EMPLOYEE_PROPERTY, toEmployee, true);
     }
 
     public Employee getToEmployee() {
-        return (Employee)readProperty("toEmployee");
+        return (Employee)readProperty(TO_EMPLOYEE_PROPERTY);
     }
 
 

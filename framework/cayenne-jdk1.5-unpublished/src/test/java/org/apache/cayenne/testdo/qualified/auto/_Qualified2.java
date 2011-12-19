@@ -18,25 +18,25 @@ public abstract class _Qualified2 extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setDeleted(Boolean deleted) {
-        writeProperty("deleted", deleted);
+        writeProperty(DELETED_PROPERTY, deleted);
     }
     public Boolean getDeleted() {
-        return (Boolean)readProperty("deleted");
+        return (Boolean)readProperty(DELETED_PROPERTY);
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setQualified1(Qualified1 qualified1) {
-        setToOneTarget("qualified1", qualified1, true);
+        setToOneTarget(QUALIFIED1_PROPERTY, qualified1, true);
     }
 
     public Qualified1 getQualified1() {
-        return (Qualified1)readProperty("qualified1");
+        return (Qualified1)readProperty(QUALIFIED1_PROPERTY);
     }
 
 

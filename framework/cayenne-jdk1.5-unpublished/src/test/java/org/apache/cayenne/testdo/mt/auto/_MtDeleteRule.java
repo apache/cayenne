@@ -23,45 +23,45 @@ public abstract class _MtDeleteRule extends CayenneDataObject {
     public static final String DELETE_RULE_ID_PK_COLUMN = "DELETE_RULE_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToFromCascade(MtDeleteCascade obj) {
-        addToManyTarget("fromCascade", obj, true);
+        addToManyTarget(FROM_CASCADE_PROPERTY, obj, true);
     }
     public void removeFromFromCascade(MtDeleteCascade obj) {
-        removeToManyTarget("fromCascade", obj, true);
+        removeToManyTarget(FROM_CASCADE_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtDeleteCascade> getFromCascade() {
-        return (List<MtDeleteCascade>)readProperty("fromCascade");
+        return (List<MtDeleteCascade>)readProperty(FROM_CASCADE_PROPERTY);
     }
 
 
     public void addToFromDeny(MtDeleteDeny obj) {
-        addToManyTarget("fromDeny", obj, true);
+        addToManyTarget(FROM_DENY_PROPERTY, obj, true);
     }
     public void removeFromFromDeny(MtDeleteDeny obj) {
-        removeToManyTarget("fromDeny", obj, true);
+        removeToManyTarget(FROM_DENY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtDeleteDeny> getFromDeny() {
-        return (List<MtDeleteDeny>)readProperty("fromDeny");
+        return (List<MtDeleteDeny>)readProperty(FROM_DENY_PROPERTY);
     }
 
 
     public void addToFromNullify(MtDeleteNullify obj) {
-        addToManyTarget("fromNullify", obj, true);
+        addToManyTarget(FROM_NULLIFY_PROPERTY, obj, true);
     }
     public void removeFromFromNullify(MtDeleteNullify obj) {
-        removeToManyTarget("fromNullify", obj, true);
+        removeToManyTarget(FROM_NULLIFY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtDeleteNullify> getFromNullify() {
-        return (List<MtDeleteNullify>)readProperty("fromNullify");
+        return (List<MtDeleteNullify>)readProperty(FROM_NULLIFY_PROPERTY);
     }
 
 

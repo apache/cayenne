@@ -16,17 +16,17 @@ public abstract class _IvRoot extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setDiscriminator(String discriminator) {
-        writeProperty("discriminator", discriminator);
+        writeProperty(DISCRIMINATOR_PROPERTY, discriminator);
     }
     public String getDiscriminator() {
-        return (String)readProperty("discriminator");
+        return (String)readProperty(DISCRIMINATOR_PROPERTY);
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
 }

@@ -18,14 +18,14 @@ public abstract class _DirectToSubEntity extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void addToSubEntities(SubEntity obj) {
-        addToManyTarget("subEntities", obj, true);
+        addToManyTarget(SUB_ENTITIES_PROPERTY, obj, true);
     }
     public void removeFromSubEntities(SubEntity obj) {
-        removeToManyTarget("subEntities", obj, true);
+        removeToManyTarget(SUB_ENTITIES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<SubEntity> getSubEntities() {
-        return (List<SubEntity>)readProperty("subEntities");
+        return (List<SubEntity>)readProperty(SUB_ENTITIES_PROPERTY);
     }
 
 

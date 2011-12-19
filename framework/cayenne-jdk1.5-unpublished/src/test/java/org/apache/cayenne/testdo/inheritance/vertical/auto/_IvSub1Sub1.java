@@ -15,10 +15,10 @@ public abstract class _IvSub1Sub1 extends IvSub1 {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setSub1Sub1Name(String sub1Sub1Name) {
-        writeProperty("sub1Sub1Name", sub1Sub1Name);
+        writeProperty(SUB1SUB1NAME_PROPERTY, sub1Sub1Name);
     }
     public String getSub1Sub1Name() {
-        return (String)readProperty("sub1Sub1Name");
+        return (String)readProperty(SUB1SUB1NAME_PROPERTY);
     }
 
 }

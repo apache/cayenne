@@ -14,20 +14,21 @@ public abstract class _FlattenedTest4 extends CayenneDataObject {
     public static final String NAME_PROPERTY = "name";
     public static final String TO_FT3_PROPERTY = "toFT3";
 
+    public static final String FT4_ID_PK_COLUMN = "FT4_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setToFT3(FlattenedTest3 toFT3) {
-        setToOneTarget("toFT3", toFT3, true);
+        setToOneTarget(TO_FT3_PROPERTY, toFT3, true);
     }
 
     public FlattenedTest3 getToFT3() {
-        return (FlattenedTest3)readProperty("toFT3");
+        return (FlattenedTest3)readProperty(TO_FT3_PROPERTY);
     }
 
 

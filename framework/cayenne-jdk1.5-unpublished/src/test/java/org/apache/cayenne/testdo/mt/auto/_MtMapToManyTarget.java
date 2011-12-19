@@ -16,11 +16,11 @@ public abstract class _MtMapToManyTarget extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setMapToMany(MtMapToMany mapToMany) {
-        setToOneTarget("mapToMany", mapToMany, true);
+        setToOneTarget(MAP_TO_MANY_PROPERTY, mapToMany, true);
     }
 
     public MtMapToMany getMapToMany() {
-        return (MtMapToMany)readProperty("mapToMany");
+        return (MtMapToMany)readProperty(MAP_TO_MANY_PROPERTY);
     }
 
 

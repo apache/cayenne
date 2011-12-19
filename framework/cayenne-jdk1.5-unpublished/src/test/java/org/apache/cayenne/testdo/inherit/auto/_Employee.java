@@ -21,30 +21,30 @@ public abstract class _Employee extends AbstractPerson {
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
     public void setSalary(Float salary) {
-        writeProperty("salary", salary);
+        writeProperty(SALARY_PROPERTY, salary);
     }
     public Float getSalary() {
-        return (Float)readProperty("salary");
+        return (Float)readProperty(SALARY_PROPERTY);
     }
 
     public void addToAddresses(Address obj) {
-        addToManyTarget("addresses", obj, true);
+        addToManyTarget(ADDRESSES_PROPERTY, obj, true);
     }
     public void removeFromAddresses(Address obj) {
-        removeToManyTarget("addresses", obj, true);
+        removeToManyTarget(ADDRESSES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Address> getAddresses() {
-        return (List<Address>)readProperty("addresses");
+        return (List<Address>)readProperty(ADDRESSES_PROPERTY);
     }
 
 
     public void setToDepartment(Department toDepartment) {
-        setToOneTarget("toDepartment", toDepartment, true);
+        setToOneTarget(TO_DEPARTMENT_PROPERTY, toDepartment, true);
     }
 
     public Department getToDepartment() {
-        return (Department)readProperty("toDepartment");
+        return (Department)readProperty(TO_DEPARTMENT_PROPERTY);
     }
 
 

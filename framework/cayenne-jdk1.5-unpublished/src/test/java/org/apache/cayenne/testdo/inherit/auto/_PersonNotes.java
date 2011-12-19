@@ -17,18 +17,18 @@ public abstract class _PersonNotes extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setNotes(String notes) {
-        writeProperty("notes", notes);
+        writeProperty(NOTES_PROPERTY, notes);
     }
     public String getNotes() {
-        return (String)readProperty("notes");
+        return (String)readProperty(NOTES_PROPERTY);
     }
 
     public void setPerson(AbstractPerson person) {
-        setToOneTarget("person", person, true);
+        setToOneTarget(PERSON_PROPERTY, person, true);
     }
 
     public AbstractPerson getPerson() {
-        return (AbstractPerson)readProperty("person");
+        return (AbstractPerson)readProperty(PERSON_PROPERTY);
     }
 
 

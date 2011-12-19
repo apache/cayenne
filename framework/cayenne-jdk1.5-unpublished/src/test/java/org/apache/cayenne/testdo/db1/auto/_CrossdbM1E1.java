@@ -21,33 +21,33 @@ public abstract class _CrossdbM1E1 extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToFlattened(CrossdbM2E1 obj) {
-        addToManyTarget("flattened", obj, true);
+        addToManyTarget(FLATTENED_PROPERTY, obj, true);
     }
     public void removeFromFlattened(CrossdbM2E1 obj) {
-        removeToManyTarget("flattened", obj, true);
+        removeToManyTarget(FLATTENED_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<CrossdbM2E1> getFlattened() {
-        return (List<CrossdbM2E1>)readProperty("flattened");
+        return (List<CrossdbM2E1>)readProperty(FLATTENED_PROPERTY);
     }
 
 
     public void addToListOfM2E2(CrossdbM2E2 obj) {
-        addToManyTarget("listOfM2E2", obj, true);
+        addToManyTarget(LIST_OF_M2E2_PROPERTY, obj, true);
     }
     public void removeFromListOfM2E2(CrossdbM2E2 obj) {
-        removeToManyTarget("listOfM2E2", obj, true);
+        removeToManyTarget(LIST_OF_M2E2_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<CrossdbM2E2> getListOfM2E2() {
-        return (List<CrossdbM2E2>)readProperty("listOfM2E2");
+        return (List<CrossdbM2E2>)readProperty(LIST_OF_M2E2_PROPERTY);
     }
 
 

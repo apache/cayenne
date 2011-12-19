@@ -15,10 +15,10 @@ public abstract class _MtTable1Subclass extends MtTable1 {
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";
 
     public void setSubclassAttribute1(String subclassAttribute1) {
-        writeProperty("subclassAttribute1", subclassAttribute1);
+        writeProperty(SUBCLASS_ATTRIBUTE1_PROPERTY, subclassAttribute1);
     }
     public String getSubclassAttribute1() {
-        return (String)readProperty("subclassAttribute1");
+        return (String)readProperty(SUBCLASS_ATTRIBUTE1_PROPERTY);
     }
 
 }

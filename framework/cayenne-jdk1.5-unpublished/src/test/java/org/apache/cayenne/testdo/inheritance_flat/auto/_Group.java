@@ -20,23 +20,23 @@ public abstract class _Group extends User {
     public static final String ID_PK_COLUMN = "id";
 
     public void addToGroupMembers(Role obj) {
-        addToManyTarget("groupMembers", obj, true);
+        addToManyTarget(GROUP_MEMBERS_PROPERTY, obj, true);
     }
     public void removeFromGroupMembers(Role obj) {
-        removeToManyTarget("groupMembers", obj, true);
+        removeToManyTarget(GROUP_MEMBERS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Role> getGroupMembers() {
-        return (List<Role>)readProperty("groupMembers");
+        return (List<Role>)readProperty(GROUP_MEMBERS_PROPERTY);
     }
 
 
     public void setGroupProperties(GroupProperties groupProperties) {
-        setToOneTarget("groupProperties", groupProperties, true);
+        setToOneTarget(GROUP_PROPERTIES_PROPERTY, groupProperties, true);
     }
 
     public GroupProperties getGroupProperties() {
-        return (GroupProperties)readProperty("groupProperties");
+        return (GroupProperties)readProperty(GROUP_PROPERTIES_PROPERTY);
     }
 
 

@@ -21,47 +21,48 @@ public abstract class _FlattenedTest1 extends CayenneDataObject {
     public static final String FT3OVER_COMPLEX_PROPERTY = "ft3OverComplex";
     public static final String FT4ARRAY_FOR1_PROPERTY = "ft4ArrayFor1";
 
+    public static final String FT1_ID_PK_COLUMN = "FT1_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToFt2Array(FlattenedTest2 obj) {
-        addToManyTarget("ft2Array", obj, true);
+        addToManyTarget(FT2ARRAY_PROPERTY, obj, true);
     }
     public void removeFromFt2Array(FlattenedTest2 obj) {
-        removeToManyTarget("ft2Array", obj, true);
+        removeToManyTarget(FT2ARRAY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<FlattenedTest2> getFt2Array() {
-        return (List<FlattenedTest2>)readProperty("ft2Array");
+        return (List<FlattenedTest2>)readProperty(FT2ARRAY_PROPERTY);
     }
 
 
     @SuppressWarnings("unchecked")
     public List<FlattenedTest3> getFt3Array() {
-        return (List<FlattenedTest3>)readProperty("ft3Array");
+        return (List<FlattenedTest3>)readProperty(FT3ARRAY_PROPERTY);
     }
 
 
     public void addToFt3OverComplex(FlattenedTest3 obj) {
-        addToManyTarget("ft3OverComplex", obj, true);
+        addToManyTarget(FT3OVER_COMPLEX_PROPERTY, obj, true);
     }
     public void removeFromFt3OverComplex(FlattenedTest3 obj) {
-        removeToManyTarget("ft3OverComplex", obj, true);
+        removeToManyTarget(FT3OVER_COMPLEX_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<FlattenedTest3> getFt3OverComplex() {
-        return (List<FlattenedTest3>)readProperty("ft3OverComplex");
+        return (List<FlattenedTest3>)readProperty(FT3OVER_COMPLEX_PROPERTY);
     }
 
 
     @SuppressWarnings("unchecked")
     public List<FlattenedTest4> getFt4ArrayFor1() {
-        return (List<FlattenedTest4>)readProperty("ft4ArrayFor1");
+        return (List<FlattenedTest4>)readProperty(FT4ARRAY_FOR1_PROPERTY);
     }
 
 

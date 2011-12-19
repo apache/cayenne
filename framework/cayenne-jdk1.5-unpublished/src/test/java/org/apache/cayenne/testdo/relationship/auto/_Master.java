@@ -19,21 +19,21 @@ public abstract class _Master extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToChildren(Child obj) {
-        addToManyTarget("children", obj, true);
+        addToManyTarget(CHILDREN_PROPERTY, obj, true);
     }
     public void removeFromChildren(Child obj) {
-        removeToManyTarget("children", obj, true);
+        removeToManyTarget(CHILDREN_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Child> getChildren() {
-        return (List<Child>)readProperty("children");
+        return (List<Child>)readProperty(CHILDREN_PROPERTY);
     }
 
 

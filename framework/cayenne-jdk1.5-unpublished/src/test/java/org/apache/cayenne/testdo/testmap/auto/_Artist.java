@@ -25,52 +25,52 @@ public abstract class _Artist extends CayenneDataObject {
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 
     public void setArtistName(String artistName) {
-        writeProperty("artistName", artistName);
+        writeProperty(ARTIST_NAME_PROPERTY, artistName);
     }
     public String getArtistName() {
-        return (String)readProperty("artistName");
+        return (String)readProperty(ARTIST_NAME_PROPERTY);
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
-        writeProperty("dateOfBirth", dateOfBirth);
+        writeProperty(DATE_OF_BIRTH_PROPERTY, dateOfBirth);
     }
     public Date getDateOfBirth() {
-        return (Date)readProperty("dateOfBirth");
+        return (Date)readProperty(DATE_OF_BIRTH_PROPERTY);
     }
 
     public void addToArtistExhibitArray(ArtistExhibit obj) {
-        addToManyTarget("artistExhibitArray", obj, true);
+        addToManyTarget(ARTIST_EXHIBIT_ARRAY_PROPERTY, obj, true);
     }
     public void removeFromArtistExhibitArray(ArtistExhibit obj) {
-        removeToManyTarget("artistExhibitArray", obj, true);
+        removeToManyTarget(ARTIST_EXHIBIT_ARRAY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ArtistExhibit> getArtistExhibitArray() {
-        return (List<ArtistExhibit>)readProperty("artistExhibitArray");
+        return (List<ArtistExhibit>)readProperty(ARTIST_EXHIBIT_ARRAY_PROPERTY);
     }
 
 
     public void addToGroupArray(ArtGroup obj) {
-        addToManyTarget("groupArray", obj, true);
+        addToManyTarget(GROUP_ARRAY_PROPERTY, obj, true);
     }
     public void removeFromGroupArray(ArtGroup obj) {
-        removeToManyTarget("groupArray", obj, true);
+        removeToManyTarget(GROUP_ARRAY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ArtGroup> getGroupArray() {
-        return (List<ArtGroup>)readProperty("groupArray");
+        return (List<ArtGroup>)readProperty(GROUP_ARRAY_PROPERTY);
     }
 
 
     public void addToPaintingArray(Painting obj) {
-        addToManyTarget("paintingArray", obj, true);
+        addToManyTarget(PAINTING_ARRAY_PROPERTY, obj, true);
     }
     public void removeFromPaintingArray(Painting obj) {
-        removeToManyTarget("paintingArray", obj, true);
+        removeToManyTarget(PAINTING_ARRAY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Painting> getPaintingArray() {
-        return (List<Painting>)readProperty("paintingArray");
+        return (List<Painting>)readProperty(PAINTING_ARRAY_PROPERTY);
     }
 
 

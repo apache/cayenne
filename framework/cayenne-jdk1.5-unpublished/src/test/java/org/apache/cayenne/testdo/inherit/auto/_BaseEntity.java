@@ -19,27 +19,27 @@ public abstract class _BaseEntity extends CayenneDataObject {
     public static final String BASE_ENTITY_ID_PK_COLUMN = "BASE_ENTITY_ID";
 
     public void setEntityType(String entityType) {
-        writeProperty("entityType", entityType);
+        writeProperty(ENTITY_TYPE_PROPERTY, entityType);
     }
     public String getEntityType() {
-        return (String)readProperty("entityType");
+        return (String)readProperty(ENTITY_TYPE_PROPERTY);
     }
 
     public void setToDirectToSubEntity(DirectToSubEntity toDirectToSubEntity) {
-        setToOneTarget("toDirectToSubEntity", toDirectToSubEntity, true);
+        setToOneTarget(TO_DIRECT_TO_SUB_ENTITY_PROPERTY, toDirectToSubEntity, true);
     }
 
     public DirectToSubEntity getToDirectToSubEntity() {
-        return (DirectToSubEntity)readProperty("toDirectToSubEntity");
+        return (DirectToSubEntity)readProperty(TO_DIRECT_TO_SUB_ENTITY_PROPERTY);
     }
 
 
     public void setToRelatedEntity(RelatedEntity toRelatedEntity) {
-        setToOneTarget("toRelatedEntity", toRelatedEntity, true);
+        setToOneTarget(TO_RELATED_ENTITY_PROPERTY, toRelatedEntity, true);
     }
 
     public RelatedEntity getToRelatedEntity() {
-        return (RelatedEntity)readProperty("toRelatedEntity");
+        return (RelatedEntity)readProperty(TO_RELATED_ENTITY_PROPERTY);
     }
 
 

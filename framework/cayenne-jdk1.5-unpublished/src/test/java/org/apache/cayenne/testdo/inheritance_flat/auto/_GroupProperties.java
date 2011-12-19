@@ -18,25 +18,25 @@ public abstract class _GroupProperties extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setDescription(String description) {
-        writeProperty("description", description);
+        writeProperty(DESCRIPTION_PROPERTY, description);
     }
     public String getDescription() {
-        return (String)readProperty("description");
+        return (String)readProperty(DESCRIPTION_PROPERTY);
     }
 
     public void setId(Long id) {
-        writeProperty("id", id);
+        writeProperty(ID_PROPERTY, id);
     }
     public Long getId() {
-        return (Long)readProperty("id");
+        return (Long)readProperty(ID_PROPERTY);
     }
 
     public void setGroup(Group group) {
-        setToOneTarget("group", group, true);
+        setToOneTarget(GROUP_PROPERTY, group, true);
     }
 
     public Group getGroup() {
-        return (Group)readProperty("group");
+        return (Group)readProperty(GROUP_PROPERTY);
     }
 
 

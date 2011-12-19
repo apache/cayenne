@@ -17,18 +17,18 @@ public abstract class _MtDeleteDeny extends CayenneDataObject {
     public static final String DELETE_DENY_ID_PK_COLUMN = "DELETE_DENY_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setDeny(MtDeleteRule deny) {
-        setToOneTarget("deny", deny, true);
+        setToOneTarget(DENY_PROPERTY, deny, true);
     }
 
     public MtDeleteRule getDeny() {
-        return (MtDeleteRule)readProperty("deny");
+        return (MtDeleteRule)readProperty(DENY_PROPERTY);
     }
 
 

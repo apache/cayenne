@@ -16,17 +16,17 @@ public abstract class _SoftTest extends CayenneDataObject {
     public static final String SOFT_TEST_ID_PK_COLUMN = "SOFT_TEST_ID";
 
     public void setDeleted(Boolean deleted) {
-        writeProperty("deleted", deleted);
+        writeProperty(DELETED_PROPERTY, deleted);
     }
     public Boolean getDeleted() {
-        return (Boolean)readProperty("deleted");
+        return (Boolean)readProperty(DELETED_PROPERTY);
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     protected abstract void onPrePersist();

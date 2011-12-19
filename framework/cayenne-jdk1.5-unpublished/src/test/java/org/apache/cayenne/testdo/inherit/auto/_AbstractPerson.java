@@ -20,28 +20,28 @@ public abstract class _AbstractPerson extends CayenneDataObject {
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setPersonType(String personType) {
-        writeProperty("personType", personType);
+        writeProperty(PERSON_TYPE_PROPERTY, personType);
     }
     public String getPersonType() {
-        return (String)readProperty("personType");
+        return (String)readProperty(PERSON_TYPE_PROPERTY);
     }
 
     public void addToNotes(PersonNotes obj) {
-        addToManyTarget("notes", obj, true);
+        addToManyTarget(NOTES_PROPERTY, obj, true);
     }
     public void removeFromNotes(PersonNotes obj) {
-        removeToManyTarget("notes", obj, true);
+        removeToManyTarget(NOTES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<PersonNotes> getNotes() {
-        return (List<PersonNotes>)readProperty("notes");
+        return (List<PersonNotes>)readProperty(NOTES_PROPERTY);
     }
 
 

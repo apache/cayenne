@@ -12,12 +12,13 @@ public abstract class _MtLifecycles extends CayenneDataObject {
 
     public static final String NAME_PROPERTY = "name";
 
+    public static final String ID_PK_COLUMN = "ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
 }

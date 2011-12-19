@@ -19,21 +19,21 @@ public abstract class _ClientCompany extends CayenneDataObject {
     public static final String CLIENT_COMPANY_ID_PK_COLUMN = "CLIENT_COMPANY_ID";
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToRepresentatives(CustomerRepresentative obj) {
-        addToManyTarget("representatives", obj, true);
+        addToManyTarget(REPRESENTATIVES_PROPERTY, obj, true);
     }
     public void removeFromRepresentatives(CustomerRepresentative obj) {
-        removeToManyTarget("representatives", obj, true);
+        removeToManyTarget(REPRESENTATIVES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<CustomerRepresentative> getRepresentatives() {
-        return (List<CustomerRepresentative>)readProperty("representatives");
+        return (List<CustomerRepresentative>)readProperty(REPRESENTATIVES_PROPERTY);
     }
 
 

@@ -18,25 +18,25 @@ public abstract class _UserProperties extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setId(Long id) {
-        writeProperty("id", id);
+        writeProperty(ID_PROPERTY, id);
     }
     public Long getId() {
-        return (Long)readProperty("id");
+        return (Long)readProperty(ID_PROPERTY);
     }
 
     public void setNickname(String nickname) {
-        writeProperty("nickname", nickname);
+        writeProperty(NICKNAME_PROPERTY, nickname);
     }
     public String getNickname() {
-        return (String)readProperty("nickname");
+        return (String)readProperty(NICKNAME_PROPERTY);
     }
 
     public void setUser(User user) {
-        setToOneTarget("user", user, true);
+        setToOneTarget(USER_PROPERTY, user, true);
     }
 
     public User getUser() {
-        return (User)readProperty("user");
+        return (User)readProperty(USER_PROPERTY);
     }
 
 

@@ -21,35 +21,35 @@ public abstract class _MtTable3 extends CayenneDataObject {
     public static final String TABLE3_ID_PK_COLUMN = "TABLE3_ID";
 
     public void setBinaryColumn(byte[] binaryColumn) {
-        writeProperty("binaryColumn", binaryColumn);
+        writeProperty(BINARY_COLUMN_PROPERTY, binaryColumn);
     }
     public byte[] getBinaryColumn() {
-        return (byte[])readProperty("binaryColumn");
+        return (byte[])readProperty(BINARY_COLUMN_PROPERTY);
     }
 
     public void setCharColumn(String charColumn) {
-        writeProperty("charColumn", charColumn);
+        writeProperty(CHAR_COLUMN_PROPERTY, charColumn);
     }
     public String getCharColumn() {
-        return (String)readProperty("charColumn");
+        return (String)readProperty(CHAR_COLUMN_PROPERTY);
     }
 
     public void setIntColumn(Integer intColumn) {
-        writeProperty("intColumn", intColumn);
+        writeProperty(INT_COLUMN_PROPERTY, intColumn);
     }
     public Integer getIntColumn() {
-        return (Integer)readProperty("intColumn");
+        return (Integer)readProperty(INT_COLUMN_PROPERTY);
     }
 
     public void addToTable2Array(MtTable2 obj) {
-        addToManyTarget("table2Array", obj, true);
+        addToManyTarget(TABLE2ARRAY_PROPERTY, obj, true);
     }
     public void removeFromTable2Array(MtTable2 obj) {
-        removeToManyTarget("table2Array", obj, true);
+        removeToManyTarget(TABLE2ARRAY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtTable2> getTable2Array() {
-        return (List<MtTable2>)readProperty("table2Array");
+        return (List<MtTable2>)readProperty(TABLE2ARRAY_PROPERTY);
     }
 
 

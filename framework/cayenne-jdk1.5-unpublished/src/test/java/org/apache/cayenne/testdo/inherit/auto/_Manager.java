@@ -18,14 +18,14 @@ public abstract class _Manager extends Employee {
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
     public void addToManagedDepartments(Department obj) {
-        addToManyTarget("managedDepartments", obj, true);
+        addToManyTarget(MANAGED_DEPARTMENTS_PROPERTY, obj, true);
     }
     public void removeFromManagedDepartments(Department obj) {
-        removeToManyTarget("managedDepartments", obj, true);
+        removeToManyTarget(MANAGED_DEPARTMENTS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Department> getManagedDepartments() {
-        return (List<Department>)readProperty("managedDepartments");
+        return (List<Department>)readProperty(MANAGED_DEPARTMENTS_PROPERTY);
     }
 
 

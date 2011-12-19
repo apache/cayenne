@@ -16,11 +16,11 @@ public abstract class _User extends Role {
     public static final String ID_PK_COLUMN = "id";
 
     public void setUserProperties(UserProperties userProperties) {
-        setToOneTarget("userProperties", userProperties, true);
+        setToOneTarget(USER_PROPERTIES_PROPERTY, userProperties, true);
     }
 
     public UserProperties getUserProperties() {
-        return (UserProperties)readProperty("userProperties");
+        return (UserProperties)readProperty(USER_PROPERTIES_PROPERTY);
     }
 
 
