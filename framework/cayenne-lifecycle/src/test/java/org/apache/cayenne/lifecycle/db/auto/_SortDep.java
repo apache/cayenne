@@ -16,11 +16,11 @@ public abstract class _SortDep extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setRoot(SortRoot root) {
-        setToOneTarget("root", root, true);
+        setToOneTarget(ROOT_PROPERTY, root, true);
     }
 
     public SortRoot getRoot() {
-        return (SortRoot)readProperty("root");
+        return (SortRoot)readProperty(ROOT_PROPERTY);
     }
 
 

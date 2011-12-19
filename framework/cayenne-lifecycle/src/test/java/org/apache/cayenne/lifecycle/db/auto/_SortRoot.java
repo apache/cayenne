@@ -18,14 +18,14 @@ public abstract class _SortRoot extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void addToDeps(SortDep obj) {
-        addToManyTarget("deps", obj, true);
+        addToManyTarget(DEPS_PROPERTY, obj, true);
     }
     public void removeFromDeps(SortDep obj) {
-        removeToManyTarget("deps", obj, true);
+        removeToManyTarget(DEPS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<SortDep> getDeps() {
-        return (List<SortDep>)readProperty("deps");
+        return (List<SortDep>)readProperty(DEPS_PROPERTY);
     }
 
 

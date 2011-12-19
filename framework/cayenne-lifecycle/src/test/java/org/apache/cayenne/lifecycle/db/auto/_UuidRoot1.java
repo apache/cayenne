@@ -15,10 +15,10 @@ public abstract class _UuidRoot1 extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public void setUuid(String uuid) {
-        writeProperty("uuid", uuid);
+        writeProperty(UUID_PROPERTY, uuid);
     }
     public String getUuid() {
-        return (String)readProperty("uuid");
+        return (String)readProperty(UUID_PROPERTY);
     }
 
 }
