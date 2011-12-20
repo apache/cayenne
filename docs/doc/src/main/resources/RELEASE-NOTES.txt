@@ -22,6 +22,7 @@ CAY-1630 [PATCH] On OptimisticLockException, add method to return the object tha
 CAY-1637 [PATCH] DataContextFactory is cumbersome to customize
 CAY-1638 [PATCH] Can't disable validation for CayenneContext
 CAY-1639 cayenne-lifecycle: don't call String representation of ObjectId a UUID
+CAY-1640 NullPointerException when saving
 CAY-1642 [PATCH] add ability to customize connection "timeout" setting for ROP
 CAY-1643 Updated Velocity templates to use static keys in setters/getters
 
