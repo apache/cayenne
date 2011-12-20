@@ -574,6 +574,96 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         assertEquals(PersistenceState.DELETED, parentDeleted.getPersistenceState());
         assertEquals("DDD", parentDeleted.getGlobalAttribute1());
     }
+    
+    
+    /*
+     * was added for CAY-1636
+     */
+    public void testCAY1636() throws Exception {
+        
+        ClientMtTooneMaster A = clientContext.newObject(ClientMtTooneMaster.class);
+        clientContext.commitChanges();
+        
+        ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
+        A.setToDependent(B);
+        clientContext.commitChanges();
+        
+        ObjectContext child = clientContext.createChildContext();
+    
+        SelectQuery query = new SelectQuery(ClientMtTooneMaster.class);
+        List<?> objects = child.performQuery(query);
+        
+        assertEquals(1, objects.size());
+        
+        ClientMtTooneMaster childDeleted = (ClientMtTooneMaster) objects.get(0);
+        
+      
+        child.deleteObjects(childDeleted);
+
+        child.commitChangesToParent();
+        
+        ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
+          .getGraphManager()
+          .getNode(childDeleted.getObjectId());
+        
+        assertNotNull(parentDeleted);
+        assertEquals(PersistenceState.DELETED, parentDeleted.getPersistenceState());
+        
+        clientContext.commitChanges();
+        
+        SelectQuery query2 = new SelectQuery(ClientMtTooneMaster.class);
+        List<?> objects2 = child.performQuery(query2);
+        
+        assertEquals(0, objects2.size());
+ 
+    }
+    
+    public void testCAY1636_2() throws Exception {
+        
+        ClientMtTooneMaster A = clientContext.newObject(ClientMtTooneMaster.class);
+        clientContext.commitChanges();
+        
+        ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
+        A.setToDependent(B);
+        clientContext.commitChanges();
+        
+        ObjectContext child = clientContext.createChildContext();
+        
+        SelectQuery queryB = new SelectQuery(ClientMtTooneDep.class);
+        List<?> objectsB = child.performQuery(queryB);
+        
+        assertEquals(1, objectsB.size());
+        
+        ClientMtTooneDep childBDeleted = (ClientMtTooneDep) objectsB.get(0);
+        child.deleteObjects(childBDeleted);
+    
+        SelectQuery query = new SelectQuery(ClientMtTooneMaster.class);
+        List<?> objects = child.performQuery(query);
+        
+        assertEquals(1, objects.size());
+        
+        ClientMtTooneMaster childDeleted = (ClientMtTooneMaster) objects.get(0);
+        
+      
+        child.deleteObjects(childDeleted);
+
+        child.commitChangesToParent();
+        
+        ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
+          .getGraphManager()
+          .getNode(childDeleted.getObjectId());
+        
+        assertNotNull(parentDeleted);
+        assertEquals(PersistenceState.DELETED, parentDeleted.getPersistenceState());
+        
+        clientContext.commitChanges();
+        
+        SelectQuery query2 = new SelectQuery(ClientMtTooneMaster.class);
+        List<?> objects2 = child.performQuery(query2);
+        
+        assertEquals(0, objects2.size());
+ 
+    }
 
     public void testCommitChanges() throws Exception {
         clientContext.newObject(ClientMtTable1.class);
