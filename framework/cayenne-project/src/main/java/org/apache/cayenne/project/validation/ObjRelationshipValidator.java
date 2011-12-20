@@ -137,7 +137,7 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
         // check for relationships with same source and target entities
         ObjEntity entity = (ObjEntity) relationship.getSourceEntity();
         for (ObjRelationship rel : entity.getRelationships()) {
-            if (relationship.getDbRelationshipPath().equals(rel.getDbRelationshipPath())) {
+            if (relationship.getDbRelationshipPath() != null && relationship.getDbRelationshipPath().equals(rel.getDbRelationshipPath())) {
                 if (relationship != rel && 
                         relationship.getTargetEntity() == rel.getTargetEntity() &&
                         relationship.getSourceEntity() == rel.getSourceEntity()) {
