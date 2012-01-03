@@ -43,7 +43,7 @@ http://publib.boulder.ibm.com/infocenter/cldscp10/index.jsp?topic=/com.ibm.cloud
        <db-type name="BLOB"/>
    </jdbc-type>
    <jdbc-type name="BOOLEAN">
-       <db-type name="SMALLINT"/>
+       <db-type name="BOOLEAN"/>
    </jdbc-type>
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
