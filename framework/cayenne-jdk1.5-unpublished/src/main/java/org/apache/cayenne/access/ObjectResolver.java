@@ -148,7 +148,7 @@ class ObjectResolver {
         }
 
         // this will create a HOLLOW object if it is not registered yet
-        Persistent object = context.localObject(anId, null);
+        Persistent object = context.findOrCreateObject(anId);
 
         // deal with object state
         int state = object.getPersistenceState();

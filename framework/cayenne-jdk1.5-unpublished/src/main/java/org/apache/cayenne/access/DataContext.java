@@ -1135,6 +1135,60 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
+     * An internal version of {@link #localObject(Object)} that operates on ObjectId
+     * instead of Persistent, and wouldn't attempt to look up an object in the parent
+     * channel.
+     * 
+     * @since 3.1
+     */
+    Persistent findOrCreateObject(ObjectId id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("Null ObjectId");
+        }
+
+        // have to synchronize almost the entire method to prevent multiple threads from
+        // messing up dataobjects per CAY-845. Originally only parts of "else" were
+        // synchronized, but we had to expand the lock scope to ensure consistent
+        // behavior.
+        synchronized (getGraphManager()) {
+            Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
+
+            // return an existing object
+            if (cachedObject != null) {
+
+                int state = cachedObject.getPersistenceState();
+
+                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
+                if (state != PersistenceState.MODIFIED
+                        && state != PersistenceState.DELETED) {
+
+                    ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
+                            id.getEntityName());
+
+                    descriptor.injectValueHolders(cachedObject);
+                }
+
+                return cachedObject;
+            }
+
+            // create and register a hollow object
+            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
+                    id.getEntityName());
+            Persistent localObject = (Persistent) descriptor.createObject();
+
+            localObject.setObjectContext(this);
+            localObject.setObjectId(id);
+
+            getGraphManager().registerNode(id, localObject);
+            localObject.setPersistenceState(PersistenceState.HOLLOW);
+
+            return localObject;
+        }
+
+    }
+
+    /**
      * Returns an object local to this DataContext and matching the ObjectId. If
      * <code>prototype</code> is not null, local object is refreshed with the prototype
      * values.

@@ -181,8 +181,9 @@ class DataRowUtils {
                         // must check before creating ObjectId because of partial
                         // snapshots
                         if (hasFK(dbRelationship, snapshot)) {
-                            ObjectId id = snapshot.createTargetObjectId(relationship
-                                    .getTargetEntityName(), dbRelationship);
+                            ObjectId id = snapshot.createTargetObjectId(
+                                    relationship.getTargetEntityName(),
+                                    dbRelationship);
 
                             if (diff == null
                                     || !diff.containsArcSnapshot(relationship.getName())
@@ -202,8 +203,10 @@ class DataRowUtils {
                                         property.invalidate(object);
                                     }
                                     else {
-                                        property.writeProperty(object, null, context
-                                                .localObject(id, null));
+                                        property.writeProperty(
+                                                object,
+                                                null,
+                                                context.findOrCreateObject(id));
                                     }
                                 }
                             }

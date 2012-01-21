@@ -203,8 +203,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // we previously checked that "!isSourceIndependentFromTargetChange"
             DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
 
-            ObjectId targetId = sourceRow.createTargetObjectId(relationship
-                    .getTargetEntityName(), dbRelationship);
+            ObjectId targetId = sourceRow.createTargetObjectId(
+                    relationship.getTargetEntityName(),
+                    dbRelationship);
 
             // null id means that FK is null...
             if (targetId == null) {
@@ -226,10 +227,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                             .getEntityResolver())) {
 
                 // prevent passing partial snapshots to ObjectResolver per CAY-724.
-                // Create
-                // a hollow object right here and skip object conversion downstream
+                // Create a hollow object right here and skip object conversion downstream
                 this.noObjectConversion = true;
-                Object object = context.localObject(targetId, null);
+                Object object = context.findOrCreateObject(targetId);
 
                 this.response = new GenericResponse(Collections.singletonList(object));
                 return DONE;
@@ -568,8 +568,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // take a shortcut when no prefetches exist...
             if (prefetchTree == null) {
-                return new ObjectResolver(context, descriptor, metadata
-                        .isRefreshingObjects())
+                return new ObjectResolver(
+                        context,
+                        descriptor,
+                        metadata.isRefreshingObjects())
                         .synchronizedRootResultNodeFromDataRows(normalizedRows);
             }
             else {
@@ -678,8 +680,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             }
 
             if (prefetchTree == null) {
-                return new ObjectResolver(context, descriptor, metadata
-                        .isRefreshingObjects())
+                return new ObjectResolver(
+                        context,
+                        descriptor,
+                        metadata.isRefreshingObjects())
                         .synchronizedRootResultNodeFromDataRows(rowsColumn);
             }
             else {
@@ -705,7 +709,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // no conversions needed for scalar positions; reuse Object[]'s to fill them
             // with resolved objects
-            List<PrefetchProcessorNode> segmentNodes = new ArrayList<PrefetchProcessorNode>(width);
+            List<PrefetchProcessorNode> segmentNodes = new ArrayList<PrefetchProcessorNode>(
+                    width);
             for (int i = 0; i < width; i++) {
 
                 if (rsMapping.get(i) instanceof EntityResultSegment) {
@@ -718,7 +723,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                             i);
 
                     segmentNodes.add(nextResult);
-                    
+
                     List<Persistent> objects = nextResult.getObjects();
 
                     for (int j = 0; j < rowsLen; j++) {
