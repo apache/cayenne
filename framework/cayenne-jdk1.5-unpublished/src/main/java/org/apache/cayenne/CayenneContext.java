@@ -132,7 +132,7 @@ public class CayenneContext extends BaseContext {
     CayenneContextGraphManager internalGraphManager() {
         return graphManager;
     }
-    
+
     /**
      * Commits changes to uncommitted objects. First checks if there are changes in this
      * context and if any changes are detected, sends a commit message to remote Cayenne
@@ -155,7 +155,7 @@ public class CayenneContext extends BaseContext {
 
             if (graphManager.hasChanges()) {
 
-            	if (isValidatingObjectsOnCommit()) {
+                if (isValidatingObjectsOnCommit()) {
                     ValidationResult result = new ValidationResult();
                     Iterator<?> it = graphManager.dirtyNodes().iterator();
                     while (it.hasNext()) {
@@ -174,11 +174,11 @@ public class CayenneContext extends BaseContext {
                             }
                         }
                     }
-    
+
                     if (result.hasFailures()) {
                         throw new ValidationException(result);
                     }
-            	}
+                }
 
                 graphManager.graphCommitStarted();
 
@@ -294,97 +294,6 @@ public class CayenneContext extends BaseContext {
 
     public QueryResponse onQuery(ObjectContext context, Query query) {
         return new CayenneContextQueryAction(this, context, query).execute();
-    }
-
-    /**
-     * Converts a list of Persistent objects registered in some other ObjectContext to a
-     * list of objects local to this ObjectContext.
-     * <p>
-     * <i>Current limitation: all objects in the source list must be either in COMMITTED
-     * or in HOLLOW state.</i>
-     * </p>
-     * 
-     * @deprecated since 3.1 Cayenne users should use {@link #localObject(Object)}; the
-     *             internal code has been refactored to avoid using this method all
-     *             together.
-     */
-    @Override
-    public Persistent localObject(ObjectId id, Object prototype) {
-
-        // TODO: Andrus, 1/26/2006 - this implementation is copied verbatim from
-        // DataContext. Somehow need to pull out the common code or implement inheritance
-
-        // ****** Copied from DataContext - start *******
-
-        if (id == null) {
-            throw new IllegalArgumentException("Null ObjectId");
-        }
-
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                id.getEntityName());
-
-        synchronized (getGraphManager()) {
-            Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
-
-            // merge into an existing object
-            if (cachedObject != null) {
-
-                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
-                if (cachedObject != prototype
-                        && cachedObject.getPersistenceState() != PersistenceState.MODIFIED
-                        && cachedObject.getPersistenceState() != PersistenceState.DELETED) {
-
-                    if (prototype != null
-                            && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
-
-                        descriptor.shallowMerge(prototype, cachedObject);
-
-                        if (cachedObject.getPersistenceState() == PersistenceState.HOLLOW) {
-                            cachedObject.setPersistenceState(PersistenceState.COMMITTED);
-                        }
-                    }
-                }
-
-                return cachedObject;
-            }
-            // create and merge into a new object
-            else {
-
-                // Andrus, 1/26/2006 - note that there is a tricky case of a temporary
-                // object
-                // passed from peer DataContext... In the past we used to throw an
-                // exception
-                // or return null. Now that we can have a valid (but generally
-                // indistinguishible) case of such object passed from parent, we let it
-                // slip... Not sure what's the best way of handling it that does not
-                // involve
-                // breaking encapsulation of the DataChannel to detect where in the
-                // hierarchy
-                // this context is.
-
-                Persistent localObject;
-
-                localObject = (Persistent) descriptor.createObject();
-
-                localObject.setObjectContext(this);
-                localObject.setObjectId(id);
-
-                getGraphManager().registerNode(id, localObject);
-
-                if (prototype != null
-                        && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
-                    localObject.setPersistenceState(PersistenceState.COMMITTED);
-                    descriptor.shallowMerge(prototype, localObject);
-                }
-                else {
-                    localObject.setPersistenceState(PersistenceState.HOLLOW);
-                }
-
-                return localObject;
-            }
-        }
-
-        // ****** Copied from DataContext - end *******
     }
 
     @Override

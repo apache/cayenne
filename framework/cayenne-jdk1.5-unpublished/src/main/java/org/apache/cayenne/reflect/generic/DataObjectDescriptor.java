@@ -35,6 +35,9 @@ class DataObjectDescriptor extends PersistentDescriptor {
 
     @Override
     public void shallowMerge(Object from, Object to) throws PropertyException {
+        
+        injectValueHolders(to);
+        
         super.shallowMerge(from, to);
 
         if (from instanceof DataObject && to instanceof DataObject) {

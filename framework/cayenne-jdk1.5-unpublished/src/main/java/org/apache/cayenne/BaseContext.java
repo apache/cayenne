@@ -96,7 +96,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     protected transient DataChannel channel;
     protected transient QueryCache queryCache;
     protected transient EntityResolver entityResolver;
-    
+
     protected boolean validatingObjectsOnCommit = true;
 
     /**
@@ -153,7 +153,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @since 3.1
      */
     protected void attachToRuntime(Injector injector) {
-        
+
         // TODO: nested contexts handling??
         attachToChannel(injector.getInstance(DataChannel.class));
         setQueryCache(new NestedQueryCache(injector.getInstance(QueryCache.class)));
@@ -224,7 +224,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     public void setValidatingObjectsOnCommit(boolean flag) {
         this.validatingObjectsOnCommit = flag;
     }
-    
+
     /**
      * @since 3.1
      */
@@ -298,7 +298,80 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      *             internal code has been refactored to avoid using this method all
      *             together.
      */
-    public abstract Persistent localObject(ObjectId id, Object prototype);
+    public Persistent localObject(ObjectId id, Object prototype) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("Null ObjectId");
+        }
+
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
+                id.getEntityName());
+
+        // have to synchronize almost the entire method to prevent multiple threads from
+        // messing up dataobjects per CAY-845. Originally only parts of "else" were
+        // synchronized, but we had to expand the lock scope to ensure consistent
+        // behavior.
+        synchronized (getGraphManager()) {
+            Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
+
+            // merge into an existing object
+            if (cachedObject != null) {
+
+                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
+                if (cachedObject != prototype
+                        && cachedObject.getPersistenceState() != PersistenceState.MODIFIED
+                        && cachedObject.getPersistenceState() != PersistenceState.DELETED) {
+
+                    if (prototype != null
+                            && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
+
+                        descriptor.shallowMerge(prototype, cachedObject);
+
+                        if (cachedObject.getPersistenceState() == PersistenceState.HOLLOW) {
+                            cachedObject.setPersistenceState(PersistenceState.COMMITTED);
+                        }
+                    }
+                }
+
+                return cachedObject;
+            }
+            // create and merge into a new object
+            else {
+
+                // Andrus, 1/26/2006 - note that there is a tricky case of a temporary
+                // object
+                // passed from peer DataContext... In the past we used to throw an
+                // exception
+                // or return null. Now that we can have a valid (but generally
+                // indistinguishible) case of such object passed from parent, we let it
+                // slip... Not sure what's the best way of handling it that does not
+                // involve
+                // breaking encapsulation of the DataChannel to detect where in the
+                // hierarchy
+                // this context is.
+
+                Persistent localObject;
+
+                localObject = (Persistent) descriptor.createObject();
+
+                localObject.setObjectContext(this);
+                localObject.setObjectId(id);
+
+                getGraphManager().registerNode(id, localObject);
+
+                if (prototype != null
+                        && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
+                    localObject.setPersistenceState(PersistenceState.COMMITTED);
+                    descriptor.shallowMerge(prototype, localObject);
+                }
+                else {
+                    localObject.setPersistenceState(PersistenceState.HOLLOW);
+                }
+
+                return localObject;
+            }
+        }
+    }
 
     public abstract Collection<?> modifiedObjects();
 
