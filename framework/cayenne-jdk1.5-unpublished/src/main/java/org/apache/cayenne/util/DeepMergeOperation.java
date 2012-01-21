@@ -46,8 +46,8 @@ import org.apache.cayenne.reflect.ToOneProperty;
  */
 public class DeepMergeOperation {
 
-    private Map<ObjectId, Persistent> seen;
-    private ShallowMergeOperation shallowMergeOperation;
+    private final Map<ObjectId, Persistent> seen;
+    private final ShallowMergeOperation shallowMergeOperation;
 
     public DeepMergeOperation(ObjectContext context) {
         this.seen = new HashMap<ObjectId, Persistent>();
@@ -58,18 +58,25 @@ public class DeepMergeOperation {
         seen.clear();
     }
 
+    /**
+     * @deprecated since 3.1 use {@link #merge(Persistent, ClassDescriptor)}.
+     */
     public Object merge(Object object, ClassDescriptor descriptor) {
         if (!(object instanceof Persistent)) {
             throw new CayenneRuntimeException("Expected Persistent, got: " + object);
         }
 
-        final Persistent source = (Persistent) object;
-        ObjectId id = source.getObjectId();
+        return merge((Persistent) object, descriptor);
+    }
+
+    public Object merge(final Persistent peerInParentContext, ClassDescriptor descriptor) {
+
+        ObjectId id = peerInParentContext.getObjectId();
 
         // sanity check
         if (id == null) {
             throw new CayenneRuntimeException("Server returned an object without an id: "
-                    + source);
+                    + peerInParentContext);
         }
 
         Object seenTarget = seen.get(id);
@@ -77,16 +84,17 @@ public class DeepMergeOperation {
             return seenTarget;
         }
 
-        final Persistent target = shallowMergeOperation.merge(source);
+        final Persistent target = shallowMergeOperation.merge(peerInParentContext);
         seen.put(id, target);
 
-        descriptor = descriptor.getSubclassDescriptor(source.getClass());
+        descriptor = descriptor.getSubclassDescriptor(peerInParentContext.getClass());
         descriptor.visitProperties(new PropertyVisitor() {
 
             public boolean visitToOne(ToOneProperty property) {
 
-                if (!property.isFault(source)) {
-                    Object destinationSource = property.readProperty(source);
+                if (!property.isFault(peerInParentContext)) {
+                    Persistent destinationSource = (Persistent) property
+                            .readProperty(peerInParentContext);
 
                     Object destinationTarget = destinationSource != null ? merge(
                             destinationSource,
@@ -101,8 +109,8 @@ public class DeepMergeOperation {
             }
 
             public boolean visitToMany(ToManyProperty property) {
-                if (!property.isFault(source)) {
-                    Object value = property.readProperty(source);
+                if (!property.isFault(peerInParentContext)) {
+                    Object value = property.readProperty(peerInParentContext);
                     Object targetValue;
 
                     if (property instanceof ToManyMapProperty) {
@@ -112,7 +120,7 @@ public class DeepMergeOperation {
                         for (Entry entry : map.entrySet()) {
                             Object destinationSource = entry.getValue();
                             Object destinationTarget = destinationSource != null ? merge(
-                                    destinationSource,
+                                    (Persistent) destinationSource,
                                     property.getTargetDescriptor()) : null;
 
                             targetMap.put(entry.getKey(), destinationTarget);
@@ -125,7 +133,7 @@ public class DeepMergeOperation {
 
                         for (Object destinationSource : collection) {
                             Object destinationTarget = destinationSource != null ? merge(
-                                    destinationSource,
+                                    (Persistent) destinationSource,
                                     property.getTargetDescriptor()) : null;
 
                             targetCollection.add(destinationTarget);
