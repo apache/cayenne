@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationship.Child;
 import org.apache.cayenne.testdo.relationship.Master;
@@ -29,6 +30,9 @@ import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
 public class NestedDataContextParentPeerEventsTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     @Inject
     private DataContext parentContext1;
@@ -41,10 +45,10 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         a.setName("X");
         parentContext1.commitChanges();
 
-        Master a1 = (Master) parentContext2.localObject(a.getObjectId(), a);
+        Master a1 = parentContext2.localObject(a);
 
-        final ObjectContext child = parentContext1.createChildContext();
-        final Master a2 = (Master) child.localObject(a.getObjectId(), a);
+        final ObjectContext child = runtime.getContext(parentContext1);
+        final Master a2 = child.localObject(a);
 
         a1.setName("Y");
         assertEquals("X", a2.getName());
@@ -56,8 +60,9 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
             protected void assertResult() throws Exception {
                 assertEquals("Y", a2.getName());
 
-                assertFalse("Peer data context became dirty on event processing", child
-                        .hasChanges());
+                assertFalse(
+                        "Peer data context became dirty on event processing",
+                        child.hasChanges());
             }
         }.assertWithTimeout(2000);
     }
@@ -72,13 +77,13 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         altA.setName("Y");
         parentContext1.commitChanges();
 
-        Child p1 = (Child) parentContext2.localObject(p.getObjectId(), null);
-        Master altA1 = (Master) parentContext2.localObject(altA.getObjectId(), null);
+        Child p1 = parentContext2.localObject(p);
+        Master altA1 = parentContext2.localObject(altA);
 
-        final ObjectContext childContext1 = parentContext1.createChildContext();
-        final Child p2 = (Child) childContext1.localObject(p.getObjectId(), p);
-        final Master altA2 = (Master) childContext1.localObject(altA.getObjectId(), altA);
-        Master a2 = (Master) childContext1.localObject(a.getObjectId(), a);
+        final ObjectContext childContext1 = runtime.getContext(parentContext1);
+        final Child p2 = childContext1.localObject(p);
+        final Master altA2 = childContext1.localObject(altA);
+        Master a2 = childContext1.localObject(a);
 
         p1.setMaster(altA1);
         assertSame(a2, p2.getMaster());
@@ -108,12 +113,12 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
 
         parentContext1.commitChanges();
 
-        Child py1 = (Child) parentContext2.localObject(py.getObjectId(), py);
-        Master a1 = (Master) parentContext2.localObject(a.getObjectId(), a);
+        Child py1 = parentContext2.localObject(py);
+        Master a1 = parentContext2.localObject(a);
 
-        final ObjectContext peer2 = parentContext1.createChildContext();
-        final Child py2 = (Child) peer2.localObject(py.getObjectId(), py);
-        final Master a2 = (Master) peer2.localObject(a.getObjectId(), a);
+        final ObjectContext peer2 = runtime.getContext(parentContext1);
+        final Child py2 = peer2.localObject(py);
+        final Master a2 = peer2.localObject(a);
 
         a1.addToChildren(py1);
         assertEquals(1, a2.getChildren().size());
@@ -127,8 +132,9 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
                 assertEquals(2, a2.getChildren().size());
                 assertTrue(a2.getChildren().contains(py2));
 
-                assertFalse("Peer data context became dirty on event processing", peer2
-                        .hasChanges());
+                assertFalse(
+                        "Peer data context became dirty on event processing",
+                        peer2.hasChanges());
             }
         }.assertWithTimeout(2000);
     }

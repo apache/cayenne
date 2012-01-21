@@ -30,14 +30,14 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
-    
+
     @Inject
     private DBHelper dbHelper;
-    
+
     @Override
     public void setUpAfterInjection() throws Exception {
         super.setUpAfterInjection();
-        
+
         dbHelper.deleteAll("MT_TABLE2");
         dbHelper.deleteAll("MT_TABLE1");
     }
@@ -47,12 +47,16 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         ClientMtTable1 a1 = peer1.newObject(ClientMtTable1.class);
         a1.setGlobalAttribute1("Y");
         ObjectId a1TempId = a1.getObjectId();
+        
+        // make sure temp ObjectId becomes available to peers
+        peer1.commitChangesToParent();
 
         ObjectContext peer2 = clientContext.createChildContext();
-        ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a1TempId, a1);
+        ClientMtTable1 a2 = peer2.localObject(a1);
 
         assertEquals(a1TempId, a2.getObjectId());
 
+        a1.setGlobalAttribute1("Z");
         peer1.commitChanges();
         assertFalse(a1.getObjectId().isTemporary());
         assertFalse(a2.getObjectId().isTemporary());
@@ -65,18 +69,19 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         clientContext.commitChanges();
 
         ObjectContext peer1 = clientContext.createChildContext();
-        ClientMtTable1 a1 = (ClientMtTable1) peer1.localObject(a.getObjectId(), a);
+        ClientMtTable1 a1 = peer1.localObject(a);
 
         ObjectContext peer2 = clientContext.createChildContext();
-        ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a.getObjectId(), a);
+        ClientMtTable1 a2 = peer2.localObject(a);
 
         a1.setGlobalAttribute1("Y");
         assertEquals("X", a2.getGlobalAttribute1());
         peer1.commitChangesToParent();
         assertEquals("Y", a2.getGlobalAttribute1());
 
-        assertFalse("Peer data context became dirty on event processing", peer2
-                .hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 
     public void testPeerObjectUpdatedToOneRelationship() throws Exception {
@@ -91,21 +96,22 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         clientContext.commitChanges();
 
         ObjectContext peer1 = clientContext.createChildContext();
-        ClientMtTable2 p1 = (ClientMtTable2) peer1.localObject(p.getObjectId(), p);
-        ClientMtTable1 altA1 = (ClientMtTable1) peer1.localObject(altA.getObjectId(), altA);
+        ClientMtTable2 p1 = peer1.localObject(p);
+        ClientMtTable1 altA1 = peer1.localObject(altA);
 
         ObjectContext peer2 = clientContext.createChildContext();
-        ClientMtTable2 p2 = (ClientMtTable2) peer2.localObject(p.getObjectId(), p);
-        ClientMtTable1 altA2 = (ClientMtTable1) peer2.localObject(altA.getObjectId(), altA);
-        ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a.getObjectId(), a);
+        ClientMtTable2 p2 = peer2.localObject(p);
+        ClientMtTable1 altA2 = peer2.localObject(altA);
+        ClientMtTable1 a2 = peer2.localObject(a);
 
         p1.setTable1(altA1);
         assertSame(a2, p2.getTable1());
         peer1.commitChangesToParent();
         assertEquals(altA2, p2.getTable1());
 
-        assertFalse("Peer data context became dirty on event processing", peer2
-                .hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 
     public void testPeerObjectUpdatedToManyRelationship() throws Exception {
@@ -122,12 +128,12 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         clientContext.commitChanges();
 
         ObjectContext peer1 = clientContext.createChildContext();
-        ClientMtTable2 py1 = (ClientMtTable2) peer1.localObject(py.getObjectId(), py);
-        ClientMtTable1 a1 = (ClientMtTable1) peer1.localObject(a.getObjectId(), a);
+        ClientMtTable2 py1 = peer1.localObject(py);
+        ClientMtTable1 a1 = peer1.localObject(a);
 
         ObjectContext peer2 = clientContext.createChildContext();
-        ClientMtTable2 py2 = (ClientMtTable2) peer2.localObject(py.getObjectId(), py);
-        ClientMtTable1 a2 = (ClientMtTable1) peer2.localObject(a.getObjectId(), a);
+        ClientMtTable2 py2 = peer2.localObject(py);
+        ClientMtTable1 a2 = peer2.localObject(a);
 
         a1.addToTable2Array(py1);
         assertEquals(1, a2.getTable2Array().size());
@@ -136,7 +142,8 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         assertEquals(2, a2.getTable2Array().size());
         assertTrue(a2.getTable2Array().contains(py2));
 
-        assertFalse("Peer data context became dirty on event processing", peer2
-                .hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 }

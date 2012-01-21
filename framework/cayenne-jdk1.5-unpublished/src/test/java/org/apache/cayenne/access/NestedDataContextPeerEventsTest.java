@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -33,16 +34,29 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
     @Inject
     private DataContext context;
 
-    public void testPeerObjectUpdatedTempOID() {
-        ObjectContext peer1 = context.createChildContext();
-        Artist a1 = peer1.newObject(Artist.class);
-        a1.setArtistName("Y");
-        ObjectId a1TempId = a1.getObjectId();
+    @Inject
+    private ServerRuntime runtime;
 
-        ObjectContext peer2 = context.createChildContext();
-        Artist a2 = (Artist) peer2.localObject(a1TempId, a1);
+    public void testPeerObjectUpdatedTempOID() {
+
+        ObjectContext peer1 = runtime.getContext(context);
+        Artist a1 = peer1.newObject(Artist.class);
+        a1.setArtistName("Z");
+
+        // commit to parent, so that object with temp ID becomes visible to peer child
+        // contexts
+        peer1.commitChangesToParent();
+
+        ObjectId a1TempId = a1.getObjectId();
+        assertTrue(a1TempId.isTemporary());
+
+        ObjectContext peer2 = runtime.getContext(context);
+        Artist a2 = peer2.localObject(a1);
 
         assertEquals(a1TempId, a2.getObjectId());
+
+        // make changes to be able to trigger a commit from child, the commit to DB
+        a1.setArtistName("Y");
 
         peer1.commitChanges();
         assertFalse(a1.getObjectId().isTemporary());
@@ -55,19 +69,20 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         a.setArtistName("X");
         context.commitChanges();
 
-        ObjectContext peer1 = context.createChildContext();
-        Artist a1 = (Artist) peer1.localObject(a.getObjectId(), a);
+        ObjectContext peer1 = runtime.getContext(context);
+        Artist a1 = peer1.localObject(a);
 
-        ObjectContext peer2 = context.createChildContext();
-        Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
+        ObjectContext peer2 = runtime.getContext(context);
+        Artist a2 = peer2.localObject(a);
 
         a1.setArtistName("Y");
         assertEquals("X", a2.getArtistName());
         peer1.commitChangesToParent();
         assertEquals("Y", a2.getArtistName());
 
-        assertFalse("Peer data context became dirty on event processing", peer2
-                .hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 
     public void testPeerObjectUpdatedToOneRelationship() {
@@ -82,22 +97,23 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         altA.setArtistName("Y");
         context.commitChanges();
 
-        ObjectContext peer1 = context.createChildContext();
-        Painting p1 = (Painting) peer1.localObject(p.getObjectId(), p);
-        Artist altA1 = (Artist) peer1.localObject(altA.getObjectId(), altA);
+        ObjectContext peer1 = runtime.getContext(context);
+        Painting p1 = peer1.localObject(p);
+        Artist altA1 = peer1.localObject(altA);
 
-        ObjectContext peer2 = context.createChildContext();
-        Painting p2 = (Painting) peer2.localObject(p.getObjectId(), p);
-        Artist altA2 = (Artist) peer2.localObject(altA.getObjectId(), altA);
-        Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
+        ObjectContext peer2 = runtime.getContext(context);
+        Painting p2 = peer2.localObject(p);
+        Artist altA2 = peer2.localObject(altA);
+        Artist a2 = peer2.localObject(a);
 
         p1.setToArtist(altA1);
         assertSame(a2, p2.getToArtist());
         peer1.commitChangesToParent();
         assertEquals(altA2, p2.getToArtist());
 
-        assertFalse("Peer data context became dirty on event processing", peer2
-                .hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 
     public void testPeerObjectUpdatedToManyRelationship() {
@@ -114,13 +130,13 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 
         context.commitChanges();
 
-        ObjectContext peer1 = context.createChildContext();
-        Painting py1 = (Painting) peer1.localObject(py.getObjectId(), py);
-        Artist a1 = (Artist) peer1.localObject(a.getObjectId(), a);
+        ObjectContext peer1 = runtime.getContext(context);
+        Painting py1 = peer1.localObject(py);
+        Artist a1 = peer1.localObject(a);
 
-        ObjectContext peer2 = context.createChildContext();
-        Painting py2 = (Painting) peer2.localObject(py.getObjectId(), py);
-        Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
+        ObjectContext peer2 = runtime.getContext(context);
+        Painting py2 = peer2.localObject(py);
+        Artist a2 = peer2.localObject(a);
 
         a1.addToPaintingArray(py1);
         assertEquals(1, a2.getPaintingArray().size());
@@ -129,7 +145,8 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         assertEquals(2, a2.getPaintingArray().size());
         assertTrue(a2.getPaintingArray().contains(py2));
 
-        assertFalse("Peer data context became dirty on event processing", peer2
-                .hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 }

@@ -72,6 +72,7 @@ public class CayenneContextTest extends ClientCase {
         assertSame(channel, context.getChannel());
     }
 
+    @Deprecated
     public void testLocalObject() {
 
         DataChannel channel = mock(DataChannel.class);

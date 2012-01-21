@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -108,10 +108,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
     public void testObjectQueryStringMapBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
-        Artist a = (Artist) context.localObject(new ObjectId(
-                "Artist",
-                Artist.ARTIST_ID_PK_COLUMN,
-                11), null);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 11);
         Map<String, Artist> parameters = Collections.singletonMap("artist", a);
 
         List<?> paintings = context2.performQuery("ObjectQuery", parameters, true);
@@ -169,10 +166,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(1, counts.length);
         assertEquals(1, counts[0]);
 
-        Painting p = (Painting) context.localObject(new ObjectId(
-                "Painting",
-                Painting.PAINTING_ID_PK_COLUMN,
-                512), null);
+        Painting p = Cayenne.objectForPK(context, Painting.class, 512);
         assertEquals("No Painting Like This", p.getPaintingTitle());
     }
 
@@ -191,10 +185,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(1, counts.length);
         assertEquals(1, counts[0]);
 
-        Painting p = (Painting) context.localObject(new ObjectId(
-                "Painting",
-                Painting.PAINTING_ID_PK_COLUMN,
-                300), null);
+        Painting p = Cayenne.objectForPK(context, Painting.class, 300);
         assertEquals("Go Figure", p.getPaintingTitle());
     }
 
