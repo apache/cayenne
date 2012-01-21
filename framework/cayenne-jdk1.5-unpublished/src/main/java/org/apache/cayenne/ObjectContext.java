@@ -81,10 +81,14 @@ public interface ObjectContext extends Serializable {
     Persistent localObject(ObjectId id, Object prototype);
 
     /**
-     * Returns a copy of 'objectFromAnotherContext' object that is registered in this
-     * context, creating and registering a local hollow object if needed. No DB query is
-     * performed. This method will cause an exception if an object is not already
-     * registered in this context or its parent DataChannel and the ObjectId is temporary.
+     * Returns a local copy of 'objectFromAnotherContext' object. "Local" means that the
+     * returned object is registered in this context. If the local object hasn't been
+     * previously cached in this context, a hollow object is created and returned to the
+     * caller. No DB query is performed to resolve an object.
+     * <p>
+     * This method will cause an exception if 'objectFromAnotherContext' has a temporary
+     * ObjectId and a copy of an object can't be found in this context or its parent
+     * DataChannel.
      * 
      * @since 3.1
      */
