@@ -48,7 +48,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * <p>
  * <i>Intended for internal use only.</i>
  * </p>
- *
+ * 
  * @since 1.2
  */
 public abstract class ObjectContextQueryAction {
@@ -120,6 +120,7 @@ public abstract class ObjectContextQueryAction {
             // rewrite response to contain objects from the query context
 
             GenericResponse childResponse = new GenericResponse();
+            ShallowMergeOperation merger = null;
 
             for (response.reset(); response.next();) {
                 if (response.isList()) {
@@ -130,6 +131,10 @@ public abstract class ObjectContextQueryAction {
                     }
                     else {
 
+                        if (merger == null) {
+                            merger = new ShallowMergeOperation(targetContext);
+                        }
+
                         // TODO: Andrus 1/31/2006 - IncrementalFaultList is not properly
                         // transferred between contexts....
 
@@ -137,8 +142,7 @@ public abstract class ObjectContextQueryAction {
                         Iterator it = objects.iterator();
                         while (it.hasNext()) {
                             Persistent object = (Persistent) it.next();
-                            childObjects.add(targetContext.localObject(object
-                                    .getObjectId(), object));
+                            childObjects.add(merger.merge(object));
                         }
 
                         childResponse.addResultList(childObjects);
@@ -245,17 +249,17 @@ public abstract class ObjectContextQueryAction {
                         }
 
                         /**
-                         * Workaround for CAY-1183. If a Relationship query is being sent from
-                         * child context, we assure that local object is not NEW and relationship - unresolved
-                         * (this way exception will occur). This helps when faulting objects that
-                         * were committed to parent context (this), but not to database.
-                         *
-                         * Checking type of context's channel is the only way to ensure that we are
-                         * on the top level of context hierarchy (there might be more than one-level-deep
+                         * Workaround for CAY-1183. If a Relationship query is being sent
+                         * from child context, we assure that local object is not NEW and
+                         * relationship - unresolved (this way exception will occur). This
+                         * helps when faulting objects that were committed to parent
+                         * context (this), but not to database. Checking type of context's
+                         * channel is the only way to ensure that we are on the top level
+                         * of context hierarchy (there might be more than one-level-deep
                          * nested contexts).
                          */
                         if (((Persistent) object).getPersistenceState() == PersistenceState.NEW
-                            && !(actingContext.getChannel() instanceof BaseContext)) {
+                                && !(actingContext.getChannel() instanceof BaseContext)) {
                             this.response = new ListResponse();
                             return DONE;
                         }

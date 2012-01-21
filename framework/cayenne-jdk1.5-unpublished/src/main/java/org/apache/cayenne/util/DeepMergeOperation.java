@@ -37,19 +37,21 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
- * An operation that performs object graph deep merge, terminating merge at unresolved
- * nodes.
+ * An operation that merges changes from an object graph, whose objects are registered in
+ * some ObjectContext, to peer objects in an ObjectConext that is a child of that context.
+ * The merge terminates at hollow nodes in the parent context to avoid tripping over
+ * unresolved relationships.
  * 
  * @since 1.2
  */
 public class DeepMergeOperation {
 
-    protected ObjectContext context;
-    protected Map<ObjectId, Persistent> seen;
+    private Map<ObjectId, Persistent> seen;
+    private ShallowMergeOperation shallowMergeOperation;
 
     public DeepMergeOperation(ObjectContext context) {
-        this.context = context;
         this.seen = new HashMap<ObjectId, Persistent>();
+        this.shallowMergeOperation = new ShallowMergeOperation(context);
     }
 
     public void reset() {
@@ -75,7 +77,7 @@ public class DeepMergeOperation {
             return seenTarget;
         }
 
-        final Persistent target = context.localObject(id, source);
+        final Persistent target = shallowMergeOperation.merge(source);
         seen.put(id, target);
 
         descriptor = descriptor.getSubclassDescriptor(source.getClass());
@@ -101,17 +103,17 @@ public class DeepMergeOperation {
             public boolean visitToMany(ToManyProperty property) {
                 if (!property.isFault(source)) {
                     Object value = property.readProperty(source);
-                    Object targetValue; 
-                    
+                    Object targetValue;
+
                     if (property instanceof ToManyMapProperty) {
                         Map<?, ?> map = (Map) value;
                         Map targetMap = new HashMap();
-                        
+
                         for (Entry entry : map.entrySet()) {
                             Object destinationSource = entry.getValue();
-                            Object destinationTarget = destinationSource != null
-                                ? merge(destinationSource, property.getTargetDescriptor())
-                                    : null;
+                            Object destinationTarget = destinationSource != null ? merge(
+                                    destinationSource,
+                                    property.getTargetDescriptor()) : null;
 
                             targetMap.put(entry.getKey(), destinationTarget);
                         }
@@ -122,9 +124,9 @@ public class DeepMergeOperation {
                         Collection targetCollection = new ArrayList(collection.size());
 
                         for (Object destinationSource : collection) {
-                            Object destinationTarget = destinationSource != null
-                                    ? merge(destinationSource, property.getTargetDescriptor())
-                                    : null;
+                            Object destinationTarget = destinationSource != null ? merge(
+                                    destinationSource,
+                                    property.getTargetDescriptor()) : null;
 
                             targetCollection.add(destinationTarget);
                         }
