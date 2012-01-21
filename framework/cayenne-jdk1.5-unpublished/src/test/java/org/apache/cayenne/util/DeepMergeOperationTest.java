@@ -22,21 +22,15 @@ package org.apache.cayenne.util;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.util.DeepMergeOperation;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DeepMergeOperationTest extends ServerCase {
-
-    @Inject
-    private ServerRuntime runtime;
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
@@ -49,11 +43,6 @@ public class DeepMergeOperationTest extends ServerCase {
 
     public void testDeepMergeNonExistent() {
 
-        final ClassDescriptor d = runtime
-                .getDataDomain()
-                .getEntityResolver()
-                .getClassDescriptor("Artist");
-
         final Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
         context.commitChanges();
@@ -63,7 +52,7 @@ public class DeepMergeOperationTest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                Artist a2 = (Artist) op.merge(a, d);
+                Artist a2 = (Artist) op.merge(a);
                 assertNotNull(a2);
                 assertEquals(PersistenceState.COMMITTED, a2.getPersistenceState());
                 assertEquals(a.getArtistName(), a2.getArtistName());
@@ -72,11 +61,6 @@ public class DeepMergeOperationTest extends ServerCase {
     }
 
     public void testDeepMergeModified() {
-
-        final ClassDescriptor d = runtime
-                .getDataDomain()
-                .getEntityResolver()
-                .getClassDescriptor("Artist");
 
         final Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
@@ -89,7 +73,7 @@ public class DeepMergeOperationTest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                Artist a2 = (Artist) op.merge(a, d);
+                Artist a2 = (Artist) op.merge(a);
                 assertNotNull(a2);
                 assertEquals(PersistenceState.MODIFIED, a2.getPersistenceState());
                 assertSame(a1, a2);

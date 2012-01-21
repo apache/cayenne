@@ -41,7 +41,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.DeepMergeOperation;
 import org.apache.cayenne.util.ToStringBuilder;
 
@@ -230,11 +229,7 @@ public class ClientChannel implements DataChannel {
                     + object);
         }
 
-        // have to resolve descriptor here for every object, as often a query will not
-        // have any info indicating the entity type
-        ClassDescriptor descriptor = resolver.getClassDescriptor(id.getEntityName());
-
-        return merger.merge(object, descriptor);
+        return merger.merge(object);
     }
 
     public GraphDiff onSync(

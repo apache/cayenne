@@ -29,6 +29,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -46,30 +47,43 @@ import org.apache.cayenne.reflect.ToOneProperty;
  */
 public class DeepMergeOperation {
 
-    private final Map<ObjectId, Persistent> seen;
+    private final EntityResolver entityResolver;
     private final ShallowMergeOperation shallowMergeOperation;
 
     public DeepMergeOperation(ObjectContext context) {
-        this.seen = new HashMap<ObjectId, Persistent>();
+        this.entityResolver = context.getEntityResolver();
         this.shallowMergeOperation = new ShallowMergeOperation(context);
     }
 
+    /**
+     * @deprecated since 3.1 - unused as the object is now stateless
+     */
     public void reset() {
-        seen.clear();
+        // noop
     }
 
     /**
-     * @deprecated since 3.1 use {@link #merge(Persistent, ClassDescriptor)}.
+     * @deprecated since 3.1 use {@link #merge(Persistent)}.
      */
     public Object merge(Object object, ClassDescriptor descriptor) {
+
         if (!(object instanceof Persistent)) {
             throw new CayenneRuntimeException("Expected Persistent, got: " + object);
         }
 
-        return merge((Persistent) object, descriptor);
+        return merge((Persistent) object);
     }
 
-    public Object merge(final Persistent peerInParentContext, ClassDescriptor descriptor) {
+    public Object merge(final Persistent peerInParentContext) {
+        ClassDescriptor descriptor = entityResolver
+                .getClassDescriptor(peerInParentContext.getObjectId().getEntityName());
+        return merge(peerInParentContext, descriptor, new HashMap<ObjectId, Persistent>());
+    }
+
+    private Object merge(
+            final Persistent peerInParentContext,
+            ClassDescriptor descriptor,
+            final Map<ObjectId, Persistent> seen) {
 
         ObjectId id = peerInParentContext.getObjectId();
 
@@ -98,7 +112,8 @@ public class DeepMergeOperation {
 
                     Object destinationTarget = destinationSource != null ? merge(
                             destinationSource,
-                            property.getTargetDescriptor()) : null;
+                            property.getTargetDescriptor(),
+                            seen) : null;
 
                     Object oldTarget = property.isFault(target) ? null : property
                             .readProperty(target);
@@ -121,7 +136,8 @@ public class DeepMergeOperation {
                             Object destinationSource = entry.getValue();
                             Object destinationTarget = destinationSource != null ? merge(
                                     (Persistent) destinationSource,
-                                    property.getTargetDescriptor()) : null;
+                                    property.getTargetDescriptor(),
+                                    seen) : null;
 
                             targetMap.put(entry.getKey(), destinationTarget);
                         }
@@ -134,7 +150,8 @@ public class DeepMergeOperation {
                         for (Object destinationSource : collection) {
                             Object destinationTarget = destinationSource != null ? merge(
                                     (Persistent) destinationSource,
-                                    property.getTargetDescriptor()) : null;
+                                    property.getTargetDescriptor(),
+                                    seen) : null;
 
                             targetCollection.add(destinationTarget);
                         }

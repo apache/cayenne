@@ -22,9 +22,7 @@ package org.apache.cayenne.util;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
@@ -37,9 +35,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class DeepMergeOperationInheritanceTest extends ServerCase {
 
     @Inject
-    private EntityResolver resolver;
-
-    @Inject
     private DataContext context;
 
     @Inject
@@ -49,8 +44,6 @@ public class DeepMergeOperationInheritanceTest extends ServerCase {
     protected DataChannelInterceptor queryInterceptor;
 
     public void testDeepMergeExistingSubclass() {
-
-        final ClassDescriptor d = resolver.getClassDescriptor("Department");
 
         final Department d1 = context.newObject(Department.class);
         d1.setName("D1");
@@ -83,7 +76,7 @@ public class DeepMergeOperationInheritanceTest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                Department d2 = (Department) op.merge(d1, d);
+                Department d2 = (Department) op.merge(d1);
                 assertNotNull(d2);
                 assertEquals(PersistenceState.COMMITTED, d2.getPersistenceState());
 
@@ -101,8 +94,6 @@ public class DeepMergeOperationInheritanceTest extends ServerCase {
     }
 
     public void testDeepMergeNonExistentSubclass() {
-
-        final ClassDescriptor d = resolver.getClassDescriptor("Department");
 
         final Department d1 = context.newObject(Department.class);
         d1.setName("D1");
@@ -131,7 +122,7 @@ public class DeepMergeOperationInheritanceTest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                Department d2 = (Department) op.merge(d1, d);
+                Department d2 = (Department) op.merge(d1);
                 assertNotNull(d2);
                 assertEquals(PersistenceState.COMMITTED, d2.getPersistenceState());
 
