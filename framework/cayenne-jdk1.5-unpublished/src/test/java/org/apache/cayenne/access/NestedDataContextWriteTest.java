@@ -654,7 +654,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         Painting painting = child.newObject(Painting.class);
         painting.setPaintingTitle("222");
 
-        Artist localParentMt = (Artist) child.localObject(artist.getObjectId(), null);
+        Artist localParentMt = child.localObject(artist);
         assertEquals(0, artist.getPaintingArray().size());
         assertEquals(0, localParentMt.getPaintingArray().size());
 

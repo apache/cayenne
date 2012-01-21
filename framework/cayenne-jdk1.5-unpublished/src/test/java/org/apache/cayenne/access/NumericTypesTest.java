@@ -21,9 +21,7 @@ package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -271,11 +269,11 @@ public class NumericTypesTest extends ServerCase {
         object.setDecimalPK(new BigDecimal("1.25"));
         context.commitChanges();
 
-        Map<String, BigDecimal> map = Collections.singletonMap(
+        ObjectId syntheticId = new ObjectId(
+                "DecimalPKTestEntity",
                 "DECIMAL_PK",
                 new BigDecimal("1.25"));
-        ObjectId syntheticId = new ObjectId("DecimalPKTestEntity", map);
-        assertSame(object, context.localObject(syntheticId, null));
+        assertSame(object, context.getGraphManager().getNode(syntheticId));
 
         context.deleteObjects(object);
         context.commitChanges();
@@ -290,9 +288,8 @@ public class NumericTypesTest extends ServerCase {
         object.setDecimalPK(new Double(1.25));
         context.commitChanges();
 
-        Map<String, Double> map = Collections
-                .singletonMap("DECIMAL_PK", new Double(1.25));
-        ObjectId syntheticId = new ObjectId("DecimalPKTest1", map);
-        assertSame(object, context.localObject(syntheticId, null));
+        ObjectId syntheticId = new ObjectId("DecimalPKTest1", "DECIMAL_PK", new Double(
+                1.25));
+        assertSame(object, context.getGraphManager().getNode(syntheticId));
     }
 }

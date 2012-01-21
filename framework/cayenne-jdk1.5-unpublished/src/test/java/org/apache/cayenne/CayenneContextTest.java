@@ -389,7 +389,7 @@ public class CayenneContextTest extends ClientCase {
         context.setEntityResolver(serverContext
                 .getEntityResolver()
                 .getClientEntityResolver());
-        ClientMtTable1 hollow = (ClientMtTable1) context.localObject(gid, null);
+        ClientMtTable1 hollow = context.localObject(inflated);
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
 
         // testing this...

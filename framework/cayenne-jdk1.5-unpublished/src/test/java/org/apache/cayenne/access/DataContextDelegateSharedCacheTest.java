@@ -54,8 +54,6 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
     /**
      * Test case to prove that delegate method is invoked on external change of object in
      * the store.
-     * 
-     * @throws Exception
      */
     public void testShouldMergeChanges() throws Exception {
 
@@ -71,7 +69,7 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
+        Artist altArtist = context1.localObject(artist);
         assertNotNull(altArtist);
         assertNotSame(altArtist, artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
@@ -114,7 +112,7 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
+        Artist altArtist = context1.localObject(artist);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(oldName, altArtist.getArtistName());
@@ -149,7 +147,7 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
+        Artist altArtist = context1.localObject(artist);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
@@ -192,7 +190,7 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        Artist altArtist = (Artist) context1.localObject(artist.getObjectId(), null);
+        Artist altArtist = context1.localObject(artist);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());

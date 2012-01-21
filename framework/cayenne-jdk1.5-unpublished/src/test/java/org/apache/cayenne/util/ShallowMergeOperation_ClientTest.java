@@ -19,31 +19,30 @@
 package org.apache.cayenne.util;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class ShallowMergeOperationTest extends ServerCase {
+@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+public class ShallowMergeOperation_ClientTest extends ClientCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private ClientRuntime runtime;
 
     @Inject
-    private DataContext context;
+    private CayenneContext context;
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
@@ -51,26 +50,25 @@ public class ShallowMergeOperationTest extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
-    private TableHelper tArtist;
+    private TableHelper tMtTable1;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
+        dbHelper.deleteAll("MT_JOIN45");
+        dbHelper.deleteAll("MT_TABLE4");
+        dbHelper.deleteAll("MT_TABLE5");
 
-        tArtist = new TableHelper(dbHelper, "ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
-
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
-    private void createArtistsDataSet() throws Exception {
-        tArtist.insert(33001, "artist1");
-        tArtist.insert(33002, "artist2");
-        tArtist.insert(33003, "artist3");
-        tArtist.insert(33004, "artist4");
+    private void createMtTable1DataSet() throws Exception {
+        tMtTable1.insert(33001, "g1", "s1");
+        tMtTable1.insert(33002, "g2", "s2");
+        tMtTable1.insert(33003, "g3", "s3");
+        tMtTable1.insert(33004, "g4", "s4");
     }
 
     public void testMerge_Relationship() throws Exception {
@@ -78,46 +76,37 @@ public class ShallowMergeOperationTest extends ServerCase {
         ObjectContext childContext = runtime.getContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
-        Artist _new = context.newObject(Artist.class);
-        final Painting _newP = context.newObject(Painting.class);
-        _new.addToPaintingArray(_newP);
+        ClientMtTable1 _new = context.newObject(ClientMtTable1.class);
+        final ClientMtTable2 _new2 = context.newObject(ClientMtTable2.class);
+        _new.addToTable2Array(_new2);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                Painting painting = op.merge(_newP);
-
-                assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-                assertNotNull(painting.getToArtist());
-                assertEquals(PersistenceState.COMMITTED, painting
-                        .getToArtist()
+                ClientMtTable2 child2 = op.merge(_new2);
+                assertEquals(PersistenceState.COMMITTED, child2.getPersistenceState());
+                assertNotNull(child2.getTable1());
+                assertEquals(PersistenceState.COMMITTED, child2
+                        .getTable1()
                         .getPersistenceState());
             }
         });
     }
 
     public void testMerge_NoOverride() throws Exception {
-        createArtistsDataSet();
 
         ObjectContext childContext = runtime.getContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
-        int modifiedId = 33003;
-        final Artist modified = (Artist) Cayenne.objectForQuery(
-                context,
-                new ObjectIdQuery(new ObjectId(
-                        "Artist",
-                        Artist.ARTIST_ID_PK_COLUMN,
-                        modifiedId)));
-        final Artist peerModified = (Artist) Cayenne.objectForQuery(
-                childContext,
-                new ObjectIdQuery(new ObjectId(
-                        "Artist",
-                        Artist.ARTIST_ID_PK_COLUMN,
-                        modifiedId)));
+        final ClientMtTable1 modified = context.newObject(ClientMtTable1.class);
+        context.commitChanges();
 
-        modified.setArtistName("M1");
-        peerModified.setArtistName("M2");
+        final ClientMtTable1 peerModified = (ClientMtTable1) Cayenne.objectForQuery(
+                childContext,
+                new ObjectIdQuery(modified.getObjectId()));
+
+        modified.setGlobalAttribute1("M1");
+        peerModified.setGlobalAttribute1("M2");
 
         assertEquals(PersistenceState.MODIFIED, modified.getPersistenceState());
         assertEquals(PersistenceState.MODIFIED, peerModified.getPersistenceState());
@@ -130,29 +119,42 @@ public class ShallowMergeOperationTest extends ServerCase {
                 assertEquals(
                         PersistenceState.MODIFIED,
                         peerModified2.getPersistenceState());
-                assertEquals("M2", peerModified.getArtistName());
-                assertEquals("M1", modified.getArtistName());
+                assertEquals("M2", peerModified.getGlobalAttribute1());
+                assertEquals("M1", modified.getGlobalAttribute1());
             }
         });
     }
 
     public void testMerge_PersistenceStates() throws Exception {
-        createArtistsDataSet();
+
+        createMtTable1DataSet();
 
         final ObjectContext childContext = runtime.getContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
-        final Artist _new = context.newObject(Artist.class);
+        final ClientMtTable1 _new = context.newObject(ClientMtTable1.class);
 
-        final Artist hollow = Cayenne.objectForPK(context, Artist.class, 33001);
+        final ClientMtTable1 hollow = Cayenne.objectForPK(
+                context,
+                ClientMtTable1.class,
+                33001);
         context.invalidateObjects(hollow);
 
-        final Artist committed = Cayenne.objectForPK(context, Artist.class, 33002);
+        final ClientMtTable1 committed = Cayenne.objectForPK(
+                context,
+                ClientMtTable1.class,
+                33002);
 
-        final Artist modified = Cayenne.objectForPK(context, Artist.class, 33003);
-        modified.setArtistName("M1");
+        final ClientMtTable1 modified = Cayenne.objectForPK(
+                context,
+                ClientMtTable1.class,
+                33003);
+        modified.setGlobalAttribute1("XXX");
 
-        final Artist deleted = Cayenne.objectForPK(context, Artist.class, 33004);
+        final ClientMtTable1 deleted = Cayenne.objectForPK(
+                context,
+                ClientMtTable1.class,
+                33004);
         context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
@@ -161,7 +163,6 @@ public class ShallowMergeOperationTest extends ServerCase {
         assertEquals(PersistenceState.DELETED, deleted.getPersistenceState());
         assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
-        // now check how objects in different state behave
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
@@ -187,12 +188,12 @@ public class ShallowMergeOperationTest extends ServerCase {
                 assertSame(childContext, committedPeer.getObjectContext());
                 assertSame(context, committed.getObjectContext());
 
-                Artist modifiedPeer = op.merge(modified);
+                ClientMtTable1 modifiedPeer = op.merge(modified);
                 assertEquals(
                         PersistenceState.COMMITTED,
                         modifiedPeer.getPersistenceState());
                 assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
-                assertEquals("M1", modifiedPeer.getArtistName());
+                assertEquals("XXX", modifiedPeer.getGlobalAttribute1());
                 assertSame(childContext, modifiedPeer.getObjectContext());
                 assertSame(context, modified.getObjectContext());
 
@@ -203,7 +204,6 @@ public class ShallowMergeOperationTest extends ServerCase {
                 assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
                 assertSame(childContext, deletedPeer.getObjectContext());
                 assertSame(context, deleted.getObjectContext());
-
             }
         });
     }

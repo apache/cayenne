@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -41,6 +42,9 @@ public class DataContextDataChannelEventsTest extends ServerCase {
 
     @Inject
     private DataContext peer;
+
+    @Inject
+    private ServerRuntime runtime;
 
     public void testCommitEvent() {
         Artist a = context.newObject(Artist.class);
@@ -82,11 +86,12 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        ObjectContext child = context.createChildContext();
-        Artist a1 = (Artist) child.localObject(a.getObjectId(), a);
+        ObjectContext childContext = runtime.getContext(context);
+
+        Artist a1 = childContext.localObject(a);
 
         a1.setArtistName("Y");
-        child.commitChangesToParent();
+        childContext.commitChangesToParent();
 
         assertFalse(listener.graphCommitted);
         assertTrue(listener.graphChanged);
@@ -101,7 +106,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        Artist a1 = (Artist) peer.localObject(a.getObjectId(), a);
+        Artist a1 = peer.localObject(a);
 
         a1.setArtistName("Y");
         peer.commitChangesToParent();
@@ -118,7 +123,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
     }
 
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
-        ObjectContext childPeer1 = context.createChildContext();
+        ObjectContext childPeer1 = runtime.getContext(context);
 
         Artist a = childPeer1.newObject(Artist.class);
         a.setArtistName("X");
@@ -127,9 +132,9 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
 
-        ObjectContext childPeer2 = context.createChildContext();
+        ObjectContext childPeer2 = runtime.getContext(context);
 
-        Artist a1 = (Artist) childPeer2.localObject(a.getObjectId(), a);
+        Artist a1 = childPeer2.localObject(a);
 
         a1.setArtistName("Y");
         childPeer2.commitChangesToParent();

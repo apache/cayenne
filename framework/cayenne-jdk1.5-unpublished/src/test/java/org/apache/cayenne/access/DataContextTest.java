@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
@@ -391,8 +392,9 @@ public class DataContextTest extends ServerCase {
 
         createSingleArtistDataSet();
 
-        SelectQuery select = new SelectQuery(Painting.class, Expression
-                .fromString("db:PAINTING_ID = 1"));
+        SelectQuery select = new SelectQuery(
+                Painting.class,
+                Expression.fromString("db:PAINTING_ID = 1"));
 
         assertEquals(0, context.performQuery(select).size());
 
@@ -638,8 +640,10 @@ public class DataContextTest extends ServerCase {
                 Artist artist = context.objectFromDataRow(Artist.class, row);
                 List<?> paintings = artist.getPaintingArray();
                 assertNotNull(paintings);
-                assertEquals("Expected one painting for artist: " + artist, 1, paintings
-                        .size());
+                assertEquals(
+                        "Expected one painting for artist: " + artist,
+                        1,
+                        paintings.size());
             }
         }
         finally {
@@ -703,7 +707,7 @@ public class DataContextTest extends ServerCase {
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
         assertSame(object, context.getObjectStore().getNode(oid));
     }
-    
+
     public void testInvalidateObjects() throws Exception {
 
         DataRow row = new DataRow(10);
@@ -729,19 +733,17 @@ public class DataContextTest extends ServerCase {
     public void testBeforeHollowDeleteShouldChangeStateToCommited() throws Exception {
         createSingleArtistDataSet();
 
-        ObjectId gid = new ObjectId("Artist", "ARTIST_ID", 33001);
-        final Artist inflated = new Artist();
-        inflated.setPersistenceState(PersistenceState.COMMITTED);
-        inflated.setObjectId(gid);
-        inflated.setArtistName("artist1");
-
-        Artist hollow = (Artist) context.localObject(gid, null);
+        Artist hollow = Cayenne.objectForPK(context, Artist.class, 33001);
+        context.invalidateObjects(hollow);
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
 
         // testing this...
         context.deleteObjects(hollow);
-        assertSame(hollow, context.getGraphManager().getNode(gid));
-        assertEquals(inflated.getArtistName(), hollow.getArtistName());
+        assertSame(
+                hollow,
+                context.getGraphManager().getNode(
+                        new ObjectId("Artist", "ARTIST_ID", 33001)));
+        assertEquals("artist1", hollow.getArtistName());
 
         assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
     }
