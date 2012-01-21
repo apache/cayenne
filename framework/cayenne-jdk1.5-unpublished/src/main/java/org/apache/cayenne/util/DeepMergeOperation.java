@@ -74,14 +74,14 @@ public class DeepMergeOperation {
         return merge((Persistent) object);
     }
 
-    public Object merge(final Persistent peerInParentContext) {
+    public <T extends Persistent> T merge(T peerInParentContext) {
         ClassDescriptor descriptor = entityResolver
                 .getClassDescriptor(peerInParentContext.getObjectId().getEntityName());
         return merge(peerInParentContext, descriptor, new HashMap<ObjectId, Persistent>());
     }
 
-    private Object merge(
-            final Persistent peerInParentContext,
+    private <T extends Persistent> T merge(
+            final T peerInParentContext,
             ClassDescriptor descriptor,
             final Map<ObjectId, Persistent> seen) {
 
@@ -93,12 +93,12 @@ public class DeepMergeOperation {
                     + peerInParentContext);
         }
 
-        Object seenTarget = seen.get(id);
+        Persistent seenTarget = seen.get(id);
         if (seenTarget != null) {
-            return seenTarget;
+            return (T) seenTarget;
         }
 
-        final Persistent target = shallowMergeOperation.merge(peerInParentContext);
+        final T target = shallowMergeOperation.merge(peerInParentContext);
         seen.put(id, target);
 
         descriptor = descriptor.getSubclassDescriptor(peerInParentContext.getClass());

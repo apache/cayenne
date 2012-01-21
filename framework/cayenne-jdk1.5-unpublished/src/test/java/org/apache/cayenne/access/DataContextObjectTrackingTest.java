@@ -142,6 +142,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
         assertNotNull(context.getGraphManager().getNode(oid));
     }
 
+    @Deprecated
     public void testLocalObjectPeerContextMap() throws Exception {
         createArtistsDataSet();
 
@@ -239,6 +240,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
         });
     }
 
+    @Deprecated
     public void testLocalObjectPeerContextNoOverride() throws Exception {
         createArtistsDataSet();
 

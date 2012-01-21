@@ -43,6 +43,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.NestedQueryCache;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.DataContextFactory;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
@@ -115,8 +116,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Creates and returns a new child ObjectContext.
      * 
      * @since 3.0
-     * @deprecated Since 3.1 replaced by
-     *             {@link DataContextFactory#createContext(DataChannel)}
+     * @deprecated Since 3.1 replaced by {@link CayenneRuntime#getContext(DataChannel)}
      */
     @Deprecated
     public ObjectContext createChildContext() {

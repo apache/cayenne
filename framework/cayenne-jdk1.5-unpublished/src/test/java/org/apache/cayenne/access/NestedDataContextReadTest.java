@@ -194,18 +194,22 @@ public class NestedDataContextReadTest extends ServerCase {
                 assertSame(childContext, hollowPeer.getObjectContext());
                 assertSame(context, hollow.getObjectContext());
 
-                Persistent committedPeer = childContext.localObject(committed
-                        .getObjectId(), committed);
-                assertEquals(PersistenceState.COMMITTED, committedPeer
-                        .getPersistenceState());
+                Persistent committedPeer = childContext.localObject(
+                        committed.getObjectId(),
+                        committed);
+                assertEquals(
+                        PersistenceState.COMMITTED,
+                        committedPeer.getPersistenceState());
                 assertEquals(committed.getObjectId(), committedPeer.getObjectId());
                 assertSame(childContext, committedPeer.getObjectContext());
                 assertSame(context, committed.getObjectContext());
 
-                Artist modifiedPeer = (Artist) childContext.localObject(modified
-                        .getObjectId(), modified);
-                assertEquals(PersistenceState.COMMITTED, modifiedPeer
-                        .getPersistenceState());
+                Artist modifiedPeer = (Artist) childContext.localObject(
+                        modified.getObjectId(),
+                        modified);
+                assertEquals(
+                        PersistenceState.COMMITTED,
+                        modifiedPeer.getPersistenceState());
                 assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
                 assertEquals("M1", modifiedPeer.getArtistName());
                 assertSame(childContext, modifiedPeer.getObjectContext());
@@ -214,8 +218,9 @@ public class NestedDataContextReadTest extends ServerCase {
                 Persistent deletedPeer = childContext.localObject(
                         deleted.getObjectId(),
                         deleted);
-                assertEquals(PersistenceState.COMMITTED, deletedPeer
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.COMMITTED,
+                        deletedPeer.getPersistenceState());
                 assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
                 assertSame(childContext, deletedPeer.getObjectContext());
                 assertSame(context, deleted.getObjectContext());
@@ -252,35 +257,15 @@ public class NestedDataContextReadTest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                Persistent peerModified2 = childContext.localObject(modified
-                        .getObjectId(), modified);
+                Persistent peerModified2 = childContext.localObject(
+                        modified.getObjectId(),
+                        modified);
                 assertSame(peerModified, peerModified2);
-                assertEquals(PersistenceState.MODIFIED, peerModified2
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.MODIFIED,
+                        peerModified2.getPersistenceState());
                 assertEquals("M2", peerModified.getArtistName());
                 assertEquals("M1", modified.getArtistName());
-            }
-        });
-    }
-
-    public void testLocalObjectRelationship() throws Exception {
-
-        final ObjectContext childContext = context.createChildContext();
-
-        Artist _new = context.newObject(Artist.class);
-        final Painting _newP = context.newObject(Painting.class);
-        _new.addToPaintingArray(_newP);
-
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Painting painting = (Painting) childContext.localObject(_newP
-                        .getObjectId(), _newP);
-                assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-                assertNotNull(painting.getToArtist());
-                assertEquals(PersistenceState.COMMITTED, painting
-                        .getToArtist()
-                        .getPersistenceState());
             }
         });
     }
@@ -412,29 +397,33 @@ public class NestedDataContextReadTest extends ServerCase {
                 assertSame(child, childHollowTargetSrc.getObjectContext());
                 Artist childHollowTarget = childHollowTargetSrc.getToArtist();
                 assertNotNull(childHollowTarget);
-                assertEquals(PersistenceState.HOLLOW, childHollowTarget
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.HOLLOW,
+                        childHollowTarget.getPersistenceState());
                 assertSame(child, childHollowTarget.getObjectContext());
 
                 Artist childModifiedTarget = ((Painting) childSources.get(1))
                         .getToArtist();
 
-                assertEquals(PersistenceState.COMMITTED, childModifiedTarget
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.COMMITTED,
+                        childModifiedTarget.getPersistenceState());
                 assertSame(child, childModifiedTarget.getObjectContext());
                 assertEquals("M1", childModifiedTarget.getArtistName());
 
                 Painting childDeletedTargetSrc = (Painting) childSources.get(2);
                 // make sure we got the right object...
-                assertEquals(deletedTargetSrc.getObjectId(), childDeletedTargetSrc
-                        .getObjectId());
+                assertEquals(
+                        deletedTargetSrc.getObjectId(),
+                        childDeletedTargetSrc.getObjectId());
                 Artist childDeletedTarget = childDeletedTargetSrc.getToArtist();
                 assertNull(childDeletedTarget);
 
                 Artist childCommittedTarget = ((Painting) childSources.get(3))
                         .getToArtist();
-                assertEquals(PersistenceState.COMMITTED, childCommittedTarget
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.COMMITTED,
+                        childCommittedTarget.getPersistenceState());
                 assertSame(child, childCommittedTarget.getObjectContext());
 
                 Painting childNewTargetSrc = (Painting) childSources.get(4);
@@ -442,8 +431,9 @@ public class NestedDataContextReadTest extends ServerCase {
                 assertEquals(newTargetSrc.getObjectId(), childNewTargetSrc.getObjectId());
                 Artist childNewTarget = childNewTargetSrc.getToArtist();
                 assertNotNull(childNewTarget);
-                assertEquals(PersistenceState.COMMITTED, childNewTarget
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.COMMITTED,
+                        childNewTarget.getPersistenceState());
                 assertSame(child, childNewTarget.getObjectContext());
                 assertEquals("N1", childNewTarget.getArtistName());
             }

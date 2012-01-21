@@ -39,7 +39,7 @@ public class ShallowMergeOperation {
         this.context = context;
     }
 
-    public Persistent merge(Persistent peerInParentContext) {
+    public <T extends Persistent> T merge(T peerInParentContext) {
 
         if (peerInParentContext == null) {
             throw new IllegalArgumentException("Null peerInParentContext");
@@ -59,11 +59,11 @@ public class ShallowMergeOperation {
         // have to synchronize almost the entire method to prevent multiple threads from
         // messing up dataobjects per CAY-845.
         synchronized (graphManager) {
-            Persistent object = (Persistent) graphManager.getNode(id);
+            T object = (T) graphManager.getNode(id);
 
             // merge into an existing object
             if (object == null) {
-                object = (Persistent) descriptor.createObject();
+                object = (T) descriptor.createObject();
                 object.setObjectContext(context);
                 object.setObjectId(id);
 
