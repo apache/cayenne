@@ -269,10 +269,10 @@ public class AshwoodEntitySorter implements EntitySorter {
                         current);
 
                 if (masters[k] == null) {
-                    masters[k] = findReflexiveMaster(current, (ObjRelationship) objEntity
-                            .getRelationship(reflexiveRelName), current
-                            .getObjectId()
-                            .getEntityName());
+                    masters[k] = findReflexiveMaster(
+                            current,
+                            (ObjRelationship) objEntity.getRelationship(reflexiveRelName),
+                            current.getObjectId().getEntityName());
                 }
 
                 if (masters[k] != null) {
@@ -352,7 +352,11 @@ public class AshwoodEntitySorter implements EntitySorter {
         DataRow snapshot = (DataRow) result.get(0);
 
         ObjectId id = snapshot.createTargetObjectId(targetEntityName, finalRel);
-        return (id != null) ? context.localObject(id, null) : null;
+
+        // not using 'localObject', looking up in context instead, as within the sorter
+        // we only care about objects participating in transaction, so no need to create
+        // hollow objects
+        return (id != null) ? context.getGraphManager().getNode(id) : null;
     }
 
     protected Comparator<DbEntity> getDbEntityComparator(boolean dependantFirst) {
