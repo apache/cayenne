@@ -145,6 +145,16 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (query instanceof ObjectIdQuery) {
 
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
+            ObjectId oid = oidQuery.getObjectId();
+
+            // special handling of temp ids... Return an empty list immediately so that
+            // upstream code could throw FaultFailureException, etc. Don't attempt to
+            // translate and run the query. See for instance CAY-1651
+            if (oid.isTemporary() && !oid.isReplacementIdAttached()) {
+                response = new ListResponse();
+                return DONE;
+            }
+
             DataRow row = null;
 
             if (cache != null && !oidQuery.isFetchMandatory()) {

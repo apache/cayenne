@@ -41,11 +41,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 
         ObjectContext peer1 = runtime.getContext(context);
         Artist a1 = peer1.newObject(Artist.class);
-        a1.setArtistName("Z");
-
-        // commit to parent, so that object with temp ID becomes visible to peer child
-        // contexts
-        peer1.commitChangesToParent();
+        a1.setArtistName("Y");
 
         ObjectId a1TempId = a1.getObjectId();
         assertTrue(a1TempId.isTemporary());
@@ -54,9 +50,6 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         Artist a2 = peer2.localObject(a1);
 
         assertEquals(a1TempId, a2.getObjectId());
-
-        // make changes to be able to trigger a commit from child, the commit to DB
-        a1.setArtistName("Y");
 
         peer1.commitChanges();
         assertFalse(a1.getObjectId().isTemporary());

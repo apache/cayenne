@@ -19,8 +19,9 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -111,6 +112,31 @@ public class DataContextLocalObjectTest extends ServerCase {
         });
     }
 
+    public void testLocalObject_FFE_InvalidID() throws Exception {
+        tArtist.insert(777, "AA");
+
+        final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 777);
+
+        Artist a3 = context2.localObject(a1);
+        assertEquals(PersistenceState.HOLLOW, a3.getPersistenceState());
+
+        context1.invalidateObjects(a1);
+        tArtist.deleteAll();
+
+        assertEquals(PersistenceState.HOLLOW, a3.getPersistenceState());
+
+        try {
+            a3.getArtistName();
+
+            fail("FaultFailureException wasn't thrown on attempt to "
+                    + "resolve HOLLOW object with no backing DB row");
+        }
+        catch (FaultFailureException e) {
+            // expected
+        }
+
+    }
+
     public void testLocalObject_TempId() throws Exception {
 
         final Artist a1 = context1.newObject(Artist.class);
@@ -119,11 +145,18 @@ public class DataContextLocalObjectTest extends ServerCase {
 
             public void execute() {
 
+                Artist a = context2.localObject(a1);
+                assertNotNull(a);
+                assertEquals(a1.getObjectId(), a.getObjectId());
+
+                // FFE mist be thrown on attempt to read non-existing temp ID
                 try {
-                    context2.localObject(a1);
-                    fail("returned a local object for temp ID");
+
+                    a.getArtistName();
+                    fail("FaultFailureException wasn't thrown on attempt to "
+                            + "resolve HOLLOW object with temp id");
                 }
-                catch (CayenneRuntimeException e) {
+                catch (FaultFailureException e) {
                     // expected
                 }
             }

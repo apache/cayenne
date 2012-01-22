@@ -27,6 +27,7 @@ CAY-1640 NullPointerException when saving
 CAY-1642 [PATCH] add ability to customize connection "timeout" setting for ROP
 CAY-1643 Updated Velocity templates to use static keys in setters/getters
 CAY-1649 Use BOOLEAN data type on Derby. Require Derby version >= 10.7.1.1.
+CAY-1651 ObjectContext.localObject - defer FaultFailureExceptions on temporary IDs
 
 Bug Fixes Since 3.1M3:
 

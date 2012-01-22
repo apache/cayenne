@@ -193,17 +193,9 @@ public class CayenneTest extends ServerCase {
         assertSame(o1, Cayenne.objectForPK(context, o1.getObjectId()));
         assertSame(o2, Cayenne.objectForPK(context, o2.getObjectId()));
 
-        try {
-            assertNull(Cayenne.objectForPK(context, new ObjectId("Artist", new byte[] {
-                    1, 2, 3
-            })));
-
-            fail("An attempt to fetch an object for "
-                    + "the non-existent temp id should have failed...");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
-        }
+        assertNull(Cayenne.objectForPK(context, new ObjectId("Artist", new byte[] {
+                1, 2, 3
+        })));
     }
 
     public void testObjectForPKObjectId() throws Exception {

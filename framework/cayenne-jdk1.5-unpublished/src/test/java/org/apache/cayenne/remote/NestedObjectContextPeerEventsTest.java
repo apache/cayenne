@@ -47,16 +47,12 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         ClientMtTable1 a1 = peer1.newObject(ClientMtTable1.class);
         a1.setGlobalAttribute1("Y");
         ObjectId a1TempId = a1.getObjectId();
-        
-        // make sure temp ObjectId becomes available to peers
-        peer1.commitChangesToParent();
 
         ObjectContext peer2 = clientContext.createChildContext();
         ClientMtTable1 a2 = peer2.localObject(a1);
 
         assertEquals(a1TempId, a2.getObjectId());
 
-        a1.setGlobalAttribute1("Z");
         peer1.commitChanges();
         assertFalse(a1.getObjectId().isTemporary());
         assertFalse(a2.getObjectId().isTemporary());
