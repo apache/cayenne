@@ -37,7 +37,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
  * Tests peer context synchronization via ClientChannel events.
  */
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
-@ClientRuntimeProperty( {
+@ClientRuntimeProperty({
         ClientModule.CHANNEL_EVENTS, "true"
 })
 public class CayenneContextClientChannelEventsTest extends ClientCase {
@@ -320,8 +320,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         ClientMtTable5 o1r = c1.newObject(ClientMtTable5.class);
         c1.commitChanges();
 
-        ClientMtTable4 o2 = (ClientMtTable4) c2.localObject(o1.getObjectId(), null);
-        ClientMtTable5 o2r = (ClientMtTable5) c2.localObject(o1r.getObjectId(), null);
+        ClientMtTable4 o2 = c2.localObject(o1);
+        ClientMtTable5 o2r = c2.localObject(o1r);
 
         o2.addToTable5s(o2r);
         c2.commitChanges();

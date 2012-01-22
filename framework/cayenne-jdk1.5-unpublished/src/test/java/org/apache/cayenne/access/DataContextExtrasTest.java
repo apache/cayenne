@@ -27,7 +27,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -51,14 +50,14 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class DataContextExtrasTest extends ServerCase {
 
     @Inject
-    protected ObjectContext context;
+    protected DataContext context;
 
     @Inject
     protected DBHelper dbHelper;
 
     @Inject
     protected JdbcEventLogger logger;
-    
+
     @Inject
     protected AdhocObjectFactory objectFactory;
 
@@ -143,10 +142,10 @@ public class DataContextExtrasTest extends ServerCase {
 
     public void testResolveFaultFailure() {
 
-        Persistent o1 = context.localObject(new ObjectId(
+        Persistent o1 = context.findOrCreateObject(new ObjectId(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
-                new Integer(234)), null);
+                234));
 
         try {
             context.prepareForAccess(o1, null, false);
@@ -168,7 +167,6 @@ public class DataContextExtrasTest extends ServerCase {
 
     public void testHasChangesNew() {
 
-        DataContext context = (DataContext) this.context;
         assertTrue("No changes expected in context", !context.hasChanges());
         context.newObject("Artist");
         assertTrue(
@@ -178,7 +176,7 @@ public class DataContextExtrasTest extends ServerCase {
 
     public void testNewObject() {
 
-        Artist a1 = (Artist) ((DataContext) context).newObject("Artist");
+        Artist a1 = (Artist) context.newObject("Artist");
         assertTrue(context.getGraphManager().registeredNodes().contains(a1));
         assertTrue(context.newObjects().contains(a1));
     }
@@ -192,7 +190,6 @@ public class DataContextExtrasTest extends ServerCase {
 
     public void testIdObjectFromDataRow() {
 
-        DataContext context = (DataContext) this.context;
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(100000));
         DataObject obj = context.objectFromDataRow(Artist.class, row);
@@ -205,7 +202,6 @@ public class DataContextExtrasTest extends ServerCase {
 
     public void testPartialObjectFromDataRow() {
 
-        DataContext context = (DataContext) this.context;
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(100001));
         row.put("ARTIST_NAME", "ArtistXYZ");
@@ -218,7 +214,6 @@ public class DataContextExtrasTest extends ServerCase {
 
     public void testFullObjectFromDataRow() {
 
-        DataContext context = (DataContext) this.context;
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", new Integer(123456));
         row.put("ARTIST_NAME", "ArtistXYZ");
@@ -233,13 +228,12 @@ public class DataContextExtrasTest extends ServerCase {
 
     public void testCommitChangesError() {
 
-        DataContext context = (DataContext) this.context;
         DataDomain domain = context.getParentDataDomain();
 
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception
         JdbcAdapter jdbcAdapter = objectFactory.newInstance(
-                JdbcAdapter.class, 
+                JdbcAdapter.class,
                 JdbcAdapter.class.getName());
         PkGenerator newGenerator = new JdbcPkGenerator(jdbcAdapter) {
 

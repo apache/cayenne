@@ -31,8 +31,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -46,6 +46,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextReadTest extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     @Inject
     private DataContext context;
@@ -111,7 +114,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testCreateChildDataContext() {
         context.setValidatingObjectsOnCommit(true);
 
-        ObjectContext child1 = context.createChildContext();
+        ObjectContext child1 = runtime.getContext(context);
 
         assertNotNull(child1);
         assertSame(context, child1.getChannel());
@@ -119,7 +122,7 @@ public class NestedDataContextReadTest extends ServerCase {
 
         context.setValidatingObjectsOnCommit(false);
 
-        ObjectContext child2 = context.createChildContext();
+        ObjectContext child2 = runtime.getContext(context);
 
         assertNotNull(child2);
         assertSame(context, child2.getChannel());
@@ -136,33 +139,21 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testSelect() throws Exception {
         createArtistsDataSet();
 
-        ObjectContext child = context.createChildContext();
+        ObjectContext child = runtime.getContext(context);
 
         // test how different object states appear in the child on select
 
         Persistent _new = context.newObject(Artist.class);
 
-        Persistent hollow = context.localObject(new ObjectId(
-                "Artist",
-                Artist.ARTIST_ID_PK_COLUMN,
-                33001), null);
-        DataObject committed = (DataObject) Cayenne.objectForQuery(
-                context,
-                new ObjectIdQuery(new ObjectId(
-                        "Artist",
-                        Artist.ARTIST_ID_PK_COLUMN,
-                        33002)));
+        Persistent hollow = Cayenne.objectForPK(context, Artist.class, 33001);
+        context.invalidateObjects(hollow);
 
-        int modifiedId = 33003;
-        Artist modified = (Artist) Cayenne.objectForQuery(context, new ObjectIdQuery(
-                new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, modifiedId)));
+        DataObject committed = Cayenne.objectForPK(context, Artist.class, 33002);
+
+        Artist modified = Cayenne.objectForPK(context, Artist.class, 33003);
         modified.setArtistName("MODDED");
-        DataObject deleted = (DataObject) Cayenne.objectForQuery(
-                context,
-                new ObjectIdQuery(new ObjectId(
-                        "Artist",
-                        Artist.ARTIST_ID_PK_COLUMN,
-                        33004)));
+
+        DataObject deleted = Cayenne.objectForPK(context, Artist.class, 33004);
         context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
@@ -180,7 +171,7 @@ public class NestedDataContextReadTest extends ServerCase {
             assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
 
             int id = Cayenne.intPKForObject(next);
-            if (id == modifiedId) {
+            if (id == 33003) {
                 assertEquals("MODDED", next.readProperty(Artist.ARTIST_NAME_PROPERTY));
             }
         }
@@ -189,48 +180,30 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testReadToOneRelationship() throws Exception {
         createRelationshipDataSet();
 
-        final ObjectContext child = context.createChildContext();
+        final ObjectContext child = runtime.getContext(context);
 
         // test how different object states appear in the child on select
 
-        int hollowTargetSrcId = 33001;
-        int modifiedTargetSrcId = 33002;
-        int deletedTargetSrcId = 33003;
-        int committedTargetSrcId = 33004;
-        int newTargetSrcId = 33005;
-
-        Painting hollowTargetSrc = Cayenne.objectForPK(
-                context,
-                Painting.class,
-                hollowTargetSrcId);
+        Painting hollowTargetSrc = Cayenne.objectForPK(context, Painting.class, 33001);
         Artist hollowTarget = hollowTargetSrc.getToArtist();
 
-        Painting modifiedTargetSrc = Cayenne.objectForPK(
-                context,
-                Painting.class,
-                modifiedTargetSrcId);
+        Painting modifiedTargetSrc = Cayenne.objectForPK(context, Painting.class, 33002);
         Artist modifiedTarget = modifiedTargetSrc.getToArtist();
         modifiedTarget.setArtistName("M1");
 
         final Painting deletedTargetSrc = Cayenne.objectForPK(
                 context,
                 Painting.class,
-                deletedTargetSrcId);
+                33003);
         Artist deletedTarget = deletedTargetSrc.getToArtist();
         deletedTargetSrc.setToArtist(null);
         context.deleteObjects(deletedTarget);
 
-        Painting committedTargetSrc = Cayenne.objectForPK(
-                context,
-                Painting.class,
-                committedTargetSrcId);
+        Painting committedTargetSrc = Cayenne.objectForPK(context, Painting.class, 33004);
         Artist committedTarget = committedTargetSrc.getToArtist();
         committedTarget.getArtistName();
 
-        final Painting newTargetSrc = Cayenne.objectForPK(
-                context,
-                Painting.class,
-                newTargetSrcId);
+        final Painting newTargetSrc = Cayenne.objectForPK(context, Painting.class, 33005);
         Artist newTarget = context.newObject(Artist.class);
         newTarget.setArtistName("N1");
         newTargetSrc.setToArtist(newTarget);
@@ -306,7 +279,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testPrefetchingToOne() throws Exception {
         createPrefetchingDataSet();
 
-        final ObjectContext child = context.createChildContext();
+        final ObjectContext child = runtime.getContext(context);
 
         final ObjectId prefetchedId = new ObjectId(
                 "Artist",
@@ -344,7 +317,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testPrefetchingToMany() throws Exception {
         createPrefetchingDataSet();
 
-        final ObjectContext child = context.createChildContext();
+        final ObjectContext child = runtime.getContext(context);
 
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
@@ -384,7 +357,7 @@ public class NestedDataContextReadTest extends ServerCase {
 
     public void testObjectFromDataRow() throws Exception {
 
-        DataContext childContext = (DataContext) context.createChildContext();
+        DataContext childContext = (DataContext) runtime.getContext(context);
 
         DataRow row = new DataRow(8);
         row.put("ARTIST_ID", 5l);

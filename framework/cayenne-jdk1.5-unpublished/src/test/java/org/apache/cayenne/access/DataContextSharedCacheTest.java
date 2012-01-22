@@ -142,9 +142,7 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
-        assertNotNull(altArtist);
+        final Artist altArtist = context1.localObject(artist);
         assertFalse(altArtist == artist);
         assertEquals(originalName, altArtist.getArtistName());
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
@@ -190,8 +188,7 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(originalName, altArtist.getArtistName());
@@ -235,8 +232,7 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
@@ -247,8 +243,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         context.commitChanges();
 
         // check underlying cache
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                altArtist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
@@ -271,8 +269,7 @@ public class DataContextSharedCacheTest extends ServerCase {
      */
     public void testSnapshotDeletePropagationToHollow() throws Exception {
 
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
 
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
@@ -283,8 +280,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         context.commitChanges();
 
         // check underlying cache
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                altArtist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
@@ -307,8 +306,7 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
         altArtist.getArtistName();
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
@@ -322,8 +320,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         context.commitChanges();
 
         // check underlying cache
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                altArtist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
@@ -358,8 +358,7 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
         altArtist.getArtistName();
         assertNotNull(altArtist);
         assertFalse(altArtist == artist);
@@ -372,8 +371,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         context.commitChanges();
 
         // check underlying cache
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                altArtist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
@@ -410,12 +411,9 @@ public class DataContextSharedCacheTest extends ServerCase {
         // objects
         // in the second context
 
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
-        final Painting altPainting1 = (Painting) context1.localObject(painting1
-                .getObjectId(), null);
-        final Painting altPainting2 = (Painting) context1.localObject(painting2
-                .getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
+        final Painting altPainting1 = context1.localObject(painting1);
+        final Painting altPainting2 = context1.localObject(painting2);
 
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(painting1.getPaintingTitle(), altPainting1.getPaintingTitle());
@@ -437,16 +435,19 @@ public class DataContextSharedCacheTest extends ServerCase {
         context.commitChanges();
 
         // check underlying cache
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                painting1.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(painting1.getObjectId()));
 
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
             @Override
             protected void assertResult() throws Exception {
-                assertEquals(PersistenceState.TRANSIENT, altPainting1
-                        .getPersistenceState());
+                assertEquals(
+                        PersistenceState.TRANSIENT,
+                        altPainting1.getPersistenceState());
                 assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
                 Collection<Painting> list = altArtist.getPaintingArray();
@@ -476,10 +477,8 @@ public class DataContextSharedCacheTest extends ServerCase {
         // objects
         // in the second context
 
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
-        final Painting altPainting1 = (Painting) context1.localObject(painting1
-                .getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
+        final Painting altPainting1 = context1.localObject(painting1);
 
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(painting1.getPaintingTitle(), altPainting1.getPaintingTitle());
@@ -563,8 +562,10 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         context.invalidateObjects(artist);
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                artist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(artist.getObjectId()));
 
         // resolve object
         assertEquals(originalName, artist.getArtistName());
@@ -581,8 +582,7 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
-        final Artist altArtist = (Artist) context1
-                .localObject(artist.getObjectId(), null);
+        final Artist altArtist = context1.localObject(artist);
         context1.prepareForAccess(altArtist, null, false);
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
@@ -590,8 +590,10 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // original context
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                artist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(artist.getObjectId()));
 
         // alternate context
         new ThreadedTestHelper() {
@@ -599,8 +601,10 @@ public class DataContextSharedCacheTest extends ServerCase {
             @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.HOLLOW, altArtist.getPersistenceState());
-                assertNull(context1.getObjectStore().getDataRowCache().getCachedSnapshot(
-                        altArtist.getObjectId()));
+                assertNull(context1
+                        .getObjectStore()
+                        .getDataRowCache()
+                        .getCachedSnapshot(altArtist.getObjectId()));
             }
         }.assertWithTimeout(5000);
 
@@ -621,8 +625,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
         context.getObjectStore().getDataRowCache().forgetSnapshot(artist.getObjectId());
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                artist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(artist.getObjectId()));
 
         // modify object and try to save
         artist.setArtistName(newName);
@@ -646,8 +652,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         artist.setArtistName(newName);
 
         context.getObjectStore().getDataRowCache().forgetSnapshot(artist.getObjectId());
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                artist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(artist.getObjectId()));
 
         context.commitChanges();
 
@@ -671,8 +679,10 @@ public class DataContextSharedCacheTest extends ServerCase {
         artist.setArtistName(newName);
 
         context.getObjectStore().getDataRowCache().forgetSnapshot(artist.getObjectId());
-        assertNull(context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                artist.getObjectId()));
+        assertNull(context
+                .getObjectStore()
+                .getDataRowCache()
+                .getCachedSnapshot(artist.getObjectId()));
 
         // now replace the row in the database
         String template = "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)";

@@ -215,7 +215,7 @@ public class DataDomainCallbacksTest extends ServerCase {
                 listener,
                 "publicCallback");
 
-        Artist a2 = (Artist) context1.localObject(a1.getObjectId(), null);
+        Artist a2 = context1.localObject(a1);
 
         assertEquals(PersistenceState.HOLLOW, a2.getPersistenceState());
         assertEquals(0, a2.getPostLoaded());

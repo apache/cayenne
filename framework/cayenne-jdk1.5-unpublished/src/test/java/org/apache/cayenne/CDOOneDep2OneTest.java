@@ -85,11 +85,6 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
     public void testReplace() throws Exception {
         String altPaintingName = "alt painting";
 
-        Artist a1 = newArtist();
-        assertEquals(a1.getObjectId(), context
-                .localObject(a1.getObjectId(), null)
-                .getObjectId());
-
         PaintingInfo pi1 = newPaintingInfo();
         Painting p1 = newPainting();
         p1.setPaintingTitle(altPaintingName);
