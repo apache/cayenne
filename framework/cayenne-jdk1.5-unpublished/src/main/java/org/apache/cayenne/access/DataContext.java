@@ -1187,9 +1187,4 @@ public class DataContext extends BaseContext implements DataChannel {
         }
 
     }
-
-    @Override
-    protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
-        super.fireDataChannelChanged(postedBy, changes);
-    }
 }
