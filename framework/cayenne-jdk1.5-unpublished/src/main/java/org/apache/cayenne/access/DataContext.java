@@ -44,7 +44,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.server.DataContextFactory;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -1186,5 +1185,12 @@ public class DataContext extends BaseContext implements DataChannel {
             return localObject;
         }
 
+    }
+
+    // this completely meaningless override is needed to expose the method as
+    // package-private ... is there a better way?
+    @Override
+    protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
+        super.fireDataChannelChanged(postedBy, changes);
     }
 }
