@@ -89,24 +89,11 @@ class DispatchQueue {
             return removeInvocations(invocationsForSender(sender, false), listener);
         }
 
-        boolean didRemove = false;
-
         // remove listener from all collections
-        didRemove = removeInvocations(subjectInvocations, listener);
+        boolean didRemove = removeInvocations(subjectInvocations, listener);
 
         for (Collection<Invocation> senderInvocations : invocationsBySender.values()) {
-            if (senderInvocations == null) {
-                continue;
-            }
-
-            Iterator<Invocation> it = senderInvocations.iterator();
-            while (it.hasNext()) {
-                Invocation invocation = it.next();
-                if (invocation.getTarget() == listener) {
-                    it.remove();
-                    didRemove = true;
-                }
-            }
+            didRemove = removeInvocations(senderInvocations, listener) || didRemove;
         }
 
         return didRemove;
