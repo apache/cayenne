@@ -51,6 +51,7 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
         DataSourceInfo dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();
+       
 
         if (dataSourceDescriptor == null) {
             String message = "Null dataSourceDescriptor for nodeDescriptor '"
@@ -60,14 +61,19 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
             throw new ConfigurationException(message);
         }
 
+        String driver = (dataSourceDescriptor.getJdbcDriver() == null)? "": dataSourceDescriptor.getJdbcDriver();
+        String dataSourceUrl = (dataSourceDescriptor.getDataSourceUrl() == null)? "": dataSourceDescriptor.getDataSourceUrl();
+        String userName = (dataSourceDescriptor.getUserName() == null)? "": dataSourceDescriptor.getUserName();
+        String password = (dataSourceDescriptor.getPassword() == null)? "": dataSourceDescriptor.getPassword();
+        
         try {
             return new PoolManager(
-                    dataSourceDescriptor.getJdbcDriver(),
-                    dataSourceDescriptor.getDataSourceUrl(),
+                    driver,
+                    dataSourceUrl,
                     dataSourceDescriptor.getMinConnections(),
                     dataSourceDescriptor.getMaxConnections(),
-                    dataSourceDescriptor.getUserName(),
-                    dataSourceDescriptor.getPassword(),
+                    userName,
+                    password,
                     jdbcEventLogger);
         }
         catch (Exception e) {
