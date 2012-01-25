@@ -29,6 +29,7 @@ CAY-1643 Updated Velocity templates to use static keys in setters/getters
 CAY-1649 Use BOOLEAN data type on Derby. Require Derby version >= 10.7.1.1.
 CAY-1651 ObjectContext.localObject - defer FaultFailureExceptions on temporary IDs
 CAY-1653 Improving DefaultEventManager concurrency - non-bocking DispatchQueue
+CAY-1654 Can't switch DataSource Factory on certain projects
 
 Bug Fixes Since 3.1M3:
 
