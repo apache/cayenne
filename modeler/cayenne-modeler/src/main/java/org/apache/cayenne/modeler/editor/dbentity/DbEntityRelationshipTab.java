@@ -42,10 +42,10 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.DbRelationshipListener;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -382,8 +382,8 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
      * Creates a list of DbEntities.
      */
     private ComboBoxModel createComboModel(Entity entity) {
-        DataMap map = entity.getDataMap();
-        Object[] objects = map.getDbEntities().toArray();
+        EntityResolver resolver = mediator.getEntityResolver();
+        Object[] objects = resolver.getDbEntities().toArray();
         return new DefaultComboBoxModel(objects);
     }
 

@@ -44,6 +44,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -459,8 +460,9 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         excludeDefaultListeners.setSelected(entity.isExcludingDefaultListeners());
 
         // init DbEntities
+        EntityResolver resolver = mediator.getEntityResolver();
         DataMap map = mediator.getCurrentDataMap();
-        Object[] dbEntities = map.getDbEntities().toArray();
+        Object[] dbEntities = resolver.getDbEntities().toArray();
         Arrays.sort(dbEntities, Comparators.getDataMapChildrenComparator());
 
         DefaultComboBoxModel dbModel = new DefaultComboBoxModel(dbEntities);
@@ -470,7 +472,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         dbEntityCombo.setEnabled(entity.getSuperClassName() == null);
 
         // toggle visibilty and editability rules
-
+        
         toggleClientFieldsVisible(map.isClientSupported());
         toggleEnabled(entity.getSuperEntityName() == null, !entity.isServerOnly());
 
