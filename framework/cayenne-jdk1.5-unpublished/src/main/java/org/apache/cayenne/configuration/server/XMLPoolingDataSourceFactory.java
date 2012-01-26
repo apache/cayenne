@@ -60,20 +60,15 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
             logger.info(message);
             throw new ConfigurationException(message);
         }
-
-        String driver = (dataSourceDescriptor.getJdbcDriver() == null)? "": dataSourceDescriptor.getJdbcDriver();
-        String dataSourceUrl = (dataSourceDescriptor.getDataSourceUrl() == null)? "": dataSourceDescriptor.getDataSourceUrl();
-        String userName = (dataSourceDescriptor.getUserName() == null)? "": dataSourceDescriptor.getUserName();
-        String password = (dataSourceDescriptor.getPassword() == null)? "": dataSourceDescriptor.getPassword();
         
         try {
             return new PoolManager(
-                    driver,
-                    dataSourceUrl,
+                    dataSourceDescriptor.getJdbcDriver(),
+                    dataSourceDescriptor.getDataSourceUrl(),
                     dataSourceDescriptor.getMinConnections(),
                     dataSourceDescriptor.getMaxConnections(),
-                    userName,
-                    password,
+                    dataSourceDescriptor.getUserName(),
+                    dataSourceDescriptor.getPassword(),
                     jdbcEventLogger);
         }
         catch (Exception e) {

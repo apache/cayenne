@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.Component;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
@@ -28,6 +29,7 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.util.Util;
 
 public class JDBCDataSourceEditor extends DataSourceEditor {
 
@@ -42,10 +44,19 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
     public Component getView() {
         return view;
     }
+    
+    @Override
+    public void setNode(DataNodeDescriptor node) {
+        if (!Util.nullSafeEquals(getNode(), node)) {
+            if (node.getDataSourceDescriptor() == null) {
+                node.setDataSourceDescriptor(new DataSourceInfo());
+            }
+            super.setNode(node);
+        }
+    }
 
     protected void prepareBindings(BindingBuilder builder) {
         this.view = new JDBCDataSourceView();
-
         
         fieldAdapters = new ObjectBinding[6];
         fieldAdapters[0] =
@@ -62,7 +73,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
           builder.bindToTextField(view.getMinConnections(), "node.dataSourceDescriptor.minConnections");
         
 
-        builder.bindToAction(view.getSyncWithLocal(),    "syncDataSourceAction()");
+        builder.bindToAction(view.getSyncWithLocal(), "syncDataSourceAction()");
     }
 
 

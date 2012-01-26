@@ -32,7 +32,7 @@ import org.apache.cayenne.util.Util;
 public abstract class DataSourceEditor extends CayenneController {
 
     protected ObjectBinding[] fieldAdapters;
-    protected DataNodeDescriptor node;
+    private DataNodeDescriptor node;
     protected BindingDelegate nodeChangeProcessor;
 
     public DataSourceEditor(ProjectController controller,
