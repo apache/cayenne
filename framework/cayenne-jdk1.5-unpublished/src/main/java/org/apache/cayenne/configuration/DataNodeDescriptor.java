@@ -24,7 +24,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
@@ -107,7 +110,10 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
 
         encoder.printlnAttribute("adapter", adapterType);
         encoder.printlnAttribute("factory", dataSourceFactoryType);
-        encoder.printlnAttribute("parameters", parameters);
+        
+        if (JNDIDataSourceFactory.class.getName().equals(dataSourceFactoryType) ||  DBCPDataSourceFactory.class.getName().equals(dataSourceFactoryType)) {
+            encoder.printlnAttribute("parameters", parameters);
+        }
         encoder.printlnAttribute("schema-update-strategy", schemaUpdateStrategyType);
         encoder.println(">");
 
@@ -123,7 +129,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
             }
         }
 
-        if (dataSourceDescriptor != null) {
+        if (dataSourceDescriptor != null && XMLPoolingDataSourceFactory.class.getName().equals(dataSourceFactoryType)) {
             dataSourceDescriptor.encodeAsXML(encoder);
         }
 
