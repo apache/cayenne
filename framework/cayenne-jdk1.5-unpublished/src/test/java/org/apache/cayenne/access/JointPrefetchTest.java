@@ -61,37 +61,41 @@ public class JointPrefetchTest extends ServerCase {
 
     @Inject
     protected DataContext context;
-    
+
     @Inject
     protected ServerRuntime runtime;
-    
+
     @Inject
     protected DataChannelInterceptor queryInterceptor;
-    
+
     @Inject
     protected DBHelper dbHelper;
-    
+
     protected TableHelper tArtist;
     protected TableHelper tGallery;
     protected TableHelper tPainting;
-    
+
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("GALLERY");
-        
+
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
-        
+
         tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
-        
+
         tPainting = new TableHelper(dbHelper, "PAINTING");
-        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", 
-                "ESTIMATED_PRICE", "GALLERY_ID");
+        tPainting.setColumns(
+                "PAINTING_ID",
+                "PAINTING_TITLE",
+                "ARTIST_ID",
+                "ESTIMATED_PRICE",
+                "GALLERY_ID");
     }
-    
+
     protected void createJointPrefetchDataSet1() throws Exception {
         tGallery.insert(33001, "G1");
         tGallery.insert(33002, "G2");
@@ -102,7 +106,7 @@ public class JointPrefetchTest extends ServerCase {
         tPainting.insert(33002, "P_artist12", 33001, 2000, 33001);
         tPainting.insert(33003, "P_artist21", 33002, 3000, 33002);
     }
-    
+
     protected void createJointPrefetchDataSet2() throws Exception {
         tGallery.insert(33001, "G1");
         tGallery.insert(33002, "G2");
@@ -113,21 +117,21 @@ public class JointPrefetchTest extends ServerCase {
         tPainting.insert(33002, "P_artist12", 33001, 2000, 33001);
         tPainting.insert(33003, "P_artist21", 33002, 3000, 33002);
     }
-    
-    public void testJointPrefetchWithFetchLimit() throws Exception {
+
+    public void testJointPrefetch_ToOne_FetchLimit() throws Exception {
         createJointPrefetchDataSet1();
-        
+
         SelectQuery q = new SelectQuery(Painting.class);
         q.setFetchLimit(2);
         q.setFetchOffset(0);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-        
+
         final List<?> objects = context.performQuery(q);
-        
+
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
             public void execute() {
                 assertEquals(2, objects.size());
 
@@ -141,7 +145,39 @@ public class JointPrefetchTest extends ServerCase {
             }
         });
     }
-    
+
+    public void testJointPrefetch_ToMany_FetchLimit() throws Exception {
+        createJointPrefetchDataSet1();
+
+        SelectQuery q = new SelectQuery(Artist.class);
+        q.setFetchLimit(2);
+        q.setFetchOffset(0);
+        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
+        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
+                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+
+        final List<?> objects = context.performQuery(q);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                // herein lies the limitation of prefetching combined with fetch limit -
+                // we got fewer artists than we wanted
+                assertEquals(1, objects.size());
+
+                Iterator<?> it = objects.iterator();
+                while (it.hasNext()) {
+                    Artist a = (Artist) it.next();
+                    List<Painting> targets = a.getPaintingArray();
+                    assertNotNull(targets);
+                    for (Painting p : targets) {
+                        assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+                    }
+                }
+            }
+        });
+    }
+
     public void testJointPrefetchDataRows() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -155,15 +191,24 @@ public class JointPrefetchTest extends ServerCase {
         final List<?> rows = context.performQuery(q);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
             public void execute() {
                 assertEquals(3, rows.size());
 
-                // row should contain columns from both entities minus those duplicated in a
+                // row should contain columns from both entities minus those duplicated in
+                // a
                 // join...
-                    
-                int rowWidth = context.getEntityResolver().getDbEntity("ARTIST").getAttributes().size()
-                        + context.getEntityResolver().getDbEntity("PAINTING").getAttributes().size();
+
+                int rowWidth = context
+                        .getEntityResolver()
+                        .getDbEntity("ARTIST")
+                        .getAttributes()
+                        .size()
+                        + context
+                                .getEntityResolver()
+                                .getDbEntity("PAINTING")
+                                .getAttributes()
+                                .size();
                 Iterator<?> it = rows.iterator();
                 while (it.hasNext()) {
                     DataRow row = (DataRow) it.next();
@@ -207,11 +252,11 @@ public class JointPrefetchTest extends ServerCase {
         q.setFetchingDataRows(false);
 
         final List<?> objects = context.performQuery(q);
-        
+
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
             public void execute() {
-             // without OUTER join we will get fewer objects...
+                // without OUTER join we will get fewer objects...
                 assertEquals(2, objects.size());
 
                 Iterator<?> it = objects.iterator();
@@ -246,9 +291,9 @@ public class JointPrefetchTest extends ServerCase {
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         final List<?> objects = context.performQuery(q);
-        
+
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
             public void execute() {
                 assertEquals(3, objects.size());
 
@@ -272,8 +317,9 @@ public class JointPrefetchTest extends ServerCase {
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                         + "values (33001, 'a1', #bind($date 'DATE'))");
-        artistSQL.setParameters(Collections.singletonMap("date", new Date(System
-                .currentTimeMillis())));
+        artistSQL.setParameters(Collections.singletonMap(
+                "date",
+                new Date(System.currentTimeMillis())));
         SQLTemplate paintingSQL = new SQLTemplate(
                 Painting.class,
                 "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
@@ -293,9 +339,9 @@ public class JointPrefetchTest extends ServerCase {
         dateOfBirth.setType("java.sql.Date");
         try {
             final List<?> objects = context.performQuery(q);
-            
+
             queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-                
+
                 public void execute() {
                     assertEquals(1, objects.size());
 
@@ -309,7 +355,7 @@ public class JointPrefetchTest extends ServerCase {
                                 .isAssignableFrom(a.getDateOfBirth().getClass()));
                     }
                 }
-            });            
+            });
         }
         finally {
             dateOfBirth.setType("java.util.Date");
@@ -327,7 +373,7 @@ public class JointPrefetchTest extends ServerCase {
         final List<?> objects = context.performQuery(q);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
             public void execute() {
                 assertEquals(3, objects.size());
 
@@ -364,9 +410,9 @@ public class JointPrefetchTest extends ServerCase {
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         final List<?> objects = context.performQuery(q);
-        
+
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
             public void execute() {
                 assertEquals(1, objects.size());
 
@@ -415,9 +461,9 @@ public class JointPrefetchTest extends ServerCase {
         assertNull(g1);
 
         final List<?> objects = context.performQuery(q);
-        
+
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
             public void execute() {
                 assertEquals(3, objects.size());
 
