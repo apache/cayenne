@@ -22,6 +22,8 @@ package org.apache.cayenne.exp.parser;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.cayenne.DataObject;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.commons.logging.Log;
@@ -121,6 +123,18 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
             return false;
         }
 
+        if (o1 instanceof DataObject) {
+            if (o2 instanceof DataObject && ((DataObject)o1).getObjectId().equals(((DataObject)o2).getObjectId())) {
+                if (((DataObject)o1).getObjectContext().equals(((DataObject)o2).getObjectContext())) {
+                    return o1.equals(o2);
+                } else if (((DataObject)o1).getPersistenceState() == ((DataObject)o2).getPersistenceState()) {
+                    DataObject o1_context = (((DataObject)o2).getObjectContext()).localObject(((DataObject)o1));
+                    return ((DataObject)o2).equals(o1_context);
+                }
+            }
+            return false;
+        }
+        
         return o1.equals(o2);
     }
 
