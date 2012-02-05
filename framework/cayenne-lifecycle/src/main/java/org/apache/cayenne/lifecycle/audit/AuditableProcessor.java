@@ -19,7 +19,7 @@
 package org.apache.cayenne.lifecycle.audit;
 
 /**
- * A superclass of application specific handlers of the {@link Auditable} mixin that
+ * A superclass of application specific handlers of the {@link Auditable} annotation, that
  * provides basic needed callbacks.
  * 
  * @since 3.1

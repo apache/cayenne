@@ -36,4 +36,5 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Auditable {
 
+    String[] ignoredProperties() default {};
 }

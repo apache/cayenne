@@ -33,6 +33,7 @@ CAY-1653 Improving DefaultEventManager concurrency - non-bocking DispatchQueue
 CAY-1654 Can't switch DataSource Factory on certain projects
 CAY-1656 cayenne generate extra data in xml model when change DataNode factory
 CAY-1657 Expression: in-memory comparison requires persistent to be in the same context as exp parameters to match
+CAY-1662 @Auditable and @AuditableChild annotations should support 'ignoredProperties' parameter and exclude changes to runtime relationships
 
 Bug Fixes Since 3.1M3:
 

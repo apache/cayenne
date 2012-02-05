@@ -43,4 +43,6 @@ public @interface AuditableChild {
      * object that should be audited when annotated object is changed.
      */
     String value();
+    
+    String[] ignoredProperties() default {};
 }

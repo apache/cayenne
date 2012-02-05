@@ -18,25 +18,41 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
 
+import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class AuditableFilterTest extends TestCase {
 
-    public void testInsertAudit() {
-        AuditableProcessor processor = mock(AuditableProcessor.class);
+    private AuditableProcessor processor;
+    private EntityResolver resolver;
 
-        AuditableFilter filter = new AuditableFilter(processor);
+    @Override
+    protected void setUp() throws Exception {
+        processor = mock(AuditableProcessor.class);
+        resolver = mock(EntityResolver.class);
+        
+        ObjEntity objectEntity = new ObjEntity("CayenneDataObject");
+        when(resolver.lookupObjEntity(any(Object.class))).thenReturn(objectEntity);
+    }
+
+    public void testInsertAudit() {
+
+        AuditableFilter filter = new AuditableFilter(resolver, processor);
         Object audited = new Object();
         filter.insertAudit(audited);
         filter.postSync();
@@ -45,9 +61,8 @@ public class AuditableFilterTest extends TestCase {
     }
 
     public void testDeleteAudit() {
-        AuditableProcessor processor = mock(AuditableProcessor.class);
 
-        AuditableFilter filter = new AuditableFilter(processor);
+        AuditableFilter filter = new AuditableFilter(resolver, processor);
         Object audited = new Object();
         filter.deleteAudit(audited);
         filter.postSync();
@@ -56,10 +71,9 @@ public class AuditableFilterTest extends TestCase {
     }
 
     public void testUpdateAudit() {
-        AuditableProcessor processor = mock(AuditableProcessor.class);
 
-        AuditableFilter filter = new AuditableFilter(processor);
-        Object audited = new Object();
+        AuditableFilter filter = new AuditableFilter(resolver, processor);
+        Object audited = new CayenneDataObject();
         filter.updateAudit(audited);
         filter.postSync();
 
@@ -67,12 +81,12 @@ public class AuditableFilterTest extends TestCase {
     }
 
     public void testUpdateAuditChild() {
-        AuditableProcessor processor = mock(AuditableProcessor.class);
 
-        AuditableFilter filter = new AuditableFilter(processor);
+        AuditableFilter filter = new AuditableFilter(resolver, processor);
 
         Object auditedParent = new Object();
         DataObject audited = new MockAuditableChild();
+        audited.setObjectId(new ObjectId("MockAuditableChild", "a", 1));
         audited.writeProperty("parent", auditedParent);
         filter.updateAuditChild(audited);
         filter.postSync();
@@ -81,9 +95,8 @@ public class AuditableFilterTest extends TestCase {
     }
 
     public void testOnSyncPassThrough() {
-        AuditableProcessor processor = mock(AuditableProcessor.class);
 
-        AuditableFilter filter = new AuditableFilter(processor);
+        AuditableFilter filter = new AuditableFilter(resolver, processor);
         ObjectContext context = mock(ObjectContext.class);
         GraphDiff changes = mock(GraphDiff.class);
 
@@ -97,13 +110,12 @@ public class AuditableFilterTest extends TestCase {
     }
 
     public void testOnSyncAuditEventsCollapse() {
-        AuditableProcessor processor = mock(AuditableProcessor.class);
 
-        final AuditableFilter filter = new AuditableFilter(processor);
+        final AuditableFilter filter = new AuditableFilter(resolver, processor);
         ObjectContext context = mock(ObjectContext.class);
         GraphDiff changes = mock(GraphDiff.class);
 
-        final Object auditedParent1 = new Object();
+        final Object auditedParent1 = new CayenneDataObject();
         final DataObject audited11 = new MockAuditableChild();
         audited11.writeProperty("parent", auditedParent1);
         final DataObject audited12 = new MockAuditableChild();

@@ -18,31 +18,44 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostRemove;
 import org.apache.cayenne.annotation.PostUpdate;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.lifecycle.changeset.ChangeSetFilter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 
 /**
  * A {@link DataChannelFilter} that enables audit of entities annotated with
- * {@link Auditable} and {@link AuditableChild}.
+ * {@link Auditable} and {@link AuditableChild}. Note that this filter relies on
+ * {@link ChangeSetFilter} presence in the DataDomain filter chain to be able to analyze
+ * ignored properties.
  * 
  * @since 3.1
  */
 public class AuditableFilter implements DataChannelFilter {
 
     private ThreadLocal<AuditableAggregator> threadAggregator;
+    private ConcurrentMap<String, AuditableEntityDescriptor> entityDescriptors;
     protected AuditableProcessor processor;
+    protected EntityResolver entityResolver;
 
-    public AuditableFilter(AuditableProcessor processor) {
+    public AuditableFilter(EntityResolver entityResolver, AuditableProcessor processor) {
         this.processor = processor;
+        this.entityResolver = entityResolver;
+        this.entityDescriptors = new ConcurrentHashMap<String, AuditableEntityDescriptor>();
         this.threadAggregator = new ThreadLocal<AuditableAggregator>();
     }
 
@@ -122,7 +135,9 @@ public class AuditableFilter implements DataChannelFilter {
 
     @PostUpdate(entityAnnotations = Auditable.class)
     void updateAudit(Object object) {
-        getAggregator().audit(object, AuditableOperation.UPDATE);
+        if (isAuditableUpdate(object, false)) {
+            getAggregator().audit(object, AuditableOperation.UPDATE);
+        }
     }
 
     // only catching child updates... child insert/delete presumably causes an event on
@@ -131,15 +146,20 @@ public class AuditableFilter implements DataChannelFilter {
     @PostUpdate(entityAnnotations = AuditableChild.class)
     void updateAuditChild(Object object) {
 
-        Object parent = getParent(object);
+        if (isAuditableUpdate(object, true)) {
 
-        if (parent != null) {
-            updateAudit(parent);
-        }
-        else {
-            // TODO: maybe log this fact... shouldn't normally happen, but I can imagine
-            // certain combinations of object graphs, disconnected relationships, delete
-            // rules, etc. may cause this
+            Object parent = getParent(object);
+
+            if (parent != null) {
+                // not calling 'updateAudit' to skip checking 'isAuditableUpdate' on
+                // parent
+                getAggregator().audit(parent, AuditableOperation.UPDATE);
+            }
+            else {
+                // TODO: maybe log this fact... shouldn't normally happen, but I can
+                // imagine certain combinations of object graphs, disconnected
+                // relationships, delete rules, etc. may cause this
+            }
         }
     }
 
@@ -163,5 +183,48 @@ public class AuditableFilter implements DataChannelFilter {
         }
 
         return dataObject.readNestedProperty(annotation.value());
+    }
+
+    protected boolean isAuditableUpdate(Object object, boolean child) {
+        AuditableEntityDescriptor descriptor = getEntityDescriptor(object, child);
+        return descriptor.auditableChange((Persistent) object);
+    }
+
+    private AuditableEntityDescriptor getEntityDescriptor(Object object, boolean child) {
+
+        ObjEntity entity = entityResolver.lookupObjEntity(object);
+
+        AuditableEntityDescriptor descriptor = entityDescriptors.get(entity.getName());
+        if (descriptor == null) {
+
+            String[] ignoredProperties;
+
+            if (child) {
+                AuditableChild annotation = object.getClass().getAnnotation(
+                        AuditableChild.class);
+                ignoredProperties = annotation != null
+                        ? annotation.ignoredProperties()
+                        : null;
+            }
+            else {
+                Auditable annotation = object.getClass().getAnnotation(Auditable.class);
+                ignoredProperties = annotation != null
+                        ? annotation.ignoredProperties()
+                        : null;
+            }
+
+            descriptor = new AuditableEntityDescriptor(entity, ignoredProperties);
+
+            AuditableEntityDescriptor existingDescriptor = entityDescriptors.putIfAbsent(
+                    entity.getName(),
+                    descriptor);
+
+            if (existingDescriptor != null) {
+                descriptor = existingDescriptor;
+            }
+        }
+
+        return descriptor;
+
     }
 }
