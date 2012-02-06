@@ -38,7 +38,9 @@ import java.lang.annotation.Target;
 public @interface CacheGroups {
 
     /**
-     * Defines one or more cache group names associated with the tagged entity.
+     * Defines one or more cache group names associated with the tagged entity. If
+     * omitted, it is assumed that cache group names are determined dynamically based on
+     * the object type or state in whatever listener is to process them.
      */
-    String[] value();
+    String[] value() default {};
 }
