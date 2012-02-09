@@ -35,7 +35,8 @@ public class ValidationException extends CayenneRuntimeException {
     }
 
     public ValidationException(ValidationResult result) {
-        this("Validation failures: " + result.toString(), result);
+        // escape percent signs so they aren't interpreted as format specifiers when String.format is called later.
+        this("Validation failures: " + result.toString().replace("%", "%%"), result);
     }
 
     public ValidationException(String messageFormat, ValidationResult result,
