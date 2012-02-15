@@ -38,9 +38,11 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dba.sybase.SybaseMergerFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -209,4 +211,14 @@ public class IngresAdapter extends JdbcAdapter {
             super.bindParameter(statement, object, pos, sqlType, scale);
         }
     }
+    
+    @Override
+    public MergerFactory mergerFactory() {
+        return new IngresMergerFactory();
+    }
+    
+//    @Override
+//    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+//        super.createTableAppendColumn(sqlBuffer, column);
+//    }
 }
