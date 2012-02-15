@@ -16,24 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dba.ingres;
 
-package org.apache.cayenne.unit;
+import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
 
-import org.apache.cayenne.dba.DbAdapter;
 
-public class IngresUnitDbAdapter extends UnitDbAdapter {
+public class IngresActionBuilder extends JdbcActionBuilder {
 
-    public IngresUnitDbAdapter(DbAdapter adapter) {
-        super(adapter);
+    public IngresActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
+        super(adapter, resolver);
     }
-//    
-//    @Override
-//    public boolean supportsFKConstraints() {
-//        return false;
-//    }
-    
+
     @Override
-    public boolean supportsLobs() {
-        return true;
-    }
+    public SQLAction objectSelectAction(SelectQuery query) {
+        return new IngresSelectAction(query, adapter, entityResolver);
+    }   
 }

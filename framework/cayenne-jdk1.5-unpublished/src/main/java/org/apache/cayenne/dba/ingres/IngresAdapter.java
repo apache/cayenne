@@ -75,6 +75,12 @@ public class IngresAdapter extends JdbcAdapter {
                 IngresAdapter.TRIM_FUNCTION);
     }
     
+    @Override
+    public SQLAction getAction(Query query, DataNode node) {
+        return query
+                .createSQLAction(new IngresActionBuilder(this, node.getEntityResolver()));
+    }
+    
     /**
      * Returns a SQL string that can be used to create database table corresponding to
      * <code>ent</code> parameter.

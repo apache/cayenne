@@ -16,24 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dba.ingres;
 
-package org.apache.cayenne.unit;
+import org.apache.cayenne.access.trans.SelectTranslator;
 
-import org.apache.cayenne.dba.DbAdapter;
+public class IngresSelectTranslator extends SelectTranslator {
 
-public class IngresUnitDbAdapter extends UnitDbAdapter {
-
-    public IngresUnitDbAdapter(DbAdapter adapter) {
-        super(adapter);
-    }
-//    
-//    @Override
-//    public boolean supportsFKConstraints() {
-//        return false;
-//    }
-    
     @Override
-    public boolean supportsLobs() {
-        return true;
+    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+        // limit results
+        int offset = queryMetadata.getFetchOffset();
+        int limit = queryMetadata.getFetchLimit();
+
+        if (offset > 0) {
+            buffer.append(" OFFSET ").append(offset);
+        }
+        
+        if (limit > 0) {
+            buffer.append(" FETCH NEXT ").append(limit).append(" ROWS ONLY ");
+        }
     }
 }
