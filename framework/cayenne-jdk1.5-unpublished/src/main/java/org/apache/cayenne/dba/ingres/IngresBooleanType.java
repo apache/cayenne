@@ -16,24 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dba.ingres;
 
-package org.apache.cayenne.unit;
+import java.sql.PreparedStatement;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.access.types.BooleanType;
 
-public class IngresUnitDbAdapter extends UnitDbAdapter {
 
-    public IngresUnitDbAdapter(DbAdapter adapter) {
-        super(adapter);
-    }
-    
+public class IngresBooleanType extends BooleanType {
+
     @Override
-    public boolean supportsFKConstraints() {
-        return false;
-    }
-    
-    @Override
-    public boolean supportsLobs() {
-        return true;
+    public void setJdbcObject(
+            PreparedStatement st,
+            Object val,
+            int pos,
+            int type,
+            int precision) throws Exception {
+
+        if (val != null) {
+            st.setInt(pos, ((Boolean) val).booleanValue() ? 1 : 0);
+        } else {
+            st.setNull(pos, type);
+        }
     }
 }

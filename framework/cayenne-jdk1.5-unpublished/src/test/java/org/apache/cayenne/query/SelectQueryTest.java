@@ -66,7 +66,10 @@ public class SelectQueryTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("CLOB_TEST_RELATION");
-        dbHelper.deleteAll("CLOB_TEST");
+        
+        if (accessStackAdapter.supportsLobs()) {
+              dbHelper.deleteAll("CLOB_TEST");
+        }
     }
 
     protected void createClobDataSet() throws Exception {

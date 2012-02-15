@@ -54,7 +54,7 @@
        <db-type name="DECIMAL"/>
    </jdbc-type>
    <jdbc-type name="DOUBLE">
-       <db-type name="DOUBLE"/>
+       <db-type name="FLOAT"/>
    </jdbc-type>
    <jdbc-type name="FLOAT">
        <db-type name="FLOAT"/>
@@ -88,10 +88,10 @@
    </jdbc-type>
    <jdbc-type name="STRUCT"/>
    <jdbc-type name="TIME">
-       <db-type name="DATE"/>
+       <db-type name="TIMESTAMP"/>
    </jdbc-type>
    <jdbc-type name="TIMESTAMP">
-       <db-type name="DATE"/>
+       <db-type name="TIMESTAMP"/>
    </jdbc-type>
    <jdbc-type name="TINYINT">
        <db-type name="TINYINT"/>

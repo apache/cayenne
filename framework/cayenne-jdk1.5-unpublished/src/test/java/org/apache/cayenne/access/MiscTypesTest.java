@@ -46,7 +46,10 @@ public class MiscTypesTest extends ServerCase {
     
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("SERIALIZABLE_ENTITY");
+        if(accessStackAdapter.supportsLobs()) {
+            dbHelper.deleteAll("SERIALIZABLE_ENTITY");
+        }
+        
         dbHelper.deleteAll("ARRAYS_ENTITY");
         dbHelper.deleteAll("CHARACTER_ENTITY");
     }

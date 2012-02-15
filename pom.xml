@@ -826,6 +826,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+        <profile>
+			<id>ingres</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>ingres</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.ingres</groupId>
+					<artifactId>ingres-driver</artifactId>
+					<version>4.0.7</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 		<profile>
 			<id>sybase</id>
 			<activation>

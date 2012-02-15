@@ -22,8 +22,6 @@ package org.apache.cayenne.access.trans;
 
 import java.sql.Types;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;

@@ -32,6 +32,8 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.DateTestEntity;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMap2;
+import org.apache.cayenne.testdo.testmap.ReturnTypesMapLobs1;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -46,14 +48,24 @@ public class ReturnTypesMappingTest extends ServerCase {
     
     @Inject
     private DBHelper dbHelper;
-
+    
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
+    
     @Override
     protected void setUpAfterInjection() throws Exception {
+        if (unitDbAdapter.supportsLobs()) {
+            dbHelper.deleteAll("TYPES_MAPPING_LOBS_TEST1");
+            dbHelper.deleteAll("TYPES_MAPPING_TEST2");
+        }
         dbHelper.deleteAll("TYPES_MAPPING_TEST1");
-        dbHelper.deleteAll("TYPES_MAPPING_TEST2");
         dbHelper.deleteAll("DATE_TEST");
     }
 
+    /*
+     * TODO: olga: We need divided TYPES_MAPPING_TES2 to 2 schemas with lobs columns and not lobs columns 
+     */
+    
     public void testBIGINT() throws Exception {
         String columnName = "BIGINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -71,8 +83,8 @@ public class ReturnTypesMappingTest extends ServerCase {
     }
 
     public void testBIGINT2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
-
+       ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+    
         Long bigintValue = 5326457654783454355l;
         test.setBigintColumn(bigintValue);
         context.commitChanges();
@@ -86,38 +98,42 @@ public class ReturnTypesMappingTest extends ServerCase {
     }
 
     public void testBINARY() throws Exception {
-        String columnName = "BINARY_COLUMN";
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] binaryValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setBinaryColumn(binaryValue);
-        context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get(columnName);
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(binaryValue, (byte[]) columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            String columnName = "BINARY_COLUMN";
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] binaryValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setBinaryColumn(binaryValue);
+            context.commitChanges();
+    
+            NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
+            DataRow testRead = (DataRow) context.performQuery(q).get(0);
+            Object columnValue = testRead.get(columnName);
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(binaryValue, (byte[]) columnValue));
+        }
     }
 
     public void testBINARY2() throws Exception {
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] binaryValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setBinaryColumn(binaryValue);
-        context.commitChanges();
-
-        SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
-        ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
-        byte[] columnValue = testRead.getBinaryColumn();
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(binaryValue, columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] binaryValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setBinaryColumn(binaryValue);
+            context.commitChanges();
+    
+            SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
+            ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
+            byte[] columnValue = testRead.getBinaryColumn();
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(binaryValue, columnValue));
+        }
     }
 
     public void testBIT() throws Exception {
@@ -153,38 +169,42 @@ public class ReturnTypesMappingTest extends ServerCase {
     }
 
     public void testBLOB() throws Exception {
-        String columnName = "BLOB_COLUMN";
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] blobValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setBlobColumn(blobValue);
-        context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get(columnName);
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(blobValue, (byte[]) columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            String columnName = "BLOB_COLUMN";
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] blobValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setBlobColumn(blobValue);
+            context.commitChanges();
+    
+            NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
+            DataRow testRead = (DataRow) context.performQuery(q).get(0);
+            Object columnValue = testRead.get(columnName);
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(blobValue, (byte[]) columnValue));
+        }
     }
 
     public void testBLOB2() throws Exception {
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] blobValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setBlobColumn(blobValue);
-        context.commitChanges();
-
-        SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
-        ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
-        byte[] columnValue = testRead.getBlobColumn();
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(blobValue, columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] blobValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setBlobColumn(blobValue);
+            context.commitChanges();
+    
+            SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
+            ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
+            byte[] columnValue = testRead.getBlobColumn();
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(blobValue, columnValue));
+        }
     }
 
     public void testBOOLEAN() throws Exception {
@@ -252,42 +272,46 @@ public class ReturnTypesMappingTest extends ServerCase {
     }
 
     public void testCLOB() throws Exception {
-        String columnName = "CLOB_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
-
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < 10000; i++) {
-            buffer.append("CLOB very large string for tests!!!!\n");
+        if (unitDbAdapter.supportsLobs()) {
+            String columnName = "CLOB_COLUMN";
+            ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
+    
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 0; i < 10000; i++) {
+                buffer.append("CLOB very large string for tests!!!!\n");
+            }
+            String clobValue = buffer.toString();
+            test.setClobColumn(clobValue);
+            context.commitChanges();
+    
+            NamedQuery q = new NamedQuery("SelectReturnTypesLobsMap1");
+            DataRow testRead = (DataRow) context.performQuery(q).get(0);
+            Object columnValue = testRead.get(columnName);
+            assertNotNull(columnValue);
+            assertEquals(String.class, columnValue.getClass());
+            assertEquals(clobValue, columnValue);
         }
-        String clobValue = buffer.toString();
-        test.setClobColumn(clobValue);
-        context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectReturnTypesMap1");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get(columnName);
-        assertNotNull(columnValue);
-        assertEquals(String.class, columnValue.getClass());
-        assertEquals(clobValue, columnValue);
     }
 
     public void testCLOB2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
-
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < 10000; i++) {
-            buffer.append("CLOB very large string for tests!!!!\n");
+        if (unitDbAdapter.supportsLobs()) {
+            ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
+    
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 0; i < 10000; i++) {
+                buffer.append("CLOB very large string for tests!!!!\n");
+            }
+            String clobValue = buffer.toString();
+            test.setClobColumn(clobValue);
+            context.commitChanges();
+    
+            SelectQuery q = new SelectQuery(ReturnTypesMapLobs1.class);
+            ReturnTypesMapLobs1 testRead = (ReturnTypesMapLobs1) context.performQuery(q).get(0);
+            String columnValue = testRead.getClobColumn();
+            assertNotNull(columnValue);
+            assertEquals(String.class, columnValue.getClass());
+            assertEquals(clobValue, columnValue);
         }
-        String clobValue = buffer.toString();
-        test.setClobColumn(clobValue);
-        context.commitChanges();
-
-        SelectQuery q = new SelectQuery(ReturnTypesMap1.class);
-        ReturnTypesMap1 testRead = (ReturnTypesMap1) context.performQuery(q).get(0);
-        String columnValue = testRead.getClobColumn();
-        assertNotNull(columnValue);
-        assertEquals(String.class, columnValue.getClass());
-        assertEquals(clobValue, columnValue);
     }
 
     public void testDATE() throws Exception {
@@ -453,38 +477,42 @@ public class ReturnTypesMappingTest extends ServerCase {
     }
 
     public void testLONGVARBINARY() throws Exception {
-        String columnName = "LONGVARBINARY_COLUMN";
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] longvarbinaryValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setLongvarbinaryColumn(longvarbinaryValue);
-        context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get(columnName);
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(longvarbinaryValue, (byte[]) columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            String columnName = "LONGVARBINARY_COLUMN";
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] longvarbinaryValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setLongvarbinaryColumn(longvarbinaryValue);
+            context.commitChanges();
+    
+            NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
+            DataRow testRead = (DataRow) context.performQuery(q).get(0);
+            Object columnValue = testRead.get(columnName);
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(longvarbinaryValue, (byte[]) columnValue));
+        }
     }
 
     public void testLONGVARBINARY2() throws Exception {
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] longvarbinaryValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setLongvarbinaryColumn(longvarbinaryValue);
-        context.commitChanges();
-
-        SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
-        ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
-        byte[] columnValue = testRead.getLongvarbinaryColumn();
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(longvarbinaryValue, columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] longvarbinaryValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setLongvarbinaryColumn(longvarbinaryValue);
+            context.commitChanges();
+    
+            SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
+            ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
+            byte[] columnValue = testRead.getLongvarbinaryColumn();
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(longvarbinaryValue, columnValue));
+        }
     }
 
     public void testLONGVARCHAR() throws Exception {
@@ -741,38 +769,42 @@ public class ReturnTypesMappingTest extends ServerCase {
     }
 
     public void testVARBINARY() throws Exception {
-        String columnName = "VARBINARY_COLUMN";
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] varbinaryValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setVarbinaryColumn(varbinaryValue);
-        context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Object columnValue = testRead.get(columnName);
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(varbinaryValue, (byte[]) columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            String columnName = "VARBINARY_COLUMN";
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] varbinaryValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setVarbinaryColumn(varbinaryValue);
+            context.commitChanges();
+    
+            NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
+            DataRow testRead = (DataRow) context.performQuery(q).get(0);
+            Object columnValue = testRead.get(columnName);
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(varbinaryValue, (byte[]) columnValue));
+        }
     }
 
     public void testVARBINARY2() throws Exception {
-        ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-
-        byte[] varbinaryValue = {
-                3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-        };
-        test.setVarbinaryColumn(varbinaryValue);
-        context.commitChanges();
-
-        SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
-        ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
-        byte[] columnValue = testRead.getVarbinaryColumn();
-        assertNotNull(columnValue);
-        assertEquals(byte[].class, columnValue.getClass());
-        assertTrue(Arrays.equals(varbinaryValue, columnValue));
+        if (unitDbAdapter.supportsLobs()) {
+            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+    
+            byte[] varbinaryValue = {
+                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
+            };
+            test.setVarbinaryColumn(varbinaryValue);
+            context.commitChanges();
+    
+            SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
+            ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
+            byte[] columnValue = testRead.getVarbinaryColumn();
+            assertNotNull(columnValue);
+            assertEquals(byte[].class, columnValue.getClass());
+            assertTrue(Arrays.equals(varbinaryValue, columnValue));
+        }
     }
 
     public void testVARCHAR() throws Exception {

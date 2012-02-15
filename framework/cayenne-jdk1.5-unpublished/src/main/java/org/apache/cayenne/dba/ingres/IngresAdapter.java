@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.dba.ingres;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
@@ -37,6 +41,8 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLAction;
 
 /**
  * DbAdapter implementation for <a href="http://opensource.ca.com/projects/ingres/">Ingres</a>.
@@ -58,7 +64,9 @@ public class IngresAdapter extends JdbcAdapter {
             @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
+        this.setSupportsUniqueConstraints(false);
     }
+    
     
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
@@ -66,6 +74,7 @@ public class IngresAdapter extends JdbcAdapter {
                 queryAssembler,
                 IngresAdapter.TRIM_FUNCTION);
     }
+    
     /**
      * Returns a SQL string that can be used to create database table corresponding to
      * <code>ent</code> parameter.
@@ -167,6 +176,9 @@ public class IngresAdapter extends JdbcAdapter {
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
         map.registerType(new IngresCharType());
+        
+        // configure boolean type to work with numeric columns
+        map.registerType(new IngresBooleanType());
     }
 
     /**
@@ -177,4 +189,18 @@ public class IngresAdapter extends JdbcAdapter {
         return new IngresPkGenerator(this);
     }
 
+    @Override
+    public void bindParameter(
+            PreparedStatement statement,
+            Object object,
+            int pos,
+            int sqlType,
+            int scale) throws SQLException, Exception {
+
+        if (object == null && (sqlType == Types.BOOLEAN || sqlType == Types.BIT)) {
+            statement.setNull(pos, Types.VARCHAR);
+        } else {
+            super.bindParameter(statement, object, pos, sqlType, scale);
+        }
+    }
 }

@@ -22,9 +22,9 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.BlobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -43,20 +43,30 @@ public class DataContextBlobTest extends ServerCase {
     private DataContext context3;
 
     @Inject
-    protected ServerRuntime runtime;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
+    
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        if (accessStackAdapter.supportsLobs()) {
+            dbHelper.deleteAll("BLOB_TEST");
+        }
+    }
 
     protected boolean skipTests() {
-        return accessStackAdapter.supportsLobs();
+        return !accessStackAdapter.supportsLobs();
     }
 
     protected boolean skipEmptyLOBTests() {
-        return accessStackAdapter.handlesNullVsEmptyLOBs();
+        return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
 
     public void testEmptyBlob() throws Exception {
+        if (skipTests()) {
+            return;
+        }
         if (skipEmptyLOBTests()) {
             return;
         }
@@ -116,6 +126,7 @@ public class DataContextBlobTest extends ServerCase {
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
         ByteArrayTypeTest.assertByteArraysEqual(blobObj2.getBlobCol(), blobObj3
                 .getBlobCol());
+      
     }
 
     protected void runWithBlobSize(int sizeBytes) throws Exception {

@@ -249,13 +249,16 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TINYINT_COL" type="TINYINT"/>
 	</db-entity>
+	<db-entity name="TYPES_MAPPING_LOBS_TEST1">
+		<db-attribute name="AAAID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
+	</db-entity>
 	<db-entity name="TYPES_MAPPING_TEST1">
 		<db-attribute name="AAAID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="BIGINT_COLUMN" type="BIGINT"/>
 		<db-attribute name="BIT_COLUMN" type="BIT"/>
 		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
 		<db-attribute name="CHAR_COLUMN" type="CHAR" length="254"/>
-		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
 		<db-attribute name="DATE_COLUMN" type="DATE"/>
 		<db-attribute name="DECIMAL_COLUMN" type="DECIMAL" length="12" scale="5"/>
 		<db-attribute name="DOUBLE_COLUMN" type="DOUBLE" scale="7"/>
@@ -490,7 +493,6 @@
 		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
 		<obj-attribute name="charColumn" type="java.lang.String" db-attribute-path="CHAR_COLUMN"/>
-		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
 		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
 		<obj-attribute name="decimalColumn" type="java.math.BigDecimal" db-attribute-path="DECIMAL_COLUMN"/>
 		<obj-attribute name="doubleColumn" type="java.lang.Double" db-attribute-path="DOUBLE_COLUMN"/>
@@ -510,6 +512,9 @@
 		<obj-attribute name="blobColumn" type="byte[]" db-attribute-path="BLOB_COLUMN"/>
 		<obj-attribute name="longvarbinaryColumn" type="byte[]" db-attribute-path="LONGVARBINARY_COLUMN"/>
 		<obj-attribute name="varbinaryColumn" type="byte[]" db-attribute-path="VARBINARY_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="ReturnTypesMapLobs1" className="org.apache.cayenne.testdo.testmap.ReturnTypesMapLobs1" clientClassName="test.client.ReturnTypesMapLobs1" dbEntityName="TYPES_MAPPING_LOBS_TEST1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
 	</obj-entity>
 	<obj-entity name="SerializableEntity" className="org.apache.cayenne.testdo.testmap.SerializableEntity" dbEntityName="SERIALIZABLE_ENTITY">
 		<obj-attribute name="serializableField" type="org.apache.cayenne.MockSerializable" db-attribute-path="SERIALIZABLE_FIELD"/>
@@ -739,6 +744,10 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
+	</query>
+	<query name="SelectReturnTypesLobsMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_LOBS_TEST1]]></sql>
 	</query>
 	<query name="SelectReturnTypesMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>

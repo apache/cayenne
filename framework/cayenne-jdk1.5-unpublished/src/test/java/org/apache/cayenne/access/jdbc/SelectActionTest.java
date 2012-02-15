@@ -47,7 +47,10 @@ public class SelectActionTest extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("CLOB_TEST_RELATION");
-        dbHelper.deleteAll("CLOB_TEST");
+        
+        if (accessStackAdapter.supportsLobs()) {
+            dbHelper.deleteAll("CLOB_TEST");
+        }
     }
 
     public void testFetchLimit_DistinctResultIterator() throws Exception {
