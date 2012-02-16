@@ -287,6 +287,9 @@ public class ReturnTypesMappingTest extends ServerCase {
             NamedQuery q = new NamedQuery("SelectReturnTypesLobsMap1");
             DataRow testRead = (DataRow) context.performQuery(q).get(0);
             Object columnValue = testRead.get(columnName);
+            if (columnValue == null && testRead.containsKey(columnName.toLowerCase())) {
+                columnValue = testRead.get(columnName.toLowerCase());
+            }
             assertNotNull(columnValue);
             assertEquals(String.class, columnValue.getClass());
             assertEquals(clobValue, columnValue);

@@ -132,8 +132,10 @@ public class SelectTranslatorTest extends ServerCase {
                     if (generatedSql.contains("RTRIM")) {
                         assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql
                                 .indexOf("RTRIM("));
-                    }
-                    else {
+                    } else if (generatedSql.contains("TRIM")) {
+                        assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql
+                                .indexOf("TRIM("));
+                    } else {
                         assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
                     }
                 }

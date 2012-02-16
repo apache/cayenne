@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.di.Inject;
@@ -27,6 +28,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTablePrimitives;
 import org.apache.cayenne.testdo.mt.MtTablePrimitives;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -35,6 +37,9 @@ public class CayenneContextPrimitiveTest extends ClientCase {
 
     @Inject
     private CayenneContext context;
+    
+    @Inject
+    private UnitDbAdapter accessStackAdapter;
 
     @Inject
     private DBHelper dbHelper;
@@ -45,13 +50,18 @@ public class CayenneContextPrimitiveTest extends ClientCase {
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("MT_TABLE_PRIMITIVES");
 
+        int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
+        
         tMtTablePrimitives = new TableHelper(dbHelper, "MT_TABLE_PRIMITIVES");
-        tMtTablePrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN");
+        tMtTablePrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN").setColumnTypes(
+                Types.INTEGER,
+                bool,
+                Types.INTEGER);
     }
 
     private void createTwoPrimitivesDataSet() throws Exception {
-        tMtTablePrimitives.insert(1, true, 0);
-        tMtTablePrimitives.insert(2, false, 5);
+        tMtTablePrimitives.insert(1, accessStackAdapter.supportsBoolean() ? true : 1, 0);
+        tMtTablePrimitives.insert(2, accessStackAdapter.supportsBoolean() ? false : 0, 5);
     }
 
     public void testSelectPrimitives() throws Exception {

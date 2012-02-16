@@ -68,18 +68,19 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
     }
 
     private void createReadToManyDataSet() throws Exception {
+        
         tQualified1.insert(1, "OX1", null);
-        tQualified1.insert(2, "OX2", true);
+        tQualified1.insert(2, "OX2", accessStackAdapter.supportsBoolean() ? true : 1);
 
         tQualified2.insert(1, "OY1", null, 1);
-        tQualified2.insert(2, "OY2", true, 1);
+        tQualified2.insert(2, "OY2", accessStackAdapter.supportsBoolean() ? true : 1, 1);
         tQualified2.insert(3, "OY3", null, 2);
-        tQualified2.insert(4, "OY4", true, 2);
+        tQualified2.insert(4, "OY4", accessStackAdapter.supportsBoolean() ? true : 1, 2);
     }
 
     private void createReadToOneDataSet() throws Exception {
         tQualified1.insert(1, "OX1", null);
-        tQualified1.insert(2, "OX2", true);
+        tQualified1.insert(2, "OX2", accessStackAdapter.supportsBoolean() ? true : 1);
 
         tQualified2.insert(1, "OY1", null, 2);
     }

@@ -33,6 +33,11 @@ public class IngresUnitDbAdapter extends UnitDbAdapter {
 //    }
     
     @Override
+    public boolean supportsBoolean() {
+        return false;
+    }
+    
+    @Override
     public boolean supportsLobs() {
         return true;
     }
