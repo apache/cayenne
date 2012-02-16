@@ -283,13 +283,7 @@ public class JdbcAdapter implements DbAdapter {
      * <code>ent</code> parameter.
      */
     public String createTable(DbEntity entity) {
-        boolean status;
-        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
+        boolean status = (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers());
         QuotingStrategy context = getQuotingStrategy(status);
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ");
@@ -333,13 +327,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-        boolean status;
-        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
+        boolean status = (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers());
         QuotingStrategy context = getQuotingStrategy(status);
         Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
@@ -365,14 +353,8 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        boolean status;
-        if ((column.getEntity().getDataMap() != null)
-                && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
+        boolean status = ((column.getEntity().getDataMap() != null)
+                && column.getEntity().getDataMap().isQuotingSQLIdentifiers());
         QuotingStrategy context = getQuotingStrategy(status);
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
@@ -423,13 +405,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.1
      */
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
-        boolean status;
-        if (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
+        boolean status =  (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
         QuotingStrategy context = getQuotingStrategy(status);
 
         if (columns == null || columns.isEmpty()) {
@@ -465,13 +441,7 @@ public class JdbcAdapter implements DbAdapter {
     public String createFkConstraint(DbRelationship rel) {
 
         DbEntity source = (DbEntity) rel.getSourceEntity();
-        boolean status;
-        if (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
+        boolean status = (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
         QuotingStrategy context = getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();

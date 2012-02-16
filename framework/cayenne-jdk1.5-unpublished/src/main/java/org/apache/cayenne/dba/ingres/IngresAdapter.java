@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.ingres;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -38,7 +37,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dba.sybase.SybaseMergerFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -83,103 +81,6 @@ public class IngresAdapter extends JdbcAdapter {
                 .createSQLAction(new IngresActionBuilder(this, node.getEntityResolver()));
     }
     
-    /**
-     * Returns a SQL string that can be used to create database table corresponding to
-     * <code>ent</code> parameter.
-     */
-    @Override
-    public String createTable(DbEntity ent) {       
-        QuotingStrategy context = getQuotingStrategy(ent.getDataMap().isQuotingSQLIdentifiers());
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ");
-        buf.append(context.quoteFullyQualifiedName(ent));
-        buf.append(" (");
-
-        // columns
-        Iterator<DbAttribute> it = ent.getAttributes().iterator();
-        boolean first = true;
-        while (it.hasNext()) {
-            if (first)
-                first = false;
-            else
-                buf.append(", ");
-
-            DbAttribute at = it.next();
-
-            // attribute may not be fully valid, do a simple check
-            if (at.getType() == TypesMapping.NOT_DEFINED) {
-                throw new CayenneRuntimeException("Undefined type for attribute '"
-                        + ent.getFullyQualifiedName()
-                        + "."
-                        + at.getName()
-                        + "'.");
-            }
-
-            String[] types = externalTypesForJdbcType(at.getType());
-            if (types == null || types.length == 0) {
-                throw new CayenneRuntimeException("Undefined type for attribute '"
-                        + ent.getFullyQualifiedName()
-                        + "."
-                        + at.getName()
-                        + "': "
-                        + at.getType());
-            }
-
-            String type = types[0];
-            buf.append(context.quoteString(at.getName())).append(' ').append(type);
-
-            // append size and precision (if applicable)
-            if (TypesMapping.supportsLength(at.getType())) {
-                int len = at.getMaxLength();
-                int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
-
-                // sanity check
-                if (scale > len) {
-                    scale = -1;
-                }
-
-                if (len > 0) {
-                    buf.append('(').append(len);
-
-                    if (scale >= 0) {
-                        buf.append(", ").append(scale);
-                    }
-
-                    buf.append(')');
-                }
-            }
-
-            // Ingres does not like "null" for non mandatory fields
-            if (at.isMandatory()) {
-                buf.append(" NOT NULL");
-            }
-        }
-
-        // primary key clause
-        Iterator<DbAttribute> pkit = ent.getPrimaryKeys().iterator();
-        if (pkit.hasNext()) {
-            if (first)
-                first = false;
-            else
-                buf.append(", ");
-
-            buf.append("PRIMARY KEY (");
-            boolean firstPk = true;
-            while (pkit.hasNext()) {
-                if (firstPk)
-                    firstPk = false;
-                else
-                    buf.append(", ");
-
-                DbAttribute at = pkit.next();
-                buf.append(context.quoteString(at.getName()));
-            }
-            buf.append(')');
-        }
-        buf.append(')');
-        return buf.toString();
-    }
-
     @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
@@ -217,8 +118,51 @@ public class IngresAdapter extends JdbcAdapter {
         return new IngresMergerFactory();
     }
     
-//    @Override
-//    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-//        super.createTableAppendColumn(sqlBuffer, column);
-//    }
+    @Override
+    public void createTableAppendColumn(StringBuffer buf, DbAttribute at) {
+        boolean status = (at.getEntity().getDataMap() != null) && at.getEntity().getDataMap().isQuotingSQLIdentifiers();
+        QuotingStrategy context = getQuotingStrategy(status);
+        String[] types = externalTypesForJdbcType(at.getType());
+        if (types == null || types.length == 0) {
+            throw new CayenneRuntimeException("Undefined type for attribute '"
+                    + ((DbEntity) at.getEntity()).getFullyQualifiedName()
+                    + "."
+                    + at.getName()
+                    + "': "
+                    + at.getType());
+        }
+
+        String type = types[0];
+        buf.append(context.quoteString(at.getName())).append(' ').append(type);
+
+        // append size and precision (if applicable)
+        if (TypesMapping.supportsLength(at.getType())) {
+            int len = at.getMaxLength();
+            int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
+
+            // sanity check
+            if (scale > len) {
+                scale = -1;
+            }
+
+            if (len > 0) {
+                buf.append('(').append(len);
+
+                if (scale >= 0) {
+                    buf.append(", ").append(scale);
+                }
+
+                buf.append(')');
+            }
+        }
+
+        // Ingres does not like "null" for non mandatory fields
+        if (at.isMandatory()) {
+            buf.append(" NOT NULL");
+        }
+        
+//        if (at.isGenerated()) {
+//            buf.append(" GENERATED ALWAYS AS IDENTITY");
+//        }
+    }
 }
