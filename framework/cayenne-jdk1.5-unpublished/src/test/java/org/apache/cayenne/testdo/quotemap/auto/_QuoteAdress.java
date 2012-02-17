@@ -18,25 +18,25 @@ public abstract class _QuoteAdress extends CayenneDataObject {
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS ID";
 
     public void setCity(String city) {
-        writeProperty(CITY_PROPERTY, city);
+        writeProperty("city", city);
     }
     public String getCity() {
-        return (String)readProperty(CITY_PROPERTY);
+        return (String)readProperty("city");
     }
 
     public void setGroup(String group) {
-        writeProperty(GROUP_PROPERTY, group);
+        writeProperty("group", group);
     }
     public String getGroup() {
-        return (String)readProperty(GROUP_PROPERTY);
+        return (String)readProperty("group");
     }
 
     public void setPerson_Rel(Quote_Person person_Rel) {
-        setToOneTarget(PERSON_REL_PROPERTY, person_Rel, true);
+        setToOneTarget("person_Rel", person_Rel, true);
     }
 
     public Quote_Person getPerson_Rel() {
-        return (Quote_Person)readProperty(PERSON_REL_PROPERTY);
+        return (Quote_Person)readProperty("person_Rel");
     }
 
 

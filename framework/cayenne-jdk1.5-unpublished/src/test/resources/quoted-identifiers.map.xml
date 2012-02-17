@@ -15,7 +15,7 @@
 		<db-attribute name="FULL name" type="VARCHAR" length="300"/>
 		<db-attribute name="GROUP" type="VARCHAR" length="100"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="address_id" type="INTEGER"/>
+		<db-attribute name="address_id" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="salary" type="INTEGER"/>
 	</db-entity>

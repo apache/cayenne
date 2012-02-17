@@ -90,7 +90,7 @@ public class IdentityColumnsTest extends ServerCase {
 
         SelectQuery q = new SelectQuery(GeneratedColumnTestEntity.class);
         q.setPageSize(10);
-        List results = context.performQuery(q);
+        List<?> results = context.performQuery(q);
         assertEquals(1, results.size());
 
         // per CAY-823 an attempt to resolve an object results in an exception

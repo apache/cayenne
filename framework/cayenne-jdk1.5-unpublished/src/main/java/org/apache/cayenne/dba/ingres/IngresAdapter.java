@@ -40,6 +40,8 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -64,10 +66,9 @@ public class IngresAdapter extends JdbcAdapter {
             @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
-        this.setSupportsUniqueConstraints(false);
+        setSupportsUniqueConstraints(true);
     }
-    
-    
+  
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new TrimmingQualifierTranslator(
@@ -160,9 +161,5 @@ public class IngresAdapter extends JdbcAdapter {
         if (at.isMandatory()) {
             buf.append(" NOT NULL");
         }
-        
-//        if (at.isGenerated()) {
-//            buf.append(" GENERATED ALWAYS AS IDENTITY");
-//        }
     }
 }

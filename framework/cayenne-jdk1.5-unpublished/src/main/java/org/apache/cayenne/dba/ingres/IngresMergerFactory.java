@@ -25,7 +25,9 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.merge.AddRelationshipToDb;
 import org.apache.cayenne.merge.DropColumnToDb;
 import org.apache.cayenne.merge.DropRelationshipToDb;
 import org.apache.cayenne.merge.MergerFactory;
@@ -75,6 +77,66 @@ public class IngresMergerFactory extends MergerFactory {
 
         };
     }
+   
+    @Override
+    public MergerToken createAddRelationshipToDb(DbEntity entity, final DbRelationship rel) {
+        return new AddRelationshipToDb(entity, rel) {
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+              
+              if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
+                  
+                  
+                DbEntity source = (DbEntity) rel.getSourceEntity();
+                boolean status = (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy(status);
+                StringBuilder buf = new StringBuilder();
+                StringBuilder refBuf = new StringBuilder();
+        
+                buf.append("ALTER TABLE ");
+                buf.append(context.quoteFullyQualifiedName(source));
+        
+                // requires the ADD CONSTRAINT statement
+                buf.append(" ADD CONSTRAINT ");
+                String name = "U_"
+                        + rel.getSourceEntity().getName()
+                        + "_"
+                        + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+        
+                buf.append(context.quoteString(name));
+                buf.append(" FOREIGN KEY (");
+        
+                boolean first = true;
+                for (DbJoin join : rel.getJoins()) {
+                    if (!first) {
+                        buf.append(", ");
+                        refBuf.append(", ");
+                    }
+                    else
+                        first = false;
+        
+                    buf.append(context.quoteString(join.getSourceName()));
+                    refBuf.append(context.quoteString(join.getTargetName()));
+                }
+        
+                buf.append(") REFERENCES ");
+                buf.append(context.quoteFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+                buf.append(" (");
+                buf.append(refBuf.toString());
+                buf.append(')');
+        
+                String fksql = buf.toString();
+                  
+                  if (fksql != null) {
+                      return Collections.singletonList(fksql);
+                  }
+              }
+             
+              return Collections.emptyList();
+             
+            }
+        };
+    }
     
     
     @Override
@@ -99,7 +161,7 @@ public class IngresMergerFactory extends MergerFactory {
                 buf.append(context.quoteFullyQualifiedName(getEntity()));
                 buf.append(" DROP CONSTRAINT ");
                 buf.append(fkName);
-                buf.append(" RESTRICT ");
+                buf.append(" CASCADE ");
 
                 return Collections.singletonList(buf.toString());
             }
