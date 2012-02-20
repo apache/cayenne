@@ -40,8 +40,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -68,7 +66,7 @@ public class IngresAdapter extends JdbcAdapter {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         setSupportsUniqueConstraints(true);
         setSupportsGeneratedKeys(true);
-    }
+    }  
   
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
