@@ -22,6 +22,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
+
 /**
  * An implementation of interface CharStream, where the stream is assumed to
  * contain only ASCII characters (with java-like unicode escape processing).
@@ -29,6 +31,18 @@ package org.apache.cayenne.exp.parser;
 
 public class JavaCharStream
 {
+
+    // optimizing internal Exception by reusing the exception per CAY-1667. This exception
+    // never reaches the end user, so we can suppress stack trace creation and make it
+    // efficient
+    private static final IOException END_OF_STREAM_EXCEPTION = new IOException() {
+
+        @Override
+        public synchronized Throwable fillInStackTrace() {
+            return this;
+        };
+    };
+    
 /** Whether parser is static. */
   public static final boolean staticFlag = false;
   static final int hexval(char c) throws java.io.IOException {
@@ -163,7 +177,7 @@ public class JavaCharStream
                                             4096 - maxNextCharInd)) == -1)
         {
            inputStream.close();
-           throw new java.io.IOException();
+           throw END_OF_STREAM_EXCEPTION;
         }
         else
            maxNextCharInd += i;
