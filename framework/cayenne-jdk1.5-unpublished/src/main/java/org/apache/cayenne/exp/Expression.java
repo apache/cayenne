@@ -32,6 +32,8 @@ import java.util.Map;
 
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ExpressionParser;
+import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
+import org.apache.cayenne.exp.parser.JavaCharStream;
 import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.Util;
@@ -117,6 +119,9 @@ public abstract class Expression implements Serializable, XMLSerializable {
     public static final int NOT_LIKE = 37;
     public static final int NOT_LIKE_IGNORE_CASE = 38;
 
+    
+    private static final int PARSE_BUFFER_MAX_SIZE = 4096;
+    
     protected int type;
 
     /**
@@ -131,9 +136,17 @@ public abstract class Expression implements Serializable, XMLSerializable {
             throw new NullPointerException("Null expression string.");
         }
 
+        // optimizing parser buffers per CAY-1667...
+        int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE
+                ? PARSE_BUFFER_MAX_SIZE
+                : expressionString.length();
         Reader reader = new StringReader(expressionString);
+        JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
+        ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
+        ExpressionParser parser = new ExpressionParser(tm);
+
         try {
-            return new ExpressionParser(reader).expression();
+            return parser.expression();
         }
         catch (ParseException ex) {
             throw new ExpressionException(ex.getMessage(), ex);
