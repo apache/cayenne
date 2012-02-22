@@ -1658,6 +1658,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
      * 
      * 
      * 
+     * 
+     * 
+     * 
      * {
      *     &#064;code
      *     ConcurrentMap&lt;Vertex, Set&lt;Edge&gt;&gt; graph = new Builder&lt;Vertex, Set&lt;Edge&gt;&gt;()
@@ -1822,6 +1825,56 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
                 es.scheduleWithFixedDelay(new CatchUpTask(map), delay, delay, unit);
             }
             return map;
+        }
+    }
+
+    // a class similar to AbstractMap.SimpleEntry. Needed for JDK 5 compatibility. Java 6
+    // exposes it to external users.
+    static class SimpleEntry<K, V> implements Entry<K, V> {
+
+        K key;
+        V value;
+
+        public SimpleEntry(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public SimpleEntry(Entry<K, V> e) {
+            this.key = e.getKey();
+            this.value = e.getValue();
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        public V setValue(V value) {
+            V oldValue = this.value;
+            this.value = value;
+            return oldValue;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Entry))
+                return false;
+            Entry e = (Entry) o;
+            return eq(key, e.getKey()) && eq(value, e.getValue());
+        }
+
+        @Override
+        public int hashCode() {
+            return ((key == null) ? 0 : key.hashCode())
+                    ^ ((value == null) ? 0 : value.hashCode());
+        }
+
+        private static boolean eq(Object o1, Object o2) {
+            return (o1 == null ? o2 == null : o1.equals(o2));
         }
     }
 }
