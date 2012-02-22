@@ -108,6 +108,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
+// based on http://concurrentlinkedhashmap.googlecode.com/svn/trunk r754
 public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         ConcurrentMap<K, V>, Serializable {
 
