@@ -35,16 +35,15 @@ package org.apache.cayenne.util.concurrentlinkedhashmap;
 
 import java.util.AbstractCollection;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Linked list implementation of the {@link Deque} interface where the link pointers are
- * tightly integrated with the element. Linked deques have no capacity restrictions; they
- * grow as necessary to support usage. They are not thread-safe; in the absence of
- * external synchronization, they do not support concurrent access by multiple threads.
- * Null elements are prohibited.
+ * Linked list implementation of the Deque interface (not available in Java 5, so not
+ * formally declared) where the link pointers are tightly integrated with the element.
+ * Linked deques have no capacity restrictions; they grow as necessary to support usage.
+ * They are not thread-safe; in the absence of external synchronization, they do not
+ * support concurrent access by multiple threads. Null elements are prohibited.
  * <p>
  * Most <tt>LinkedDeque</tt> operations run in constant time by assuming that the
  * {@link Linked} parameter is associated with the deque instance. Any usage that violates
@@ -428,7 +427,7 @@ final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
 }
 
 /**
- * An element that is linked on the {@link Deque}.
+ * An element that is linked on the Deque.
  */
 interface Linked<T extends Linked<T>> {
 
