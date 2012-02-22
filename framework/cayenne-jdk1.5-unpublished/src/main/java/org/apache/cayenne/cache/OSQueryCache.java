@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.query.QueryMetadata;
 
 import com.opensymphony.oscache.base.CacheEntry;
@@ -357,6 +358,14 @@ public class OSQueryCache implements QueryCache {
 
     public int capacity() {
         return osCache.getCache().getCapacity();
+    }
+    
+    /**
+     * Shuts down EhCache CacheManager
+     */
+    @BeforeScopeEnd
+    public void shutdown() {
+        osCache.destroy();
     }
 
     final static class RefreshSpecification {
