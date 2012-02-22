@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
@@ -40,17 +41,13 @@ import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventBridgeFactory;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
+import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import org.apache.commons.collections.ExtendedProperties;
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * A fixed size cache of DataRows keyed by ObjectId.
- * <p>
- * <strong>Synchronization Note: </strong> DataRowStore synchronizes most operations on
- * its own instance.
- * </p>
  * 
  * @since 1.1
  */
@@ -76,7 +73,8 @@ public class DataRowStore implements Serializable {
     public static final String EVENT_BRIDGE_FACTORY_DEFAULT = "org.apache.cayenne.event.JavaGroupsBridgeFactory";
 
     protected String name;
-    protected LRUMap snapshots;
+    private int maxSize;
+    protected ConcurrentMap<ObjectId, DataRow> snapshots;
     protected boolean notifyingRemoteListeners;
 
     protected transient EventManager eventManager;
@@ -124,7 +122,7 @@ public class DataRowStore implements Serializable {
                 SNAPSHOT_EXPIRATION_PROPERTY,
                 SNAPSHOT_EXPIRATION_DEFAULT);
 
-        int snapshotsCacheSize = propertiesWrapper.getInt(
+        maxSize = propertiesWrapper.getInt(
                 SNAPSHOT_CACHE_SIZE_PROPERTY,
                 SNAPSHOT_CACHE_SIZE_DEFAULT);
 
@@ -144,7 +142,7 @@ public class DataRowStore implements Serializable {
             logger.debug("DataRowStore property "
                     + SNAPSHOT_CACHE_SIZE_PROPERTY
                     + " = "
-                    + snapshotsCacheSize);
+                    + maxSize);
             logger.debug("DataRowStore property "
                     + REMOTE_NOTIFICATION_PROPERTY
                     + " = "
@@ -158,8 +156,9 @@ public class DataRowStore implements Serializable {
         // init ivars from properties
         this.notifyingRemoteListeners = notifyRemote;
 
-        // TODO: ENTRY EXPIRATION is not supported by commons LRU Map
-        this.snapshots = new LRUMap(snapshotsCacheSize);
+        this.snapshots = new ConcurrentLinkedHashMap.Builder<ObjectId, DataRow>()
+                .maximumWeightedCapacity(maxSize)
+                .build();
 
         // init event bridge only if we are notifying remote listeners
         if (notifyingRemoteListeners) {
@@ -206,60 +205,58 @@ public class DataRowStore implements Serializable {
         Map modified = null;
         Object eventPostedBy = null;
 
-        synchronized (this) {
-            for (int i = 0; i < size; i++) {
-                Persistent object = (Persistent) objects.get(i);
-                
-                // skip null objects... possible since 3.0 in some EJBQL results
-                if (object == null) {
-                    continue;
-                }
+        for (int i = 0; i < size; i++) {
+            Persistent object = (Persistent) objects.get(i);
 
-                // skip HOLLOW objects as they likely were created from partial snapshots
-                if (object.getPersistenceState() == PersistenceState.HOLLOW) {
-                    continue;
-                }
-
-                ObjectId oid = object.getObjectId();
-
-                // add snapshots if refresh is forced, or if a snapshot is
-                // missing
-
-                DataRow cachedSnapshot = (DataRow) this.snapshots.get(oid);
-                if (refresh || cachedSnapshot == null) {
-
-                    DataRow newSnapshot = (DataRow) snapshots.get(i);
-
-                    if (cachedSnapshot != null) {
-                        // use old snapshot if no changes occurred
-                        if (object instanceof DataObject
-                                && cachedSnapshot.equals(newSnapshot)) {
-                            ((DataObject) object).setSnapshotVersion(cachedSnapshot
-                                    .getVersion());
-                            continue;
-                        }
-                        else {
-                            newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
-                        }
-                    }
-
-                    if (modified == null) {
-                        modified = new HashMap();
-                        eventPostedBy = object.getObjectContext().getGraphManager();
-                    }
-
-                    modified.put(oid, newSnapshot);
-                }
+            // skip null objects... possible since 3.0 in some EJBQL results
+            if (object == null) {
+                continue;
             }
 
-            if (modified != null) {
-                processSnapshotChanges(
-                        eventPostedBy,
-                        modified,
-                        Collections.EMPTY_LIST,
-                        Collections.EMPTY_LIST,
-                        Collections.EMPTY_LIST);
+            // skip HOLLOW objects as they likely were created from partial snapshots
+            if (object.getPersistenceState() == PersistenceState.HOLLOW) {
+                continue;
             }
+
+            ObjectId oid = object.getObjectId();
+
+            // add snapshots if refresh is forced, or if a snapshot is
+            // missing
+
+            DataRow cachedSnapshot = this.snapshots.get(oid);
+            if (refresh || cachedSnapshot == null) {
+
+                DataRow newSnapshot = (DataRow) snapshots.get(i);
+
+                if (cachedSnapshot != null) {
+                    // use old snapshot if no changes occurred
+                    if (object instanceof DataObject
+                            && cachedSnapshot.equals(newSnapshot)) {
+                        ((DataObject) object).setSnapshotVersion(cachedSnapshot
+                                .getVersion());
+                        continue;
+                    }
+                    else {
+                        newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
+                    }
+                }
+
+                if (modified == null) {
+                    modified = new HashMap();
+                    eventPostedBy = object.getObjectContext().getGraphManager();
+                }
+
+                modified.put(oid, newSnapshot);
+            }
+        }
+
+        if (modified != null) {
+            processSnapshotChanges(
+                    eventPostedBy,
+                    modified,
+                    Collections.EMPTY_LIST,
+                    Collections.EMPTY_LIST,
+                    Collections.EMPTY_LIST);
         }
     }
 
@@ -274,7 +271,7 @@ public class DataRowStore implements Serializable {
      * Returns maximum allowed cache size.
      */
     public int maximumSize() {
-        return snapshots.maxSize();
+        return maxSize;
     }
 
     /**
@@ -327,8 +324,8 @@ public class DataRowStore implements Serializable {
      * Returns cached snapshot or null if no snapshot is currently cached for the given
      * ObjectId.
      */
-    public synchronized DataRow getCachedSnapshot(ObjectId oid) {
-        return (DataRow) snapshots.get(oid);
+    public DataRow getCachedSnapshot(ObjectId oid) {
+        return snapshots.get(oid);
     }
 
     /**
@@ -341,14 +338,14 @@ public class DataRowStore implements Serializable {
     /**
      * Expires and removes all stored snapshots without sending any notification events.
      */
-    public synchronized void clear() {
+    public void clear() {
         snapshots.clear();
     }
 
     /**
      * Evicts a snapshot from cache without generating any SnapshotEvents.
      */
-    public synchronized void forgetSnapshot(ObjectId id) {
+    public void forgetSnapshot(ObjectId id) {
         snapshots.remove(id);
     }
 
@@ -378,17 +375,15 @@ public class DataRowStore implements Serializable {
             return;
         }
 
-        synchronized (this) {
-            processDeletedIDs(deletedSnapshotIds);
-            processInvalidatedIDs(invalidatedSnapshotIds);
-            processUpdateDiffs(diffs);
-            sendUpdateNotification(
-                    event.getPostedBy(),
-                    diffs,
-                    deletedSnapshotIds,
-                    invalidatedSnapshotIds,
-                    indirectlyModifiedIds);
-        }
+        processDeletedIDs(deletedSnapshotIds);
+        processInvalidatedIDs(invalidatedSnapshotIds);
+        processUpdateDiffs(diffs);
+        sendUpdateNotification(
+                event.getPostedBy(),
+                diffs,
+                deletedSnapshotIds,
+                invalidatedSnapshotIds,
+                indirectlyModifiedIds);
     }
 
     /**
@@ -412,17 +407,15 @@ public class DataRowStore implements Serializable {
             return;
         }
 
-        synchronized (this) {
-            processDeletedIDs(deletedSnapshotIds);
-            processInvalidatedIDs(invalidatedSnapshotIds);
-            Map diffs = processUpdatedSnapshots(updatedSnapshots);
-            sendUpdateNotification(
-                    postedBy,
-                    diffs,
-                    deletedSnapshotIds,
-                    invalidatedSnapshotIds,
-                    indirectlyModifiedIds);
-        }
+        processDeletedIDs(deletedSnapshotIds);
+        processInvalidatedIDs(invalidatedSnapshotIds);
+        Map diffs = processUpdatedSnapshots(updatedSnapshots);
+        sendUpdateNotification(
+                postedBy,
+                diffs,
+                deletedSnapshotIds,
+                invalidatedSnapshotIds,
+                indirectlyModifiedIds);
     }
 
     private void processDeletedIDs(Collection deletedSnapshotIDs) {
@@ -456,7 +449,7 @@ public class DataRowStore implements Serializable {
 
                 ObjectId key = (ObjectId) entry.getKey();
                 DataRow newSnapshot = (DataRow) entry.getValue();
-                DataRow oldSnapshot = (DataRow) snapshots.put(key, newSnapshot);
+                DataRow oldSnapshot = snapshots.put(key, newSnapshot);
 
                 // generate diff for the updated event, if this not a new
                 // snapshot
@@ -490,7 +483,7 @@ public class DataRowStore implements Serializable {
                                             + ", New: "
                                             + newSnapshot);
                         }
-                        
+
                         forgetSnapshot(key);
                         continue;
                     }
@@ -518,7 +511,7 @@ public class DataRowStore implements Serializable {
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
                 ObjectId key = (ObjectId) entry.getKey();
-                DataRow oldSnapshot = (DataRow) snapshots.remove(key);
+                DataRow oldSnapshot = snapshots.remove(key);
 
                 if (oldSnapshot == null) {
                     continue;

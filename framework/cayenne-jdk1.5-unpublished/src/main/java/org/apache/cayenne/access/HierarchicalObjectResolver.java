@@ -68,9 +68,7 @@ class HierarchicalObjectResolver {
             Map extraResultsByPath) {
 
         synchronized (context.getObjectStore()) {
-            synchronized (cache) {
-                return resolveObjectTree(tree, mainResultRows, extraResultsByPath);
-            }
+            return resolveObjectTree(tree, mainResultRows, extraResultsByPath);
         }
     }
 

@@ -63,10 +63,6 @@ import org.apache.commons.collections.map.ReferenceMap;
  * 
  * @since 1.0
  */
-// Synchronization Note: There is often a need to do double synchronize on an ObjectStore
-// and an underlying DataRowCache. To avoid deadlocks, Cayenne consistently follows the
-// policy of locking an ObjectStore first, and then locking DataRowStore. This pattern
-// must be followed in any new related developments.
 public class ObjectStore implements Serializable, SnapshotEventListener, GraphManager {
 
     /**
