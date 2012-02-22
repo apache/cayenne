@@ -195,7 +195,7 @@ public class DerbyAdapter extends JdbcAdapter {
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new DerbyQualifierTranslator(queryAssembler, "RTRIM");
-        translator.setCaseInsensitive(runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
     

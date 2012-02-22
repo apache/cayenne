@@ -110,7 +110,7 @@ public class MySQLAdapter extends JdbcAdapter {
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new MySQLQualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
 
@@ -232,8 +232,7 @@ public class MySQLAdapter extends JdbcAdapter {
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
         JdbcEJBQLTranslatorFactory translatorFactory = 
                 new MySQLEJBQLTranslatorFactory();
-        translatorFactory.setCaseInsensitive(
-                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
         return translatorFactory;
     }
 

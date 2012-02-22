@@ -82,7 +82,7 @@ public class JdbcAdapter implements DbAdapter {
     protected String identifiersEndQuote;
     
     protected ResourceLocator resourceLocator;
-    protected RuntimeProperties runtimeProperties;
+    protected boolean caseInsensitiveCollations;
 
     /**
      * @since 3.1
@@ -118,7 +118,7 @@ public class JdbcAdapter implements DbAdapter {
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
-        this.runtimeProperties = runtimeProperties;
+        this.caseInsensitiveCollations = runtimeProperties.getBoolean(CI_PROPERTY, false);
 
         // TODO: andrus 05.02.2010 - ideally this should be injected
         this.resourceLocator = new ClassLoaderResourceLocator();
@@ -227,8 +227,7 @@ public class JdbcAdapter implements DbAdapter {
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
         JdbcEJBQLTranslatorFactory translatorFactory = 
                 new JdbcEJBQLTranslatorFactory();
-        translatorFactory.setCaseInsensitive(
-                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
         return translatorFactory;
     }
 
@@ -518,7 +517,7 @@ public class JdbcAdapter implements DbAdapter {
      */
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new QualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
 

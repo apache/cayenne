@@ -116,8 +116,7 @@ public class SQLServerAdapter extends SybaseAdapter {
         QualifierTranslator translator = new SQLServerTrimmingQualifierTranslator(
                 queryAssembler,
                 SQLServerAdapter.TRIM_FUNCTION);
-        translator.setCaseInsensitive(
-                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
 

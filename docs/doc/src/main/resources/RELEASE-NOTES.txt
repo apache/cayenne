@@ -39,6 +39,7 @@ CAY-1662 @Auditable and @AuditableChild annotations should support 'ignoredPrope
 CAY-1663 @CacheGroups annotation should allow an empty list of cache groups
 CAY-1666 Fix problem with tests on ingres db
 CAY-1667 Expression parser performance optimization
+CAY-1669 RuntimeProperties use of System properties becomes a contention point when creating query translators 
 
 Bug Fixes Since 3.1M3:
 

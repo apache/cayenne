@@ -265,8 +265,7 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new PostgresQualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(
-                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
 

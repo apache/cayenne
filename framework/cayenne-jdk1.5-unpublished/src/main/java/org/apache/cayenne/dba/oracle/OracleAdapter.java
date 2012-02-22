@@ -296,8 +296,7 @@ public class OracleAdapter extends JdbcAdapter {
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new Oracle8QualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(
-                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
 

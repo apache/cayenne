@@ -45,6 +45,8 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
 
     public String get(String key) {
 
+        // TODO: note that System.getProperty uses a synchronized hashtable internally as
+        // of Java 1.6. So this method suddenly becomes a synchronization bottleneck.
         String property = System.getProperty(key);
 
         if (property != null) {

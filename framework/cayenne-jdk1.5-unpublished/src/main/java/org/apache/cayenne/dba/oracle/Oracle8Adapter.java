@@ -99,8 +99,7 @@ public class Oracle8Adapter extends OracleAdapter {
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new Oracle8QualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(
-                runtimeProperties.getBoolean(CI_PROPERTY, false));
+        translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
 }
