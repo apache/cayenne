@@ -33,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 public class ASTObjPath extends ASTPath {
     private static final Log logObj = LogFactory.getLog(ASTObjPath.class);
 
+    public static final String OBJ_PREFIX = "obj:";
+    
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */

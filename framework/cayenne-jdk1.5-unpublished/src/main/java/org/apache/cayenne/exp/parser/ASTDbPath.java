@@ -33,6 +33,8 @@ import org.apache.cayenne.map.Entity;
  * @since 1.1
  */
 public class ASTDbPath extends ASTPath {
+    
+    public static final String DB_PREFIX = "db:";
 
     ASTDbPath(int id) {
         super(id);
@@ -91,7 +93,7 @@ public class ASTDbPath extends ASTPath {
 
     @Override
     public void encodeAsString(PrintWriter pw) {
-        pw.print("db:");
+        pw.print(DB_PREFIX);
         pw.print(path);
     }
     
@@ -101,7 +103,7 @@ public class ASTDbPath extends ASTPath {
     @Override
     public void encodeAsEJBQL(PrintWriter pw, String rootId) {
         // warning: non-standard EJBQL...
-        pw.print("db:");
+        pw.print(DB_PREFIX);
         pw.print(rootId);
         pw.print('.');
         pw.print(path);

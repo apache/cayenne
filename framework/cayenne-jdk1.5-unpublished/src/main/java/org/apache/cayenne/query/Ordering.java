@@ -28,6 +28,8 @@ import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -233,8 +235,22 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
             return null;
         }
 
-        // compile on demand
+        // compile on demand .. since orderings can only be paths, avoid the overhead of
+        // Expression.fromString, and parse them manually
         if (sortSpec == null) {
+
+            if (sortSpecString.startsWith(ASTDbPath.DB_PREFIX)) {
+                sortSpec = new ASTDbPath(sortSpecString.substring(ASTDbPath.DB_PREFIX
+                        .length()));
+            }
+            else if (sortSpecString.startsWith(ASTObjPath.OBJ_PREFIX)) {
+                sortSpec = new ASTObjPath(sortSpecString.substring(ASTObjPath.OBJ_PREFIX
+                        .length()));
+            }
+            else {
+                sortSpec = new ASTObjPath(sortSpecString);
+            }
+
             sortSpec = Expression.fromString(sortSpecString);
         }
 
