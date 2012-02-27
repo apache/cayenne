@@ -66,7 +66,7 @@ class DataDomainFlushAction {
     private DataDomainFlattenedBucket flattenedBucket;
 
     private List<Query> queries;
-    
+
     private JdbcEventLogger logger;
 
     DataDomainFlushAction(DataDomain domain) {
@@ -96,11 +96,11 @@ class DataDomainFlushAction {
     Map<ObjectId, DataRow> getResultModifiedSnapshots() {
         return resultModifiedSnapshots;
     }
-    
+
     public void setJdbcEventLogger(JdbcEventLogger logger) {
         this.logger = logger;
     }
-    
+
     public JdbcEventLogger getJdbcEventLogger() {
         return this.logger;
     }
@@ -153,12 +153,8 @@ class DataDomainFlushAction {
 
         runQueries();
 
-        // note that there is no syncing on the object store itself. This is caller's
-        // responsibility.
-        synchronized (context.getObjectStore().getDataRowCache()) {
-            postprocess(context);
-            return resultDiff;
-        }
+        postprocess(context);
+        return resultDiff;
     }
 
     private void preprocess(DataContext context, GraphDiff changes) {
@@ -197,8 +193,8 @@ class DataDomainFlushAction {
     }
 
     private void runQueries() {
-        DataDomainFlushObserver observer = new DataDomainFlushObserver(domain
-                .getJdbcEventLogger());
+        DataDomainFlushObserver observer = new DataDomainFlushObserver(
+                domain.getJdbcEventLogger());
 
         // split query list by spanned nodes and run each single node range individually.
         // Since connections are reused per node within an open transaction, there should
@@ -257,12 +253,15 @@ class DataDomainFlushAction {
                 || !resultModifiedSnapshots.isEmpty()
                 || !resultIndirectlyModifiedIds.isEmpty()) {
 
-            context.getObjectStore().getDataRowCache().processSnapshotChanges(
-                    context.getObjectStore(),
-                    resultModifiedSnapshots,
-                    resultDeletedIds,
-                    Collections.EMPTY_LIST,
-                    resultIndirectlyModifiedIds);
+            context
+                    .getObjectStore()
+                    .getDataRowCache()
+                    .processSnapshotChanges(
+                            context.getObjectStore(),
+                            resultModifiedSnapshots,
+                            resultDeletedIds,
+                            Collections.EMPTY_LIST,
+                            resultIndirectlyModifiedIds);
         }
 
         context.getObjectStore().postprocessAfterCommit(resultDiff);
