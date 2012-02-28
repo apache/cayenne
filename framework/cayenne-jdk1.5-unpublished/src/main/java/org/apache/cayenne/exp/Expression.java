@@ -82,9 +82,9 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * <ul>
      * <li><i>An attribute of root ObjEntity.</i> For entity Gallery OBJ_PATH expression
      * "galleryName" will point to ObjAttribute "galleryName"
-     * <li><i>Another ObjEntity related to root ObjEntity via a chain of relationships.</i>
-     * For entity Gallery OBJ_PATH expression "paintingArray.toArtist" will point to
-     * ObjEntity "Artist"
+     * <li><i>Another ObjEntity related to root ObjEntity via a chain of
+     * relationships.</i> For entity Gallery OBJ_PATH expression "paintingArray.toArtist"
+     * will point to ObjEntity "Artist"
      * <li><i>ObjAttribute of another ObjEntity related to root ObjEntity via a chain of
      * relationships.</i> For entity Gallery OBJ_PATH expression
      * "paintingArray.toArtist.artistName" will point to ObjAttribute "artistName"
@@ -98,13 +98,13 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * (dot). Path can point to either one of these:
      * <ul>
      * <li><i>An attribute of root DbEntity.</i> For entity GALLERY, DB_PATH expression
-     * "GALLERY_NAME" will point to a DbAttribute "GALLERY_NAME". </li>
+     * "GALLERY_NAME" will point to a DbAttribute "GALLERY_NAME".</li>
      * <li><i>Another DbEntity related to root DbEntity via a chain of relationships.</i>
      * For entity GALLERY DB_PATH expression "paintingArray.toArtist" will point to
-     * DbEntity "ARTIST". </li>
+     * DbEntity "ARTIST".</li>
      * <li><i>DbAttribute of another ObjEntity related to root DbEntity via a chain of
      * relationships.</i> For entity GALLERY DB_PATH expression
-     * "paintingArray.toArtist.ARTIST_NAME" will point to DbAttribute "ARTIST_NAME". </li>
+     * "paintingArray.toArtist.ARTIST_NAME" will point to DbAttribute "ARTIST_NAME".</li>
      * </ul>
      */
     public static final int DB_PATH = 27;
@@ -119,9 +119,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
     public static final int NOT_LIKE = 37;
     public static final int NOT_LIKE_IGNORE_CASE = 38;
 
-    
     private static final int PARSE_BUFFER_MAX_SIZE = 4096;
-    
+
     protected int type;
 
     /**
@@ -137,9 +136,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
         }
 
         // optimizing parser buffers per CAY-1667...
+        // adding 1 extra char to the buffer size above the String length, as otherwise
+        // resizing still occurs at the end of the stream
         int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE
                 ? PARSE_BUFFER_MAX_SIZE
-                : expressionString.length();
+                : expressionString.length() + 1;
         Reader reader = new StringReader(expressionString);
         JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
         ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
@@ -271,8 +272,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
      *            expression parameter, and value being the value that should be used in
      *            the final expression.
      * @param pruneMissing If <code>true</code>, subexpressions that rely on missing
-     *            parameters will be pruned from the resulting tree. If <code>false</code>,
-     *            any missing values will generate an exception.
+     *            parameters will be pruned from the resulting tree. If <code>false</code>
+     *            , any missing values will generate an exception.
      * @return Expression resulting from the substitution of parameters with real values,
      *         or null if the whole expression was pruned, due to the missing parameters.
      */
@@ -349,8 +350,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
     public abstract Expression notExp();
 
     /**
-     * Returns a count of operands of this expression. In real life there are unary (count ==
-     * 1), binary (count == 2) and ternary (count == 3) expressions.
+     * Returns a count of operands of this expression. In real life there are unary (count
+     * == 1), binary (count == 2) and ternary (count == 3) expressions.
      */
     public abstract int getOperandCount();
 
