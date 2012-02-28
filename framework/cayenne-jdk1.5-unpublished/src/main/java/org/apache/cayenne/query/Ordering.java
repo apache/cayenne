@@ -250,8 +250,6 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
             else {
                 sortSpec = new ASTObjPath(sortSpecString);
             }
-
-            sortSpec = Expression.fromString(sortSpecString);
         }
 
         return sortSpec;
