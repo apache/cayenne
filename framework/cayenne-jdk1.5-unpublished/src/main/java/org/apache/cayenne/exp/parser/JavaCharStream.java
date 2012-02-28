@@ -169,12 +169,12 @@ public class JavaCharStream
   protected void FillBuff() throws java.io.IOException
   {
      int i;
-     if (maxNextCharInd == 4096)
+     if (maxNextCharInd == nextCharBuf.length)
         maxNextCharInd = nextCharInd = 0;
 
      try {
         if ((i = inputStream.read(nextCharBuf, maxNextCharInd,
-                                            4096 - maxNextCharInd)) == -1)
+                nextCharBuf.length - maxNextCharInd)) == -1)
         {
            inputStream.close();
            throw END_OF_STREAM_EXCEPTION;
@@ -435,7 +435,7 @@ public class JavaCharStream
     buffer = new char[buffersize];
     bufline = new int[buffersize];
     bufcolumn = new int[buffersize];
-    nextCharBuf = new char[4096];
+    nextCharBuf = new char[buffersize];
   }
 
 /** Constructor. */
@@ -464,7 +464,7 @@ public class JavaCharStream
       buffer = new char[buffersize];
       bufline = new int[buffersize];
       bufcolumn = new int[buffersize];
-      nextCharBuf = new char[4096];
+      nextCharBuf = new char[buffersize];
     }
     prevCharIsLF = prevCharIsCR = false;
     tokenBegin = inBuf = maxNextCharInd = 0;
