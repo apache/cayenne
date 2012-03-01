@@ -98,10 +98,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     @Inject
     protected Injector injector;
-    
+
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
-    
+
     @Inject
     protected QueryCache queryCache;
 
@@ -114,8 +114,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
             throw e;
         }
         catch (Exception e) {
-            throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e
-                    .getMessage());
+            throw new DataDomainLoadException(
+                    "Error loading DataChannel: '%s'",
+                    e,
+                    e.getMessage());
         }
     }
 
@@ -233,6 +235,22 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
             dataDomain.addNode(dataNode);
         }
+
+        // init default node
+        DataNode defaultNode = null;
+
+        if (descriptor.getDefaultNodeName() != null) {
+            defaultNode = dataDomain.getNode(descriptor.getDefaultNodeName());
+        }
+
+        if (defaultNode == null) {
+            Collection<DataNode> allNodes = dataDomain.getDataNodes();
+            if (allNodes.size() == 1) {
+                defaultNode = allNodes.iterator().next();
+            }
+        }
+
+        dataDomain.setDefaultNode(defaultNode);
 
         for (DataChannelFilter filter : filters) {
             dataDomain.addFilter(filter);

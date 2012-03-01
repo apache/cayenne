@@ -41,6 +41,7 @@ CAY-1666 Fix problem with tests on ingres db
 CAY-1667 Expression parser performance optimization
 CAY-1669 RuntimeProperties use of System properties becomes a contention point when creating query translators 
 CAY-1670 Non-blocking DataRowStore
+CAY-1679 A notion of default node
 CAY-1680 Get rid of shared locks in DataDomain metadata lookups
 
 Bug Fixes Since 3.1M3:

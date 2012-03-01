@@ -44,6 +44,7 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable,
     protected Collection<DataMap> dataMaps;
     protected Collection<DataNodeDescriptor> nodeDescriptors;
     protected Resource configurationSource;
+    protected String defaultNodeName;
 
     public DataChannelDescriptor() {
         properties = new HashMap<String, String>();
@@ -157,5 +158,17 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable,
 
     public void setConfigurationSource(Resource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+
+    /**
+     * Returns the name of the DataNode that should be used as the default if a DataMap is
+     * not explicitly linked to a node.
+     */
+    public String getDefaultNodeName() {
+        return defaultNodeName;
+    }
+
+    public void setDefaultNodeName(String defaultDataNodeName) {
+        this.defaultNodeName = defaultDataNodeName;
     }
 }

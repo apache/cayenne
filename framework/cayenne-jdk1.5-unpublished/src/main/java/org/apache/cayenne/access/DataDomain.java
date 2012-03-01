@@ -83,6 +83,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     protected Map<String, DataNode> nodes;
     protected Map<String, DataNode> nodesByDataMapName;
+    protected DataNode defaultNode;
     protected Map<String, String> properties;
 
     protected EntityResolver entityResolver;
@@ -636,6 +637,20 @@ public class DataDomain implements QueryEngine, DataChannel {
                     break;
                 }
             }
+
+            if (node == null) {
+
+                if (defaultNode != null) {
+                    nodesByDataMapName.put(map.getName(), defaultNode);
+                    node = defaultNode;
+                }
+                else {
+                    throw new CayenneRuntimeException(
+                            "No DataNode configured for DataMap '"
+                                    + map.getName()
+                                    + "' and no default DataNode set");
+                }
+            }
         }
 
         return node;
@@ -1001,5 +1016,22 @@ public class DataDomain implements QueryEngine, DataChannel {
             throw new UnsupportedOperationException(
                     "It is illegal to call 'onQuery' inside 'onSync' chain");
         }
+    }
+
+    /**
+     * An optional DataNode that is used for DataMaps that are not linked to a DataNode
+     * explicitly.
+     * 
+     * @since 3.1
+     */
+    public DataNode getDefaultNode() {
+        return defaultNode;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setDefaultNode(DataNode defaultNode) {
+        this.defaultNode = defaultNode;
     }
 }
