@@ -84,6 +84,7 @@ public class DataDomainTest extends ServerCase {
         assertNull(d1.getDataMap(m1.getName()));
     }
 
+    @Deprecated
     public void testReindexNodes() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         DataMap map = new DataMap("map");

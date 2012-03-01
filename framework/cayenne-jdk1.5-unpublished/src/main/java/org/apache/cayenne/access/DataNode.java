@@ -316,7 +316,7 @@ public class DataNode implements QueryEngine {
      * 
      * @since 1.1
      */
-    public void setEntityResolver(org.apache.cayenne.map.EntityResolver entityResolver) {
+    public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
     }
 

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -81,18 +81,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     protected List<DataChannelFilter> filters;
 
-    /** Stores mapping of data nodes to DataNode name keys. */
-    protected Map<String, DataNode> nodes = Collections
-            .synchronizedMap(new TreeMap<String, DataNode>());
-    protected Map<String, DataNode> nodesByDataMapName = Collections
-            .synchronizedMap(new HashMap<String, DataNode>());
-
-    /**
-     * Properties configured for DataDomain. These include properties of the DataRowStore
-     * and remote notifications.
-     */
-    protected Map<String, String> properties = Collections
-            .synchronizedMap(new TreeMap<String, String>());
+    protected Map<String, DataNode> nodes;
+    protected Map<String, DataNode> nodesByDataMapName;
+    protected Map<String, String> properties;
 
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
@@ -129,8 +120,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Creates a DataDomain and assigns it a name.
      */
     public DataDomain(String name) {
-        this.filters = new CopyOnWriteArrayList<DataChannelFilter>();
-        setName(name);
+        init(name);
         resetProperties();
     }
 
@@ -142,9 +132,21 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @param properties A Map containing domain configuration properties.
      */
     public DataDomain(String name, Map properties) {
-        this.filters = new CopyOnWriteArrayList<DataChannelFilter>();
-        setName(name);
+        init(name);
         initWithProperties(properties);
+    }
+
+    private void init(String name) {
+
+        this.filters = new CopyOnWriteArrayList<DataChannelFilter>();
+        this.nodesByDataMapName = new ConcurrentHashMap<String, DataNode>();
+        this.nodes = new ConcurrentHashMap<String, DataNode>();
+
+        // properties are read-only, so no need for concurrent map, or any specific map
+        // for that matter
+        this.properties = Collections.EMPTY_MAP;
+
+        setName(name);
     }
 
     /**
@@ -178,9 +180,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.1
      */
     protected void resetProperties() {
-        if (properties != null) {
-            properties.clear();
-        }
+        properties = Collections.EMPTY_MAP;
 
         sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
         validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
@@ -193,18 +193,16 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.1
      */
     public void initWithProperties(Map<String, String> properties) {
-        // create map with predictable modification and synchronization behavior
-        Map<String, String> localMap = new HashMap<String, String>();
-        if (properties != null) {
-            localMap.putAll(properties);
-        }
 
-        this.properties = localMap;
+        // clone properties to ensure that it is read-only internally
+        properties = properties != null
+                ? new HashMap<String, String>(properties)
+                : Collections.EMPTY_MAP;
 
-        String sharedCacheEnabled = localMap.get(SHARED_CACHE_ENABLED_PROPERTY);
-        String validatingObjectsOnCommit = localMap
+        String sharedCacheEnabled = properties.get(SHARED_CACHE_ENABLED_PROPERTY);
+        String validatingObjectsOnCommit = properties
                 .get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);
-        String usingExternalTransactions = localMap
+        String usingExternalTransactions = properties
                 .get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
 
         // init ivars from properties
@@ -216,6 +214,8 @@ public class DataDomain implements QueryEngine, DataChannel {
         this.usingExternalTransactions = (usingExternalTransactions != null)
                 ? "true".equalsIgnoreCase(usingExternalTransactions)
                 : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
+
+        this.properties = properties;
     }
 
     /**
@@ -313,8 +313,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * @since 1.1
-     * @return a Map of properties for this DataDomain. There is no guarantees of specific
-     *         synchronization behavior of this map.
+     * @return a Map of properties for this DataDomain.
      */
     public Map<String, String> getProperties() {
         return properties;
@@ -453,7 +452,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Removes a DataNode from DataDomain. Any maps previously associated with this node
      * within domain will still be kept around, however they wan't be mapped to any node.
      */
-    public synchronized void removeDataNode(String nodeName) {
+    public void removeDataNode(String nodeName) {
         DataNode removed = nodes.remove(nodeName);
         if (removed != null) {
 
@@ -484,23 +483,27 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Closes all data nodes, removes them from the list of available nodes.
+     * 
+     * @deprecated since 3.1 unused and unneeded
      */
+    @Deprecated
     public void reset() {
-        synchronized (nodes) {
-            nodes.clear();
-            nodesByDataMapName.clear();
 
-            if (entityResolver != null) {
-                entityResolver.clearCache();
-                entityResolver = null;
-            }
+        nodes.clear();
+        nodesByDataMapName.clear();
+
+        if (entityResolver != null) {
+            entityResolver.clearCache();
+            entityResolver = null;
         }
     }
 
     /**
-     * Clears the list of internal DataMaps. In most cases it is wise to call "reset"
-     * before doing that.
+     * Clears the list of internal DataMaps.
+     * 
+     * @deprecated since 3.1 unused and unneeded
      */
+    @Deprecated
     public void clearDataMaps() {
         getEntityResolver().setDataMaps(Collections.EMPTY_LIST);
     }
@@ -508,7 +511,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Adds new DataNode.
      */
-    public synchronized void addNode(DataNode node) {
+    public void addNode(DataNode node) {
 
         // add node to name->node map
         nodes.put(node.getName(), node);
@@ -597,8 +600,11 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Updates internal index of DataNodes stored by the entity name.
+     * 
+     * @deprecated since 3.1 - unneeded and unused.
      */
-    public synchronized void reindexNodes() {
+    @Deprecated
+    public void reindexNodes() {
         nodesByDataMapName.clear();
 
         for (DataNode node : getDataNodes()) {
@@ -615,16 +621,27 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.1
      */
     public DataNode lookupDataNode(DataMap map) {
-        synchronized (nodesByDataMapName) {
-            DataNode node = nodesByDataMapName.get(map.getName());
-            if (node == null) {
-                reindexNodes();
-                return nodesByDataMapName.get(map.getName());
-            }
-            else {
-                return node;
+
+        DataNode node = nodesByDataMapName.get(map.getName());
+        if (node == null) {
+
+            // see if one of the node states has changed, and the map is now linked...
+            for (DataNode n : getDataNodes()) {
+                for (DataMap m : n.getDataMaps()) {
+                    if (m == map) {
+                        nodesByDataMapName.put(map.getName(), n);
+                        node = n;
+                        break;
+                    }
+                }
+
+                if (node != null) {
+                    break;
+                }
             }
         }
+
+        return node;
     }
 
     /**
@@ -799,9 +816,8 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         DataDomainFlushAction action = new DataDomainFlushAction(this);
         action.setJdbcEventLogger(jdbcEventLogger);
-        
-        return action.flush((DataContext) originatingContext,
-                childChanges);
+
+        return action.flush((DataContext) originatingContext, childChanges);
     }
 
     /**
