@@ -429,7 +429,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @since 3.1
      */
-    public synchronized void removeDataMap(String mapName) {
+    public void removeDataMap(String mapName) {
         DataMap map = getDataMap(mapName);
         if (map == null) {
             return;
@@ -440,11 +440,11 @@ public class DataDomain implements QueryEngine, DataChannel {
             node.removeDataMap(mapName);
         }
 
+        nodesByDataMapName.remove(mapName);
+
         // remove from EntityResolver
         getEntityResolver().removeDataMap(map);
 
-        // reindex nodes to remove references on removed map entities
-        reindexNodes();
         refreshEntitySorter();
     }
 
