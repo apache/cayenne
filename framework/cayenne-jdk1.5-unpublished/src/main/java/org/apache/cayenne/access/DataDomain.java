@@ -342,9 +342,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Returns snapshots cache for this DataDomain, lazily initializing it on the first
      * call if 'sharedCacheEnabled' flag is true.
      */
-    public synchronized DataRowStore getSharedSnapshotCache() {
+    public DataRowStore getSharedSnapshotCache() {
         if (sharedSnapshotCache == null && sharedCacheEnabled) {
-            this.sharedSnapshotCache = new DataRowStore(name, properties, eventManager);
+            this.sharedSnapshotCache = nonNullSharedSnapshotCache();
         }
 
         return sharedSnapshotCache;
@@ -352,10 +352,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Returns a guaranteed non-null shared snapshot cache regardless of the
-     * 'sharedCacheEnabled' flag setting. This allows to build DataContexts that do not
-     * follow the default policy.
-     * 
-     * @since 3.0
+     * 'sharedCacheEnabled' flag setting.
      */
     synchronized DataRowStore nonNullSharedSnapshotCache() {
         if (sharedSnapshotCache == null) {
