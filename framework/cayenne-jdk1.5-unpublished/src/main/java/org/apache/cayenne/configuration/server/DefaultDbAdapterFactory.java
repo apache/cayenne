@@ -26,6 +26,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
@@ -44,8 +45,6 @@ import org.apache.cayenne.log.JdbcEventLogger;
  */
 public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
-    public static final String DETECTORS_LIST = "org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors";
-
     @Inject
     protected Injector injector;
 
@@ -57,7 +56,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
     protected List<DbAdapterDetector> detectors;
 
     public DefaultDbAdapterFactory(
-            @Inject(DETECTORS_LIST) List<DbAdapterDetector> detectors) {
+            @Inject(Constants.SERVER_ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
         if (detectors == null) {
             throw new NullPointerException("Null detectors list");
         }

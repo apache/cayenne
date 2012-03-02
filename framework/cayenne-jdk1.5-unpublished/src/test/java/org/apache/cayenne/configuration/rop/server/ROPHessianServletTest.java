@@ -24,7 +24,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.server.DataDomainProvider;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.web.MockModule1;
 import org.apache.cayenne.configuration.web.MockModule2;
@@ -57,7 +57,7 @@ public class ROPHessianServletTest extends TestCase {
         assertNotNull(runtime);
 
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
         assertEquals(
                 Arrays
                         .asList("cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml"),
@@ -80,7 +80,7 @@ public class ROPHessianServletTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList(location), locations);
     }
@@ -102,7 +102,7 @@ public class ROPHessianServletTest extends TestCase {
         assertNotNull(runtime);
 
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList(name + ".xml"), locations);
         assertEquals(2, runtime.getModules().length);

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -46,7 +47,7 @@ public class ClientModule implements Module {
     public static final String ROP_SERVICE_TIMEOUT = "cayenne.config.rop.service.timeout";
 
     public static final String CHANNEL_EVENTS = "cayenne.config.rop.client.channel.events";
-    
+
     // TODO: this property name is exactly the same as CHANNEL_EVENTS... Seems messed up
     public static final String CHANNEL_REMOTE_EVENTS_OPTIONAL = "cayenne.config.rop.client.channel.events";
 
@@ -65,9 +66,8 @@ public class ClientModule implements Module {
 
     public void configure(Binder binder) {
 
-        // expose this module properties to DefaultRuntimeProperties
-        binder.<String> bindMap(DefaultRuntimeProperties.PROPERTIES_MAP).putAll(
-                properties);
+        // expose user-provided ROP properties as the main properties map
+        binder.<String> bindMap(Constants.PROPERTIES_MAP).putAll(properties);
 
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);
         binder.bind(ClientConnection.class).toProvider(HessianConnectionProvider.class);

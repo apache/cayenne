@@ -47,6 +47,7 @@ import org.apache.cayenne.access.types.TimestampType;
 import org.apache.cayenne.access.types.UUIDType;
 import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.access.types.VoidType;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
@@ -141,11 +142,11 @@ public class ServerCaseModule implements Module {
                 IngresUnitDbAdapter.class.getName()).put(
                 SQLiteAdapter.class.getName(),
                 SQLiteUnitDbAdapter.class.getName());
-        binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+        binder.bindMap(Constants.PROPERTIES_MAP);
         
         // configure extended types
         binder
-                .bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST)
+                .bindList(Constants.SERVER_DEFAULT_TYPES_LIST)
                 .add(new VoidType())
                 .add(new BigDecimalType())
                 .add(new BigIntegerType())
@@ -165,8 +166,8 @@ public class ServerCaseModule implements Module {
                 .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
                 .add(new CalendarType<Calendar>(Calendar.class))
                 .add(new UUIDType());
-        binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
-        binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+        binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+        binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);

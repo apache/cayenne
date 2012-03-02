@@ -32,6 +32,7 @@ import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
@@ -60,9 +61,9 @@ public class IngresAdapter extends JdbcAdapter {
     public static final String TRIM_FUNCTION = "TRIM";
     
     public IngresAdapter(@Inject RuntimeProperties runtimeProperties,
-            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
-            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+            @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         setSupportsUniqueConstraints(true);
         setSupportsGeneratedKeys(true);

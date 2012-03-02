@@ -38,6 +38,7 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -62,10 +63,6 @@ public class JdbcAdapter implements DbAdapter {
     // defines if database uses case-insensitive collation
     public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
     
-    public static final String DEFAULT_EXTENDED_TYPE_LIST = "org.apache.cayenne.dba.JdbcAdapter.defaultExtendedTypes";
-    public static final String USER_EXTENDED_TYPE_LIST = "org.apache.cayenne.dba.JdbcAdapter.userExtendedTypes";
-    public static final String EXTENDED_TYPE_FACTORY_LIST = "org.apache.cayenne.dba.JdbcAdapter.extendedTypeFactories";
-
     final static String DEFAULT_IDENTIFIERS_START_QUOTE = "\"";
     final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
 
@@ -111,9 +108,9 @@ public class JdbcAdapter implements DbAdapter {
      * Creates new JdbcAdapter with a set of default parameters.
      */
     public JdbcAdapter(@Inject RuntimeProperties runtimeProperties,
-            @Inject(DEFAULT_EXTENDED_TYPE_LIST) List<ExtendedType> defaultExtendedTypes,
-            @Inject(USER_EXTENDED_TYPE_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(EXTENDED_TYPE_FACTORY_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+            @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
 
         // init defaults
         this.setSupportsBatchUpdates(false);

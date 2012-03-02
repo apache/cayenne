@@ -51,6 +51,7 @@ import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataMapLoader;
@@ -63,7 +64,6 @@ import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
@@ -119,7 +119,7 @@ public class ServerModule implements Module {
     public void configure(Binder binder) {
 
         // configure empty global stack properties
-        binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+        binder.bindMap(Constants.PROPERTIES_MAP);
 
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
         
@@ -129,7 +129,7 @@ public class ServerModule implements Module {
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically
         binder
-                .bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
+                .bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST)
                 .add(new OpenBaseSniffer(objectFactory))
                 .add(new FrontBaseSniffer(objectFactory))
                 .add(new IngresSniffer(objectFactory))
@@ -145,11 +145,11 @@ public class ServerModule implements Module {
                 .add(new MySQLSniffer(objectFactory));
 
         // configure an empty filter chain
-        binder.bindList(DataDomainProvider.FILTERS_LIST);
+        binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
         
         // configure extended types
         binder
-                .bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST)
+                .bindList(Constants.SERVER_DEFAULT_TYPES_LIST)
                 .add(new VoidType())
                 .add(new BigDecimalType())
                 .add(new BigIntegerType())
@@ -169,12 +169,12 @@ public class ServerModule implements Module {
                 .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
                 .add(new CalendarType<Calendar>(Calendar.class))
                 .add(new UUIDType()); 
-        binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
-        binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+        binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+        binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
         // configure explicit configurations
         ListBuilder<Object> locationsListBuilder = binder
-                .bindList(DataDomainProvider.LOCATIONS_LIST);
+                .bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST);
         for (String location : configurationLocations) {
             locationsListBuilder.add(location);
         }

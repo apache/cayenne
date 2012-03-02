@@ -24,7 +24,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.server.DataDomainProvider;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
 
@@ -53,7 +53,7 @@ public class CayenneFilterTest extends TestCase {
         assertNotNull(runtime);
 
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("abc.xml"), locations);
     }
@@ -73,7 +73,7 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("xyz"), locations);
     }
@@ -94,7 +94,7 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("cayenne-abc.xml"), locations);
         assertEquals(2, runtime.getModules().length);

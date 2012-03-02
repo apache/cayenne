@@ -38,6 +38,7 @@ import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
@@ -47,7 +48,6 @@ import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
@@ -133,10 +133,10 @@ public class DataDomainProviderTest extends TestCase {
                 final AdhocObjectFactory objectFactory = new DefaultAdhocObjectFactory();
                 binder.bind(AdhocObjectFactory.class).toInstance(objectFactory);
                 
-                binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+                binder.bindMap(Constants.PROPERTIES_MAP);
                 
                 binder
-                        .bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
+                        .bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST)
                         .add(new OpenBaseSniffer(objectFactory))
                         .add(new FrontBaseSniffer(objectFactory))
                         .add(new IngresSniffer(objectFactory))
@@ -150,13 +150,13 @@ public class DataDomainProviderTest extends TestCase {
                         .add(new OracleSniffer(objectFactory))
                         .add(new PostgresSniffer(objectFactory))
                         .add(new MySQLSniffer(objectFactory));
-                binder.bindList(DataDomainProvider.FILTERS_LIST);
-                binder.bindList(DataDomainProvider.LOCATIONS_LIST).add(testConfigName);
+                binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
+                binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST).add(testConfigName);
                 
                 // configure extended types
-                binder.bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST);
-                binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);        
-                binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+                binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
+                binder.bindList(Constants.SERVER_USER_TYPES_LIST);        
+                binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
                 
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());

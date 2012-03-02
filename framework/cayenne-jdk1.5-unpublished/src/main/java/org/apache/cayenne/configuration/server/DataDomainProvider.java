@@ -32,6 +32,7 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationTree;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
@@ -59,16 +60,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     private static Log logger = LogFactory.getLog(DataDomainProvider.class);
 
-    /**
-     * A DI key for the list storing DataDomain filters.
-     */
-    public static final String FILTERS_LIST = "org.apache.cayenne.configuration.server.DataDomainProvider.filters";
-
-    /**
-     * A DI key for the list storing locations of the DataDomain configuration resources.
-     */
-    public static final String LOCATIONS_LIST = "org.apache.cayenne.configuration.server.DataDomainProvider.locations";
-
     @Inject
     protected ResourceLocator resourceLocator;
 
@@ -90,10 +81,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected AdhocObjectFactory objectFactory;
 
-    @Inject(FILTERS_LIST)
+    @Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
     protected List<DataChannelFilter> filters;
 
-    @Inject(LOCATIONS_LIST)
+    @Inject(Constants.SERVER_PROJECT_LOCATIONS_LIST)
     protected List<String> locations;
 
     @Inject

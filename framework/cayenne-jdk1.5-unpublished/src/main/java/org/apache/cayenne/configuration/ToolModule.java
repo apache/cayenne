@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
@@ -38,11 +37,11 @@ public class ToolModule implements Module {
 public void configure(Binder binder) {
         
         // configure empty global stack properties
-        binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
+        binder.bindMap(Constants.PROPERTIES_MAP);
         
-        binder.bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST);
-        binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
-        binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+        binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
+        binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+        binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);

@@ -30,12 +30,12 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -97,10 +97,10 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
-                binder.bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST);
-                binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
-                binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+                binder.bindMap(Constants.PROPERTIES_MAP);
+                binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
+                binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+                binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
                 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -136,10 +136,10 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bindMap(DefaultRuntimeProperties.PROPERTIES_MAP);
-                binder.bindList(JdbcAdapter.DEFAULT_EXTENDED_TYPE_LIST);
-                binder.bindList(JdbcAdapter.USER_EXTENDED_TYPE_LIST);
-                binder.bindList(JdbcAdapter.EXTENDED_TYPE_FACTORY_LIST);
+                binder.bindMap(Constants.PROPERTIES_MAP);
+                binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
+                binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+                binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
                 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);

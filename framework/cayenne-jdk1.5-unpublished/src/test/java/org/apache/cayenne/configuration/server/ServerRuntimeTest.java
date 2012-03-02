@@ -27,6 +27,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
@@ -42,7 +43,7 @@ public class ServerRuntimeTest extends TestCase {
         ServerRuntime runtime = new ServerRuntime("xxxx");
 
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("xxxx"), locations);
 
@@ -59,7 +60,7 @@ public class ServerRuntimeTest extends TestCase {
         });
 
         List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, DataDomainProvider.LOCATIONS_LIST));
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
