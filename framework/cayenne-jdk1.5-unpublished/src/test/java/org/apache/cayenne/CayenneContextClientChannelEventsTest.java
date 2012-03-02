@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.configuration.rop.client.ClientModule;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -38,7 +38,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
  */
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 @ClientRuntimeProperty({
-        ClientModule.CHANNEL_EVENTS, "true"
+        Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true"
 })
 public class CayenneContextClientChannelEventsTest extends ClientCase {
 

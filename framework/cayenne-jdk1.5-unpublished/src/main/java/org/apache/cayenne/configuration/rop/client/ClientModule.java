@@ -40,20 +40,6 @@ import org.apache.cayenne.remote.ClientConnection;
  */
 public class ClientModule implements Module {
 
-    public static final String ROP_SERVICE_URL = "cayenne.config.rop.service.url";
-    public static final String ROP_SERVICE_USER_NAME = "cayenne.config.rop.service.username";
-    public static final String ROP_SERVICE_PASSWORD = "cayenne.config.rop.service.password";
-    public static final String ROP_SERVICE_SHARED_SESSION = "cayenne.config.rop.service.shared_session";
-    public static final String ROP_SERVICE_TIMEOUT = "cayenne.config.rop.service.timeout";
-
-    public static final String CHANNEL_EVENTS = "cayenne.config.rop.client.channel.events";
-
-    // TODO: this property name is exactly the same as CHANNEL_EVENTS... Seems messed up
-    public static final String CHANNEL_REMOTE_EVENTS_OPTIONAL = "cayenne.config.rop.client.channel.events";
-
-    public static final String CONTEXT_CHANGE_EVENTS = "cayenne.config.rop.client.context.change_events";
-    public static final String CONTEXT_LIFECYCLE_EVENTS = "cayenne.config.rop.client.context.lifecycle_events";
-
     protected Map<String, String> properties;
 
     public ClientModule(Map<String, String> properties) {

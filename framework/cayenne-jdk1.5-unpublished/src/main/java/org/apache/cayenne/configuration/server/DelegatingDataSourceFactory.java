@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -139,10 +140,10 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
                 ? nodeDescriptor.getDataChannelDescriptor().getName()
                 : null;
 
-        String driver = properties.get(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY);
+        String driver = properties.get(Constants.JDBC_DRIVER_PROPERTY);
 
         if (driver == null && channelName != null) {
-            driver = properties.get(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY
+            driver = properties.get(Constants.JDBC_DRIVER_PROPERTY
                     + "."
                     + nodeDescriptor.getDataChannelDescriptor().getName()
                     + "."
@@ -153,10 +154,10 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
             return false;
         }
 
-        String url = properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY);
+        String url = properties.get(Constants.JDBC_URL_PROPERTY);
 
         if (url == null && channelName != null) {
-            url = properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY
+            url = properties.get(Constants.JDBC_URL_PROPERTY
                     + "."
                     + nodeDescriptor.getDataChannelDescriptor().getName()
                     + "."

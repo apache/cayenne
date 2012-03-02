@@ -47,7 +47,6 @@ import org.apache.cayenne.query.SQLAction;
  * Sample connection settings to use with FrontBase are shown below:
  * 
  * <pre>
- *          fb.cayenne.adapter = org.apache.cayenne.dba.frontbase.FrontBaseAdapter
  *          fb.jdbc.username = _system
  *          fb.jdbc.password = secret
  *          fb.jdbc.url = jdbc:FrontBase://localhost/cayenne/
@@ -64,11 +63,16 @@ import org.apache.cayenne.query.SQLAction;
 // what to do about it.
 public class FrontBaseAdapter extends JdbcAdapter {
 
-    public FrontBaseAdapter(@Inject RuntimeProperties runtimeProperties,
+    public FrontBaseAdapter(
+            @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
+        super(
+                runtimeProperties,
+                defaultExtendedTypes,
+                userExtendedTypes,
+                extendedTypeFactories);
         setSupportsBatchUpdates(true);
     }
 
@@ -101,9 +105,10 @@ public class FrontBaseAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
         boolean status;
-        if(ent.getDataMap()!=null && ent.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (ent.getDataMap() != null && ent.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
@@ -217,14 +222,15 @@ public class FrontBaseAdapter extends JdbcAdapter {
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
         boolean status;
-        if(table.getDataMap()!=null && table.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (table.getDataMap() != null && table.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
         StringBuffer buf = new StringBuffer("DROP TABLE ");
-        buf.append(context.quoteFullyQualifiedName(table));            
+        buf.append(context.quoteFullyQualifiedName(table));
 
         buf.append(" CASCADE");
         return Collections.singleton(buf.toString());

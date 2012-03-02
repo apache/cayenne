@@ -24,6 +24,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -39,7 +40,7 @@ public class ClientModuleTest extends TestCase {
     public void testClientConnection() {
 
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put(ClientModule.ROP_SERVICE_URL, "http://localhost/YuM");
+        properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost/YuM");
         ClientModule module = new ClientModule(properties);
 
         Injector injector = DIBootstrap.createInjector(module);
@@ -105,7 +106,7 @@ public class ClientModuleTest extends TestCase {
     public void testDataChannel_NoChannelEvents() {
 
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put(ClientModule.CHANNEL_EVENTS, "true");
+        properties.put(Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true");
         ClientModule module = new ClientModule(properties) {
 
             @Override

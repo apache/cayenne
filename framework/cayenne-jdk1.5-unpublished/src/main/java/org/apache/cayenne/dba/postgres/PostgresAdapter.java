@@ -51,23 +51,24 @@ import org.apache.cayenne.query.SQLAction;
  * Sample connection settings to use with PostgreSQL are shown below:
  * 
  * <pre>
- *    
- *      postgres.cayenne.adapter = org.apache.cayenne.dba.postgres.PostgresAdapter
  *      postgres.jdbc.username = test
  *      postgres.jdbc.password = secret
  *      postgres.jdbc.url = jdbc:postgresql://serverhostname/cayenne
  *      postgres.jdbc.driver = org.postgresql.Driver
- *     
  * </pre>
- * 
  */
 public class PostgresAdapter extends JdbcAdapter {
 
-    public PostgresAdapter(@Inject RuntimeProperties runtimeProperties,
+    public PostgresAdapter(
+            @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
+        super(
+                runtimeProperties,
+                defaultExtendedTypes,
+                userExtendedTypes,
+                extendedTypeFactories);
         setSupportsBatchUpdates(true);
     }
 
@@ -78,8 +79,8 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new PostgresActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new PostgresActionBuilder(this, node
+                .getEntityResolver()));
     }
 
     /**
@@ -132,17 +133,18 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
         boolean status;
-        if(ent.getDataMap()!=null && ent.getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
+        if (ent.getDataMap() != null && ent.getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
             status = false;
         }
-        QuotingStrategy context =  getQuotingStrategy(status);
+        QuotingStrategy context = getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
-        
-        buf.append(context.quoteFullyQualifiedName(ent)); 
-      
+
+        buf.append(context.quoteFullyQualifiedName(ent));
+
         buf.append(" (");
 
         // columns
@@ -181,9 +183,14 @@ public class PostgresAdapter extends JdbcAdapter {
             // append size and precision (if applicable)
             if (typeSupportsLength(at.getType())) {
                 int len = at.getMaxLength();
-                int scale = (TypesMapping.isDecimal(at.getType()) 
-                        && at.getType() != Types.FLOAT) // Postgress don't support notations float(a, b) 
-                        ? at.getScale() : -1;
+                int scale = (TypesMapping.isDecimal(at.getType()) && at.getType() != Types.FLOAT) // Postgress
+                                                                                                  // don't
+                                                                                                  // support
+                                                                                                  // notations
+                                                                                                  // float(a,
+                                                                                                  // b)
+                        ? at.getScale()
+                        : -1;
 
                 // sanity check
                 if (scale > len) {
@@ -253,9 +260,11 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(table
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
         StringBuffer buf = new StringBuffer("DROP TABLE ");
-        buf.append(context.quoteFullyQualifiedName(table));            
+        buf.append(context.quoteFullyQualifiedName(table));
         buf.append(" CASCADE");
         return Collections.singleton(buf.toString());
     }

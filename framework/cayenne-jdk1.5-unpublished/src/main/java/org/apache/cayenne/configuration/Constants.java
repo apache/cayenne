@@ -69,4 +69,53 @@ public interface Constants {
      */
     public static final String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
 
+    // Runtime properties
+
+    public static final String JDBC_DRIVER_PROPERTY = "cayenne.jdbc.driver";
+
+    public static final String JDBC_URL_PROPERTY = "cayenne.jdbc.url";
+
+    public static final String JDBC_USERNAME_PROPERTY = "cayenne.jdbc.username";
+
+    public static final String JDBC_PASSWORD_PROPERTY = "cayenne.jdbc.password";
+
+    public static final String JDBC_MIN_CONNECTIONS_PROPERTY = "cayenne.jdbc.min_connections";
+
+    public static final String JDBC_MAX_CONNECTIONS_PROPERTY = "cayenne.jdbc.max_connections";
+
+    /**
+     * An integer property defining the maximum number of entries in the query cache. Note
+     * that not all QueryCache providers may respect this property. MapQueryCache uses it,
+     * but the rest would use alternative configuration methods.
+     */
+    public static final String QUERY_CACHE_SIZE_PROPERTY = "cayenne.querycache.size";
+
+    /**
+     * A boolean property defining whether cross-contexts synchronization is enabled.
+     * Possible values are "true" or "false".
+     */
+    public static final String SERVER_CONTEXTS_SYNC_PROPERTY = "cayenne.server.contexts_sync_strategy";
+
+    /**
+     * A String property that defines how ObjectContexts should retain cached committed
+     * objects. Possible values are "weak", "soft", "hard".
+     */
+    public static final String SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY = "cayenne.server.object_retain_strategy";
+
+    public static final String ROP_SERVICE_URL_PROPERTY = "cayenne.rop.service_url";
+
+    public static final String ROP_SERVICE_USERNAME_PROPERTY = "cayenne.rop.service_username";
+
+    public static final String ROP_SERVICE_PASSWORD_PROPERTY = "cayenne.rop.service_password ";
+
+    public static final String ROP_SERVICE_SHARED_SESSION_PROPERTY = "cayenne.rop.shared_session_name";
+
+    public static final String ROP_SERVICE_TIMEOUT_PROPERTY = "cayenne.rop.service.timeout";
+
+    public static final String ROP_CHANNEL_EVENTS_PROPERTY = "cayenne.rop.channel_events";
+
+    public static final String ROP_CONTEXT_CHANGE_EVENTS_PROPERTY = "cayenne.rop.context_change_events";
+
+    public static final String ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY = "cayenne.rop.context_lifecycle_events";
+
 }

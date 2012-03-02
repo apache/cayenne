@@ -23,6 +23,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -48,11 +49,11 @@ public class CayenneContextFactory implements ObjectContextFactory {
 
     public ObjectContext createContext(DataChannel parent) {
         boolean changeEvents = properties.getBoolean(
-                ClientModule.CONTEXT_CHANGE_EVENTS,
+                Constants.ROP_CONTEXT_CHANGE_EVENTS_PROPERTY,
                 false);
 
         boolean lifecycleEvents = properties.getBoolean(
-                ClientModule.CONTEXT_LIFECYCLE_EVENTS,
+                Constants.ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY,
                 false);
 
         CayenneContext context = newInstance(parent, changeEvents, lifecycleEvents);

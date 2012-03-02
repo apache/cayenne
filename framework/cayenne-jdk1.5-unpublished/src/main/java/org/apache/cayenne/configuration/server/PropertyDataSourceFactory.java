@@ -21,6 +21,7 @@ package org.apache.cayenne.configuration.server;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.PoolManager;
@@ -29,12 +30,11 @@ import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * A DataSourceFactrory that creates a DataSource based on system properties. Properties
- * can be set per domain/node name or globally, aplying to all nodes without explicit
+ * can be set per domain/node name or globally, applying to all nodes without explicit
  * property set. The following properties are supported:
  * <ul>
  * <li>cayenne.jdbc.driver[.domain_name.node_name]
  * <li>cayenne.jdbc.url[.domain_name.node_name]
- * <li>cayenne.adapter[.domain_name.node_name]
  * <li>cayenne.jdbc.username[.domain_name.node_name]
  * <li>cayenne.jdbc.password[.domain_name.node_name]
  * <li>cayenne.jdbc.min.connections[.domain_name.node_name]
@@ -47,16 +47,9 @@ import org.apache.cayenne.log.JdbcEventLogger;
  */
 public class PropertyDataSourceFactory implements DataSourceFactory {
 
-    static final String JDBC_DRIVER_PROPERTY = "cayenne.jdbc.driver";
-    static final String JDBC_URL_PROPERTY = "cayenne.jdbc.url";
-    static final String JDBC_USERNAME_PROPERTY = "cayenne.jdbc.username";
-    static final String JDBC_PASSWORD_PROPERTY = "cayenne.jdbc.password";
-    static final String JDBC_MIN_CONNECTIONS_PROPERTY = "cayenne.jdbc.min.connections";
-    static final String JDBC_MAX_CONNECTIONS_PROPERTY = "cayenne.jdbc.max.conections";
-
     @Inject
     protected RuntimeProperties properties;
-    
+
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
@@ -67,12 +60,18 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
                 + "."
                 + nodeDescriptor.getName();
 
-        String driver = getProperty(JDBC_DRIVER_PROPERTY, suffix);
-        String url = getProperty(JDBC_URL_PROPERTY, suffix);
-        String username = getProperty(JDBC_USERNAME_PROPERTY, suffix);
-        String password = getProperty(JDBC_PASSWORD_PROPERTY, suffix);
-        int minConnections = getIntProperty(JDBC_MIN_CONNECTIONS_PROPERTY, suffix, 1);
-        int maxConnections = getIntProperty(JDBC_MAX_CONNECTIONS_PROPERTY, suffix, 1);
+        String driver = getProperty(Constants.JDBC_DRIVER_PROPERTY, suffix);
+        String url = getProperty(Constants.JDBC_URL_PROPERTY, suffix);
+        String username = getProperty(Constants.JDBC_USERNAME_PROPERTY, suffix);
+        String password = getProperty(Constants.JDBC_PASSWORD_PROPERTY, suffix);
+        int minConnections = getIntProperty(
+                Constants.JDBC_MIN_CONNECTIONS_PROPERTY,
+                suffix,
+                1);
+        int maxConnections = getIntProperty(
+                Constants.JDBC_MAX_CONNECTIONS_PROPERTY,
+                suffix,
+                1);
 
         try {
             return new PoolManager(

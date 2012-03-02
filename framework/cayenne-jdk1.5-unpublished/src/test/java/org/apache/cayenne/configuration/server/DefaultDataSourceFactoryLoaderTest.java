@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -101,9 +102,9 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
     public void testGetDataSourceFactory_Property() throws Exception {
 
         final RuntimeProperties properties = mock(RuntimeProperties.class);
-        when(properties.get(PropertyDataSourceFactory.JDBC_DRIVER_PROPERTY)).thenReturn(
+        when(properties.get(Constants.JDBC_DRIVER_PROPERTY)).thenReturn(
                 "x");
-        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY)).thenReturn("y");
+        when(properties.get(Constants.JDBC_URL_PROPERTY)).thenReturn("y");
 
         DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
         channelDescriptor.setName("X");
@@ -131,19 +132,19 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
         assertNotNull(factory);
         assertTrue(factory instanceof PropertyDataSourceFactory);
 
-        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY))
+        when(properties.get(Constants.JDBC_URL_PROPERTY))
                 .thenReturn(null);
         factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);
         assertFalse(factory instanceof PropertyDataSourceFactory);
 
-        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node2"))
+        when(properties.get(Constants.JDBC_URL_PROPERTY + ".X.node2"))
                 .thenReturn("y");
         factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);
         assertFalse(factory instanceof PropertyDataSourceFactory);
 
-        when(properties.get(PropertyDataSourceFactory.JDBC_URL_PROPERTY + ".X.node1"))
+        when(properties.get(Constants.JDBC_URL_PROPERTY + ".X.node1"))
                 .thenReturn("y");
         factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);

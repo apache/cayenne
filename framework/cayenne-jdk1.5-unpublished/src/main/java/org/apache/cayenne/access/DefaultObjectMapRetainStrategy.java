@@ -20,7 +20,9 @@ package org.apache.cayenne.access;
 
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.commons.collections.map.AbstractReferenceMap;
@@ -32,24 +34,32 @@ import org.apache.commons.collections.map.ReferenceMap;
  * @since 3.1
  */
 public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
-    
+
+    private static final String WEAK_RETAIN_STRATEGY = "weak";
+    private static final String SOFT_RETAIN_STRATEGY = "soft";
+    private static final String HARD_RETAIN_STRATEGY = "hard";
+
     protected RuntimeProperties runtimeProperties;
-    
+
     public DefaultObjectMapRetainStrategy(@Inject RuntimeProperties runtimeProperties) {
         this.runtimeProperties = runtimeProperties;
     }
 
     public Map<Object, Persistent> createObjectMap() {
-        String retainStrategy = runtimeProperties.get(MAP_RETAIN_STRATEGY_PROPERTY);
-        
-        if (SOFT_RETAIN_STRATEGY.equals(retainStrategy)) {
+        String strategy = runtimeProperties
+                .get(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY);
+
+        if (strategy == null || WEAK_RETAIN_STRATEGY.equals(strategy)) {
+            return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
+        }
+        else if (SOFT_RETAIN_STRATEGY.equals(strategy)) {
             return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
         }
-        else if (HARD_RETAIN_STRATEGY.equals(retainStrategy)) {
+        else if (HARD_RETAIN_STRATEGY.equals(strategy)) {
             return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.HARD);
         }
         else {
-            return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
+            throw new CayenneRuntimeException("Unsupported retain strategy " + strategy);
         }
     }
 }

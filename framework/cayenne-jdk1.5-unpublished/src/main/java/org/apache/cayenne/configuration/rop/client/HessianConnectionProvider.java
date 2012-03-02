@@ -19,6 +19,7 @@
 package org.apache.cayenne.configuration.rop.client;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -32,23 +33,26 @@ public class HessianConnectionProvider implements Provider<ClientConnection> {
 
     public ClientConnection get() throws ConfigurationException {
 
-        String url = runtimeProperties.get(ClientModule.ROP_SERVICE_URL);
+        String url = runtimeProperties.get(Constants.ROP_SERVICE_URL_PROPERTY);
         if (url == null) {
             throw new ConfigurationException(
                     "No property defined for '%s', can't initialize HessianConnection",
-                    ClientModule.ROP_SERVICE_URL);
+                    Constants.ROP_SERVICE_URL_PROPERTY);
         }
 
-        String userName = runtimeProperties
-                .get(ClientModule.ROP_SERVICE_USER_NAME);
-        String password = runtimeProperties.get(ClientModule.ROP_SERVICE_PASSWORD);
+        String userName = runtimeProperties.get(Constants.ROP_SERVICE_USERNAME_PROPERTY);
+        String password = runtimeProperties.get(Constants.ROP_SERVICE_PASSWORD_PROPERTY);
         String sharedSession = runtimeProperties
-                .get(ClientModule.ROP_SERVICE_SHARED_SESSION);
+                .get(Constants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
         String readTimeoutStr = runtimeProperties
-                .get(ClientModule.ROP_SERVICE_TIMEOUT);
-        
-        HessianConnection result = new HessianConnection(url, userName, password, sharedSession);
-        
+                .get(Constants.ROP_SERVICE_TIMEOUT_PROPERTY);
+
+        HessianConnection result = new HessianConnection(
+                url,
+                userName,
+                password,
+                sharedSession);
+
         if (readTimeoutStr != null && readTimeoutStr.length() != 0) {
             result.setReadTimeout(Long.parseLong(readTimeoutStr));
         }

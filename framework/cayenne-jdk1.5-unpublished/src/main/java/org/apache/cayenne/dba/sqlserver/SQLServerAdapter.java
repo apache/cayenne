@@ -36,21 +36,17 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * Cayenne DbAdapter implementation for <a
- * href="http://www.microsoft.com/sql/"Microsoft SQL Server </a> engine.
- * </p>
- * <h3>Microsoft Driver Settings</h3>
+ * Cayenne DbAdapter implementation for <a href="http://www.microsoft.com/sql/"Microsoft
+ * SQL Server </a> engine. </p> <h3>Microsoft Driver Settings</h3>
  * <p>
  * Sample connection settings to use with MS SQL Server are shown below:
  * 
  * <pre>
- *       sqlserver.cayenne.adapter = org.apache.cayenne.dba.sqlserver.SQLServerAdapter
  *       sqlserver.jdbc.username = test
  *       sqlserver.jdbc.password = secret
  *       sqlserver.jdbc.url = jdbc:sqlserver://192.168.0.65;databaseName=cayenne;SelectMethod=cursor
  *       sqlserver.jdbc.driver = com.microsoft.sqlserver.jdbc.SQLServerDriver
  * </pre>
- * 
  * <p>
  * <i>Note on case-sensitive LIKE: if your application requires case-sensitive LIKE
  * support, ask your DBA to configure the database to use a case-senstitive collation (one
@@ -65,17 +61,10 @@ import org.apache.cayenne.query.SQLAction;
  * </p>
  * 
  * <pre>
- * 
- *  
- *   
- *       sqlserver.cayenne.adapter = org.apache.cayenne.dba.sqlserver.SQLServerAdapter
  *       sqlserver.jdbc.username = test
  *       sqlserver.jdbc.password = secret
  *       sqlserver.jdbc.url = jdbc:jtds:sqlserver://192.168.0.65/cayenne
  *       sqlserver.jdbc.driver = net.sourceforge.jtds.jdbc.Driver
- *    
- *   
- *  
  * </pre>
  * 
  * @since 1.1
@@ -84,18 +73,22 @@ public class SQLServerAdapter extends SybaseAdapter {
 
     public static final String TRIM_FUNCTION = "RTRIM";
 
-    public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
+    public SQLServerAdapter(
+            @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
-        
-        // TODO: i wonder if Sybase supports generated keys... 
+        super(
+                runtimeProperties,
+                defaultExtendedTypes,
+                userExtendedTypes,
+                extendedTypeFactories);
+
+        // TODO: i wonder if Sybase supports generated keys...
         // in this case we need to move this to the super.
         this.setSupportsGeneratedKeys(true);
         this.setSupportsBatchUpdates(true);
     }
-    
 
     /**
      * Uses SQLServerActionBuilder to create the right action.
@@ -104,11 +97,10 @@ public class SQLServerAdapter extends SybaseAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new SQLServerActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new SQLServerActionBuilder(this, node
+                .getEntityResolver()));
     }
 
-    
     /**
      * Returns a trimming translator.
      */
@@ -121,7 +113,6 @@ public class SQLServerAdapter extends SybaseAdapter {
         return translator;
     }
 
-    
     /**
      * Overrides super implementation to correctly set up identity columns.
      * 
@@ -129,19 +120,18 @@ public class SQLServerAdapter extends SybaseAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-       
+
         super.createTableAppendColumn(sqlBuffer, column);
-        
-        if(column.isGenerated()) {
+
+        if (column.isGenerated()) {
             // current limitation - we don't allow to set identity parameters...
             sqlBuffer.append(" IDENTITY (1, 1)");
         }
     }
-    
+
     @Override
     public MergerFactory mergerFactory() {
         return new SQLServerMergerFactory();
     }
-    
-    
+
 }

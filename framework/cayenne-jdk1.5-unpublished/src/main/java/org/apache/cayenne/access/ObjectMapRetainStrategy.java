@@ -23,19 +23,12 @@ import java.util.Map;
 import org.apache.cayenne.Persistent;
 
 /**
- * A strategy for retaining objects in {@link ObjectStore}. May be used
- * weak, soft or hard references. 
+ * A strategy for retaining objects in {@link ObjectStore}. The strategy can be weak, soft
+ * or hard references.
  * 
  * @since 3.1
  */
 public interface ObjectMapRetainStrategy {
-    
-    static final String MAP_RETAIN_STRATEGY_PROPERTY = "org.apache.cayenne.context_object_retain_strategy";
-    
-    static final String WEAK_RETAIN_STRATEGY = "weak";
-    static final String SOFT_RETAIN_STRATEGY = "soft";
-    static final String HARD_RETAIN_STRATEGY = "hard";
-    
-    Map<Object, Persistent> createObjectMap();
 
+    Map<Object, Persistent> createObjectMap();
 }

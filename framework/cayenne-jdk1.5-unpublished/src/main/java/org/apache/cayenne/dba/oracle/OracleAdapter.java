@@ -59,7 +59,6 @@ import org.apache.cayenne.query.UpdateBatchQuery;
  * connection settings to use with Oracle are shown below:
  * 
  * <pre>
- *          test-oracle.cayenne.adapter = org.apache.cayenne.dba.oracle.OracleAdapter
  *          test-oracle.jdbc.username = test
  *          test-oracle.jdbc.password = secret
  *          test-oracle.jdbc.url = jdbc:oracle:thin:@//192.168.0.20:1521/ora1 
@@ -155,12 +154,17 @@ public class OracleAdapter extends JdbcAdapter {
         return oracleCursorType;
     }
 
-    public OracleAdapter(@Inject RuntimeProperties runtimeProperties,
+    public OracleAdapter(
+            @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
-        
+        super(
+                runtimeProperties,
+                defaultExtendedTypes,
+                userExtendedTypes,
+                extendedTypeFactories);
+
         // enable batch updates by default
         setSupportsBatchUpdates(true);
     }
@@ -308,8 +312,8 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new OracleActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new OracleActionBuilder(this, node
+                .getEntityResolver()));
     }
 
     /**

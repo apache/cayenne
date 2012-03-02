@@ -46,7 +46,6 @@ import org.apache.cayenne.query.SQLAction;
  * </a>. Sample connection settings to use with HSQLDB are shown below:
  * 
  * <pre>
- *        test-hsqldb.cayenne.adapter = org.apache.cayenne.dba.hsqldb.HSQLDBAdapter
  *        test-hsqldb.jdbc.username = test
  *        test-hsqldb.jdbc.password = secret
  *        test-hsqldb.jdbc.url = jdbc:hsqldb:hsql://serverhostname
@@ -54,12 +53,17 @@ import org.apache.cayenne.query.SQLAction;
  * </pre>
  */
 public class HSQLDBAdapter extends JdbcAdapter {
-    
-    public HSQLDBAdapter(@Inject RuntimeProperties runtimeProperties,
+
+    public HSQLDBAdapter(
+            @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
+        super(
+                runtimeProperties,
+                defaultExtendedTypes,
+                userExtendedTypes,
+                extendedTypeFactories);
     }
 
     /**

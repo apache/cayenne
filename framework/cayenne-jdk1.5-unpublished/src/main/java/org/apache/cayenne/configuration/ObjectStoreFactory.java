@@ -28,8 +28,6 @@ import org.apache.cayenne.access.ObjectStore;
  */
 public interface ObjectStoreFactory {
     
-    static final String SYNC_PROPERTY = "org.apache.cayenne.sync_contexts";
-    
     /**
      * Creates an {@link ObjectStore} with provided dataRowCache
      */

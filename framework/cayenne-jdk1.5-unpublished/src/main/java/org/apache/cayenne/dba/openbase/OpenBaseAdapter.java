@@ -55,7 +55,6 @@ import org.apache.cayenne.query.SQLAction;
  * connection settings to use with OpenBase are shown below:
  * 
  * <pre>
- * openbase.cayenne.adapter = org.apache.cayenne.dba.openbase.OpenBaseAdapter
  * openbase.jdbc.username = test
  * openbase.jdbc.password = secret
  * openbase.jdbc.url = jdbc:openbase://serverhostname/cayenne
@@ -66,12 +65,17 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class OpenBaseAdapter extends JdbcAdapter {
 
-    public OpenBaseAdapter(@Inject RuntimeProperties runtimeProperties,
+    public OpenBaseAdapter(
+            @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
-        
+        super(
+                runtimeProperties,
+                defaultExtendedTypes,
+                userExtendedTypes,
+                extendedTypeFactories);
+
         // init defaults
         this.setSupportsUniqueConstraints(false);
     }
@@ -83,8 +87,8 @@ public class OpenBaseAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new OpenBaseActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new OpenBaseActionBuilder(this, node
+                .getEntityResolver()));
     }
 
     @Override

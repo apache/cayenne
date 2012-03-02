@@ -39,12 +39,10 @@ import org.apache.cayenne.query.SQLAction;
 
 /**
  * A SQLite database adapter that works with Zentus JDBC driver. See
- * http://www.zentus.com/sqlitejdbc/ for the driver information.
- *
- * Also look at http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC for another adaptor option.
+ * http://www.zentus.com/sqlitejdbc/ for the driver information. Also look at
+ * http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC for another adaptor option.
  * 
  * <pre>
- *      sqlite.cayenne.adapter = org.apache.cayenne.dba.sqlite.SQLiteAdapter
  *      sqlite.jdbc.url = jdbc:sqlite:sqlitetest.db
  *      sqlite.jdbc.driver = org.sqlite.JDBC
  * </pre>
@@ -54,11 +52,16 @@ import org.apache.cayenne.query.SQLAction;
 // check http://cwiki.apache.org/CAY/sqliteadapter.html for current limitations.
 public class SQLiteAdapter extends JdbcAdapter {
 
-    public SQLiteAdapter(@Inject RuntimeProperties runtimeProperties,
+    public SQLiteAdapter(
+            @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
+        super(
+                runtimeProperties,
+                defaultExtendedTypes,
+                userExtendedTypes,
+                extendedTypeFactories);
         this.setSupportsUniqueConstraints(false);
         this.setSupportsGeneratedKeys(true);
     }
@@ -89,8 +92,8 @@ public class SQLiteAdapter extends JdbcAdapter {
 
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new SQLiteActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new SQLiteActionBuilder(this, node
+                .getEntityResolver()));
     }
 
     /**
