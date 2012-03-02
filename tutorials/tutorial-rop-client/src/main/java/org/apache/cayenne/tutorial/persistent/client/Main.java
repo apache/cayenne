@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.rop.client.ClientModule;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -35,10 +35,10 @@ public class Main {
 	public static void main(String[] args) {
 
 		Map<String, String> properties = new HashMap<String, String>();
-		properties.put(ClientModule.ROP_SERVICE_URL,
+		properties.put(Constants.ROP_SERVICE_URL_PROPERTY,
 				"http://localhost:8080/tutorial-rop-server/cayenne-service");
-		properties.put(ClientModule.ROP_SERVICE_USER_NAME, "cayenne-user");
-		properties.put(ClientModule.ROP_SERVICE_PASSWORD, "secret");
+		properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
+		properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
 
 		ClientRuntime runtime = new ClientRuntime(properties);
 
