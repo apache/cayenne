@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -37,7 +38,7 @@ public class DataDomainTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
-    
+
     @Inject
     private JdbcEventLogger logger;
 
@@ -46,6 +47,54 @@ public class DataDomainTest extends ServerCase {
         assertEquals("some name", domain.getName());
         domain.setName("tst_name");
         assertEquals("tst_name", domain.getName());
+    }
+
+    public void testLookupDataNode() {
+
+        DataDomain domain = new DataDomain("test");
+
+        DataMap m1 = new DataMap("m1");
+        DataNode n1 = new DataNode("n1");
+        n1.addDataMap(m1);
+        domain.addNode(n1);
+
+        DataMap m2 = new DataMap("m2");
+        DataNode n2 = new DataNode("n2");
+        n2.addDataMap(m2);
+        domain.addNode(n2);
+
+        assertSame(n1, domain.lookupDataNode(m1));
+        assertSame(n2, domain.lookupDataNode(m2));
+
+        try {
+
+            domain.lookupDataNode(new DataMap("m3"));
+            fail("must have thrown on missing Map to Node maping");
+        }
+        catch (CayenneRuntimeException e) {
+            // expected
+        }
+    }
+
+    public void testLookupDataNode_Default() {
+
+        DataDomain domain = new DataDomain("test");
+
+        DataMap m1 = new DataMap("m1");
+        DataNode n1 = new DataNode("n1");
+        n1.addDataMap(m1);
+        domain.setDefaultNode(n1);
+
+        DataMap m2 = new DataMap("m2");
+        DataNode n2 = new DataNode("n2");
+        n2.addDataMap(m2);
+        domain.addNode(n2);
+
+        assertSame(n1, domain.lookupDataNode(m1));
+        assertSame(n2, domain.lookupDataNode(m2));
+
+        // must map to default
+        assertSame(n1, domain.lookupDataNode(new DataMap("m3")));
     }
 
     public void testNodes() throws Exception {
@@ -143,8 +192,9 @@ public class DataDomainTest extends ServerCase {
 
     public void testInitDataDomainValidation() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE
-                .toString());
+        properties.put(
+                DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
+                Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isValidatingObjectsOnCommit());
@@ -152,8 +202,9 @@ public class DataDomainTest extends ServerCase {
 
     public void testInitDataDomainNoValidation() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE
-                .toString());
+        properties.put(
+                DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
+                Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isValidatingObjectsOnCommit());
@@ -161,8 +212,9 @@ public class DataDomainTest extends ServerCase {
 
     public void testDataDomainInternalTransactions() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.FALSE
-                .toString());
+        properties.put(
+                DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY,
+                Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isUsingExternalTransactions());
@@ -173,8 +225,9 @@ public class DataDomainTest extends ServerCase {
 
     public void testDataDomainExternalTransactions() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.TRUE
-                .toString());
+        properties.put(
+                DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY,
+                Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isUsingExternalTransactions());

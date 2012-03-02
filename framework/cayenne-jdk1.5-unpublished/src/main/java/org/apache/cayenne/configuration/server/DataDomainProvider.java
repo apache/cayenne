@@ -250,7 +250,13 @@ public class DataDomainProvider implements Provider<DataDomain> {
             }
         }
 
-        dataDomain.setDefaultNode(defaultNode);
+        if (defaultNode != null) {
+            logger.info("setting DataNode '"
+                    + defaultNode.getName()
+                    + "' as default, used by all unlinked DataMaps");
+
+            dataDomain.setDefaultNode(defaultNode);
+        }
 
         for (DataChannelFilter filter : filters) {
             dataDomain.addFilter(filter);
