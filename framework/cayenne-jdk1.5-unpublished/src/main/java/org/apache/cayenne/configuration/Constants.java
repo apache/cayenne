@@ -29,8 +29,8 @@ public interface Constants {
     // DI "collections"
 
     /**
-     * A DI container key for the properties map used to configure either ROP or server
-     * tiers.
+     * A DI container key for the Map<String, String> storing properties used by built-in
+     * Cayenne service.
      */
     public static final String PROPERTIES_MAP = "cayenne.properties";
 
@@ -41,13 +41,13 @@ public interface Constants {
     public static final String SERVER_ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
 
     /**
-     * A DI container key for the list storing DataDomain filters.
+     * A DI container key for the List<DataChannelFilter> storing DataDomain filters.
      */
     public static final String SERVER_DOMAIN_FILTERS_LIST = "cayenne.server.domain_filters";
 
     /**
-     * A DI container key for the list storing locations of the one of more project
-     * configuration files.
+     * A DI container key for the List<String> storing locations of the one of more
+     * project configuration files.
      */
     public static final String SERVER_PROJECT_LOCATIONS_LIST = "cayenne.server.project_locations";
 

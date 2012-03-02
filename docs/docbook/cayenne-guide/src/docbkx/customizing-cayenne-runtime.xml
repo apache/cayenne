@@ -217,8 +217,7 @@ ServerRuntime runtime =
 binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
        .add(MyDbAdapterDetector.class);</programlisting>
 			<para>Maps are customized using a similar "<code>bindMap</code>" method.</para>
-			<para>The names of built-in collections are listed in "ServerRuntime Service
-				Collections" table in "Appendix A".</para>
+			<para>The names of built-in collections are listed in "Appendix B".</para>
 		</section>
 		<section xml:id="alternative-service-implementations">
 			<title>Alternative Service Implementations</title>

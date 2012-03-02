@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
 	version="5.0" xml:id="server-configuration-properties">
-	<title>Server Configuration Properties</title>
+	<title>Configuration Properties</title>
 	<para>
 		<table frame="void" width="739">
-			<caption>Configuration Properties Recognized by ServerRuntime</caption>
+			<caption>Configuration Properties Recognized by ServerRuntime and/or ClientRuntime</caption>
 			<col width="77%"/>
 			<col width="10%"/>
 			<col width="13%"/>
@@ -16,6 +16,63 @@
 				</tr>
 			</thead>
 			<tbody>
+				<tr>
+					<td><code>cayenne.jdbc.driver[.domain_name.node_name]</code> - defines a JDBC driver class to
+						use when creating a DataSource. If domain name and optionally - node name
+						are specified, the setting overrides DataSource info just for this
+						domain/node. Otherwise the override is applied to all domains/nodes in the
+						system.</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.url[.domain_name.node_name] </code>- defines a DB URL to use when
+						creating a DataSource. If domain name and optionally - node name are
+						specified, the setting overrides DataSource info just for this domain/node.
+						Otherwise the override is applied to all domains/nodes in the system.</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.username[.domain_name.node_name] </code>- defines a DB user name to use
+						when creating a DataSource. If domain name and optionally - node name are
+						specified, the setting overrides DataSource info just for this domain/node.
+						Otherwise the override is applied to all domains/nodes in the system.</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.password[.domain_name.node_name]</code> - defines a DB password to use
+						when creating a DataSource. If domain name and optionally - node name are
+						specified, the setting overrides DataSource info just for this domain/node.
+						Otherwise the override is applied to all domains/nodes in the system</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.min_connections[.domain_name.node_name]</code> - defines the DB
+						connection pool minimal size. If domain name and optionally - node name are
+						specified, the setting overrides DataSource info just for this domain/node.
+						Otherwise the override is applied to all domains/nodes in the system</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.jdbc.max_connections[.domain_name.node_name]</code> - defines the DB
+						connection pool maximum size. If domain name and optionally - node name are
+						specified, the setting overrides DataSource info just for this domain/node.
+						Otherwise the override is applied to all domains/nodes in the system</td>
+					<td/>
+					<td>none, project DataNode configuration is used</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.querycache.size</code> - An integer defining the maximum number of entries in
+						the query cache. Note that not all QueryCache providers may respect this
+						property. MapQueryCache uses it, but the rest would use alternative
+						configuration methods.</td>
+					<td>any positive int value</td>
+					<td>2000</td>
+				</tr>
 				<tr>
 					<td><code>org.apache.cayenne.sync_contexts</code> - defines whether peer
 						ObjectContexts should receive snapshot events after commits from other
@@ -34,97 +91,53 @@
 					<td>weak</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.jdbc.driver[.domain_name.node_name]</code> - defines the JDBC
-						driver to use when creating a DataSource. If domain name and optionally -
-						node name are specified, the setting overrides DataSource info just for this
-						domain/node. Otherwise the override is applied to all domains/nodes in the
-						system.</td>
+					<td><code>cayenne.config.rop.service.url</code> - defines the URL of the ROP
+						server</td>
 					<td/>
-					<td>none, project DataNode configuration is used</td>
-				</tr>
-				<tr>
-					<td><code>cayenne.jdbc.url[.domain_name.node_name] </code>- defines the DB URL
-						to use when creating a DataSource. If domain name and optionally - node name
-						are specified, the setting overrides DataSource info just for this
-						domain/node. Otherwise the override is applied to all domains/nodes in the
-						system.</td>
 					<td/>
-					<td>none, project DataNode configuration is used</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.adapter[.domain_name.node_name]</code> - defines the class
-						name of the DbAdapter to use with the DataNodes. If domain name and
-						optionally - node name are specified, the setting overrides adapter info
-						just for this domain/node. Otherwise the override is applied to all
-						domains/nodes in the system.</td>
+					<td><code>cayenne.config.rop.service.username</code> - defines the user name to
+						login to the ROP server.</td>
 					<td/>
-					<td>none, project DataNode configuration is used</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.jdbc.username[.domain_name.node_name] </code>- defines the DB
-						user name to use when creating a DataSource. If domain name and optionally -
-						node name are specified, the setting overrides DataSource info just for this
-						domain/node. Otherwise the override is applied to all domains/nodes in the
-						system.</td>
+					<td><code>cayenne.config.rop.service.password</code> - defines the password to
+						login to the ROP server.</td>
 					<td/>
-					<td>none, project DataNode configuration is used</td>
-				</tr>
-				<tr>
-					<td><code>cayenne.jdbc.password[.domain_name.node_name]</code> - defines the DB
-						password to use when creating a DataSource. If domain name and optionally -
-						node name are specified, the setting overrides DataSource info just for this
-						domain/node. Otherwise the override is applied to all domains/nodes in the
-						system</td>
 					<td/>
-					<td>none, project DataNode configuration is used</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.jdbc.min.connections[.domain_name.node_name]</code> - defines
-						the DB connection pool minimal size. If domain name and optionally - node
-						name are specified, the setting overrides DataSource info just for this
-						domain/node. Otherwise the override is applied to all domains/nodes in the
-						system</td>
+					<td><code>cayenne.config.rop.service.shared_session</code>- defines the name of
+						the shared session to join on the ROP server. If omitted a dedicated session
+						is created.</td>
 					<td/>
-					<td>none, project DataNode configuration is used</td>
-				</tr>
-				<tr>
-					<td><code>cayenne.jdbc.max.conections[.domain_name.node_name]</code> - defines
-						the DB connection pool maximum size. If domain name and optionally - node
-						name are specified, the setting overrides DataSource info just for this
-						domain/node. Otherwise the override is applied to all domains/nodes in the
-						system</td>
 					<td/>
-					<td>none, project DataNode configuration is used</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.MapQueryCacheFactory.cacheSize</code> - defines the max size
-						of the LRU query cache map. Ignored if the default MapQueryCacheFactory is
-						overridden and a different cache provider is used.</td>
-					<td>an int defining max number of entries in the cache</td>
-					<td>2000</td>
-				</tr>
-			</tbody>
-		</table>
-	</para>
-	<para>
-		<table frame="void">
-			<caption>Service Collections Recognized by ServerRuntime</caption>
-			<col width="56%"/>
-			<col width="16%"/>
-			<col width="28%"/>
-			<tbody>
-				<tr>
-					<td><code>org.apache.cayenne.configuration.DefaultRuntimeProperties.properties</code> -
-						Map&lt;String,String> of properties used by built-in Cayenne services. The
-						keys in this map are the property names from the previous table</td>
+					<td><code>cayenne.config.rop.client.channel.events</code> - defines whether
+						client-side DataChannel should dispatch events to child ObjectContexts. If
+						set to true, ObjectContexts will receive commit events and merge changes
+						committed by peer contexts that passed through the common client
+						DataChannel.</td>
+					<td>true, false</td>
+					<td>false</td>
 				</tr>
 				<tr>
-					<td><code>org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors</code> -
-						List&lt;DbAdapterDetector> of detector objects that can discover the type of
-						current database and install the correct DbAdapter in runtime.</td>
+					<td><code>cayenne.config.rop.client.context.change_events</code>- defines whether object
+						property changes in the client context result in firing events. Client UI
+						components can listen to these events and update the UI. Disabled by
+						default.</td>
+					<td>true, false</td>
+					<td>false</td>
 				</tr>
 				<tr>
-					<td/>
+					<td><code>cayenne.config.rop.client.context.lifecycle_events</code> -  defines whether object
+						commit and rollback operations in the client context result in firing
+						events. Client UI components can listen to these events and update the UI.
+						Disabled by default.</td>
+					<td>true,false</td>
+					<td>\false</td>
 				</tr>
 			</tbody>
 		</table>
