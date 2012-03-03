@@ -21,6 +21,7 @@ package org.apache.cayenne.exp;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,12 +38,32 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ExpressionTest extends ServerCase {
-    
+
     @Inject
     private ObjectContext context;
-    
+
     @Inject
     private ServerRuntime runtime;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        Expression qual = ExpressionFactory.likeExp("artistName", "Equals");
+        query.setQualifier(qual);
+        List<?> objects = context.performQuery(query);
+
+        if (objects.size() > 0) {
+            SelectQuery query1 = new SelectQuery(Painting.class);
+            Expression e = ExpressionFactory.matchExp(
+                    Painting.TO_ARTIST_PROPERTY,
+                    objects.get(0));
+            query.setQualifier(e);
+            objects.addAll(context.performQuery(query1));
+        }
+
+        context.deleteObjects(objects);
+    }
 
     public void testFromStringLong() {
         Expression e = Expression.fromString("216201000180L");
@@ -226,69 +247,76 @@ public class ExpressionTest extends ServerCase {
 
         assertEquals("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO", buffer.toString());
     }
-    
+
     public void testEqualsObjects() {
-        
+
         assertTrue(context instanceof DataContext);
-        
+
         DataContext context2 = (DataContext) runtime.getContext();
-        
+
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("Equals");
         Painting p1 = context.newObject(Painting.class);
         p1.setToArtist(a1);
         p1.setPaintingTitle("painting1");
-        
+
         SelectQuery query = new SelectQuery(Painting.class);
-        Expression e = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a1); 
+        Expression e = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a1);
         query.setQualifier(e);
-        
+
         context.commitChanges();
-        
+
         assertNotSame(context2, context);
-        
+
         List<Artist> objects = context2.performQuery(query);
         assertEquals(1, objects.size());
-        
+
         // 2 same objects in different contexts
-        assertTrue(e.match(objects.get(0))); 
-        
-        // we change one object - so the objects are different now (PersistenceState different)
+        assertTrue(e.match(objects.get(0)));
+
+        // we change one object - so the objects are different now (PersistenceState
+        // different)
         a1.setArtistName("newName");
-        
+
         SelectQuery q2 = new SelectQuery(Painting.class);
-        Expression ex2 = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a1); 
+        Expression ex2 = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a1);
         q2.setQualifier(ex2);
-        
-        assertFalse(ex2.match(objects.get(0))); 
-        
+
+        assertFalse(ex2.match(objects.get(0)));
+
         Artist a2 = context.newObject(Artist.class);
         a1.setArtistName("Equals");
-        
+
         SelectQuery q = new SelectQuery(Painting.class);
-        Expression ex = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a2); 
+        Expression ex = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a2);
         q.setQualifier(ex);
-        
+
         // 2 different objects in different contexts
-        assertFalse(ex.match(objects.get(0))); 
+        assertFalse(ex.match(objects.get(0)));
     }
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        
-        SelectQuery query = new SelectQuery(Artist.class);
-        Expression qual = ExpressionFactory.likeExp("artistName", "Equals");
-        query.setQualifier(qual);
-        List<?> objects = context.performQuery(query);
-        
-        if (objects.size() > 0) {
-            SelectQuery query1 = new SelectQuery(Painting.class);
-            Expression e = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, objects.get(0)); 
-            query.setQualifier(e);
-            objects.addAll(context.performQuery(query1));
-        }
-        
-        
-        context.deleteObjects(objects);
+
+    public void testFirst() {
+        List<Painting> paintingList = new ArrayList<Painting>();
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("x1");
+        paintingList.add(p1);
+
+        Painting p2 = context.newObject(Painting.class);
+        p2.setPaintingTitle("x2");
+        paintingList.add(p2);
+
+        Painting p3 = context.newObject(Painting.class);
+        p3.setPaintingTitle("x3");
+        paintingList.add(p3);
+
+        Expression e1 = ExpressionFactory.likeExp("paintingTitle", "x%");
+        assertSame(p1, e1.first(paintingList));
+
+        Expression e3 = ExpressionFactory.matchExp("paintingTitle", "x3");
+        assertSame(p3, e3.first(paintingList));
+
+        Expression e4 = ExpressionFactory.matchExp("paintingTitle", "x4");
+        assertNull(e4.first(paintingList));
     }
+
 }

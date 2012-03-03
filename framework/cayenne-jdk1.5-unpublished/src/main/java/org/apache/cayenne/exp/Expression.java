@@ -386,6 +386,21 @@ public abstract class Expression implements Serializable, XMLSerializable {
     public boolean match(Object o) {
         return ConversionUtil.toBoolean(evaluate(o));
     }
+    
+    /**
+     * Returns the first object in the list that matches the expression.
+     * 
+     * @since 3.1
+     */
+    public <T> T first(List<T> objects) {
+        for (T o : objects) {
+            if (match(o)) {
+                return o;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Returns a list of objects that match the expression.

@@ -37,7 +37,7 @@ public class CayenneDataObjectTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
-    
+
     public void testSetObjectId() throws Exception {
         CayenneDataObject object = new CayenneDataObject();
         ObjectId oid = new ObjectId("T");
