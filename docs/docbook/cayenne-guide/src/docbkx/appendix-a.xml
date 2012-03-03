@@ -2,6 +2,8 @@
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
 	version="5.0" xml:id="server-configuration-properties">
 	<title>Configuration Properties</title>
+	<para>Note that the property names below are defined as constants in
+			<code>org.apache.cayenne.configuration.Constants</code> interface. </para>
 	<para>
 		<table frame="void" width="739">
 			<caption>Configuration Properties Recognized by ServerRuntime and/or ClientRuntime</caption>
@@ -74,70 +76,72 @@
 					<td>2000</td>
 				</tr>
 				<tr>
-					<td><code>org.apache.cayenne.sync_contexts</code> - defines whether peer
-						ObjectContexts should receive snapshot events after commits from other
-						contexts. If true (default), the contexts would automatically synchronize
-						their state with peers.</td>
+					<td><code>cayenne.server.contexts_sync_strategy</code> - defines whether peer ObjectContexts
+						should receive snapshot events after commits from other contexts. If true
+						(default), the contexts would automatically synchronize their state with
+						peers.</td>
 					<td>true, false</td>
 					<td>true</td>
 				</tr>
 				<tr>
-					<td><code>org.apache.cayenne.context_object_retain_strategy</code> - defines
-						fetched objects retain strategy for ObjectContexts. When weak or soft
-						strategy is used, objects retained by ObjectContext that have no local
-						changes can potetially get garbage collected when JVM feels like doing
-						it.</td>
+					<td><code>cayenne.server.object_retain_strategy</code> - defines fetched objects retain
+						strategy for ObjectContexts. When weak or soft strategy is used, objects
+						retained by ObjectContext that have no local changes can potetially get
+						garbage collected when JVM feels like doing it.</td>
 					<td>weak, soft, hard</td>
 					<td>weak</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.config.rop.service.url</code> - defines the URL of the ROP
-						server</td>
+					<td><code>cayenne.rop.service_url</code> - defines the URL of the ROP server</td>
 					<td/>
 					<td/>
 				</tr>
 				<tr>
-					<td><code>cayenne.config.rop.service.username</code> - defines the user name to
-						login to the ROP server.</td>
+					<td><code>cayenne.rop.service_username</code> - defines the user name for an ROP client to
+						login to an ROP server.</td>
 					<td/>
 				</tr>
 				<tr>
-					<td><code>cayenne.config.rop.service.password</code> - defines the password to
-						login to the ROP server.</td>
-					<td/>
-					<td/>
-				</tr>
-				<tr>
-					<td><code>cayenne.config.rop.service.shared_session</code>- defines the name of
-						the shared session to join on the ROP server. If omitted a dedicated session
-						is created.</td>
+					<td><code>cayenne.rop.service_password</code> - defines the password for an ROP client to login
+						to an ROP server.</td>
 					<td/>
 					<td/>
 				</tr>
 				<tr>
-					<td><code>cayenne.config.rop.client.channel.events</code> - defines whether
-						client-side DataChannel should dispatch events to child ObjectContexts. If
-						set to true, ObjectContexts will receive commit events and merge changes
-						committed by peer contexts that passed through the common client
-						DataChannel.</td>
+					<td><code>cayenne.rop.shared_session_name</code>- defines the name of the shared session that
+						an ROP client wants to join on an ROP server. If omitted, a dedicated
+						session is created.</td>
+					<td/>
+					<td/>
+				</tr>
+				<tr>
+					<td><code>cayenne.rop.service.timeout</code> - a value in milliseconds for the
+						ROP client-server connection read operation timeout</td>
+					<td>any positive long value</td>
+					<td/>
+				</tr>
+				<tr>
+					<td><code>cayenne.rop.channel_events</code> - defines whether client-side DataChannel should
+						dispatch events to child ObjectContexts. If set to true, ObjectContexts will
+						receive commit events and merge changes committed by peer contexts that
+						passed through the common client DataChannel.</td>
 					<td>true, false</td>
 					<td>false</td>
 				</tr>
 				<tr>
-					<td><code>cayenne.config.rop.client.context.change_events</code>- defines whether object
-						property changes in the client context result in firing events. Client UI
+					<td><code>cayenne.rop.context_change_events</code>- defines whether object property changes in
+						the client context result in firing events. Client UI components can listen
+						to these events and update the UI. Disabled by default.</td>
+					<td>true, false</td>
+					<td>false</td>
+				</tr>
+				<tr>
+					<td><code>cayenne.rop.context_lifecycle_events</code> - defines whether object commit and
+						rollback operations in the client context result in firing events. Client UI
 						components can listen to these events and update the UI. Disabled by
 						default.</td>
-					<td>true, false</td>
-					<td>false</td>
-				</tr>
-				<tr>
-					<td><code>cayenne.config.rop.client.context.lifecycle_events</code> -  defines whether object
-						commit and rollback operations in the client context result in firing
-						events. Client UI components can listen to these events and update the UI.
-						Disabled by default.</td>
 					<td>true,false</td>
-					<td>\false</td>
+					<td>false</td>
 				</tr>
 			</tbody>
 		</table>

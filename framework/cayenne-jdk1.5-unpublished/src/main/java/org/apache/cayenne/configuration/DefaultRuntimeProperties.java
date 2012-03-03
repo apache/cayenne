@@ -50,6 +50,21 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
 
         return properties.get(key);
     }
+    
+    public long getLong(String key, long defaultValue) {
+        String string = get(key);
+        if (string == null) {
+            return defaultValue;
+        }
+
+        try {
+            return Long.parseLong(string);
+        }
+        catch (NumberFormatException e) {
+            // incorrect property format, should we rethrow?
+            return defaultValue;
+        }
+    }
 
     public int getInt(String key, int defaultValue) {
         String string = get(key);

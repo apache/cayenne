@@ -106,7 +106,7 @@ public interface Constants {
 
     public static final String ROP_SERVICE_USERNAME_PROPERTY = "cayenne.rop.service_username";
 
-    public static final String ROP_SERVICE_PASSWORD_PROPERTY = "cayenne.rop.service_password ";
+    public static final String ROP_SERVICE_PASSWORD_PROPERTY = "cayenne.rop.service_password";
 
     public static final String ROP_SERVICE_SHARED_SESSION_PROPERTY = "cayenne.rop.shared_session_name";
 

@@ -32,5 +32,7 @@ public interface RuntimeProperties {
     
     int getInt(String key, int defaultValue);
     
+    long getLong(String key, long defaultValue);
+    
     boolean getBoolean(String key, boolean defaultValue);
 }
