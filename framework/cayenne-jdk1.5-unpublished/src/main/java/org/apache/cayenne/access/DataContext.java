@@ -72,7 +72,7 @@ import org.apache.cayenne.util.Util;
  * objects that are registered with the context, are not visible to the users of other
  * contexts.
  */
-public class DataContext extends BaseContext implements DataChannel {
+public class DataContext extends BaseContext {
 
     private DataContextDelegate delegate;
     protected boolean usingSharedSnaphsotCache;
