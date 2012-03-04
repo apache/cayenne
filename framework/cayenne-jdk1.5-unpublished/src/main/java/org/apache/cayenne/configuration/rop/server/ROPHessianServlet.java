@@ -67,6 +67,8 @@ public class ROPHessianServlet extends HessianServlet {
      */
     @Override
     public void init(ServletConfig configuration) throws ServletException {
+        
+        checkAlreadyConfigured(configuration.getServletContext());
 
         this.servletContext = configuration.getServletContext();
 
@@ -103,6 +105,14 @@ public class ROPHessianServlet extends HessianServlet {
 
         WebUtil.setCayenneRuntime(servletContext, runtime);
         super.init(configuration);
+    }
+    
+    protected void checkAlreadyConfigured(ServletContext context) throws ServletException {
+        // sanity check
+        if (WebUtil.getCayenneRuntime(context) != null) {
+            throw new ServletException(
+                    "CayenneRuntime is already configured in the servlet environment");
+        }
     }
 
     @Override

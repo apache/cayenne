@@ -62,6 +62,8 @@ public class CayenneFilter implements Filter {
 
     public void init(FilterConfig config) throws ServletException {
 
+        checkAlreadyConfigured(config.getServletContext());
+
         this.servletContext = config.getServletContext();
 
         WebConfiguration configAdapter = new WebConfiguration(config);
@@ -69,10 +71,19 @@ public class CayenneFilter implements Filter {
         String configurationLocation = configAdapter.getConfigurationLocation();
         Collection<Module> modules = configAdapter.createModules(new WebModule());
 
-        ServerRuntime runtime = new ServerRuntime(configurationLocation, modules
-                .toArray(new Module[modules.size()]));
+        ServerRuntime runtime = new ServerRuntime(
+                configurationLocation,
+                modules.toArray(new Module[modules.size()]));
 
         WebUtil.setCayenneRuntime(config.getServletContext(), runtime);
+    }
+
+    protected void checkAlreadyConfigured(ServletContext context) throws ServletException {
+        // sanity check
+        if (WebUtil.getCayenneRuntime(context) != null) {
+            throw new ServletException(
+                    "CayenneRuntime is already configured in the servlet environment");
+        }
     }
 
     public void destroy() {
