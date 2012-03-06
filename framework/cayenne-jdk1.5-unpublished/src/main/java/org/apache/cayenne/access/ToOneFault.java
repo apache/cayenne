@@ -40,7 +40,7 @@ public class ToOneFault extends Fault {
 
         if (sourceObject.getObjectContext() == null) {
             throw new IllegalStateException(
-                    "Null ObjectContext. Can't read a to-one relationshup '"
+                    "Null ObjectContext. Can't read a to-one relationship '"
                             + relationshipName
                             + "' for an object with ID: "
                             + sourceObject.getObjectId());
