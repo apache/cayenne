@@ -119,9 +119,13 @@ class SchemaAnalyzer {
 
             if (schema != null) {
                 if (schemaNameMap.get(schema) != null) {
-
-                }
-                else {
+                    Collection<String> names = schemaNameMap.get(schema);
+                    if (names.contains(name)) {
+                         mapTableInDB.put(name, schema);
+                    } else {
+                        tableNoInDB.add(name);
+                    }
+                } else {
                     isIncluded = false;
                     errorMessage = "no schema " + schema + " in db";
                     break;
