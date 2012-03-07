@@ -5,6 +5,16 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 3.1M4
+
+* In an attempt to better organize DI configuration and ultimately make it easier to understand, 
+  all properties and DI collection keys were placed in a single Constants interface. The property and key String 
+  values were changed to follow a single convention. Please refer to https://issues.apache.org/jira/browse/CAY-1665
+  for mapping between the old and the new names.
+
+  If you are upgrading from the earlier 3.1 releases, please change your code and runtime parameters accordingly.
+  3.0 users may still review the new property names as some of them existed prior to DI.
+
 UPGRADING TO 3.1M3
 
 * DataMap listeners are no longer supported. Global listeners registered through
