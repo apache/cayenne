@@ -143,6 +143,17 @@
 					<td>true,false</td>
 					<td>false</td>
 				</tr>
+				<tr>
+					<td><code>cayenne.server.rop_event_bridge_factory</code> - defines the name of
+						the org.apache.cayenne.event.EventBridgeFactory that is passed from the ROP
+						server to the client. I.e. server DI would provide a name of the factory,
+						passing this name to the client via the wire. The client would instantiate
+						it to receive events from the server. Note that this property is stored in
+						"cayenne.server.rop_event_bridge_properties" map, not in the main
+						"cayenne.properties".</td>
+					<td/>
+					<td/>
+				</tr>
 			</tbody>
 		</table>
 	</para>

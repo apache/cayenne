@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.remote.service.HttpRemoteService;
@@ -37,8 +38,6 @@ import com.caucho.services.server.ServiceContext;
  */
 public class HessianService extends HttpRemoteService {
 
-    public static final String EVENT_BRIDGE_PROPERTIES_MAP = "org.apache.cayenne.remote.hessian.service.HessianService.properties";
-
     public static final String[] SERVER_SERIALIZER_FACTORIES = new String[] {
         ServerSerializerFactory.class.getName()
     };
@@ -47,7 +46,7 @@ public class HessianService extends HttpRemoteService {
      * @since 3.1
      */
     public HessianService(@Inject ObjectContextFactory contextFactory,
-            @Inject(EVENT_BRIDGE_PROPERTIES_MAP) Map<String, String> eventBridgeProperties) {
+            @Inject(Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP) Map<String, String> eventBridgeProperties) {
         super(contextFactory, eventBridgeProperties);
     }
 

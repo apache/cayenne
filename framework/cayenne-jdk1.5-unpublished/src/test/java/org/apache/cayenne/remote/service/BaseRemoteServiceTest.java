@@ -26,12 +26,12 @@ import junit.framework.TestCase;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.event.MockEventBridgeFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.remote.QueryMessage;
 import org.apache.cayenne.remote.RemoteSession;
-import org.apache.cayenne.remote.hessian.service.HessianService;
 import org.apache.cayenne.util.Util;
 
 public class BaseRemoteServiceTest extends TestCase {
@@ -40,7 +40,7 @@ public class BaseRemoteServiceTest extends TestCase {
 
         Map<String, String> map = new HashMap<String, String>();
         map.put(
-                HessianService.EVENT_BRIDGE_FACTORY_PROPERTY,
+                Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY,
                 MockEventBridgeFactory.class.getName());
 
         ObjectContextFactory factory = new ObjectContextFactory() {

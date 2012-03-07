@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.event.MockEventBridgeFactory;
 
@@ -41,7 +42,7 @@ public class HessianServiceTest extends TestCase {
 
         Map<String, String> map = new HashMap<String, String>();
         map.put(
-                HessianService.EVENT_BRIDGE_FACTORY_PROPERTY,
+                Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY,
                 MockEventBridgeFactory.class.getName());
 
         ObjectContextFactory factory = new ObjectContextFactory() {

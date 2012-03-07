@@ -27,6 +27,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
@@ -42,8 +43,6 @@ import org.apache.commons.logging.LogFactory;
  * @since 1.2
  */
 public abstract class BaseRemoteService implements RemoteService {
-
-    public static final String EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.RemoteService.EventBridge.factory";
 
     // keep logger non-static so that it could be garbage collected with this instance.
     protected final Log logger;
@@ -137,8 +136,11 @@ public abstract class BaseRemoteService implements RemoteService {
         catch (Throwable th) {
 
             StringBuilder wrapperMessage = new StringBuilder();
-            wrapperMessage.append("Exception processing message ").append(
-                    message.getClass().getName()).append(" of type ").append(message);
+            wrapperMessage
+                    .append("Exception processing message ")
+                    .append(message.getClass().getName())
+                    .append(" of type ")
+                    .append(message);
 
             String wrapperMessageString = wrapperMessage.toString();
             logger.info(wrapperMessageString, th);
@@ -185,13 +187,14 @@ public abstract class BaseRemoteService implements RemoteService {
      */
     protected void initEventBridgeParameters(Map<String, String> properties) {
         String eventBridgeFactoryName = properties
-                .get(BaseRemoteService.EVENT_BRIDGE_FACTORY_PROPERTY);
+                .get(Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY);
 
         if (eventBridgeFactoryName != null) {
 
             Map<String, String> eventBridgeParameters = new HashMap<String, String>(
                     properties);
-            eventBridgeParameters.remove(BaseRemoteService.EVENT_BRIDGE_FACTORY_PROPERTY);
+            eventBridgeParameters
+                    .remove(Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY);
 
             this.eventBridgeFactoryName = eventBridgeFactoryName;
             this.eventBridgeParameters = eventBridgeParameters;

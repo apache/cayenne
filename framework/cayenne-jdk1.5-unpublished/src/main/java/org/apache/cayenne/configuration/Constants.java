@@ -69,6 +69,12 @@ public interface Constants {
      */
     public static final String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
 
+    /**
+     * A server-side DI container key for the Map<String, String> storing event bridge
+     * properties passed to the ROP client on bootstrap.
+     */
+    public static final String SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP = "cayenne.server.rop_event_bridge_properties";
+
     // Runtime properties
 
     public static final String JDBC_DRIVER_PROPERTY = "cayenne.jdbc.driver";
@@ -117,5 +123,13 @@ public interface Constants {
     public static final String ROP_CONTEXT_CHANGE_EVENTS_PROPERTY = "cayenne.rop.context_change_events";
 
     public static final String ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY = "cayenne.rop.context_lifecycle_events";
+
+    /**
+     * The name of the {@link org.apache.cayenne.event.EventBridgeFactory} that is passed
+     * from the ROP server to the client. Client would instantiate the factory to receive
+     * events from the server. Note that this property is stored in
+     * {@link #SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP}, not {@link #PROPERTIES_MAP}.
+     */
+    public static final String SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.server.rop_event_bridge_factory";
 
 }

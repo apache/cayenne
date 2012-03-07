@@ -20,6 +20,7 @@ package org.apache.cayenne.configuration.rop.server;
 
 import java.util.Map;
 
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
@@ -43,7 +44,7 @@ public class ROPServerModule implements Module {
     public void configure(Binder binder) {
 
         MapBuilder<String> mapBuilder = binder
-                .bindMap(HessianService.EVENT_BRIDGE_PROPERTIES_MAP);
+                .bindMap(Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP);
         mapBuilder.putAll(eventBridgeProperties);
 
         binder.bind(RemoteService.class).to(HessianService.class);
