@@ -48,6 +48,46 @@ ServerRuntime runtime =
 		"org/foo/cayenne-library2.xml"
 	}
 );</programlisting>
+		<para>When the projects are merged, the following rules are applied:<itemizedlist>
+				<listitem>
+					<para>The order of projects matters during merge. If there are two conflicting
+						metadata objects belonging to two projects, an object from the <emphasis
+							role="italic">last</emphasis> project takes precedence over the object
+						from the first one. This makes possible to override pieces of metadata. This
+						is also similar to how DI modules are merged in Cayenne.</para>
+				</listitem>
+				<listitem>
+					<para>Runtime DataDomain name is set to the name of the last project in the
+						list.</para>
+				</listitem>
+				<listitem>
+					<para>Runtime DataDomain properties are the same as the properties of the last
+						project in the list. I.e. <emphasis role="italic">properties are not
+							merged</emphasis> to avoid invalid combinations and unexpected runtime
+						behavior.</para>
+				</listitem>
+				<listitem>
+					<para>If there are two or more DataMaps with the same name, only one DataMap is
+						used in the merged project, the rest are discarded. Same precedence rules
+						apply - DataMap from the project with the highest index in the project list
+						overrides all other DataMaps with the same name.</para>
+				</listitem>
+				<listitem>
+					<para>If there are two or more DataNodes with the same name, only one DataNodes
+						is used in the merged project, the rest are discarded. DataNode coming from
+						project with the highest index in the project list is chosen per precedence
+						rule above.</para>
+				</listitem>
+				<listitem>
+					<para>There is a notion of "default" DataNode. After the merge if any DataMaps
+						are not explicitly linked to DataNodes, their queries will be executed via a
+						default DataNode. This makes it possible to build mapping "libraries" that
+						are only associated with a specific database in runtime. If there's only one
+						DataNode in the merged project, it will be automatically chosen as default.
+						A possible way to explicitly designate a specific node as default is to
+						override <code>DataDomainProvider.createAndInitDataDomain()</code>.</para>
+				</listitem>
+			</itemizedlist></para>
 	</section>
 	<section xml:id="webapps">
 		<title>Web Applications</title>

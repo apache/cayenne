@@ -30,9 +30,8 @@ import org.apache.commons.logging.LogFactory;
  * override pieces of metadata. This is also similar to how DI modules are merged in
  * Cayenne. So this is how the merge works:
  * <ul>
- * <li></li>
  * <li>Merged descriptor name is the same as the name of the last descriptor on the merge
- * list.</li> *
+ * list.</li>
  * <li>Merged descriptor properties are the same as the properties of the last descriptor
  * on the merge list. I.e. properties are not merged to avoid invalid combinations and
  * unexpected runtime behavior.</li>
