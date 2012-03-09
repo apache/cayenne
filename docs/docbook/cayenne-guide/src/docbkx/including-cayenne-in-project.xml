@@ -54,18 +54,18 @@
 				<code>org.apache.cayenne.plugins:maven-cayenne-plugin</code>.</para>
 		<section xml:id="mvn-cgen">
 			<title>cgen</title>
-			<para>c<code>cgen</code> is a <code>maven-cayenne-plugin</code> goal that generates and
-				maintains Persistent object source files based on a DataMap. By default, it is bound
-				to the generate-sources phase. If "makePairs" is set to "true" (which is the
-				recommended default), this task will generate a pair of classes
-				(superclass/subclass) for each ObjEntity in the DataMap. Superclasses should not be
-				changed manually, since they are always overwritten. Subclasses are never
-				overwritten and may be later customized by the user. If "makePairs" is set to
-				"false", a single class will be generated for each ObjEntity. </para>
+			<para><code>cgen</code> is a <code>maven-cayenne-plugin</code> goal that generates and maintains
+				Persistent object source files based on a DataMap. By default, it is bound to the
+				generate-sources phase. If "makePairs" is set to "true" (which is the recommended
+				default), this task will generate a pair of classes (superclass/subclass) for each
+				ObjEntity in the DataMap. Superclasses should not be changed manually, since they
+				are always overwritten. Subclasses are never overwritten and may be later customized
+				by the user. If "makePairs" is set to "false", a single class will be generated for
+				each ObjEntity. </para>
 			<para>By creating custom templates, you can use cgen to generate other output (such as
 				web pages, reports, specialized code templates) based on DataMap information.</para>
 			<para>
-				<table frame="void" width="739">
+				<table frame="void">
 					<caption>cgen required parameters</caption>
 					<col width="14%"/>
 					<col width="6%"/>
@@ -94,11 +94,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<table frame="void" width="773">
+				<table frame="void">
 					<caption>cgen optional parameters</caption>
 					<col width="33%"/>
-					<col width="7%"/>
-					<col width="60%"/>
+					<col width="8%"/>
+					<col width="59%"/>
 					<thead>
 						<tr>
 							<th>Name</th>

@@ -5,7 +5,7 @@
 	<para>Note that the property names below are defined as constants in
 			<code>org.apache.cayenne.configuration.Constants</code> interface. </para>
 	<para>
-		<table frame="void" width="739">
+		<table frame="void">
 			<caption>Configuration Properties Recognized by ServerRuntime and/or ClientRuntime</caption>
 			<col width="77%"/>
 			<col width="10%"/>
