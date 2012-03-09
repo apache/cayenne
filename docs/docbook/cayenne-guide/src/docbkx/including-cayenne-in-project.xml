@@ -48,11 +48,194 @@
    &lt;artifactId>cayenne-server&lt;/artifactId>
    &lt;version>X.Y.Z&lt;/version>
 &lt;/dependency></programlisting></para>
-		<para>Additionally Cayenne provides a set of plugins to perform various project tasks, such
-			as synching generated Java classes with the mapping, etc, described in the following
-			subsection.</para>
+		<para>Additionally Cayenne provides a Maven plugin with a set of goals to perform various project
+			tasks, such as synching generated Java classes with the mapping, described in the
+			following subsection. The full plugin name is
+				<code>org.apache.cayenne.plugins:maven-cayenne-plugin</code>.</para>
 		<section xml:id="mvn-cgen">
 			<title>cgen</title>
+			<para>c<code>cgen</code> is a <code>maven-cayenne-plugin</code> goal that generates and
+				maintains Persistent object source files based on a DataMap. By default, it is bound
+				to the generate-sources phase. If "makePairs" is set to "true" (which is the
+				recommended default), this task will generate a pair of classes
+				(superclass/subclass) for each ObjEntity in the DataMap. Superclasses should not be
+				changed manually, since they are always overwritten. Subclasses are never
+				overwritten and may be later customized by the user. If "makePairs" is set to
+				"false", a single class will be generated for each ObjEntity. </para>
+			<para>By creating custom templates, you can use cgen to generate other output (such as
+				web pages, reports, specialized code templates) based on DataMap information.</para>
+			<para>
+				<table frame="void" width="739">
+					<caption>cgen required parameters</caption>
+					<col width="14%"/>
+					<col width="6%"/>
+					<col width="80%"/>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>map</code>
+							</td>
+							<td>File</td>
+							<td>DataMap XML file which serves as a source of metadata for class
+								generation. E.g.
+									<code>${project.basedir}/src/main/resources/my.map.xml</code></td>
+						</tr>
+						<tr>
+							<td><code>destDir</code></td>
+							<td>File</td>
+							<td>Root destination directory for Java classes (ignoring their package
+								names).</td>
+						</tr>
+					</tbody>
+				</table>
+				<table frame="void" width="773">
+					<caption>cgen optional parameters</caption>
+					<col width="33%"/>
+					<col width="7%"/>
+					<col width="60%"/>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>additionalMaps</code>
+							</td>
+							<td>File</td>
+							<td>A directory that contains additional DataMap XML files that may be
+								needed to resolve cross-DataMap relationships for the the main
+								DataMap, for which class generation occurs.</td>
+						</tr>
+						<tr>
+							<td><code>client</code></td>
+							<td>boolean</td>
+							<td>Whether we are generating classes for the client tier in a Remote
+								Object Persistence application. "False" by default.</td>
+						</tr>
+						<tr>
+							<td><code>embeddableTemplate</code></td>
+							<td>String</td>
+							<td>Location of a custom Velocity template file for Embeddable class
+								generation. If omitted, default template is used.</td>
+						</tr>
+						<tr>
+							<td><code>embeddableSuperTemplate</code></td>
+							<td>String</td>
+							<td>Location of a custom Velocity template file for Embeddable
+								superclass generation. Ignored unless "makepairs" set to "true". If
+								omitted, default template is used.</td>
+						</tr>
+						<tr>
+							<td><code>encoding</code></td>
+							<td>String</td>
+							<td>Generated files encoding if different from the default on current
+								platform. Target encoding must be supported by the JVM running the
+								build. Standard encodings supported by Java on all platforms are
+								US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16. See
+								javadocs for java.nio.charset.Charset for more information.</td>
+						</tr>
+						<tr>
+							<td><code>excludeEntities</code></td>
+							<td>String</td>
+							<td>A comma-separated list of ObjEntity patterns (expressed as a perl5
+								regex) to exclude from template generation. By default none of the
+								DataMap entities are excluded.</td>
+						</tr>
+						<tr>
+							<td><code>includeEntities</code></td>
+							<td>String</td>
+							<td>A comma-separated list of ObjEntity patterns (expressed as a perl5
+								regex) to include from template generation. By default all DataMap
+								entities are included.</td>
+						</tr>
+						<tr>
+							<td><code>makePairs</code></td>
+							<td>boolean</td>
+							<td>If "true" (a recommended default), will generate subclass/superclass
+								pairs, with all generated code placed in superclass.</td>
+						</tr>
+						<tr>
+							<td><code>mode</code></td>
+							<td>String</td>
+							<td>Specifies class generator iteration target. There are three possible
+								values: "entity" (default), "datamap", "all". "entity" performs one
+								generator iteration for each included ObjEntity, applying either
+								standard to custom entity templates. "datamap" performs a single
+								iteration, applying DataMap templates. "All" is a combination of
+								entity and datamap.</td>
+						</tr>
+						<tr>
+							<td><code>overwrite</code></td>
+							<td>boolean</td>
+							<td>Only has effect when "makePairs" is set to "false". If "overwrite"
+								os "true", will overwrite older versions of generated classes.</td>
+						</tr>
+						<tr>
+							<td><code>superPkg</code></td>
+							<td>String</td>
+							<td>Java package name of generated superclasses. Only has effect if
+								"makepairs" and "usePkgPath" are set to "true" (both are true by
+								default). Defines a common package for all generated Java classes.
+								If omitted, each superclass will be placed in the same package as
+								subclass.</td>
+						</tr>
+						<tr>
+							<td><code>superTemplate</code></td>
+							<td>String</td>
+							<td>Location of a custom Velocity template file for ObjEntity superclass
+								generation. Only has effect if "makepairs" set to "true". If
+								omitted, default template is used.</td>
+						</tr>
+						<tr>
+							<td><code>template</code></td>
+							<td>String</td>
+							<td>Location of a custom Velocity template file for ObjEntity class
+								generation. If omitted, default template is used.</td>
+						</tr>
+						<tr>
+							<td><code>usePkgPath</code></td>
+							<td>boolean</td>
+							<td>If set to "true" (default), a directory tree will be generated in
+								"destDir" corresponding to the class package structure, if set to
+								"false", classes will be generated in "destDir" ignoring their
+								package.</td>
+						</tr>
+					</tbody>
+				</table>Example - a typical class generatio scenario, where pairs of classes are
+				generated, and superclasses are placed in a separate package:
+				<programlisting>&lt;plugin>
+	&lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
+	&lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
+	&lt;version>X.Y.Z&lt;/version>
+
+	&lt;!-- 
+	There's an intermittent problem when using Maven/cgen in Eclipse with  m2eclipse plugin that
+    requires placing "configuration" section at the plugin level, instead of execution
+    level.
+	-->
+	&lt;configuration>
+		&lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
+		&lt;destDir>${project.basedir}/src/main/java&lt;/destDir>
+		&lt;superPkg>org.example.model.auto&lt;/superPkg>
+	&lt;/configuration>
+
+	&lt;executions>
+		&lt;execution>
+			&lt;goals>
+				&lt;goal>cgen&lt;/goal>
+			&lt;/goals>
+		&lt;/execution>
+	&lt;/executions>
+&lt;/plugin></programlisting></para>
 		</section>
 		<section xml:id="mvn-cdbgen">
 			<title>cdbgen</title>
