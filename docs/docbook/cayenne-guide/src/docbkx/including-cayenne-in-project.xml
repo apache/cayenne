@@ -55,13 +55,13 @@
 		<section xml:id="mvn-cgen">
 			<title>cgen</title>
 			<para><code>cgen</code> is a <code>maven-cayenne-plugin</code> goal that generates and maintains
-				Persistent object source files based on a DataMap. By default, it is bound to the
-				generate-sources phase. If "makePairs" is set to "true" (which is the recommended
-				default), this task will generate a pair of classes (superclass/subclass) for each
-				ObjEntity in the DataMap. Superclasses should not be changed manually, since they
-				are always overwritten. Subclasses are never overwritten and may be later customized
-				by the user. If "makePairs" is set to "false", a single class will be generated for
-				each ObjEntity. </para>
+				source (.java) files of persistent objects based on a DataMap. By default, it is
+				bound to the generate-sources phase. If "makePairs" is set to "true" (which is the
+				recommended default), this task will generate a pair of classes
+				(superclass/subclass) for each ObjEntity in the DataMap. Superclasses should not be
+				changed manually, since they are always overwritten. Subclasses are never
+				overwritten and may be later customized by the user. If "makePairs" is set to
+				"false", a single class will be generated for each ObjEntity. </para>
 			<para>By creating custom templates, you can use cgen to generate other output (such as
 				web pages, reports, specialized code templates) based on DataMap information.</para>
 			<para>
@@ -239,6 +239,128 @@
 		</section>
 		<section xml:id="mvn-cdbgen">
 			<title>cdbgen</title>
+			<para><code>cdbgen</code> is a <code>maven-cayenne-plugin</code> goal that that drops
+				and/or generates tables in a database on Cayenne DataMap. By default, it is bound to
+				the pre-integration-test phase.<table frame="void">
+					<caption>cdbgen required parameters</caption>
+					<col width="14%"/>
+					<col width="6%"/>
+					<col width="80%"/>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>map</code>
+							</td>
+							<td>File</td>
+							<td>DataMap XML file which serves as a source of metadata for DB schema
+								generation. E.g.
+									<code>${project.basedir}/src/main/resources/my.map.xml</code></td>
+						</tr>
+						<tr>
+							<td><code>driver</code></td>
+							<td>String</td>
+							<td>A class of JDBC driver to use for the target database.</td>
+						</tr>
+						<tr>
+							<td><code>url</code></td>
+							<td>String</td>
+							<td>JDBC connection URL of a target database.</td>
+						</tr>
+					</tbody>
+				</table></para>
+			<para>
+				<table frame="void" width="792">
+					<caption>cdbgen optional parameters</caption>
+					<col width="18%"/>
+					<col width="7%"/>
+					<col width="79%"/>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>adapter</code>
+							</td>
+							<td>String</td>
+							<td>Java class name implementing org.apache.cayenne.dba.DbAdapter. While
+								this attribute is optional (a generic JdbcAdapter is used if not
+								set), it is highly recommended to specify correct target
+								adapter.</td>
+						</tr>
+						<tr>
+							<td><code>createFK</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should create foreign key constraints.
+								Default is "true".</td>
+						</tr>
+						<tr>
+							<td><code>createPK</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should create Cayenne-specific auto PK
+								objects. Default is "true".</td>
+						</tr>
+						<tr>
+							<td><code>createTables</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should create new tables. Default is
+								"true".</td>
+						</tr>
+						<tr>
+							<td><code>dropPK</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should drop Cayenne primary key support
+								objects. Default is "false".</td>
+						</tr>
+						<tr>
+							<td><code>dropTables</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should drop the tables before attempting to
+								create new ones. Default is "false".</td>
+						</tr>
+						<tr>
+							<td><code>password</code></td>
+							<td>String</td>
+							<td>Database user password.</td>
+						</tr>
+						<tr>
+							<td><code>username</code></td>
+							<td>String</td>
+							<td>Database user name.</td>
+						</tr>
+					</tbody>
+				</table>
+			</para>
+			<para>Example - creating a DB schema on a local HSQLDB
+				database:<programlisting>&lt;plugin>
+	&lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
+	&lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
+	&lt;version>X.Y.Z&lt;/version>
+
+	&lt;executions>
+		&lt;execution>
+			&lt;configuration>
+				&lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
+				&lt;url>jdbc:hsqldb:hsql://localhost/testdb&lt;/url>
+				&lt;adapter>org.apache.cayenne.dba.hsqldb.HSQLDBAdapter&lt;/adapter>
+				&lt;driver>org.hsqldb.jdbcDriver&lt;/driver>                        
+				&lt;username>sa&lt;/username>
+			&lt;/configuration>
+			&lt;goals>
+				&lt;goal>cdbgen&lt;/goal>
+			&lt;/goals>
+		&lt;/execution>
+	&lt;/executions>
+&lt;/plugin></programlisting></para>
 		</section>
 		<section xml:id="mvn-cdbimport">
 			<title>cdbimport</title>
