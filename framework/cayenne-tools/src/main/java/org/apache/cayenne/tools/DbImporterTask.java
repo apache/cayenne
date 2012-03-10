@@ -28,6 +28,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.CayenneException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -49,25 +50,47 @@ public class DbImporterTask extends CayenneTask {
     @Override
     public void execute() {
 
-        log(String.format("connection settings - [driver: %s, url: %s, username: %s, password: %s]", driver, url, userName, password), Project.MSG_VERBOSE);
+        log(
+                String.format(
+                        "connection settings - [driver: %s, url: %s, username: %s, password: %s]",
+                        driver,
+                        url,
+                        userName,
+                        password),
+                Project.MSG_VERBOSE);
 
-        log(String.format("importer options - [map: %s, overwriteExisting: %s, schemaName: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-                map, overwriteExisting, schemaName, tablePattern, importProcedures, procedurePattern, meaningfulPk, namingStrategy), Project.MSG_VERBOSE);
+        log(
+                String.format(
+                        "importer options - [map: %s, overwriteExisting: %s, schemaName: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
+                        map,
+                        overwriteExisting,
+                        schemaName,
+                        tablePattern,
+                        importProcedures,
+                        procedurePattern,
+                        meaningfulPk,
+                        namingStrategy),
+                Project.MSG_VERBOSE);
 
         validateAttributes();
 
         try {
 
             // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url, userName, password);
+            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(
+                    driver).newInstance(), url, userName, password);
 
             // Load the data map and run the db importer.
             final LoaderDelegate loaderDelegate = new LoaderDelegate();
-            final DbLoader loader = new DbLoader(dataSource.getConnection(), adapter, loaderDelegate);
+            final DbLoader loader = new DbLoader(
+                    dataSource.getConnection(),
+                    adapter,
+                    loaderDelegate);
             loader.setCreatingMeaningfulPK(meaningfulPk);
 
             if (namingStrategy != null) {
-                final NamingStrategy namingStrategyInst = (NamingStrategy) Class.forName(namingStrategy).newInstance();
+                final NamingStrategy namingStrategyInst = (NamingStrategy) Class.forName(
+                        namingStrategy).newInstance();
                 loader.setNamingStrategy(namingStrategyInst);
             }
 
@@ -85,9 +108,14 @@ public class DbImporterTask extends CayenneTask {
             // Write the new DataMap out to disk.
             map.delete();
             PrintWriter pw = new PrintWriter(map);
-            dataMap.encodeAsXML(pw);
+            
+            XMLEncoder encoder = new XMLEncoder(pw, "\t");
+            encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+            dataMap.encodeAsXML(encoder);
+
             pw.close();
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             final Throwable th = Util.unwindException(ex);
 
             String message = "Error importing database schema";
@@ -155,25 +183,30 @@ public class DbImporterTask extends CayenneTask {
 
     final class LoaderDelegate extends AbstractDbLoaderDelegate {
 
+        @Override
         public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
             return overwriteExisting;
         }
 
+        @Override
         public void dbEntityAdded(final DbEntity ent) {
             super.dbEntityAdded(ent);
             log("Added DB entity: " + ent.getName());
         }
 
+        @Override
         public void dbEntityRemoved(final DbEntity ent) {
             super.dbEntityRemoved(ent);
             log("Removed DB entity: " + ent.getName());
         }
 
+        @Override
         public void objEntityAdded(final ObjEntity ent) {
             super.objEntityAdded(ent);
             log("Added obj entity: " + ent.getName());
         }
 
+        @Override
         public void objEntityRemoved(final ObjEntity ent) {
             super.objEntityRemoved(ent);
             log("Removed obj entity: " + ent.getName());

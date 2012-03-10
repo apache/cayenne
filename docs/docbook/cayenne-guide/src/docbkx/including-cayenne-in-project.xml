@@ -239,9 +239,9 @@
 		</section>
 		<section xml:id="mvn-cdbgen">
 			<title>cdbgen</title>
-			<para><code>cdbgen</code> is a <code>maven-cayenne-plugin</code> goal that that drops
-				and/or generates tables in a database on Cayenne DataMap. By default, it is bound to
-				the pre-integration-test phase.<table frame="void">
+			<para><code>cdbgen</code> is a <code>maven-cayenne-plugin</code> goal that drops and/or generates
+				tables in a database on Cayenne DataMap. By default, it is bound to the
+				pre-integration-test phase.<table frame="void">
 					<caption>cdbgen required parameters</caption>
 					<col width="14%"/>
 					<col width="6%"/>
@@ -364,6 +364,110 @@
 		</section>
 		<section xml:id="mvn-cdbimport">
 			<title>cdbimport</title>
+			<para><code>cdbimport</code> is a <code>maven-cayenne-plugin</code> goal that generates
+				a DataMap based on an existing database schema. By default, it is bound to the
+				generate-sources phase. This allows you to generate your DataMap prior to building
+				your project, which may be necessary if you are also using the cgen task.<table
+					frame="void">
+					<caption>cdbimport required parameters</caption>
+					<col width="14%"/>
+					<col width="6%"/>
+					<col width="80%"/>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>map</code>
+							</td>
+							<td>File</td>
+							<td>DataMap XML file which is the destination of the schema import.
+								Maybe an existing file. If this file does not exist, it is created
+								when cdbimport is executed. E.g.
+									<code>${project.basedir}/src/main/resources/my.map.xml</code></td>
+						</tr>
+						<tr>
+							<td><code>driver</code></td>
+							<td>String</td>
+							<td>A class of JDBC driver to use for the target database.</td>
+						</tr>
+						<tr>
+							<td><code>url</code></td>
+							<td>String</td>
+							<td>JDBC connection URL of a target database.</td>
+						</tr>
+					</tbody>
+				</table></para>
+			<para>
+				<table frame="void" width="792">
+					<caption>cdbimport optional parameters</caption>
+					<col width="18%"/>
+					<col width="7%"/>
+					<col width="79%"/>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>adapter</code>
+							</td>
+							<td>String</td>
+							<td>Java class name implementing org.apache.cayenne.dba.DbAdapter. While
+								this attribute is optional (a generic JdbcAdapter is used if not
+								set), it is highly recommended to specify correct target
+								adapter.</td>
+						</tr>
+						<tr>
+							<td><code>createFK</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should create foreign key constraints.
+								Default is "true".</td>
+						</tr>
+						<tr>
+							<td><code>createPK</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should create Cayenne-specific auto PK
+								objects. Default is "true".</td>
+						</tr>
+						<tr>
+							<td><code>createTables</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should create new tables. Default is
+								"true".</td>
+						</tr>
+						<tr>
+							<td><code>dropPK</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should drop Cayenne primary key support
+								objects. Default is "false".</td>
+						</tr>
+						<tr>
+							<td><code>dropTables</code></td>
+							<td>boolean</td>
+							<td>Defines whether cdbgen should drop the tables before attempting to
+								create new ones. Default is "false".</td>
+						</tr>
+						<tr>
+							<td><code>password</code></td>
+							<td>String</td>
+							<td>Database user password.</td>
+						</tr>
+						<tr>
+							<td><code>username</code></td>
+							<td>String</td>
+							<td>Database user name.</td>
+						</tr>
+					</tbody>
+				</table>
+			</para>
 		</section>
 	</section>
 	<section xml:id="ant-projects">
