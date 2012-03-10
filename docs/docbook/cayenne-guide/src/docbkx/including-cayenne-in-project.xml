@@ -481,6 +481,28 @@
 					</tbody>
 				</table>
 			</para>
+			<para>Example - loading a DB schema from a local HSQLDB database (essentially a reverse
+				operation compared to the cdbgen example above)
+				:<programlisting>&lt;plugin>
+	&lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
+	&lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
+	&lt;version>X.Y.Z&lt;/version>
+
+	&lt;executions>
+		&lt;execution>
+			&lt;configuration>
+				&lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
+				&lt;url>jdbc:hsqldb:hsql://localhost/testdb&lt;/url>
+				&lt;adapter>org.apache.cayenne.dba.hsqldb.HSQLDBAdapter&lt;/adapter>
+				&lt;driver>org.hsqldb.jdbcDriver&lt;/driver>                        
+				&lt;username>sa&lt;/username>
+			&lt;/configuration>
+			&lt;goals>
+				&lt;goal>cdbimport&lt;/goal>
+			&lt;/goals>
+		&lt;/execution>
+	&lt;/executions>
+&lt;/plugin></programlisting></para>
 		</section>
 	</section>
 	<section xml:id="ant-projects">
