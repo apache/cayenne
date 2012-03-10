@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 
 /**
  * Maven mojo to perform class generation from data map. This class is an Maven
@@ -40,15 +39,6 @@ import org.apache.maven.project.MavenProject;
  * @goal cgen
  */
 public class CayenneGeneratorMojo extends AbstractMojo {
-
-	/**
-	 * Project instance used to add generated source code to the build.
-	 * 
-	 * @parameter default-value="${project}"
-	 * @required
-	 * @readonly
-	 */
-	private MavenProject project;
 
 	/**
 	 * Path to additional DataMap XML files to use for class generation.
@@ -226,10 +216,11 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(dataMap);
 			generator.addEntities(filterAction.getFilteredEntities(dataMap));
-			//ksenia khailenko 15.10.2010
-			//TODO add the "includeEmbeddables" and "excludeEmbeddables" attributes
+			// ksenia khailenko 15.10.2010
+			// TODO add the "includeEmbeddables" and "excludeEmbeddables"
+			// attributes
 			generator.addEmbeddables(dataMap.getEmbeddables());
-			//TODO add the "includeQueries" and "excludeQueries" attributes
+			// TODO add the "includeQueries" and "excludeQueries" attributes
 			generator.addQueries(dataMap.getQueries());
 			generator.execute();
 		} catch (Exception e) {
