@@ -300,32 +300,30 @@
 						<tr>
 							<td><code>createFK</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should create foreign key constraints.
-								Default is "true".</td>
+							<td>Indicates whether cdbgen should create foreign key constraints. Default is "true".</td>
 						</tr>
 						<tr>
 							<td><code>createPK</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should create Cayenne-specific auto PK
-								objects. Default is "true".</td>
+							<td>Indicates whether cdbgen should create Cayenne-specific auto PK objects. Default is
+								"true".</td>
 						</tr>
 						<tr>
 							<td><code>createTables</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should create new tables. Default is
-								"true".</td>
+							<td>Indicates whether cdbgen should create new tables. Default is "true".</td>
 						</tr>
 						<tr>
 							<td><code>dropPK</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should drop Cayenne primary key support
-								objects. Default is "false".</td>
+							<td>Indicates whether cdbgen should drop Cayenne primary key support objects. Default is
+								"false".</td>
 						</tr>
 						<tr>
 							<td><code>dropTables</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should drop the tables before attempting to
-								create new ones. Default is "false".</td>
+							<td>Indicates whether cdbgen should drop the tables before attempting to create new ones.
+								Default is "false".</td>
 						</tr>
 						<tr>
 							<td><code>password</code></td>
@@ -403,9 +401,9 @@
 					</tbody>
 				</table></para>
 			<para>
-				<table frame="void" width="792">
+				<table frame="void" width="822">
 					<caption>cdbimport optional parameters</caption>
-					<col width="18%"/>
+					<col width="24%"/>
 					<col width="7%"/>
 					<col width="79%"/>
 					<thead>
@@ -426,39 +424,54 @@
 								adapter.</td>
 						</tr>
 						<tr>
-							<td><code>createFK</code></td>
+							<td><code>importProcedures</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should create foreign key constraints.
-								Default is "true".</td>
+							<td>Indicates whether stored procedures should be imported from the
+								database. Default is false. </td>
 						</tr>
 						<tr>
-							<td><code>createPK</code></td>
+							<td><code>meaningfulPk</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should create Cayenne-specific auto PK
-								objects. Default is "true".</td>
+							<td>Indicates whether primary keys should be mapped as attributes of the
+								ObjEntity. Default is false. </td>
 						</tr>
 						<tr>
-							<td><code>createTables</code></td>
-							<td>boolean</td>
-							<td>Defines whether cdbgen should create new tables. Default is
-								"true".</td>
+							<td><code>namingStrategy</code></td>
+							<td>String</td>
+							<td>The naming strategy used for mapping database names to object entity
+								names. Default is
+									<code>org.apache.cayenne.map.naming.SmartNamingStrategy</code>.
+							</td>
 						</tr>
 						<tr>
-							<td><code>dropPK</code></td>
+							<td><code>overwriteExisting</code></td>
 							<td>boolean</td>
-							<td>Defines whether cdbgen should drop Cayenne primary key support
-								objects. Default is "false".</td>
-						</tr>
-						<tr>
-							<td><code>dropTables</code></td>
-							<td>boolean</td>
-							<td>Defines whether cdbgen should drop the tables before attempting to
-								create new ones. Default is "false".</td>
+							<td>Indicates whether existing DB and object entities should be
+								overwritten. This is an all-or-nothing setting. If you need finer
+								granularity, use the CayenneModeler. Default is "true". </td>
 						</tr>
 						<tr>
 							<td><code>password</code></td>
 							<td>String</td>
 							<td>Database user password.</td>
+						</tr>
+						<tr>
+							<td><code>procedurePattern</code></td>
+							<td>String</td>
+							<td>Pattern to match stored procedure names against for import. Default
+								is to match all stored procedures. This value is only meaningful if
+								importProcedures is true. </td>
+						</tr>
+						<tr>
+							<td><code>schemaName</code></td>
+							<td>String</td>
+							<td>Database schema to import tables/stored procedures from. </td>
+						</tr>
+						<tr>
+							<td><code>tablePattern</code></td>
+							<td>String</td>
+							<td>Pattern to match table names against for import. Default is to match
+								all tables. </td>
 						</tr>
 						<tr>
 							<td><code>username</code></td>
