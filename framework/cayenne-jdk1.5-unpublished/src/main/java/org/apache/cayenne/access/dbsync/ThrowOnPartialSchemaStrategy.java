@@ -43,7 +43,7 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
      * @since 3.0
      */
     @Override
-    protected void processSchemaUpdate(DataNode dataNode) {
+    protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
 
         SchemaAnalyzer analyzer = new SchemaAnalyzer();
 
@@ -97,7 +97,7 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
             DataNode dataNode,
             List<String> mergerOnlyTable,
             String errorMessage,
-            int entitiesSize) {
+            int entitiesSize) throws SQLException {
 
         if (mergerOnlyTable.size() == 0 && errorMessage == null) {
             logger.info("Full schema is present");

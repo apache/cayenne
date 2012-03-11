@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +43,7 @@ public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaSt
             DataNode dataNode,
             List<String> mergerOnlyTable,
             String errorMessage,
-            int entitiesSize) {
+            int entitiesSize) throws SQLException {
 
         if (mergerOnlyTable.size() == 0 && errorMessage == null) {
             logger.info("Full schema is present");
