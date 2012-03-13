@@ -44,6 +44,7 @@ CAY-1668 Memory Exhaustion Problem with Deserialization of ObjectContext
 CAY-1669 RuntimeProperties use of System properties becomes a contention point when creating query translators 
 CAY-1670 Non-blocking DataRowStore
 CAY-1672 [PATCH] SQLException thrown by processSchemaUpdate in BaseSchemaUpdateStrategy is not thrown in sub classes
+CAY-1674 Error generating classes with invalid path in the query qualifier
 CAY-1675 [PATCH] add .first(List<T>) method to Expression to enhance in-memory filtering
 CAY-1679 A notion of default node
 CAY-1680 Get rid of shared locks in DataDomain metadata lookups

@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+import java.util.Iterator;
+
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -42,7 +46,7 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
             validateQualifier(root, query.getQualifier(), validationResult);
 
             for (final Ordering ordering : query.getOrderings()) {
-                validateOrdering(root, ordering, validationResult);
+                validateOrdering(query, root, ordering, validationResult);
             }
 
             if (query.getPrefetchTree() != null) {
@@ -52,6 +56,7 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
                     validatePrefetch(root, prefetchTreeNode.getPath(), validationResult);
                 }
             }
+      
         }
     }
 
@@ -60,10 +65,21 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
     }
 
     void validateOrdering(
+            SelectQuery query,
             Entity root,
             Ordering ordering,
             ValidationResult validationResult) {
-        // TODO: andrus 03/10/2010 - should this be implemented?
+       
+        // validate paths in ordering
+        String path = ordering.getSortSpecString();
+        Iterator<CayenneMapEntry> it = root.resolvePathComponents(path);
+        while (it.hasNext()) {
+            try {
+                it.next();
+            } catch (ExpressionException e) {
+                addFailure(validationResult, query, "Invalid ordering path: '%s'", path);
+            }
+        }
     }
 
     void validateQualifier(
