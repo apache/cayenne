@@ -49,7 +49,6 @@ CAY-1675 [PATCH] add .first(List<T>) method to Expression to enhance in-memory f
 CAY-1679 A notion of default node
 CAY-1680 Get rid of shared locks in DataDomain metadata lookups
 CAY-1684 Upgrade commons-collections dependency to 3.2.1
-CAY-1685 Working with a database that has dots "." in column names- "Quote SQL identifiers" does not seem to help. 
 
 Bug Fixes Since 3.1M3:
 
