@@ -241,8 +241,9 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
         }
 
         int lastPartStart = dbAttributePath.lastIndexOf('.');
-        if (lastPartStart < 0) {
-            DbAttribute attribute = (DbAttribute) dbEnt.getAttribute(dbAttributePath);
+        DbAttribute attribute = (DbAttribute) dbEnt.getAttribute(dbAttributePath);
+        
+        if (lastPartStart < 0 || (attribute != null && dbEnt.getDataMap().isQuotingSQLIdentifiers())) {
             if (attribute == null) {
                 return IteratorUtils.EMPTY_ITERATOR;
             }

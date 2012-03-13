@@ -9,6 +9,7 @@
 		<db-attribute name="ADDRESS ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="City" type="VARCHAR" length="200"/>
 		<db-attribute name="group" type="VARCHAR" length="100"/>
+		<db-attribute name="with.point" type="VARCHAR" length="100"/>
 	</db-entity>
 	<db-entity name="quote Person">
 		<db-attribute name="DAte" type="DATE"/>
@@ -22,6 +23,7 @@
 	<obj-entity name="QuoteAdress" className="org.apache.cayenne.testdo.quotemap.QuoteAdress" dbEntityName="QUOTED_ADDRESS">
 		<obj-attribute name="city" type="java.lang.String" db-attribute-path="City"/>
 		<obj-attribute name="group" type="java.lang.String" db-attribute-path="group"/>
+		<obj-attribute name="with_point" type="java.lang.String" db-attribute-path="with.point"/>
 	</obj-entity>
 	<obj-entity name="Quote_Person" className="org.apache.cayenne.testdo.quotemap.Quote_Person" dbEntityName="quote Person">
 		<obj-attribute name="dAte" type="java.util.Date" db-attribute-path="DAte"/>

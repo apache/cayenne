@@ -27,6 +27,8 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.SelectQuery;
@@ -57,6 +59,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");
         quoteAdress.setGroup("324");
+        quoteAdress.setWith_point("string");
 
         Quote_Person quote_Person = context.newObject(Quote_Person.class);
         quote_Person.setSalary(10000);
@@ -76,7 +79,7 @@ public class QuotedIdentifiersTest extends ServerCase {
 
         QuoteAdress quoteAdress2 = context.newObject(QuoteAdress.class);
         quoteAdress2.setCity("city2");
-
+     
         Quote_Person quote_Person2 = context.newObject(Quote_Person.class);
         quote_Person2.setSalary(100);
         quote_Person2.setName("Name");
@@ -86,10 +89,14 @@ public class QuotedIdentifiersTest extends ServerCase {
         
         context.commitChanges();
 
-        DbEntity entity = context
-                .getEntityResolver()
-                .lookupObjEntity(QuoteAdress.class)
-                .getDbEntity();
+        ObjEntity objEntity = context
+        .getEntityResolver()
+        .lookupObjEntity(QuoteAdress.class);
+        
+        assertEquals("with.point", ((ObjAttribute)objEntity.getAttribute("with_point")).getDbAttribute().getName());
+        
+        DbEntity entity = objEntity.getDbEntity();
+        
         List idAttributes = Collections.singletonList(entity.getAttribute("City"));
         List updatedAttributes = Collections.singletonList(entity.getAttribute("City"));
 
