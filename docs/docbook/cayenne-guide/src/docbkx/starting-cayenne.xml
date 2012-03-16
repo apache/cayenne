@@ -29,7 +29,7 @@
 ServerRuntime runtime = 
 	new ServerRuntime("com/example/cayenne-project.xml", extensions);</programlisting></para>
 		<para>It is a good idea to shut down the runtime when it is no longer needed, usually before the
-			application itself is shutdown: <programlisting>runtime.shutdwon();</programlisting>When
+			application itself is shutdown: <programlisting>runtime.shutdown();</programlisting>When
 			a runtime object has the same scope as the application, this may not be always
 			necessary, however in some cases it is essential, and is generally considered a good
 			practice. E.g. in a web container hot redeploy of a webapp will cause resource leaks and

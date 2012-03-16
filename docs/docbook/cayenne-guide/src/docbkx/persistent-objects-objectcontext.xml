@@ -4,9 +4,75 @@
 	<title>Persistent Objects and ObjectContext</title>
 	<section xml:id="objectcontext">
 		<title>ObjectContext</title>
+		<para>ObjectContext is an interface that users normally work with to access the database. It
+			provides the API to execute database operations and to manage persistent objects. A
+			context is obtained from the
+			ServerRuntime:<programlisting>ObjectContext context = runtime.getContext();</programlisting></para>
+		<para>The call above creates a new instance of ObjectContext that can work with this
+			particualr Cayenne stack. ObjectContext is a single "work area" in Cayenne, storing
+			persistent objects. ObjectContext guarantees that for each database row with a unique ID
+			it will contain at most one instance of an object, thus ensuring object graph
+			consistency between multiple selects (a feature called "uniquing"). At the same time
+			different ObjectContexts will have independent copies of objects for each unique
+			database row. This allows users to isolate object changes from one another by using
+			separate ObjectContexts.</para>
+		<para>These properties directly affect the strategies for scoping and sharing (or not
+			sharing) ObjectContexts. Contexts that are only used to fetch objects from the database
+			and whose objects are never modified by the application can be shared between mutliple
+			users (and multiple threads). Contexts that store modified objects should be accessed
+			only by a single user (e.g. a web application user might reuse a context instance
+			between multiple web requests in the same HttpSession, thus carrying uncommitted changes
+			to objects from request to request, until he decides to commit or rollback them). Even
+			for a single user it might make sense to use mutliple ObjectContexts (e.g.
+			request-scoped contexts to allow concurrent requests from the browser that change and
+			commit objects independently).</para>
+		<para>ObjectContext is serializable and does not permanently hold to any of the application
+			resources. So it does not have to be closed. If the context is not used anymore, it
+			should simply be allowed to go out of scope and get garbage collected, just like any
+			other Java object.</para>
 	</section>
 	<section xml:id="persistent-lifecycle">
 		<title>Persistent and its Lifecycle</title>
+		<para>Cayenne can persist Java objects that implement
+				<code>org.apache.cayenne.Persistent</code> interface. The interface provides access
+			to 3 persistence-related properties - objectId, persistenceState and objectContext.
+			Generally persistent objects are created from the model using class generation as
+			described above, so users do not have to worry about implementation details. Still
+			access to 3 properties above is very often useful in the application code (e.g. ObjectId
+			can be used for quick equality check of 2 objects, persistence state can allow
+			highlighting changed objects, etc.),</para>
+		<para>Each persistent object belongs to a single ObjectContext, and can be in one of the
+			following persistence states that are managed by Cayenne:<table frame="void">
+				<caption>Persistence States</caption>
+				<col width="50%"/>
+				<col width="50%"/>
+				<tbody>
+					<tr>
+						<td/>
+						<td/>
+					</tr>
+					<tr>
+						<td/>
+						<td/>
+					</tr>
+					<tr>
+						<td/>
+						<td/>
+					</tr>
+					<tr>
+						<td/>
+						<td/>
+					</tr>
+					<tr>
+						<td/>
+						<td/>
+					</tr>
+					<tr>
+						<td/>
+						<td/>
+					</tr>
+				</tbody>
+			</table></para>
 	</section>
 	<section xml:id="persistent-operations">
 		<title>Persistent Operations</title>
