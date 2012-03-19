@@ -8,14 +8,13 @@
 			provides the API to execute database operations and to manage persistent objects. A
 			context is obtained from the
 			ServerRuntime:<programlisting>ObjectContext context = runtime.getContext();</programlisting></para>
-		<para>The call above creates a new instance of ObjectContext that can work with this
-			particualr Cayenne stack. ObjectContext is a single "work area" in Cayenne, storing
-			persistent objects. ObjectContext guarantees that for each database row with a unique ID
-			it will contain at most one instance of an object, thus ensuring object graph
-			consistency between multiple selects (a feature called "uniquing"). At the same time
-			different ObjectContexts will have independent copies of objects for each unique
-			database row. This allows users to isolate object changes from one another by using
-			separate ObjectContexts.</para>
+		<para>The call above creates a new instance of ObjectContext that can access the database via this
+			runtime. ObjectContext is a single "work area" in Cayenne, storing persistent objects.
+			ObjectContext guarantees that for each database row with a unique ID it will contain at
+			most one instance of an object, thus ensuring object graph consistency between multiple
+			selects (a feature called "uniquing"). At the same time different ObjectContexts will
+			have independent copies of objects for each unique database row. This allows users to
+			isolate object changes from one another by using separate ObjectContexts.</para>
 		<para>These properties directly affect the strategies for scoping and sharing (or not
 			sharing) ObjectContexts. Contexts that are only used to fetch objects from the database
 			and whose objects are never modified by the application can be shared between mutliple
@@ -32,7 +31,7 @@
 			other Java object.</para>
 	</section>
 	<section xml:id="persistent-lifecycle">
-		<title>Persistent and its Lifecycle</title>
+		<title>Persistent Object and its Lifecycle</title>
 		<para>Cayenne can persist Java objects that implement <code>org.apache.cayenne.Persistent</code>
 			interface. Generally persistent objects are created from the model via class generation
 			as described above, so users do not have to worry about implementation details. </para>
@@ -91,7 +90,38 @@
 			</table></para>
 	</section>
 	<section xml:id="persistent-operations">
-		<title>Persistent Operations</title>
+		<title>ObjectContext Persistence API</title>
+		<para>One of the first things users usually want to do with an ObjectContext is to select
+			some objects from an existing database. This is done by calling "<emphasis role="italic"
+				>performQuery</emphasis>"
+			method:<programlisting>SelectQuery query = new SelectQuery(Artist.class);
+List&lt;Artist> artists = context.performQuery(query);</programlisting>We'll
+			discuss queries in some detail in the following chapters. The example above is
+			self-explanatory - we create a SelectQuery that matches all Artist objects present in
+			the database, and then call "performQuery",  getting a list of Artist objects.</para>
+		<para>In some cases queries can be quite complex, returning multiple result sets, and even
+			updating the database. For such queries ObjectContext provides "<emphasis role="italic"
+				>performGenericQuery</emphasis>"method. While not nearly as common as
+			"performQuery", it is nevertheless important in some situations.
+			E.g.:<programlisting>Collection&lt;Query> queries = ... // some queries
+QueryChain query = new QueryChain(queries);
+
+QueryResponse response = context.performGenericQuery(query);</programlisting></para>
+		<para>The "<emphasis role="italic">newObject</emphasis>" method call creates a new
+			persistent object setting its state to
+			NEW:<programlisting>Artist artist = context.newObject(Artist.class);
+artist.setName("Picasso");</programlisting>Once
+			a new object is created, its properties can be modified by the application in memory
+			without affecting the database. To ensure the object is saved to the database,
+			application must call "<emphasis role="italic">commitChanges</emphasis>":
+			<programlisting>context.commitChanges();</programlisting>In our case "commitChanges"
+			commits just this one artist object, but in fact it commits all in-memory changes to all
+			objects registered in this ObjectContext (it just happens that we didn't have any more
+			objects to commit). I.e. anything that has changed since the previous commit or rollback
+			(or since the context creation if there were no previous commits or rollbacks). Commit
+			internally generates a minimal set of SQL statements to synchronize the database with
+			the in-memory state of all changed objects and sends them to DB in a single
+			transaction.</para>
 	</section>
 	<section xml:id="cayenne-helper-class">
 		<title>Cayenne Helper Class</title>
