@@ -33,43 +33,59 @@
 	</section>
 	<section xml:id="persistent-lifecycle">
 		<title>Persistent and its Lifecycle</title>
-		<para>Cayenne can persist Java objects that implement
-				<code>org.apache.cayenne.Persistent</code> interface. The interface provides access
-			to 3 persistence-related properties - objectId, persistenceState and objectContext.
-			Generally persistent objects are created from the model using class generation as
-			described above, so users do not have to worry about implementation details. Still
-			access to 3 properties above is very often useful in the application code (e.g. ObjectId
-			can be used for quick equality check of 2 objects, persistence state can allow
-			highlighting changed objects, etc.),</para>
-		<para>Each persistent object belongs to a single ObjectContext, and can be in one of the
-			following persistence states that are managed by Cayenne:<table frame="void">
+		<para>Cayenne can persist Java objects that implement <code>org.apache.cayenne.Persistent</code>
+			interface. Generally persistent objects are created from the model via class generation
+			as described above, so users do not have to worry about implementation details. </para>
+		<para>Persistent interface provides access to 3 persistence-related properties - objectId,
+			persistenceState and objectContext. All 3 are initialized by Cayenne runtime framework.
+			Application code should not attempt to change them them. However it is allowed to read
+			them, which provides valuable runtime information. E.g. ObjectId can be used for quick
+			equality check of 2 objects, knowing persistence state would allow highlighting changed
+			objects, etc.</para>
+		<para>Each persistent object belongs to a single ObjectContext, and can be in one of the following
+			persistence states (as defined in <code>org.apache.cayenne.PersistenceState</code>)
+				:<table frame="void">
 				<caption>Persistence States</caption>
-				<col width="50%"/>
-				<col width="50%"/>
+				<col width="16%"/>
+				<col width="84%"/>
 				<tbody>
 					<tr>
-						<td/>
-						<td/>
+						<td>TRANSIENT</td>
+						<td>The object is not registered with an ObjectContext and will not be
+							persisted.</td>
 					</tr>
 					<tr>
-						<td/>
-						<td/>
+						<td>NEW</td>
+						<td>The object is freshly registered in an ObjectContext, but has not been
+							saved to the database yet and there is no matching database row.</td>
 					</tr>
 					<tr>
-						<td/>
-						<td/>
+						<td>COMMITTED</td>
+						<td>The object is registered in an ObjectContext, there is a row in the
+							database corresponding to this object, and the object state corresponds
+							to the last known state of the matching database row.</td>
 					</tr>
 					<tr>
-						<td/>
-						<td/>
+						<td>MODIFIED</td>
+						<td>The object is registered in an ObjectContext, there is a row in the
+							database corresponding to this object, but the object in-memory state
+							has diverged from the last known state of the matching database
+							row.</td>
 					</tr>
 					<tr>
-						<td/>
-						<td/>
+						<td>HOLLOW</td>
+						<td>The object is registered in an ObjectContext, there is a row in the
+							database corresponding to this object, but the object state is unknown.
+							Whenever an application tries to access a property of such object,
+							Cayenne attempts reading its values from the database and "inflate" the
+							object, turning it to COMMITED.</td>
 					</tr>
 					<tr>
-						<td/>
-						<td/>
+						<td>DELETED</td>
+						<td>The object is registered in an ObjectContext and has been marked for
+							deletion in-memory. The corresponding row in the database will get
+							deleted upon ObjectContext commit, and the object state will be turned
+							into TRANSIENT.</td>
 					</tr>
 				</tbody>
 			</table></para>
