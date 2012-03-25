@@ -90,7 +90,7 @@ public interface DataChannel {
     /**
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff
      * that describes changes to objects made on the receiving end as a result of
-     * syncronization.
+     * synchronization.
      * 
      * @param originatingContext an ObjectContext that initiated the sync. Can be null.
      * @param changes diff from the context that initiated the sync.
