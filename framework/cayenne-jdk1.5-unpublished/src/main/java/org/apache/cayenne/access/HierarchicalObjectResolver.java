@@ -59,7 +59,7 @@ class HierarchicalObjectResolver {
     }
 
     HierarchicalObjectResolver(DataContext context, QueryMetadata metadata,
-                               ClassDescriptor descriptor, boolean needToSaveDuplicates) {
+            ClassDescriptor descriptor, boolean needToSaveDuplicates) {
         this(context, metadata);
         this.descriptor = descriptor;
         this.needToSaveDuplicates = needToSaveDuplicates;
@@ -132,36 +132,48 @@ class HierarchicalObjectResolver {
                 return true;
             }
 
-            PrefetchProcessorNode parentProcessorNode = (PrefetchProcessorNode) processorNode.getParent();
+            PrefetchProcessorNode parentProcessorNode = (PrefetchProcessorNode) processorNode
+                    .getParent();
             ObjRelationship relationship = processorNode.getIncoming().getRelationship();
 
-            PrefetchSelectQuery query = new PrefetchSelectQuery(node.getPath(), relationship);
+            PrefetchSelectQuery query = new PrefetchSelectQuery(
+                    node.getPath(),
+                    relationship);
+
+            List<DbRelationship> dbRelationships = relationship.getDbRelationships();
+            DbRelationship lastDbRelationship = dbRelationships.get(0);
+
+            String pathPrefix = "";
+            if (dbRelationships.size() > 1) {
+
+                // we need path prefix for flattened relationships
+                StringBuilder buffer = new StringBuilder();
+                for (int i = dbRelationships.size() - 1; i >= 1; i--) {
+                    if (buffer.length() > 0) {
+                        buffer.append(".");
+                    }
+
+                    buffer.append(dbRelationships
+                            .get(i)
+                            .getReverseRelationship()
+                            .getName());
+                }
+
+                pathPrefix = buffer.append(".").toString();
+            }
 
             for (Object dataRow : parentProcessorNode.getDataRows()) {
-                List<DbRelationship> dbRelationships = relationship.getReverseRelationship().getDbRelationships();
-                DbRelationship lastDbRelationship = dbRelationships.get(dbRelationships.size() - 1);
-                
-                String pathPrefix = "";
-                if (dbRelationships.size() > 1) {
-                    // we need path prefix for flattened relationships
-                    List<DbRelationship> headingDbRelationships
-                            = dbRelationships.subList(0, dbRelationships.size() - 1);
-                    StringBuilder pathPrefixBuilder = new StringBuilder();
-                    for (DbRelationship dbRelationship : headingDbRelationships) {
-                        pathPrefixBuilder.append(dbRelationship.getName());
-                    }
-                    pathPrefix = pathPrefixBuilder.toString() + ".";
-                }
 
                 Expression allJoinsQualifier = null;
                 for (DbJoin join : lastDbRelationship.getJoins()) {
-                    // we have reversed db relationship here, so target and source are interchanged
-                    Object targetValue = ((DataRow) dataRow).get(join.getTargetName());
-                    Expression joinQualifier
-                            = ExpressionFactory.matchDbExp(pathPrefix + join.getSourceName(), targetValue);
+
+                    Object targetValue = ((DataRow) dataRow).get(join.getSourceName());
+                    Expression joinQualifier = ExpressionFactory.matchDbExp(pathPrefix
+                            + join.getTargetName(), targetValue);
                     if (allJoinsQualifier == null) {
                         allJoinsQualifier = joinQualifier;
-                    } else {
+                    }
+                    else {
                         allJoinsQualifier = allJoinsQualifier.andExp(joinQualifier);
                     }
                 }
@@ -171,10 +183,9 @@ class HierarchicalObjectResolver {
 
             query.setFetchingDataRows(true);
             if (relationship.isSourceIndependentFromTargetChange()) {
-                // setup extra result columns to be able to relate result rows to the parent
-                // result objects.
-                query.addResultPath("db:"
-                        + relationship.getReverseDbRelationshipPath());
+                // setup extra result columns to be able to relate result rows to the
+                // parent result objects.
+                query.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
             }
 
             List dataRows = context.performQuery(query);
