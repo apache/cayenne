@@ -14,26 +14,34 @@ import org.apache.cayenne.testdo.testmap.Box;
  */
 public abstract class _Bag extends CayenneDataObject {
 
+    public static final String NAME_PROPERTY = "name";
     public static final String BALLS_PROPERTY = "balls";
     public static final String BOXES_PROPERTY = "boxes";
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public void setName(String name) {
+        writeProperty(NAME_PROPERTY, name);
+    }
+    public String getName() {
+        return (String)readProperty(NAME_PROPERTY);
+    }
+
     @SuppressWarnings("unchecked")
     public List<Ball> getBalls() {
-        return (List<Ball>)readProperty("balls");
+        return (List<Ball>)readProperty(BALLS_PROPERTY);
     }
 
 
     public void addToBoxes(Box obj) {
-        addToManyTarget("boxes", obj, true);
+        addToManyTarget(BOXES_PROPERTY, obj, true);
     }
     public void removeFromBoxes(Box obj) {
-        removeToManyTarget("boxes", obj, true);
+        removeToManyTarget(BOXES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Box> getBoxes() {
-        return (List<Box>)readProperty("boxes");
+        return (List<Box>)readProperty(BOXES_PROPERTY);
     }
 
 

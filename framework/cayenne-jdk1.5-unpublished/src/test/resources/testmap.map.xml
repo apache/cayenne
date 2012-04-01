@@ -53,6 +53,7 @@
 	</db-entity>
 	<db-entity name="BAG">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
 	<db-entity name="BALL">
 		<db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
@@ -92,6 +93,7 @@
 	<db-entity name="BOX">
 		<db-attribute name="BAG_ID" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR"/>
 	</db-entity>
 	<db-entity name="BOX_INFO">
 		<db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
@@ -348,6 +350,7 @@
 	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
 	</obj-entity>
 	<obj-entity name="Bag" className="org.apache.cayenne.testdo.testmap.Bag" clientClassName="test.client.Bag" dbEntityName="BAG" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="Ball" className="org.apache.cayenne.testdo.testmap.Ball" clientClassName="test.client.Ball" dbEntityName="BALL" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
 		<obj-attribute name="thingVolume" type="java.lang.Integer" db-attribute-path="THING_VOLUME"/>
@@ -378,6 +381,7 @@
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
 	</obj-entity>
 	<obj-entity name="Box" className="org.apache.cayenne.testdo.testmap.Box" clientClassName="test.client.Box" dbEntityName="BOX" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="BoxInfo" className="org.apache.cayenne.testdo.testmap.BoxInfo" clientClassName="test.client.BoxInfo" dbEntityName="BOX_INFO" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
 		<obj-attribute name="color" type="java.lang.String" db-attribute-path="COLOR"/>

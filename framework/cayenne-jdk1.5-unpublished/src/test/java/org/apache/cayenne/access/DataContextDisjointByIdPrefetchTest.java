@@ -1,5 +1,6 @@
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -15,12 +16,14 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.cayenne.exp.ExpressionFactory.matchExp;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextDisjointByIdPrefetchTest extends ServerCase {
+
     @Inject
     protected DataContext context;
 
@@ -47,10 +50,10 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         dbHelper.deleteAll("BAG");
 
         tBag = new TableHelper(dbHelper, "BAG");
-        tBag.setColumns("ID");
+        tBag.setColumns("ID", "NAME");
 
         tBox = new TableHelper(dbHelper, "BOX");
-        tBox.setColumns("ID", "BAG_ID");
+        tBox.setColumns("ID", "BAG_ID", "NAME");
 
         tBoxInfo = new TableHelper(dbHelper, "BOX_INFO");
         tBoxInfo.setColumns("ID", "BOX_ID", "COLOR");
@@ -66,35 +69,35 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
     }
 
     private void createBagWithTwoBoxesDataSet() throws Exception {
-        tBag.insert(1);
-        tBox.insert(1, 1);
-        tBox.insert(2, 1);
+        tBag.insert(1, "X");
+        tBox.insert(1, 1, "Y");
+        tBox.insert(2, 1, "Z");
     }
 
     private void createThreeBagsWithPlentyOfBoxesDataSet() throws Exception {
-        tBag.insert(1);
-        tBag.insert(2);
-        tBag.insert(3);
+        tBag.insert(1, null);
+        tBag.insert(2, null);
+        tBag.insert(3, null);
 
-        tBox.insert(1, 1);
-        tBox.insert(2, 1);
-        tBox.insert(3, 1);
-        tBox.insert(4, 1);
-        tBox.insert(5, 1);
+        tBox.insert(1, 1, null);
+        tBox.insert(2, 1, null);
+        tBox.insert(3, 1, null);
+        tBox.insert(4, 1, null);
+        tBox.insert(5, 1, null);
 
-        tBox.insert(6, 2);
-        tBox.insert(7, 2);
+        tBox.insert(6, 2, null);
+        tBox.insert(7, 2, null);
 
-        tBox.insert(8, 3);
-        tBox.insert(9, 3);
-        tBox.insert(10, 3);
+        tBox.insert(8, 3, null);
+        tBox.insert(9, 3, null);
+        tBox.insert(10, 3, null);
     }
 
     private void createBagWithTwoBoxesAndPlentyOfBallsDataSet() throws Exception {
-        tBag.insert(1);
-        tBox.insert(1, 1);
+        tBag.insert(1, null);
+        tBox.insert(1, 1, null);
         tBoxInfo.insert(1, 1, "red");
-        tBox.insert(2, 1);
+        tBox.insert(2, 1, null);
         tBoxInfo.insert(2, 2, "green");
 
         tThing.insert(1, 10, 10);
@@ -122,7 +125,7 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         tBall.insert(6, 2, 30, 40);
     }
 
-    public void testBasic() throws Exception {
+    public void testOneToMany() throws Exception {
         createBagWithTwoBoxesDataSet();
 
         SelectQuery query = new SelectQuery(Bag.class);
@@ -135,9 +138,42 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
-                List<?> toMany = (List<?>) b1.readPropertyDirectly(Bag.BOXES_PROPERTY);
+                List<Box> toMany = (List<Box>) b1
+                        .readPropertyDirectly(Bag.BOXES_PROPERTY);
                 assertNotNull(toMany);
                 assertFalse(((ValueHolder) toMany).isFault());
+                assertEquals(2, toMany.size());
+
+                List<String> names = new ArrayList<String>();
+                for (Box b : toMany) {
+                    assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
+                    names.add(b.getName());
+                }
+                
+                assertTrue(names.contains("Y"));
+                assertTrue(names.contains("Z"));
+            }
+        });
+    }
+
+    public void testManyToOne() throws Exception {
+        createBagWithTwoBoxesDataSet();
+
+        SelectQuery query = new SelectQuery(Box.class);
+        query.addPrefetch(Box.BAG_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+
+        final List<Box> result = context.performQuery(query);
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                assertFalse(result.isEmpty());
+                Box b1 = result.get(0);
+                assertNotNull(b1.getBag());
+                assertEquals(PersistenceState.COMMITTED, b1
+                        .getBag()
+                        .getPersistenceState());
+                assertEquals("X", b1.getBag().getName());
             }
         });
     }
@@ -158,14 +194,15 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         assertEquals(9, context.getObjectStore().getDataRowCache().size());
     }
 
-    public void testToOneRelationship() throws Exception {
+    public void testOneToOneRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Box.class);
-        query.addPrefetch(Box.BOX_INFO_PROPERTY)
-                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Box.BOX_INFO_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
         final List<Box> result = context.performQuery(query);
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
             public void execute() {
                 assertFalse(result.isEmpty());
                 Box b1 = result.get(0);
@@ -180,11 +217,12 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.BALLS_PROPERTY)
-                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Bag.BALLS_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
         final List<Bag> result = context.performQuery(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
@@ -200,12 +238,12 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Ball.class);
-        query.orQualifier(
-                matchExp(Ball.THING_VOLUME_PROPERTY, 40).andExp(matchExp(Ball.THING_WEIGHT_PROPERTY, 30)));
-        query.orQualifier(
-                matchExp(Ball.THING_VOLUME_PROPERTY, 20).andExp(matchExp(Ball.THING_WEIGHT_PROPERTY, 10)));
-        query.addPrefetch(Ball.THING_PROPERTY)
-                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.orQualifier(matchExp(Ball.THING_VOLUME_PROPERTY, 40).andExp(
+                matchExp(Ball.THING_WEIGHT_PROPERTY, 30)));
+        query.orQualifier(matchExp(Ball.THING_VOLUME_PROPERTY, 20).andExp(
+                matchExp(Ball.THING_WEIGHT_PROPERTY, 10)));
+        query.addPrefetch(Ball.THING_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
         context.performQuery(query);
 
         assertEquals(4, context.getObjectStore().getDataRowCache().size());
@@ -215,11 +253,12 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Box.class);
-        query.addPrefetch(Box.THINGS_PROPERTY)
-                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Box.THINGS_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
         final List<Box> result = context.performQuery(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
             public void execute() {
                 assertFalse(result.isEmpty());
                 Box b1 = result.get(0);

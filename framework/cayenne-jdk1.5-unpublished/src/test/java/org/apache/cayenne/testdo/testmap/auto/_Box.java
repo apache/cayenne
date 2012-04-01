@@ -16,6 +16,7 @@ import org.apache.cayenne.testdo.testmap.Thing;
  */
 public abstract class _Box extends CayenneDataObject {
 
+    public static final String NAME_PROPERTY = "name";
     public static final String BAG_PROPERTY = "bag";
     public static final String BALLS_PROPERTY = "balls";
     public static final String BOX_INFO_PROPERTY = "boxInfo";
@@ -23,39 +24,46 @@ public abstract class _Box extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public void setName(String name) {
+        writeProperty(NAME_PROPERTY, name);
+    }
+    public String getName() {
+        return (String)readProperty(NAME_PROPERTY);
+    }
+
     public void setBag(Bag bag) {
-        setToOneTarget("bag", bag, true);
+        setToOneTarget(BAG_PROPERTY, bag, true);
     }
 
     public Bag getBag() {
-        return (Bag)readProperty("bag");
+        return (Bag)readProperty(BAG_PROPERTY);
     }
 
 
     public void addToBalls(Ball obj) {
-        addToManyTarget("balls", obj, true);
+        addToManyTarget(BALLS_PROPERTY, obj, true);
     }
     public void removeFromBalls(Ball obj) {
-        removeToManyTarget("balls", obj, true);
+        removeToManyTarget(BALLS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Ball> getBalls() {
-        return (List<Ball>)readProperty("balls");
+        return (List<Ball>)readProperty(BALLS_PROPERTY);
     }
 
 
     public void setBoxInfo(BoxInfo boxInfo) {
-        setToOneTarget("boxInfo", boxInfo, true);
+        setToOneTarget(BOX_INFO_PROPERTY, boxInfo, true);
     }
 
     public BoxInfo getBoxInfo() {
-        return (BoxInfo)readProperty("boxInfo");
+        return (BoxInfo)readProperty(BOX_INFO_PROPERTY);
     }
 
 
     @SuppressWarnings("unchecked")
     public List<Thing> getThings() {
-        return (List<Thing>)readProperty("things");
+        return (List<Thing>)readProperty(THINGS_PROPERTY);
     }
 
 
