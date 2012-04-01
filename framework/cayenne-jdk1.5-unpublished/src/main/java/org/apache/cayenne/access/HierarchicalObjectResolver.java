@@ -298,7 +298,7 @@ class HierarchicalObjectResolver {
         }
 
         public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
-            return startDisjointByIdPrefetch(node);
+            return startDisjointPrefetch(node);
         }
 
         public boolean startJointPrefetch(PrefetchTreeNode node) {
