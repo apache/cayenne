@@ -32,6 +32,9 @@ public interface PrefetchProcessor {
 
     boolean startDisjointPrefetch(PrefetchTreeNode node);
 
+    /**
+     * @since 3.1
+     */
     boolean startDisjointByIdPrefetch(PrefetchTreeNode prefetchTreeNode);
 
     boolean startJointPrefetch(PrefetchTreeNode node);
