@@ -28,7 +28,13 @@ import java.util.Set;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchProcessor;
+import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -53,7 +59,7 @@ class HierarchicalObjectResolver {
     }
 
     HierarchicalObjectResolver(DataContext context, QueryMetadata metadata,
-            ClassDescriptor descriptor, boolean needToSaveDuplicates) {
+                               ClassDescriptor descriptor, boolean needToSaveDuplicates) {
         this(context, metadata);
         this.descriptor = descriptor;
         this.needToSaveDuplicates = needToSaveDuplicates;
@@ -116,6 +122,65 @@ class HierarchicalObjectResolver {
             processorNode.setObjects(objects);
 
             return true;
+        }
+
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
+
+            if (node.getParent().isPhantom()) {
+                // TODO: doing nothing in current implementation if parent node is phantom
+                return true;
+            }
+
+            PrefetchProcessorNode parentProcessorNode = (PrefetchProcessorNode) processorNode.getParent();
+            ObjRelationship relationship = processorNode.getIncoming().getRelationship();
+
+            PrefetchSelectQuery query = new PrefetchSelectQuery(node.getPath(), relationship);
+
+            for (Object dataRow : parentProcessorNode.getDataRows()) {
+                List<DbRelationship> dbRelationships = relationship.getReverseRelationship().getDbRelationships();
+                DbRelationship lastDbRelationship = dbRelationships.get(dbRelationships.size() - 1);
+                
+                String pathPrefix = "";
+                if (dbRelationships.size() > 1) {
+                    // we need path prefix for flattened relationships
+                    List<DbRelationship> headingDbRelationships
+                            = dbRelationships.subList(0, dbRelationships.size() - 1);
+                    StringBuilder pathPrefixBuilder = new StringBuilder();
+                    for (DbRelationship dbRelationship : headingDbRelationships) {
+                        pathPrefixBuilder.append(dbRelationship.getName());
+                    }
+                    pathPrefix = pathPrefixBuilder.toString() + ".";
+                }
+
+                Expression allJoinsQualifier = null;
+                for (DbJoin join : lastDbRelationship.getJoins()) {
+                    // we have reversed db relationship here, so target and source are interchanged
+                    Object targetValue = ((DataRow) dataRow).get(join.getTargetName());
+                    Expression joinQualifier
+                            = ExpressionFactory.matchDbExp(pathPrefix + join.getSourceName(), targetValue);
+                    if (allJoinsQualifier == null) {
+                        allJoinsQualifier = joinQualifier;
+                    } else {
+                        allJoinsQualifier = allJoinsQualifier.andExp(joinQualifier);
+                    }
+                }
+
+                query.orQualifier(allJoinsQualifier);
+            }
+
+            query.setFetchingDataRows(true);
+            if (relationship.isSourceIndependentFromTargetChange()) {
+                // setup extra result columns to be able to relate result rows to the parent
+                // result objects.
+                query.addResultPath("db:"
+                        + relationship.getReverseDbRelationshipPath());
+            }
+
+            List dataRows = context.performQuery(query);
+            processorNode.setDataRows(dataRows);
+
+            return startDisjointPrefetch(node);
         }
 
         public boolean startJointPrefetch(PrefetchTreeNode node) {
@@ -221,6 +286,10 @@ class HierarchicalObjectResolver {
             return node == rootNode;
         }
 
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            return startDisjointByIdPrefetch(node);
+        }
+
         public boolean startJointPrefetch(PrefetchTreeNode node) {
             PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
 
@@ -276,6 +345,10 @@ class HierarchicalObjectResolver {
         public boolean startDisjointPrefetch(PrefetchTreeNode node) {
             ((PrefetchProcessorNode) node).connectToParents();
             return true;
+        }
+
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            return startDisjointPrefetch(node);
         }
 
         public boolean startJointPrefetch(PrefetchTreeNode node) {

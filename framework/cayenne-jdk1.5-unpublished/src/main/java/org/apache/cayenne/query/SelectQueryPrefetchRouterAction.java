@@ -97,9 +97,9 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
 
         // create and configure PrefetchSelectQuery
         PrefetchSelectQuery prefetchQuery = new PrefetchSelectQuery(
-                query,
                 prefetchPath,
                 relationship);
+        prefetchQuery.setStatementFetchSize(query.getStatementFetchSize());
 
         prefetchQuery.setQualifier(classDescriptor.getEntity().translateToRelatedEntity(
                 queryQualifier,
@@ -117,6 +117,11 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
 
         // route...
         prefetchQuery.route(router, resolver, null);
+        return true;
+    }
+
+    public boolean startDisjointByIdPrefetch(PrefetchTreeNode prefetchTreeNode) {
+        // simply pass through
         return true;
     }
 

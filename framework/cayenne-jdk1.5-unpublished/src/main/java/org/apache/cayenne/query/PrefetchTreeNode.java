@@ -41,6 +41,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     public static final int UNDEFINED_SEMANTICS = 0;
     public static final int JOINT_PREFETCH_SEMANTICS = 1;
     public static final int DISJOINT_PREFETCH_SEMANTICS = 2;
+    public static final int DISJOINT_BY_ID_PREFETCH_SEMANTICS = 3;
 
     protected String name;
     protected boolean phantom;
@@ -130,7 +131,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
      */
     public Collection<PrefetchTreeNode> jointNodes() {
         Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
-        traverse(new CollectionBuilderOperation(c, false, true, false, false));
+        traverse(new CollectionBuilderOperation(c, false, false, true, false, false));
         return c;
     }
 
@@ -139,7 +140,17 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
      */
     public Collection<PrefetchTreeNode> disjointNodes() {
         Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
-        traverse(new CollectionBuilderOperation(c, true, false, false, false));
+        traverse(new CollectionBuilderOperation(c, true, false, false, false, false));
+        return c;
+    }
+
+    /**
+     * Returns a collection of PrefetchTreeNodes with disjoint semantics
+     * @since 3.1
+     */
+    public Collection<PrefetchTreeNode> disjointByIdNodes() {
+        Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
+        traverse(new CollectionBuilderOperation(c, false, true, false, false, false));
         return c;
     }
 
@@ -148,7 +159,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
      */
     public Collection<PrefetchTreeNode> nonPhantomNodes() {
         Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
-        traverse(new CollectionBuilderOperation(c, true, true, true, false));
+        traverse(new CollectionBuilderOperation(c, true, true, true, true, false));
         return c;
     }
 
@@ -165,6 +176,9 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
         }
         else if (isDisjointPrefetch()) {
             result = processor.startDisjointPrefetch(this);
+        }
+        else if (isDisjointByIdPrefetch()) {
+            result = processor.startDisjointByIdPrefetch(this);
         }
         else if (isJointPrefetch()) {
             result = processor.startJointPrefetch(this);
@@ -345,7 +359,11 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     public boolean isDisjointPrefetch() {
         return semantics == DISJOINT_PREFETCH_SEMANTICS;
     }
-    
+
+    public boolean isDisjointByIdPrefetch() {
+        return semantics == DISJOINT_BY_ID_PREFETCH_SEMANTICS;
+    }
+
     public String getEjbqlPathEntityId() {
         return ejbqlPathEntityId;
     }
@@ -401,6 +419,13 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
             return true;
         }
 
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            encoder.print("<prefetch type=\"disjointById\">");
+            encoder.print(node.getPath());
+            encoder.println("</prefetch>");
+            return true;
+        }
+
         public boolean startJointPrefetch(PrefetchTreeNode node) {
             encoder.print("<prefetch type=\"joint\">");
             encoder.print(node.getPath());
@@ -427,14 +452,16 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
         Collection<PrefetchTreeNode> nodes;
         boolean includePhantom;
         boolean includeDisjoint;
+        boolean includeDisjointById;
         boolean includeJoint;
         boolean includeUnknown;
 
         CollectionBuilderOperation(Collection<PrefetchTreeNode> nodes, boolean includeDisjoint,
-                boolean includeJoint, boolean includeUnknown, boolean includePhantom) {
+                boolean includeDisjointById, boolean includeJoint, boolean includeUnknown, boolean includePhantom) {
             this.nodes = nodes;
 
             this.includeDisjoint = includeDisjoint;
+            this.includeDisjointById = includeDisjointById;
             this.includeJoint = includeJoint;
             this.includeUnknown = includeUnknown;
             this.includePhantom = includePhantom;
@@ -450,6 +477,13 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 
         public boolean startDisjointPrefetch(PrefetchTreeNode node) {
             if (includeDisjoint) {
+                nodes.add(node);
+            }
+            return true;
+        }
+
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            if (includeDisjointById) {
                 nodes.add(node);
             }
             return true;
@@ -487,6 +521,10 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 
         public boolean startDisjointPrefetch(PrefetchTreeNode node) {
             return node == PrefetchTreeNode.this;
+        }
+
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            return startDisjointPrefetch(node);
         }
 
         public boolean startJointPrefetch(PrefetchTreeNode node) {

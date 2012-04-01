@@ -51,6 +51,15 @@
 		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="BAG">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BALL">
+		<db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="THING_VOLUME" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="THING_WEIGHT" type="INTEGER" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="BIGDECIMAL_ENTITY">
 		<db-attribute name="BIGDECIMAL_FIELD" type="NUMERIC" length="12" scale="2"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -79,6 +88,20 @@
 	<db-entity name="BOOLEAN_TEST">
 		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN" isMandatory="true"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BOX">
+		<db-attribute name="BAG_ID" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BOX_INFO">
+		<db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="COLOR" type="VARCHAR" isMandatory="true" length="200"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BOX_THING">
+		<db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="THING_VOLUME" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="THING_WEIGHT" type="INTEGER" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="CALENDAR_TEST">
 		<db-attribute name="CALENDAR_FIELD" type="TIMESTAMP"/>
@@ -245,6 +268,11 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="SMALLINT_COL" type="SMALLINT"/>
 	</db-entity>
+	<db-entity name="THING">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="VOLUME" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="WEIGHT" type="INTEGER" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="TINYINT_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TINYINT_COL" type="TINYINT"/>
@@ -319,6 +347,12 @@
 	</obj-entity>
 	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
 	</obj-entity>
+	<obj-entity name="Bag" className="org.apache.cayenne.testdo.testmap.Bag" clientClassName="test.client.Bag" dbEntityName="BAG" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	</obj-entity>
+	<obj-entity name="Ball" className="org.apache.cayenne.testdo.testmap.Ball" clientClassName="test.client.Ball" dbEntityName="BALL" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="thingVolume" type="java.lang.Integer" db-attribute-path="THING_VOLUME"/>
+		<obj-attribute name="thingWeight" type="java.lang.Integer" db-attribute-path="THING_WEIGHT"/>
+	</obj-entity>
 	<obj-entity name="BigDecimalEntity" className="org.apache.cayenne.testdo.testmap.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
 		<obj-attribute name="bigDecimalField" type="java.math.BigDecimal" db-attribute-path="BIGDECIMAL_FIELD"/>
 	</obj-entity>
@@ -342,6 +376,11 @@
 	</obj-entity>
 	<obj-entity name="BooleanTestEntity" className="org.apache.cayenne.testdo.testmap.BooleanTestEntity" dbEntityName="BOOLEAN_TEST">
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="Box" className="org.apache.cayenne.testdo.testmap.Box" clientClassName="test.client.Box" dbEntityName="BOX" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	</obj-entity>
+	<obj-entity name="BoxInfo" className="org.apache.cayenne.testdo.testmap.BoxInfo" clientClassName="test.client.BoxInfo" dbEntityName="BOX_INFO" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="color" type="java.lang.String" db-attribute-path="COLOR"/>
 	</obj-entity>
 	<obj-entity name="CalendarEntity" className="org.apache.cayenne.testdo.testmap.CalendarEntity" dbEntityName="CALENDAR_TEST">
 		<obj-attribute name="calendarField" type="java.util.Calendar" db-attribute-path="CALENDAR_FIELD"/>
@@ -525,6 +564,10 @@
 	<obj-entity name="SubPainting" className="org.apache.cayenne.testdo.testmap.SubPainting" dbEntityName="PAINTING">
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 	</obj-entity>
+	<obj-entity name="Thing" className="org.apache.cayenne.testdo.testmap.Thing" clientClassName="test.client.Thing" dbEntityName="THING" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="volume" type="java.lang.Integer" db-attribute-path="VOLUME"/>
+		<obj-attribute name="weight" type="java.lang.Integer" db-attribute-path="WEIGHT"/>
+	</obj-entity>
 	<obj-entity name="TinyintTestEntity" className="org.apache.cayenne.testdo.testmap.TinyintTestEntity" dbEntityName="TINYINT_TEST">
 		<obj-attribute name="tinyintCol" type="java.lang.Byte" db-attribute-path="TINYINT_COL"/>
 	</obj-entity>
@@ -561,11 +604,43 @@
 	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" toMany="false">
 		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
 	</db-relationship>
+	<db-relationship name="BOXES" source="BAG" target="BOX" toMany="true">
+		<db-attribute-pair source="ID" target="BAG_ID"/>
+	</db-relationship>
+	<db-relationship name="BOX" source="BALL" target="BOX" toMany="false">
+		<db-attribute-pair source="BOX_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="THING" source="BALL" target="THING" toMany="false">
+		<db-attribute-pair source="THING_VOLUME" target="VOLUME"/>
+		<db-attribute-pair source="THING_WEIGHT" target="WEIGHT"/>
+	</db-relationship>
 	<db-relationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
 		<db-attribute-pair source="BIN_ID" target="FK_ID"/>
 	</db-relationship>
 	<db-relationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" toMany="false">
 		<db-attribute-pair source="FK_ID" target="BIN_ID"/>
+	</db-relationship>
+	<db-relationship name="BAG" source="BOX" target="BAG" toMany="false">
+		<db-attribute-pair source="BAG_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="BALLS" source="BOX" target="BALL" toMany="true">
+		<db-attribute-pair source="ID" target="BOX_ID"/>
+	</db-relationship>
+	<db-relationship name="BOX_INFO" source="BOX" target="BOX_INFO" toMany="false">
+		<db-attribute-pair source="ID" target="BOX_ID"/>
+	</db-relationship>
+	<db-relationship name="BOX_THING" source="BOX" target="BOX_THING" toMany="true">
+		<db-attribute-pair source="ID" target="BOX_ID"/>
+	</db-relationship>
+	<db-relationship name="BOX" source="BOX_INFO" target="BOX" toMany="false">
+		<db-attribute-pair source="BOX_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="BOX" source="BOX_THING" target="BOX" toMany="false">
+		<db-attribute-pair source="BOX_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="THING" source="BOX_THING" target="THING" toMany="false">
+		<db-attribute-pair source="THING_VOLUME" target="VOLUME"/>
+		<db-attribute-pair source="THING_WEIGHT" target="WEIGHT"/>
 	</db-relationship>
 	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" toMany="false">
 		<db-attribute-pair source="FK_COL" target="PK_COL"/>
@@ -650,6 +725,14 @@
 	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING" toMany="false">
 		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
 	</db-relationship>
+	<db-relationship name="BALL" source="THING" target="BALL" toMany="false">
+		<db-attribute-pair source="VOLUME" target="THING_VOLUME"/>
+		<db-attribute-pair source="WEIGHT" target="THING_WEIGHT"/>
+	</db-relationship>
+	<db-relationship name="BOX_THING" source="THING" target="BOX_THING" toMany="true">
+		<db-attribute-pair source="VOLUME" target="THING_VOLUME"/>
+		<db-attribute-pair source="WEIGHT" target="THING_WEIGHT"/>
+	</db-relationship>
 	<obj-relationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="Nullify" db-relationship-path="artistGroupArray.toArtist"/>
 	<obj-relationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toChildGroups"/>
 	<obj-relationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentGroup"/>
@@ -658,8 +741,17 @@
 	<obj-relationship name="paintingArray" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<obj-relationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="Nullify" db-relationship-path="toExhibit"/>
+	<obj-relationship name="balls" source="Bag" target="Ball" deleteRule="Deny" db-relationship-path="BOXES.BALLS"/>
+	<obj-relationship name="boxes" source="Bag" target="Box" deleteRule="Deny" db-relationship-path="BOXES"/>
+	<obj-relationship name="box" source="Ball" target="Box" deleteRule="Nullify" db-relationship-path="BOX"/>
+	<obj-relationship name="thing" source="Ball" target="Thing" deleteRule="Nullify" db-relationship-path="THING"/>
 	<obj-relationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" db-relationship-path="binaryPKDetails"/>
 	<obj-relationship name="toBinaryPKMaster" source="BinaryPKTest2" target="BinaryPKTest1" db-relationship-path="toBinaryPKMaster"/>
+	<obj-relationship name="bag" source="Box" target="Bag" deleteRule="Nullify" db-relationship-path="BAG"/>
+	<obj-relationship name="balls" source="Box" target="Ball" deleteRule="Deny" db-relationship-path="BALLS"/>
+	<obj-relationship name="boxInfo" source="Box" target="BoxInfo" deleteRule="Deny" db-relationship-path="BOX_INFO"/>
+	<obj-relationship name="things" source="Box" target="Thing" deleteRule="Deny" db-relationship-path="BOX_THING.THING"/>
+	<obj-relationship name="box" source="BoxInfo" target="Box" deleteRule="Nullify" db-relationship-path="BOX"/>
 	<obj-relationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" db-relationship-path="toCharPK"/>
 	<obj-relationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" db-relationship-path="charFKs"/>
 	<obj-relationship name="clobValue" source="ClobTestEntity" target="ClobTestRelation" db-relationship-path="clob"/>
@@ -694,6 +786,8 @@
 	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
 	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="ball" source="Thing" target="Ball" deleteRule="Nullify" db-relationship-path="BALL"/>
+	<obj-relationship name="box" source="Thing" target="Box" deleteRule="Deny" db-relationship-path="BOX_THING.BOX"/>
 	<query name="EjbqlQueryTest" factory="org.apache.cayenne.map.EjbqlBuilder">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>

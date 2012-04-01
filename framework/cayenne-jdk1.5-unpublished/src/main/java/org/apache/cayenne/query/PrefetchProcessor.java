@@ -22,7 +22,7 @@ package org.apache.cayenne.query;
 /**
  * A hierarchical visitor interface for traversing a tree of PrefetchTreeNodes. If any of
  * the processing methods return false, node's children will be skipped from traversal.
- * 
+ *
  * @since 1.2
  * @see org.apache.cayenne.query.PrefetchTreeNode#traverse(PrefetchProcessor)
  */
@@ -31,6 +31,8 @@ public interface PrefetchProcessor {
     boolean startPhantomPrefetch(PrefetchTreeNode node);
 
     boolean startDisjointPrefetch(PrefetchTreeNode node);
+
+    boolean startDisjointByIdPrefetch(PrefetchTreeNode prefetchTreeNode);
 
     boolean startJointPrefetch(PrefetchTreeNode node);
 

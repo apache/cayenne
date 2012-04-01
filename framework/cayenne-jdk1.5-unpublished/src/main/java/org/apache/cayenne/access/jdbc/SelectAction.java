@@ -115,6 +115,11 @@ public class SelectAction extends BaseSQLAction {
                         return rootPrefetch == node;
                     }
 
+                    public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+                        // continue to children only if we are at root
+                        return rootPrefetch == node;
+                    }
+
                     public boolean startUnknownPrefetch(PrefetchTreeNode node) {
                         // continue to children only if we are at root
                         return rootPrefetch == node;

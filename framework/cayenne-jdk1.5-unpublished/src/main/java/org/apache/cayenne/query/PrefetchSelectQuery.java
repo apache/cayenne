@@ -30,10 +30,13 @@ import org.apache.cayenne.util.Util;
 /**
  * A SelectQuery to perform a prefetch based on another query. Used internally by Cayenne
  * and is normally never used directly.
- * 
  */
 public class PrefetchSelectQuery extends SelectQuery {
 
+    /**
+     * @deprecated since 3.1 unused
+     */
+    @Deprecated
     protected SelectQuery parentQuery;
 
     /**
@@ -52,9 +55,23 @@ public class PrefetchSelectQuery extends SelectQuery {
 
     /**
      * Creates a new disjoint prefetch select query.
+     *
+     * @since 3.1
+     */
+    public PrefetchSelectQuery(String prefetchPath, ObjRelationship lastPrefetchHint) {
+        setRoot(lastPrefetchHint.getTargetEntity());
+        this.prefetchPath = prefetchPath;
+        this.lastPrefetchHint = lastPrefetchHint;
+    }
+
+    /**
+     * Creates a new disjoint prefetch select query.
      * 
      * @since 1.2
+     * @deprecated Since 3.1 use another constructor without parentQuery parameter
+     *             instead.
      */
+    @Deprecated
     public PrefetchSelectQuery(SelectQuery parentQuery, String prefetchPath,
             ObjRelationship lastPrefetchHint) {
 
@@ -78,8 +95,6 @@ public class PrefetchSelectQuery extends SelectQuery {
 
     /**
      * Returns the prefetchPath.
-     * 
-     * @return String
      */
     public String getPrefetchPath() {
         return prefetchPath;
@@ -96,14 +111,18 @@ public class PrefetchSelectQuery extends SelectQuery {
 
     /**
      * @since 1.1
+     * @deprecated since 3.1
      */
+    @Deprecated
     public SelectQuery getParentQuery() {
         return parentQuery;
     }
 
     /**
      * @since 1.1
+     * @deprecated since 3.1
      */
+    @Deprecated
     public void setParentQuery(SelectQuery parentQuery) {
         this.parentQuery = parentQuery;
     }

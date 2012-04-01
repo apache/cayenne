@@ -42,6 +42,8 @@ public class _Testmap {
 
     public static final String SELECT_DATE_TEST_QUERYNAME = "SelectDateTest";
 
+    public static final String SELECT_RETURN_TYPES_LOBS_MAP1_QUERYNAME = "SelectReturnTypesLobsMap1";
+
     public static final String SELECT_RETURN_TYPES_MAP1_QUERYNAME = "SelectReturnTypesMap1";
 
     public static final String SELECT_RETURN_TYPES_MAP2_QUERYNAME = "SelectReturnTypesMap2";
