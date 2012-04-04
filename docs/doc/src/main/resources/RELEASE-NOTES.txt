@@ -38,6 +38,7 @@ CAY-1659 PATCH: Ingres limit query support
 CAY-1660 Ingres primary key generator doesn't work correctly with Ingres 10
 CAY-1662 @Auditable and @AuditableChild annotations should support 'ignoredProperties' parameter and exclude changes to runtime relationships
 CAY-1663 @CacheGroups annotation should allow an empty list of cache groups
+CAY-1665 Consistent and concise property names aggregated in one place 
 CAY-1666 Fix problem with tests on ingres db
 CAY-1667 Expression parser performance optimization
 CAY-1668 Memory Exhaustion Problem with Deserialization of ObjectContext
