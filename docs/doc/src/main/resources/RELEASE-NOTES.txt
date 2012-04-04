@@ -51,6 +51,7 @@ CAY-1679 A notion of default node
 CAY-1680 Get rid of shared locks in DataDomain metadata lookups
 CAY-1684 Upgrade commons-collections dependency to 3.2.1
 CAY-1686 StringIdQuery - a query providing an optimized fetch for objects based on 1..N String IDs. 
+CAY-1693 Initial support for bitwise operators in Expression and SelectQuery - MySQL
 
 Bug Fixes Since 3.1M3:
 
