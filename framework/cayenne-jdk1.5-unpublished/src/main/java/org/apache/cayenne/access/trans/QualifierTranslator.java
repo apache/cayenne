@@ -53,7 +53,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
     public QualifierTranslator(QueryAssembler queryAssembler) {
         super(queryAssembler);
-        
+
         caseInsensitive = false;
     }
 
@@ -67,7 +67,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     protected void doAppendPart() throws IOException {
         doAppendPart(extractQualifier());
     }
-    
+
     public void setCaseInsensitive(boolean caseInsensitive) {
         this.caseInsensitive = caseInsensitive;
     }
@@ -299,6 +299,15 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                     else if (childIndex == 1)
                         out.append(" AND ");
                     break;
+                case Expression.BITWISE_OR:
+                    out.append(" ").append(operandForBitwiseOr()).append(" ");
+                    break;
+                case Expression.BITWISE_AND:
+                    out.append(" ").append(operandForBitwiseAnd()).append(" ");
+                    break;
+                case Expression.BITWISE_XOR:
+                    out.append(" ").append(operandForBitwiseXor()).append(" ");
+                    break;
             }
         }
         catch (IOException ioex) {
@@ -309,6 +318,34 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             objectMatchTranslator.setOperation(out.toString());
             objectMatchTranslator.setExpression(node);
         }
+    }
+
+    /**
+     * @since 3.1
+     */
+    protected String operandForBitwiseNot() {
+        return "~";
+    }
+
+    /**
+     * @since 3.1
+     */
+    protected String operandForBitwiseOr() {
+        return "|";
+    }
+
+    /**
+     * @since 3.1
+     */
+    protected String operandForBitwiseAnd() {
+        return "&";
+    }
+    
+    /**
+     * @since 3.1
+     */
+    protected String operandForBitwiseXor() {
+        return "^";
     }
 
     public void startNode(Expression node, Expression parentNode) {
@@ -343,9 +380,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 // qualBuf.append('+');
                 else if (node.getType() == Expression.NOT)
                     out.append("NOT ");
+                else if (node.getType() == Expression.BITWISE_NOT) {
+                    out.append(operandForBitwiseNot());
+                }
             }
-            else if ((node.getType() == Expression.LIKE_IGNORE_CASE
-                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE)
+            else if ((node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE)
                     && !caseInsensitive) {
                 out.append("UPPER(");
             }
@@ -375,10 +414,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
             if (parenthesisNeeded)
                 out.append(')');
-            
+
             if (isPatternMatchNode && !likeIgnoreCase)
                 appendLikeEscapeCharacter((PatternMatchNode) node);
-            
+
             if (likeIgnoreCase && !caseInsensitive)
                 out.append(')');
 

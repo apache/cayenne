@@ -45,6 +45,11 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsLobs() {
         return true;
     }
+    
+    @Override
+    public boolean supportsBitwiseOps() {
+        return true;
+    }
 
     @Override
     public boolean supportsCaseSensitiveLike() {

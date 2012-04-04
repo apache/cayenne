@@ -29,6 +29,10 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTAdd;
 import org.apache.cayenne.exp.parser.ASTAnd;
 import org.apache.cayenne.exp.parser.ASTBetween;
+import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
+import org.apache.cayenne.exp.parser.ASTBitwiseNot;
+import org.apache.cayenne.exp.parser.ASTBitwiseOr;
+import org.apache.cayenne.exp.parser.ASTBitwiseXor;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTDivide;
 import org.apache.cayenne.exp.parser.ASTEqual;
@@ -60,7 +64,6 @@ import org.apache.cayenne.map.Entity;
 /**
  * Helper class to build expressions. Alternatively expressions can be built using
  * {@link org.apache.cayenne.exp.Expression#fromString(String)} method.
- * 
  */
 public class ExpressionFactory {
 
@@ -88,7 +91,9 @@ public class ExpressionFactory {
                 Expression.MULTIPLY, Expression.DIVIDE, Expression.NEGATIVE,
                 Expression.OBJ_PATH, Expression.DB_PATH, Expression.LIST,
                 Expression.NOT_BETWEEN, Expression.NOT_IN, Expression.NOT_LIKE,
-                Expression.NOT_LIKE_IGNORE_CASE, Expression.TRUE, Expression.FALSE
+                Expression.NOT_LIKE_IGNORE_CASE, Expression.TRUE, Expression.FALSE,
+                Expression.BITWISE_NOT, Expression.BITWISE_AND, Expression.BITWISE_OR,
+                Expression.BITWISE_XOR
         };
 
         int max = 0;
@@ -143,6 +148,11 @@ public class ExpressionFactory {
 
         typeLookup[Expression.TRUE] = ASTTrue.class;
         typeLookup[Expression.FALSE] = ASTFalse.class;
+
+        typeLookup[Expression.BITWISE_NOT] = ASTBitwiseNot.class;
+        typeLookup[Expression.BITWISE_OR] = ASTBitwiseOr.class;
+        typeLookup[Expression.BITWISE_AND] = ASTBitwiseAnd.class;
+        typeLookup[Expression.BITWISE_XOR] = ASTBitwiseXor.class;
     }
 
     /**
@@ -190,9 +200,9 @@ public class ExpressionFactory {
     /**
      * Creates an expression that matches any of the key-values pairs in <code>map</code>.
      * <p>
-     * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a DB_PATH expression. OR is used to join pair
-     * binary expressions.
+     * For each pair <code>pairType</code> operator is used to build a binary expression.
+     * Key is considered to be a DB_PATH expression. OR is used to join pair binary
+     * expressions.
      */
     public static Expression matchAnyDbExp(Map<String, ?> map, int pairType) {
         List<Expression> pairs = new ArrayList<Expression>(map.size());
@@ -210,9 +220,9 @@ public class ExpressionFactory {
     /**
      * Creates an expression that matches all key-values pairs in <code>map</code>.
      * <p>
-     * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a DB_PATH expression. AND is used to join pair
-     * binary expressions.
+     * For each pair <code>pairType</code> operator is used to build a binary expression.
+     * Key is considered to be a DB_PATH expression. AND is used to join pair binary
+     * expressions.
      */
     public static Expression matchAllDbExp(Map<String, ?> map, int pairType) {
         List<Expression> pairs = new ArrayList<Expression>(map.size());
@@ -231,9 +241,9 @@ public class ExpressionFactory {
      * Creates an expression that matches any of the key-values pairs in the
      * <code>map</code>.
      * <p>
-     * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a OBJ_PATH expression. OR is used to join pair
-     * binary expressions.
+     * For each pair <code>pairType</code> operator is used to build a binary expression.
+     * Key is considered to be a OBJ_PATH expression. OR is used to join pair binary
+     * expressions.
      */
     public static Expression matchAnyExp(Map<String, ?> map, int pairType) {
         List<Expression> pairs = new ArrayList<Expression>(map.size());
@@ -251,8 +261,7 @@ public class ExpressionFactory {
 
     /**
      * Creates an expression to match a collection of values against a single path
-     * expression.
-     * <h3>Splits</h3>
+     * expression. <h3>Splits</h3>
      * <p>
      * Note that "path" argument here can use a split character (a pipe symbol - '|')
      * instead of dot to indicate that relationship following a path should be split into
@@ -332,9 +341,9 @@ public class ExpressionFactory {
     /**
      * Creates an expression that matches all key-values pairs in <code>map</code>.
      * <p>
-     * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a OBJ_PATH expression. AND is used to join pair
-     * binary expressions.
+     * For each pair <code>pairType</code> operator is used to build a binary expression.
+     * Key is considered to be a OBJ_PATH expression. AND is used to join pair binary
+     * expressions.
      */
     public static Expression matchAllExp(Map<String, ?> map, int pairType) {
         List<Expression> pairs = new ArrayList<Expression>(map.size());
@@ -576,19 +585,21 @@ public class ExpressionFactory {
     }
 
     /**
-     * <p>A convenience shortcut for building LIKE expression.</p>
-     * 
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building LIKE expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
      */
     public static Expression likeExp(String pathSpec, Object value, char escapeChar) {
         return new ASTLike(new ASTObjPath(pathSpec), value, escapeChar);
     }
-    
+
     /**
      * A convenience shortcut for building LIKE DB_PATH expression.
      * 
@@ -599,33 +610,37 @@ public class ExpressionFactory {
     }
 
     /**
-     * <p>A convenience shortcut for building LIKE DB_PATH expression.</p>
-     * 
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building LIKE DB_PATH expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
      */
     public static Expression likeDbExp(String pathSpec, Object value, char escapeChar) {
-        return new ASTLike(new ASTDbPath(pathSpec), value,escapeChar);
+        return new ASTLike(new ASTDbPath(pathSpec), value, escapeChar);
     }
-    
+
     /**
      * A convenience shortcut for building NOT_LIKE expression.
      */
     public static Expression notLikeExp(String pathSpec, Object value) {
         return new ASTNotLike(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
-     * <p>A convenience shortcut for building NOT_LIKE expression.</p>
-     * 
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building NOT_LIKE expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
      */
@@ -641,14 +656,16 @@ public class ExpressionFactory {
     public static Expression notLikeDbExp(String pathSpec, Object value) {
         return new ASTNotLike(new ASTDbPath(pathSpec), value);
     }
-    
+
     /**
-     * <p>A convenience shortcut for building NOT_LIKE expression.</p>
-     *
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building NOT_LIKE expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
      */
@@ -664,19 +681,24 @@ public class ExpressionFactory {
     }
 
     /**
-     * <p>A convenience shortcut for building LIKE_IGNORE_CASE expression.</p>
-     *
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building LIKE_IGNORE_CASE expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
      */
-    public static Expression likeIgnoreCaseExp(String pathSpec, Object value, char escapeChar) {
+    public static Expression likeIgnoreCaseExp(
+            String pathSpec,
+            Object value,
+            char escapeChar) {
         return new ASTLikeIgnoreCase(new ASTObjPath(pathSpec), value, escapeChar);
     }
-    
+
     /**
      * A convenience shortcut for building LIKE_IGNORE_CASE expression.
      * 
@@ -685,18 +707,23 @@ public class ExpressionFactory {
     public static Expression likeIgnoreCaseDbExp(String pathSpec, Object value) {
         return new ASTLikeIgnoreCase(new ASTDbPath(pathSpec), value);
     }
-    
+
     /**
-     * <p>A convenience shortcut for building LIKE_IGNORE_CASE expression.</p>
-     * 
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building LIKE_IGNORE_CASE expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
      */
-    public static Expression likeIgnoreCaseDbExp(String pathSpec, Object value, char escapeChar) {
+    public static Expression likeIgnoreCaseDbExp(
+            String pathSpec,
+            Object value,
+            char escapeChar) {
         return new ASTLikeIgnoreCase(new ASTDbPath(pathSpec), value, escapeChar);
     }
 
@@ -708,19 +735,24 @@ public class ExpressionFactory {
     }
 
     /**
-     * <p>A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.</p>
-     * 
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
-     */ 
-    public static Expression notLikeIgnoreCaseExp(String pathSpec, Object value, char escapeChar) {
+     */
+    public static Expression notLikeIgnoreCaseExp(
+            String pathSpec,
+            Object value,
+            char escapeChar) {
         return new ASTNotLikeIgnoreCase(new ASTObjPath(pathSpec), value, escapeChar);
     }
-    
+
     /**
      * A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.
      * 
@@ -731,19 +763,24 @@ public class ExpressionFactory {
     }
 
     /**
-     * <p>A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.</p>
-     * 
-     * <p>The escape character allows for escaping meta-characters
-     * in the LIKE clause.  Note that the escape character cannot
-     * be '?'.  To specify no escape character, supply 0 as the
-     * escape character.</p>
+     * <p>
+     * A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.
+     * </p>
+     * <p>
+     * The escape character allows for escaping meta-characters in the LIKE clause. Note
+     * that the escape character cannot be '?'. To specify no escape character, supply 0
+     * as the escape character.
+     * </p>
      * 
      * @since 3.0.1
      */
-    public static Expression notLikeIgnoreCaseDbExp(String pathSpec, Object value, char escapeChar) {
+    public static Expression notLikeIgnoreCaseDbExp(
+            String pathSpec,
+            Object value,
+            char escapeChar) {
         return new ASTNotLikeIgnoreCase(new ASTDbPath(pathSpec), value, escapeChar);
     }
-    
+
     /**
      * A convenience shortcut for boolean true expression.
      * 
@@ -788,7 +825,7 @@ public class ExpressionFactory {
         }
         return exp;
     }
-    
+
     /**
      * Creates an expression that matches the primary key of object in
      * <code>ObjectId</code>'s <code>IdSnapshot</code> for the argument
@@ -806,10 +843,10 @@ public class ExpressionFactory {
         if (objects == null || objects.size() == 0) {
             return expFalse();
         }
-        
+
         return matchAnyExp(objects.toArray(new Persistent[objects.size()]));
-    } 
-    
+    }
+
     /**
      * Creates an expression that matches any of the objects contained in the
      * <code>objects</code> array
@@ -818,7 +855,7 @@ public class ExpressionFactory {
         if (objects == null || objects.length == 0) {
             return expFalse();
         }
-        
+
         List<Expression> pairs = new ArrayList<Expression>(objects.length);
 
         for (Persistent object : objects) {

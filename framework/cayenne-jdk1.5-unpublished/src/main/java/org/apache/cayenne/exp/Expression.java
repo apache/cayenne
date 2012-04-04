@@ -118,6 +118,26 @@ public abstract class Expression implements Serializable, XMLSerializable {
     public static final int NOT_IN = 36;
     public static final int NOT_LIKE = 37;
     public static final int NOT_LIKE_IGNORE_CASE = 38;
+    
+    /**
+     * @since 3.1
+     */
+    public static final int BITWISE_NOT = 39;
+    
+    /**
+     * @since 3.1
+     */
+    public static final int BITWISE_AND = 40;
+    
+    /**
+     * @since 3.1
+     */
+    public static final int BITWISE_OR = 41;
+    
+    /**
+     * @since 3.1
+     */
+    public static final int BITWISE_XOR = 42;
 
     private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 

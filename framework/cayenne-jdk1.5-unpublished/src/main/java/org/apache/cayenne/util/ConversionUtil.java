@@ -50,6 +50,28 @@ public final class ConversionUtil {
 
         return defaultValue;
     }
+    
+    /**
+     * @since 3.1
+     */
+    public static long toLong(Object object, long defaultValue) {
+        if (object == null) {
+            return defaultValue;
+        }
+        else if (object instanceof Number) {
+            return ((Number) object).longValue();
+        }
+        else if (object instanceof String) {
+            try {
+                return Long.parseLong((String) object);
+            }
+            catch (NumberFormatException ex) {
+                return defaultValue;
+            }
+        }
+
+        return defaultValue;
+    }
 
     public static boolean toBoolean(Object object) {
         if (object instanceof Boolean) {

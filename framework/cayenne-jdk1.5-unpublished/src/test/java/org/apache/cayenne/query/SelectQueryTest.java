@@ -30,6 +30,14 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
+import org.apache.cayenne.exp.parser.ASTBitwiseNot;
+import org.apache.cayenne.exp.parser.ASTBitwiseOr;
+import org.apache.cayenne.exp.parser.ASTBitwiseXor;
+import org.apache.cayenne.exp.parser.ASTEqual;
+import org.apache.cayenne.exp.parser.ASTGreater;
+import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -42,6 +50,7 @@ import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -66,9 +75,10 @@ public class SelectQueryTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("CLOB_TEST_RELATION");
-        
+        dbHelper.delete("TYPES_MAPPING_TEST1");
+
         if (accessStackAdapter.supportsLobs()) {
-              dbHelper.deleteAll("CLOB_TEST");
+            dbHelper.deleteAll("CLOB_TEST");
         }
     }
 
@@ -99,6 +109,17 @@ public class SelectQueryTest extends ServerCase {
 
         tArtist.insert(1, "_X");
         tArtist.insert(2, "Y_");
+    }
+
+    protected void createNumericsDataSet() throws Exception {
+        TableHelper tNumerics = new TableHelper(dbHelper, "TYPES_MAPPING_TEST1");
+        tNumerics.setColumns("AAAID", "INTEGER_COLUMN");
+
+        tNumerics.insert(1, 0);
+        tNumerics.insert(2, 1);
+        tNumerics.insert(3, 2);
+        tNumerics.insert(4, 3);
+        tNumerics.insert(5, 4);
     }
 
     public void testFetchLimit() throws Exception {
@@ -419,6 +440,99 @@ public class SelectQueryTest extends ServerCase {
         query.setQualifier(qual);
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
+    }
+
+    public void testSelectBitwiseNot() throws Exception {
+
+        if (!accessStackAdapter.supportsBitwiseOps()) {
+            return;
+        }
+
+        createNumericsDataSet();
+
+        // to simplify result checking, do double NOT
+        Expression left = new ASTBitwiseNot(new ASTBitwiseNot(new ASTObjPath(
+                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY)));
+        Expression right = new ASTScalar(2);
+        Expression greater = new ASTGreater();
+        greater.setOperand(0, left);
+        greater.setOperand(1, right);
+
+        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
+        query.setQualifier(greater);
+
+        List<ReturnTypesMap1> objects = context.performQuery(query);
+        assertEquals(2, objects.size());
+    }
+    
+    public void testSelectBitwiseOr() throws Exception {
+
+        if (!accessStackAdapter.supportsBitwiseOps()) {
+            return;
+        }
+
+        createNumericsDataSet();
+
+        // to simplify result checking, do double NOT
+        Expression left = new ASTBitwiseOr(new ASTObjPath(
+                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1));
+        Expression right = new ASTScalar(1);
+        Expression equal = new ASTEqual();
+        equal.setOperand(0, left);
+        equal.setOperand(1, right);
+
+        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
+        query.setQualifier(equal);
+
+        List<ReturnTypesMap1> objects = context.performQuery(query);
+        assertEquals(2, objects.size());
+    }
+    
+    public void testSelectBitwiseAnd() throws Exception {
+
+        if (!accessStackAdapter.supportsBitwiseOps()) {
+            return;
+        }
+
+        createNumericsDataSet();
+
+        // to simplify result checking, do double NOT
+        Expression left = new ASTBitwiseAnd(new ASTObjPath(
+                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1));
+        Expression right = new ASTScalar(0);
+        Expression equal = new ASTEqual();
+        equal.setOperand(0, left);
+        equal.setOperand(1, right);
+
+        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
+        query.setQualifier(equal);
+
+        List<ReturnTypesMap1> objects = context.performQuery(query);
+        assertEquals(3, objects.size());
+    }
+    
+    public void testSelectBitwiseXor() throws Exception {
+
+        if (!accessStackAdapter.supportsBitwiseOps()) {
+            return;
+        }
+
+        createNumericsDataSet();
+
+        // to simplify result checking, do double NOT
+        Expression left = new ASTBitwiseXor(new ASTObjPath(
+                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1));
+        Expression right = new ASTScalar(5);
+        Expression equal = new ASTEqual();
+        equal.setOperand(0, left);
+        equal.setOperand(1, right);
+
+        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
+        query.setQualifier(equal);
+
+        List<ReturnTypesMap1> objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+        assertEquals(4, objects.get(0).getIntegerColumn().intValue());
     }
 
     public void testSelectBooleanNotTrueOr() throws Exception {

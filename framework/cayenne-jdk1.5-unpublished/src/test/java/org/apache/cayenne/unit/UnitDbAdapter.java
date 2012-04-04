@@ -229,6 +229,10 @@ public class UnitDbAdapter {
     public boolean supportsBatchPK() {
         return true;
     }
+    
+    public boolean supportsBitwiseOps() {
+        return false;
+    }
 
     protected void executeDDL(Connection con, String ddl) throws Exception {
         logger.info(ddl);
