@@ -23,21 +23,26 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -107,26 +112,37 @@ public final class ModelerUtil {
     }
 
     public static String[] getRegisteredTypeNames() {
-        String[] explicitList = new ExtendedTypeMap().getRegisteredTypeNames();
-        Set<String> nonPrimitives = new HashSet<String>(Arrays.asList(explicitList));
+        Set<String> nonPrimitives = new HashSet<String>();
 
-        // add types that are not mapped explicitly, but nevertheless supported by Cayenne
-        nonPrimitives.add(Calendar.class.getName());
+        nonPrimitives.add(String.class.getName());
+        nonPrimitives.add(BigDecimal.class.getName());
         nonPrimitives.add(BigInteger.class.getName());
-        nonPrimitives.add(Serializable.class.getName());
+        nonPrimitives.add(Boolean.class.getName());
+        nonPrimitives.add(Byte.class.getName());
         nonPrimitives.add(Character.class.getName());
-        nonPrimitives.add("char[]");
+        nonPrimitives.add(Date.class.getName());
+        nonPrimitives.add(java.util.Date.class.getName());
+        nonPrimitives.add(Double.class.getName());
+        nonPrimitives.add(Float.class.getName());
+        nonPrimitives.add(Integer.class.getName());
+        nonPrimitives.add(Long.class.getName());
+        nonPrimitives.add(Short.class.getName());
+        nonPrimitives.add(Time.class.getName());
+        nonPrimitives.add(Timestamp.class.getName());
+        nonPrimitives.add(Date.class.getName());
+        nonPrimitives.add(GregorianCalendar.class.getName());
+        nonPrimitives.add(Calendar.class.getName());
+        nonPrimitives.add(UUID.class.getName());
+        nonPrimitives.add(Serializable.class.getName());
         nonPrimitives.add("java.lang.Character[]");
         nonPrimitives.add("java.lang.Byte[]");
-        nonPrimitives.add("java.util.Date");
-        nonPrimitives.remove(Void.TYPE.getName());
 
         String[] nonPrimitivesNames = new String[nonPrimitives.size()];
         nonPrimitives.toArray(nonPrimitivesNames);
         Arrays.sort(nonPrimitivesNames);
 
         String[] primitivesNames = {
-                "boolean", "byte", "char", "double", "float", "int", "long", "short"
+                "boolean", "byte", "byte[]", "char", "char[]", "double", "float", "int", "long", "short"
         };
 
         String[] finalList = new String[primitivesNames.length
