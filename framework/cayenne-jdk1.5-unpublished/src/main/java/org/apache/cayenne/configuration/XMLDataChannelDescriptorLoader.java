@@ -225,8 +225,11 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                 String dataMapLocation = nameMapper.configurationLocation(
                         DataMap.class,
                         dataMapName);
+
                 Resource dataMapResource = baseResource
                         .getRelativeResource(dataMapLocation);
+
+                logger.info("Loading XML DataMap resource from " + dataMapResource.getURL());
 
                 DataMap dataMap = dataMapLoader.load(dataMapResource);
                 dataMap.setName(dataMapName);
