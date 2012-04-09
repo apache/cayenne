@@ -199,7 +199,7 @@ public class DataDomainProviderTest extends TestCase {
         assertTrue(domain.getDataMaps().contains(map2));
 
         assertEquals(2, domain.getDataNodes().size());
-        DataNode node1 = domain.getNode("node1");
+        DataNode node1 = domain.getDataNode("node1");
         assertNotNull(node1);
         assertEquals(1, node1.getDataMaps().size());
         assertSame(map1, node1.getDataMaps().iterator().next());

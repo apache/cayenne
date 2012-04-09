@@ -231,7 +231,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         DataNode defaultNode = null;
 
         if (descriptor.getDefaultNodeName() != null) {
-            defaultNode = dataDomain.getNode(descriptor.getDefaultNodeName());
+            defaultNode = dataDomain.getDataNode(descriptor.getDefaultNodeName());
         }
 
         if (defaultNode == null) {

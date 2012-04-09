@@ -97,12 +97,12 @@ public class DataPortTask extends CayenneTask {
         }
 
         // perform project validation
-        DataNode source = domain.getNode(srcNode);
+        DataNode source = domain.getDataNode(srcNode);
         if (source == null) {
             throw new BuildException("srcNode not found in the project: " + srcNode);
         }
 
-        DataNode destination = domain.getNode(destNode);
+        DataNode destination = domain.getDataNode(destNode);
         if (destination == null) {
             throw new BuildException("destNode not found in the project: " + destNode);
         }

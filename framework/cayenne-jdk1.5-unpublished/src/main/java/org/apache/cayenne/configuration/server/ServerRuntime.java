@@ -85,7 +85,7 @@ public class ServerRuntime extends CayenneRuntime {
         DataDomain domain = getDataDomain();
 
         if (dataNodeName != null) {
-            DataNode node = domain.getNode(dataNodeName);
+            DataNode node = domain.getDataNode(dataNodeName);
             if (node == null) {
                 throw new IllegalArgumentException("Unknown DataNode name: "
                         + dataNodeName);

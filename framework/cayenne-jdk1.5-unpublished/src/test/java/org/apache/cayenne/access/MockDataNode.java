@@ -42,14 +42,6 @@ public class MockDataNode extends DataNode {
     protected Map results = new HashMap();
     protected int runCount;
 
-    public static MockDataNode interceptNode(DataDomain domain, String nodeName) {
-        DataNode node = domain.getNode(nodeName);
-        if (node == null) {
-            throw new IllegalArgumentException("No node for name: " + nodeName);
-        }
-        return interceptNode(domain, node);
-    }
-
     public static MockDataNode interceptNode(DataDomain domain, DataNode node) {
         MockDataNode mockNode = new MockDataNode(node);
         mockNode.domain = domain;
