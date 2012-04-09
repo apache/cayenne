@@ -591,8 +591,19 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Returns registered DataNode whose name matches <code>name</code> parameter.
+     * 
+     * @deprecated since 3.1, use a more consistently named {@link #getDataNode(String)}.
      */
     public DataNode getNode(String nodeName) {
+        return getDataNode(nodeName);
+    }
+    
+    /**
+     * Returns registered DataNode whose name matches <code>name</code> parameter.
+     * 
+     * @since 3.1
+     */
+    public DataNode getDataNode(String nodeName) {
         return nodes.get(nodeName);
     }
 
