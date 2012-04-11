@@ -211,6 +211,7 @@ public class RemoveAction extends CayenneAction {
                 for (Object path : paths) {
                     compoundEdit.addEdit(removeLastPathComponent(path));
                 }
+                compoundEdit.end();
 
                 application.getUndoManager().addEdit(compoundEdit);
 
